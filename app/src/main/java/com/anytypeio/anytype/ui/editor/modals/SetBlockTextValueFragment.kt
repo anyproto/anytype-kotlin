@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withParent
@@ -80,7 +82,9 @@ class SetBlockTextValueFragment :
             lifecycle = lifecycle,
             dragAndDropSelector = DragAndDropAdapterDelegate(),
             clipboardInterceptor = this,
-            onDragListener = this
+            onDragListener = this,
+            paragraphTopPadding = resources.getDimensionPixelSize(R.dimen.dp_16),
+            paragraphBottomPadding = resources.getDimensionPixelSize(R.dimen.dp_16),
         )
     }
 
@@ -115,6 +119,7 @@ class SetBlockTextValueFragment :
         when (state) {
             SetBlockTextValueViewModel.ViewState.Exit -> {
                 withParent<OnFragmentInteractionListener> { onSetTextBlockValue() }
+                binding.recycler.hideKeyboard()
                 dismiss()
             }
             SetBlockTextValueViewModel.ViewState.Loading -> {

@@ -42,7 +42,10 @@ class SetBlockTextValueViewModel(
                         }
                     }
                     if (block is BlockView.Table.Cell.Text) {
-                        block.block.copy(inputAction = BlockView.InputAction.Done)
+                        block.block.copy(
+                            inputAction = BlockView.InputAction.Done,
+                            isFocused = block.block.text.isEmpty()
+                        )
                     } else {
                         null
                     }

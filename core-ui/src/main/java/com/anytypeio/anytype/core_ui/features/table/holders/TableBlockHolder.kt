@@ -79,4 +79,8 @@ class TableBlockHolder(
     private fun applyBackground(background: ThemeColor) {
         root.setBlockBackgroundColor(background)
     }
+
+    fun recycle() {
+        tableAdapter.submitList(emptyList())
+    }
 }

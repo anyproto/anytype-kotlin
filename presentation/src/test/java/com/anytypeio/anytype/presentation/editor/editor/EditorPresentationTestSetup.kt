@@ -638,10 +638,21 @@ open class EditorPresentationTestSetup {
     }
 
     protected fun stubGetTemplates(
-        templates : List<ObjectWrapper.Basic> = emptyList()
+        templates: List<ObjectWrapper.Basic> = emptyList()
     ) {
         getTemplates.stub {
             onBlocking { run(any()) } doReturn templates
+        }
+    }
+
+    fun stubFillRow() {
+        fillTableRow.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = listOf()
+                )
+            )
         }
     }
 }

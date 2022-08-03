@@ -3,6 +3,9 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubTable
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.presentation.MockBlockFactory
@@ -300,5 +303,50 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         vm.onOutsideClicked()
 
         verifyZeroInteractions(createBlock)
+    }
+
+    @Test
+    fun `should create a new paragraph on outside-clicked event if the last block is a table block`() {
+
+        // SETUP
+
+        val table = StubTable(children = listOf())
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val page = Block(
+            id = root,
+            children = listOf(header.id) + listOf(table.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val document = listOf(page, header, title, table)
+
+        stubInterceptEvents()
+        stubOpenDocument(document)
+        stubCreateBlock(root)
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.onOutsideClicked()
+
+        verifyBlocking(createBlock, times(1)) {
+            invoke(
+                params = eq(
+                    CreateBlock.Params(
+                        target = "",
+                        context = root,
+                        position = Position.INNER,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.P
+                        )
+                    )
+                )
+            )
+        }
     }
 }

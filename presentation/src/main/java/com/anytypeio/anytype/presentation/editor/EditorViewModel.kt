@@ -1622,12 +1622,13 @@ class EditorViewModel(
 
         toggleSelection(target)
 
-        val descendants = blocks.asMap().descendants(parent = target)
-
-        if (isSelected(target)) {
-            descendants.forEach { child -> select(child) }
-        } else {
-            descendants.forEach { child -> unselect(child) }
+        if (view !is BlockView.Table) {
+            val descendants = blocks.asMap().descendants(parent = target)
+            if (isSelected(target)) {
+                descendants.forEach { child -> select(child) }
+            } else {
+                descendants.forEach { child -> unselect(child) }
+            }
         }
 
         mode = EditorMode.Select
@@ -2872,6 +2873,9 @@ class EditorViewModel(
                 is Content.RelationBlock -> {
                     addNewBlockAtTheEnd()
                 }
+                is Content.Table -> {
+                    addNewBlockAtTheEnd()
+                }
                 else -> {
                     Timber.d("Outside-click has been ignored.")
                 }
@@ -3790,7 +3794,11 @@ class EditorViewModel(
             }
             is ListenerType.TableEmptyCell -> {
                 when (mode) {
-                    EditorMode.Edit -> {
+                    EditorMode.Edit, EditorMode.Locked -> {
+                        if (currentSelection().isNotEmpty()) {
+                            Timber.e("Some other blocks are selected, amend table cell click")
+                            return
+                        }
                         proceedWithSelectingCell(
                             cellId = clicked.cellId,
                             tableId = clicked.tableId
@@ -3807,7 +3815,11 @@ class EditorViewModel(
             }
             is ListenerType.TableTextCell -> {
                 when (mode) {
-                    EditorMode.Edit -> {
+                    EditorMode.Edit, EditorMode.Locked -> {
+                        if (currentSelection().isNotEmpty()) {
+                            Timber.e("Some other blocks are selected, amend table cell click")
+                            return
+                        }
                         proceedWithSelectingCell(
                             cellId = clicked.cellId,
                             tableId = clicked.tableId

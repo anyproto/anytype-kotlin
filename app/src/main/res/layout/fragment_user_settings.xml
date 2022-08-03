@@ -63,10 +63,11 @@
             android:ellipsize="end"
             android:fontFamily="@font/inter_regular"
             android:gravity="center_vertical|end"
+            android:hint="@string/unknown"
             android:maxLines="1"
             android:singleLine="true"
-            android:text="TextView"
             android:textColor="@color/text_secondary"
+            android:textColorHint="@color/text_tertiary"
             android:textSize="17sp"
             tools:text="Note" />
 

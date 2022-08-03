@@ -3,6 +3,17 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubLayoutColumns
+import com.anytypeio.anytype.core_models.StubLayoutRows
+import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.StubTable
+import com.anytypeio.anytype.core_models.StubTableCells
+import com.anytypeio.anytype.core_models.StubTableColumn
+import com.anytypeio.anytype.core_models.StubTableColumns
+import com.anytypeio.anytype.core_models.StubTableRow
+import com.anytypeio.anytype.core_models.StubTableRows
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -1266,6 +1277,44 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         verifyBlocking(copy, times(1)) { invoke(params) }
 
         clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should not select table block cells on table block long click event`() {
+
+        val columns = StubTableColumns(size = 3)
+        val rows = StubTableRows(size = 2)
+        val cells = StubTableCells(columns = columns, rows = rows)
+        val columnLayout = StubLayoutColumns(children = columns.map { it.id })
+        val rowLayout = StubLayoutRows(children = rows.map { it.id })
+        val table = StubTable(children = listOf(columnLayout.id, rowLayout.id))
+
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+
+        val page = Block(
+            id = root,
+            children = listOf(header.id) + listOf(table.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val document =
+            listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.onClickListener(ListenerType.LongClick(target = table.id))
+
+        val selectedId = vm.currentSelection().first()
+
+        assertEquals(1, vm.currentSelection().size)
+        assertEquals(table.id, selectedId)
     }
 
     private fun clearPendingCoroutines() {

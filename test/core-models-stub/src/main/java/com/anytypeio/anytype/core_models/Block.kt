@@ -94,7 +94,7 @@ fun StubFile(
     size: Long = MockDataFactory.randomLong(),
     type: Block.Content.File.Type? = null,
     state: Block.Content.File.State? = null
-) : Block = Block(
+): Block = Block(
     id = id,
     children = children,
     fields = Block.Fields.empty(),
@@ -212,7 +212,7 @@ fun StubBookmark(
     title: String? = MockDataFactory.randomString(),
     fields: Block.Fields = Block.Fields.empty(),
     backgroundColor: String? = null
-) : Block = Block(
+): Block = Block(
     id = id,
     content = Block.Content.Bookmark(
         title = title,
@@ -229,7 +229,7 @@ fun StubBookmark(
 fun StubSmartBlock(
     id: Id = MockDataFactory.randomString(),
     children: List<Id> = emptyList()
-) : Block = Block(
+): Block = Block(
     id = id,
     children = children,
     fields = Block.Fields.empty(),
@@ -289,3 +289,15 @@ fun StubTableColumn(
     fields = Block.Fields.empty(),
     backgroundColor = background
 )
+
+fun StubTableColumns(size: Int): List<Block> = (0 until size).map { StubTableColumn() }
+fun StubTableRows(size: Int): List<Block> = (0 until size).map { StubTableRow() }
+fun StubTableCells(columns: List<Block>, rows: List<Block>): List<Block> {
+    val cells = mutableListOf<Block>()
+    for (i in rows.indices) {
+        for (j in columns.indices) {
+            cells.add(StubParagraph(id = "${rows[i].id}-${columns[j].id}"))
+        }
+    }
+    return cells.toList()
+}

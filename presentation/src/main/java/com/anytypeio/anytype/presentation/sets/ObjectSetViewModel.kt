@@ -293,7 +293,11 @@ class ObjectSetViewModel(
                                         EventWrapper(AppNavigation.Command.OpenUpdateAppScreen)
                                     )
                                 }
-                                Error.NotFoundObject -> toast(TOAST_SET_NOT_EXIST)
+                                Error.NotFoundObject -> {
+                                    toast(TOAST_SET_NOT_EXIST).also {
+                                        dispatch(AppNavigation.Command.Exit)
+                                    }
+                                }
                             }
                         }
                         is Result.Success -> {
@@ -337,7 +341,11 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             closeBlock(CloseBlock.Params(context)).process(
                 success = { dispatch(AppNavigation.Command.Exit) },
-                failure = { Timber.e(it, "Error while closing object set: $context") }
+                failure = {
+                    Timber.e(it, "Error while closing object set: $context").also {
+                        dispatch(AppNavigation.Command.Exit)
+                    }
+                }
             )
         }
     }
@@ -1142,7 +1150,11 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             closeBlock(CloseBlock.Params(context)).process(
                 success = { dispatch(AppNavigation.Command.ExitToDesktop) },
-                failure = { Timber.e(it, "Error while closing object set: $context") }
+                failure = {
+                    Timber.e(it, "Error while closing object set: $context").also {
+                        dispatch(AppNavigation.Command.ExitToDesktop)
+                    }
+                }
             )
         }
     }

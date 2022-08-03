@@ -9,7 +9,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -213,8 +212,6 @@ class BlockAdapter(
     private val onDragListener: View.OnDragListener,
     private val lifecycle: Lifecycle,
     private val dragAndDropSelector: DragAndDropSelector,
-    private val paragraphTopPadding: Int? = null,
-    private val paragraphBottomPadding: Int? = null
 ) : RecyclerView.Adapter<BlockViewHolder>(), DragAndDropSelector by dragAndDropSelector {
 
     private var blocks: List<BlockView> = initialBlock
@@ -257,14 +254,10 @@ class BlockAdapter(
 
         val holder = when (viewType) {
             HOLDER_PARAGRAPH -> {
-                val binding = ItemBlockTextBinding.inflate(inflater, parent, false)
-                if (paragraphTopPadding != null && paragraphBottomPadding != null) {
-                    binding.textContent.updatePadding(
-                        top = paragraphTopPadding,
-                        bottom = paragraphBottomPadding
-                    )
-                }
-                Paragraph(binding = binding, clicked = onClickListener)
+                Paragraph(
+                    ItemBlockTextBinding.inflate(inflater, parent, false),
+                    clicked = onClickListener
+                )
             }
             HOLDER_TITLE -> {
                 Title.Document(

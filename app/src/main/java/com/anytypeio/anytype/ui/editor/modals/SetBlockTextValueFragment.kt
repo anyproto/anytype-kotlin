@@ -18,7 +18,9 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -82,9 +84,7 @@ class SetBlockTextValueFragment :
             lifecycle = lifecycle,
             dragAndDropSelector = DragAndDropAdapterDelegate(),
             clipboardInterceptor = this,
-            onDragListener = this,
-            paragraphTopPadding = resources.getDimensionPixelSize(R.dimen.dp_16),
-            paragraphBottomPadding = resources.getDimensionPixelSize(R.dimen.dp_16),
+            onDragListener = this
         )
     }
 
@@ -94,6 +94,8 @@ class SetBlockTextValueFragment :
             layoutManager = LinearLayoutManager(requireContext())
             adapter = blockAdapter
         }
+        binding.topSpace.setOnClickListener { vm.onPaddingsClick() }
+        binding.bottomSpace.setOnClickListener { vm.onPaddingsClick() }
     }
 
     override fun onStart() {
@@ -130,6 +132,12 @@ class SetBlockTextValueFragment :
             is SetBlockTextValueViewModel.ViewState.OnMention -> {
                 withParent<OnFragmentInteractionListener> { onMentionClicked(state.targetId) }
                 dismiss()
+            }
+            SetBlockTextValueViewModel.ViewState.Focus -> {
+                val lm = binding.recycler.layoutManager as LinearLayoutManager
+                val pos = lm.findFirstVisibleItemPosition()
+                val container = lm.getChildAt(pos)
+                container?.findViewById<TextInputWidget>(R.id.textContent)?.focusAndShowKeyboard()
             }
         }
     }

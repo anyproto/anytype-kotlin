@@ -14,11 +14,19 @@
         android:layout_marginTop="6dp"
         android:src="@drawable/sheet_top" />
 
+    <View
+        android:id="@+id/topSpace"
+        android:layout_width="match_parent"
+        android:layout_height="13dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="13dp"
-        android:layout_marginBottom="32dp" />
+        android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/bottomSpace"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_32"/>
 
 </LinearLayout>

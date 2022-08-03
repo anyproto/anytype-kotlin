@@ -124,6 +124,10 @@ class SetBlockTextValueViewModel(
         }
     }
 
+    fun onPaddingsClick() {
+        state.value = ViewState.Focus
+    }
+
     class Factory(
         private val updateText: UpdateText,
         private val storage: Editor.Storage
@@ -144,5 +148,6 @@ class SetBlockTextValueViewModel(
         data class OnMention(val targetId: String) : ViewState()
         object Exit : ViewState()
         object Loading : ViewState()
+        object Focus: ViewState()
     }
 }

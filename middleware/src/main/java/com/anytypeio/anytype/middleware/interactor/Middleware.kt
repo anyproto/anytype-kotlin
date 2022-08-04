@@ -625,7 +625,8 @@ class Middleware(
             htmlSlot = command.html.orEmpty(),
             selectedTextRange = range,
             anySlot = blocks,
-            selectedBlockIds = command.selected
+            selectedBlockIds = command.selected,
+            isPartOfBlock = command.isPartOfBlock ?: false
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockPaste(request)

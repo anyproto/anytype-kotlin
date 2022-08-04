@@ -33,7 +33,8 @@ class Paste(
                     range = params.range,
                     text = clip.text,
                     html = clip.html,
-                    blocks = blocks
+                    blocks = blocks,
+                    isPartOfBlock = params.isPartOfBlock
                 )
             )
         } else {
@@ -51,7 +52,8 @@ class Paste(
         val context: Id,
         val focus: Id,
         val range: IntRange,
-        val selected: List<Id>
+        val selected: List<Id>,
+        val isPartOfBlock: Boolean? = null
     )
 
     companion object {

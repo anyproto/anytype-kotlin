@@ -87,7 +87,8 @@ sealed class Intent {
             val context: Id,
             val focus: Id,
             val selected: List<Id>,
-            val range: IntRange
+            val range: IntRange,
+            val isPartOfBlock: Boolean? = null
         ) : Clipboard()
 
         class Copy(

@@ -494,7 +494,8 @@ class Orchestrator(
                             context = intent.context,
                             focus = intent.focus,
                             range = intent.range,
-                            selected = intent.selected
+                            selected = intent.selected,
+                            isPartOfBlock = intent.isPartOfBlock
                         )
                     ).proceed(
                         failure = defaultOnError,

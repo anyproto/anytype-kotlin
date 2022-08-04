@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRec
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
-import com.anytypeio.anytype.domain.relations.AddFileToRecord
+import com.anytypeio.anytype.domain.dataview.interactor.AddFileToRecord
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider

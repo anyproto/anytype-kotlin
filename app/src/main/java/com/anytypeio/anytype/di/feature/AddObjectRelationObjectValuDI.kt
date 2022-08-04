@@ -2,7 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.add.AddObjectRelationViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider

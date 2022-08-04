@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for getting compatible object types with current smart block type.
  */
+@Deprecated("Part of soon-to-be-deprecated API")
 class GetCompatibleObjectTypes(
     private val repo: BlockRepository
 ) : BaseUseCase<List<ObjectType>, GetCompatibleObjectTypes.Params>() {

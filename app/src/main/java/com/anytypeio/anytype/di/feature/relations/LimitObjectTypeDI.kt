@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.di.feature.relations
 
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
-import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.LimitObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState

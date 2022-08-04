@@ -5,8 +5,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
-import com.anytypeio.anytype.domain.dataview.interactor.DebugLocalStore
-import com.anytypeio.anytype.domain.dataview.interactor.DebugSync
+import com.anytypeio.anytype.domain.debugging.DebugLocalStore
+import com.anytypeio.anytype.domain.debugging.DebugSync
 import com.anytypeio.anytype.ui.settings.DebugSettingsFragment
 import dagger.Module
 import dagger.Provides

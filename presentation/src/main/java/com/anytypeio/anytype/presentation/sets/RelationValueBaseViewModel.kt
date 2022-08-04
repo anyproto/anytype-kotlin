@@ -20,7 +20,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRec
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
-import com.anytypeio.anytype.domain.relations.AddFileToRecord
+import com.anytypeio.anytype.domain.dataview.interactor.AddFileToRecord
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation

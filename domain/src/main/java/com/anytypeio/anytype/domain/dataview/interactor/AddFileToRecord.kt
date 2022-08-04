@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.relations
+package com.anytypeio.anytype.domain.dataview.interactor
 
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+@Deprecated("Part of soon-to-be-deprecated API")
 class AddFileToRecord(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, AddFileToRecord.Params>() {

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for creating a new record inside data view's database.
  */
+@Deprecated("Part of soon-to-be-deprecated API")
 class CreateDataViewRecord(
     private val repo: BlockRepository
 ) : BaseUseCase<DVRecord, CreateDataViewRecord.Params>() {

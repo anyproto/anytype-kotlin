@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
+import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider

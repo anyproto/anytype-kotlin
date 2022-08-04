@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.dataview.interactor
+package com.anytypeio.anytype.domain.search
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort

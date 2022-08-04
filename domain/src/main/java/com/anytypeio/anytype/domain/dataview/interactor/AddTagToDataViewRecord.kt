@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for adding a new tag value to record.
  */
+@Deprecated("Part of soon-to-be-deprecated API")
 class AddTagToDataViewRecord(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, AddTagToDataViewRecord.Params>() {

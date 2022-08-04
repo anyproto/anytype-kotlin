@@ -9,6 +9,7 @@ package com.anytypeio.anytype.core_models
  * @property [layout] template's layout
  *
  */
+@Deprecated("Will be deprecated. Object type will be treated as object")
 data class ObjectType(
     val url: Url,
     val name: String,

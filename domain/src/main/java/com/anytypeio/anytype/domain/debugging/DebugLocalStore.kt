@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.dataview.interactor
+package com.anytypeio.anytype.domain.debugging
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either

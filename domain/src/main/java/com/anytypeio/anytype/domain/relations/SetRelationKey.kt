@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.dataview.interactor
+package com.anytypeio.anytype.domain.relations
 
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id

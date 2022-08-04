@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.StubRelation
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
+import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectRelationProvider
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule

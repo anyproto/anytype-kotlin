@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for updating data-view record.
  */
+@Deprecated("Part of soon-to-be-deprecated API")
 class UpdateDataViewRecord(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, UpdateDataViewRecord.Params>() {

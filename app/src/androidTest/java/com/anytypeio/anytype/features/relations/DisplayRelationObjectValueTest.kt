@@ -27,7 +27,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataView
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.relations.AddFileToRecord
+import com.anytypeio.anytype.domain.dataview.interactor.AddFileToRecord
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider

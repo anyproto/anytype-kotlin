@@ -7,6 +7,7 @@ package com.anytypeio.anytype.core_models
  * @property [isReadOnly] editable by user or not
  * @property [isHidden] whether this type is internal (not displayed to user)
  */
+@Deprecated("Will be deprecated. Relations will be treated as objects")
 data class Relation(
     val key: String,
     val name: String,

@@ -141,6 +141,7 @@ interface BlockRepository {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
+    @Deprecated("Part of soon-to-be-deprecated API")
     suspend fun getObjectTypes(): List<ObjectType>
 
     suspend fun createObjectType(prototype: ObjectType.Prototype): ObjectType

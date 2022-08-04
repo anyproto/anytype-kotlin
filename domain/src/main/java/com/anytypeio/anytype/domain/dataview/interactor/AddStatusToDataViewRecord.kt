@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for adding a new status value to record.
  */
+@Deprecated("Part of soon-to-be-deprecated API")
 class AddStatusToDataViewRecord(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, AddStatusToDataViewRecord.Params>() {

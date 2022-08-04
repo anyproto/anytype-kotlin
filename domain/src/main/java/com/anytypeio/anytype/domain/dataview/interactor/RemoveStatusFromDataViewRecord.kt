@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+@Deprecated("Part of soon-to-be-deprecated API")
 class RemoveStatusFromDataViewRecord(
     private val repo: BlockRepository
 ) : BaseUseCase<Unit, RemoveStatusFromDataViewRecord.Params>() {

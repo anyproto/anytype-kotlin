@@ -62,5 +62,6 @@
     <color name="palette_very_light_lime">#172A08</color>
     <color name="palette_very_light_grey">#1D1D1B</color>
     <color name="palette_system_red">#F55522</color>
+    <color name="object_loading_state_gradient_end_color">#161615</color>
 
 </resources>

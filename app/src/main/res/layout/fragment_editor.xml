@@ -16,6 +16,10 @@
         android:focusable="true"
         android:focusableInTouchMode="true" />
 
+    <include
+        android:id="@+id/loading_container"
+        layout="@layout/object_loading_state"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sheet"
         android:layout_width="match_parent"
@@ -32,6 +36,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:itemCount="1"
+            android:visibility="gone"
             tools:listitem="@layout/item_block_title" />
 
         <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar

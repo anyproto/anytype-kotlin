@@ -1195,10 +1195,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         when (state) {
             is ViewState.Success -> {
                 blockAdapter.updateWithDiffUtil(state.blocks)
+                binding.recycler.visible()
                 binding.recycler.invalidateItemDecorations()
                 val isLocked = vm.mode is Editor.Mode.Locked
                 binding.topToolbar.setIsLocked(isLocked)
                 resetDocumentTitle(state)
+                binding.loadingContainer.root.gone()
             }
             is ViewState.OpenLinkScreen -> {
                 if (childFragmentManager.findFragmentByTag(TAG_LINK) == null) {

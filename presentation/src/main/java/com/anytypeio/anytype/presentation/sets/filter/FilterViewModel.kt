@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
@@ -475,6 +476,7 @@ open class FilterViewModel(
                             filter = DVFilter(
                                 relationKey = relation,
                                 value = selected?.value?.toDouble(),
+                                quickOption = selected?.type ?: DVFilterQuickOption.EXACT_DATE,
                                 condition = condition.toDomain()
                             )
                         )

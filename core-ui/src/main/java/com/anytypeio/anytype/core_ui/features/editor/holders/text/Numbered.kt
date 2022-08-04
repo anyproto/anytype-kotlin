@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
@@ -142,7 +143,7 @@ class Numbered(
         }
     }
 
-    override fun setTextColor(color: String) {
+    override fun setTextColor(color: ThemeColor) {
         super.setTextColor(color)
         number.setTextColor(color)
     }

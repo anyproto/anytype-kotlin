@@ -47,8 +47,7 @@ class HighlightingBlockTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             marks = listOf(Markup.Mark.Bold(from = 3, to = 10)),
-            indent = 0,
-            color = null
+            indent = 0
         )
 
         val views = listOf(headerOne)

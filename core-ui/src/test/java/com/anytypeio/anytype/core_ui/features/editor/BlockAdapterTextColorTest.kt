@@ -28,14 +28,13 @@ class BlockAdapterTextColorTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             isFocused = false,
-            color = ThemeColor.BLUE.code
+            color = ThemeColor.BLUE
         )
 
         val updated = BlockView.Text.Bulleted(
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
-            isFocused = false,
-            color = null
+            isFocused = false
         )
 
         val views = listOf(bulleted)

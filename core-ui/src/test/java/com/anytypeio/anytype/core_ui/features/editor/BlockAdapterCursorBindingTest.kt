@@ -200,8 +200,7 @@ class BlockAdapterCursorBindingTest {
             id = MockDataFactory.randomUuid(),
             isFocused = true,
             indent = 0,
-            cursor = 3,
-            color = null
+            cursor = 3
         )
 
         val views = listOf(block)

@@ -108,13 +108,12 @@ class Bulleted(
     override fun getMentionUncheckedIcon(): Drawable? = mentionUncheckedIcon
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
-    override fun setTextColor(color: String) {
+    override fun setTextColor(color: ThemeColor) {
         super.setTextColor(color)
-        val value = ThemeColor.values().find { value -> value.code == color }
-        if (value != null && value != ThemeColor.DEFAULT) {
+        if (color != ThemeColor.DEFAULT) {
             DrawableCompat.setTint(
                 bullet.drawable,
-                content.context.resources.dark(value, getDefaultTextColor())
+                content.context.resources.dark(color, getDefaultTextColor())
             )
         } else {
             DrawableCompat.setTint(

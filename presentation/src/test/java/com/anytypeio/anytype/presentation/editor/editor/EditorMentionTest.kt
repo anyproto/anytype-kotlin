@@ -219,7 +219,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = mentionHash
                                 )
                             ),
-                            color = null,
                             indent = 0,
                             text = "page about Avant-Garde Jazz  music",
                             mode = BlockView.Mode.EDIT
@@ -380,7 +379,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = newPageId
                                 )
                             ),
-                            color = null,
                             indent = 0,
                             text = "page about Jazz  music",
                             mode = BlockView.Mode.EDIT
@@ -541,7 +539,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = newPageId
                                 )
                             ),
-                            color = null,
                             indent = 0,
                             text = "page about Untitled  music",
                             mode = BlockView.Mode.EDIT
@@ -901,7 +898,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             to = 14
                         )
                     ),
-                    color = null,
                     indent = 0,
                     text = "Start Foob end",
                     mode = BlockView.Mode.EDIT
@@ -1039,7 +1035,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             to = 18
                         )
                     ),
-                    color = null,
                     indent = 0,
                     text = "Start Untitled end",
                     mode = BlockView.Mode.EDIT

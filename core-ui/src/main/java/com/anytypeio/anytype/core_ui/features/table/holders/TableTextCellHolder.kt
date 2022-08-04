@@ -120,7 +120,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
         private fun setBlockText(
             text: String,
             markup: Markup,
-            color: String?
+            color: ThemeColor
         ) {
             when (markup.marks.isEmpty()) {
                 true -> textContent.text = text
@@ -178,7 +178,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        private fun setTextColor(color: String?) {
+        private fun setTextColor(color: ThemeColor) {
             textContent.setTextColor(resolveTextBlockThemedColor(color))
         }
 
@@ -218,7 +218,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        private fun resolveTextBlockThemedColor(color: String?): Int {
+        private fun resolveTextBlockThemedColor(color: ThemeColor): Int {
             return itemView.context.resolveThemedTextColor(color, defTextColor)
         }
 

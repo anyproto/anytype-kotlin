@@ -346,8 +346,7 @@ class BlockViewDiffUtilTest {
             text = text,
             marks = emptyList(),
             indent = 0,
-            isFocused = MockDataFactory.randomBoolean(),
-            color = null
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -387,7 +386,6 @@ class BlockViewDiffUtilTest {
             marks = emptyList(),
             indent = 0,
             isFocused = MockDataFactory.randomBoolean(),
-            color = null,
             isEmpty = true
         )
 

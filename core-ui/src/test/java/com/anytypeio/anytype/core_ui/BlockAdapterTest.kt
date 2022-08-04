@@ -175,7 +175,7 @@ class BlockAdapterTest {
         val paragraph = BlockView.Text.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            color = ThemeColor.BLUE.code
+            color = ThemeColor.BLUE
         )
 
         val views = listOf(paragraph)
@@ -321,11 +321,11 @@ class BlockAdapterTest {
         val paragraph = BlockView.Text.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            color = ThemeColor.BLUE.code
+            color = ThemeColor.BLUE
         )
 
         val updated = paragraph.copy(
-            color = ThemeColor.LIME.code
+            color = ThemeColor.LIME
         )
 
         val views = listOf(paragraph)
@@ -970,7 +970,6 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             toggled = MockDataFactory.randomBoolean(),
-            color = null,
             isFocused = false,
             marks = emptyList()
         )
@@ -2395,7 +2394,6 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
             indent = 0,
-            color = null
         )
 
         val views = listOf(highlight)
@@ -2433,8 +2431,7 @@ class BlockAdapterTest {
         val highlight = BlockView.Text.Highlight(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            mode = BlockView.Mode.EDIT,
-            color = null
+            mode = BlockView.Mode.EDIT
         )
 
         val updated = highlight.copy(
@@ -2490,8 +2487,7 @@ class BlockAdapterTest {
         val highlight = BlockView.Text.Highlight(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            mode = BlockView.Mode.EDIT,
-            color = null
+            mode = BlockView.Mode.EDIT
         )
 
         val views = listOf(highlight)
@@ -2529,8 +2525,7 @@ class BlockAdapterTest {
         val highlight = BlockView.Text.Highlight(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            mode = BlockView.Mode.EDIT,
-            color = null
+            mode = BlockView.Mode.EDIT
         )
 
         val updated = highlight.copy(
@@ -3077,7 +3072,6 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = 0,
-            color = null,
             isFocused = false,
             marks = emptyList()
         )

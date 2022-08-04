@@ -120,7 +120,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                                     param = linkObject
                                 )
                             ),
-                            color = null,
                             indent = 0,
                             text = "Start Foobar End",
                             mode = BlockView.Mode.EDIT
@@ -278,7 +277,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                         ),
 
                         ),
-                    color = null,
                     indent = 0,
                     text = "Start Link Object Mention End",
                     mode = BlockView.Mode.EDIT
@@ -444,7 +442,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                             param = newObjectId
                         ),
                     ),
-                    color = null,
                     indent = 0,
                     text = "Start Link Object Mention End",
                     mode = BlockView.Mode.EDIT

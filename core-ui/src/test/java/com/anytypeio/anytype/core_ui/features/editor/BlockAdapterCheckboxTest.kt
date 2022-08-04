@@ -31,8 +31,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             isFocused = false,
-            isChecked = false,
-            color = null
+            isChecked = false
         )
 
         val views = listOf(checkbox)
@@ -64,8 +63,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             isFocused = false,
-            isChecked = true,
-            color = null
+            isChecked = true
         )
 
         val views = listOf(checkbox)
@@ -104,8 +102,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             isFocused = false,
-            isChecked = false,
-            color = null
+            isChecked = false
         )
 
         val views = listOf(checkbox)
@@ -139,8 +136,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = MockDataFactory.randomString(),
             isFocused = true,
-            isChecked = true,
-            color = null
+            isChecked = true
         )
 
         val views = listOf(checkbox)
@@ -185,8 +181,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = text,
             isFocused = false,
-            isChecked = true,
-            color = null
+            isChecked = true
         )
 
         val views = listOf(checkbox)
@@ -235,8 +230,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = text,
             isFocused = false,
-            isChecked = true,
-            color = null
+            isChecked = true
         )
 
         val views = listOf(checkbox)
@@ -293,8 +287,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = text,
             isFocused = false,
-            isChecked = false,
-            color = null
+            isChecked = false
         )
 
         val views = listOf(checkbox)
@@ -351,8 +344,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             id = MockDataFactory.randomUuid(),
             text = text,
             isFocused = false,
-            isChecked = false,
-            color = null
+            isChecked = false
         )
 
         val views = listOf(checkbox)
@@ -400,8 +392,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
         val checkbox = BlockView.Text.Bulleted(
             id = MockDataFactory.randomUuid(),
             text = text,
-            isFocused = false,
-            color = null
+            isFocused = false
         )
 
         val views = listOf(checkbox)

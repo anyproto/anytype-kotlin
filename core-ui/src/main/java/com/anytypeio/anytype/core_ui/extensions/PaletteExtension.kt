@@ -76,6 +76,15 @@ fun Resources.veryLight(
     ThemeColor.LIME -> getColor(R.color.palette_very_light_lime, null)
 }
 
+fun TextView.setTextColor(color: ThemeColor, defaultColor: Int = R.color.text_primary) {
+    val default = context.getColor(defaultColor)
+    if (color != ThemeColor.DEFAULT) {
+        setTextColor(resources.dark(color, default))
+    } else {
+        setTextColor(default)
+    }
+}
+
 fun TextView.setTextColor(color: String, defaultColor: Int = R.color.text_primary) {
     val value = ThemeColor.values().find { value -> value.code == color }
     val default = context.getColor(defaultColor)
@@ -160,6 +169,14 @@ fun Context.resolveThemedTextColor(color: String?, defaultColor: Int): Int {
     val value = ThemeColor.values().find { value -> value.code == color }
     return if (value != null && value != ThemeColor.DEFAULT) {
         resources.text(value, defaultColor)
+    } else {
+        defaultColor
+    }
+}
+
+fun Context.resolveThemedTextColor(color: ThemeColor, defaultColor: Int): Int {
+    return if (color != ThemeColor.DEFAULT) {
+        resources.text(color, defaultColor)
     } else {
         defaultColor
     }

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
@@ -798,7 +799,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             marks = normalizedMarks,
             isFocused = block.id == focus.id,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
@@ -851,7 +852,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
             text = normalizedText,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             isFocused = block.id == focus.id,
             marks = normalizedMarks,
             background = block.parseThemeBackgroundColor(),
@@ -886,7 +887,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
             text = normalizedText,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             isFocused = block.id == focus.id,
             marks = normalizedMarks,
             background = block.parseThemeBackgroundColor(),
@@ -921,7 +922,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
             text = normalizedText,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             isFocused = block.id == focus.id,
             marks = normalizedMarks,
             background = block.parseThemeBackgroundColor(),
@@ -958,7 +959,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             marks = normalizedMarks,
             isChecked = content.isChecked == true,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             isFocused = block.id == focus.id,
             indent = indent,
@@ -994,7 +995,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             indent = indent,
             marks = normalizedMarks,
             isFocused = block.id == focus.id,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
@@ -1019,7 +1020,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         id = block.id,
         text = content.text,
         background = block.parseThemeBackgroundColor(),
-        color = content.color,
+        color = content.parseThemeTextColor(),
         isFocused = block.id == focus.id,
         indent = indent,
         lang = block.fields.lang,
@@ -1063,7 +1064,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             marks = normalizedMarks,
             indent = indent,
-            alignment = content.align?.toView(), color = content.color,
+            alignment = content.align?.toView(), color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
@@ -1104,7 +1105,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             marks = normalizedMarks,
             indent = indent,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
@@ -1138,7 +1139,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             id = block.id,
             text = normalizedText,
             marks = normalizedMarks,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             isFocused = block.id == focus.id,
@@ -1176,7 +1177,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             number = number,
             isFocused = block.id == focus.id,
-            color = content.color,
+            color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             marks = normalizedMarks,

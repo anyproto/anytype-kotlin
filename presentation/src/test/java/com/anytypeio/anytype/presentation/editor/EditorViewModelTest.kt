@@ -85,6 +85,7 @@ import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificati
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -838,10 +839,10 @@ open class EditorViewModelTest {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P,
-                color = "red"
+                color = ThemeColor.RED.code
             ),
             children = emptyList(),
-            backgroundColor = "yellow"
+            backgroundColor = ThemeColor.YELLOW.code
         )
 
         val page = Block(
@@ -909,7 +910,7 @@ open class EditorViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    color = paragraph.content<Block.Content.Text>().color,
+                    color = paragraph.content.asText().parseThemeTextColor(),
                     background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(
@@ -947,7 +948,7 @@ open class EditorViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    color = paragraph.content<Block.Content.Text>().color,
+                    color = paragraph.content.asText().parseThemeTextColor(),
                     background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(
@@ -982,7 +983,7 @@ open class EditorViewModelTest {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P,
-                color = "red"
+                color = ThemeColor.RED.code
             ),
             backgroundColor = "yellow",
             children = emptyList()
@@ -1049,7 +1050,7 @@ open class EditorViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    color = paragraph.content<Block.Content.Text>().color,
+                    color = paragraph.content.asText().parseThemeTextColor(),
                     background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(
@@ -1094,7 +1095,7 @@ open class EditorViewModelTest {
                     isFocused = true,
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    color = paragraph.content<Block.Content.Text>().color,
+                    color = paragraph.content.asText().parseThemeTextColor(),
                     background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(

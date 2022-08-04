@@ -325,8 +325,7 @@ interface TextBlockHolder : TextHolder {
         }
 
         if (payload.textColorChanged()) {
-            val color = item.color ?: ThemeColor.DEFAULT.code
-            setTextColor(resolveTextBlockThemedColor(color))
+            setTextColor(resolveTextBlockThemedColor(item.color))
             setMarkup(item, clicked, resolveTextBlockThemedColor(item.color))
         }
 
@@ -390,7 +389,7 @@ interface TextBlockHolder : TextHolder {
         content.clearTextWatchers()
     }
 
-    fun resolveTextBlockThemedColor(color: String?): Int {
+    fun resolveTextBlockThemedColor(color: ThemeColor): Int {
         return content.context.resolveThemedTextColor(color, getDefaultTextColor())
     }
 

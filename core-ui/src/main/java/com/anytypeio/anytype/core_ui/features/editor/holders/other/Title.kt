@@ -376,7 +376,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyTextColor(item: BlockView.Title) {
-            setTextColor(item.color ?: ThemeColor.DEFAULT.code)
+            setTextColor(item.color)
         }
 
         override fun applyBackground(item: BlockView.Title) {
@@ -498,7 +498,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyTextColor(item: BlockView.Title) {
-            setTextColor(item.color ?: ThemeColor.DEFAULT.code)
+            setTextColor(item.color)
         }
 
         override fun applyBackground(item: BlockView.Title) {
@@ -567,7 +567,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyTextColor(item: BlockView.Title) {
-            setTextColor(item.color ?: ThemeColor.DEFAULT.code)
+            setTextColor(item.color)
         }
 
         override fun applyBackground(item: BlockView.Title) {

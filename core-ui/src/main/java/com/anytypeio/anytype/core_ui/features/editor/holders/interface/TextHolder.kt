@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.`interface`
 
 import android.view.Gravity
 import android.view.View
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.setTextColor
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
@@ -45,7 +46,7 @@ interface TextHolder {
         }
     }
 
-    fun setTextColor(color: String) {
+    fun setTextColor(color: ThemeColor) {
         content.setTextColor(color)
     }
 

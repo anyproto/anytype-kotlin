@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ThemeColor
 
 /**
  * Maps blocks to its children using id as a key
@@ -128,9 +129,9 @@ fun Block.getFirstLinkOrObjectMarkupParam(range: IntRange?): String? {
 
 fun Block.getSubstring(range: IntRange): String = content.asText().text.substring(range)
 
-fun Block.textColor(): String? {
+fun Block.textColor(): ThemeColor {
     if (content is Content.Text)
-        return content.color
+        return content.parseThemeTextColor()
     else
         throw UnsupportedOperationException("Wrong block content type: ${content.javaClass}")
 }
@@ -284,3 +285,7 @@ fun List<Block>.isAllTextBlocks(): Boolean =
     all { block ->
         block.content is Content.Text
     }
+
+fun Block.Content.Text.parseThemeTextColor() : ThemeColor {
+    return color?.let { ThemeColor.fromCode(it) } ?: ThemeColor.DEFAULT
+}

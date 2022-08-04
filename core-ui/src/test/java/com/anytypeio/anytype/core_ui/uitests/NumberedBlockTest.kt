@@ -55,7 +55,7 @@ class NumberedBlockTest {
     fun `should change text color - when payload`() {
         scenario.onFragment {
             val recycler = givenRecycler(it)
-            val adapter = givenAdapter(listOf(givenNumbered(ThemeColor.RED.code)))
+            val adapter = givenAdapter(listOf(givenNumbered(ThemeColor.RED)))
             recycler.adapter = adapter
 
 
@@ -71,7 +71,7 @@ class NumberedBlockTest {
             }
 
 
-            adapter.updateWithDiffUtil(listOf(givenNumbered(ThemeColor.BLUE.code)))
+            adapter.updateWithDiffUtil(listOf(givenNumbered(ThemeColor.BLUE)))
 
             R_test.id.recycler.rVMatcher().apply {
                 onItemView(0, R.id.number).checkIsDisplayed()
@@ -91,7 +91,7 @@ class NumberedBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-    private fun givenNumbered(color: String) = BlockView.Text.Numbered(
+    private fun givenNumbered(color: ThemeColor) = BlockView.Text.Numbered(
         text = "text",
         id = "id",
         mode = BlockView.Mode.EDIT,

@@ -80,7 +80,7 @@ sealed class BlockView : ViewType {
          * Base text color for the text.
          * If not present, default color will be applied.
          */
-        val color: String?
+        val color: ThemeColor
 
         /**
          * Background color for the whole block as opposed to text highlight background.
@@ -294,7 +294,7 @@ sealed class BlockView : ViewType {
 
         // Stable properties
 
-        abstract override val color: String?
+        abstract override val color: ThemeColor
         abstract override val background: ThemeColor
         abstract override val mode: Mode
         abstract override var cursor: Int?
@@ -315,7 +315,7 @@ sealed class BlockView : ViewType {
             override var text: String,
             override var marks: List<Markup.Mark> = emptyList(),
             override var isFocused: Boolean = false,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
@@ -344,7 +344,7 @@ sealed class BlockView : ViewType {
                 override val id: String,
                 override var text: String,
                 override var isFocused: Boolean = false,
-                override val color: String? = null,
+                override val color: ThemeColor = ThemeColor.DEFAULT,
                 override val background: ThemeColor = ThemeColor.DEFAULT,
                 override val indent: Int = 0,
                 override var marks: List<Markup.Mark> = emptyList(),
@@ -370,7 +370,7 @@ sealed class BlockView : ViewType {
              */
             data class Two(
                 override val id: String,
-                override val color: String? = null,
+                override val color: ThemeColor = ThemeColor.DEFAULT,
                 override var text: String,
                 override var isFocused: Boolean = false,
                 override val background: ThemeColor = ThemeColor.DEFAULT,
@@ -398,7 +398,7 @@ sealed class BlockView : ViewType {
              */
             data class Three(
                 override val id: String,
-                override val color: String? = null,
+                override val color: ThemeColor = ThemeColor.DEFAULT,
                 override var text: String,
                 override var isFocused: Boolean = false,
                 override val background: ThemeColor = ThemeColor.DEFAULT,
@@ -428,7 +428,7 @@ sealed class BlockView : ViewType {
             override val id: String,
             override var isFocused: Boolean = false,
             override var text: String,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val indent: Int = 0,
             override var marks: List<Markup.Mark> = emptyList(),
@@ -449,7 +449,7 @@ sealed class BlockView : ViewType {
             override val id: String,
             override var isFocused: Boolean = false,
             override var text: String,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val indent: Int = 0,
             override var marks: List<Markup.Mark> = emptyList(),
@@ -478,7 +478,7 @@ sealed class BlockView : ViewType {
             override var marks: List<Markup.Mark> = emptyList(),
             override var isFocused: Boolean = false,
             override var text: String,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override var isChecked: Boolean = false,
             override val indent: Int = 0,
@@ -506,7 +506,7 @@ sealed class BlockView : ViewType {
             override val id: String,
             override var marks: List<Markup.Mark> = emptyList(),
             override var isFocused: Boolean = false,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override var text: String,
             override val indent: Int = 0,
@@ -535,7 +535,7 @@ sealed class BlockView : ViewType {
             override var text: String,
             override var marks: List<Markup.Mark> = emptyList(),
             override var isFocused: Boolean = false,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
@@ -564,7 +564,7 @@ sealed class BlockView : ViewType {
             override var text: String,
             override var marks: List<Markup.Mark> = emptyList(),
             override var isFocused: Boolean = false,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
@@ -593,7 +593,7 @@ sealed class BlockView : ViewType {
         override var text: String,
         override var isFocused: Boolean = false,
         override var cursor: Int? = null,
-        override val color: String? = null,
+        override val color: ThemeColor = ThemeColor.DEFAULT,
         override val background: ThemeColor = ThemeColor.DEFAULT,
     ) : BlockView(), TextSupport, Focusable, Cursor, Permission {
         override fun getViewType(): Int = HOLDER_DESCRIPTION
@@ -606,7 +606,7 @@ sealed class BlockView : ViewType {
         abstract var coverColor: CoverColor?
         abstract var coverImage: Url?
         abstract var coverGradient: String?
-        abstract override val color: String?
+        override val color: ThemeColor = ThemeColor.DEFAULT
         abstract override val background: ThemeColor
 
         val hasCover get() = coverColor != null || coverImage != null || coverGradient != null
@@ -624,7 +624,7 @@ sealed class BlockView : ViewType {
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             val emoji: String? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
@@ -648,7 +648,7 @@ sealed class BlockView : ViewType {
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
@@ -671,7 +671,7 @@ sealed class BlockView : ViewType {
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
@@ -695,7 +695,7 @@ sealed class BlockView : ViewType {
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            override val color: String? = null,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
             override val mode: Mode = Mode.READ,
             override var cursor: Int? = null
         ) : Title() {
@@ -714,7 +714,7 @@ sealed class BlockView : ViewType {
         override val mode: Mode = Mode.EDIT,
         override var isFocused: Boolean = false,
         override val isSelected: Boolean = false,
-        override val color: String? = null,
+        override val color: ThemeColor = ThemeColor.DEFAULT,
         override var cursor: Int? = null,
         override val background: ThemeColor = ThemeColor.DEFAULT,
         override val indent: Int = 0,

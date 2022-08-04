@@ -226,7 +226,6 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     id = block.id,
                     marks = emptyList(),
                     background = block.parseThemeBackgroundColor(),
-                    color = block.content<Block.Content.Text>().color,
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1
@@ -331,7 +330,6 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     id = block.id,
                     marks = emptyList(),
                     background = block.parseThemeBackgroundColor(),
-                    color = block.content<Block.Content.Text>().color,
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1
@@ -444,7 +442,6 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     id = block.id,
                     marks = emptyList(),
                     background = block.parseThemeBackgroundColor(),
-                    color = block.content<Block.Content.Text>().color,
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1

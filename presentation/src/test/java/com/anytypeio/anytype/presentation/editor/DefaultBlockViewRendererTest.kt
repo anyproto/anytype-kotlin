@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -208,7 +209,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.START,
                 indent = 0,
@@ -229,7 +230,7 @@ class DefaultBlockViewRendererTest {
                 id = toggle.id,
                 marks = emptyList(),
                 background = toggle.parseThemeBackgroundColor(),
-                color = toggle.content<Block.Content.Text>().color,
+                color = toggle.content<Block.Content.Text>().parseThemeTextColor(),
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -347,7 +348,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.END,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -367,7 +368,7 @@ class DefaultBlockViewRendererTest {
                 id = toggle.id,
                 marks = emptyList(),
                 background = toggle.parseThemeBackgroundColor(),
-                color = toggle.content<Block.Content.Text>().color,
+                color = toggle.content<Block.Content.Text>().parseThemeTextColor(),
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -385,7 +386,7 @@ class DefaultBlockViewRendererTest {
                 id = checkbox.id,
                 marks = emptyList(),
                 background = checkbox.parseThemeBackgroundColor(),
-                color = checkbox.content<Block.Content.Text>().color,
+                color = checkbox.content<Block.Content.Text>().parseThemeTextColor(),
                 text = checkbox.content<Block.Content.Text>().text,
                 indent = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -479,7 +480,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = null,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -570,7 +571,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -672,7 +673,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -774,7 +775,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -969,7 +970,7 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 marks = emptyList(),
                 background = a.parseThemeBackgroundColor(),
-                color = a.content<Block.Content.Text>().color,
+                color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -988,7 +989,7 @@ class DefaultBlockViewRendererTest {
                 id = b.id,
                 marks = emptyList(),
                 background = b.parseThemeBackgroundColor(),
-                color = b.content<Block.Content.Text>().color,
+                color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -1010,7 +1011,7 @@ class DefaultBlockViewRendererTest {
                 id = c.id,
                 marks = emptyList(),
                 background = c.parseThemeBackgroundColor(),
-                color = c.content<Block.Content.Text>().color,
+                color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -1136,7 +1137,7 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 marks = emptyList(),
                 background = a.parseThemeBackgroundColor(),
-                color = a.content<Block.Content.Text>().color,
+                color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -1154,7 +1155,7 @@ class DefaultBlockViewRendererTest {
                 id = b.id,
                 marks = emptyList(),
                 background = b.parseThemeBackgroundColor(),
-                color = b.content<Block.Content.Text>().color,
+                color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -1175,7 +1176,7 @@ class DefaultBlockViewRendererTest {
                 id = c.id,
                 marks = emptyList(),
                 background = c.parseThemeBackgroundColor(),
-                color = c.content<Block.Content.Text>().color,
+                color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -1300,7 +1301,7 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 marks = emptyList(),
                 background = a.parseThemeBackgroundColor(),
-                color = a.content<Block.Content.Text>().color,
+                color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -1318,7 +1319,7 @@ class DefaultBlockViewRendererTest {
                 id = b.id,
                 marks = emptyList(),
                 background = b.parseThemeBackgroundColor(),
-                color = b.content<Block.Content.Text>().color,
+                color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -1339,7 +1340,7 @@ class DefaultBlockViewRendererTest {
                 id = c.id,
                 marks = emptyList(),
                 background = c.parseThemeBackgroundColor(),
-                color = c.content<Block.Content.Text>().color,
+                color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -2892,7 +2893,7 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 marks = emptyList(),
                 background = a.parseThemeBackgroundColor(),
-                color = a.content<Block.Content.Text>().color,
+                color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -2911,7 +2912,7 @@ class DefaultBlockViewRendererTest {
                 id = b.id,
                 marks = emptyList(),
                 background = b.parseThemeBackgroundColor(),
-                color = b.content<Block.Content.Text>().color,
+                color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -2933,7 +2934,7 @@ class DefaultBlockViewRendererTest {
                 id = c.id,
                 marks = emptyList(),
                 background = c.parseThemeBackgroundColor(),
-                color = c.content<Block.Content.Text>().color,
+                color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -2958,7 +2959,7 @@ class DefaultBlockViewRendererTest {
                 id = d.id,
                 marks = emptyList(),
                 background = d.parseThemeBackgroundColor(),
-                color = d.content<Block.Content.Text>().color,
+                color = d.content<Block.Content.Text>().parseThemeTextColor(),
                 text = d.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3130,7 +3131,7 @@ class DefaultBlockViewRendererTest {
                 id = a1.id,
                 marks = emptyList(),
                 background = a1.parseThemeBackgroundColor(),
-                color = a1.content<Block.Content.Text>().color,
+                color = a1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3149,7 +3150,7 @@ class DefaultBlockViewRendererTest {
                 id = a2.id,
                 marks = emptyList(),
                 background = a2.parseThemeBackgroundColor(),
-                color = a2.content<Block.Content.Text>().color,
+                color = a2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3168,7 +3169,7 @@ class DefaultBlockViewRendererTest {
                 id = b1.id,
                 marks = emptyList(),
                 background = b1.parseThemeBackgroundColor(),
-                color = b1.content<Block.Content.Text>().color,
+                color = b1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3190,7 +3191,7 @@ class DefaultBlockViewRendererTest {
                 id = b2.id,
                 marks = emptyList(),
                 background = b2.parseThemeBackgroundColor(),
-                color = b2.content<Block.Content.Text>().color,
+                color = b2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3212,7 +3213,7 @@ class DefaultBlockViewRendererTest {
                 id = b3.id,
                 marks = emptyList(),
                 background = b3.parseThemeBackgroundColor(),
-                color = b3.content<Block.Content.Text>().color,
+                color = b3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3234,7 +3235,7 @@ class DefaultBlockViewRendererTest {
                 id = a3.id,
                 marks = emptyList(),
                 background = a3.parseThemeBackgroundColor(),
-                color = a3.content<Block.Content.Text>().color,
+                color = a3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3253,7 +3254,7 @@ class DefaultBlockViewRendererTest {
                 id = a4.id,
                 marks = emptyList(),
                 background = a4.parseThemeBackgroundColor(),
-                color = a4.content<Block.Content.Text>().color,
+                color = a4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3395,7 +3396,7 @@ class DefaultBlockViewRendererTest {
                 id = a1.id,
                 marks = emptyList(),
                 background = a1.parseThemeBackgroundColor(),
-                color = a1.content<Block.Content.Text>().color,
+                color = a1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3414,7 +3415,7 @@ class DefaultBlockViewRendererTest {
                 id = a2.id,
                 marks = emptyList(),
                 background = a2.parseThemeBackgroundColor(),
-                color = a2.content<Block.Content.Text>().color,
+                color = a2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3433,7 +3434,7 @@ class DefaultBlockViewRendererTest {
                 id = b1.id,
                 marks = emptyList(),
                 background = b1.parseThemeBackgroundColor(),
-                color = b1.content<Block.Content.Text>().color,
+                color = b1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3455,7 +3456,7 @@ class DefaultBlockViewRendererTest {
                 id = a3.id,
                 marks = emptyList(),
                 background = a3.parseThemeBackgroundColor(),
-                color = a3.content<Block.Content.Text>().color,
+                color = a3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -3474,7 +3475,7 @@ class DefaultBlockViewRendererTest {
                 id = a4.id,
                 marks = emptyList(),
                 background = a4.parseThemeBackgroundColor(),
-                color = a4.content<Block.Content.Text>().color,
+                color = a4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4251,7 +4252,7 @@ class DefaultBlockViewRendererTest {
                 id = a1.id,
                 marks = emptyList(),
                 background = a1.parseThemeBackgroundColor(),
-                color = a1.content<Block.Content.Text>().color,
+                color = a1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4270,7 +4271,7 @@ class DefaultBlockViewRendererTest {
                 id = a2.id,
                 marks = emptyList(),
                 background = a2.parseThemeBackgroundColor(),
-                color = a2.content<Block.Content.Text>().color,
+                color = a2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4289,7 +4290,7 @@ class DefaultBlockViewRendererTest {
                 id = b1.id,
                 marks = emptyList(),
                 background = b1.parseThemeBackgroundColor(),
-                color = b1.content<Block.Content.Text>().color,
+                color = b1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4311,7 +4312,7 @@ class DefaultBlockViewRendererTest {
                 id = c1.id,
                 marks = emptyList(),
                 background = c1.parseThemeBackgroundColor(),
-                color = c1.content<Block.Content.Text>().color,
+                color = c1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c1.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4336,7 +4337,7 @@ class DefaultBlockViewRendererTest {
                 id = c2.id,
                 marks = emptyList(),
                 background = c2.parseThemeBackgroundColor(),
-                color = c2.content<Block.Content.Text>().color,
+                color = c2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c2.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4361,7 +4362,7 @@ class DefaultBlockViewRendererTest {
                 id = c3.id,
                 marks = emptyList(),
                 background = c3.parseThemeBackgroundColor(),
-                color = c3.content<Block.Content.Text>().color,
+                color = c3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c3.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4386,7 +4387,7 @@ class DefaultBlockViewRendererTest {
                 id = c4.id,
                 marks = emptyList(),
                 background = c4.parseThemeBackgroundColor(),
-                color = c4.content<Block.Content.Text>().color,
+                color = c4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c4.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4411,7 +4412,7 @@ class DefaultBlockViewRendererTest {
                 id = a3.id,
                 marks = emptyList(),
                 background = a3.parseThemeBackgroundColor(),
-                color = a3.content<Block.Content.Text>().color,
+                color = a3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4430,7 +4431,7 @@ class DefaultBlockViewRendererTest {
                 id = a4.id,
                 marks = emptyList(),
                 background = a4.parseThemeBackgroundColor(),
-                color = a4.content<Block.Content.Text>().color,
+                color = a4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -4517,7 +4518,7 @@ class DefaultBlockViewRendererTest {
                 id = quote.id,
                 marks = emptyList(),
                 background = quote.parseThemeBackgroundColor(),
-                color = quote.content<Block.Content.Text>().color,
+                color = quote.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4535,7 +4536,7 @@ class DefaultBlockViewRendererTest {
                 id = child.id,
                 marks = emptyList(),
                 background = child.parseThemeBackgroundColor(),
-                color = child.content<Block.Content.Text>().color,
+                color = child.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4621,7 +4622,7 @@ class DefaultBlockViewRendererTest {
                 id = quote1.id,
                 marks = emptyList(),
                 background = quote1.parseThemeBackgroundColor(),
-                color = quote1.content<Block.Content.Text>().color,
+                color = quote1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4639,7 +4640,7 @@ class DefaultBlockViewRendererTest {
                 id = quote2.id,
                 marks = emptyList(),
                 background = quote2.parseThemeBackgroundColor(),
-                color = quote2.content<Block.Content.Text>().color,
+                color = quote2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4738,7 +4739,7 @@ class DefaultBlockViewRendererTest {
                 id = quote1.id,
                 marks = emptyList(),
                 background = quote1.parseThemeBackgroundColor(),
-                color = quote1.content<Block.Content.Text>().color,
+                color = quote1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4756,7 +4757,7 @@ class DefaultBlockViewRendererTest {
                 id = quote2.id,
                 marks = emptyList(),
                 background = quote2.parseThemeBackgroundColor(),
-                color = quote2.content<Block.Content.Text>().color,
+                color = quote2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4778,7 +4779,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4894,7 +4895,7 @@ class DefaultBlockViewRendererTest {
                 id = quote1.id,
                 marks = emptyList(),
                 background = quote1.parseThemeBackgroundColor(),
-                color = quote1.content<Block.Content.Text>().color,
+                color = quote1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4912,7 +4913,7 @@ class DefaultBlockViewRendererTest {
                 id = quote2.id,
                 marks = emptyList(),
                 background = quote2.parseThemeBackgroundColor(),
-                color = quote2.content<Block.Content.Text>().color,
+                color = quote2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4934,7 +4935,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph1.id,
                 marks = emptyList(),
                 background = paragraph1.parseThemeBackgroundColor(),
-                color = paragraph1.content<Block.Content.Text>().color,
+                color = paragraph1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -4960,7 +4961,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph2.id,
                 marks = emptyList(),
                 background = paragraph2.parseThemeBackgroundColor(),
-                color = paragraph2.content<Block.Content.Text>().color,
+                color = paragraph2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5076,7 +5077,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5094,7 +5095,7 @@ class DefaultBlockViewRendererTest {
                 id = quote.id,
                 marks = emptyList(),
                 background = quote.parseThemeBackgroundColor(),
-                color = quote.content<Block.Content.Text>().color,
+                color = quote.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5115,7 +5116,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph1.id,
                 marks = emptyList(),
                 background = paragraph1.parseThemeBackgroundColor(),
-                color = paragraph1.content<Block.Content.Text>().color,
+                color = paragraph1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5140,7 +5141,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph2.id,
                 marks = emptyList(),
                 background = paragraph2.parseThemeBackgroundColor(),
-                color = paragraph2.content<Block.Content.Text>().color,
+                color = paragraph2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5207,7 +5208,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5284,7 +5285,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5359,7 +5360,7 @@ class DefaultBlockViewRendererTest {
                 id = paragraph.id,
                 marks = emptyList(),
                 background = paragraph.parseThemeBackgroundColor(),
-                color = paragraph.content<Block.Content.Text>().color,
+                color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5432,7 +5433,6 @@ class DefaultBlockViewRendererTest {
                 id = callout.id,
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
-                color = callout.content<Block.Content.Text>().color,
                 text = callout.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5496,7 +5496,6 @@ class DefaultBlockViewRendererTest {
                 id = callout.id,
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
-                color = callout.content<Block.Content.Text>().color,
                 text = callout.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5516,7 +5515,7 @@ class DefaultBlockViewRendererTest {
                 id = child.id,
                 marks = emptyList(),
                 background = child.parseThemeBackgroundColor(),
-                color = child.content<Block.Content.Text>().color,
+                color = child.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5583,7 +5582,6 @@ class DefaultBlockViewRendererTest {
                 id = callout.id,
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
-                color = callout.content<Block.Content.Text>().color,
                 text = callout.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5603,7 +5601,7 @@ class DefaultBlockViewRendererTest {
                 id = child1.id,
                 marks = emptyList(),
                 background = child1.parseThemeBackgroundColor(),
-                color = child1.content<Block.Content.Text>().color,
+                color = child1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5625,7 +5623,7 @@ class DefaultBlockViewRendererTest {
                 id = child2.id,
                 marks = emptyList(),
                 background = child2.parseThemeBackgroundColor(),
-                color = child2.content<Block.Content.Text>().color,
+                color = child2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5695,7 +5693,6 @@ class DefaultBlockViewRendererTest {
                 id = callout.id,
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
-                color = callout.content<Block.Content.Text>().color,
                 text = callout.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
@@ -5782,7 +5779,6 @@ class DefaultBlockViewRendererTest {
                 id = callout.id,
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
-                color = callout.content<Block.Content.Text>().color,
                 text = callout.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(

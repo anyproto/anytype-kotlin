@@ -115,12 +115,7 @@ abstract class Text(
     }
 
     private fun setStyle(item: BlockView.TextBlockProps) {
-        val color = item.color
-        if (color != null) {
-            setTextColor(color)
-        } else {
-            setTextColor(content.context.color(R.color.text_primary))
-        }
+        setTextColor(item.color)
         setBackgroundColor(background = item.background)
     }
 

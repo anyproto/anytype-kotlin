@@ -340,7 +340,8 @@ sealed class Command {
         val range: IntRange,
         val text: String,
         val html: String?,
-        val blocks: List<Block>
+        val blocks: List<Block>,
+        val isPartOfBlock: Boolean? = null
     )
 
     /**

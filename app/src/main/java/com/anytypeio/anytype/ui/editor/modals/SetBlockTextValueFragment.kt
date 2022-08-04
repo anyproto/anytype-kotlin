@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
-import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -28,7 +27,6 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.FragmentSetBlockTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.objects.block.SetBlockTextValueViewModel
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import java.util.*
@@ -55,16 +53,7 @@ class SetBlockTextValueFragment :
             onCheckboxClicked = {},
             onTitleCheckboxClicked = {},
             onFocusChanged = { _, _ -> },
-            onSplitLineEnterClicked = { id, editable, _ ->
-                vm.onKeyboardDoneKeyClicked(
-                    ctx = ctx,
-                    tableId = table,
-                    targetId = id,
-                    text = editable.toString(),
-                    marks = editable.marks(),
-                    markup = editable.extractMarks()
-                )
-            },
+            onSplitLineEnterClicked = { _, _, _ -> vm.onKeyboardDoneKeyClicked() },
             onSplitDescription = { _, _, _ -> },
             onEmptyBlockBackspaceClicked = {},
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
@@ -74,7 +63,14 @@ class SetBlockTextValueFragment :
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onTitleTextInputClicked = {},
-            onTextBlockTextChanged = {},
+            onTextBlockTextChanged = { block ->
+                vm.onTextBlockTextChanged(
+                    textBlock = block,
+                    cellId = this.block,
+                    tableId = table,
+                    ctx = ctx
+                )
+            },
             onClickListener = vm::onClickListener,
             onMentionEvent = {},
             onSlashEvent = {},
@@ -103,7 +99,7 @@ class SetBlockTextValueFragment :
             jobs += subscribe(vm.state) { render(it) }
             jobs += subscribe(vm.toasts) { toast(it) }
         }
-        vm.onStart(tableId = table, blockId = block)
+        vm.onStart(tableId = table, cellId = block)
         super.onStart()
     }
 
@@ -157,7 +153,22 @@ class SetBlockTextValueFragment :
         return FragmentSetBlockTextValueBinding.inflate(inflater, container, false)
     }
 
-    override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
+    override fun onClipboardAction(action: ClipboardInterceptor.Action) {
+        when (action) {
+            is ClipboardInterceptor.Action.Copy -> vm.onCopy(
+                context = ctx,
+                range = action.selection,
+                cellId = block
+            )
+            is ClipboardInterceptor.Action.Paste -> vm.onPaste(
+                context = ctx,
+                range = action.selection,
+                cellId = block,
+                tableId = table
+            )
+        }
+    }
+
     override fun onUrlPasted(url: Url) {}
     override fun onDrag(v: View?, event: DragEvent?) = false
 

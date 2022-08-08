@@ -1053,7 +1053,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         .navigate(
                             R.id.objectTypeChangeScreen,
                             bundleOf(
-                                ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType
+                                ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType,
+                                ObjectTypeChangeFragment.ARG_EXCLUDED_TYPES to command.excludedTypes
                             )
                         )
                 }

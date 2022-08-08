@@ -64,7 +64,6 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -3740,7 +3739,7 @@ class EditorViewModel(
                     }
                 }
             }
-            is ListenerType.Relation.ObjectType -> {
+            is ListenerType.Relation.ChangeObjectType -> {
                 if (mode != EditorMode.Locked) {
                     val restrictions = orchestrator.stores.objectRestrictions.current()
                     if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
@@ -3751,7 +3750,8 @@ class EditorViewModel(
                     dispatch(
                         Command.OpenChangeObjectTypeScreen(
                             ctx = context,
-                            smartBlockType = getObjectSmartBlockType()
+                            smartBlockType = getObjectSmartBlockType(),
+                            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
                         )
                     )
                 } else {
@@ -5539,7 +5539,8 @@ class EditorViewModel(
         dispatch(
             Command.OpenChangeObjectTypeScreen(
                 ctx = context,
-                smartBlockType = getObjectSmartBlockType()
+                smartBlockType = getObjectSmartBlockType(),
+                excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
             )
         )
     }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,39 +14,43 @@
         android:layout_marginTop="6dp"
         android:src="@drawable/sheet_top" />
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/textInputField"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
             android:background="@null"
             android:fontFamily="@font/inter_regular"
             android:hint="@string/hint_paste_link"
             android:imeOptions="actionDone"
-            android:maxLines="1"
-            android:singleLine="true"
+            android:paddingTop="@dimen/dp_14"
+            android:paddingBottom="@dimen/dp_14"
             android:textColor="@color/text_primary"
             android:textColorHint="@color/text_tertiary"
-            android:textCursorDrawable="@drawable/cursor" />
+            android:textCursorDrawable="@drawable/cursor"
+            tools:text="http://www.reallylong.link/rll/jZxOZV6GUAwRucSxhnpWJwr1NZB1v5ck/dThI2STuLl" />
 
         <TextView
             android:id="@+id/button"
-            android:textSize="17sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="16dp"
             android:background="@drawable/default_ripple"
             android:stateListAnimator="@animator/scale_shrink"
-            android:text="@string/create" />
+            android:text="@string/create"
+            android:textSize="17sp" />
 
-    </FrameLayout>
+    </LinearLayout>
 
 </LinearLayout>

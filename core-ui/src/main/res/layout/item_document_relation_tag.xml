@@ -15,7 +15,7 @@
 
     <TextView
         android:id="@+id/tvRelationTitle"
-        style="@style/RelationViewTitleStyle"
+        style="@style/RelationListViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="top"

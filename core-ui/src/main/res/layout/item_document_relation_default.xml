@@ -8,27 +8,23 @@
 
     <TextView
         android:id="@+id/tvRelationTitle"
-        style="@style/RelationViewTitleStyle"
+        style="@style/RelationListViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
+        android:layout_gravity="center_vertical"
         android:layout_weight="0.4"
         android:gravity="top"
-        android:paddingTop="@dimen/dp_6"
-        android:paddingBottom="@dimen/dp_6"
         tools:text="Description of something" />
 
     <TextView
         android:id="@+id/tvRelationValue"
-        style="@style/RelationViewValueStyle"
+        style="@style/RelationListViewValueStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
+        android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/dp_2"
         android:layout_weight="0.6"
         android:hint="@string/enter_value"
-        android:paddingTop="@dimen/dp_6"
-        android:paddingBottom="@dimen/dp_6"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

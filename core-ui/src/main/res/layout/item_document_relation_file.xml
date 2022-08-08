@@ -14,13 +14,9 @@
 
     <TextView
         android:id="@+id/tvRelationTitle"
-        style="@style/RelationViewTitleStyle"
+        style="@style/RelationListViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:gravity="top"
-        android:paddingTop="@dimen/dp_6"
-        android:paddingBottom="@dimen/dp_6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"

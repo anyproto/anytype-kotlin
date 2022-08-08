@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/tvRelationTitle"
-        style="@style/RelationViewTitleStyle"
+        style="@style/RelationListViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/tvRelationValue"
-        style="@style/RelationViewValueStyle"
+        style="@style/RelationListViewValueStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"

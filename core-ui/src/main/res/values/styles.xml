@@ -1007,4 +1007,21 @@
         <item name="android:textSize">17sp</item>
     </style>
 
+    <style name="RelationListViewTitleStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="RelationListViewValueStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
 </resources>

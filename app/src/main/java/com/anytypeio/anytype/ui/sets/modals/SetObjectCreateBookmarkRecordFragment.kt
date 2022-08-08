@@ -12,7 +12,8 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
 import javax.inject.Inject
 
-class SetObjectCreateBookmarkRecordFragment : SetObjectCreateRecordFragmentBase<FragmentSetObjectCreateBookmarkRecordBinding>() {
+class SetObjectCreateBookmarkRecordFragment :
+    SetObjectCreateRecordFragmentBase<FragmentSetObjectCreateBookmarkRecordBinding>() {
 
 
     override val textInputType: Int = TYPE_TEXT_VARIATION_URI
@@ -39,9 +40,10 @@ class SetObjectCreateBookmarkRecordFragment : SetObjectCreateRecordFragmentBase<
     override fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ): FragmentSetObjectCreateBookmarkRecordBinding = FragmentSetObjectCreateBookmarkRecordBinding.inflate(
-        inflater, container, false
-    )
+    ): FragmentSetObjectCreateBookmarkRecordBinding =
+        FragmentSetObjectCreateBookmarkRecordBinding.inflate(
+            inflater, container, false
+        )
 
     companion object {
         const val CTX_KEY = "arg.object-set-record.context"

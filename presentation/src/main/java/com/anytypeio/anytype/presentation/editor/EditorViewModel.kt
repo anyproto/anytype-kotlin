@@ -3735,7 +3735,7 @@ class EditorViewModel(
                     }
                 }
             }
-            is ListenerType.Relation.ObjectType -> {
+            is ListenerType.Relation.ChangeObjectType -> {
                 if (mode != EditorMode.Locked) {
                     val restrictions = orchestrator.stores.objectRestrictions.current()
                     if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
@@ -3746,7 +3746,8 @@ class EditorViewModel(
                     dispatch(
                         Command.OpenChangeObjectTypeScreen(
                             ctx = context,
-                            smartBlockType = getObjectSmartBlockType()
+                            smartBlockType = getObjectSmartBlockType(),
+                            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
                         )
                     )
                 } else {
@@ -5526,7 +5527,8 @@ class EditorViewModel(
         dispatch(
             Command.OpenChangeObjectTypeScreen(
                 ctx = context,
-                smartBlockType = getObjectSmartBlockType()
+                smartBlockType = getObjectSmartBlockType(),
+                excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
             )
         )
     }

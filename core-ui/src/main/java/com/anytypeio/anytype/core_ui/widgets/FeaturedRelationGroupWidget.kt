@@ -228,7 +228,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                                 context = context,
                                 view = it,
                                 onChangeTypeClicked = {
-                                    click(ListenerType.Relation.ObjectType(type = relation.relationId))
+                                    click(ListenerType.Relation.ChangeObjectType(type = relation.relationId))
                                 },
                                 onOpenSetClicked = {
                                     click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))

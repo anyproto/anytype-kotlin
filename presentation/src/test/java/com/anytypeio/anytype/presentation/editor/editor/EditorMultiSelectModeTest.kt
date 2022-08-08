@@ -3,10 +3,12 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.clipboard.Copy
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
@@ -18,6 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -43,16 +46,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            text = MockDataFactory.randomString(),
-            style = Block.Content.Text.Style.TITLE,
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
+    val title = StubTitle()
 
     val header = Block(
         id = MockDataFactory.randomUuid(),
@@ -197,7 +191,16 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 0,
             text = parent.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         val child1View = BlockView.Text.Paragraph(
@@ -207,7 +210,19 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 1,
             text = child1.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = child1.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         val child2View = BlockView.Text.Paragraph(
@@ -217,7 +232,19 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 1,
             text = child2.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = child2.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         val grandchild1View = BlockView.Text.Paragraph(
@@ -227,7 +254,22 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 2,
             text = grandchild1.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = child1.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = grandchild1.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         val grandchild2View = BlockView.Text.Paragraph(
@@ -237,7 +279,22 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 2,
             text = grandchild2.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = child1.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = grandchild2.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         vm.state.test().apply {
@@ -407,7 +464,16 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 0,
             text = parent.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         val child1View = BlockView.Text.Paragraph(
@@ -417,7 +483,19 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 1,
             text = child1.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = child1.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         val child2View = BlockView.Text.Paragraph(
@@ -427,7 +505,19 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             marks = emptyList(),
             indent = 1,
             text = child2.content<Block.Content.Text>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                listOf(
+                    BlockView.Decoration(
+                        background = parent.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = child2.parseThemeBackgroundColor()
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         vm.state.test().apply {
@@ -702,7 +792,16 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         id = a.id,
                         text = a.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,
-                        isSelected = false
+                        isSelected = false,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = a.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -867,19 +966,46 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         id = a.id,
                         text = a.content<TXT>().text,
                         mode = BlockView.Mode.READ,
-                        isSelected = true
+                        isSelected = true,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = a.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Paragraph(
                         id = b.id,
                         text = b.content<TXT>().text,
                         mode = BlockView.Mode.READ,
-                        isSelected = true
+                        isSelected = true,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = b.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Paragraph(
                         id = c.id,
                         text = c.content<TXT>().text,
                         mode = BlockView.Mode.READ,
-                        isSelected = true
+                        isSelected = true,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = c.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )

@@ -6,9 +6,11 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType.Companion.PAGE_URL
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -122,7 +124,16 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                             ),
                             indent = 0,
                             text = "Start Foobar End",
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                                listOf(
+                                    BlockView.Decoration(
+                                        background = block.parseThemeBackgroundColor()
+                                    )
+                                )
+                            } else {
+                                emptyList()
+                            }
                         )
                     )
                 )
@@ -279,7 +290,16 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                         ),
                     indent = 0,
                     text = "Start Link Object Mention End",
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -444,7 +464,16 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                     ),
                     indent = 0,
                     text = "Start Link Object Mention End",
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )

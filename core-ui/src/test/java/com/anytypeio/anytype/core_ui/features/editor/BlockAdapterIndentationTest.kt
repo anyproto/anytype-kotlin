@@ -4,7 +4,9 @@ import android.os.Build
 import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.StubParagraphView
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -33,11 +35,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
         val padding = context.dimen(R.dimen.default_document_content_padding_start).toInt()
         val indent = context.dimen(R.dimen.indent)
 
-        val block = BlockView.Text.Paragraph(
-            id = MockDataFactory.randomUuid(),
-            text = MockDataFactory.randomString(),
-            indent = 0
-        )
+        val block = StubParagraphView(indent = 0)
 
         val views = listOf(block)
 
@@ -72,10 +70,12 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        assertEquals(
-            actual = holder.content.paddingLeft,
-            expected = padding + (indent.toInt() * 2)
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            assertEquals(
+                actual = holder.content.paddingLeft,
+                expected = padding + (indent.toInt() * 2)
+            )
+        }
     }
 
     @Test
@@ -125,10 +125,12 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        assertEquals(
-            actual = holder.content.paddingLeft,
-            expected = padding + (indent.toInt() * 2)
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            assertEquals(
+                actual = holder.content.paddingLeft,
+                expected = padding + (indent.toInt() * 2)
+            )
+        }
     }
 
     @Test
@@ -178,10 +180,12 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        assertEquals(
-            actual = holder.content.paddingLeft,
-            expected = padding + (indent.toInt() * 2)
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            assertEquals(
+                actual = holder.content.paddingLeft,
+                expected = padding + (indent.toInt() * 2)
+            )
+        }
     }
 
     @Test
@@ -231,10 +235,12 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        assertEquals(
-            actual = holder.content.paddingLeft,
-            expected = padding + (indent.toInt() * 2)
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            assertEquals(
+                actual = holder.content.paddingLeft,
+                expected = padding + (indent.toInt() * 2)
+            )
+        }
     }
 
     @Test
@@ -283,10 +289,12 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        assertEquals(
-            actual = holder.checkbox.paddingLeft,
-            expected = indent.toInt() * 2
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            assertEquals(
+                actual = holder.checkbox.paddingLeft,
+                expected = indent.toInt() * 2
+            )
+        }
     }
 
     @Test
@@ -336,9 +344,11 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        assertEquals(
-            actual = holder.number.marginLeft,
-            expected = indent.toInt() * 2
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            assertEquals(
+                actual = holder.number.marginLeft,
+                expected = indent.toInt() * 2
+            )
+        }
     }
 }

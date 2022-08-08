@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -12,6 +13,7 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -32,16 +34,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            text = MockDataFactory.randomString(),
-            style = Block.Content.Text.Style.TITLE,
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
+    val title = StubTitle()
 
     val header = Block(
         id = MockDataFactory.randomUuid(),
@@ -105,7 +98,16 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Text.Bulleted(
                 id = child.id,
                 text = child.content<TXT>().text,
-                mode = BlockView.Mode.EDIT
+                mode = BlockView.Mode.EDIT,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = child.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -165,7 +167,16 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Text.Bulleted(
                 id = child.id,
                 text = child.content<TXT>().text,
-                mode = BlockView.Mode.EDIT
+                mode = BlockView.Mode.EDIT,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = child.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -225,7 +236,16 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Text.Bulleted(
                 id = child.id,
                 text = child.content<TXT>().text,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = child.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -289,6 +309,15 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.LinkToObject.Default.Text(
                 id = link.id,
                 icon = ObjectIcon.Basic.Avatar(""),
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = link.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -393,7 +422,16 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                         param = target
                     )
                 ),
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -484,7 +522,17 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 description = bookmarkDescription,
                 title = bookmarkTitle,
                 mode = BlockView.Mode.READ,
-                isPreviousBlockMedia = false
+                isPreviousBlockMedia = false,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = bookmark.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Card
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -572,7 +620,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     listOf(
                         BlockView.Decoration(
                             background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.None
+                            style = BlockView.Decoration.Style.Card
                         )
                     )
                 } else {
@@ -666,7 +714,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     listOf(
                         BlockView.Decoration(
                             background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.None
+                            style = BlockView.Decoration.Style.Card
                         )
                     )
                 } else {

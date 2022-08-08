@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -157,7 +158,16 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 background = block.parseThemeBackgroundColor(),
                 text = block.content<Block.Content.Text>().text,
                 alignment = block.content<Block.Content.Text>().align?.toView(),
-                number = 1
+                number = 1,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -248,7 +258,16 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     background = block.parseThemeBackgroundColor(),
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
-                    number = 1
+                    number = 1,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
 
@@ -345,7 +364,16 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     background = block.parseThemeBackgroundColor(),
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
-                    number = 1
+                    number = 1,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
 
@@ -453,7 +481,16 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     background = block.parseThemeBackgroundColor(),
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
-                    number = 1
+                    number = 1,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
 
@@ -570,7 +607,16 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 background = block.parseThemeBackgroundColor(),
                 text = block.content<Block.Content.Text>().text,
                 alignment = block.content<Block.Content.Text>().align?.toView(),
-                number = 1
+                number = 1,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 

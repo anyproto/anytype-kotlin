@@ -23,8 +23,10 @@ import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -151,7 +153,16 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                         id = parent.id,
                         isFocused = true,
                         cursor = parent.content<Block.Content.Text>().text.length,
-                        text = parent.content<Block.Content.Text>().text
+                        text = parent.content<Block.Content.Text>().text,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = parent.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -264,14 +275,35 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Text.Paragraph(
                         id = parent.id,
                         isFocused = false,
-                        text = parent.content<Block.Content.Text>().text
+                        text = parent.content<Block.Content.Text>().text,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = parent.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Bulleted(
                         id = child1.id,
                         isFocused = true,
                         indent = 1,
                         cursor = child1.content<Block.Content.Text>().text.length,
-                        text = child1.content<Block.Content.Text>().text
+                        text = child1.content<Block.Content.Text>().text,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = parent.parseThemeBackgroundColor()
+                                ),
+                                BlockView.Decoration(
+                                    background = child1.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -384,14 +416,35 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Text.Paragraph(
                         id = parent.id,
                         isFocused = false,
-                        text = parent.content<Block.Content.Text>().text
+                        text = parent.content<Block.Content.Text>().text,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = parent.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Bulleted(
                         indent = 1,
                         id = child1.id,
                         isFocused = true,
                         cursor = child1.content<Block.Content.Text>().text.length,
-                        text = child1.content<Block.Content.Text>().text
+                        text = child1.content<Block.Content.Text>().text,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = parent.parseThemeBackgroundColor()
+                                ),
+                                BlockView.Decoration(
+                                    background = child1.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -486,7 +539,16 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         isFocused = true,
-                        text = paragraph.content<Block.Content.Text>().text
+                        text = paragraph.content<Block.Content.Text>().text,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = paragraph.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                 )
             )
@@ -593,7 +655,16 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         isFocused = true,
-                        text = paragraph.content<Block.Content.Text>().text
+                        text = paragraph.content<Block.Content.Text>().text,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = paragraph.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                 )
             )

@@ -72,13 +72,15 @@ fun StubParagraph(
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),
     marks: List<Block.Content.Text.Mark> = emptyList(),
-    backgroundColor: String? = null
+    backgroundColor: String? = null,
+    textColor: String? = null
 ): Block = Block(
     id = id,
     content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.P,
-        marks = marks
+        marks = marks,
+        color = textColor
     ),
     children = children,
     fields = Block.Fields.empty(),
@@ -93,7 +95,7 @@ fun StubFile(
     name: String = MockDataFactory.randomString(),
     size: Long = MockDataFactory.randomLong(),
     type: Block.Content.File.Type? = null,
-    state: Block.Content.File.State? = null
+    state: Block.Content.File.State? = null,
 ) : Block = Block(
     id = id,
     children = children,

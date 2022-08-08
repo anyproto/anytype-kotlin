@@ -9,8 +9,10 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
@@ -326,7 +328,16 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.Text.Bulleted(
                     id = block.id,
-                    text = block.content<Block.Content.Text>().text
+                    text = block.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -347,7 +358,16 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.Text.Bulleted(
                     id = block.id,
-                    text = block.content<Block.Content.Text>().text
+                    text = block.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -440,7 +460,16 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.Text.Bulleted(
                     id = block.id,
-                    text = block.content<Block.Content.Text>().text
+                    text = block.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )

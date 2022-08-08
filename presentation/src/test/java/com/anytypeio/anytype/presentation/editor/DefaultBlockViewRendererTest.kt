@@ -2771,6 +2771,16 @@ class DefaultBlockViewRendererTest {
                 background = a.parseThemeBackgroundColor(),
                 isPreviousBlockMedia = false,
                 objectTypeName = null,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = a.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Card
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 

@@ -4,11 +4,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -30,16 +34,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            text = MockDataFactory.randomString(),
-            style = Block.Content.Text.Style.TITLE,
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
+    val title = StubTitle()
 
     val header = Block(
         id = MockDataFactory.randomUuid(),
@@ -332,26 +327,6 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
-
         val style = Block.Content.Text.Style.CHECKBOX
         val child = MockDataFactory.randomUuid()
 
@@ -417,7 +392,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     text = "",
                     isFocused = false,
                     isChecked = false,
-                    indent = 0
+                    indent = 0,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -456,7 +440,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = child,
                     text = "",
-                    isFocused = true
+                    isFocused = true,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -468,26 +461,6 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     fun `should convert bullet block with empty text to paragraph on enter-pressed event`() {
 
         // SETUP
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
 
         val style = Block.Content.Text.Style.BULLET
         val child = MockDataFactory.randomUuid()
@@ -553,7 +526,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     id = child,
                     text = "",
                     isFocused = false,
-                    indent = 0
+                    indent = 0,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -592,7 +574,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = child,
                     text = "",
-                    isFocused = true
+                    isFocused = true,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -690,7 +681,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     text = "",
                     isFocused = false,
                     indent = 0,
-                    isEmpty = true
+                    isEmpty = true,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -729,7 +729,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = child,
                     text = "",
-                    isFocused = true
+                    isFocused = true,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -741,26 +750,6 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     fun `should convert numbered block with empty text to paragraph on enter-pressed event`() {
 
         // SETUP
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
 
         val style = Block.Content.Text.Style.NUMBERED
         val child = MockDataFactory.randomUuid()
@@ -827,7 +816,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     text = "",
                     isFocused = false,
                     indent = 0,
-                    number = 1
+                    number = 1,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -866,7 +864,16 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = child,
                     text = "",
-                    isFocused = true
+                    isFocused = true,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = ThemeColor.DEFAULT
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )

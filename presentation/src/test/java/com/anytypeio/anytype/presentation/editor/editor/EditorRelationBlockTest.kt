@@ -5,7 +5,9 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
@@ -28,16 +30,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            style = Block.Content.Text.Style.TITLE,
-            text = MockDataFactory.randomString(),
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
+    private val title = StubTitle()
 
     private val header = Block(
         id = MockDataFactory.randomUuid(),
@@ -122,7 +115,16 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                         BlockView.Text.Paragraph(
                             id = a.id,
                             text = a.content<Block.Content.Text>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                                listOf(
+                                    BlockView.Decoration(
+                                        background = a.parseThemeBackgroundColor()
+                                    )
+                                )
+                            } else {
+                                emptyList()
+                            }
                         ),
                         BlockView.Relation.Related(
                             id = b.id,
@@ -132,7 +134,15 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                                 value = value,
                                 format = relation.format
                             ),
-                            decorations = listOf()
+                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                                listOf(
+                                    BlockView.Decoration(
+                                        background = b.parseThemeBackgroundColor()
+                                    )
+                                )
+                            } else {
+                                emptyList()
+                            }
                         )
                     )
                 )
@@ -228,13 +238,30 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     background = block.parseThemeBackgroundColor(),
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
-                    number = 1
+                    number = 1,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Relation.Placeholder(
                     id = relationBlock.id,
                     indent = 0,
                     isSelected = false,
-                    decorations = listOf()
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = relationBlock.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
 
@@ -332,7 +359,16 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     background = block.parseThemeBackgroundColor(),
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
-                    number = 1
+                    number = 1,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Relation.Related(
                     id = relationBlock.id,
@@ -345,7 +381,15 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                         isFeatured = false,
                         format = r2.format
                     ),
-                    decorations = listOf()
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = relationBlock.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
 
@@ -444,13 +488,30 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     background = block.parseThemeBackgroundColor(),
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
-                    number = 1
+                    number = 1,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = block.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Relation.Placeholder(
                     id = relationBlock.id,
                     indent = 0,
                     isSelected = false,
-                    decorations = listOf()
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = relationBlock.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
 

@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -275,57 +276,161 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = blockText1.id,
                     indent = 0,
-                    text = blockText1.content.asText().text
+                    text = blockText1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText1.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.One(
                     id = blockHeaderOne1.id,
                     indent = 0,
-                    text = blockHeaderOne1.content.asText().text
+                    text = blockHeaderOne1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderOne1.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H1
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText2.id,
                     indent = 0,
-                    text = blockText2.content.asText().text
+                    text = blockText2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText2.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo1.id,
                     indent = 0,
-                    text = blockHeaderTwo1.content.asText().text
+                    text = blockHeaderTwo1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderTwo1.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H2
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText3.id,
                     indent = 0,
-                    text = blockText3.content.asText().text
+                    text = blockText3.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText3.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.One(
                     id = blockHeaderOne2.id,
                     indent = 0,
-                    text = blockHeaderOne2.content.asText().text
+                    text = blockHeaderOne2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderOne2.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H1
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText4.id,
                     indent = 0,
-                    text = blockText4.content.asText().text
+                    text = blockText4.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText4.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo2.id,
                     indent = 0,
-                    text = blockHeaderTwo2.content.asText().text
+                    text = blockHeaderTwo2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderTwo2.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H2
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText5.id,
                     indent = 0,
-                    text = blockText5.content.asText().text
+                    text = blockText5.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText5.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Three(
                     id = blockHeaderThree.id,
                     indent = 0,
-                    text = blockHeaderThree.content.asText().text
+                    text = blockHeaderThree.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderThree.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H3
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText6.id,
                     indent = 0,
-                    text = blockText6.content.asText().text
+                    text = blockText6.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText6.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -489,32 +594,89 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = blockText1.id,
                     indent = 0,
-                    text = blockText1.content.asText().text
+                    text = blockText1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText1.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.One(
                     id = blockHeaderOne.id,
                     indent = 0,
-                    text = blockHeaderOne.content.asText().text
+                    text = blockHeaderOne.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderOne.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H1
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText2.id,
                     indent = 0,
-                    text = blockText2.content.asText().text
+                    text = blockText2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText2.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo.id,
                     indent = 0,
-                    text = blockHeaderTwo.content.asText().text
+                    text = blockHeaderTwo.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderTwo.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H2
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText3.id,
                     indent = 0,
-                    text = blockText3.content.asText().text
+                    text = blockText3.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText3.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Three(
                     id = blockHeaderThree.id,
                     indent = 0,
-                    text = blockHeaderThree.content.asText().text
+                    text = blockHeaderThree.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderThree.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H3
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -566,17 +728,45 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = blockText1.id,
                     indent = 0,
-                    text = blockText1.content.asText().text
+                    text = blockText1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText1.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.One(
                     id = blockHeaderOne.id,
                     indent = 0,
-                    text = blockHeaderOne.content.asText().text
+                    text = blockHeaderOne.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderOne.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H1
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = blockText2.id,
                     indent = 0,
-                    text = blockText2.content.asText().text
+                    text = blockText2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText2.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo.id,
@@ -586,12 +776,31 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Paragraph(
                     id = blockText3.id,
                     indent = 0,
-                    text = blockText3.content.asText().text
+                    text = blockText3.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockText3.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Three(
                     id = blockHeaderThree.id,
                     indent = 0,
-                    text = blockHeaderThree.content.asText().text
+                    text = blockHeaderThree.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderThree.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H3
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -750,27 +959,77 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Header.One(
                     id = blockHeaderOne1.id,
                     indent = 0,
-                    text = blockHeaderOne1.content.asText().text
+                    text = blockHeaderOne1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderOne1.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H1
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo1.id,
                     indent = 0,
-                    text = blockHeaderTwo1.content.asText().text
+                    text = blockHeaderTwo1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderTwo1.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H2
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Three(
                     id = blockHeaderThree.id,
                     indent = 0,
-                    text = blockHeaderThree.content.asText().text
+                    text = blockHeaderThree.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderThree.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H3
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo2.id,
                     indent = 0,
-                    text = blockHeaderTwo2.content.asText().text
+                    text = blockHeaderTwo2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderTwo2.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H2
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Three(
                     id = blockHeaderThree2.id,
                     indent = 0,
-                    text = blockHeaderThree2.content.asText().text
+                    text = blockHeaderThree2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderThree2.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H3
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -946,27 +1205,77 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 BlockView.Text.Header.One(
                     id = blockHeaderOne1.id,
                     indent = 0,
-                    text = blockHeaderOne1.content.asText().text
+                    text = blockHeaderOne1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderOne1.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H1
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo1.id,
                     indent = 0,
-                    text = blockHeaderTwo1.content.asText().text
+                    text = blockHeaderTwo1.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderTwo1.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H2
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Three(
                     id = blockHeaderThree.id,
                     indent = 0,
-                    text = blockHeaderThree.content.asText().text
+                    text = blockHeaderThree.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderThree.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H3
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Two(
                     id = blockHeaderTwo2.id,
                     indent = 0,
-                    text = blockHeaderTwo2.content.asText().text
+                    text = blockHeaderTwo2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderTwo2.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H2
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Header.Three(
                     id = blockHeaderThree2.id,
                     indent = 0,
-                    text = blockHeaderThree2.content.asText().text
+                    text = blockHeaderThree2.content.asText().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = blockHeaderThree2.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H3
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )

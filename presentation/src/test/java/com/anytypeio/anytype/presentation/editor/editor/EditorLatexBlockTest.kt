@@ -3,8 +3,10 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -153,7 +155,16 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
                             id = p.id,
                             isFocused = false,
                             text = p.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                                listOf(
+                                    BlockView.Decoration(
+                                        background = p.parseThemeBackgroundColor()
+                                    )
+                                )
+                            } else {
+                                emptyList()
+                            }
                         ),
                         BlockView.Latex(
                             id = latex.id,

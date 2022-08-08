@@ -4,7 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
@@ -108,7 +110,16 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.Text.Checkbox(
                     id = checkbox.id,
-                    text = checkbox.content<Block.Content.Text>().text
+                    text = checkbox.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = checkbox.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -125,7 +136,16 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
                 BlockView.Text.Checkbox(
                     id = checkbox.id,
                     text = checkbox.content<Block.Content.Text>().text,
-                    isChecked = true
+                    isChecked = true,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = checkbox.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )

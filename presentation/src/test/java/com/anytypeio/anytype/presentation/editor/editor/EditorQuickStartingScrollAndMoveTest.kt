@@ -3,10 +3,12 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -141,13 +143,31 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                     text = a.content<TXT>().text,
                     number = 1,
                     mode = BlockView.Mode.READ,
-                    isSelected = false
+                    isSelected = false,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = b.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 ),
                 BlockView.Text.Paragraph(
                     id = b.id,
                     text = b.content<TXT>().text,
                     mode = BlockView.Mode.READ,
-                    isSelected = true
+                    isSelected = true,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = b.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -239,13 +259,31 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                         text = a.content<TXT>().text,
                         number = 1,
                         mode = BlockView.Mode.EDIT,
-                        isSelected = false
+                        isSelected = false,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = a.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Paragraph(
                         id = b.id,
                         text = b.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,
-                        isSelected = false
+                        isSelected = false,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = b.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )

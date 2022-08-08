@@ -10,6 +10,8 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubFile
+import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -391,16 +393,7 @@ open class EditorViewModelTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val paragraph = Block(
-            id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
+        val paragraph = StubParagraph(id = child)
 
         val page = listOf(
             Block(
@@ -441,7 +434,16 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
-                    background = paragraph.parseThemeBackgroundColor()
+                    background = paragraph.parseThemeBackgroundColor(),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -576,15 +578,8 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val paragraph = Block(
-            id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
+        val paragraph = StubParagraph(
+            id = child
         )
 
         val page = listOf(
@@ -599,16 +594,7 @@ open class EditorViewModelTest {
             paragraph
         )
 
-        val added = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
+        val added = StubParagraph()
 
         stubObserveEvents(
             flow {
@@ -660,12 +646,30 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
-                        background = paragraph.parseThemeBackgroundColor()
+                        background = paragraph.parseThemeBackgroundColor(),
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = paragraph.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Paragraph(
                         id = added.id,
                         text = added.content.asText().text,
-                        background = added.parseThemeBackgroundColor()
+                        background = added.parseThemeBackgroundColor(),
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = added.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -729,16 +733,7 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val paragraph = Block(
-            id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
+        val paragraph = StubParagraph(id = child)
 
         val page = listOf(
             Block(
@@ -796,7 +791,16 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    background = paragraph.parseThemeBackgroundColor()
+                    background = paragraph.parseThemeBackgroundColor(),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -917,7 +921,16 @@ open class EditorViewModelTest {
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
-                    )
+                    ),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -959,7 +972,16 @@ open class EditorViewModelTest {
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
-                    )
+                    ),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -1057,7 +1079,16 @@ open class EditorViewModelTest {
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
-                    )
+                    ),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -1102,7 +1133,16 @@ open class EditorViewModelTest {
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
-                    )
+                    ),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -1119,17 +1159,10 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val paragraph = Block(
+        val paragraph = StubParagraph(
             id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P,
-                color = "red"
-            ),
-            children = emptyList(),
-            backgroundColor = "yellow"
+            textColor = ThemeColor.RED.code,
+            backgroundColor = ThemeColor.YELLOW.code
         )
 
         val page = Block(
@@ -1210,16 +1243,7 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val paragraph = Block(
-            id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
+        val paragraph = StubParagraph(id = child)
 
         val page = Block(
             id = root,
@@ -1271,7 +1295,16 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    background = paragraph.parseThemeBackgroundColor()
+                    background = paragraph.parseThemeBackgroundColor(),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -1507,16 +1540,7 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val paragraph = Block(
-            id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
+        val paragraph = StubParagraph(id = child)
 
         val page = Block(
             id = root,
@@ -1591,7 +1615,16 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        background = paragraph.parseThemeBackgroundColor()
+                        background = paragraph.parseThemeBackgroundColor(),
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = paragraph.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -1610,13 +1643,32 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        background = paragraph.parseThemeBackgroundColor()
+                        background = paragraph.parseThemeBackgroundColor(),
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = paragraph.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Header.One(
                         id = new.id,
                         text = new.content<Block.Content.Text>().text,
                         background = new.parseThemeBackgroundColor(),
-                        indent = 0
+                        indent = 0,
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = new.parseThemeBackgroundColor(),
+                                    style = BlockView.Decoration.Style.Header.H1
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -1753,26 +1805,12 @@ open class EditorViewModelTest {
 
         val root = MockDataFactory.randomUuid()
 
-        val firstChild = Block(
-            id = "FIRST CHILD",
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = "FIRST CHILD TEXT",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
+        val firstChild = StubParagraph(
+            id = "FIRST CHILD"
         )
 
-        val secondChild = Block(
-            id = "SECOND CHILD",
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = "SECOND CHILD TEXT",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
+        val secondChild = StubParagraph(
+            id = "SECOND CHILD"
         )
 
         val page = Block(
@@ -1828,12 +1866,30 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = firstChild.id,
                         text = firstChild.content<Block.Content.Text>().text,
-                        background = firstChild.parseThemeBackgroundColor()
+                        background = firstChild.parseThemeBackgroundColor(),
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = firstChild.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     ),
                     BlockView.Text.Paragraph(
                         id = secondChild.id,
                         text = secondChild.content<Block.Content.Text>().text,
-                        background = secondChild.parseThemeBackgroundColor()
+                        background = secondChild.parseThemeBackgroundColor(),
+                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                            listOf(
+                                BlockView.Decoration(
+                                    background = secondChild.parseThemeBackgroundColor()
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        }
                     )
                 )
             )
@@ -1862,7 +1918,16 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = secondChild.id,
                     text = secondChild.content<Block.Content.Text>().text,
-                    background = secondChild.parseThemeBackgroundColor()
+                    background = secondChild.parseThemeBackgroundColor(),
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = secondChild.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -3082,36 +3147,9 @@ open class EditorViewModelTest {
         // SETUP
 
         val paragraphs = listOf(
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            )
+            StubParagraph(),
+            StubParagraph(),
+            StubParagraph()
         )
 
         val page = listOf(
@@ -3159,21 +3197,48 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[1].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[2].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             }
         )
@@ -3254,7 +3319,7 @@ open class EditorViewModelTest {
 
         vm.onTextInputClicked(target = paragraphs[2].id)
 
-        // At this momemnt, we expect that all blocks are unselected, therefore we should exit to read mode.
+        // At this moment, we expect that all blocks are unselected, therefore we should exit to read mode.
 
         coroutineTestRule.advanceTime(EditorViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
 
@@ -3268,18 +3333,7 @@ open class EditorViewModelTest {
 
         val root = MockDataFactory.randomUuid()
 
-        val paragraphs = listOf(
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            )
-        )
+        val paragraphs = listOf(StubParagraph())
 
         val page = listOf(
             Block(
@@ -3326,7 +3380,16 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             }
         )
@@ -3419,7 +3482,7 @@ open class EditorViewModelTest {
                     listOf(
                         BlockView.Decoration(
                             background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.None
+                            style = BlockView.Decoration.Style.Card
                         )
                     )
                 } else {
@@ -3498,7 +3561,7 @@ open class EditorViewModelTest {
                     listOf(
                         BlockView.Decoration(
                             background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.None
+                            style = BlockView.Decoration.Style.Card
                         )
                     )
                 } else {
@@ -3527,15 +3590,9 @@ open class EditorViewModelTest {
     @Test
     fun `open select file - when error in edit mode`() {
 
-        val file = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.File(
-                hash = MockDataFactory.randomString(),
-                type = Block.Content.File.Type.FILE,
-                state = Block.Content.File.State.ERROR
-            ),
-            children = emptyList()
+        val file = StubFile(
+            state = Block.Content.File.State.ERROR,
+            type = Block.Content.File.Type.FILE,
         )
 
         val page = listOf(
@@ -3578,7 +3635,7 @@ open class EditorViewModelTest {
                     listOf(
                         BlockView.Decoration(
                             background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.None
+                            style = BlockView.Decoration.Style.Card
                         )
                     )
                 } else {
@@ -3884,36 +3941,9 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
 
         val paragraphs = listOf(
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            )
+            StubParagraph(),
+            StubParagraph(),
+            StubParagraph()
         )
 
         val page = listOf(
@@ -3961,21 +3991,48 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[1].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[2].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             }
         )
@@ -3999,36 +4056,9 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
 
         val paragraphs = listOf(
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            )
+            StubParagraph(),
+            StubParagraph(),
+            StubParagraph()
         )
 
         val page = listOf(
@@ -4076,21 +4106,48 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[1].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[2].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             }
         )
@@ -4121,38 +4178,7 @@ open class EditorViewModelTest {
 
         val root = MockDataFactory.randomUuid()
 
-        val paragraphs = listOf(
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            ),
-            Block(
-                id = MockDataFactory.randomString(),
-                content = Block.Content.Text(
-                    marks = emptyList(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            )
-        )
+        val paragraphs = listOf(StubParagraph(), StubParagraph(), StubParagraph())
 
         val page = listOf(
             Block(
@@ -4199,21 +4225,48 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[1].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             },
             paragraphs[2].let { p ->
                 BlockView.Text.Paragraph(
                     id = p.id,
                     marks = emptyList(),
-                    text = p.content<Block.Content.Text>().text
+                    text = p.content<Block.Content.Text>().text,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = p.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             }
         )

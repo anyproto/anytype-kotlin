@@ -12,11 +12,13 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -221,7 +223,16 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             ),
                             indent = 0,
                             text = "page about Avant-Garde Jazz  music",
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                                listOf(
+                                    BlockView.Decoration(
+                                        background = a.parseThemeBackgroundColor()
+                                    )
+                                )
+                            } else {
+                                emptyList()
+                            }
                         )
                     )
                 )
@@ -381,7 +392,16 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             ),
                             indent = 0,
                             text = "page about Jazz  music",
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                                listOf(
+                                    BlockView.Decoration(
+                                        background = a.parseThemeBackgroundColor()
+                                    )
+                                )
+                            } else {
+                                emptyList()
+                            }
                         )
                     )
                 )
@@ -541,7 +561,16 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             ),
                             indent = 0,
                             text = "page about Untitled  music",
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                                listOf(
+                                    BlockView.Decoration(
+                                        background = a.parseThemeBackgroundColor()
+                                    )
+                                )
+                            } else {
+                                emptyList()
+                            }
                         )
                     )
                 )
@@ -900,7 +929,16 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     ),
                     indent = 0,
                     text = "Start Foob end",
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = a.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )
@@ -1037,7 +1075,16 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     ),
                     indent = 0,
                     text = "Start Untitled end",
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                        listOf(
+                            BlockView.Decoration(
+                                background = a.parseThemeBackgroundColor()
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
                 )
             )
         )

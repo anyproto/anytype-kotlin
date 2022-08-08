@@ -21,9 +21,11 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.TXT
 import kotlinx.coroutines.runBlocking
@@ -34,6 +36,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
+import kotlin.test.asserter
 
 class TableBlockRendererTest {
 
@@ -222,7 +225,16 @@ class TableBlockRendererTest {
         ) + blocksUpper.map { block: Block ->
             BlockView.Text.Bulleted(
                 id = block.id,
-                text = block.content<TXT>().text
+                text = block.content<TXT>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         } + listOf(
             BlockView.Table(
@@ -236,7 +248,16 @@ class TableBlockRendererTest {
             BlockView.Text.Numbered(
                 id = block.id,
                 text = block.content<TXT>().text,
-                number = idx.inc()
+                number = idx.inc(),
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         }
 
@@ -354,7 +375,16 @@ class TableBlockRendererTest {
         ) + blocksUpper.map { block: Block ->
             BlockView.Text.Bulleted(
                 id = block.id,
-                text = block.content<TXT>().text
+                text = block.content<TXT>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         } + listOf(
             BlockView.Table(
@@ -368,7 +398,16 @@ class TableBlockRendererTest {
             BlockView.Text.Numbered(
                 id = block.id,
                 text = block.content<TXT>().text,
-                number = idx.inc()
+                number = idx.inc(),
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         }
 
@@ -564,7 +603,16 @@ class TableBlockRendererTest {
         ) + blocksUpper.map { block: Block ->
             BlockView.Text.Bulleted(
                 id = block.id,
-                text = block.content<TXT>().text
+                text = block.content<TXT>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         } + listOf(
             BlockView.Table(
@@ -578,7 +626,16 @@ class TableBlockRendererTest {
             BlockView.Text.Numbered(
                 id = block.id,
                 text = block.content<TXT>().text,
-                number = idx.inc()
+                number = idx.inc(),
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         }
 

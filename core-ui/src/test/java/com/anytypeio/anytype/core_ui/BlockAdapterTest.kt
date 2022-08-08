@@ -262,13 +262,15 @@ class BlockAdapterTest {
 
         // Setup
 
-        val paragraph = BlockView.Text.Paragraph(
-            text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
-        )
+        val paragraph = StubParagraphView()
 
         val updated = paragraph.copy(
-            background = ThemeColor.PURPLE
+            background = ThemeColor.PURPLE,
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = ThemeColor.PURPLE
+                )
+            )
         )
 
         val views = listOf(paragraph)
@@ -306,11 +308,13 @@ class BlockAdapterTest {
             onSlashEvent = {}
         )
 
-        val expected = context.resources.getColor(R.color.palette_very_light_purple)
-        assertEquals(
-            expected = expected,
-            actual = (holder.root.background as ColorDrawable).color
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val expected = context.resources.getColor(R.color.palette_very_light_purple)
+            assertEquals(
+                expected = expected,
+                actual = (holder.root.background as ColorDrawable).color
+            )
+        }
     }
 
     @Test
@@ -823,14 +827,15 @@ class BlockAdapterTest {
 
         check(holder is Paragraph)
 
-        val actual = holder.content.paddingLeft
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.content.paddingLeft
 
-        val expected =
-            holder.dimen(R.dimen.default_document_content_padding_start) + paragraph.indent * holder.dimen(
-                R.dimen.indent
-            )
-
-        assertEquals(expected, actual)
+            val expected =
+                holder.dimen(R.dimen.default_document_content_padding_start) + paragraph.indent * holder.dimen(
+                    R.dimen.indent
+                )
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -856,14 +861,14 @@ class BlockAdapterTest {
 
         check(holder is HeaderOne)
 
-        val actual = holder.content.paddingLeft
-
-        val expected =
-            holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
-                R.dimen.indent
-            )
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.content.paddingLeft
+            val expected =
+                holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
+                    R.dimen.indent
+                )
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -889,14 +894,16 @@ class BlockAdapterTest {
 
         check(holder is HeaderTwo)
 
-        val actual = holder.content.paddingLeft
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.content.paddingLeft
 
-        val expected =
-            holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
-                R.dimen.indent
-            )
+            val expected =
+                holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
+                    R.dimen.indent
+                )
 
-        assertEquals(expected, actual)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -922,25 +929,22 @@ class BlockAdapterTest {
 
         check(holder is HeaderThree)
 
-        val actual = holder.content.paddingLeft
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.content.paddingLeft
 
-        val expected =
-            holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
-                R.dimen.indent
-            )
+            val expected =
+                holder.dimen(R.dimen.default_document_content_padding_start) + view.indent * holder.dimen(
+                    R.dimen.indent
+                )
 
-        assertEquals(expected, actual)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
     fun `should apply indent to checkbox view`() {
 
-        val view = BlockView.Text.Checkbox(
-            id = MockDataFactory.randomUuid(),
-            text = MockDataFactory.randomString(),
-            indent = MockDataFactory.randomInt()
-        )
-
+        val view = StubCheckboxView()
         val views = listOf(view)
 
         val recycler = RecyclerView(context).apply {
@@ -955,11 +959,11 @@ class BlockAdapterTest {
 
         check(holder is Checkbox)
 
-        val actual = holder.itemView.findViewById<ImageView>(R.id.checkboxIcon).paddingLeft
-
-        val expected = view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.findViewById<ImageView>(R.id.checkboxIcon).paddingLeft
+            val expected = view.indent * holder.dimen(R.dimen.indent)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -988,22 +992,20 @@ class BlockAdapterTest {
 
         check(holder is Toggle)
 
-        val actual =
-            (holder.itemView.findViewById<Guideline>(R.id.guideline).layoutParams as ConstraintLayout.LayoutParams).guideBegin
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual =
+                (holder.itemView.findViewById<Guideline>(R.id.guideline).layoutParams as ConstraintLayout.LayoutParams).guideBegin
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+            val expected = view.indent * holder.dimen(R.dimen.indent)
 
-        assertEquals(expected, actual)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
     fun `should apply indent to file placeholder view`() {
 
-        val view = BlockView.MediaPlaceholder.File(
-            id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt(),
-            isPreviousBlockMedia = false
-        )
+        val view = StubFilePlaceholderView()
 
         val views = listOf(view)
 
@@ -1019,12 +1021,14 @@ class BlockAdapterTest {
 
         check(holder is FilePlaceholder)
 
-        val actual = holder.itemView.paddingLeft
-
-        val expected =
-            holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.paddingLeft
+            val expected =
+                holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(
+                    R.dimen.indent
+                )
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1050,11 +1054,11 @@ class BlockAdapterTest {
 
         check(holder is FileError)
 
-        val actual = holder.itemView.marginLeft
-
-        val expected = view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
+            val expected = view.indent * holder.dimen(R.dimen.indent)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1079,12 +1083,12 @@ class BlockAdapterTest {
 
         check(holder is FileUpload)
 
-        val actual = holder.itemView.marginLeft
-
-        val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
+            val expected =
+                holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1117,11 +1121,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to video placeholder view`() {
 
-        val view = BlockView.MediaPlaceholder.Video(
-            id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt(),
-            isPreviousBlockMedia = false
-        )
+        val view = StubVideoPlaceholderView()
 
         val views = listOf(view)
 
@@ -1137,12 +1137,14 @@ class BlockAdapterTest {
 
         check(holder is VideoPlaceholder)
 
-        val actual = holder.itemView.paddingLeft
-
-        val expected =
-            holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.paddingLeft
+            val expected =
+                holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(
+                    R.dimen.indent
+                )
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1167,12 +1169,14 @@ class BlockAdapterTest {
 
         check(holder is VideoUpload)
 
-        val actual = holder.itemView.marginLeft
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
 
-        val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            val expected =
+                holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
-        assertEquals(expected, actual)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1198,11 +1202,13 @@ class BlockAdapterTest {
 
         check(holder is VideoError)
 
-        val actual = holder.itemView.marginLeft
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+            val expected = view.indent * holder.dimen(R.dimen.indent)
 
-        assertEquals(expected, actual)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1228,56 +1234,17 @@ class BlockAdapterTest {
 
         check(holder is LinkToObject)
 
-        val actual = holder.itemView.marginLeft
-
-        val expected = view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
+            val expected = view.indent * holder.dimen(R.dimen.indent)
+            assertEquals(expected, actual)
+        }
     }
-
-//    Turned off the test, because Robolectric is not working with MateralCardView
-//    @Test
-//    fun `should apply indent to bookmark view`() {
-//
-//        val view = BlockView.Bookmark.View(
-//            id = MockDataFactory.randomUuid(),
-//            indent = MockDataFactory.randomInt(),
-//            description = MockDataFactory.randomString(),
-//            title = MockDataFactory.randomString(),
-//            faviconUrl = MockDataFactory.randomString(),
-//            imageUrl = MockDataFactory.randomString(),
-//            url = MockDataFactory.randomString()
-//        )
-//
-//        val views = listOf(view)
-//
-//        val recycler = RecyclerView(context).apply {
-//            layoutManager = LinearLayoutManager(context)
-//        }
-//
-//        val adapter = buildAdapter(views)
-//
-//        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_BOOKMARK)
-//
-//        adapter.bindViewHolder(holder, 0)
-//
-//        check(holder is Types.Bookmark)
-//
-//        val actual = (holder.itemView.bookmarkRoot).marginLeft
-//
-//        val expected = view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.dp_12)
-//
-//        assertEquals(expected, actual)
-//    }
 
     @Test
     fun `should apply indent to bookmark placeholder view`() {
 
-        val view = BlockView.MediaPlaceholder.Bookmark(
-            id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt(),
-            isPreviousBlockMedia = false
-        )
+        val view = StubBookmarkPlaceholderView()
 
         val views = listOf(view)
 
@@ -1287,19 +1254,21 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder =
-            adapter.onCreateViewHolder(recycler, Types.HOLDER_BOOKMARK_PLACEHOLDER)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_BOOKMARK_PLACEHOLDER)
 
         adapter.bindViewHolder(holder, 0)
 
         check(holder is BookmarkPlaceholder)
 
-        val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).paddingLeft
-
-        val expected =
-            view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.default_document_item_padding_start)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).paddingLeft
+            val expected = view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.default_document_item_padding_start)
+            assertEquals(expected, actual)
+        } else {
+            val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).paddingLeft
+            val expected = 0
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1330,22 +1299,20 @@ class BlockAdapterTest {
 
         check(holder is Picture)
 
-        val actual = holder.itemView.marginLeft
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
 
-        val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            val expected =
+                holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
 
-        assertEquals(expected, actual)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
     fun `should apply indent to picture placeholder view`() {
 
-        val view = BlockView.MediaPlaceholder.Picture(
-            id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt(),
-            isPreviousBlockMedia = false
-        )
+        val view = StubPicturePlaceholderView()
 
         val views = listOf(view)
 
@@ -1361,11 +1328,14 @@ class BlockAdapterTest {
 
         check(holder is PicturePlaceholder)
 
-        val actual = holder.itemView.paddingLeft
-
-        val expected = holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.paddingLeft
+            val expected =
+                holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(
+                    R.dimen.indent
+                )
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1391,11 +1361,13 @@ class BlockAdapterTest {
 
         check(holder is PictureError)
 
-        val actual = holder.itemView.marginLeft
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)
+            val expected = view.indent * holder.dimen(R.dimen.indent)
 
-        assertEquals(expected, actual)
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
@@ -1420,12 +1392,11 @@ class BlockAdapterTest {
 
         check(holder is PictureUpload)
 
-        val actual = holder.itemView.marginLeft
-
-        val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
-
-        assertEquals(expected, actual)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val actual = holder.itemView.marginLeft
+            val expected = holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            assertEquals(expected, actual)
+        }
     }
 
     //@Test

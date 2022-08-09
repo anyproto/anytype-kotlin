@@ -59,6 +59,10 @@ class AccountAndDataViewModel(
         viewModelScope.launch {
             deleteAccount(BaseUseCase.None).process(
                 success = {
+                    sendEvent(
+                        analytics = analytics,
+                        eventName = EventsDictionary.deleteAccount
+                    )
                     Timber.d("Successfully deleted account, status")
                 },
                 failure = {

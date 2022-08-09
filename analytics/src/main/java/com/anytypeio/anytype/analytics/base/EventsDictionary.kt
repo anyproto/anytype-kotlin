@@ -10,6 +10,8 @@ object EventsDictionary {
     const val createAccount = "CreateAccount"
     const val openAccount = "OpenAccount"
     const val logout = "LogOut"
+    const val deleteAccount = "DeleteAccount"
+    const val cancelDeletion = "CancelDeletion"
 
     // Dashboard view events
     const val showHome = "ScreenHome"
@@ -120,6 +122,8 @@ object EventsDictionary {
         const val objPowerTool = "Powertool"
         const val objTurnInto = "TurnInto"
         const val tabFavorites = "Favorites"
+        const val screenSettings = "ScreenSettings"
+        const val screenDeletion = "ScreenDeletion"
     }
 
     object Type {

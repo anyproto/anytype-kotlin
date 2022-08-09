@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.auth
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -45,6 +46,9 @@ class DeleteAccountViewModelTest {
     @Mock
     lateinit var configStorage: ConfigStorage
 
+    @Mock
+    lateinit var analytics: Analytics
+
     lateinit var restoreAccount: RestoreAccount
     lateinit var logout: Logout
 
@@ -65,7 +69,8 @@ class DeleteAccountViewModelTest {
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,
             logout = logout,
-            dateHelper = helper
+            dateHelper = helper,
+            analytics = analytics
         )
     }
 

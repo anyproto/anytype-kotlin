@@ -36,7 +36,12 @@ class LogoutWarningViewModel(
                             analytics = analytics,
                             startTime = startTime,
                             middleTime = System.currentTimeMillis(),
-                            eventName = EventsDictionary.logout
+                            eventName = EventsDictionary.logout,
+                            props = Props(
+                                mapOf(
+                                    EventsPropertiesKey.route to EventsDictionary.Routes.screenSettings
+                                )
+                            )
                         )
                         isLoggingOut.value = false
                         commands.emit(Command.Logout)

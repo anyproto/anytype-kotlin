@@ -3,6 +3,11 @@ package com.anytypeio.anytype.presentation.auth.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
@@ -22,7 +27,8 @@ import kotlin.time.toDuration
 class DeletedAccountViewModel(
     private val restoreAccount: RestoreAccount,
     private val logout: Logout,
-    private val dateHelper: DateHelper
+    private val dateHelper: DateHelper,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -74,6 +80,10 @@ class DeletedAccountViewModel(
                                 // TODO
                             }
                         }
+                        sendEvent(
+                            analytics = analytics,
+                            eventName = EventsDictionary.cancelDeletion
+                        )
                     },
                     failure = {
                         Timber.e(it, "Error while cancelling account deletion")
@@ -107,6 +117,13 @@ class DeletedAccountViewModel(
                         }
                     }
                 }
+                sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.logout,
+                    props = Props(
+                        mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.screenDeletion)
+                    )
+                )
             }
         } else {
             sendToast(LOG_OUT_MSG)
@@ -116,14 +133,16 @@ class DeletedAccountViewModel(
     class Factory(
         private val restoreAccount: RestoreAccount,
         private val logout: Logout,
-        private val helper: DateHelper
+        private val helper: DateHelper,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return DeletedAccountViewModel(
                 restoreAccount = restoreAccount,
                 logout = logout,
-                dateHelper = helper
+                dateHelper = helper,
+                analytics = analytics
             ) as T
         }
     }
@@ -135,7 +154,7 @@ class DeletedAccountViewModel(
 
     sealed class DeletionDate {
         object Unknown : DeletionDate()
-        object Deleted: DeletionDate()
+        object Deleted : DeletionDate()
         object Today : DeletionDate()
         object Tomorrow : DeletionDate()
         data class Later(val days: Int) : DeletionDate()

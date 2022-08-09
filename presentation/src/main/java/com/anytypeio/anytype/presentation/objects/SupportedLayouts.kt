@@ -11,6 +11,7 @@ object SupportedLayouts {
         ObjectType.Layout.PROFILE,
         ObjectType.Layout.SET,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.NOTE
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.BOOKMARK
     )
 }

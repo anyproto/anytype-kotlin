@@ -300,7 +300,8 @@ abstract class RelationValueBaseViewModel(
                 ObjectType.Layout.TODO,
                 ObjectType.Layout.FILE,
                 ObjectType.Layout.IMAGE,
-                ObjectType.Layout.NOTE -> {
+                ObjectType.Layout.NOTE,
+                ObjectType.Layout.BOOKMARK -> {
                     viewModelScope.launch {
                         navigation.emit(AppNavigation.Command.OpenObject(id))
                     }

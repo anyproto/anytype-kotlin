@@ -588,26 +588,13 @@ class ObjectSetViewModel(
             val record = records.records.find { rec -> rec[Relations.ID] == target }
             if (record != null) {
                 val obj = ObjectWrapper.Basic(record)
-                if (obj.layout != ObjectType.Layout.BOOKMARK) {
-                    proceedWithNavigation(
-                        target = target,
-                        layout = obj.layout
-                    )
-                } else {
-                    proceedWithBrowsingBookmarkObject(obj)
-                }
+                proceedWithNavigation(
+                    target = target,
+                    layout = obj.layout
+                )
             } else {
                 toast("Record not found. Please, try again later.")
             }
-        }
-    }
-
-    private fun proceedWithBrowsingBookmarkObject(obj: ObjectWrapper.Basic) {
-        val url = obj.url
-        if (url.isNullOrEmpty()) {
-            toast("Url is empty.")
-        } else {
-            dispatch(ObjectSetCommand.Intent.GoTo(url))
         }
     }
 
@@ -1102,7 +1089,8 @@ class ObjectSetViewModel(
             ObjectType.Layout.TODO,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.IMAGE,
-            ObjectType.Layout.FILE -> proceedWithOpeningPage(target)
+            ObjectType.Layout.FILE,
+            ObjectType.Layout.BOOKMARK -> proceedWithOpeningPage(target)
             ObjectType.Layout.SET -> {
                 viewModelScope.launch {
                     closeBlock(CloseBlock.Params(context)).process(

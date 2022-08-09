@@ -128,7 +128,8 @@ open class ObjectSearchViewModel(
             ObjectType.Layout.TODO,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.FILE,
-            ObjectType.Layout.IMAGE -> {
+            ObjectType.Layout.IMAGE,
+            ObjectType.Layout.BOOKMARK -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
             }
             ObjectType.Layout.SET -> {

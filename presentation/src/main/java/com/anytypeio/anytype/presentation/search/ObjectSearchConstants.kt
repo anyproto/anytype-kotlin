@@ -39,8 +39,7 @@ object ObjectSearchConstants {
                 IMAGE_URL,
                 FILE_URL,
                 VIDEO_URL,
-                AUDIO_URL,
-                BOOKMARK_TYPE
+                AUDIO_URL
             )
         )
     )

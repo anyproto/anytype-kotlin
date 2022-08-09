@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -53,16 +54,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         coroutineTestRule.advanceTime(ObjectSetViewModel.TITLE_CHANNEL_DISPATCH_DELAY)
     }
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            style = Block.Content.Text.Style.TITLE,
-            text = MockDataFactory.randomString(),
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
+    private val title = StubTitle()
 
     private val header = Block(
         id = MockDataFactory.randomUuid(),
@@ -276,7 +268,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should close current object before navitating to some other object`() {
+    fun `should close current object before navigating to some other object`() {
 
         // SETUP
 

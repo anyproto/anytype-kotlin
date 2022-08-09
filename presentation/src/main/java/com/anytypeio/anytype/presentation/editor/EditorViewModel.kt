@@ -4227,7 +4227,7 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) { objectTypes ->
+                getObjectTypes() { objectTypes ->
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -4307,7 +4307,7 @@ class EditorViewModel(
                 getRelations { proceedWithRelations(it) }
             }
             is SlashItem.Main.Objects -> {
-                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) {
+                getObjectTypes() {
                     proceedWithObjectTypes(it)
                 }
             }
@@ -4560,12 +4560,11 @@ class EditorViewModel(
         }
     }
 
-    private fun getObjectTypes(excluded: List<Id>, action: (List<ObjectType>) -> Unit) {
+    private fun getObjectTypes(excluded: List<Id> = emptyList(), action: (List<ObjectType>) -> Unit) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
-                    smartBlockType = blocks.first { it.id == context }
-                        .content<Content.Smart>().type,
+                    smartBlockType = blocks.first { it.id == context }.content<Content.Smart>().type,
                     excludedTypes = excluded
                 )
             ).proceed(

@@ -891,3 +891,20 @@ fun CoroutineScope.sendAnalyticsGoBackEvent(
         )
     )
 }
+
+fun CoroutineScope.sendAnalyticsBlockActionEvent(
+    analytics: Analytics,
+    type: String,
+    context: String? = null
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.blockAction,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.context to context,
+                EventsPropertiesKey.type to type
+            )
+        )
+    )
+}

@@ -103,6 +103,9 @@ object EventsDictionary {
     const val setRepositionSort = "RepositionSort"
     const val setRemoveSort = "RemoveSort"
 
+    // Block Actions
+    const val blockAction = "BlockAction"
+
     const val goBack = "HistoryBack"
 
     // Routes
@@ -126,6 +129,19 @@ object EventsDictionary {
         const val menu = "menu"
         const val dataView = "dataview"
         const val block = "block"
+    }
+
+    object BlockAction {
+        const val addBelow = "AddBelow"
+        const val delete = "Delete"
+        const val duplicate = "Duplicate"
+        const val moveTo = "MoveTo"
+        const val move = "Move"
+        const val style = "Style"
+        const val download = "Download"
+        const val preview = "Preview"
+        const val copy = "Copy"
+        const val paste = "Paste"
     }
 }
 

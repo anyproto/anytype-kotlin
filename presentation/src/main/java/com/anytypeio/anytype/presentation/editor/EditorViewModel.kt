@@ -159,6 +159,7 @@ import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
@@ -5070,12 +5071,15 @@ class EditorViewModel(
         when (action) {
             ActionItemType.AddBelow -> {
                 onMultiSelectAddBelow()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.addBelow)
             }
             ActionItemType.Delete -> {
                 onMultiSelectModeDeleteClicked()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.delete)
             }
             ActionItemType.Duplicate -> {
                 onMultiSelectDuplicateClicked()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.duplicate)
             }
             ActionItemType.MoveTo -> {
                 proceedWithMoveToButtonClicked(
@@ -5083,30 +5087,47 @@ class EditorViewModel(
                     restoreBlock = null,
                     restorePosition = null
                 )
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.moveTo)
             }
             ActionItemType.SAM -> {
                 onEnterScrollAndMoveClicked()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.move)
             }
             ActionItemType.Style -> {
                 onMultiSelectStyleButtonClicked()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.style)
             }
             ActionItemType.Download -> {
                 startDownloadingFiles(ids = currentSelection().toList())
                 proceedWithExitingMultiSelectMode()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.download)
             }
             ActionItemType.Preview -> {
                 proceedWithObjectAppearanceSettingClicked()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.preview)
             }
             ActionItemType.Copy -> {
                 onMultiSelectCopyClicked()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.copy)
             }
             ActionItemType.Paste -> {
                 onMultiSelectPasteClicked()
                 proceedWithExitingMultiSelectMode()
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.paste)
             }
             else -> {
                 sendToast("TODO")
             }
+        }
+    }
+
+    private fun onSendBlockActionAnalyticsEvent(type: String) {
+        viewModelScope.launch {
+            sendAnalyticsBlockActionEvent(
+                analytics = analytics,
+                context = context,
+                type = type
+            )
         }
     }
 

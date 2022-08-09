@@ -78,6 +78,8 @@ sealed class ObjectWrapper {
 
         val url: String? by default
 
+        val featuredRelations: List<String>? by default
+
         fun isEmpty(): Boolean = map.isEmpty()
     }
 }

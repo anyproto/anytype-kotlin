@@ -1142,7 +1142,8 @@ sealed class BlockView : ViewType {
 
     data class FeaturedRelation(
         override val id: String,
-        val relations: List<DocumentRelationView>
+        val relations: List<DocumentRelationView>,
+        val allowChangingObjectType : Boolean = true
     ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }

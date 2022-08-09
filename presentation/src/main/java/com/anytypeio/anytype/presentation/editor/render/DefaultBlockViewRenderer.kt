@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectType.Companion.BOOKMARK_TYPE
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -2013,19 +2014,17 @@ class DefaultBlockViewRenderer @Inject constructor(
         details: Block.Details,
         relations: List<Relation>
     ): BlockView.FeaturedRelation {
-        val featured = details.details[ctx]?.featuredRelations ?: emptyList()
-        val views = mutableListOf<DocumentRelationView>()
-        views.addAll(
-            mapFeaturedRelations(
-                ctx = ctx,
-                ids = featured,
-                details = details,
-                relations = relations
-            )
+        val obj = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
+        val views = mapFeaturedRelations(
+            ctx = ctx,
+            ids = obj.featuredRelations ?: emptyList(),
+            details = details,
+            relations = relations
         )
         return BlockView.FeaturedRelation(
             id = block.id,
-            relations = views
+            relations = views,
+            allowChangingObjectType = !obj.type.contains(BOOKMARK_TYPE)
         )
     }
 

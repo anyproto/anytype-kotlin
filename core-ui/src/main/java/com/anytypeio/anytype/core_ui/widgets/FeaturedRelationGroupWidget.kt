@@ -232,7 +232,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                                 },
                                 onOpenSetClicked = {
                                     click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
-                                }
+                                },
+                                allowChangingObjectType = item.allowChangingObjectType
                             )
                             popup.show()
                         }

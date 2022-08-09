@@ -35,6 +35,7 @@ class KeychainPhraseDialog : BaseMnemonicFragment<DialogKeychainPhraseBinding>()
     )
 
     override val keychain: TextView by lazy { binding.keychain }
+    override val btnCopy: TextView by lazy { binding.btnCopy }
 
     companion object {
         const val ARG_SCREEN_TYPE = "arg.keychain.screen.type"

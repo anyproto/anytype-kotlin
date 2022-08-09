@@ -11,11 +11,13 @@ import android.widget.TextView
 import androidx.core.text.buildSpannedString
 import androidx.core.text.inSpans
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -25,6 +27,8 @@ import com.anytypeio.anytype.presentation.keychain.KeychainViewState
 import com.anytypeio.anytype.ui.profile.RoundedBackgroundColorSpan
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T>() {
@@ -42,6 +46,7 @@ abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T
     }
 
     protected abstract val keychain: TextView
+    protected abstract val btnCopy: TextView
 
     @Inject
     lateinit var factory: KeychainPhraseViewModelFactory
@@ -49,8 +54,9 @@ abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        keychain.setOnClickListener { vm.onKeychainClicked() }
-        binding.root.setOnClickListener { vm.onRootClicked() }
+        keychain.clicks().onEach { vm.onKeychainClicked() }.launchIn(lifecycleScope)
+        btnCopy.clicks().onEach { vm.onKeychainClicked() }.launchIn(lifecycleScope)
+        binding.root.clicks().onEach { vm.onRootClicked() }.launchIn(lifecycleScope)
 
         vm.state.observe(viewLifecycleOwner) { render(it) }
 

@@ -35,6 +35,7 @@ class DashboardMnemonicReminderDialog :
     }
 
     override val keychain: TextView by lazy { binding.keychain }
+    override val btnCopy: TextView by lazy { binding.btnCopy }
 
     companion object {
         const val MNEMONIC_LABEL = "Your Anytype mnemonic phrase"

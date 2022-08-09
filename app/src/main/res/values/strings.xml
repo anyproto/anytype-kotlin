@@ -90,6 +90,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="back_up_your_recovery_phrase">Back up your recovery \nphrase</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
+    <string name="show_and_copy_mnemonic">Show and copy phrase</string>
 
     <string name="greet">Hi, %1$s</string>
     <string name="greet_user">Hi, User</string>

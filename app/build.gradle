@@ -104,6 +104,8 @@ android {
             universalApk false
         }
     }
+
+    ndkVersion "23.2.8568313"
 }
 
 dependencies {

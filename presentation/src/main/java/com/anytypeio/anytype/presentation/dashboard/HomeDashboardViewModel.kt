@@ -503,9 +503,9 @@ class HomeDashboardViewModel(
             objectSearchSubscriptionContainer.observe(
                 subscription = Subscriptions.SUBSCRIPTION_RECENT,
                 keys = DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
-                filters = ObjectSearchConstants.filterTabHistory,
-                sorts = ObjectSearchConstants.sortTabHistory,
-                limit = ObjectSearchConstants.limitTabHistory,
+                filters = ObjectSearchConstants.filterTabRecent,
+                sorts = ObjectSearchConstants.sortTabRecent,
+                limit = ObjectSearchConstants.limitTabRecent,
                 offset = 0
             ).catch { Timber.e(it, "Error while collecting search results") }
                 .collectLatest { objects ->

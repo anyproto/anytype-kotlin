@@ -283,7 +283,7 @@ class DashboardFragment :
                                         DashboardPager.TYPE_FAVOURITES
                                     )
                                     TAB.RECENT -> TabItem(
-                                        getString(R.string.history),
+                                        getString(R.string.recent),
                                         DashboardPager.TYPE_RECENT
                                     )
                                     TAB.SETS -> TabItem(

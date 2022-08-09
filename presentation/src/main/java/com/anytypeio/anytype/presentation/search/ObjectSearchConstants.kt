@@ -183,8 +183,8 @@ object ObjectSearchConstants {
     )
     //endregion
 
-    //region TAB HISTORY
-    val filterTabHistory = listOf(
+    //region TAB RECENT
+    val filterTabRecent = listOf(
         DVFilter(
             relationKey = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
@@ -217,14 +217,14 @@ object ObjectSearchConstants {
         )
     )
 
-    val sortTabHistory = listOf(
+    val sortTabRecent = listOf(
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
             type = DVSortType.DESC
         )
     )
 
-    const val limitTabHistory = 50L
+    const val limitTabRecent = 50L
 
     //endregion
 

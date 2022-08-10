@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddSortEvent
+import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.StateFlow
@@ -73,5 +75,18 @@ class SelectSortRelationViewModel(
 
     companion object {
         const val USE_CASE_ERROR = "Couldn't add a sort. Please, try again."
+    }
+
+    override fun filterRelationsFromAlreadyInUse(
+        set: ObjectSet,
+        viewerId: String?
+    ): List<SimpleRelationView> {
+        val relationsInUse: List<String> = run {
+            val block = set.blocks.first { it.content is DV }
+            val dv = block.content as DV
+            val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
+            viewer.sorts.map { it.relationKey }.toList()
+        }
+        return set.simpleRelations(viewerId).filterNot { it.key in relationsInUse }
     }
 }

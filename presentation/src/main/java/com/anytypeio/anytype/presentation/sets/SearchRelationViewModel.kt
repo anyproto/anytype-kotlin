@@ -8,7 +8,10 @@ import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -31,15 +34,16 @@ abstract class SearchRelationViewModel(
     init {
         // Initializing views before any query.
         viewModelScope.launch {
-            _views.value = objectSetState.value.simpleRelations(session.currentViewerId)
-                .filterNot { notAllowedRelations(it) }
+            _views.value =
+                filterRelationsFromAlreadyInUse(objectSetState.value, session.currentViewerId)
+                    .filterNot { notAllowedRelations(it) }
         }
         // Searching and mapping views based on query changes.
         viewModelScope.launch {
             query
                 .consumeAsFlow()
                 .withLatestFrom(objectSetState) { query, state ->
-                    val relations = state.simpleRelations(session.currentViewerId)
+                    val relations = filterRelationsFromAlreadyInUse(state, session.currentViewerId)
                     if (query.isEmpty()) {
                         relations
                     } else {
@@ -53,6 +57,12 @@ abstract class SearchRelationViewModel(
                 }
                 .collect { _views.value = it }
         }
+    }
+
+    protected open fun filterRelationsFromAlreadyInUse(
+        set: ObjectSet, viewerId: String?
+    ): List<SimpleRelationView> {
+        return set.simpleRelations(viewerId)
     }
 
     private fun notAllowedRelations(relation: SimpleRelationView): Boolean =

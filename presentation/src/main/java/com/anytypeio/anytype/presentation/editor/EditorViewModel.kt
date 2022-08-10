@@ -1620,7 +1620,7 @@ class EditorViewModel(
 
         toggleSelection(target)
 
-        if (view !is BlockView.Table) {
+        if (view !is BlockView.Table && view !is BlockView.TableOfContents) {
             val descendants = blocks.asMap().descendants(parent = target)
             if (isSelected(target)) {
                 descendants.forEach { child -> select(child) }
@@ -1713,6 +1713,11 @@ class EditorViewModel(
                         excludedActions.add(ActionItemType.Download)
                     }
                     is Content.Table -> {
+                        excludedActions.add(ActionItemType.Paste)
+                        excludedActions.add(ActionItemType.Copy)
+                        excludedActions.add(ActionItemType.Style)
+                    }
+                    is Content.TableOfContents -> {
                         excludedActions.add(ActionItemType.Paste)
                         excludedActions.add(ActionItemType.Copy)
                         excludedActions.add(ActionItemType.Style)
@@ -2881,6 +2886,9 @@ class EditorViewModel(
                 is Content.Table -> {
                     addNewBlockAtTheEnd()
                 }
+                is Content.TableOfContents -> {
+                    addNewBlockAtTheEnd()
+                }
                 else -> {
                     Timber.d("Outside-click has been ignored.")
                 }
@@ -3791,6 +3799,12 @@ class EditorViewModel(
                             commands.value = EventWrapper(Command.ScrollToPosition(pos))
                         }
                     }
+                    else -> Unit
+                }
+            }
+            is ListenerType.TableOfContents -> {
+                when (mode) {
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
             }

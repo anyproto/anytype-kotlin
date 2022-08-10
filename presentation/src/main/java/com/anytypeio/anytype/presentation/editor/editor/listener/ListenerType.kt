@@ -68,6 +68,7 @@ sealed interface ListenerType {
     }
 
     data class TableOfContentsItem(val target: Id, val item: Id) : ListenerType
+    data class TableOfContents(val target: Id) : ListenerType
     data class TableEmptyCell(val cellId: Id, val rowId: Id, val tableId: Id) : ListenerType
     data class TableTextCell(val cellId: Id, val tableId: Id) : ListenerType
     data class TableEmptyCellMenu(val rowId: Id, val columnId: Id) : ListenerType

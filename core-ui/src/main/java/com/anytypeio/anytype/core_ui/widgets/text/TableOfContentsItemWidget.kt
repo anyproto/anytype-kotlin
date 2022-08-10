@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.TvTableOfContentsBinding
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 
 class TableOfContentsItemWidget @JvmOverloads constructor(
     context: Context,
@@ -17,9 +18,14 @@ class TableOfContentsItemWidget @JvmOverloads constructor(
     val binding = TvTableOfContentsBinding.inflate(LayoutInflater.from(context), this)
     val textView = binding.text
 
+    val editorTouchProcessor = EditorTouchProcessor(
+        fallback = { e -> this.onTouchEvent(e) }
+    )
+
     init {
         textView.apply {
             paintFlags = Paint.UNDERLINE_TEXT_FLAG
+            setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
         }
     }
 

@@ -688,7 +688,8 @@ class BlockAdapter(
             }
             HOLDER_TOC -> {
                 TableOfContents(
-                    ItemBlockTocBinding.inflate(inflater, parent, false)
+                    binding = ItemBlockTocBinding.inflate(inflater, parent, false),
+                    onDragAndDropTrigger = onDragAndDropTrigger
                 )
             }
             HOLDER_UNSUPPORTED -> Unsupported(
@@ -761,11 +762,6 @@ class BlockAdapter(
                                 onClickListener(LongClick(target = blocks[pos].id))
                             }
                         }
-                        holder.editorTouchProcessor.onDragAndDropTrigger = {
-                            onDragAndDropTrigger(holder, it)
-                        }
-                    }
-                    is TableOfContents -> {
                         holder.editorTouchProcessor.onDragAndDropTrigger = {
                             onDragAndDropTrigger(holder, it)
                         }

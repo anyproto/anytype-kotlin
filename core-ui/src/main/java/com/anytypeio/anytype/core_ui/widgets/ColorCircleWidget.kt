@@ -15,9 +15,11 @@ class ColorCircleWidget : View {
 
     var innerColor: Int = 0
     private var innerStrokeColor: Int = 0
-    private var innerRadius : Float = 0f
+    private var innerRadius: Float = 0f
     private var outerStrokeWidth: Float = 0f
     private var outerStrokeColor: Int = 0
+    private var showSlantedLine: Boolean = false
+    private var slantedLineHeight: Int = 0
 
     private val paint = Paint(ANTI_ALIAS_FLAG)
 
@@ -57,6 +59,11 @@ class ColorCircleWidget : View {
             R.styleable.ColorCircleWidget_outerStrokeColor,
             ContextCompat.getColor(context, R.color.default_style_color_circle_outer_stroke_color)
         )
+        showSlantedLine = attrs.getBoolean(R.styleable.ColorCircleWidget_showSlantedLine, false)
+        slantedLineHeight = attrs.getDimensionPixelSize(
+            R.styleable.ColorCircleWidget_slantedLineWidth,
+            resources.getDimension(R.dimen.default_style_color_slanted_line_height).toInt()
+        )
         attrs.recycle()
     }
 
@@ -89,7 +96,7 @@ class ColorCircleWidget : View {
                 color = innerStrokeColor
             }
             canvas.apply {
-                drawCircle(cx, cy, innerRadius - outerStrokeWidth / 4 , paint)
+                drawCircle(cx, cy, innerRadius - outerStrokeWidth / 4, paint)
             }
         }
 
@@ -102,7 +109,33 @@ class ColorCircleWidget : View {
                 color = outerStrokeColor
             }
             canvas.apply {
-                drawCircle(cx, cy, radius - outerStrokeWidth / 2 , paint)
+                drawCircle(cx, cy, radius - outerStrokeWidth / 2, paint)
+            }
+        }
+
+        if (showSlantedLine) {
+            paint.apply {
+                style = Paint.Style.STROKE
+                strokeWidth = outerStrokeWidth / 2
+                color = outerStrokeColor
+            }
+            val dx = slantedLineHeight / 2
+            val dy = slantedLineHeight / 2
+            canvas.apply {
+                drawLine(
+                    width / 2f,
+                    height / 2f,
+                    width / 2f + dx,
+                    height / 2f - dy,
+                    paint
+                )
+                drawLine(
+                    width / 2f,
+                    height / 2f,
+                    width / 2f - dx,
+                    height / 2f + dy,
+                    paint
+                )
             }
         }
     }

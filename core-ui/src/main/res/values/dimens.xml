@@ -121,6 +121,7 @@
     <dimen name="popup_context_menu_bottom_allowance">40dp</dimen>
     <dimen name="default_style_color_circle_inner_radius">22dp</dimen>
     <dimen name="default_style_color_outer_stroke_width">2dp</dimen>
+    <dimen name="default_style_color_slanted_line_height">16dp</dimen>
 
     <dimen name="default_page_links_bottom_offset">64dp</dimen>
     

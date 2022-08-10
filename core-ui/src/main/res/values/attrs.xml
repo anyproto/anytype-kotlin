@@ -30,6 +30,8 @@
         <attr name="innerRadius" format="dimension" />
         <attr name="outerStrokeWidth" format="dimension" />
         <attr name="outerStrokeColor" format="color" />
+        <attr name="showSlantedLine" format="boolean" />
+        <attr name="slantedLineWidth" format="dimension"/>
     </declare-styleable>
     <declare-styleable name="HighlightDrawer">
         <attr name="roundedTextHorizontalPadding" format="dimension" />

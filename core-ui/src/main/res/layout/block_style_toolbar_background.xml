@@ -9,6 +9,7 @@
         android:id="@+id/backgroundColorDefault"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="@color/background_primary"
+        app:showSlantedLine="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget

@@ -4,7 +4,6 @@ import com.amplitude.api.Amplitude
 import com.amplitude.api.AmplitudeClient
 import com.anytypeio.anytype.analytics.BuildConfig
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.blockWriting
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
@@ -33,20 +32,15 @@ class AmplitudeTracker(
         scope.launch { startRegisteringUserProps() }
     }
 
-    private var isPreviousEventBlockWriting = false
-
     private suspend fun startRegisteringEvents() {
         analytics.observeEvents().collect { event ->
             if (BuildConfig.SEND_EVENTS && event is EventAnalytics.Anytype) {
-                if (event.name != blockWriting || !isPreviousEventBlockWriting) {
-                    isPreviousEventBlockWriting = event.name == blockWriting
-                    val props = event.props.getEventProperties(
-                        startTime = event.duration?.start,
-                        middleTime = event.duration?.middleware,
-                        renderTime = event.duration?.render
-                    )
-                    tracker.logEvent(event.name, props)
-                }
+                val props = event.props.getEventProperties(
+                    startTime = event.duration?.start,
+                    middleTime = event.duration?.middleware,
+                    renderTime = event.duration?.render
+                )
+                tracker.logEvent(event.name, props)
             }
         }
     }

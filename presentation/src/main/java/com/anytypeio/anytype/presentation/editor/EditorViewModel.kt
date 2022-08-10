@@ -174,7 +174,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEven
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsWritingEvent
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
@@ -838,7 +837,6 @@ class EditorViewModel(
             }
             .onEach { params ->
                 proceedWithUpdatingText(params)
-                analytics.sendAnalyticsWritingEvent()
             }
             .launchIn(viewModelScope)
     }

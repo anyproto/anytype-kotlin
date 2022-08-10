@@ -71,7 +71,6 @@ object EventsDictionary {
     const val objectSetDescription = "SetObjectDescription"
 
     // Blocks events
-    const val blockWriting = "Writing"
     const val blockCreate = "CreateBlock"
     const val blockDelete = "DeleteBlock"
     const val blockChangeTextStyle = "ChangeTextStyle"

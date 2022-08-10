@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Link.IconSize
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
@@ -31,18 +32,7 @@ class DocumentExternalEventReducerTest {
             )
         )
 
-        val bookmark = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Bookmark(
-                url = null,
-                description = null,
-                title = null,
-                favicon = null,
-                image = null
-            )
-        )
+        val bookmark = StubBookmark()
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
@@ -168,18 +158,7 @@ class DocumentExternalEventReducerTest {
             )
         )
 
-        val bookmark = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Bookmark(
-                url = null,
-                description = null,
-                title = null,
-                favicon = null,
-                image = null
-            )
-        )
+        val bookmark = StubBookmark()
 
         val page = Block(
             id = MockDataFactory.randomUuid(),

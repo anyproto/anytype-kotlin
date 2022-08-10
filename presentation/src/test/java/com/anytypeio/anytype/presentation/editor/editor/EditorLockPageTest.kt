@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
@@ -466,17 +467,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         val bookmarkDescription = "Operating system for life"
         val bookmarkTitle = "Anytype"
 
-        val bookmark = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Bookmark(
-                description = bookmarkDescription,
-                url = bookmarkUrl,
-                favicon = null,
-                image = null,
-                title = bookmarkTitle
-            ),
-            children = emptyList()
+        val bookmark = StubBookmark(
+            url = bookmarkUrl,
+            description = bookmarkDescription,
+            title = bookmarkTitle
         )
 
         val page = listOf(

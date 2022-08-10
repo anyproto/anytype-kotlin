@@ -1664,6 +1664,7 @@ class EditorViewModel(
             excludedActions.add(ActionItemType.AddBelow)
             excludedActions.add(ActionItemType.Divider)
             excludedActions.add(ActionItemType.DividerExtended)
+            excludedActions.add(ActionItemType.OpenObject)
         }
 
         var needSortByDownloads = false
@@ -1673,6 +1674,12 @@ class EditorViewModel(
                 when (val content = block.content) {
                     is Content.Bookmark -> {
                         excludedActions.add(ActionItemType.Download)
+                        if (!isMultiMode) {
+                            val idx = targetActions.indexOf(ActionItemType.OpenObject)
+                            if (idx == NO_POSITION) {
+                                targetActions.add(OPEN_OBJECT_POSITION, ActionItemType.OpenObject)
+                            }
+                        }
                     }
                     is Content.Divider -> {
                         excludedActions.add(ActionItemType.Download)
@@ -5126,9 +5133,31 @@ class EditorViewModel(
                 proceedWithExitingMultiSelectMode()
                 onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.paste)
             }
+            ActionItemType.OpenObject -> {
+                val selected = blocks.firstOrNull { currentSelection().contains(it.id) }
+                proceedWithExitingMultiSelectMode()
+                if (selected != null) {
+                    proceedWithMultiSelectOpenObjectAction(
+                        selected = selected
+                    )
+                } else {
+                    sendToast("No blocks were selected. Please, try again.")
+                }
+                onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.openObject)
+            }
             else -> {
                 sendToast("TODO")
             }
+        }
+    }
+
+    private fun proceedWithMultiSelectOpenObjectAction(selected: Block) {
+        when (val content = selected.content) {
+            is Content.Bookmark -> {
+                val target = content.targetObjectId
+                if (target != null) { proceedWithOpeningPage(target) }
+            }
+            else -> sendToast("Unexpected object")
         }
     }
 
@@ -5933,3 +5962,4 @@ class EditorViewModel(
 
 private const val NO_POSITION = -1
 private const val PREVIEW_POSITION = 2
+private const val OPEN_OBJECT_POSITION = 2

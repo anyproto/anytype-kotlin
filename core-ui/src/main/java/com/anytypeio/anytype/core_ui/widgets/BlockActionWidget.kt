@@ -122,6 +122,10 @@ class BlockActionWidget @JvmOverloads constructor(
                         title.setText(R.string.paste)
                         icon.setImageResource(R.drawable.ic_block_action_paste)
                     }
+                    ActionItemType.OpenObject -> {
+                        title.setText(R.string.open_object)
+                        icon.setImageResource(R.drawable.ic_action_open_object)
+                    }
                     else -> {
                         title.text = action::class.simpleName
                     }

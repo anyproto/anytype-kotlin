@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MainMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MediaMenuHolder
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
@@ -768,14 +769,7 @@ class SlashWidgetTesting : EditorTestSetup() {
         val paragraph = paragraph(text = "FooBar")
         val paragraph2 = paragraph(text = "Second")
 
-        val bookmark = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Bookmark(
-                null, null, null, null, null
-            )
-        )
+        val bookmark = StubBookmark()
 
         val page = Block(
             id = root,

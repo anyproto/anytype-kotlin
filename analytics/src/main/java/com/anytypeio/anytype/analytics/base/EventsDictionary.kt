@@ -146,6 +146,7 @@ object EventsDictionary {
         const val preview = "Preview"
         const val copy = "Copy"
         const val paste = "Paste"
+        const val openObject = "OpenObject"
     }
 }
 

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.StubBulleted
 import com.anytypeio.anytype.core_models.StubCheckbox
 import com.anytypeio.anytype.core_models.StubDescription
@@ -456,18 +457,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val bookmark = Block(
-            id = MockDataFactory.randomString(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Bookmark(
-                url = MockDataFactory.randomString(),
-                description = MockDataFactory.randomString(),
-                title = MockDataFactory.randomString(),
-                favicon = null,
-                image = null
-            )
-        )
+        val bookmark = StubBookmark()
 
         val paragraph = Block(
             id = MockDataFactory.randomString(),
@@ -569,18 +559,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val bookmark = Block(
-            id = MockDataFactory.randomString(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Bookmark(
-                url = MockDataFactory.randomString(),
-                description = MockDataFactory.randomString(),
-                title = MockDataFactory.randomString(),
-                favicon = null,
-                image = null
-            )
-        )
+        val bookmark = StubBookmark()
 
         val paragraph = Block(
             id = MockDataFactory.randomString(),

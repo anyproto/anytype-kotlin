@@ -543,5 +543,6 @@
     <string name="simple_tables_widget_tab_cell">Cell</string>
     <string name="simple_tables_widget_tab_row">Row</string>
     <string name="simple_tables_widget_tab_column">Column</string>
+    <string name="open_object">Open object</string>
 
 </resources>

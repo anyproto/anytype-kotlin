@@ -263,7 +263,8 @@ data class Block(
             val title: String?,
             val description: String?,
             val image: Hash?,
-            val favicon: Hash?
+            val favicon: Hash?,
+            val targetObjectId: Id?
         ) : Content()
 
         data class Divider(val style: Style) : Content() {

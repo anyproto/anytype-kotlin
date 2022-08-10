@@ -285,7 +285,8 @@ fun MBlock.toCoreModelsBookmark(): Block.Content.Bookmark {
         title = content.title.ifEmpty { null },
         description = content.description.ifEmpty { null },
         image = content.imageHash.ifEmpty { null },
-        favicon = content.faviconHash.ifEmpty { null }
+        favicon = content.faviconHash.ifEmpty { null },
+        targetObjectId = content.targetObjectId.ifEmpty { null }
     )
 }
 

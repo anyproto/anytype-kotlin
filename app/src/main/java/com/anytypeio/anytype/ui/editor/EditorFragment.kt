@@ -1807,7 +1807,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             ).apply {
                 duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()
-                doOnEnd { binding.topToolbar.visible() }
+                doOnEnd { if (hasBinding) binding.topToolbar.visible() }
                 start()
             }
         }

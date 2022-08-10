@@ -18,6 +18,7 @@ sealed class ActionItemType {
     object Preview : ActionItemType()
     object Copy : ActionItemType()
     object Paste : ActionItemType()
+    object OpenObject: ActionItemType()
 
     companion object {
         val defaultSorting = listOf(

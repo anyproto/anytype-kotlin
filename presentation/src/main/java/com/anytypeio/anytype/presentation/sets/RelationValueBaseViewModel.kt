@@ -91,7 +91,7 @@ abstract class RelationValueBaseViewModel(
         when (relation.format) {
             Relation.Format.TAG -> {
                 relationFormat = Relation.Format.TAG
-                val isRemoveable = isEditing.value
+                val isRemovable = isEditing.value
                 val optionKeys: List<Id> = when (val value = record[relationId]) {
                     is Id -> listOf(value)
                     is List<*> -> value.typeOf()
@@ -105,7 +105,7 @@ abstract class RelationValueBaseViewModel(
                                 id = option.id,
                                 name = option.text,
                                 color = option.color.ifEmpty { null },
-                                removable = isRemoveable,
+                                removable = isRemovable,
                                 isCheckboxShown = false,
                                 isSelected = true,
                             )
@@ -138,7 +138,7 @@ abstract class RelationValueBaseViewModel(
                 }
             }
             Relation.Format.OBJECT -> {
-                val isRemoveable = isEditing.value
+                val isRemovable = isEditing.value
                 relationFormat = Relation.Format.OBJECT
                 val value = record.getOrDefault(relationId, null)
                 if (value is List<*>) {
@@ -151,7 +151,7 @@ abstract class RelationValueBaseViewModel(
                             items.add(
                                 RelationValueView.Object.NonExistent(
                                     id = id,
-                                    removable = isRemoveable
+                                    removable = isRemovable
                                 )
                             )
                         } else {
@@ -166,7 +166,7 @@ abstract class RelationValueBaseViewModel(
                                         layout = wrapper.layout,
                                         builder = urlBuilder
                                     ),
-                                    removable = isRemoveable,
+                                    removable = isRemovable,
                                     layout = wrapper.layout
                                 )
                             )
@@ -181,7 +181,7 @@ abstract class RelationValueBaseViewModel(
                         items.add(
                             RelationValueView.Object.NonExistent(
                                 id = value,
-                                removable = isRemoveable
+                                removable = isRemovable
                             )
                         )
                     } else {
@@ -196,7 +196,7 @@ abstract class RelationValueBaseViewModel(
                                     layout = wrapper.layout,
                                     builder = urlBuilder
                                 ),
-                                removable = isRemoveable,
+                                removable = isRemovable,
                                 layout = wrapper.layout
                             )
                         )
@@ -205,11 +205,16 @@ abstract class RelationValueBaseViewModel(
             }
             Relation.Format.FILE -> {
                 relationFormat = Relation.Format.FILE
-                val isRemoveable = isEditing.value
+                val isRemovable = isEditing.value
                 val value = record.getOrDefault(relationId, null)
                 if (value != null) {
-                    check(value is List<*>) { "Unexpected file data format" }
-                    value.typeOf<Id>().forEach { id ->
+                    val ids = buildList {
+                        when (value) {
+                            is List<*> -> addAll(value.typeOf())
+                            is Id -> add(value)
+                        }
+                    }
+                    ids.forEach { id ->
                         val detail = details.provide()[id]
                         items.add(
                             RelationValueView.File(
@@ -218,7 +223,7 @@ abstract class RelationValueBaseViewModel(
                                 mime = detail?.fileMimeType.orEmpty(),
                                 ext = detail?.fileExt.orEmpty(),
                                 image = detail?.iconImage,
-                                removable = isRemoveable
+                                removable = isRemovable
                             )
                         )
                     }

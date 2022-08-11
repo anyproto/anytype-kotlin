@@ -56,7 +56,7 @@ fun Block.Prototype.getAnalyticsEvent(
         is Block.Prototype.Relation -> {
             Props(mapOf(EventsPropertiesKey.type to "relation"))
         }
-        Block.Prototype.DividerLine -> {
+        is Block.Prototype.DividerLine -> {
             Props(
                 mapOf(
                     EventsPropertiesKey.type to "div",
@@ -64,7 +64,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 )
             )
         }
-        Block.Prototype.DividerDots -> {
+        is Block.Prototype.DividerDots -> {
             Props(
                 mapOf(
                     EventsPropertiesKey.type to "div",
@@ -72,16 +72,16 @@ fun Block.Prototype.getAnalyticsEvent(
                 )
             )
         }
-        Block.Prototype.Bookmark -> {
+        is Block.Prototype.Bookmark -> {
             Props(mapOf(EventsPropertiesKey.type to "bookmark"))
         }
-        Block.Prototype.Latex -> {
+        is Block.Prototype.Latex -> {
             Props(mapOf(EventsPropertiesKey.type to "latex"))
         }
-        Block.Prototype.TableOfContents -> {
+        is Block.Prototype.TableOfContents -> {
             Props(mapOf(EventsPropertiesKey.type to "table_of_contents"))
         }
-        Block.Prototype.SimpleTable -> {
+        is Block.Prototype.SimpleTable -> {
             Props(mapOf(EventsPropertiesKey.type to "table"))
         }
     }

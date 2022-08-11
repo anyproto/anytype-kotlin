@@ -259,13 +259,21 @@ data class Block(
          * @property favicon optional hash of bookmark's favicon
          */
         data class Bookmark(
+            @Deprecated("Deprecated. Will be deleted in favor of values from target object's relations.")
             val url: Url?,
+            @Deprecated("Deprecated. Will be deleted in favor of values from target object's relations.")
             val title: String?,
+            @Deprecated("Deprecated. Will be deleted in favor of values from target object's relations.")
             val description: String?,
+            @Deprecated("Deprecated. Will be deleted in favor of values from target object's relations.")
             val image: Hash?,
+            @Deprecated("Deprecated. Will be deleted in favor of values from target object's relations.")
             val favicon: Hash?,
-            val targetObjectId: Id?
-        ) : Content()
+            val targetObjectId: Id?,
+            val state: State
+        ) : Content() {
+            enum class State { EMPTY, FETCHING, DONE, ERROR }
+        }
 
         data class Divider(val style: Style) : Content() {
             enum class Style { LINE, DOTS }
@@ -387,7 +395,17 @@ data class Block(
 
         object DividerLine : Prototype()
         object DividerDots : Prototype()
-        object Bookmark : Prototype()
+        sealed class Bookmark : Prototype() {
+            /**
+             * Creates placeholder block for bookmark
+             */
+            object New : Bookmark()
+            /**
+             * Creates bookmark block from an existing bookmark object
+             * @property [target] bookmark object id
+             */
+            data class Existing(val target: Id) : Bookmark()
+        }
         object Latex : Prototype()
         data class Relation(
             val key: Id

@@ -286,8 +286,18 @@ fun MBlock.toCoreModelsBookmark(): Block.Content.Bookmark {
         description = content.description.ifEmpty { null },
         image = content.imageHash.ifEmpty { null },
         favicon = content.faviconHash.ifEmpty { null },
-        targetObjectId = content.targetObjectId.ifEmpty { null }
+        targetObjectId = content.targetObjectId.ifEmpty { null },
+        state = content.state.toCoreModelsBookmarkState()
     )
+}
+
+fun MBookmarkState.toCoreModelsBookmarkState() : Block.Content.Bookmark.State {
+    return when (this) {
+        MBookmarkState.Empty -> Block.Content.Bookmark.State.EMPTY
+        MBookmarkState.Fetching -> Block.Content.Bookmark.State.FETCHING
+        MBookmarkState.Done -> Block.Content.Bookmark.State.DONE
+        MBookmarkState.Error -> Block.Content.Bookmark.State.ERROR
+    }
 }
 
 fun MBlock.toCoreModelsDataView(): Block.Content.DataView {

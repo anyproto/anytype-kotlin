@@ -481,7 +481,7 @@ class Orchestrator(
                             val middlewareTime = System.currentTimeMillis()
                             proxies.payloads.send(payload)
                             analytics.sendAnalyticsCreateBlockEvent(
-                                prototype = Block.Prototype.Bookmark,
+                                prototype = Block.Prototype.Bookmark.New,
                                 startTime = startTime,
                                 middlewareTime = middlewareTime
                             )

@@ -214,7 +214,8 @@ fun StubBookmark(
     title: String? = MockDataFactory.randomString(),
     fields: Block.Fields = Block.Fields.empty(),
     backgroundColor: String? = null,
-    targetObjectId: Id? = null
+    targetObjectId: Id? = null,
+    state: Block.Content.Bookmark.State = Block.Content.Bookmark.State.EMPTY
 ): Block = Block(
     id = id,
     content = Block.Content.Bookmark(
@@ -223,7 +224,8 @@ fun StubBookmark(
         description = description,
         image = image,
         favicon = favicon,
-        targetObjectId = targetObjectId
+        targetObjectId = targetObjectId,
+        state = state
     ),
     children = emptyList(),
     fields = fields,

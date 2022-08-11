@@ -93,7 +93,9 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                         title = event.title ?: content.title,
                         description = event.description ?: content.description,
                         image = event.image ?: content.image,
-                        favicon = event.favicon ?: content.favicon
+                        favicon = event.favicon ?: content.favicon,
+                        state = event.state ?: content.state,
+                        targetObjectId = event.targetObjectId ?: content.targetObjectId
                     )
                 )
             },

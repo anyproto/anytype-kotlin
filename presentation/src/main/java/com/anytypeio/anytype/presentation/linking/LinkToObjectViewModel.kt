@@ -39,7 +39,12 @@ class LinkToObjectViewModel(
     override fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
         sendSearchResultEvent(target)
         viewModelScope.launch {
-            commands.emit(Command.Link(link = target))
+            commands.emit(
+                Command.Link(
+                    link = target,
+                    isBookmark = layout == ObjectType.Layout.BOOKMARK
+                )
+            )
         }
     }
 
@@ -59,6 +64,6 @@ class LinkToObjectViewModel(
 
     sealed class Command {
         object Exit : Command()
-        data class Link(val link: Id) : Command()
+        data class Link(val link: Id, val isBookmark: Boolean) : Command()
     }
 }

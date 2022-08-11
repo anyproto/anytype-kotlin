@@ -789,7 +789,7 @@ class SlashWidgetTesting : EditorTestSetup() {
                 context = root,
                 target = paragraph.id,
                 position = Position.BOTTOM,
-                prototype = Block.Prototype.Bookmark
+                prototype = Block.Prototype.Bookmark.New
             ),
             events = listOf(
                 Event.Command.UpdateStructure(

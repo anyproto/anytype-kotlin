@@ -68,7 +68,9 @@ class DocumentExternalEventReducerTest {
                     title = null,
                     description = null,
                     favicon = null,
-                    image = null
+                    image = null,
+                    targetObjectId = null,
+                    state = null
                 )
             )
 
@@ -100,7 +102,9 @@ class DocumentExternalEventReducerTest {
                     title = bookmarkTitle,
                     description = bookmarkDescription,
                     favicon = null,
-                    image = null
+                    image = null,
+                    targetObjectId = null,
+                    state = null
                 )
             )
 
@@ -136,7 +140,9 @@ class DocumentExternalEventReducerTest {
                     title = bookmarkTitle,
                     description = bookmarkDescription,
                     favicon = faviconHash,
-                    image = imageHash
+                    image = imageHash,
+                    targetObjectId = null,
+                    state = null
                 )
             )
 
@@ -188,7 +194,9 @@ class DocumentExternalEventReducerTest {
                     title = null,
                     description = null,
                     favicon = null,
-                    image = null
+                    image = null,
+                    targetObjectId = null,
+                    state = null
                 )
             )
 

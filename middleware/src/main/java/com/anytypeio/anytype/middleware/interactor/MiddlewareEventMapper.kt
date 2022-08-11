@@ -6,6 +6,7 @@ import com.anytypeio.anytype.middleware.mappers.toCoreLinkRelationModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
+import com.anytypeio.anytype.middleware.mappers.toCoreModelsBookmarkState
 
 fun anytype.Event.Message.toCoreModels(
     context: String
@@ -165,7 +166,9 @@ fun anytype.Event.Message.toCoreModels(
             title = event.title?.value_,
             description = event.description?.value_,
             image = event.imageHash?.value_,
-            favicon = event.faviconHash?.value_
+            favicon = event.faviconHash?.value_,
+            targetObjectId = event.targetObjectId?.value_,
+            state = event.state?.value_?.toCoreModelsBookmarkState()
         )
     }
     blockDataviewRecordsSet != null -> {

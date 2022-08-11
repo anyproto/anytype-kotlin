@@ -466,11 +466,14 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         val bookmarkUrl = "https://anytype.io"
         val bookmarkDescription = "Operating system for life"
         val bookmarkTitle = "Anytype"
+        val bookmarkObjectId = MockDataFactory.randomUuid()
 
         val bookmark = StubBookmark(
             url = bookmarkUrl,
             description = bookmarkDescription,
-            title = bookmarkTitle
+            title = bookmarkTitle,
+            targetObjectId = bookmarkObjectId,
+            state = Block.Content.Bookmark.State.DONE
         )
 
         val page = listOf(
@@ -491,7 +494,18 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubClosePage()
         stubOpenDocument(
-            document = page
+            document = page,
+            details = Block.Details(
+                mapOf(
+                    bookmarkObjectId to Block.Fields(
+                        mapOf(
+                            Relations.NAME to bookmarkTitle,
+                            Relations.DESCRIPTION to bookmarkDescription,
+                            Relations.URL to bookmarkUrl
+                        )
+                    )
+                )
+            )
         )
 
         val vm = buildViewModel()

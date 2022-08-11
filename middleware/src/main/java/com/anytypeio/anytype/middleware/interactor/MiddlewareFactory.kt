@@ -10,14 +10,22 @@ import com.anytypeio.anytype.middleware.mappers.MBRelation
 import com.anytypeio.anytype.middleware.mappers.MBTableOfContents
 import com.anytypeio.anytype.middleware.mappers.MBText
 import com.anytypeio.anytype.middleware.mappers.MBlock
+import com.anytypeio.anytype.middleware.mappers.MBookmarkState
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 
 class MiddlewareFactory {
 
     fun create(prototype: Block.Prototype): MBlock {
         return when (prototype) {
-            is Block.Prototype.Bookmark -> {
+            is Block.Prototype.Bookmark.New -> {
                 val bookmark = MBBookmark()
+                MBlock(bookmark = bookmark)
+            }
+            is Block.Prototype.Bookmark.Existing -> {
+                val bookmark = MBBookmark(
+                    targetObjectId = prototype.target,
+                    state = MBookmarkState.Done
+                )
                 MBlock(bookmark = bookmark)
             }
             is Block.Prototype.Text -> {

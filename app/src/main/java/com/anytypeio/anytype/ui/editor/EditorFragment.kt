@@ -1988,10 +1988,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         )
     }
 
-    override fun onLinkTo(link: Id, target: Id) {
+    override fun onLinkTo(link: Id, target: Id, isBookmark: Boolean) {
         vm.proceedWithLinkToAction(
             link = link,
-            target = target
+            target = target,
+            isBookmark = isBookmark
         )
     }
 

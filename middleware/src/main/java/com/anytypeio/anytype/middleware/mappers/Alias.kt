@@ -18,6 +18,7 @@ typealias MBLinkCardStyle = anytype.model.Block.Content.Link.CardStyle
 typealias MBLinkDescription = anytype.model.Block.Content.Link.Description
 typealias MBLinkStyle = anytype.model.Block.Content.Link.Style
 typealias MBBookmark = anytype.model.Block.Content.Bookmark
+typealias MBookmarkState = anytype.model.Block.Content.Bookmark.State
 typealias MBLayout = anytype.model.Block.Content.Layout
 typealias MBLayoutStyle = anytype.model.Block.Content.Layout.Style
 typealias MBDiv = anytype.model.Block.Content.Div

@@ -108,7 +108,9 @@ sealed class Event {
             val title: String?,
             val description: String?,
             val image: Hash?,
-            val favicon: Hash?
+            val favicon: Hash?,
+            val targetObjectId: Id?,
+            val state: Block.Content.Bookmark.State?
         ) : Command()
 
         /**

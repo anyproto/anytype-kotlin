@@ -3098,7 +3098,7 @@ class EditorViewModel(
                     Intent.CRUD.Replace(
                         context = context,
                         target = focused.id,
-                        prototype = Prototype.Bookmark
+                        prototype = Prototype.Bookmark.New
                     )
                 )
             }
@@ -3125,7 +3125,7 @@ class EditorViewModel(
                         context = context,
                         position = position,
                         target = target,
-                        prototype = Prototype.Bookmark
+                        prototype = Prototype.Bookmark.New
                     )
                 )
             }
@@ -4985,7 +4985,7 @@ class EditorViewModel(
         dispatch(Command.OpenLinkToScreen(target = block, position = position))
     }
 
-    fun proceedWithLinkToAction(link: Id, target: Id) {
+    fun proceedWithLinkToAction(link: Id, target: Id, isBookmark: Boolean) {
         val targetBlock = blocks.firstOrNull { it.id == target }
         if (targetBlock != null) {
             val targetContent = targetBlock.content
@@ -5000,7 +5000,10 @@ class EditorViewModel(
                         context = context,
                         target = target,
                         position = position,
-                        prototype = Prototype.Link(target = link)
+                        prototype = if (isBookmark)
+                            Prototype.Bookmark.Existing(target = link)
+                        else
+                            Prototype.Link(target = link)
                     )
                 )
             }

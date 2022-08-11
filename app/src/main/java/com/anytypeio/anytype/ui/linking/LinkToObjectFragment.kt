@@ -181,7 +181,8 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
                 withParent<OnLinkToAction> {
                     onLinkTo(
                         link = command.link,
-                        target = target
+                        target = target,
+                        isBookmark = command.isBookmark
                     )
                 }
                 dismiss()
@@ -265,6 +266,6 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
 }
 
 interface OnLinkToAction {
-    fun onLinkTo(link: Id, target: Id)
+    fun onLinkTo(link: Id, target: Id, isBookmark: Boolean)
     fun onLinkToClose(block: Id, position: Int?)
 }

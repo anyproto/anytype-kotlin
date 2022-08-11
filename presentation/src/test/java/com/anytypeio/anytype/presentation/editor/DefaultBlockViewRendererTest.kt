@@ -5182,8 +5182,15 @@ class DefaultBlockViewRendererTest {
     @Test
     fun `should return blocks with expected decoration - when a paragraph with background contains a bookmark with background`() {
 
+        val bookmarkObjectId = MockDataFactory.randomUuid()
+        val bookmarkDescription = MockDataFactory.randomString()
+        val bookmarkTitle = MockDataFactory.randomString()
+        val bookmarkUrl = MockDataFactory.randomString()
+
         val bookmark = StubBookmark(
-            backgroundColor = ThemeColor.ORANGE.code
+            backgroundColor = ThemeColor.ORANGE.code,
+            state = Block.Content.Bookmark.State.DONE,
+            targetObjectId = bookmarkObjectId
         )
 
         val paragraph = StubParagraph(
@@ -5208,7 +5215,17 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = Block.Details()
+                details = Block.Details(
+                    mapOf(
+                        bookmarkObjectId to Block.Fields(
+                            mapOf(
+                                Relations.NAME to bookmarkTitle,
+                                Relations.DESCRIPTION to bookmarkDescription,
+                                Relations.URL to bookmarkUrl
+                            )
+                        )
+                    )
+                )
             )
         }
 
@@ -5231,9 +5248,9 @@ class DefaultBlockViewRendererTest {
             BlockView.Media.Bookmark(
                 id = bookmark.id,
                 indent = 1,
-                title = bookmark.content<Block.Content.Bookmark>().title,
-                url = bookmark.content<Block.Content.Bookmark>().url.orEmpty(),
-                description = bookmark.content<Block.Content.Bookmark>().description,
+                title = bookmarkTitle,
+                url = bookmarkUrl,
+                description = bookmarkDescription,
                 isPreviousBlockMedia = false,
                 background = bookmark.parseThemeBackgroundColor(),
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -5305,12 +5322,9 @@ class DefaultBlockViewRendererTest {
                     emptyList()
                 }
             ),
-            BlockView.Media.Bookmark(
+            BlockView.MediaPlaceholder.Bookmark(
                 id = bookmark.id,
                 indent = 1,
-                title = bookmark.content<Block.Content.Bookmark>().title,
-                url = bookmark.content<Block.Content.Bookmark>().url.orEmpty(),
-                description = bookmark.content<Block.Content.Bookmark>().description,
                 isPreviousBlockMedia = false,
                 background = bookmark.parseThemeBackgroundColor(),
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -5380,12 +5394,9 @@ class DefaultBlockViewRendererTest {
                     emptyList()
                 }
             ),
-            BlockView.Media.Bookmark(
+            BlockView.MediaPlaceholder.Bookmark(
                 id = bookmark.id,
                 indent = 1,
-                title = bookmark.content<Block.Content.Bookmark>().title,
-                url = bookmark.content<Block.Content.Bookmark>().url.orEmpty(),
-                description = bookmark.content<Block.Content.Bookmark>().description,
                 isPreviousBlockMedia = false,
                 background = bookmark.parseThemeBackgroundColor(),
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {

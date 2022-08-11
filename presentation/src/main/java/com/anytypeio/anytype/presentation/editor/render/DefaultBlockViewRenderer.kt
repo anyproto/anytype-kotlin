@@ -591,7 +591,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             indent = indent,
                             selection = selection,
                             isPreviousBlockMedia = isPreviousBlockMedia,
-                            schema = blockDecorationScheme
+                            schema = blockDecorationScheme,
+                            details = details
                         )
                     )
                     isPreviousBlockMedia = true
@@ -1190,6 +1191,55 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             decorations = schema.toBlockViewDecoration(block)
         )
+    }
+
+    private fun bookmark(
+        mode: EditorMode,
+        content: Content.Bookmark,
+        block: Block,
+        indent: Int,
+        selection: Set<Id>,
+        isPreviousBlockMedia: Boolean,
+        schema: NestedDecorationData,
+        details: Block.Details
+    ): BlockView {
+        return if (content.state == Content.Bookmark.State.DONE) {
+            val obj = ObjectWrapper.Bookmark(
+                details.details[content.targetObjectId]?.map ?: emptyMap()
+            )
+            BlockView.Media.Bookmark(
+                id = block.id,
+                url = obj.url.orEmpty(),
+                title = obj.name,
+                description = obj.description,
+                imageUrl = obj.picture?.let { urlBuilder.image(it) },
+                faviconUrl = obj.iconImage?.let { urlBuilder.image(it) },
+                indent = indent,
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                ),
+                background = block.parseThemeBackgroundColor(),
+                isPreviousBlockMedia = isPreviousBlockMedia,
+                decorations = schema.toBlockViewDecoration(block)
+            )
+        } else {
+            BlockView.MediaPlaceholder.Bookmark(
+                id = block.id,
+                indent = indent,
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                ),
+                background = block.parseThemeBackgroundColor(),
+                isPreviousBlockMedia = isPreviousBlockMedia,
+                decorations = schema.toBlockViewDecoration(block)
+            )
+        }
     }
 
     private fun bookmark(

@@ -365,7 +365,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             context = root,
             target = title.id,
             position = Position.BOTTOM,
-            prototype = Block.Prototype.Bookmark
+            prototype = Block.Prototype.Bookmark.New
         )
 
         val document = listOf(page, header, title)
@@ -417,7 +417,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             context = root,
             target = title.id,
             position = Position.BOTTOM,
-            prototype = Block.Prototype.Bookmark
+            prototype = Block.Prototype.Bookmark.New
         )
 
         val document = listOf(page, header, title)

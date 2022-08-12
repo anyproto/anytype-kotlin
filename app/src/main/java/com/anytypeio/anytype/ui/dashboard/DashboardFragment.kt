@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
+import androidx.viewpager2.widget.ViewPager2
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -173,6 +174,31 @@ class DashboardFragment :
         override fun onTabReselected(tab: TabLayout.Tab?) {}
     }
 
+    private val tabToItem by lazy {
+        buildMap {
+            this[TAB.FAVOURITE] = TabItem(
+                getString(R.string.favorites),
+                DashboardPager.TYPE_FAVOURITES
+            )
+            this[TAB.RECENT] = TabItem(
+                getString(R.string.recent),
+                DashboardPager.TYPE_RECENT
+            )
+            this[TAB.SETS] = TabItem(
+                getString(R.string.sets),
+                DashboardPager.TYPE_SETS
+            )
+            this[TAB.SHARED] = TabItem(
+                getString(R.string.shared),
+                DashboardPager.TYPE_SHARED
+            )
+            this[TAB.BIN] = TabItem(
+                getString(R.string.bin),
+                DashboardPager.TYPE_BIN
+            )
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setup()
@@ -225,27 +251,7 @@ class DashboardFragment :
                     vm.mode.collect { mode ->
                         when (mode) {
                             HomeDashboardViewModel.Mode.DEFAULT -> {
-                                binding.selectionTopToolbar.invisible()
-                                binding.tabsLayout.visible()
-                                val set = ConstraintSet().apply {
-                                    clone(binding.dashboardRoot)
-                                    clear(R.id.selectionBottomToolbar, ConstraintSet.BOTTOM)
-                                    connect(
-                                        R.id.selectionBottomToolbar,
-                                        ConstraintSet.TOP,
-                                        R.id.dashboardRoot,
-                                        ConstraintSet.BOTTOM
-                                    )
-                                }
-                                val transitionSet = TransitionSet().apply {
-                                    addTransition(ChangeBounds())
-                                    duration = 100
-                                }
-                                TransitionManager.beginDelayedTransition(
-                                    binding.dashboardRoot,
-                                    transitionSet
-                                )
-                                set.applyTo(binding.dashboardRoot)
+                                animateSelectionHiding()
                             }
                             HomeDashboardViewModel.Mode.SELECTION -> {
                                 binding.tabsLayout.invisible()
@@ -268,6 +274,7 @@ class DashboardFragment :
                                     binding.dashboardRoot,
                                     transitionSet
                                 )
+                                transitionSet.excludeChildren(binding.dashboardPager, true)
                                 set.applyTo(binding.dashboardRoot)
                             }
                         }
@@ -277,28 +284,7 @@ class DashboardFragment :
                     vm.tabs.collect { tabs ->
                         dashboardPagerAdapter.setItems(
                             tabs.map { tab ->
-                                when (tab) {
-                                    TAB.FAVOURITE -> TabItem(
-                                        getString(R.string.favorites),
-                                        DashboardPager.TYPE_FAVOURITES
-                                    )
-                                    TAB.RECENT -> TabItem(
-                                        getString(R.string.recent),
-                                        DashboardPager.TYPE_RECENT
-                                    )
-                                    TAB.SETS -> TabItem(
-                                        getString(R.string.sets),
-                                        DashboardPager.TYPE_SETS
-                                    )
-                                    TAB.SHARED -> TabItem(
-                                        getString(R.string.shared),
-                                        DashboardPager.TYPE_SHARED
-                                    )
-                                    TAB.BIN -> TabItem(
-                                        getString(R.string.bin),
-                                        DashboardPager.TYPE_BIN
-                                    )
-                                }
+                                tabToItem[tab] ?: throw IllegalStateException("Wrong tab!")
                             }
                         )
                     }
@@ -317,6 +303,31 @@ class DashboardFragment :
                 }
             }
         }
+    }
+
+    private fun animateSelectionHiding() {
+        binding.selectionTopToolbar.invisible()
+        binding.tabsLayout.visible()
+        val set = ConstraintSet().apply {
+            clone(binding.dashboardRoot)
+            clear(R.id.selectionBottomToolbar, ConstraintSet.BOTTOM)
+            connect(
+                R.id.selectionBottomToolbar,
+                ConstraintSet.TOP,
+                R.id.dashboardRoot,
+                ConstraintSet.BOTTOM
+            )
+        }
+        val transitionSet = TransitionSet().apply {
+            addTransition(ChangeBounds())
+            duration = 100
+        }
+        transitionSet.excludeChildren(binding.dashboardPager, true)
+        TransitionManager.beginDelayedTransition(
+            binding.dashboardRoot,
+            transitionSet
+        )
+        set.applyTo(binding.dashboardRoot)
     }
 
     override fun onStart() {
@@ -406,6 +417,12 @@ class DashboardFragment :
             TabLayoutMediator(binding.tabsLayout, binding.dashboardPager) { tab, position ->
                 tab.text = dashboardPagerAdapter.getTitle(position)
             }.attach()
+            registerOnPageChangeCallback(
+                object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        vm.onCancelSelectionClicked()
+                    }
+                })
         }
 
         binding.btnAddDoc

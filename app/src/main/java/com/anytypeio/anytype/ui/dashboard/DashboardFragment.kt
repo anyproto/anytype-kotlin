@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -88,14 +89,16 @@ class DashboardFragment :
         DashboardAdapter(
             data = mutableListOf(),
             onDocumentClicked = { target, isLoading ->
-                vm.onTabObjectClicked(
-                    target,
-                    isLoading,
-                    TAB.FAVOURITE
-                )
+                clickAnimationSafely {
+                    vm.onTabObjectClicked(
+                        target,
+                        isLoading,
+                        TAB.FAVOURITE
+                    )
+                }
             },
-            onArchiveClicked = { vm.onArchivedClicked(it) },
-            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+            onArchiveClicked = { clickAnimationSafely { vm.onArchivedClicked(it) } },
+            onObjectSetClicked = { clickAnimationSafely { vm.onObjectSetClicked(it) } }
         )
     }
 
@@ -103,14 +106,16 @@ class DashboardFragment :
         DashboardAdapter(
             data = mutableListOf(),
             onDocumentClicked = { target, isLoading ->
-                vm.onTabObjectClicked(
-                    target,
-                    isLoading,
-                    TAB.RECENT
-                )
+                clickAnimationSafely {
+                    vm.onTabObjectClicked(
+                        target,
+                        isLoading,
+                        TAB.RECENT
+                    )
+                }
             },
             onArchiveClicked = {},
-            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+            onObjectSetClicked = { clickAnimationSafely { vm.onObjectSetClicked(it) } }
         )
     }
 
@@ -118,14 +123,16 @@ class DashboardFragment :
         DashboardAdapter(
             data = mutableListOf(),
             onDocumentClicked = { target, isLoading ->
-                vm.onTabObjectClicked(
-                    target,
-                    isLoading,
-                    TAB.SHARED
-                )
+                clickAnimationSafely {
+                    vm.onTabObjectClicked(
+                        target,
+                        isLoading,
+                        TAB.SHARED
+                    )
+                }
             },
             onArchiveClicked = {},
-            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+            onObjectSetClicked = { clickAnimationSafely { vm.onObjectSetClicked(it) } }
         )
     }
 
@@ -134,7 +141,7 @@ class DashboardFragment :
             data = mutableListOf(),
             onDocumentClicked = { _, _ -> },
             onArchiveClicked = {},
-            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+            onObjectSetClicked = { clickAnimationSafely { vm.onObjectSetClicked(it) } }
         )
     }
 
@@ -142,11 +149,13 @@ class DashboardFragment :
         DashboardAdapter(
             data = mutableListOf(),
             onDocumentClicked = { target, isLoading ->
-                vm.onTabObjectClicked(
-                    target,
-                    isLoading,
-                    TAB.BIN
-                )
+                clickAnimationSafely {
+                    vm.onTabObjectClicked(
+                        target,
+                        isLoading,
+                        TAB.BIN
+                    )
+                }
             },
             onArchiveClicked = {},
             onObjectSetClicked = {}
@@ -199,10 +208,19 @@ class DashboardFragment :
         }
     }
 
+    private inline fun clickAnimationSafely(block: () -> Any) {
+        if (motionListener.isSettled) {
+            block()
+        }
+    }
+
+    private val motionListener = DashboardMotionListener()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setup()
         binding.dashboardRoot.progress = motionProgress
+        binding.dashboardRoot.addTransitionListener(motionListener)
         with(vm) {
             state.observe(viewLifecycleOwner, this@DashboardFragment)
             navigation.observe(viewLifecycleOwner, navObserver)
@@ -274,7 +292,6 @@ class DashboardFragment :
                                     binding.dashboardRoot,
                                     transitionSet
                                 )
-                                transitionSet.excludeChildren(binding.dashboardPager, true)
                                 set.applyTo(binding.dashboardRoot)
                             }
                         }
@@ -493,3 +510,37 @@ class DashboardFragment :
 }
 
 data class TabItem(val title: String, val type: Int)
+
+private class DashboardMotionListener : MotionLayout.TransitionListener {
+
+    var isSettled = true
+        private set
+
+    override fun onTransitionStarted(
+        motionLayout: MotionLayout?,
+        startId: Int,
+        endId: Int
+    ) {
+        isSettled = false
+    }
+
+    override fun onTransitionChange(
+        motionLayout: MotionLayout?,
+        startId: Int,
+        endId: Int,
+        progress: Float
+    ) {
+    }
+
+    override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
+        isSettled = true
+    }
+
+    override fun onTransitionTrigger(
+        motionLayout: MotionLayout?,
+        triggerId: Int,
+        positive: Boolean,
+        progress: Float
+    ) {
+    }
+}

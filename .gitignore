@@ -10,6 +10,7 @@
 /apikeys.properties
 /scripts/release/app-release.jks
 /scripts/distribution/anytype-debug-service-account-key.json
+/analytics/gradle.properties
 .DS_Store
 **/build
 /libs

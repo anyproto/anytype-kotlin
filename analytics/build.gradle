@@ -20,7 +20,7 @@ android {
             buildConfigField "boolean", "SEND_EVENTS", "true"
         }
         debug {
-            buildConfigField "boolean", "SEND_EVENTS", "false"
+            buildConfigField "boolean", "SEND_EVENTS", getProperty('config.enableAnalyticsForDebugBuilds')
         }
     }
 
@@ -41,4 +41,16 @@ dependencies {
     implementation app.coroutinesAndroid
     implementation app.timber
     implementation analytics.amplitude
+}
+
+tasks.register("enableAnalyticsForDebugBuilds") {
+    doLast {
+        enableAnalyticsForDebugBuilds()
+    }
+}
+
+def enableAnalyticsForDebugBuilds() {
+    def file = file('gradle.properties')
+    def content = "config.enableAnalyticsForDebugBuilds=true"
+    file.text = content.toString()
 }

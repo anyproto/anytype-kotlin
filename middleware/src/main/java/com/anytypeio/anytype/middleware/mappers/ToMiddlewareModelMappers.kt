@@ -180,6 +180,12 @@ fun Block.Content.Text.Mark.toMiddlewareModel(): MBMark = when (type) {
             type = MBMarkType.Strikethrough
         )
     }
+    Block.Content.Text.Mark.Type.UNDERLINE -> {
+        MBMark(
+            range = range.range(),
+            type = MBMarkType.Underscored
+        )
+    }
     Block.Content.Text.Mark.Type.KEYBOARD -> {
         MBMark(
             range = range.range(),

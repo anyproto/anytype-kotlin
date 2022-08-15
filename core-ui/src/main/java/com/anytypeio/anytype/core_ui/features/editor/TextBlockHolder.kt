@@ -81,7 +81,11 @@ interface TextBlockHolder : TextHolder {
 
     private fun setSpannable(markup: Markup, textColor: Int) {
         content.setText(
-            markup.toSpannable(textColor = textColor, context = content.context),
+            markup.toSpannable(
+                textColor = textColor,
+                context = content.context,
+                underlineHeight = getUnderlineHeight()
+            ),
             TextView.BufferType.SPANNABLE
         )
     }
@@ -109,7 +113,8 @@ interface TextBlockHolder : TextHolder {
                     mentionUncheckedIcon = getMentionUncheckedIcon(),
                     click = { clicked(ListenerType.Mention(it)) },
                     onImageReady = { param -> refreshMentionSpan(param) },
-                    mentionInitialsSize = getMentionInitialsSize()
+                    mentionInitialsSize = getMentionInitialsSize(),
+                    underlineHeight = getUnderlineHeight()
                 ),
                 TextView.BufferType.SPANNABLE
             )
@@ -140,7 +145,8 @@ interface TextBlockHolder : TextHolder {
                 textColor = textColor,
                 mentionCheckedIcon = getMentionCheckedIcon(),
                 mentionUncheckedIcon = getMentionUncheckedIcon(),
-                mentionInitialsSize = getMentionInitialsSize()
+                mentionInitialsSize = getMentionInitialsSize(),
+                underlineHeight = getUnderlineHeight()
             )
         }
     }
@@ -446,6 +452,10 @@ interface TextBlockHolder : TextHolder {
             override fun onDestroyActionMode(mode: ActionMode) {}
         }
     }
+
+    private fun getUnderlineHeight(): Float =
+        content.resources.getDimensionPixelSize(R.dimen.block_text_markup_underline_height)
+            .toFloat()
 
     //endregion
 }

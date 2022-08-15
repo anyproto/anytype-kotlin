@@ -107,6 +107,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 SlashItem.Style.Markup.Bold,
                 SlashItem.Style.Markup.Italic,
                 SlashItem.Style.Markup.Strikethrough,
+                SlashItem.Style.Markup.Underline,
                 SlashItem.Style.Markup.Code
             ),
             mediaItems = emptyList(),

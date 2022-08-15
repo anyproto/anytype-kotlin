@@ -154,7 +154,7 @@ data class Block(
                     KEYBOARD,
                     ITALIC,
                     BOLD,
-                    UNDERSCORED,
+                    UNDERLINE,
                     LINK,
                     TEXT_COLOR,
                     BACKGROUND_COLOR,

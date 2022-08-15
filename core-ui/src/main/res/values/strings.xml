@@ -369,6 +369,7 @@
     <string name="slash_widget_style_strikethrough">Strikethrough</string>
     <string name="slash_widget_style_code">Code</string>
     <string name="slash_widget_style_link">Link</string>
+    <string name="slash_widget_style_underline">Underline</string>
 
     <string name="slash_widget_media_file">File</string>
     <string name="slash_widget_media_file_subtitle">Store file in original state</string>

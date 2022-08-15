@@ -40,6 +40,7 @@ fun SlashItem.Style.Markup.convertToMarkType() = when (this) {
     SlashItem.Style.Markup.Strikethrough -> Block.Content.Text.Mark.Type.STRIKETHROUGH
     SlashItem.Style.Markup.Code -> Block.Content.Text.Mark.Type.KEYBOARD
     SlashItem.Style.Markup.Italic -> Block.Content.Text.Mark.Type.ITALIC
+    SlashItem.Style.Markup.Underline -> Block.Content.Text.Mark.Type.UNDERLINE
 }
 
 object SlashExtensions {
@@ -85,6 +86,7 @@ object SlashExtensions {
                 SlashItem.Style.Markup.Bold,
                 SlashItem.Style.Markup.Italic,
                 SlashItem.Style.Markup.Strikethrough,
+                SlashItem.Style.Markup.Underline,
                 SlashItem.Style.Markup.Code
             )
         }

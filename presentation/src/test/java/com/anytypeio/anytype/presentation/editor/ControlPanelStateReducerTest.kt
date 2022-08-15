@@ -426,6 +426,7 @@ class ControlPanelStateReducerTest {
                         isCode = false,
                         isLinked = false,
                         isStrikethrough = false,
+                        isUnderline = false,
                         markupTextColor = "yellow",
                         markupUrl = null,
                         markupHighlightColor = "red",
@@ -481,6 +482,7 @@ class ControlPanelStateReducerTest {
                         isCode = false,
                         isLinked = false,
                         isStrikethrough = false,
+                        isUnderline = false,
                         markupTextColor = null,
                         markupUrl = null,
                         markupHighlightColor = null,
@@ -731,6 +733,7 @@ class ControlPanelStateReducerTest {
                         isCode = false,
                         isLinked = false,
                         isStrikethrough = false,
+                        isUnderline = false,
                         markupTextColor = null,
                         markupUrl = null,
                         markupHighlightColor = null,
@@ -742,6 +745,7 @@ class ControlPanelStateReducerTest {
                         Markup.Type.BOLD,
                         Markup.Type.ITALIC,
                         Markup.Type.STRIKETHROUGH,
+                        Markup.Type.UNDERLINE,
                         Markup.Type.KEYBOARD,
                         Markup.Type.LINK
                     )

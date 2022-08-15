@@ -29,7 +29,8 @@ class StyleToolbarExtraWidget @JvmOverloads constructor(
         binding.alignmentLeft.clicks().map { StylingEvent.Alignment.Left },
         binding.alignmentMiddle.clicks().map { StylingEvent.Alignment.Center },
         binding.alignmentRight.clicks().map { StylingEvent.Alignment.Right },
-        binding.setUrl.clicks().map { StylingEvent.Markup.Link }
+        binding.setUrl.clicks().map { StylingEvent.Markup.Link },
+        binding.underline.clicks().map { StylingEvent.Markup.Underline }
     )
 
     fun setProperties(
@@ -39,6 +40,7 @@ class StyleToolbarExtraWidget @JvmOverloads constructor(
         italic.isSelected = state.isItalicSelected
         strikethrough.isSelected = state.isStrikethroughSelected
         code.isSelected = state.isCodeSelected
+        underline.isSelected = state.isUnderlineSelected
         alignmentLeft.isSelected = state.isAlignStartSelected
         alignmentMiddle.isSelected = state.isAlignCenterSelected
         alignmentRight.isSelected = state.isAlignEndSelected
@@ -55,6 +57,8 @@ class StyleToolbarExtraWidget @JvmOverloads constructor(
         italicIcon.isEnabled = italic.isEnabled
         strikethrough.isEnabled = state.isSupportStrikethrough
         strikethroughIcon.isEnabled = strikethrough.isEnabled
+        underline.isEnabled = state.isSupportUnderline
+        underlineIcon.isEnabled = underline.isEnabled
         code.isEnabled = state.isSupportCode
         codeIcon.isEnabled = code.isEnabled
         setUrl.isEnabled = state.isSupportLinked

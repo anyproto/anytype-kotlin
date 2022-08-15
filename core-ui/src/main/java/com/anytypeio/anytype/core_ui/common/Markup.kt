@@ -27,7 +27,8 @@ fun Markup.toSpannable(
     mentionCheckedIcon: Drawable? = null,
     mentionUncheckedIcon: Drawable? = null,
     mentionInitialsSize: Float = 0F,
-    onImageReady: (String) -> Unit = {}
+    onImageReady: (String) -> Unit = {},
+    underlineHeight: Float
 ) = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
         when (mark) {
@@ -69,6 +70,12 @@ fun Markup.toSpannable(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
+            is Markup.Mark.Underline -> setSpan(
+                Underline(underlineHeight = underlineHeight),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
             is Markup.Mark.BackgroundColor -> {
                 setSpan(
                     Span.Highlight(mark.background),
@@ -78,7 +85,11 @@ fun Markup.toSpannable(
                 )
             }
             is Markup.Mark.Link -> setSpan(
-                Span.Url(mark.param, textColor),
+                Span.Url(
+                    url = mark.param,
+                    color = textColor,
+                    underlineHeight = underlineHeight
+                ),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -135,7 +146,8 @@ fun Editable.setMarkup(
     mentionUncheckedIcon: Drawable?,
     mentionInitialsSize: Float,
     onImageReady: (String) -> Unit = {},
-    textColor: Int
+    textColor: Int,
+    underlineHeight: Float
 ) {
     removeSpans<Span>()
     markup.marks.forEach { mark ->
@@ -178,6 +190,12 @@ fun Editable.setMarkup(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
+            is Markup.Mark.Underline -> setSpan(
+                Underline(underlineHeight = underlineHeight),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
             is Markup.Mark.BackgroundColor -> {
                 setSpan(
                     Span.Highlight(mark.background),
@@ -187,7 +205,11 @@ fun Editable.setMarkup(
                 )
             }
             is Markup.Mark.Link -> setSpan(
-                Span.Url(mark.param, textColor),
+                Span.Url(
+                    url = mark.param,
+                    color = textColor,
+                    underlineHeight = underlineHeight
+                ),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG

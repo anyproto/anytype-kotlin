@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor
 
 import android.text.Editable
 import com.anytypeio.anytype.core_ui.common.Span
+import com.anytypeio.anytype.core_ui.common.Underline
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 
@@ -22,6 +23,10 @@ fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).
             background = span.value
         )
         is Span.Italic -> Markup.Mark.Italic(
+            from = getSpanStart(span),
+            to = getSpanEnd(span)
+        )
+        is Underline -> Markup.Mark.Underline(
             from = getSpanStart(span),
             to = getSpanEnd(span)
         )

@@ -32,11 +32,12 @@ class MarkupToolbarWidget @JvmOverloads constructor(
     private fun italic() = binding.italic.clicks().map { Markup.Type.ITALIC }
     private fun strike() = binding.strike.clicks().map { Markup.Type.STRIKETHROUGH }
     private fun code() = binding.code.clicks().map { Markup.Type.KEYBOARD }
+    private fun underline() = binding.underline.clicks().map { Markup.Type.UNDERLINE }
 
     fun linkClicks() = binding.url.clicks().map { Markup.Type.LINK }
     fun colorClicks() = binding.color.clicks()
     fun highlightClicks() = binding.highlight.clicks()
-    fun markup() = merge(bold(), italic(), strike(), code())
+    fun markup() = merge(bold(), italic(), strike(), underline(), code())
 
     fun setProps(
         props: MarkupStyleDescriptor?,
@@ -53,6 +54,9 @@ class MarkupToolbarWidget @JvmOverloads constructor(
         strike.isSelected = props?.isStrikethrough ?: false
         strike.isEnabled = supportedTypes.contains(Markup.Type.STRIKETHROUGH)
         strikeIcon.isEnabled = strike.isEnabled
+        underline.isSelected = props?.isUnderline ?: false
+        underline.isEnabled = supportedTypes.contains(Markup.Type.UNDERLINE)
+        underlineIcon.isEnabled = underline.isEnabled
         code.isSelected = props?.isCode ?: false
         code.isEnabled = supportedTypes.contains(Markup.Type.KEYBOARD)
         codeIcon.isEnabled = code.isEnabled

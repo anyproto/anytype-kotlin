@@ -257,6 +257,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.Style.Type.Bulleted,
             SlashItem.Style.Type.Numbered,
             SlashItem.Style.Markup.Bold,
+            SlashItem.Style.Markup.Underline,
             SlashItem.Style.Markup.Code
         )
         assertEquals(expected = expectedStyleItems, actual = command.styleItems)

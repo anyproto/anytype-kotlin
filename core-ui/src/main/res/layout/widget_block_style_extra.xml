@@ -93,9 +93,36 @@
         android:id="@+id/divider3"
         style="@style/BlockStyleDividerStyle"
         android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toStartOf="@+id/code"
+        app:layout_constraintEnd_toStartOf="@+id/underline"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/strikethrough"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/underline"
+        style="@style/BlockStyleButtonContainerStyle"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toStartOf="@id/divider9"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/divider3"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/underlineIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_toolbar_style_underline_selector" />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/divider9"
+        style="@style/BlockStyleDividerStyle"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toStartOf="@+id/code"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/underline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
@@ -105,7 +132,7 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/divider3"
+        app:layout_constraintStart_toEndOf="@+id/divider9"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView

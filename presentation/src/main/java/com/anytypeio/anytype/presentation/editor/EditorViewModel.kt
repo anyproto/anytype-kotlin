@@ -1776,6 +1776,9 @@ class EditorViewModel(
             is StylingEvent.Markup.Code -> {
                 onUpdateBlockListMarkup(ids, Markup.Type.KEYBOARD)
             }
+            is StylingEvent.Markup.Underline -> {
+                onUpdateBlockListMarkup(ids, Markup.Type.UNDERLINE)
+            }
             is StylingEvent.Markup.Link -> {
                 if (ids.size == 1) {
                     onBlockStyleLinkClicked(ids[0])

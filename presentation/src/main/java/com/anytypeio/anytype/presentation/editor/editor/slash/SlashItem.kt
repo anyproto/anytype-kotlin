@@ -251,6 +251,11 @@ sealed class SlashItem {
                 override fun getAbbreviation(): List<String>? = null
             }
 
+            object Underline : Markup() {
+                override fun getSearchName(): String = SlashConst.SLASH_STYLE_UNDERLINE
+                override fun getAbbreviation(): List<String>? = null
+            }
+
             object Code : Markup() {
                 override fun getSearchName(): String = SlashConst.SLASH_STYLE_CODE
                 override fun getAbbreviation(): List<String>? = null

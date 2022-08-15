@@ -46,6 +46,7 @@ fun Markup.Type.toCoreModel(): Mark.Type = when (this) {
     Markup.Type.KEYBOARD -> Mark.Type.KEYBOARD
     Markup.Type.MENTION -> Mark.Type.MENTION
     Markup.Type.OBJECT -> Mark.Type.OBJECT
+    Markup.Type.UNDERLINE -> Mark.Type.UNDERLINE
 }
 
 fun Block.Content.Text.addMarkToContent(mark: Mark): Block.Content.Text {

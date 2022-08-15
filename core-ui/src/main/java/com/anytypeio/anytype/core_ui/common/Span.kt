@@ -3,8 +3,10 @@ package com.anytypeio.anytype.core_ui.common
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.os.FileUriExposedException
 import android.provider.Browser
 import android.text.Annotation
@@ -17,17 +19,28 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.shekhargulati.urlcleaner.UrlCleaner
 import com.shekhargulati.urlcleaner.UrlCleanerException
 import timber.log.Timber
+import kotlin.math.roundToInt
 
 interface Span {
     class Bold : StyleSpan(Typeface.BOLD), Span
     class Italic : StyleSpan(Typeface.ITALIC), Span
     class Strikethrough : StrikethroughSpan(), Span
     class TextColor(color: Int, val value: String) : ForegroundColorSpan(color), Span
-    class Url(url: String, val color: Int) : URLSpan(url), Span {
+    class Url(url: String, val color: Int, private val underlineHeight: Float) : URLSpan(url), Span {
 
         override fun updateDrawState(ds: TextPaint) {
-            super.updateDrawState(ds)
-            ds.color = color
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val alphaText = (Color.alpha(color) * 0.65f).roundToInt()
+                val alphaUnderline = (Color.alpha(color) * 0.35f).roundToInt()
+                ds.color =
+                    Color.argb(alphaText, Color.red(color), Color.green(color), Color.blue(color))
+                ds.underlineColor =
+                    Color.argb(alphaUnderline, Color.red(color), Color.green(color), Color.blue(color))
+                ds.underlineThickness = underlineHeight
+            } else {
+                ds.color = color
+                super.updateDrawState(ds)
+            }
         }
 
         override fun onClick(widget: View) {

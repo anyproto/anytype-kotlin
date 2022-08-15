@@ -299,4 +299,6 @@
     <dimen name="object_settings_relations_item_height">48dp</dimen>
     <dimen name="object_slash_menu_relations_item_height">44dp</dimen>
 
+    <dimen name="block_text_markup_underline_height">0.5dp</dimen>
+
 </resources>

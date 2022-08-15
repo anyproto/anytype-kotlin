@@ -6,6 +6,7 @@ interface MarkupStyleDescriptor {
     val isBold: Boolean
     val isItalic: Boolean
     val isStrikethrough: Boolean
+    val isUnderline: Boolean
     val isCode: Boolean
     val isLinked: Boolean
     val markupTextColor: String?
@@ -20,6 +21,7 @@ interface MarkupStyleDescriptor {
         override val isItalic: Boolean,
         override val isCode: Boolean,
         override val isStrikethrough: Boolean,
+        override val isUnderline: Boolean,
         override val isLinked: Boolean,
         override val markupTextColor: String?,
         override val markupHighlightColor: String?,

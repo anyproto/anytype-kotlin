@@ -142,7 +142,8 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             textContent.setText(
                 markup.toSpannable(
                     textColor = textColor,
-                    context = itemView.context
+                    context = itemView.context,
+                    underlineHeight = getUnderlineHeight()
                 ),
                 TextView.BufferType.SPANNABLE
             )
@@ -160,7 +161,8 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
                     mentionImagePadding = mentionIconPadding,
                     mentionCheckedIcon = mentionCheckedIcon,
                     mentionUncheckedIcon = mentionUncheckedIcon,
-                    mentionInitialsSize = mentionInitialsSize
+                    mentionInitialsSize = mentionInitialsSize,
+                    underlineHeight = getUnderlineHeight()
                 ),
                 TextView.BufferType.SPANNABLE
             )
@@ -230,6 +232,10 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
     }
+
+    fun getUnderlineHeight(): Float =
+        itemView.resources.getDimensionPixelSize(R.dimen.block_text_markup_underline_height)
+            .toFloat()
 
     class TableSpaceHolder(binding: ItemBlockTableSpaceBinding) : TableCellHolder(binding.root)
 }

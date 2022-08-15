@@ -401,7 +401,7 @@ fun MBMarkType.toCoreModels(): Block.Content.Text.Mark.Type = when (this) {
     MBMarkType.Keyboard -> Block.Content.Text.Mark.Type.KEYBOARD
     MBMarkType.Italic -> Block.Content.Text.Mark.Type.ITALIC
     MBMarkType.Bold -> Block.Content.Text.Mark.Type.BOLD
-    MBMarkType.Underscored -> Block.Content.Text.Mark.Type.UNDERSCORED
+    MBMarkType.Underscored -> Block.Content.Text.Mark.Type.UNDERLINE
     MBMarkType.Link -> Block.Content.Text.Mark.Type.LINK
     MBMarkType.TextColor -> Block.Content.Text.Mark.Type.TEXT_COLOR
     MBMarkType.BackgroundColor -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR

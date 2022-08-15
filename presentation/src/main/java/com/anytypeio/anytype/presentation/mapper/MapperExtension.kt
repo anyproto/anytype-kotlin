@@ -220,6 +220,12 @@ fun Block.Content.Text.marks(
                     to = mark.range.last
                 )
             }
+            Block.Content.Text.Mark.Type.UNDERLINE -> {
+                Markup.Mark.Underline(
+                    from = mark.range.first,
+                    to = mark.range.last
+                )
+            }
             Block.Content.Text.Mark.Type.TEXT_COLOR -> {
                 val color = mark.param
                 if (color.isNullOrBlank()) null
@@ -477,6 +483,10 @@ fun Markup.Mark.mark(): Block.Content.Text.Mark = when (this) {
     is Markup.Mark.Italic -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.ITALIC
+    )
+    is Markup.Mark.Underline -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.UNDERLINE
     )
     is Markup.Mark.Strikethrough -> Block.Content.Text.Mark(
         range = from..to,
@@ -777,7 +787,10 @@ fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
             isSelected = false
         )
         ObjectType.Layout.SPACE -> ObjectLayoutView.Space(id = layout.code, isSelected = false)
-        ObjectType.Layout.BOOKMARK -> ObjectLayoutView.Bookmark(id = layout.code, isSelected = false)
+        ObjectType.Layout.BOOKMARK -> ObjectLayoutView.Bookmark(
+            id = layout.code,
+            isSelected = false
+        )
     }
 }
 

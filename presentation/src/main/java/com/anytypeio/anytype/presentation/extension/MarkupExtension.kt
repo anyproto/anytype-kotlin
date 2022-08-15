@@ -61,6 +61,7 @@ fun Block.style(selection: IntRange): MarkupStyleDescriptor {
     var isBold = false
     var isItalic = false
     var isStrike = false
+    var isUnderline = false
     var isCode = false
     var isLinked = false
 
@@ -92,6 +93,12 @@ fun Block.style(selection: IntRange): MarkupStyleDescriptor {
                     if (!isStrike) {
                         val overlap = selection.overlap(mark.range)
                         if (overlap.inside()) isStrike = true
+                    }
+                }
+                Block.Content.Text.Mark.Type.UNDERLINE -> {
+                    if (!isUnderline) {
+                        val overlap = selection.overlap(mark.range)
+                        if (overlap.inside()) isUnderline = true
                     }
                 }
                 Block.Content.Text.Mark.Type.KEYBOARD -> {
@@ -135,7 +142,8 @@ fun Block.style(selection: IntRange): MarkupStyleDescriptor {
         markupHighlightColor = markupHighlightColor,
         markupUrl = markupUrl,
         blockTextColor = blockTextColor,
-        blockBackroundColor = blockBackgroundColor
+        blockBackroundColor = blockBackgroundColor,
+        isUnderline = isUnderline
     )
 }
 
@@ -181,6 +189,7 @@ private fun Markup.Mark.updateRanges(start: Int, length: Int): Markup.Mark {
         is Markup.Mark.BackgroundColor -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Bold -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Italic -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Underline -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Keyboard -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Link -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Mention.Base -> copy(from = newFrom, to = newTo)

@@ -114,12 +114,14 @@ fun List<Block.Content.Text>.getStyleOtherToolbarState(): StyleToolbarState.Othe
         isSupportCode = true,
         isSupportLinked = true,
         isSupportStrikethrough = true,
+        isSupportUnderline = true,
         isSupportAlignStart = all { it.alignmentSupport().contains(Alignment.START) },
         isSupportAlignCenter = all { it.alignmentSupport().contains(Alignment.CENTER) },
         isSupportAlignEnd = all { it.alignmentSupport().contains(Alignment.END) },
         isBoldSelected = isBoldSelected,
         isItalicSelected = all { it.isItalic() },
         isStrikethroughSelected = all { it.isStrikethrough() },
+        isUnderlineSelected = all { it.isUnderline() },
         isCodeSelected = all { it.isCode() },
         isLinkedSelected = all { it.isLinked() },
         isAlignCenterSelected = all { it.isAlignCenter() },
@@ -158,6 +160,7 @@ fun Block.Content.Text.getSupportedMarkupTypes(): List<Markup.Type> = when (styl
             Markup.Type.BOLD,
             Markup.Type.ITALIC,
             Markup.Type.STRIKETHROUGH,
+            Markup.Type.UNDERLINE,
             Markup.Type.KEYBOARD,
             Markup.Type.LINK
         )
@@ -167,6 +170,7 @@ fun Block.Content.Text.getSupportedMarkupTypes(): List<Markup.Type> = when (styl
         listOf(
             Markup.Type.ITALIC,
             Markup.Type.STRIKETHROUGH,
+            Markup.Type.UNDERLINE,
             Markup.Type.KEYBOARD,
             Markup.Type.LINK
         )
@@ -197,3 +201,7 @@ fun Block.Content.Text.isLinked(): Boolean = marks.any { mark ->
 fun Block.Content.Text.isAlignStart(): Boolean = this.align == Block.Align.AlignLeft
 fun Block.Content.Text.isAlignCenter(): Boolean = this.align == Block.Align.AlignCenter
 fun Block.Content.Text.isAlignEnd(): Boolean = this.align == Block.Align.AlignRight
+
+fun Block.Content.Text.isUnderline(): Boolean = marks.any { mark ->
+    mark.type == Block.Content.Text.Mark.Type.UNDERLINE && mark.range.first == 0 && mark.range.last == text.length
+}

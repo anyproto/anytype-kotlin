@@ -56,7 +56,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = textColor, context = context)
+        val editable = markup.toSpannable(textColor = textColor, context = context, underlineHeight = 1f)
 
         // TESTING
 
@@ -87,7 +87,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11, context = context)
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
 
         // TESTING
 
@@ -118,7 +118,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11, context = context)
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
 
         // TESTING
 
@@ -149,7 +149,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11, context = context)
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
 
         // TESTING
 
@@ -181,7 +181,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11, context = context)
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
 
         // TESTING
 
@@ -213,7 +213,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11, context = context)
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
 
         // TESTING
 
@@ -245,7 +245,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11, context = context)
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
 
         // TESTING
 

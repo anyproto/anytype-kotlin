@@ -50,6 +50,7 @@ object SlashConst {
     const val SLASH_STYLE_BOLD = "Bold"
     const val SLASH_STYLE_ITALIC = "Italic"
     const val SLASH_STYLE_STRIKETHROUGH = "Strikethrough"
+    const val SLASH_STYLE_UNDERLINE = "Underline"
     const val SLASH_STYLE_CODE = "Code"
 
     const val SLASH_BACK = "Back"

@@ -50,6 +50,21 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/underline"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/underlineIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_toolbar_markup_underline_selector" />
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/code"
         android:layout_width="0dp"
         android:layout_height="match_parent"

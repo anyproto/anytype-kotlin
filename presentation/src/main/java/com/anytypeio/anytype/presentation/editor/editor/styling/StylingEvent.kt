@@ -17,6 +17,7 @@ sealed class StylingEvent {
         object StrikeThrough : Markup()
         object Code : Markup()
         object Link : Markup()
+        object Underline : Markup()
     }
 
     sealed class Coloring : StylingEvent() {

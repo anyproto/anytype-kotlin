@@ -34,7 +34,7 @@ class ObjectActionAdapter(
             when (item) {
                 ObjectAction.DELETE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
-                    tvActionTitle.setText(R.string.move_to_bin)
+                    tvActionTitle.setText(R.string.action_bar_delete)
                 }
                 ObjectAction.DUPLICATE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_duplicate)

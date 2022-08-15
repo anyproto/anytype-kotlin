@@ -32,7 +32,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `preview action should be in actions before style - when link block`() {
+    fun `preview action should be in actions on second position`() {
         if (BuildConfig.ENABLE_LINK_APPERANCE_MENU) {
             val link = MockBlockFactory.link()
 
@@ -60,11 +60,8 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
                 )
             )
             assertContains(vm.actions.value, ActionItemType.Preview)
-            assertContains(vm.actions.value, ActionItemType.Style)
             assertTrue {
-                vm.actions.value.indexOf(ActionItemType.Preview) == vm.actions.value.indexOf(
-                    ActionItemType.Style
-                ) - 1
+                vm.actions.value.indexOf(ActionItemType.Preview) == 1
             }
         }
     }

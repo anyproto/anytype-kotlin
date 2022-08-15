@@ -36,8 +36,8 @@ class BlockActionWidget @JvmOverloads constructor(
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(
                 SpacingItemDecoration(
-                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_8).toInt(),
-                    lastItemSpacingEnd = resources.getDimension(R.dimen.dp_8).toInt()
+                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_6).toInt(),
+                    lastItemSpacingEnd = resources.getDimension(R.dimen.dp_6).toInt()
                 )
             )
         }

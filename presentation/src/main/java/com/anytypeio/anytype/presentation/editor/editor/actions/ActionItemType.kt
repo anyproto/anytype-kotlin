@@ -22,14 +22,32 @@ sealed class ActionItemType {
 
     companion object {
         val defaultSorting = listOf(
+                Delete,
+                Style,
                 Paste,
                 Copy,
-                Style,
-                Delete,
-                AddBelow,
                 Duplicate,
+                AddBelow,
                 SAM,
                 MoveTo
+        )
+
+        val objectSorting = listOf(
+            Delete,
+            Preview,
+            Paste,
+            Copy,
+            Duplicate,
+            AddBelow,
+            SAM,
+            MoveTo
+        )
+
+        val objectSortingMultiline = listOf(
+            Delete,
+            Paste,
+            Copy,
+            Duplicate
         )
     }
 }

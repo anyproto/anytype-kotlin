@@ -76,9 +76,8 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
             adapter = actionAdapter
             addItemDecoration(
                 SpacingItemDecoration(
-                    spacingStart = resources.getDimension(R.dimen.dp_20).toInt(),
-                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_16).toInt(),
-                    lastItemSpacingEnd = resources.getDimension(R.dimen.dp_16).toInt()
+                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_8).toInt(),
+                    lastItemSpacingEnd = resources.getDimension(R.dimen.dp_8).toInt()
                 )
             )
         }

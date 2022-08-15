@@ -51,6 +51,11 @@ class ObjectMenuViewModel(
         isFavorite: Boolean,
         isProfile: Boolean
     ): List<ObjectAction> = buildList {
+        if (isFavorite) {
+            add(ObjectAction.REMOVE_FROM_FAVOURITE)
+        } else {
+            add(ObjectAction.ADD_TO_FAVOURITE)
+        }
         if (!isProfile) {
             if (isArchived) {
                 add(ObjectAction.RESTORE)
@@ -59,12 +64,9 @@ class ObjectMenuViewModel(
             }
         }
         add(ObjectAction.UNDO_REDO)
-        if (isFavorite) {
-            add(ObjectAction.REMOVE_FROM_FAVOURITE)
-        } else {
-            add(ObjectAction.ADD_TO_FAVOURITE)
+        if (!isProfile) {
+            add(ObjectAction.DUPLICATE)
         }
-        add(ObjectAction.SEARCH_ON_PAGE)
 
         val root = storage.document.get().find { it.id == ctx }
         if (root != null) {
@@ -74,10 +76,7 @@ class ObjectMenuViewModel(
                 add(ObjectAction.LOCK)
             }
         }
-
-        if (!isProfile) {
-            add(ObjectAction.DUPLICATE)
-        }
+        add(ObjectAction.SEARCH_ON_PAGE)
     }
 
     override fun onIconClicked(ctx: Id) {
@@ -250,7 +249,7 @@ class ObjectMenuViewModel(
     }
 
     @Throws(Exception::class)
-    fun isThisObjectLocked(ctx: Id) : Boolean {
+    fun isThisObjectLocked(ctx: Id): Boolean {
         val doc = storage.document.get().first { it.id == ctx }
         return doc.fields.isLocked ?: false
     }

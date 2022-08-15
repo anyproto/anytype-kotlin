@@ -1691,13 +1691,14 @@ class EditorViewModel(
                         }
                     }
                     is Content.Link -> {
-                        excludedActions.add(ActionItemType.Download)
-                        if (BuildConfig.ENABLE_LINK_APPERANCE_MENU) {
-                            if (!isMultiMode) {
-                                var copyIndex = targetActions.indexOf(ActionItemType.Style)
-                                if (copyIndex == NO_POSITION) copyIndex = PREVIEW_POSITION
-                                targetActions.addIfNotExists(ActionItemType.Preview, copyIndex)
-                            }
+                        targetActions.clear()
+                        if (!isMultiMode) {
+                            targetActions.addAll(ActionItemType.objectSorting)
+                        } else {
+                            targetActions.addAll(ActionItemType.objectSortingMultiline)
+                        }
+                        if (!BuildConfig.ENABLE_LINK_APPERANCE_MENU) {
+                            excludedActions.add(ActionItemType.Preview)
                         }
                     }
                     is Content.Page -> {
@@ -5980,4 +5981,4 @@ class EditorViewModel(
 
 private const val NO_POSITION = -1
 private const val PREVIEW_POSITION = 2
-private const val OPEN_OBJECT_POSITION = 2
+private const val OPEN_OBJECT_POSITION = 4

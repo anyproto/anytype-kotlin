@@ -216,6 +216,11 @@ class BlockDataRepository(
         url = url
     )
 
+    override suspend fun fetchBookmarkObject(ctx: Id, url: Url) = remote.fetchBookmarkObject(
+        ctx = ctx,
+        url = url
+    )
+
     override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
         remote.uploadBlock(command)
 

@@ -641,6 +641,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun objectBookmarkFetch(request: Rpc.Object.BookmarkFetch.Request): Rpc.Object.BookmarkFetch.Response {
+        val encoded = Service.objectBookmarkFetch(Rpc.Object.BookmarkFetch.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.BookmarkFetch.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.BookmarkFetch.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response {
         val encoded = Service.objectCreateSet(Rpc.Object.CreateSet.Request.ADAPTER.encode(request))
         val response = Rpc.Object.CreateSet.Response.ADAPTER.decode(encoded)

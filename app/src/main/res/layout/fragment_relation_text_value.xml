@@ -33,7 +33,6 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="13dp"
         android:layout_marginBottom="32dp"
         tools:listitem="@layout/item_modify_viewer_relation_order" />
 

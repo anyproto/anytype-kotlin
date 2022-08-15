@@ -169,6 +169,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         url = url
     )
 
+    override suspend fun fetchBookmarkObject(ctx: Id, url: Url) = remote.fetchBookmarkObject(
+        ctx = ctx,
+        url = url
+    )
+
     override suspend fun undo(command: Command.Undo) = remote.undo(command)
 
     override suspend fun redo(command: Command.Redo) = remote.redo(command)

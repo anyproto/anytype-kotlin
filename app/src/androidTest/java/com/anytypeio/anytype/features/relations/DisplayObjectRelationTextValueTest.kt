@@ -16,6 +16,7 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
@@ -33,6 +34,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
@@ -45,6 +47,9 @@ class DisplayObjectRelationTextValueTest {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    @Mock
+    lateinit var reloadObject: ReloadObject
+
     val root = MockDataFactory.randomUuid()
 
     private val state = MutableStateFlow(ObjectSet.init())
@@ -55,7 +60,8 @@ class DisplayObjectRelationTextValueTest {
         MockitoAnnotations.openMocks(this)
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
-            values = DataViewObjectValueProvider(state, session)
+            values = DataViewObjectValueProvider(state, session),
+            reloadObject = reloadObject
         )
     }
 

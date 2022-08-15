@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.di.feature;
 
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.`object`.ReloadObject
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
@@ -31,8 +33,20 @@ object RelationTextValueModule {
     @PerModal
     fun provideRelationTextValueViewModelFactory(
         relations: ObjectRelationProvider,
-        values: ObjectValueProvider
-    ) = RelationTextValueViewModel.Factory(relations, values)
+        values: ObjectValueProvider,
+        reloadObject: ReloadObject
+    ) = RelationTextValueViewModel.Factory(
+        relations = relations,
+        values = values,
+        reloadObject = reloadObject
+    )
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideReloadObjectUseCase(
+        repo: BlockRepository
+    ): ReloadObject = ReloadObject(repo)
 }
 
 @Subcomponent(modules = [RelationDateValueModule::class])

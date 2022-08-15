@@ -10,20 +10,27 @@ import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.features.relations.RelationActionAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.normalizeUrl
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withParent
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.sets.EditGridCellAction
+import com.anytypeio.anytype.presentation.common.SystemAction
+import com.anytypeio.anytype.presentation.sets.RelationValueAction
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -49,7 +56,6 @@ open class RelationTextValueFragment :
     private val relationValueAdapter by lazy {
         RelationTextValueAdapter(
             items = emptyList(),
-            actionClick = { handleActions(it) },
             onEditCompleted = { view, txt ->
                 if (view is RelationTextValueView.Number) {
                     try {
@@ -68,18 +74,43 @@ open class RelationTextValueFragment :
         )
     }
 
+    private val relationValueActionAdapter by lazy {
+        RelationActionAdapter { action ->
+            vm.onAction(
+                target = objectId,
+                action = action
+            )
+        }
+    }
+
+    private val concatAdapter by lazy {
+        ConcatAdapter(relationValueAdapter, relationValueActionAdapter)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = relationValueAdapter
+            adapter = concatAdapter
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(
+                        drawable(R.drawable.default_divider_offset_20_dp)
+                    )
+                }
+            )
         }
         onHideKeyboardWhenBottomSheetHidden()
     }
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
+        jobs += lifecycleScope.subscribe(vm.actions) { relationValueActionAdapter.submitList(it)  }
+        jobs += lifecycleScope.subscribe(vm.intents) { proceedWithAction(it) }
         jobs += lifecycleScope.subscribe(vm.title) { binding.tvRelationHeader.text = it }
+        jobs += lifecycleScope.subscribe(vm.isDismissed) { isDismissed ->
+            if (isDismissed) dismiss()
+        }
         super.onStart()
 
         if (flow == FLOW_CHANGE_DATE) {
@@ -99,48 +130,6 @@ open class RelationTextValueFragment :
     override fun onStop() {
         super.onStop()
         vm.onStop()
-    }
-
-    private fun handleActions(action: EditGridCellAction) {
-        when (action) {
-            is EditGridCellAction.Url -> {
-                try {
-                    Intent(Intent.ACTION_VIEW).apply {
-                        val url = action.url.normalizeUrl()
-                        data = Uri.parse(url)
-                    }.let {
-                        startActivity(it)
-                    }
-                } catch (e: Exception) {
-                    toast("An error occurred. Url may be invalid: ${e.message}")
-                }
-            }
-            is EditGridCellAction.Email -> {
-                try {
-                    Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:" + action.email)
-                    }.let {
-                        startActivity(it)
-                    }
-                } catch (e: Exception) {
-                    toast("An error occurred. Email address may be invalid: ${e.message}")
-                }
-            }
-            is EditGridCellAction.Phone -> {
-                try {
-                    Intent(Intent.ACTION_DIAL).apply {
-                        data = Uri.parse("tel:${action.phone}")
-                    }.let {
-                        startActivity(it)
-                    }
-                } catch (e: Exception) {
-                    toast("An error occurred. Phone number may be invalid: ${e.message}")
-                }
-            }
-            else -> {
-                toast("Unexpected action")
-            }
-        }
     }
 
     private fun dispatchTextResultAndExit(txt: String) {

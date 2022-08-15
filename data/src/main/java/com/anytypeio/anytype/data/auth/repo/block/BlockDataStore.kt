@@ -68,6 +68,7 @@ interface BlockDataStore {
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
     suspend fun createBookmarkObject(url: Url) : Id
+    suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
     suspend fun redo(command: Command.Redo): Payload
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>

@@ -18,7 +18,6 @@ abstract class RelationTextViewHolderBase<T : RelationTextValueView>(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     protected val input: TextView = binding.textInputField
-    protected val btnAction = binding.btnAction
     private val textInputField = binding.textInputField
 
     init {

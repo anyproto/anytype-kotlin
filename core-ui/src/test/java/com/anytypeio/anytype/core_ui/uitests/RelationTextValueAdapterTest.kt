@@ -224,7 +224,6 @@ class RelationTextValueAdapterTest {
 
     private fun givenAdapter(item: RelationTextValueView) = RelationTextValueAdapter(
         onEditCompleted = { view, txt -> },
-        actionClick = {},
         items = listOf(item)
     )
 }

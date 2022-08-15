@@ -1003,6 +1003,17 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun objectBookmarkFetch(ctx: Id, url: Url) {
+        val request = Rpc.Object.BookmarkFetch.Request(
+            contextId = ctx,
+            url = url
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectBookmarkFetch(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun objectCreateSet(
         contextId: String,
         targetId: String?,

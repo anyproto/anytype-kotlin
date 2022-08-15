@@ -545,5 +545,11 @@
     <string name="simple_tables_widget_tab_row">Row</string>
     <string name="simple_tables_widget_tab_column">Column</string>
     <string name="open_object">Open object</string>
+    <string name="reload_object_content">Reload object content</string>
+    <string name="open_link">Open link</string>
+    <string name="copy_email">Copy email</string>
+    <string name="copy_phone_number">Copy phone number</string>
+    <string name="send_email">Send email</string>
+    <string name="call_phone_number">Call phone number</string>
 
 </resources>

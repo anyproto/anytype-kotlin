@@ -18,12 +18,11 @@ import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextView
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationUrlHolder
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.text.ActionDoneListener
-import com.anytypeio.anytype.presentation.sets.EditGridCellAction
+import com.anytypeio.anytype.presentation.sets.RelationValueAction
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 
 class RelationTextValueAdapter(
     private var items: List<RelationTextValueView>,
-    private val actionClick: (EditGridCellAction) -> Unit,
     private val onEditCompleted: (RelationTextValueView, String) -> Unit
 ) : RecyclerView.Adapter<RelationTextViewHolderBase<*>>() {
 
@@ -39,15 +38,6 @@ class RelationTextValueAdapter(
                     onEditCompleted(items[holder.bindingAdapterPosition], txt)
                 }
             )
-            textInputField.doAfterTextChanged { newText ->
-                if (newText.isNullOrEmpty()) {
-                    btnAction.alpha = 0.5F
-                    btnAction.isEnabled = false
-                } else {
-                    btnAction.alpha = 1F
-                    btnAction.isEnabled = true
-                }
-            }
         }
         return holder
     }
@@ -62,9 +52,9 @@ class RelationTextValueAdapter(
         return when (viewType) {
             TYPE_TEXT -> RelationTextHolder(binding, R.string.enter_text)
             TYPE_TEXT_SHORT -> RelationTextShortHolder(binding, R.string.enter_text)
-            TYPE_URL -> RelationUrlHolder(binding, actionClick, R.string.enter_url)
-            TYPE_PHONE -> RelationPhoneHolder(binding, actionClick, R.string.enter_phone)
-            TYPE_EMAIL -> RelationEmailHolder(binding, actionClick, R.string.enter_email)
+            TYPE_URL -> RelationUrlHolder(binding, R.string.enter_url)
+            TYPE_PHONE -> RelationPhoneHolder(binding, R.string.enter_phone)
+            TYPE_EMAIL -> RelationEmailHolder(binding, R.string.enter_email)
             TYPE_NUMBER -> RelationNumberHolder(binding, R.string.enter_number)
             else -> throw IllegalArgumentException("Unexpected view type: $viewType")
         }

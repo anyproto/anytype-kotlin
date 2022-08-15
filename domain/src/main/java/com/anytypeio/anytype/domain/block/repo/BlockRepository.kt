@@ -128,6 +128,8 @@ interface BlockRepository {
      */
     suspend fun createBookmarkObject(url: Url) : Id
 
+    suspend fun fetchBookmarkObject(ctx: Id, url: Url)
+
     suspend fun undo(command: Command.Undo): Undo.Result
     suspend fun redo(command: Command.Redo): Redo.Result
 

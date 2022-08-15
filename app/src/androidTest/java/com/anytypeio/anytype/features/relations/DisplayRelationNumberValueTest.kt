@@ -13,6 +13,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -49,6 +50,9 @@ class DisplayRelationNumberValueTest {
     @Mock
     lateinit var dispatcher: Dispatcher<Payload>
 
+    @Mock
+    lateinit var reloadObject: ReloadObject
+
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
@@ -64,7 +68,8 @@ class DisplayRelationNumberValueTest {
         MockitoAnnotations.openMocks(this)
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
-            values = DataViewObjectValueProvider(state, session)
+            values = DataViewObjectValueProvider(state, session),
+            reloadObject = reloadObject
         )
     }
 

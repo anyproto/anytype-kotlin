@@ -20,7 +20,7 @@ class ObjectTypeHolder(
             image = null,
             name = item.name
         )
-        tvTitle.text = item.name
+        tvTitle.text = if (item.name == "") "Untitled" else item.name
         if (item.description.isNullOrBlank()) {
             tvSubtitle.gone()
         } else {

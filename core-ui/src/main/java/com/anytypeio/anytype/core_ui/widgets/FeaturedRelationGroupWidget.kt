@@ -192,7 +192,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             if (color != null) {
                                 setTextColor(resources.dark(color, defaultTextColor))
                                 setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                                background.setDrawableColor(resources.light(color, defaultBackground))
+                                background.setDrawableColor(
+                                    resources.light(
+                                        color,
+                                        defaultBackground
+                                    )
+                                )
                             } else {
                                 setTextColor(defaultTextColor)
                                 setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
@@ -215,6 +220,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.ObjectType -> {
                     val view = TextView(context).apply {
                         id = generateViewId()
+                        hint = context.resources.getString(R.string.untitled)
                         text = relation.name
                         isSingleLine = true
                         maxLines = 1

@@ -187,7 +187,8 @@ interface BlockRepository {
     suspend fun createDataViewRecord(
         context: Id,
         target: Id,
-        template: Id?
+        template: Id?,
+        prefilled: Map<Id, Any>
     ): DVRecord
 
     suspend fun updateDataViewRecord(

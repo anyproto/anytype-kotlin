@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -726,12 +727,12 @@ class ObjectSetViewModel(
                 } else {
                     val startTime = System.currentTimeMillis()
                     viewModelScope.launch {
-                        val template = resolveTemplateForNewRecord()
                         createDataViewRecord(
                             CreateDataViewRecord.Params(
                                 context = context,
                                 target = currentState.dataview.id,
-                                template = template
+                                template = resolveTemplateForNewRecord(),
+                                prefilled = resolvePrefilledRecordData(currentState)
                             )
                         ).process(
                             failure = { Timber.e(it, "Error while creating new record") },
@@ -760,6 +761,18 @@ class ObjectSetViewModel(
             }
         } else {
             toast("Data view is not initialized yet.")
+        }
+    }
+
+    private fun resolvePrefilledRecordData(setOfObjects: ObjectSet): Map<Id, Any> = buildMap {
+        val viewer = setOfObjects.viewerById(session.currentViewerId)
+        viewer.filters.forEach { filter ->
+            val relation = reducer.state.value.relations.find { it.key == filter.relationKey }
+            if (relation != null && !relation.isReadOnly) {
+                if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
+                    filter.value?.let { put(filter.relationKey, it) }
+                }
+            }
         }
     }
 

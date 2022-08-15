@@ -214,12 +214,14 @@ class Middleware(
     fun blockDataViewRecordCreate(
         context: String,
         target: String,
-        template: Id?
+        template: Id?,
+        prefilled: Map<Id, Any>
     ): Map<String, Any?> {
         val request = Rpc.BlockDataviewRecord.Create.Request(
             contextId = context,
             blockId = target,
-            templateId = template.orEmpty()
+            templateId = template.orEmpty(),
+            record = prefilled
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewRecordCreate(request)

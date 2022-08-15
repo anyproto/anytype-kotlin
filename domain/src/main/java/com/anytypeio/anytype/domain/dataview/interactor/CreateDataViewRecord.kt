@@ -17,17 +17,21 @@ class CreateDataViewRecord(
         repo.createDataViewRecord(
             context = params.context,
             target = params.target,
-            template = params.template
+            template = params.template,
+            prefilled = params.prefilled
         )
     }
 
     /**
      * @property [context] operation's context
      * @property [target] data-view's block id
+     * @property [template] optional template for dv record
+     * @property [prefilled] prefilled or pre-populated data for dv record
      */
     data class Params(
         val context: Id,
         val target: Id,
-        val template: Id?
+        val template: Id?,
+        val prefilled: Map<Id, Any> = emptyMap()
     )
 }

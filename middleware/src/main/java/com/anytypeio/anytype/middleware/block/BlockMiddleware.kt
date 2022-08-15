@@ -328,11 +328,13 @@ class BlockMiddleware(
     override suspend fun createDataViewRecord(
         context: String,
         target: String,
-        template: Id?
+        template: Id?,
+        prefilled: Map<Id, Any>
     ): Map<String, Any?> = middleware.blockDataViewRecordCreate(
         context = context,
         target = target,
-        template = template
+        template = template,
+        prefilled = prefilled
     )
 
     override suspend fun updateDataViewRecord(

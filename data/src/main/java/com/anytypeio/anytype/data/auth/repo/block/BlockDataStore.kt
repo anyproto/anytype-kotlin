@@ -127,7 +127,7 @@ interface BlockDataStore {
     ): Payload
 
     suspend fun createDataViewRecord(
-        context: Id, target: Id, template: Id?
+        context: Id, target: Id, template: Id?, prefilled: Map<Id, Any>
     ): Map<String, Any?>
 
     suspend fun updateDataViewRecord(

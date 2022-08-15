@@ -423,11 +423,13 @@ class BlockDataRepository(
     override suspend fun createDataViewRecord(
         context: Id,
         target: Id,
-        template: Id?
+        template: Id?,
+        prefilled: Map<Id, Any>
     ): Map<String, Any?> = remote.createDataViewRecord(
         context = context,
         target = target,
-        template = template
+        template = template,
+        prefilled = prefilled
     )
 
     override suspend fun addDataViewRelationOption(

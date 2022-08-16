@@ -14,7 +14,7 @@
         android:layout_marginBottom="@dimen/list_item_object_half_icon_margin_bottom"
         android:contentDescription="@string/content_desc_mention_suggester_icon"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_default_plus" />
+        app:srcCompat="@drawable/ic_default_plus_black" />
 
     <TextView
         android:id="@+id/text"
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/list_item_object_half_subtitle_margin_start"
         android:layout_marginEnd="@dimen/list_item_object_half_subtitle_margin_end"
-        style="@style/ObjectListItemSubtitle"
+        style="@style/ObjectListItemTitle"
         android:layout_gravity="center_vertical"
         android:ellipsize="end"
         android:maxLines="1"

@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager2
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.roundToInt
 
@@ -18,7 +18,7 @@ class TableVerticalItemDivider(
         state: RecyclerView.State
     ) {
         canvas.save()
-        val spanCount = (parent.layoutManager as GridLayoutManager).spanCount
+        val spanCount = (parent.layoutManager as GridLayoutManager2).spanCount
         val childCount = parent.childCount
         val itemCount = parent.adapter?.itemCount ?: 0
         val rect = Rect()
@@ -49,7 +49,7 @@ class TableVerticalItemDivider(
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        val spanCount = (parent.layoutManager as GridLayoutManager).spanCount
+        val spanCount = (parent.layoutManager as GridLayoutManager2).spanCount
         val itemCount = parent.adapter?.itemCount ?: 0
         val position = parent.getChildLayoutPosition(view)
         outRect.bottom = drawable.intrinsicHeight

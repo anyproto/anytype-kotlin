@@ -62,7 +62,7 @@ class TableBlockHolder(
         lm.spanCount = item.rowCount
         tableAdapter.setTableBlockId(item.id)
         tableAdapter.submitList(item.cells)
-        recycler.postDelayed(lm::clearBorders, 300)
+        recycler.postDelayed(lm::clearBorders, 200)
     }
 
     fun processChangePayload(

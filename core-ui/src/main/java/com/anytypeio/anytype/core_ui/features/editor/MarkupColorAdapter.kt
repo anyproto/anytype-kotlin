@@ -48,6 +48,19 @@ class MarkupColorAdapter(
                     }
                 }
             }
+            R.layout.item_markup_color_background_default -> {
+                ViewHolder(
+                    view = inflater.inflate(
+                        viewType,
+                        parent,
+                        false
+                    )
+                ).apply {
+                    itemView.setOnClickListener {
+                        onColorClicked(items[bindingAdapterPosition])
+                    }
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -68,7 +81,10 @@ class MarkupColorAdapter(
     override fun getItemViewType(
         position: Int
     ): Int = when (items[position]) {
-        is MarkupColorView.Background -> R.layout.item_markup_color_background
+        is MarkupColorView.Background -> {
+            if (position == 0) R.layout.item_markup_color_background_default
+            else R.layout.item_markup_color_background
+        }
         is MarkupColorView.Text -> R.layout.item_markup_color_text
     }
 

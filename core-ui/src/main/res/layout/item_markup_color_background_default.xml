@@ -9,8 +9,9 @@
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:layout_gravity="center"
+        app:innerRadius="18dp"
         app:innerStrokeColor="@color/text_tertiary"
         app:outerStrokeColor="@color/shape_primary"
         app:showInnerStroke="true"
-        app:innerRadius="18dp" />
+        app:showSlantedLine="true" />
 </FrameLayout>

@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_ui.databinding.WidgetMarkupToolbarMainBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.extensions.tint
-import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -82,27 +81,30 @@ class MarkupToolbarWidget @JvmOverloads constructor(
 
         if (props?.markupHighlightColor != null) {
             val code = ThemeColor.values().first { it.code == props.markupHighlightColor }
-            if (code == ThemeColor.DEFAULT) {
-                backgroundColorCircle.backgroundTintList = null
+            if (code != ThemeColor.DEFAULT) {
+                backgroundColorCircle.visible()
+                backgroundColorCircle.innerColor = resources.light(code)
+                backgroundColorCircle.invalidate()
+                backgroundColorCircleDefault.invisible()
             } else {
-                val default = resources.getColor(R.color.background_primary, null)
-                val value = resources.light(code, default)
-                backgroundColorCircle.tint(value)
+                backgroundColorCircle.invisible()
+                backgroundColorCircleDefault.visible()
             }
         } else {
             val code = ThemeColor.values().find { it.code == props?.blockBackroundColor }
             if (code != null) {
-                val default = resources.getColor(R.color.background_primary, null)
-                val value = resources.veryLight(code, default)
-                backgroundColorCircle.tint(value)
-            } else
-                backgroundColorCircle.backgroundTintList = null
+                backgroundColorCircle.visible()
+                backgroundColorCircle.innerColor = resources.light(code)
+                backgroundColorCircle.invalidate()
+                backgroundColorCircleDefault.invisible()
+            } else {
+                backgroundColorCircle.invisible()
+                backgroundColorCircleDefault.visible()
+            }
         }
 
-        if (isBackgroundColorSelected)
-            selectedBackgroundCircle.visible()
-        else
-            selectedBackgroundCircle.invisible()
+        backgroundColorCircle.isSelected = isBackgroundColorSelected
+        backgroundColorCircleDefault.isSelected = isBackgroundColorSelected
 
         if (isTextColorSelected)
             selectedTextColorCircle.visible()

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/slashBackgroundRoot"
+    android:layout_width="match_parent"
+    android:layout_height="55dp">
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/circle"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="5dp"
+        app:innerRadius="11dp"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
+        app:showInnerStroke="true" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/SlashWidgetStyleItemTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        tools:text="Ultramarine" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="52dp"
+        android:background="@drawable/divider_relations" />
+
+</FrameLayout>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:orientation="horizontal">
@@ -123,20 +125,29 @@
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <View
-            android:id="@+id/backgroundColorCircle"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center"
-            android:background="@drawable/circle_markup_background_color" />
-
-        <View
-            android:id="@+id/selectedBackgroundCircle"
+        <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+            android:id="@+id/backgroundColorCircleDefault"
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_gravity="center"
-            android:background="@drawable/circle_selected_color_circle"
-            android:visibility="invisible" />
+            app:innerRadius="11dp"
+            app:innerStrokeColor="@color/text_tertiary"
+            app:outerStrokeColor="@color/shape_primary"
+            app:showInnerStroke="true"
+            app:showSlantedLine="true"
+            app:slantedLineWidth="@dimen/dp_8"
+            tools:visibility="invisible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+            android:id="@+id/backgroundColorCircle"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            app:innerRadius="11dp"
+            app:innerStrokeColor="@color/text_tertiary"
+            app:outerStrokeColor="@color/shape_primary"
+            app:showInnerStroke="true"
+            tools:visibility="visible" />
 
     </FrameLayout>
 

@@ -5,9 +5,14 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetColorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.BackgroundDefaultMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.BackgroundMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.ColorMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.DefaultMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
@@ -36,6 +41,28 @@ class SlashColorAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
+            R.layout.item_slash_widget_background -> {
+                BackgroundMenuHolder(
+                    binding = ItemSlashWidgetBackgroundBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
+                    itemView.setOnClickListener {
+                        clicks(items[bindingAdapterPosition])
+                    }
+                }
+            }
+            R.layout.item_slash_widget_background_default -> {
+                BackgroundDefaultMenuHolder(
+                    binding = ItemSlashWidgetBackgroundDefaultBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
+                    itemView.setOnClickListener {
+                        clicks(items[bindingAdapterPosition])
+                    }
+                }
+            }
             R.layout.item_slash_widget_color -> {
                 ColorMenuHolder(
                     binding = ItemSlashWidgetColorBinding.inflate(
@@ -64,7 +91,7 @@ class SlashColorAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ColorMenuHolder -> {
+            is DefaultMenuHolder -> {
                 val item = items[position] as SlashItem.Color
                 holder.bind(item)
             }
@@ -76,10 +103,18 @@ class SlashColorAdapter(
     }
 
     override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
-        is SlashItem.Color -> R.layout.item_slash_widget_color
+        is SlashItem.Color.Background -> {
+            if (position == DEFAULT_BACKGROUND_POSITION) R.layout.item_slash_widget_background_default
+            else R.layout.item_slash_widget_background
+        }
+        is SlashItem.Color.Text -> R.layout.item_slash_widget_color
         is SlashItem.Subheader -> R.layout.item_slash_widget_subheader
         else -> throw IllegalArgumentException("Wrong item type:$item")
     }
 
     override fun getItemCount(): Int = items.size
+
+    companion object {
+        const val DEFAULT_BACKGROUND_POSITION = 1
+    }
 }

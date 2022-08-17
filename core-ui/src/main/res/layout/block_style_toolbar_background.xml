@@ -9,6 +9,9 @@
         android:id="@+id/backgroundColorDefault"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="@color/background_primary"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
+        app:showInnerStroke="true"
         app:showSlantedLine="true"
         tools:ignore="MissingConstraints" />
 
@@ -16,60 +19,90 @@
         android:id="@+id/backgroundColorGrey"
         style="@style/DefaultCircleColorStyle"
         app:innerColor="@color/palette_light_grey"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorYellow"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_yellow"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorOrange"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_orange"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorRed"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_red"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorPink"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_pink"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorPurple"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_purple"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorBlue"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_blue"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorIce"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_ice"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorTeal"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_teal"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/backgroundColorLime"
         style="@style/DefaultCircleColorStyle"
+        app:innerStrokeColor="@color/text_tertiary"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerColor="@color/palette_light_lime"
+        app:showInnerStroke="true"
         tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.helper.widget.Flow

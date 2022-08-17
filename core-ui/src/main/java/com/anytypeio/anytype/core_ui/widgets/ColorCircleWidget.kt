@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.util.AttributeSet
@@ -15,11 +14,12 @@ class ColorCircleWidget : View {
 
     var innerColor: Int = 0
     private var innerStrokeColor: Int = 0
+    private var showInnerStroke: Boolean = false
     private var innerRadius: Float = 0f
     private var outerStrokeWidth: Float = 0f
     private var outerStrokeColor: Int = 0
     private var showSlantedLine: Boolean = false
-    private var slantedLineHeight: Int = 0
+    private var slantedLineWidth: Int = 0
 
     private val paint = Paint(ANTI_ALIAS_FLAG)
 
@@ -51,6 +51,10 @@ class ColorCircleWidget : View {
             R.styleable.ColorCircleWidget_innerStrokeColor,
             ContextCompat.getColor(context, R.color.default_style_color_circle_inner_stroke_color)
         )
+        showInnerStroke = attrs.getBoolean(
+            R.styleable.ColorCircleWidget_showInnerStroke,
+            false
+        )
         outerStrokeWidth = attrs.getDimensionPixelSize(
             R.styleable.ColorCircleWidget_outerStrokeWidth,
             resources.getDimension(R.dimen.default_style_color_outer_stroke_width).toInt()
@@ -60,7 +64,7 @@ class ColorCircleWidget : View {
             ContextCompat.getColor(context, R.color.default_style_color_circle_outer_stroke_color)
         )
         showSlantedLine = attrs.getBoolean(R.styleable.ColorCircleWidget_showSlantedLine, false)
-        slantedLineHeight = attrs.getDimensionPixelSize(
+        slantedLineWidth = attrs.getDimensionPixelSize(
             R.styleable.ColorCircleWidget_slantedLineWidth,
             resources.getDimension(R.dimen.default_style_color_slanted_line_height).toInt()
         )
@@ -75,7 +79,6 @@ class ColorCircleWidget : View {
         val radius = min(width, height) / 2f
 
         // background
-
         paint.apply {
             color = 0
             style = Paint.Style.FILL
@@ -83,13 +86,11 @@ class ColorCircleWidget : View {
         canvas.apply { drawCircle(cx, cy, radius, paint) }
 
         // inner circle
-
         paint.apply { color = innerColor }
         canvas.apply { drawCircle(cx, cy, innerRadius, paint) }
 
-        // inner stroke for white color
-
-        if (innerColor == Color.WHITE) {
+        // inner stroke
+        if (showInnerStroke) {
             paint.apply {
                 style = Paint.Style.STROKE
                 strokeWidth = outerStrokeWidth / 2
@@ -101,7 +102,6 @@ class ColorCircleWidget : View {
         }
 
         // outer stroke for selected state
-
         if (isSelected) {
             paint.apply {
                 style = Paint.Style.STROKE
@@ -117,10 +117,10 @@ class ColorCircleWidget : View {
             paint.apply {
                 style = Paint.Style.STROKE
                 strokeWidth = outerStrokeWidth / 2
-                color = outerStrokeColor
+                color = innerStrokeColor
             }
-            val dx = slantedLineHeight / 2
-            val dy = slantedLineHeight / 2
+            val dx = slantedLineWidth / 2
+            val dy = slantedLineWidth / 2
             canvas.apply {
                 drawLine(
                     width / 2f,

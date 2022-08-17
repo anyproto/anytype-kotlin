@@ -27,6 +27,7 @@
     <declare-styleable name="ColorCircleWidget">
         <attr name="innerColor" format="color" />
         <attr name="innerStrokeColor" format="color" />
+        <attr name="showInnerStroke" format="boolean"/>
         <attr name="innerRadius" format="dimension" />
         <attr name="outerStrokeWidth" format="dimension" />
         <attr name="outerStrokeColor" format="color" />

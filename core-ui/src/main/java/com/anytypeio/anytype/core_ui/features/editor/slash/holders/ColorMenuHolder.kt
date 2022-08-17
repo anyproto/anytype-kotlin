@@ -2,23 +2,33 @@ package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
 import android.content.Context
 import android.content.res.Resources
+import android.view.View
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetColorBinding
 import com.anytypeio.anytype.core_ui.extensions.text
 import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
-class ColorMenuHolder(
-    val binding: ItemSlashWidgetColorBinding
-) : RecyclerView.ViewHolder(binding.root) {
+abstract class DefaultMenuHolder(
+    view: View
+) : RecyclerView.ViewHolder(view) {
 
-    fun bind(item: SlashItem.Color) = with(binding) {
+    abstract val circle: ColorCircleWidget
+    abstract val title: TextView
+
+    fun bind(item: SlashItem.Color) {
         circle.isSelected = item.isSelected
-        circle.innerColor = view.context.resources.getColor(item)
-        val capitalizedTitle = view.context.getTitle(item.themeColor)
+        if (item.themeColor != ThemeColor.DEFAULT) {
+            circle.innerColor = itemView.context.resources.getColor(item)
+        }
+        val capitalizedTitle = itemView.context.getTitle(item.themeColor)
         title.text = when (item) {
             is SlashItem.Color.Text -> capitalizedTitle
             is SlashItem.Color.Background -> itemView.resources.getString(
@@ -51,4 +61,22 @@ class ColorMenuHolder(
             ThemeColor.LIME -> getString(R.string.slash_widget_lime_color_title)
         }
     }
+}
+
+class ColorMenuHolder(binding: ItemSlashWidgetColorBinding) :
+    DefaultMenuHolder(binding.root) {
+    override val circle: ColorCircleWidget = binding.circle
+    override val title: TextView = binding.title
+}
+
+class BackgroundDefaultMenuHolder(binding: ItemSlashWidgetBackgroundDefaultBinding) :
+    DefaultMenuHolder(binding.root) {
+    override val circle: ColorCircleWidget = binding.circle
+    override val title: TextView = binding.title
+}
+
+class BackgroundMenuHolder(binding: ItemSlashWidgetBackgroundBinding) :
+    DefaultMenuHolder(binding.root) {
+    override val circle: ColorCircleWidget = binding.circle
+    override val title: TextView = binding.title
 }

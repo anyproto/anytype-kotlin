@@ -152,7 +152,8 @@ class TextBlockSetTextTest : BlockAdapterTestSetup() {
                 Markup.Mark.Mention.Base(
                     from = 10,
                     to = 14,
-                    param = "mention"
+                    param = "mention",
+                    isArchived = false
                 )
             ),
             id = MockDataFactory.randomUuid(),

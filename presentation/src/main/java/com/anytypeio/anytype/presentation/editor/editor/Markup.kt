@@ -61,7 +61,8 @@ interface Markup {
         data class Object(
             override val from: Int,
             override val to: Int,
-            val param: String
+            val param: String,
+            val isArchived: Boolean
         ) : Mark()
 
         sealed class Mention : Mark() {
@@ -70,21 +71,24 @@ interface Markup {
             data class Base(
                 override val from: Int,
                 override val to: Int,
-                override val param: String
+                override val param: String,
+                val isArchived: Boolean
             ) : Mention()
 
             data class WithEmoji(
                 override val from: Int,
                 override val to: Int,
                 override val param: String,
-                val emoji: String
+                val emoji: String,
+                val isArchived: Boolean
             ) : Mention()
 
             data class WithImage(
                 override val from: Int,
                 override val to: Int,
                 override val param: String,
-                val image: String
+                val image: String,
+                val isArchived: Boolean
             ) : Mention()
 
             data class Loading(
@@ -100,32 +104,38 @@ interface Markup {
             ) : Mention()
 
             sealed class Profile : Mention() {
+                abstract val isArchived: Boolean
                 data class WithImage(
                     override val from: Int,
                     override val to: Int,
                     override val param: String,
-                    val imageUrl: String
+                    val imageUrl: String,
+                    override val isArchived: Boolean
                 ) : Profile()
 
                 data class WithInitials(
                     override val from: Int,
                     override val to: Int,
                     override val param: String,
-                    val initials: Char
+                    val initials: Char,
+                    override val isArchived: Boolean
                 ) : Profile()
             }
 
             sealed class Task : Mention(){
+                abstract val isArchived: Boolean
                 data class Checked(
                     override val from: Int,
                     override val to: Int,
-                    override val param: String
+                    override val param: String,
+                    override val isArchived: Boolean
                 ) : Task()
 
                 data class Unchecked(
                     override val from: Int,
                     override val to: Int,
-                    override val param: String
+                    override val param: String,
+                    override val isArchived: Boolean
                 ) : Task()
             }
         }

@@ -46,12 +46,14 @@ fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).
         is MentionSpan -> Markup.Mark.Mention.Base(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            param = span.param.orEmpty()
+            param = span.param.orEmpty(),
+            isArchived = false
         )
         is Span.ObjectLink -> Markup.Mark.Object(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            param = span.link.orEmpty()
+            param = span.link.orEmpty(),
+            isArchived = false
         )
         else -> null
     }

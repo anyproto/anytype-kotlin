@@ -13,6 +13,8 @@ import android.text.Annotation
 import android.text.TextPaint
 import android.text.style.*
 import android.view.View
+import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.timber
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -87,6 +89,7 @@ interface Span {
             }
         }
     }
+
     class Font(family: String) : TypefaceSpan(family), Span
 
     class Keyboard(value: String) : Annotation(KEYBOARD_KEY, value), Span {
@@ -101,19 +104,32 @@ interface Span {
         }
     }
 
-    class ObjectLink(val link: String?, val color: Int, val click: ((String) -> Unit)?) :
+    class ObjectLink(
+        val context: Context,
+        val link: String?,
+        val color: Int,
+        val click: ((String) -> Unit)?,
+        val isArchived: Boolean
+    ) :
         ClickableSpan(), Span {
+
+        private val textColorArchive = context.color(R.color.text_tertiary)
+
         override fun updateDrawState(ds: TextPaint) {
             super.updateDrawState(ds)
-            ds.color = color
+            if (isArchived) {
+                ds.color = textColorArchive
+            } else {
+                ds.color = color
+            }
         }
 
         override fun onClick(widget: View) {
-            if (!link.isNullOrBlank()) {
+            if (!link.isNullOrBlank() && !isArchived) {
                 (widget as? TextInputWidget)?.enableReadMode()
                 click?.invoke(link)
             } else {
-                Timber.e("Can't proceed with ObjectLinkSpan click, link is null or blank")
+                Timber.e("Can't proceed with ObjectLinkSpan click, link is null or blank or archived")
             }
         }
     }

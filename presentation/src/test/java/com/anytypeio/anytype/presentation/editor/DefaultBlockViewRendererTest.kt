@@ -1637,7 +1637,8 @@ class DefaultBlockViewRendererTest {
                         from = 6,
                         to = 19,
                         param = mentionTarget1,
-                        emoji = randomEmoji1
+                        emoji = randomEmoji1,
+                        isArchived = false
                     ),
                     Markup.Mark.Bold(
                         from = 20,
@@ -1660,7 +1661,8 @@ class DefaultBlockViewRendererTest {
                         from = 51,
                         to = 55,
                         param = mentionTarget2,
-                        emoji = randomEmoji2
+                        emoji = randomEmoji2,
+                        isArchived = false
                     ),
                     Markup.Mark.Link(
                         from = 56,
@@ -1824,7 +1826,8 @@ class DefaultBlockViewRendererTest {
                         from = 6,
                         to = 19,
                         emoji = randomEmoji1,
-                        param = mentionTarget1
+                        param = mentionTarget1,
+                        isArchived = false
                     ),
                     Markup.Mark.Bold(
                         from = 20,
@@ -1847,7 +1850,8 @@ class DefaultBlockViewRendererTest {
                         from = 51,
                         to = 55,
                         emoji = randomEmoji2,
-                        param = mentionTarget2
+                        param = mentionTarget2,
+                        isArchived = false
                     ),
                     Markup.Mark.Link(
                         from = 56,
@@ -2012,7 +2016,8 @@ class DefaultBlockViewRendererTest {
                     Markup.Mark.Mention.Base(
                         from = 6,
                         to = 19,
-                        param = mentionTarget1
+                        param = mentionTarget1,
+                        isArchived = false
                     ),
                     Markup.Mark.Bold(
                         from = 20,
@@ -2035,7 +2040,8 @@ class DefaultBlockViewRendererTest {
                         from = 51,
                         to = 55,
                         param = mentionTarget2,
-                        emoji = randomEmoji2
+                        emoji = randomEmoji2,
+                        isArchived = false
                     ),
                     Markup.Mark.Link(
                         from = 56,
@@ -2193,7 +2199,8 @@ class DefaultBlockViewRendererTest {
                         from = 6,
                         to = 12,
                         param = mentionTarget1,
-                        emoji = randomEmoji1
+                        emoji = randomEmoji1,
+                        isArchived = false
                     ),
                     Markup.Mark.Bold(
                         from = 13,
@@ -2216,7 +2223,8 @@ class DefaultBlockViewRendererTest {
                         from = 44,
                         to = 51,
                         param = mentionTarget2,
-                        emoji = randomEmoji2
+                        emoji = randomEmoji2,
+                        isArchived = false
                     ),
                     Markup.Mark.Link(
                         from = 52,
@@ -2484,7 +2492,8 @@ class DefaultBlockViewRendererTest {
                     Markup.Mark.Mention.Base(
                         from = 6,
                         to = 11,
-                        param = mentionTarget1
+                        param = mentionTarget1,
+                        isArchived = false
                     )
                 ),
                 isFocused = true,
@@ -2666,7 +2675,8 @@ class DefaultBlockViewRendererTest {
                         from = 57,
                         to = 61,
                         param = mentionTarget2,
-                        emoji = randomEmoji2
+                        emoji = randomEmoji2,
+                        isArchived = false
                     ),
                     Markup.Mark.Link(
                         from = 62,

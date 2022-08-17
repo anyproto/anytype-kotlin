@@ -26,7 +26,7 @@ class MarkupExtTest {
         val given = listOf(
             Markup.Mark.Bold(from = 0, to = 5),
             Markup.Mark.Strikethrough(from = 23, to = 31),
-            Markup.Mark.Mention.Base(from = 32, to = 43, param = "fjdhghdjhj")
+            Markup.Mark.Mention.Base(from = 32, to = 43, param = "fjdhghdjhj", isArchived = false)
         )
 
         val actual = given.isLinksOrMentionsPresent()

@@ -920,7 +920,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                         Markup.Mark.Mention.Base(
                             from = 6,
                             to = 10,
-                            param = mentionTarget
+                            param = mentionTarget,
+                            isArchived = false
                         ),
                         Markup.Mark.Strikethrough(
                             from = 11,
@@ -1066,7 +1067,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                         Markup.Mark.Mention.Base(
                             from = 6,
                             to = 14,
-                            param = mentionTarget
+                            param = mentionTarget,
+                            isArchived = false
                         ),
                         Markup.Mark.Strikethrough(
                             from = 15,

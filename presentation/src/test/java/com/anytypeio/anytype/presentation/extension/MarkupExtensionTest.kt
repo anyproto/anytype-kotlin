@@ -313,7 +313,8 @@ class MarkupExtensionTest {
             Markup.Mark.Mention.Base(
                 from = 6,
                 to = 12,
-                param = "3M6"
+                param = "3M6",
+                isArchived = false
             )
         )
 
@@ -333,7 +334,8 @@ class MarkupExtensionTest {
             Markup.Mark.Mention.Base(
                 from = 6,
                 to = 11,
-                param = "3M6"
+                param = "3M6",
+                isArchived = false
             )
         )
 
@@ -353,7 +355,8 @@ class MarkupExtensionTest {
                 from = 6,
                 to = 9,
                 param = mentionTarget,
-                emoji = "\uD83D\uDE01"
+                emoji = "\uD83D\uDE01",
+                isArchived = false
             ),
             Markup.Mark.Bold(
                 from = 10,
@@ -368,7 +371,8 @@ class MarkupExtensionTest {
                 from = 6,
                 to = 10,
                 param = mentionTarget,
-                emoji = "\uD83D\uDE01"
+                emoji = "\uD83D\uDE01",
+                isArchived = false
             ),
             Markup.Mark.Bold(
                 from = 11,

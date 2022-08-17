@@ -6,8 +6,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.text.TextPaint
 import android.text.style.DynamicDrawableSpan
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Span
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -27,7 +30,8 @@ class MentionSpan constructor(
     val param: String? = null,
     val isDeleted: Boolean = false,
     private val initials: String? = null,
-    private val initialsTextSize: Float = 0F
+    private val initialsTextSize: Float = 0F,
+    private val isArchived: Boolean
 ) : DynamicDrawableSpan(), Span {
 
     val target: CustomTarget<Drawable> = object : CustomTarget<Drawable>() {
@@ -47,7 +51,8 @@ class MentionSpan constructor(
     private val endPaddingPx = 4
     private var icon: Drawable? = null
     private var iconRef: WeakReference<Drawable>? = null
-    private val textColorDeleted = Color.parseColor("#CBC9BD")
+    private val textColorDeleted = context.color(R.color.text_tertiary)
+    private val textColorArchive = context.color(R.color.text_tertiary)
 
     init {
         placeholder?.setBounds(imageSize)
@@ -128,6 +133,13 @@ class MentionSpan constructor(
         } else {
             paint.flags = Paint.UNDERLINE_TEXT_FLAG
         }
+
+        (paint as? TextPaint)?.let {
+            if (isArchived) {
+                it.color = textColorArchive
+            }
+        }
+
         canvas.drawText(
             text.substring(start, end),
             imageSize + imagePadding.toFloat(),

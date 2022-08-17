@@ -246,7 +246,8 @@ class MentionExtTest {
         val expected = Markup.Mark.Mention.Base(
             from = mark.range.first,
             to = mark.range.last,
-            param = param
+            param = param,
+            isArchived = false
         )
         assertEquals(expected, result)
     }
@@ -271,7 +272,8 @@ class MentionExtTest {
             from = mark.range.first,
             to = mark.range.last,
             param = param,
-            emoji = "emoji"
+            emoji = "emoji",
+            isArchived = false
         )
         assertEquals(expected, result)
     }
@@ -297,7 +299,8 @@ class MentionExtTest {
             from = mark.range.first,
             to = mark.range.last,
             param = param,
-            image = urlBuilder.thumbnail("image")
+            image = urlBuilder.thumbnail("image"),
+            isArchived = false
         )
         assertEquals(expected, result)
     }
@@ -330,6 +333,33 @@ class MentionExtTest {
         equalsMentionBase(mark, null)
     }
 
+    @Test
+    fun `should create MentionBasic archived`() {
+
+        val param = MockDataFactory.randomUuid()
+
+        val mention = Block.Content.Text.Mark(
+            range = IntRange(0, 10),
+            type = Block.Content.Text.Mark.Type.MENTION,
+            param = param
+        )
+
+        val obj: ObjectWrapper.Basic? = ObjectWrapper.Basic(
+            mapOf(Relations.IS_ARCHIVED to true)
+        )
+
+        val result = mention.createMentionMarkup(obj, urlBuilder)
+
+        val expected = Markup.Mark.Mention.Base(
+            from = mention.range.first,
+            to = mention.range.last,
+            param = param,
+            isArchived = true
+        )
+
+        assertEquals(expected, result)
+    }
+
     private fun equalsMentionBase(mark: Block.Content.Text.Mark, layout: ObjectType.Layout?) {
         val obj = ObjectWrapper.Basic(
             mapOf(
@@ -341,7 +371,8 @@ class MentionExtTest {
         val expected = Markup.Mark.Mention.Base(
             from = mark.range.first,
             to = mark.range.last,
-            param = mark.param!!
+            param = mark.param!!,
+            isArchived = false
         )
         assertEquals(expected, result)
     }
@@ -360,7 +391,8 @@ class MentionExtTest {
             from = mark.range.first,
             to = mark.range.last,
             imageUrl = urlBuilder.thumbnail(image),
-            param = mark.param!!
+            param = mark.param!!,
+            isArchived = false
         )
         assertEquals(expected, result)
 
@@ -377,7 +409,8 @@ class MentionExtTest {
             from = mark.range.first,
             to = mark.range.last,
             param = mark.param!!,
-            initials = name.first()
+            initials = name.first(),
+            isArchived = false
         )
         assertEquals(expectedName, resultName)
     }
@@ -407,13 +440,15 @@ class MentionExtTest {
         val expectedTrue = Markup.Mark.Mention.Task.Checked(
             from = mark.range.first,
             to = mark.range.last,
-            param = mark.param!!
+            param = mark.param!!,
+            isArchived = false
         )
 
         val expectedFalse = Markup.Mark.Mention.Task.Unchecked(
             from = mark.range.first,
             to = mark.range.last,
-            param = mark.param!!
+            param = mark.param!!,
+            isArchived = false
         )
         assertEquals(expectedTrue, resultTrue)
         assertEquals(expectedFalse, resultFalse)
@@ -429,7 +464,8 @@ class MentionExtTest {
         val expected = Markup.Mark.Mention.Base(
             from = mark.range.first,
             to = mark.range.last,
-            param = mark.param!!
+            param = mark.param!!,
+            isArchived = false
         )
         assertEquals(expected, result)
     }

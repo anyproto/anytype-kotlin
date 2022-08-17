@@ -119,7 +119,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                                 Markup.Mark.Object(
                                     from = 6,
                                     to = 12,
-                                    param = linkObject
+                                    param = linkObject,
+                                    isArchived = false
                                 )
                             ),
                             indent = 0,
@@ -284,7 +285,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                         Markup.Mark.Object(
                             from = 6,
                             to = 25,
-                            param = linkNew
+                            param = linkNew,
+                            isArchived = false
                         ),
 
                         ),
@@ -459,7 +461,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                         Markup.Mark.Object(
                             from = 6,
                             to = 25,
-                            param = newObjectId
+                            param = newObjectId,
+                            isArchived = false
                         ),
                     ),
                     indent = 0,

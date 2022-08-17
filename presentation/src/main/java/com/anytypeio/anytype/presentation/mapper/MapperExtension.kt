@@ -273,12 +273,18 @@ fun Block.Content.Text.marks(
                 )
             }
             Block.Content.Text.Mark.Type.OBJECT -> {
+                val wrapper = if (!details.details.containsKey(mark.param)) {
+                    null
+                } else {
+                    ObjectWrapper.Basic(map = details.details[mark.param]?.map ?: emptyMap())
+                }
                 val param = mark.param
                 if (param.isNullOrBlank()) null
                 else Markup.Mark.Object(
                     from = mark.range.first,
                     to = mark.range.last,
-                    param = param
+                    param = param,
+                    isArchived = wrapper?.isArchived == true
                 )
             }
             else -> null

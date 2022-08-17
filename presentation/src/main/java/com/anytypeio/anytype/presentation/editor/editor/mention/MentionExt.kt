@@ -60,6 +60,7 @@ fun Block.Content.Text.Mark.createMentionMarkup(
     val initials = (obj.name ?: MENTION_TITLE_EMPTY).let {
         if (it.isEmpty()) MENTION_TITLE_EMPTY.first() else it.first()
     }
+    val isArchived = obj.isArchived == true
 
     return when (obj.layout) {
 
@@ -69,7 +70,8 @@ fun Block.Content.Text.Mark.createMentionMarkup(
             param = p,
             emoji  = emoji,
             image = image,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            isArchived = isArchived
         )
 
         ObjectType.Layout.PROFILE -> {
@@ -78,14 +80,16 @@ fun Block.Content.Text.Mark.createMentionMarkup(
                     from = range.first,
                     to = range.last,
                     param = p,
-                    initials = initials
+                    initials = initials,
+                    isArchived = isArchived
                 )
             } else {
                 Markup.Mark.Mention.Profile.WithImage(
                     from = range.first,
                     to = range.last,
                     imageUrl = urlBuilder.thumbnail(image),
-                    param = p
+                    param = p,
+                    isArchived = isArchived
                 )
             }
         }
@@ -95,13 +99,15 @@ fun Block.Content.Text.Mark.createMentionMarkup(
                 Markup.Mark.Mention.Task.Checked(
                     from = range.first,
                     to = range.last,
-                    param = p
+                    param = p,
+                    isArchived = isArchived
                 )
             } else {
                 Markup.Mark.Mention.Task.Unchecked(
                     from = range.first,
                     to = range.last,
-                    param = p
+                    param = p,
+                    isArchived = isArchived
                 )
             }
         }
@@ -112,7 +118,8 @@ fun Block.Content.Text.Mark.createMentionMarkup(
             param = p,
             emoji  = emoji,
             image = image,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            isArchived = isArchived
         )
     }
 }
@@ -123,7 +130,8 @@ private fun createBaseMentionMark(
     param: String,
     emoji: String?,
     image: String?,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    isArchived: Boolean
 ): Markup.Mark.Mention {
 
     if (!emoji.isNullOrEmpty()) {
@@ -131,7 +139,8 @@ private fun createBaseMentionMark(
             from = from,
             to = to,
             emoji = emoji,
-            param = param
+            param = param,
+            isArchived = isArchived
         )
     }
 
@@ -140,13 +149,15 @@ private fun createBaseMentionMark(
             from = from,
             to = to,
             image = urlBuilder.thumbnail(image),
-            param = param
+            param = param,
+            isArchived = isArchived
         )
     }
 
     return Markup.Mark.Mention.Base(
         from = from,
         to = to,
-        param = param
+        param = param,
+        isArchived = isArchived
     )
 }

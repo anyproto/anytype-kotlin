@@ -168,7 +168,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
                 Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    param = "4673675627647237"
+                    param = "4673675627647237",
+                    isArchived = false
                 )
             ),
             id = MockDataFactory.randomUuid(),
@@ -323,7 +324,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
                 Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    param = "asudhguyagdhjashj"
+                    param = "asudhguyagdhjashj",
+                    isArchived = false
                 )
             )
         )
@@ -471,7 +473,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
                 Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    param = "ya.ru"
+                    param = "ya.ru",
+                    isArchived = false
                 )
             )
         )
@@ -585,7 +588,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
                 Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    param = "4234213rfw"
+                    param = "4234213rfw",
+                    isArchived = false
                 )
             ),
             id = MockDataFactory.randomUuid(),
@@ -739,7 +743,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
                 Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    param = "foifhunsjkdnfjkasnjku"
+                    param = "foifhunsjkdnfjkasnjku",
+                    isArchived = false
                 )
             ),
             id = MockDataFactory.randomUuid(),
@@ -819,7 +824,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
                 Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    param = "foifhunsjkdnfjkasnjku"
+                    param = "foifhunsjkdnfjkasnjku",
+                    isArchived = false
                 )
             ),
             id = MockDataFactory.randomUuid(),

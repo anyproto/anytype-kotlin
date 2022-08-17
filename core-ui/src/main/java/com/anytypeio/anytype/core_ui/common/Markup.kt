@@ -126,7 +126,9 @@ fun Markup.toSpannable(
                 Span.ObjectLink(
                     link = mark.param,
                     color = textColor,
-                    click = click
+                    click = click,
+                    isArchived = mark.isArchived,
+                    context = context
                 ),
                 mark.from,
                 mark.to,
@@ -246,9 +248,11 @@ fun Editable.setMarkup(
             }
             is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
+                    context = context,
                     link = mark.param,
                     color = textColor,
-                    click = click
+                    click = click,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
@@ -307,7 +311,8 @@ fun Editable.proceedWithSettingMentionSpan(
                     imageSize = mentionImageSize,
                     imagePadding = mentionImagePadding,
                     param = mark.param,
-                    isDeleted = true
+                    isDeleted = true,
+                    isArchived = false
                 ),
                 mark.from,
                 mark.to,
@@ -323,7 +328,8 @@ fun Editable.proceedWithSettingMentionSpan(
                     placeholder = placeholder,
                     imageSize = mentionImageSize,
                     imagePadding = mentionImagePadding,
-                    param = mark.param
+                    param = mark.param,
+                    isArchived = false
                 ),
                 mark.from,
                 mark.to,
@@ -333,9 +339,11 @@ fun Editable.proceedWithSettingMentionSpan(
         is Markup.Mark.Mention.Base -> {
             setSpan(
                 Span.ObjectLink(
+                    context = context,
                     link = mark.param,
                     color = textColor,
-                    click = click
+                    click = click,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
@@ -350,13 +358,14 @@ fun Editable.proceedWithSettingMentionSpan(
                     imageSize = mentionImageSize,
                     imagePadding = mentionImagePadding,
                     param = mark.param,
-                    emoji = mark.emoji
+                    emoji = mark.emoji,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(click, mark)
         }
         is Markup.Mark.Mention.WithImage -> {
             setSpan(
@@ -366,13 +375,14 @@ fun Editable.proceedWithSettingMentionSpan(
                     imageSize = mentionImageSize,
                     imagePadding = mentionImagePadding,
                     param = mark.param,
-                    image = mark.image
+                    image = mark.image,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(click, mark)
         }
         is Markup.Mark.Mention.Task.Checked -> {
             setSpan(
@@ -382,13 +392,14 @@ fun Editable.proceedWithSettingMentionSpan(
                     imageSize = mentionImageSize,
                     imagePadding = mentionImagePadding,
                     placeholder = mentionCheckedIcon,
-                    param = mark.param
+                    param = mark.param,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(click, mark)
         }
         is Markup.Mark.Mention.Task.Unchecked -> {
             setSpan(
@@ -398,13 +409,14 @@ fun Editable.proceedWithSettingMentionSpan(
                     imageSize = mentionImageSize,
                     imagePadding = mentionImagePadding,
                     placeholder = mentionUncheckedIcon,
-                    param = mark.param
+                    param = mark.param,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(click, mark)
         }
         is Markup.Mark.Mention.Profile.WithImage -> {
             setSpan(
@@ -414,13 +426,14 @@ fun Editable.proceedWithSettingMentionSpan(
                     imageSize = mentionImageSize,
                     imagePadding = mentionImagePadding,
                     param = mark.param,
-                    profile = mark.imageUrl
+                    profile = mark.imageUrl,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(click, mark)
         }
         is Markup.Mark.Mention.Profile.WithInitials -> {
             val placeholder =
@@ -437,13 +450,14 @@ fun Editable.proceedWithSettingMentionSpan(
                     placeholder = placeholder,
                     param = mark.param,
                     initials = mark.initials.toString(),
-                    initialsTextSize = mentionInitialsSize
+                    initialsTextSize = mentionInitialsSize,
+                    isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(click, mark)
         }
     }
 }

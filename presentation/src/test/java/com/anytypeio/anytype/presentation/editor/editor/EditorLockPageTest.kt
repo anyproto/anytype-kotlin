@@ -420,7 +420,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     Markup.Mark.Mention.Base(
                         from = 0,
                         to = 5,
-                        param = target
+                        param = target,
+                        isArchived = false
                     )
                 ),
                 mode = BlockView.Mode.READ,

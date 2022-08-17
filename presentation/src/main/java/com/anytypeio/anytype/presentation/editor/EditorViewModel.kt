@@ -4253,7 +4253,7 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                getObjectTypes() { objectTypes ->
+                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) { objectTypes ->
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -4333,7 +4333,7 @@ class EditorViewModel(
                 getRelations { proceedWithRelations(it) }
             }
             is SlashItem.Main.Objects -> {
-                getObjectTypes() {
+                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) {
                     proceedWithObjectTypes(it)
                 }
             }

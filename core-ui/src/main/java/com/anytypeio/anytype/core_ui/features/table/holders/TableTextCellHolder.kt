@@ -13,8 +13,6 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableRowItemBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableSpaceBinding
 import com.anytypeio.anytype.core_ui.extensions.resolveThemedTextColor
 import com.anytypeio.anytype.core_ui.extensions.veryLight
-import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
-import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.table.TableCellsDiffUtil
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -27,7 +25,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class TableTextCellHolder(context: Context, binding: ItemBlockTableRowItemBinding) :
-        TableCellHolder(binding.root), SupportCustomTouchProcessor {
+        TableCellHolder(binding.root) {
 
         val root: View = binding.root
         val textContent: AppCompatTextView = binding.textContent
@@ -44,13 +42,6 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             ContextCompat.getDrawable(context, R.drawable.ic_task_0_text_16)
         private val mentionInitialsSize =
             itemView.resources.getDimension(R.dimen.mention_span_initials_size_default)
-
-        override val editorTouchProcessor = EditorTouchProcessor(
-            fallback = { e -> itemView.onTouchEvent(e) })
-
-        init {
-            textContent.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        }
 
         fun bind(
             cell: BlockView.Table.Cell

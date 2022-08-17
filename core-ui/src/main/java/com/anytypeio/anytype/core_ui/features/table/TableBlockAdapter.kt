@@ -41,11 +41,12 @@ class TableBlockAdapter(
                             onCellClicked(getItem(pos))
                         }
                     }
-                    editorTouchProcessor.onLongClick = {
+                    textContent.setOnLongClickListener { _ ->
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             clickListener(ListenerType.LongClick(tableBlockId))
                         }
+                        true
                     }
                 }
             }

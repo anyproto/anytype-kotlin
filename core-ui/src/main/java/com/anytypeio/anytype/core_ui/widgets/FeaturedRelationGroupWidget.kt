@@ -220,7 +220,9 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.ObjectType -> {
                     val view = TextView(context).apply {
                         id = generateViewId()
-                        hint = context.resources.getString(R.string.untitled)
+                        if (relation.name == "") {
+                            hint = context.resources.getString(R.string.untitled)
+                        }
                         text = relation.name
                         isSingleLine = true
                         maxLines = 1

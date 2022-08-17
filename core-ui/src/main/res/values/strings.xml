@@ -258,6 +258,7 @@
     <string name="preview">Preview</string>
     <string name="link_to">Link to</string>
     <string name="mention_suggester_new_page">Create new object</string>
+    <string name="mention_suggester_create_object">Create object</string>
     <string name="your_search_query">Search</string>
     <string name="syncing">Syncing…</string>
     <string name="choose_a_object_type_for_this_set">Choose a object type for this set</string>

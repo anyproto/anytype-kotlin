@@ -1,11 +1,12 @@
 package com.anytypeio.anytype.core_ui.widgets.toolbar.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemMentionNewPageBinding
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
+import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 
 class MentionAdapter(
@@ -41,7 +42,7 @@ class MentionAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_NEW_PAGE -> NewPageViewHolder(
-                inflater.inflate(R.layout.item_mention_new_page, parent, false)
+                binding = ItemMentionNewPageBinding.inflate(inflater, parent, false)
             ).apply {
                 itemView.setOnClickListener {
                     newClicked(mentionFilter)
@@ -72,9 +73,27 @@ class MentionAdapter(
         if (holder is DefaultObjectViewAdapter.ObjectViewHolder) {
             holder.bind(data[position])
         }
+        if (holder is NewPageViewHolder) {
+            holder.bind(filter = mentionFilter.removePrefix(MENTION_PREFIX))
+        }
     }
 
-    class NewPageViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class NewPageViewHolder(binding: ItemMentionNewPageBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        private val tvTitle = binding.text
+
+        fun bind(filter: String) {
+            val res = itemView.resources
+            if (filter.isEmpty()) {
+                tvTitle.text = res.getString(R.string.mention_suggester_new_page)
+            } else {
+                tvTitle.text =
+                    "${res.getString(R.string.mention_suggester_create_object)} \"$filter\""
+            }
+        }
+
+    }
 
     companion object {
         const val TYPE_NEW_PAGE = 1

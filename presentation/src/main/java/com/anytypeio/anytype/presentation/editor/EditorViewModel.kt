@@ -4056,6 +4056,7 @@ class EditorViewModel(
         return controlPanelViewState.value?.let { state ->
             val isVisible = state.mentionToolbar.isVisible
             val isSlashWidgetVisible = state.slashWidget.isVisible
+            val isMainToolbarVisible = state.mainToolbar.isVisible
             if (isVisible) {
                 onMentionEvent(MentionEvent.MentionSuggestStop)
                 return true
@@ -4063,6 +4064,9 @@ class EditorViewModel(
             if (isSlashWidgetVisible) {
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 return true
+            }
+            if (isMainToolbarVisible) {
+                onHideKeyboardClicked()
             }
             return false
         } ?: run { false }

@@ -2,8 +2,12 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -58,7 +62,8 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
-                style = Block.Content.Text.Style.values().filter { it != Block.Content.Text.Style.DESCRIPTION }.random()
+                style = Block.Content.Text.Style.values()
+                    .filter { it != Block.Content.Text.Style.DESCRIPTION }.random()
             ),
             children = emptyList()
         )
@@ -190,16 +195,16 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         testFocusObserver.assertValue(EditorViewModel.EMPTY_FOCUS_ID)
     }
 
-    //@Test
+    @Test
     fun `should update views on hide-keyboard event`() {
 
         // SETUP
 
         val style = Block.Content.Text.Style.values()
-                .filter { style ->
-                    style != Block.Content.Text.Style.TITLE || style != Block.Content.Text.Style.DESCRIPTION
-                }
-                .random()
+            .filter { style ->
+                style != Block.Content.Text.Style.TITLE || style != Block.Content.Text.Style.DESCRIPTION
+            }
+            .random()
 
         val block = Block(
             id = MockDataFactory.randomUuid(),
@@ -275,5 +280,48 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         }
 
         verifyZeroInteractions(createBlock)
+    }
+
+    @Test
+    fun `should close keyboard and clear focus when system close keyboard happened`() {
+
+        // SETUP
+
+        val paragraph = StubParagraph()
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, paragraph.id)
+        )
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubOpenDocument(document)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = IntRange(0, 0)
+        )
+        vm.onBlockFocusChanged(
+            id = paragraph.id,
+            hasFocus = true
+        )
+
+        vm.onBackPressedCallback()
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = true)
+            )
+        )
     }
 }

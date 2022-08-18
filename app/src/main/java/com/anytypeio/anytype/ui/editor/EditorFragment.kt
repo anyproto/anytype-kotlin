@@ -1217,6 +1217,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             ViewState.Loading -> {}
             ViewState.NotExist -> {
                 binding.recycler.gone()
+                binding.loadingContainer.root.gone()
                 binding.objectNotExist.root.visible()
             }
         }

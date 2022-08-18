@@ -146,15 +146,14 @@ class ObjectIconWidget @JvmOverloads constructor(
     fun setProfileInitials(
         name: String
     ) {
-        val textColor = context.color(R.color.default_object_profile_avatar_text_color)
         with(binding) {
             ivImage.invisible()
             emojiContainer.invisible()
             ivCheckbox.invisible()
             initialContainer.visible()
             initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
-            initial.setTextColor(textColor)
-            initial.setHintTextColor(textColor)
+            initial.setTextColor(context.color(R.color.text_primary))
+            initial.setHintTextColor(context.color(R.color.text_tertiary))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
         }
     }

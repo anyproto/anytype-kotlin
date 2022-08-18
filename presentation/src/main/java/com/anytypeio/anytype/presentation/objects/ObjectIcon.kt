@@ -52,7 +52,7 @@ sealed class ObjectIcon {
                 } else if (!emoji.isNullOrBlank()) {
                     Basic.Emoji(unicode = emoji)
                 } else {
-                    None
+                    Basic.Avatar(name = obj.name.orEmpty())
                 }
                 ObjectType.Layout.IMAGE -> if (!img.isNullOrBlank()) {
                     Basic.Image(hash = builder.thumbnail(img))

@@ -33,7 +33,8 @@
             android:fontFamily="@font/inter_semibold"
             android:gravity="center"
             android:hint="@string/u"
-            android:textColor="@color/white" />
+            android:textColorHint="@color/text_tertiary"
+            android:textColor="@color/text_primary" />
 
     </FrameLayout>
 

@@ -19,6 +19,7 @@
     <TextView
         android:id="@+id/tvDocTitle"
         style="@style/DashboardDocAlternativeTitleStyle"
+        android:hint="@string/untitled"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_marginStart="36dp"

@@ -100,7 +100,7 @@ class ObjectTypeHorizontalListAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (data[position]) {
             is ObjectTypeView.Item -> R.layout.item_object_type_horizontal_item
-            ObjectTypeView.Search -> R.layout.item_object_type_search
+            is ObjectTypeView.Search -> R.layout.item_object_type_search
             else -> throw IllegalStateException("Unexpected ObjectTypeView!")
         }
     }

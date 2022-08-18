@@ -44,6 +44,6 @@ fun StubFeatureConfig(
 ) : FeaturesConfig = FeaturesConfig(
     enableDataView = enableDataView,
     enableDebug = enableDebug,
-    enableChannelSwitch = enableChannelSwitch,
+    enablePrereleaseChannel = enableChannelSwitch,
     enableSpaces = enableSpaces
 )

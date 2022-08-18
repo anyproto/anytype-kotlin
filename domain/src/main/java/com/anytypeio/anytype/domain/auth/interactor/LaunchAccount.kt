@@ -29,7 +29,7 @@ class LaunchAccount(
             featuresConfigProvider.set(
                 enableDataView = setup.features.enableDataView ?: false,
                 enableDebug = setup.features.enableDebug ?: false,
-                enableChannelSwitch = setup.features.enableChannelSwitch ?: false,
+                enableChannelSwitch = setup.features.enablePrereleaseChannel ?: false,
                 enableSpaces = setup.features.enableSpaces ?: false
             )
             configStorage.set(config = setup.config)

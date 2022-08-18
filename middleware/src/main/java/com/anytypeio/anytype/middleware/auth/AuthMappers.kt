@@ -27,7 +27,7 @@ fun Rpc.Account.Create.Response.toAccountSetup() : AccountSetup {
         features = FeaturesConfig(
             enableDataView = configuration.enableDataview,
             enableDebug = configuration.enableDebug,
-            enableChannelSwitch = configuration.enableReleaseChannelSwitch,
+            enablePrereleaseChannel = configuration.enablePrereleaseChannel,
             enableSpaces = configuration.enableSpaces
         ),
         config = Config(
@@ -59,7 +59,7 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
         features = FeaturesConfig(
             enableDataView = configuration.enableDataview,
             enableDebug = configuration.enableDebug,
-            enableChannelSwitch = configuration.enableReleaseChannelSwitch,
+            enablePrereleaseChannel = configuration.enablePrereleaseChannel,
             enableSpaces = configuration.enableSpaces
         ),
         config = Config(

@@ -127,7 +127,7 @@ sealed class Viewer {
         }
     }
 
-    enum class SortType { ASC, DESC }
+    enum class SortType { ASC, DESC, CUSTOM }
     enum class FilterOperator { And, Or }
 
     sealed class Filter {

@@ -338,6 +338,7 @@ fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort =
 fun Block.Content.DataView.Sort.Type.toMiddlewareModel(): MDVSortType = when (this) {
     Block.Content.DataView.Sort.Type.ASC -> MDVSortType.Asc
     Block.Content.DataView.Sort.Type.DESC -> MDVSortType.Desc
+    Block.Content.DataView.Sort.Type.CUSTOM -> MDVSortType.Custom
 }
 
 fun Block.Content.DataView.Filter.toMiddlewareModel(): MDVFilter =

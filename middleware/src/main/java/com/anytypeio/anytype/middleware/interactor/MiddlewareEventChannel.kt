@@ -14,7 +14,6 @@ class MiddlewareEventChannel(
     private fun filter(msg: anytype.Event.Message): Boolean {
         // TODO move to class property, also we should log non filtered events
         val events = listOf(
-            msg.objectShow,
             msg.blockAdd,
             msg.blockSetText,
             msg.blockSetChildrenIds,

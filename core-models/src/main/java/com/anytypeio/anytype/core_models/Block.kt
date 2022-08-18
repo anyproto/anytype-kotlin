@@ -331,7 +331,7 @@ data class Block(
                 val relationKey: String,
                 val type: Type
             ) {
-                enum class Type { ASC, DESC }
+                enum class Type { ASC, DESC, CUSTOM }
             }
 
             data class Filter(

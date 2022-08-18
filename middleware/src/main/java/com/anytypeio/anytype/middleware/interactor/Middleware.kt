@@ -868,7 +868,8 @@ class Middleware(
         val response = service.objectOpen(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return response.event.toPayload()
+        return response.objectView?.toPayload()
+            ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)
@@ -1112,7 +1113,8 @@ class Middleware(
         val response = service.objectOpen(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return response.event.toPayload()
+        return response.objectView?.toPayload()
+            ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)
@@ -1566,8 +1568,7 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectShow(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
+        return response.objectView?.toPayload() ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)
@@ -1702,5 +1703,4 @@ class Middleware(
         val message = "<=== " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)
     }
-
 }

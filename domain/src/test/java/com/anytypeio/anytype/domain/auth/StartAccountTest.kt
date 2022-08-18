@@ -80,7 +80,7 @@ class StartAccountTest {
         val featuresConfig = FeaturesConfig(
             enableDataView = false,
             enableDebug = false,
-            enableChannelSwitch = false
+            enablePrereleaseChannel = false
         )
 
         repo.stub {
@@ -132,7 +132,7 @@ class StartAccountTest {
         val featuresConfig = FeaturesConfig(
             enableDataView = false,
             enableDebug = false,
-            enableChannelSwitch = false
+            enablePrereleaseChannel = false
         )
 
         repo.stub {
@@ -175,7 +175,7 @@ class StartAccountTest {
         val featuresConfig = FeaturesConfig(
             enableDataView = null,
             enableDebug = null,
-            enableChannelSwitch = null
+            enablePrereleaseChannel = null
         )
 
         repo.stub {
@@ -225,7 +225,7 @@ class StartAccountTest {
         val featuresConfig = FeaturesConfig(
             enableDataView = true,
             enableDebug = false,
-            enableChannelSwitch = true
+            enablePrereleaseChannel = true
         )
 
         repo.stub {

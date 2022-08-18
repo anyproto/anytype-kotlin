@@ -2,6 +2,7 @@ package com.anytypeio.anytype
 
 import anytype.model.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
 import com.anytypeio.anytype.middleware.mappers.MSmartBlockType
@@ -33,14 +34,16 @@ class MiddlewareEventChannelTest {
     fun `should filter event by context and pass it downstream`() {
 
         val context = MockDataFactory.randomUuid()
+        val id = MockDataFactory.randomUuid()
 
-        val msg = anytype.Event.Object.Show(
-            rootId = context,
-            blocks = emptyList(),
-            type = MSmartBlockType.Page
+        val msg = anytype.Event.Block.Set.BackgroundColor(
+            id = id,
+            backgroundColor = ThemeColor.YELLOW.code
         )
 
-        val message = anytype.Event.Message(objectShow = msg)
+        val message = anytype.Event.Message(
+            blockSetBackgroundColor = msg
+        )
 
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
@@ -49,10 +52,10 @@ class MiddlewareEventChannelTest {
         }
 
         val expected = listOf(
-            Event.Command.ShowObject(
-                root = context,
-                blocks = emptyList(),
-                context = context
+            Event.Command.GranularChange(
+                id = id,
+                context = context,
+                backgroundColor = ThemeColor.YELLOW.code
             )
         )
 
@@ -71,12 +74,13 @@ class MiddlewareEventChannelTest {
 
         val context = MockDataFactory.randomUuid()
 
-        val msg = anytype.Event.Object.Show(
-            rootId = MockDataFactory.randomString(),
-            blocks = emptyList()
+        val msg = anytype.Event.Block.Set.BackgroundColor(
+            backgroundColor = ThemeColor.YELLOW.code
         )
 
-        val message = anytype.Event.Message(objectShow = msg)
+        val message = anytype.Event.Message(
+            blockSetBackgroundColor = msg
+        )
 
         val event = anytype.Event(contextId = MockDataFactory.randomUuid(), messages = listOf(message))
 
@@ -98,14 +102,16 @@ class MiddlewareEventChannelTest {
     fun `should pass event downstream if context for filtering is not provided`() {
 
         val context = MockDataFactory.randomUuid()
+        val id = MockDataFactory.randomUuid()
 
-        val msg = anytype.Event.Object.Show(
-            rootId = context,
-            blocks = emptyList(),
-            type = MSmartBlockType.Page
+        val msg = anytype.Event.Block.Set.BackgroundColor(
+            id = id,
+            backgroundColor = ThemeColor.YELLOW.code
         )
 
-        val message = anytype.Event.Message(objectShow = msg)
+        val message = anytype.Event.Message(
+            blockSetBackgroundColor = msg
+        )
 
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
@@ -114,10 +120,10 @@ class MiddlewareEventChannelTest {
         }
 
         val expected = listOf(
-            Event.Command.ShowObject(
-                root = context,
-                blocks = emptyList(),
-                context = context
+            Event.Command.GranularChange(
+                id = id,
+                context = context,
+                backgroundColor = ThemeColor.YELLOW.code
             )
         )
 

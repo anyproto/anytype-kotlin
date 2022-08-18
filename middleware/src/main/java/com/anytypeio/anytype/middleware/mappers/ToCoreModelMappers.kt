@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.mappers
 
 import anytype.ResponseEvent
+import anytype.Rpc
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.ObjectLinksInfo
@@ -19,6 +20,32 @@ fun ResponseEvent?.toPayload(): Payload {
     return Payload(
         context = context,
         events = messages.mapNotNull { it.toCoreModels(context) }
+    )
+}
+
+fun MObjectView.toPayload() : Payload {
+    val type = type.toCoreModel()
+    return Payload(
+        context = rootId,
+        events = listOf(
+            Event.Command.ShowObject(
+                context = rootId,
+                root = rootId,
+                blocks = blocks.toCoreModels(
+                    types = mapOf(rootId to type)
+                ),
+                details = Block.Details(
+                    details.associate { details ->
+                        details.id to details.details.toCoreModel()
+                    }
+                ),
+                type = type,
+                objectTypes = objectTypes.map { it.toCoreModels() },
+                relations = relations.map { it.toCoreModels() },
+                objectRestrictions = restrictions?.object_?.mapNotNull { it.toCoreModel() }.orEmpty(),
+                dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
+            )
+        )
     )
 }
 
@@ -514,6 +541,7 @@ fun MDVSort.toCoreModels(): Block.Content.DataView.Sort = DVSort(
 fun MDVSortType.toCoreModels(): DVSortType = when (this) {
     MDVSortType.Asc -> DVSortType.ASC
     MDVSortType.Desc -> DVSortType.DESC
+    MDVSortType.Custom -> DVSortType.CUSTOM
 }
 
 

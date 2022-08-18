@@ -532,6 +532,7 @@ fun Markup.Mark.mark(): Block.Content.Text.Mark = when (this) {
 fun Block.Content.DataView.Sort.Type.toView(): Viewer.SortType = when (this) {
     Block.Content.DataView.Sort.Type.ASC -> Viewer.SortType.ASC
     Block.Content.DataView.Sort.Type.DESC -> Viewer.SortType.DESC
+    Block.Content.DataView.Sort.Type.CUSTOM -> Viewer.SortType.CUSTOM
 }
 
 fun DVFilterOperator.toView(): Viewer.FilterOperator = when (this) {
@@ -600,6 +601,7 @@ fun SortingExpression.toDomain(): DVSort = DVSort(
     type = when (type) {
         Viewer.SortType.ASC -> Block.Content.DataView.Sort.Type.ASC
         Viewer.SortType.DESC -> Block.Content.DataView.Sort.Type.DESC
+        Viewer.SortType.CUSTOM -> Block.Content.DataView.Sort.Type.CUSTOM
     }
 )
 

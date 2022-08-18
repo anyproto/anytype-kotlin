@@ -11,7 +11,7 @@ class DefaultFeaturesConfigProvider : FeaturesConfigProvider {
     private var config: FeaturesConfig = FeaturesConfig(
         enableDataView = false,
         enableDebug = false,
-        enableChannelSwitch = false,
+        enablePrereleaseChannel = false,
         enableSpaces = false
     )
 
@@ -26,7 +26,7 @@ class DefaultFeaturesConfigProvider : FeaturesConfigProvider {
         config = FeaturesConfig(
             enableDataView = enableDataView,
             enableDebug = enableDebug,
-            enableChannelSwitch = enableChannelSwitch,
+            enablePrereleaseChannel = enableChannelSwitch,
             enableSpaces = enableSpaces
         )
     }

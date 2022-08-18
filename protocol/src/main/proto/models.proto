@@ -314,11 +314,12 @@ message Block {
                 repeated Sort sorts = 4;
                 repeated Filter filters = 5;
                 repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
-				        string coverRelationKey = 7; // Relation used for cover in gallery
+				string coverRelationKey = 7; // Relation used for cover in gallery
                 bool hideIcon = 8; // Hide icon near name
                 Size cardSize = 9; // Gallery card size
                 bool coverFit = 10; // Image fits container
-                string groupRelationKey = 11;
+                string groupRelationKey = 11; // Group view by this relationKey
+				bool groupBackgroundColors = 12; // Enable backgrounds in groups
 
                 enum Type {
                     Table = 0;
@@ -361,10 +362,12 @@ message Block {
             message Sort {
                 string RelationKey = 1;
                 Type type = 2;
+                repeated google.protobuf.Value customOrder = 3;
 
                 enum Type {
                     Asc = 0;
                     Desc = 1;
+                    Custom = 2;
                 }
             }
 
@@ -426,6 +429,7 @@ message Block {
                 string groupId = 1;
                 int32 index = 2;
                 bool hidden = 3;
+				string backgroundColor = 4;
             }
 
             message ObjectOrder {
@@ -518,7 +522,7 @@ message Account {
     message Config {
         bool enableDataview = 1;
         bool enableDebug = 2;
-        bool enableReleaseChannelSwitch = 3;
+        bool enablePrereleaseChannel = 3;
         bool enableSpaces = 4;
 
         google.protobuf.Struct extra = 100;
@@ -749,5 +753,38 @@ message InternalFlag {
         editorDeleteEmpty = 0;
         editorSelectType = 1;
         editorSelectTemplate = 2;
+    }
+}
+
+
+/*
+    * Works with a smart blocks: Page, Dashboard
+    * Dashboard opened, click on a page, Rpc.Block.open, Block.ShowFullscreen(PageBlock)
+*/
+message ObjectView {
+    string rootId = 1; // Root block id
+    repeated Block blocks = 2; // dependent simple blocks (descendants)
+    repeated DetailsSet details = 3; // details for the current and dependent objects
+    SmartBlockType type = 4;
+
+    message DetailsSet {
+        string id = 1; // context objectId
+        google.protobuf.Struct details = 2; // can not be a partial state. Should replace client details state
+        repeated string subIds = 3;
+    }
+
+    message RelationWithValuePerObject {
+        string objectId = 1;
+        repeated RelationWithValue relations = 2;
+    }
+
+    repeated ObjectType objectTypes = 5; // objectTypes contains ONLY to get layouts for the actual and all dependent objects. Relations are currently omitted // todo: switch to other pb model
+    repeated Relation relations = 7; // combined relations of object's type + extra relations. If object doesn't has some relation key in the details this means client should hide it and only suggest when adding existing one
+    Restrictions restrictions = 8; // object restrictions
+    HistorySize history = 9;
+
+    message HistorySize {
+        int32 undo = 1;
+        int32 redo = 2;
     }
 }

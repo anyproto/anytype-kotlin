@@ -20,7 +20,7 @@ fun FeaturesConfigEntity.toDomain(): FeaturesConfig {
     return FeaturesConfig(
         enableDataView = enableDataView,
         enableDebug = enableDebug,
-        enableChannelSwitch = enableChannelSwitch,
+        enablePrereleaseChannel = enableChannelSwitch,
         enableSpaces = enableSpaces
     )
 }

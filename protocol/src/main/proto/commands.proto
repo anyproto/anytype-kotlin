@@ -8,6 +8,14 @@ import "localstore.proto";
 import "events.proto";
 import "google/protobuf/struct.proto";
 
+
+import "google/protobuf/descriptor.proto";
+
+// To disable authorization in specific method use no_auth option inside Request of that method
+extend google.protobuf.MessageOptions {
+    optional bool no_auth = 7777;
+}
+
 /*
  * Rpc is a namespace, that agregates all of the service commands between client and middleware.
  * Structure: Topic > Subtopic > Subsub... > Action > (Request, Response).
@@ -97,6 +105,7 @@ message Rpc {
             * Front-end-to-middleware request to create a new wallet
             */
             message Request {
+                option (no_auth) = true;
                 string rootPath = 1; // Path to a wallet directory
             }
 
@@ -128,6 +137,8 @@ message Rpc {
             * Front end to middleware request-to-recover-a wallet with this mnemonic and a rootPath
             */
             message Request {
+                option (no_auth) = true;
+
                 string rootPath = 1; // Path to a wallet directory
                 string mnemonic = 2; // Mnemonic of a wallet to recover
             }
@@ -177,13 +188,57 @@ message Rpc {
             }
         }
 
+        message CreateSession {
+            message Request {
+                option (no_auth) = true;
+                string mnemonic = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                string token = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                    }
+                }
+            }
+        }
+
+        message CloseSession {
+            message Request {
+                string token = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+
     }
 
     message Account {
         message Config {
             bool enableDataview = 1;
             bool enableDebug = 2;
-            bool enableReleaseChannelSwitch = 3;
+            bool enablePrereleaseChannel = 3;
             bool enableSpaces = 4;
 
             google.protobuf.Struct extra = 100;
@@ -194,6 +249,8 @@ message Rpc {
             * Front end to middleware request-to-create-an account
             */
             message Request {
+                option (no_auth) = true;
+
                 string name = 1; // Account name
                 oneof avatar {
                     string avatarLocalPath = 2; // Path to an image, that will be used as an avatar of this account
@@ -304,6 +361,7 @@ message Rpc {
             * User can select an account from those, that came with an AccountAdd events
             */
             message Request {
+                option (no_auth) = true;
                 string id = 1; // Id of a selected account
                 string rootPath = 2; // Root path is optional, set if this is a first request
             }
@@ -613,7 +671,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                ResponseEvent event = 2;
+                model.ObjectView objectView = 2;
 
                 message Error {
                     Code code = 1;
@@ -664,7 +722,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                ResponseEvent event = 2;
+                model.ObjectView objectView = 2;
 
                 message Error {
                     Code code = 1;
@@ -839,6 +897,7 @@ message Rpc {
                 Error error = 1;
                 string objectId = 2;
                 ResponseEvent event = 3;
+                model.ObjectView objectView = 4;
 
                 message Error {
                     Code code = 1;
@@ -1927,7 +1986,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                Event.Object.Show objectShow = 2;
+                model.ObjectView objectView = 2;
                 History.Version version = 3;
                 string traceId = 4;
 
@@ -4632,6 +4691,7 @@ message Rpc {
     message Metrics {
         message SetParameters {
             message Request {
+                option (no_auth) = true;
                 string platform = 1;
             }
 
@@ -4729,4 +4789,8 @@ message Rpc {
 
 message Empty {
 
+}
+
+message StreamRequest {
+    string token = 1;
 }

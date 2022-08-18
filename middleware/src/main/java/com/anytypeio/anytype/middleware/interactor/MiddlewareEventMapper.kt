@@ -19,28 +19,6 @@ fun anytype.Event.Message.toCoreModels(
             blocks = event.blocks.toCoreModels()
         )
     }
-    objectShow != null -> {
-        val event = objectShow
-        checkNotNull(event)
-        val type = event.type.toCoreModel()
-        Event.Command.ShowObject(
-            context = context,
-            root = event.rootId,
-            blocks = event.blocks.toCoreModels(
-                types = mapOf(event.rootId to type)
-            ),
-            details = Block.Details(
-                event.details.associate { details ->
-                    details.id to details.details.toCoreModel()
-                }
-            ),
-            type = type,
-            objectTypes = event.objectTypes.map { it.toCoreModels() },
-            relations = event.relations.map { it.toCoreModels() },
-            objectRestrictions = event.restrictions?.object_?.mapNotNull { it.toCoreModel() }.orEmpty(),
-            dataViewRestrictions = event.restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
-        )
-    }
     blockSetText != null -> {
         val event = blockSetText
         checkNotNull(event)

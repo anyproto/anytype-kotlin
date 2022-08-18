@@ -12,6 +12,7 @@
         android:layout_height="match_parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:background="@drawable/rectangle_media_block_placeholder">

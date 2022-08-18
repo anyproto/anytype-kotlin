@@ -21,7 +21,7 @@ class PictureUpload(
     override val decoratableContainer: EditorDecorationContainer
         get() = binding.decorationContainer
 
-    override val decoratableCard: View get() = binding.root
+    override val decoratableCard: View get() = binding.card
 
     override fun uploadClick(target: String, clicked: (ListenerType) -> Unit) {
         clicked(ListenerType.Video.Upload(target))

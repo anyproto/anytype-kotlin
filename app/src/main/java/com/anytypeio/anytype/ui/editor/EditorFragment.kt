@@ -1312,13 +1312,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         val insets = ViewCompat.getRootWindowInsets(binding.root)
 
         if (state.navigationToolbar.isVisible) {
-            keyboardDelayJobs += lifecycleScope.launch {
-                if (binding.toolbar.isVisible) binding.toolbar.gone()
-                binding.placeholder.requestFocus()
-                hideKeyboard()
-                delayKeyboardHide(insets)
-                binding.bottomToolbar.visible()
-            }
+            binding.placeholder.requestFocus()
+            hideKeyboard()
+            binding.bottomToolbar.visible()
         } else {
             binding.bottomToolbar.gone()
         }

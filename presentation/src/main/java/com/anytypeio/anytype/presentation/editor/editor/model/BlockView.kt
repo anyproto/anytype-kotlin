@@ -897,7 +897,8 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val isPreviousBlockMedia: Boolean,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            val isLoading: Boolean = false
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
         }

@@ -1202,8 +1202,40 @@ class DefaultBlockViewRenderer @Inject constructor(
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
         details: Block.Details
-    ): BlockView {
-        return if (content.state == Content.Bookmark.State.DONE) {
+    ): BlockView = when(content.state) {
+        Content.Bookmark.State.EMPTY -> {
+            BlockView.MediaPlaceholder.Bookmark(
+                id = block.id,
+                indent = indent,
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                ),
+                background = block.parseThemeBackgroundColor(),
+                isPreviousBlockMedia = isPreviousBlockMedia,
+                decorations = schema.toBlockViewDecoration(block),
+                isLoading = false
+            )
+        }
+        Content.Bookmark.State.FETCHING -> {
+            BlockView.MediaPlaceholder.Bookmark(
+                id = block.id,
+                indent = indent,
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                ),
+                background = block.parseThemeBackgroundColor(),
+                isPreviousBlockMedia = isPreviousBlockMedia,
+                decorations = schema.toBlockViewDecoration(block),
+                isLoading = true
+            )
+        }
+        Content.Bookmark.State.DONE -> {
             val obj = ObjectWrapper.Bookmark(
                 details.details[content.targetObjectId]?.map ?: emptyMap()
             )
@@ -1235,56 +1267,11 @@ class DefaultBlockViewRenderer @Inject constructor(
                     decorations = schema.toBlockViewDecoration(block)
                 )
             }
-        } else {
-            BlockView.MediaPlaceholder.Bookmark(
-                id = block.id,
-                indent = indent,
-                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                isSelected = checkIfSelected(
-                    mode = mode,
-                    block = block,
-                    selection = selection
-                ),
-                background = block.parseThemeBackgroundColor(),
-                isPreviousBlockMedia = isPreviousBlockMedia,
-                decorations = schema.toBlockViewDecoration(block)
-            )
         }
-    }
-
-    private fun bookmark(
-        mode: EditorMode,
-        content: Content.Bookmark,
-        block: Block,
-        indent: Int,
-        selection: Set<Id>,
-        isPreviousBlockMedia: Boolean,
-        schema: NestedDecorationData
-    ): BlockView = content.url?.let { url ->
-        if (content.title != null && content.description != null) {
-            BlockView.Media.Bookmark(
-                id = block.id,
-                url = url,
-                title = content.title,
-                description = content.description,
-                imageUrl = content.image?.let { urlBuilder.image(it) },
-                faviconUrl = content.favicon?.let { urlBuilder.image(it) },
-                indent = indent,
-                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                isSelected = checkIfSelected(
-                    mode = mode,
-                    block = block,
-                    selection = selection
-                ),
-                background = block.parseThemeBackgroundColor(),
-                isPreviousBlockMedia = isPreviousBlockMedia,
-                decorations = schema.toBlockViewDecoration(block)
-            )
-        } else {
-            // TODO maybe refact: if title is null, it does not mean that we have an error state.
+        Content.Bookmark.State.ERROR -> {
             BlockView.Error.Bookmark(
                 id = block.id,
-                url = url,
+                url = content.url.orEmpty(),
                 indent = indent,
                 mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                 isSelected = checkIfSelected(
@@ -1296,19 +1283,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 background = block.parseThemeBackgroundColor()
             )
         }
-    } ?: BlockView.MediaPlaceholder.Bookmark(
-        id = block.id,
-        indent = indent,
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
-        ),
-        background = block.parseThemeBackgroundColor(),
-        isPreviousBlockMedia = isPreviousBlockMedia,
-        decorations = schema.toBlockViewDecoration(block)
-    )
+    }
 
     private fun divider(
         block: Block,

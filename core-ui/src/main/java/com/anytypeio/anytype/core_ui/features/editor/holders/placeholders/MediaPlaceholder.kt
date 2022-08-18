@@ -77,7 +77,7 @@ abstract class MediaPlaceholder(
         }
     }
 
-    fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
+    open fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
         check(item is BlockView.MediaPlaceholder) { "Expected a media placeholder, but was: $item" }
         payloads.forEach { payload ->
             if (payload.isSelectionChanged) {

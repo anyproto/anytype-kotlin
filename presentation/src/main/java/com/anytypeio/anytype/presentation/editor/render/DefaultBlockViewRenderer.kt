@@ -1207,24 +1207,34 @@ class DefaultBlockViewRenderer @Inject constructor(
             val obj = ObjectWrapper.Bookmark(
                 details.details[content.targetObjectId]?.map ?: emptyMap()
             )
-            BlockView.Media.Bookmark(
-                id = block.id,
-                url = obj.url.orEmpty(),
-                title = obj.name,
-                description = obj.description,
-                imageUrl = obj.picture?.let { urlBuilder.image(it) },
-                faviconUrl = obj.iconImage?.let { urlBuilder.image(it) },
-                indent = indent,
-                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                isSelected = checkIfSelected(
-                    mode = mode,
+            if (obj.isArchived == true || obj.isDeleted == true) {
+                linkDeleted(
                     block = block,
-                    selection = selection
-                ),
-                background = block.parseThemeBackgroundColor(),
-                isPreviousBlockMedia = isPreviousBlockMedia,
-                decorations = schema.toBlockViewDecoration(block)
-            )
+                    indent = indent,
+                    mode = mode,
+                    selection = selection,
+                    parentSchema = schema
+                )
+            } else {
+                BlockView.Media.Bookmark(
+                    id = block.id,
+                    url = obj.url.orEmpty(),
+                    title = obj.name,
+                    description = obj.description,
+                    imageUrl = obj.picture?.let { urlBuilder.image(it) },
+                    faviconUrl = obj.iconImage?.let { urlBuilder.image(it) },
+                    indent = indent,
+                    mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    isSelected = checkIfSelected(
+                        mode = mode,
+                        block = block,
+                        selection = selection
+                    ),
+                    background = block.parseThemeBackgroundColor(),
+                    isPreviousBlockMedia = isPreviousBlockMedia,
+                    decorations = schema.toBlockViewDecoration(block)
+                )
+            }
         } else {
             BlockView.MediaPlaceholder.Bookmark(
                 id = block.id,

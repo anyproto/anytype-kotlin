@@ -94,5 +94,7 @@ sealed class ObjectWrapper {
         val iconEmoji: String? by default
         val iconImage: String? by default
         val picture: String? by default
+        val isArchived: Boolean? by default
+        val isDeleted: Boolean? by default
     }
 }

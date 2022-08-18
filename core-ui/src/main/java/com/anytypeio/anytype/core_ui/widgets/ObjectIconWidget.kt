@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconBinding
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -119,7 +120,8 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
-            ObjectIcon.None -> removeIcon()
+            is ObjectIcon.Bookmark -> setBookmark(icon.image)
+            is ObjectIcon.None -> removeIcon()
         }
     }
 
@@ -218,6 +220,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivCheckbox.invisible()
                 initialContainer.invisible()
                 emojiContainer.invisible()
+                ivBookmark.gone()
                 ivImage.visible()
                 ivImage.setCorneredShape(imageCornerRadius)
             }
@@ -237,6 +240,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             initialContainer.invisible()
             ivImage.invisible()
             emojiContainer.visible()
+            ivBookmark.gone()
             ivEmoji.setImageDrawable(drawable)
         }
     }
@@ -247,7 +251,23 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivCheckbox.isSelected = isChecked ?: false
             initialContainer.invisible()
             emojiContainer.invisible()
+            ivBookmark.gone()
             ivImage.invisible()
+        }
+    }
+
+    private fun setBookmark(image: Url) {
+        with(binding) {
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            emojiContainer.invisible()
+            ivImage.invisible()
+            ivBookmark.visible()
+            Glide
+                .with(binding.ivBookmark)
+                .load(image)
+                .centerCrop()
+                .into(binding.ivBookmark)
         }
     }
 
@@ -255,6 +275,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         with(binding) {
             ivEmoji.setImageDrawable(null)
             ivImage.setImageDrawable(null)
+            ivBookmark.setImageDrawable(null)
             ivCheckbox.invisible()
         }
     }

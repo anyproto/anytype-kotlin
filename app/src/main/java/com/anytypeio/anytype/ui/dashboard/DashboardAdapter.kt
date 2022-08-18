@@ -11,6 +11,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.databinding.ItemDesktopArchiveBinding
 import com.anytypeio.anytype.databinding.ItemDesktopSetWithoutIconBinding
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
 import timber.log.Timber
 
@@ -38,6 +40,7 @@ class DashboardAdapter(
         const val VIEW_TYPE_SET = 4
         const val VIEW_TYPE_SET_WITHOUT_ICON = 5
         const val VIEW_TYPE_DOCUMENT_NOTE = 6
+        const val VIEW_TYPE_DOCUMENT_BOOKMARK = 7
 
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
     }
@@ -75,6 +78,19 @@ class DashboardAdapter(
             }
             VIEW_TYPE_DOCUMENT_TASK -> {
                 ViewHolder.DocumentTaskViewHolder(parent).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            if (item is DashboardView.Document) {
+                                onDocumentClicked(item.target, item.isLoading)
+                            }
+                        }
+                    }
+                }
+            }
+            VIEW_TYPE_DOCUMENT_BOOKMARK -> {
+                ViewHolder.DocumentBookmarkViewHolder(parent).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
@@ -155,6 +171,7 @@ class DashboardAdapter(
             is DashboardView.Document -> when {
                 item.layout == ObjectType.Layout.TODO -> VIEW_TYPE_DOCUMENT_TASK
                 item.layout == ObjectType.Layout.NOTE -> VIEW_TYPE_DOCUMENT_NOTE
+                item.layout == ObjectType.Layout.BOOKMARK -> VIEW_TYPE_DOCUMENT_BOOKMARK
                 item.hasIcon || item.layout == ObjectType.Layout.PROFILE -> VIEW_TYPE_DOCUMENT
                 else -> VIEW_TYPE_DOCUMENT_WITHOUT_ICON
             }
@@ -192,6 +209,13 @@ class DashboardAdapter(
                 holder.bindSubtitle(item.typeName)
                 holder.bindLoading(item.isLoading)
                 holder.bindDone(item.done)
+            }
+            is ViewHolder.DocumentBookmarkViewHolder -> {
+                val item = data[position] as DashboardView.Document
+                holder.bindTitle(item.title)
+                holder.bindSubtitle(item.typeName)
+                holder.bindLoading(item.isLoading)
+                holder.bindImage(item.image)
             }
             is ViewHolder.ObjectSetHolder -> {
                 with(holder) {
@@ -244,6 +268,9 @@ class DashboardAdapter(
                         bindByPayloads(holder, position, payload)
                     }
                     is ViewHolder.DocumentTaskViewHolder -> {
+                        bindByPayloads(holder, position, payload)
+                    }
+                    is ViewHolder.DocumentBookmarkViewHolder -> {
                         bindByPayloads(holder, position, payload)
                     }
                     else -> Timber.d("Skipping payload update.")
@@ -350,6 +377,28 @@ class DashboardAdapter(
             }
             if (payload.isDoneChanged) {
                 bindDone(item.done)
+            }
+        }
+    }
+
+    private fun bindByPayloads(
+        holder: ViewHolder.DocumentBookmarkViewHolder,
+        position: Int,
+        payload: DesktopDiffUtil.Payload
+    ) {
+        with(holder) {
+            val item = data[position] as DashboardView.Document
+            if (payload.titleChanged()) {
+                bindTitle(item.title)
+            }
+            if (payload.isLoadingChanged) {
+                bindLoading(item.isLoading)
+            }
+            if (payload.isSelectionChanged) {
+                bindSelection(item.isSelected)
+            }
+            if (payload.isImageChanged) {
+                bindImage(item.image)
             }
         }
     }
@@ -484,6 +533,61 @@ class DashboardAdapter(
                     shimmer.invisible()
                     tvTitle.visible()
                     tvSubtitle.visible()
+                }
+            }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
+            }
+        }
+
+        class DocumentBookmarkViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_desktop_bookmark,
+                parent,
+                false
+            )
+        ) {
+
+            private val tvTitle = itemView.findViewById<TextView>(R.id.tvDocTitle)
+            private val tvSubtitle = itemView.findViewById<TextView>(R.id.tvDocTypeName)
+            private val icon = itemView.findViewById<ImageView>(R.id.ivIcon)
+            private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
+
+            fun bindTitle(title: String?) {
+                tvTitle.text = title
+            }
+
+            fun bindSubtitle(type: String?) {
+                tvSubtitle.text = type
+            }
+
+            fun bindLoading(isLoading: Boolean) {
+                if (isLoading) {
+                    tvTitle.invisible()
+                    tvSubtitle.invisible()
+                    shimmer.startShimmer()
+                    shimmer.visible()
+                } else {
+                    shimmer.stopShimmer()
+                    shimmer.invisible()
+                    tvTitle.visible()
+                    tvSubtitle.visible()
+                }
+            }
+
+            fun bindImage(iconImage: String?) {
+                if (iconImage != null) {
+                    Glide
+                        .with(icon)
+                        .load(iconImage)
+                        .centerInside()
+                        .into(icon)
+                    icon.visible()
+                } else {
+                    icon.setImageDrawable(null)
+                    icon.gone()
                 }
             }
 

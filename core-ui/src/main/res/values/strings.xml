@@ -552,5 +552,6 @@
     <string name="copy_phone_number">Copy phone number</string>
     <string name="send_email">Send email</string>
     <string name="call_phone_number">Call phone number</string>
+    <string name="bookmark_icon">Bookmark icon</string>
 
 </resources>

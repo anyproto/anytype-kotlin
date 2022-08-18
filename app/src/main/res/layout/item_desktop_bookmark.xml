@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_dashboard_card_height"
+    android:clickable="true"
+    app:cardBackgroundColor="@color/dashboard_card_background"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp">
+
+    <ImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="17dp" />
+
+    <TextView
+        android:id="@+id/tvDocTitle"
+        style="@style/DashboardDocAlternativeTitleStyle"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="4"
+        tools:text="@string/default_text_placeholder" />
+
+    <TextView
+        android:id="@+id/tvDocTypeName"
+        style="@style/DashboardDocumentSubtitleStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="98dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/unknown_type"
+        tools:text="Task" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:shimmer_auto_start="false"
+        app:shimmer_duration="2000"
+        tools:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/iconSkeleton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/circle_default" />
+
+            <View
+                android:id="@+id/txtSkeleton"
+                android:layout_width="match_parent"
+                android:layout_height="22dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rectangle_dashboard_text_skeleton" />
+
+        </LinearLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <ImageView
+        android:id="@+id/ivSelection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:src="@drawable/ic_bin_selection"
+        android:visibility="invisible" />
+
+</androidx.cardview.widget.CardView>

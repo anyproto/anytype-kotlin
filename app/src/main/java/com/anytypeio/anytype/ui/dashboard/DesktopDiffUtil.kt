@@ -79,6 +79,7 @@ class DesktopDiffUtil(
         val isLoadingChanged: Boolean = changes.contains(LOADING_STATE_CHANGED)
         val isSelectionChanged: Boolean = changes.contains(SELECTION_CHANGED)
         val isDoneChanged: Boolean = changes.contains(DONE_CHANGED)
+        val isImageChanged: Boolean = changes.contains(IMAGE_CHANGED)
 
         fun targetChanged() = changes.contains(TARGET_CHANGED)
         fun titleChanged() = changes.contains(TITLE_CHANGED)

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 sealed class ObjectIcon {
@@ -19,6 +20,8 @@ sealed class ObjectIcon {
     }
 
     data class Task(val isChecked: Boolean) : ObjectIcon()
+
+    data class Bookmark(val image: Url) : ObjectIcon()
 
     companion object {
         fun from(
@@ -60,7 +63,7 @@ sealed class ObjectIcon {
                 ObjectType.Layout.NOTE -> Basic.Avatar(obj.snippet.orEmpty())
                 ObjectType.Layout.FILE -> Basic.Avatar(obj.name.orEmpty())
                 ObjectType.Layout.BOOKMARK -> when {
-                    !img.isNullOrBlank() -> Basic.Image(hash = builder.thumbnail(img))
+                    !img.isNullOrBlank() -> Bookmark(image = builder.thumbnail(img))
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
                     else -> Basic.Avatar(obj.name.orEmpty())
                 }

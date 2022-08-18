@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <FrameLayout
         android:id="@+id/emojiContainer"
@@ -46,5 +45,14 @@
         android:contentDescription="@string/content_desc_checkbox_icon"
         android:src="@drawable/ic_data_view_grid_checkbox_selector"
         android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/ivBookmark"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/bookmark_icon"
+        android:src="@drawable/ic_data_view_grid_checkbox_selector"
+        android:visibility="gone" />
 
 </merge>

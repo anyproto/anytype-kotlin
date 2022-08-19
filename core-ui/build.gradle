@@ -11,7 +11,7 @@ android {
         targetSdkVersion config["target_sdk"]
         testInstrumentationRunner config["test_runner"]
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
-        buildConfigField "boolean", "NESTED_DECORATION_ENABLED", "true"
+        buildConfigField "boolean", "NESTED_DECORATION_ENABLED", "false"
     }
 
     testOptions {

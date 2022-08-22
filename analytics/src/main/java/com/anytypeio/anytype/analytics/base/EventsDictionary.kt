@@ -69,6 +69,8 @@ object EventsDictionary {
     const val objectCreate = "CreateObject"
     const val objectSetTitle = "SetObjectTitle"
     const val objectSetDescription = "SetObjectDescription"
+    const val objectOpenAs = "OpenAsObject "
+    const val objectReload = "ReloadSourceData"
 
     // Blocks events
     const val blockCreate = "CreateBlock"
@@ -89,6 +91,9 @@ object EventsDictionary {
     const val relationCreate = "CreateRelation"
     const val relationChangeValue = "ChangeRelationValue"
     const val relationDelete = "DeleteRelation"
+    const val relationUrlOpen = "RelationUrlOpen"
+    const val relationUrlCopy = "RelationUrlCopy"
+    const val relationUrlEdit = "RelationUrlEditMobile"
 
     // Sets
     const val setAddView = "AddView"
@@ -108,6 +113,7 @@ object EventsDictionary {
     const val blockAction = "BlockAction"
 
     const val goBack = "HistoryBack"
+    const val bookmarkOpenUrl = "BlockBookmarkOpenUrl"
 
     // Routes
     object Routes {
@@ -132,6 +138,7 @@ object EventsDictionary {
         const val menu = "menu"
         const val dataView = "dataview"
         const val block = "block"
+        const val bookmark = "bookmark"
     }
 
     object BlockAction {

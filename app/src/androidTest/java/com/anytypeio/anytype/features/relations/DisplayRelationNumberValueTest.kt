@@ -10,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -53,6 +54,9 @@ class DisplayRelationNumberValueTest {
     @Mock
     lateinit var reloadObject: ReloadObject
 
+    @Mock
+    lateinit var analytics: Analytics
+
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
@@ -69,7 +73,8 @@ class DisplayRelationNumberValueTest {
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
-            reloadObject = reloadObject
+            reloadObject = reloadObject,
+            analytics = analytics
         )
     }
 

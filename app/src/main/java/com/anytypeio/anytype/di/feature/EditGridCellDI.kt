@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -34,11 +35,13 @@ object RelationTextValueModule {
     fun provideRelationTextValueViewModelFactory(
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
-        reloadObject: ReloadObject
+        reloadObject: ReloadObject,
+        analytics: Analytics
     ) = RelationTextValueViewModel.Factory(
         relations = relations,
         values = values,
-        reloadObject = reloadObject
+        reloadObject = reloadObject,
+        analytics = analytics
     )
 
     @JvmStatic

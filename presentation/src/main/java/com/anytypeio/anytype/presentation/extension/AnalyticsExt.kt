@@ -903,6 +903,51 @@ fun CoroutineScope.sendAnalyticsBlockActionEvent(
     )
 }
 
+fun CoroutineScope.sendAnalyticsBookmarkOpen(analytics: Analytics) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.bookmarkOpenUrl
+    )
+}
+
+fun CoroutineScope.sendAnalyticsOpenAsObject(analytics: Analytics, type: String) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.objectOpenAs,
+        props = Props(
+            mapOf(EventsPropertiesKey.type to type)
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsObjectReload(analytics: Analytics) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.objectReload
+    )
+}
+
+fun CoroutineScope.sendAnalyticsRelationUrlOpen(analytics: Analytics) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.relationUrlOpen
+    )
+}
+
+fun CoroutineScope.sendAnalyticsRelationUrlCopy(analytics: Analytics) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.relationUrlCopy
+    )
+}
+
+fun CoroutineScope.sendAnalyticsRelationUrlEdit(analytics: Analytics) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.relationUrlEdit
+    )
+}
+
 fun CoroutineScope.sendAnalyticsSlashMenuEvent(
     analytics: Analytics
 ) {

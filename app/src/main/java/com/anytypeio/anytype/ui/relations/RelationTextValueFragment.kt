@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.ui.relations
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +19,6 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import com.anytypeio.anytype.core_utils.ext.normalizeUrl
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withParent
@@ -29,8 +26,6 @@ import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.common.SystemAction
-import com.anytypeio.anytype.presentation.sets.RelationValueAction
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -70,7 +65,8 @@ open class RelationTextValueFragment :
                 } else {
                     dispatchTextResultAndExit(txt)
                 }
-            }
+            },
+            focusListener = vm::onUrlEditEvent
         )
     }
 

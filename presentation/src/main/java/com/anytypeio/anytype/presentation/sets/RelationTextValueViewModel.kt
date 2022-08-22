@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -13,6 +14,10 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectReload
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlCopy
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlEdit
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlOpen
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -27,7 +32,8 @@ import timber.log.Timber
 class RelationTextValueViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
-    private val reloadObject: ReloadObject
+    private val reloadObject: ReloadObject,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<RelationTextValueView>>(emptyList())
@@ -150,7 +156,7 @@ class RelationTextValueViewModel(
         target: Id,
         action: RelationValueAction
     ) {
-        when(action) {
+        when (action) {
             is RelationValueAction.Email.Copy -> {
                 viewModelScope.launch {
                     intents.emit(
@@ -195,6 +201,7 @@ class RelationTextValueViewModel(
                         SystemAction.OpenUrl(url = action.url)
                     )
                     isDismissed.value = true
+                    sendAnalyticsRelationUrlOpen(analytics)
                 }
             }
             is RelationValueAction.Url.Copy -> {
@@ -206,6 +213,7 @@ class RelationTextValueViewModel(
                         )
                     )
                     isDismissed.value = true
+                    sendAnalyticsRelationUrlCopy(analytics)
                 }
             }
             is RelationValueAction.Url.Reload -> {
@@ -225,7 +233,10 @@ class RelationTextValueViewModel(
                     url = url
                 )
             ).process(
-                success = { isDismissed.value = true },
+                success = {
+                    isDismissed.value = true
+                    sendAnalyticsObjectReload(analytics)
+                },
                 failure = {
                     Timber.e(it, "Error while reloading bookmark.")
                     sendToast("Something went wrong. Please, try again later.")
@@ -234,17 +245,25 @@ class RelationTextValueViewModel(
         }
     }
 
+    fun onUrlEditEvent(hasFocus: Boolean) {
+        if (hasFocus) {
+            viewModelScope.sendAnalyticsRelationUrlEdit(analytics)
+        }
+    }
+
     class Factory(
         private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
-        private val reloadObject: ReloadObject
+        private val reloadObject: ReloadObject,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationTextValueViewModel(
                 relations = relations,
                 values = values,
-                reloadObject = reloadObject
+                reloadObject = reloadObject,
+                analytics = analytics
             ) as T
         }
     }

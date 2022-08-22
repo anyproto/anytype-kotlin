@@ -4,7 +4,6 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
@@ -18,12 +17,12 @@ import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextView
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationUrlHolder
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.text.ActionDoneListener
-import com.anytypeio.anytype.presentation.sets.RelationValueAction
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 
 class RelationTextValueAdapter(
     private var items: List<RelationTextValueView>,
-    private val onEditCompleted: (RelationTextValueView, String) -> Unit
+    private val onEditCompleted: (RelationTextValueView, String) -> Unit,
+    private val focusListener: (Boolean) -> Unit
 ) : RecyclerView.Adapter<RelationTextViewHolderBase<*>>() {
 
     override fun onCreateViewHolder(
@@ -52,7 +51,11 @@ class RelationTextValueAdapter(
         return when (viewType) {
             TYPE_TEXT -> RelationTextHolder(binding, R.string.enter_text)
             TYPE_TEXT_SHORT -> RelationTextShortHolder(binding, R.string.enter_text)
-            TYPE_URL -> RelationUrlHolder(binding, R.string.enter_url)
+            TYPE_URL -> RelationUrlHolder(binding, R.string.enter_url).apply {
+                binding.textInputField.setOnFocusChangeListener { _, hasFocus ->
+                    focusListener.invoke(hasFocus)
+                }
+            }
             TYPE_PHONE -> RelationPhoneHolder(binding, R.string.enter_phone)
             TYPE_EMAIL -> RelationEmailHolder(binding, R.string.enter_email)
             TYPE_NUMBER -> RelationNumberHolder(binding, R.string.enter_number)

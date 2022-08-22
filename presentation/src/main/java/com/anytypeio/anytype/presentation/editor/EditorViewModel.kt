@@ -162,11 +162,13 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEven
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBookmarkOpen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeChangeEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
@@ -3344,7 +3346,10 @@ class EditorViewModel(
         when (clicked) {
             is ListenerType.Bookmark.View -> {
                 when (mode) {
-                    EditorMode.Edit -> onBookmarkClicked(clicked.item)
+                    EditorMode.Edit -> {
+                        onBookmarkClicked(clicked.item)
+                        viewModelScope.sendAnalyticsBookmarkOpen(analytics)
+                    }
                     EditorMode.Locked -> onBookmarkClicked(clicked.item)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                     else -> Unit
@@ -5147,6 +5152,10 @@ class EditorViewModel(
                 val target = content.targetObjectId
                 if (target != null) {
                     proceedWithOpeningPage(target)
+                    viewModelScope.sendAnalyticsOpenAsObject(
+                        analytics = analytics,
+                        type = EventsDictionary.Type.bookmark
+                    )
                 }
             }
             else -> sendToast("Unexpected object")

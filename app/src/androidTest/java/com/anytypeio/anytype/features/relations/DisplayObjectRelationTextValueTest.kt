@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.`object`.ReloadObject
@@ -50,6 +51,9 @@ class DisplayObjectRelationTextValueTest {
     @Mock
     lateinit var reloadObject: ReloadObject
 
+    @Mock
+    lateinit var analytics: Analytics
+
     val root = MockDataFactory.randomUuid()
 
     private val state = MutableStateFlow(ObjectSet.init())
@@ -61,7 +65,8 @@ class DisplayObjectRelationTextValueTest {
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
-            reloadObject = reloadObject
+            reloadObject = reloadObject,
+            analytics = analytics
         )
     }
 

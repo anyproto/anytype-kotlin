@@ -2816,6 +2816,7 @@ message Rpc {
                 string targetId = 2; // id of the closest block
                 repeated string blockIds = 3; // id of block for duplicate
                 anytype.model.Block.Position position = 4;
+                string targetContextId = 5;
             }
 
             message Response {

@@ -1608,9 +1608,20 @@ class EditorViewModel(
                     is Content.Bookmark -> {
                         excludedActions.add(ActionItemType.Download)
                         if (!isMultiMode) {
-                            val idx = targetActions.indexOf(ActionItemType.OpenObject)
-                            if (idx == NO_POSITION) {
-                                targetActions.add(OPEN_OBJECT_POSITION, ActionItemType.OpenObject)
+                            if (content.targetObjectId != null) {
+                                val details = orchestrator.stores.details.current().details
+                                val obj = ObjectWrapper.Basic(
+                                    details[content.targetObjectId]?.map ?: emptyMap()
+                                )
+                                val isReady = content.state == Content.Bookmark.State.DONE
+                                val isActive = obj.isArchived != true && obj.isDeleted != true
+                                val idx = targetActions.indexOf(ActionItemType.OpenObject)
+                                if (idx == NO_POSITION && isReady && isActive) {
+                                    targetActions.add(
+                                        OPEN_OBJECT_POSITION,
+                                        ActionItemType.OpenObject
+                                    )
+                                }
                             }
                         }
                     }

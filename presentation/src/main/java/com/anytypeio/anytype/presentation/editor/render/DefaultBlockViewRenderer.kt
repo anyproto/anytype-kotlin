@@ -1239,13 +1239,22 @@ class DefaultBlockViewRenderer @Inject constructor(
             val obj = ObjectWrapper.Bookmark(
                 details.details[content.targetObjectId]?.map ?: emptyMap()
             )
-            if (obj.isArchived == true || obj.isDeleted == true) {
+            if (obj.isDeleted == true) {
                 linkDeleted(
                     block = block,
                     indent = indent,
                     mode = mode,
                     selection = selection,
                     parentSchema = schema
+                )
+            } else if (obj.isArchived == true) {
+                linkArchive(
+                    block = block,
+                    indent = indent,
+                    mode = mode,
+                    selection = selection,
+                    parentSchema = schema,
+                    obj = ObjectWrapper.Basic(obj.map)
                 )
             } else {
                 BlockView.Media.Bookmark(

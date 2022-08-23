@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -72,10 +74,28 @@ open class RelationTextValueFragment :
 
     private val relationValueActionAdapter by lazy {
         RelationActionAdapter { action ->
-            vm.onAction(
-                target = objectId,
-                action = action
-            )
+            val input = binding.recycler.findViewById<TextView?>(R.id.textInputField)
+            val parsed = input?.text?.toString().orEmpty()
+            // Workaround for updating relation value when before reloading content
+            if (action is RelationValueAction.Url.Reload && parsed != action.url) {
+                withParent<TextValueEditReceiver> {
+                    onTextValueChanged(
+                        ctx = ctx,
+                        relationId = relationId,
+                        objectId = objectId,
+                        text = parsed
+                    )
+                }
+                vm.onAction(
+                    target = objectId,
+                    action = action.copy(url = parsed)
+                )
+            } else {
+                vm.onAction(
+                    target = objectId,
+                    action = action
+                )
+            }
         }
     }
 

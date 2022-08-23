@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '30 23 * * *'
+    - cron: '30 23 * * 1,2,3,4,5'
   workflow_dispatch:
 name: Distribute nightly debug build
 jobs:

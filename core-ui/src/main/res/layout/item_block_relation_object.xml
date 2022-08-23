@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -9,11 +10,90 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content"
-        layout="@layout/item_document_relation_object"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvRelationTitle"
+            style="@style/RelationBlockTitleStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Description of something" />
+
+        <TextView
+            android:id="@+id/tvPlaceholder"
+            style="@style/RelationPlaceholderTextStyle"
+            android:text="@string/select_objects"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/default_text_placeholder" />
+
+        <com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
+            android:id="@+id/obj0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
+            android:id="@+id/obj1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/obj0"
+            app:layout_constraintStart_toEndOf="@+id/obj0"
+            app:layout_constraintTop_toTopOf="@+id/obj0"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
+            android:id="@+id/obj2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/obj0"
+            app:layout_constraintStart_toEndOf="@+id/obj1"
+            app:layout_constraintTop_toTopOf="@+id/obj0"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
+            android:id="@+id/obj3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/obj0"
+            app:layout_constraintStart_toEndOf="@+id/obj2"
+            app:layout_constraintTop_toTopOf="@+id/obj0"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/item_block_multi_select_mode_selector"
         tools:background="@drawable/item_block_multi_select_selected" />
 

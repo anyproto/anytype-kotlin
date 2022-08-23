@@ -1062,8 +1062,19 @@ class BlockAdapter(
                     }
                     is DividerLine -> onBindViewHolder(holder, position)
                     is DividerDots -> onBindViewHolder(holder, position)
-                    is RelationBlockViewHolder.Placeholder -> onBindViewHolder(holder, position)
-                    is RelationBlockViewHolder -> onBindViewHolder(holder, position)
+                    is RelationBlockViewHolder -> {
+                        when (holder) {
+                            is RelationBlockViewHolder.Placeholder -> {
+                                bindViewHolder(holder, position)
+                            }
+                            else -> {
+                                holder.processChangePayload(
+                                    payloads = payloads.typeOf(),
+                                    block = blocks[position] as BlockView.Relation.Related
+                                )
+                            }
+                        }
+                    }
                     is Description -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1450,47 +1461,47 @@ class BlockAdapter(
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
                 holder.indentize(item = item)
-                holder.setBackgroundColor(item.background)
+                holder.applyBackground(item)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
             is RelationBlockViewHolder.Status -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
-                holder.bind(item = item.view as DocumentRelationView.Status)
+                holder.bind(item = item.view)
                 holder.indentize(item = item)
-                holder.setBackgroundColor(item.background)
+                holder.applyBackground(item)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
             is RelationBlockViewHolder.Tags -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
-                holder.bind(item = item.view as DocumentRelationView.Tags)
+                holder.bind(item = item.view)
                 holder.indentize(item = item)
-                holder.setBackgroundColor(item.background)
+                holder.applyBackground(item)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
             is RelationBlockViewHolder.Object -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
-                holder.bind(item = item.view as DocumentRelationView.Object)
+                holder.bind(item = item.view)
                 holder.indentize(item = item)
-                holder.setBackgroundColor(item.background)
+                holder.applyBackground(item)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
             is RelationBlockViewHolder.File -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
-                holder.bind(item = item.view as DocumentRelationView.File)
+                holder.bind(item = item.view)
                 holder.indentize(item = item)
-                holder.setBackgroundColor(item.background)
+                holder.applyBackground(item)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
             is RelationBlockViewHolder.Checkbox -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
-                holder.bind(item = item.view as DocumentRelationView.Checkbox)
+                holder.bind(item = item.view)
                 holder.indentize(item = item)
-                holder.setBackgroundColor(item.background)
+                holder.applyBackground(item)
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }

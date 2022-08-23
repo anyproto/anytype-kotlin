@@ -289,6 +289,8 @@ class BlockViewDiffUtil(
         fun readWriteModeChanged() = changes.contains(READ_WRITE_MODE_CHANGED)
         fun selectionChanged() = changes.contains(SELECTION_CHANGED)
         fun alignmentChanged() = changes.contains(ALIGNMENT_CHANGED)
+        fun relationValueChanged() = changes.contains(RELATION_VALUE_CHANGED)
+        fun relationNameChanged() = changes.contains(RELATION_NAME_CHANGED)
     }
 
     companion object {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -8,10 +9,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include
+    <LinearLayout
         android:id="@+id/content"
-        layout="@layout/item_document_relation_checkbox"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvRelationTitle"
+            style="@style/RelationBlockTitleStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_6"
+            tools:text="Title for this checkbox relation" />
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_2"
+            android:layout_weight="0.6"
+            android:paddingTop="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_8">
+
+            <ImageView
+                android:id="@+id/ivRelationCheckbox"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_relation_checkbox_selector" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

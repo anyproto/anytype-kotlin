@@ -13,11 +13,9 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
         android:paddingStart="@dimen/default_document_content_padding_start"
-        android:paddingEnd="@dimen/default_document_content_padding_end"
-        tools:background="@drawable/item_block_multi_select_selected">
+        android:paddingEnd="@dimen/default_document_content_padding_end">
 
         <ImageView
             android:id="@+id/relationIcon"
@@ -39,5 +37,12 @@
             android:textColor="@color/palette_dark_grey" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

@@ -2,18 +2,87 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
         android:id="@+id/decorationContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content"
-        layout="@layout/item_document_relation_file"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+        <TextView
+            android:id="@+id/tvRelationTitle"
+            style="@style/RelationBlockTitleStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Description of something" />
+
+        <TextView
+            android:id="@+id/tvPlaceholder"
+            style="@style/RelationPlaceholderTextStyle"
+            android:text="@string/select_files"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/default_text_placeholder" />
+
+        <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
+            android:id="@+id/file0"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
+            android:id="@+id/file1"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginStart="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/file0"
+            app:layout_constraintStart_toEndOf="@+id/file0"
+            app:layout_constraintTop_toTopOf="@+id/file0"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
+            android:id="@+id/file2"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginStart="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/file0"
+            app:layout_constraintStart_toEndOf="@+id/file1"
+            app:layout_constraintTop_toTopOf="@+id/file0"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/item_block_multi_select_mode_selector"
         tools:background="@drawable/item_block_multi_select_selected" />
 

@@ -1150,11 +1150,15 @@ sealed class BlockView : ViewType {
     }
 
     sealed class Relation : BlockView(), Selectable, Indentable, Decoratable {
+
+        abstract val background: ThemeColor
+
         data class Placeholder(
             override val id: String,
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
-            override val decorations: List<Decoration>
+            override val decorations: List<Decoration>,
+            override val background: ThemeColor = ThemeColor.DEFAULT
         ) : Relation() {
             override fun getViewType(): Int = HOLDER_RELATION_PLACEHOLDER
         }
@@ -1163,7 +1167,7 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
-            val background: ThemeColor = ThemeColor.DEFAULT,
+            override val background: ThemeColor = ThemeColor.DEFAULT,
             val view: DocumentRelationView,
             override val decorations: List<Decoration>
         ) : Relation() {

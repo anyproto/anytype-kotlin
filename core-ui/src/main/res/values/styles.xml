@@ -1024,4 +1024,20 @@
         <item name="android:textColor">@color/text_primary</item>
     </style>
 
+    <style name="RelationBlockTitleStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+    </style>
+
+    <style name="RelationBlockValueStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:hint">@string/enter_value</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+    </style>
+
 </resources>

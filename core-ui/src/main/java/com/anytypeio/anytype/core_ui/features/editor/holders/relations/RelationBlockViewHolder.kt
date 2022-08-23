@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.relations
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -39,9 +41,9 @@ sealed class RelationBlockViewHolder(
     BlockViewHolder.IndentableHolder,
     DecoratableViewHolder {
 
-    fun setBackgroundColor(background: ThemeColor) {
-        itemView.setBlockBackgroundColor(background)
-    }
+    abstract val selected: View
+    abstract val content: ViewGroup
+    abstract val relationName: TextView
 
     fun indent(item: BlockView.Indentable, view: View) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -63,12 +65,22 @@ sealed class RelationBlockViewHolder(
     }
 
     fun applyContentDecorations(
-        viewGroup: ViewGroup,
-        decorations: List<BlockView.Decoration>,
+        root: View,
+        decorations: List<BlockView.Decoration>
     ) {
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            if (decorations.isEmpty() || (decorations.size == 1 && decorations[0].style == BlockView.Decoration.Style.None)) {
+                root.updateLayoutParams<RecyclerView.LayoutParams> {
+                    bottomMargin = dimen(R.dimen.dp_2)
+                }
+            }
             decoratableContainer.decorate(decorations = decorations) { rect ->
-                viewGroup.updateLayoutParams<FrameLayout.LayoutParams> {
+                content.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.dp_8) + rect.left
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
+                    bottomMargin = rect.bottom
+                }
+                selected.updateLayoutParams<FrameLayout.LayoutParams> {
                     marginStart = dimen(R.dimen.dp_8) + rect.left
                     marginEnd = dimen(R.dimen.dp_8) + rect.right
                     bottomMargin = rect.bottom
@@ -76,6 +88,40 @@ sealed class RelationBlockViewHolder(
             }
         }
     }
+
+    fun applyBackground(item: BlockView.Relation) {
+        content.setBlockBackgroundColor(item.background)
+    }
+
+    fun applySelection(item: BlockView.Selectable) {
+        selected.isSelected = item.isSelected
+    }
+
+    fun processChangePayload(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        block: BlockView.Relation.Related
+    ) {
+        payloads.forEach { payload ->
+            if (payload.selectionChanged()) {
+                applySelection(block)
+            }
+            if (payload.backgroundColorChanged()) {
+                applyBackground(block)
+            }
+            if (payload.relationValueChanged()) {
+                applyRelationValue(block.view)
+            }
+            if (payload.relationNameChanged()) {
+                applyRelationName(block.view.name)
+            }
+        }
+    }
+
+    fun applyRelationName(name: String) {
+        relationName.text = name
+    }
+
+    abstract fun applyRelationValue(item: DocumentRelationView)
 
     init {
         applyDefaultOffsets(itemView)
@@ -85,33 +131,53 @@ sealed class RelationBlockViewHolder(
         RelationBlockViewHolder(binding.root) {
 
         val icon = binding.relationIcon
-        val content = binding.content
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = binding.tvPlaceholder
 
         fun bind(item: BlockView.Relation.Placeholder) = with(itemView) {
-            content.isSelected = item.isSelected
             indentize(item)
+            applySelection(item)
+            applyBackground(item)
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            indent(item, icon)
+            indent(item, itemView)
         }
 
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
         override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-            applyContentDecorations(content, decorations)
+            super.applyContentDecorations(itemView, decorations)
         }
+
+        override fun applyRelationValue(item: DocumentRelationView) {}
     }
 
     class Default(binding: ItemBlockRelationDefaultBinding) :
         RelationBlockViewHolder(binding.root) {
 
-        private val tvTitle = binding.content.tvRelationTitle
-        private val tvValue = binding.content.tvRelationValue
-        private val content = binding.content.root
+        private val tvTitle = binding.tvRelationTitle
+        private val tvValue = binding.tvRelationValue
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = tvTitle
+        override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
-        fun bind(item: DocumentRelationView): Unit = with(itemView) {
-            tvTitle.text = item.name
+        fun bind(item: DocumentRelationView) {
+            applyRelationName(item.name)
+            applyRelationValue(item)
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            indent(item, itemView)
+        }
+
+        override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+            super.applyContentDecorations(itemView, decorations)
+        }
+
+        override fun applyRelationValue(item: DocumentRelationView) {
             tvValue.apply {
                 text = item.value
                 if (item is DocumentRelationView.Default) {
@@ -128,118 +194,135 @@ sealed class RelationBlockViewHolder(
                 }
             }
         }
-
-        override fun indentize(item: BlockView.Indentable) {
-            indent(item, tvTitle)
-        }
-
-        override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
-
-        override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-            applyContentDecorations(content, decorations)
-        }
     }
 
     class Checkbox(binding: ItemBlockRelationCheckboxBinding) :
         RelationBlockViewHolder(binding.root) {
 
-        private val tvTitle = binding.content.tvRelationTitle
-        private val tvCheckbox = binding.content.ivRelationCheckbox
-        private val content = binding.content.root
+        private val tvTitle = binding.tvRelationTitle
+        private val tvCheckbox = binding.ivRelationCheckbox
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView.Checkbox) = with(itemView) {
-            tvTitle.text = item.name
-            tvCheckbox.isSelected = item.isChecked
+        fun bind(item: DocumentRelationView) {
+            applyRelationName(item.name)
+            applyRelationValue(item)
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            indent(item, tvTitle)
+            indent(item, itemView)
         }
 
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
         override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-            applyContentDecorations(content, decorations)
+            super.applyContentDecorations(itemView, decorations)
+        }
+
+        override fun applyRelationValue(item: DocumentRelationView) {
+            if (item is DocumentRelationView.Checkbox) {
+                tvCheckbox.isSelected = item.isChecked
+            }
         }
     }
 
     class Status(binding: ItemBlockRelationStatusBinding) : RelationBlockViewHolder(binding.root) {
 
-        private val tvTitle = binding.content.tvRelationTitle
-        private val tvValue = binding.content.tvRelationValue
-        private val content = binding.content.root
+        private val tvTitle = binding.tvRelationTitle
+        private val tvValue = binding.tvRelationValue
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView.Status) {
-            tvTitle.text = item.name
-            tvValue.apply {
-                if (item.status.isNotEmpty()) {
-                    val status = item.status.first()
-                    text = status.status
-                    val color = ThemeColor.values().find { v -> v.code == status.color }
-                    val defaultTextColor = resources.getColor(R.color.text_primary, null)
-                    if (color != null && color != ThemeColor.DEFAULT) {
-                        setTextColor(resources.dark(color, defaultTextColor))
-                    } else {
-                        setTextColor(defaultTextColor)
-                    }
-                } else {
-                    text = null
-                }
-            }
+        val c = binding.content
+
+        fun bind(item: DocumentRelationView) {
+            applyRelationName(item.name)
+            applyRelationValue(item)
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            indent(item, tvTitle)
+            indent(item, itemView)
         }
 
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
         override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-            applyContentDecorations(content, decorations)
+            super.applyContentDecorations(itemView, decorations)
+        }
+
+        override fun applyRelationValue(item: DocumentRelationView) {
+            if (item is DocumentRelationView.Status) {
+                tvValue.apply {
+                    if (item.status.isNotEmpty()) {
+                        val status = item.status.first()
+                        text = status.status
+                        val color = ThemeColor.values().find { v -> v.code == status.color }
+                        val defaultTextColor = resources.getColor(R.color.text_primary, null)
+                        if (color != null && color != ThemeColor.DEFAULT) {
+                            setTextColor(resources.dark(color, defaultTextColor))
+                        } else {
+                            setTextColor(defaultTextColor)
+                        }
+                    } else {
+                        text = null
+                    }
+                }
+            }
         }
     }
 
-    class Tags(binding: ItemBlockRelationTagBinding) : RelationBlockViewHolder(binding.root) {
+    class Tags(private val binding: ItemBlockRelationTagBinding) :
+        RelationBlockViewHolder(binding.root) {
 
-        private val tvTitle = binding.content.tvRelationTitle
-        private val content = binding.content
-        private val placeholder = binding.content.tvPlaceholder
+        private val tvTitle = binding.tvRelationTitle
+        override val content = binding.content
+        private val placeholder = binding.tvPlaceholder
+        override val selected = binding.selected
+        override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView.Tags) = with(itemView) {
-            tvTitle.text = item.name
-            if (item.tags.isEmpty()) {
-                placeholder.visible()
-            } else {
-                placeholder.gone()
-            }
-            for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
-            item.tags.forEachIndexed { index, tagView ->
-                when (index) {
-                    in 0..MAX_VISIBLE_TAGS_INDEX -> {
-                        getViewByIndex(index)?.setup(tagView.tag, tagView.color)
+        fun bind(item: DocumentRelationView) {
+            applyRelationName(item.name)
+            applyRelationValue(item)
+        }
+
+        override fun applyRelationValue(item: DocumentRelationView) {
+            if (item is DocumentRelationView.Tags) {
+                if (item.tags.isEmpty()) {
+                    placeholder.visible()
+                } else {
+                    placeholder.gone()
+                }
+                for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
+                item.tags.forEachIndexed { index, tagView ->
+                    when (index) {
+                        in 0..MAX_VISIBLE_TAGS_INDEX -> {
+                            getViewByIndex(index)?.setup(tagView.tag, tagView.color)
+                        }
                     }
                 }
             }
         }
 
         private fun getViewByIndex(index: Int): TagWidget? = when (index) {
-            0 -> content.tag0
-            1 -> content.tag1
-            2 -> content.tag2
-            3 -> content.tag3
-            4 -> content.tag4
-            5 -> content.tag5
+            0 -> binding.tag0
+            1 -> binding.tag1
+            2 -> binding.tag2
+            3 -> binding.tag3
+            4 -> binding.tag4
+            5 -> binding.tag5
             else -> null
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            indent(item, tvTitle)
+            indent(item, itemView)
         }
 
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
         override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-            applyContentDecorations(content.root, decorations)
+            super.applyContentDecorations(itemView, decorations)
         }
 
         companion object {
@@ -247,30 +330,39 @@ sealed class RelationBlockViewHolder(
         }
     }
 
-    class Object(binding: ItemBlockRelationObjectBinding) : RelationBlockViewHolder(binding.root) {
+    class Object(private val binding: ItemBlockRelationObjectBinding) :
+        RelationBlockViewHolder(binding.root) {
 
-        private val tvTitle = binding.content.tvRelationTitle
-        private val placeholder = binding.content.tvPlaceholder
-        private val content = binding.content
+        private val tvTitle = binding.tvRelationTitle
+        private val placeholder = binding.tvPlaceholder
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView.Object) {
-            tvTitle.text = item.name
-            if (item.objects.isEmpty()) {
-                placeholder.visible()
-            } else {
-                placeholder.gone()
-            }
-            for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
-            item.objects.forEachIndexed { index, objectView ->
-                when (index) {
-                    in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
-                        getViewByIndex(index)?.let { view ->
-                            if (objectView is ObjectView.Default) {
-                                view.visible()
-                                view.setup(name = objectView.name, icon = objectView.icon)
-                            } else {
-                                view.visible()
-                                view.setupAsNonExistent()
+        fun bind(item: DocumentRelationView) {
+            applyRelationName(item.name)
+            applyRelationValue(item)
+        }
+
+        override fun applyRelationValue(item: DocumentRelationView) {
+            if (item is DocumentRelationView.Object) {
+                if (item.objects.isEmpty()) {
+                    placeholder.visible()
+                } else {
+                    placeholder.gone()
+                }
+                for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
+                item.objects.forEachIndexed { index, objectView ->
+                    when (index) {
+                        in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
+                            getViewByIndex(index)?.let { view ->
+                                if (objectView is ObjectView.Default) {
+                                    view.visible()
+                                    view.setup(name = objectView.name, icon = objectView.icon)
+                                } else {
+                                    view.visible()
+                                    view.setupAsNonExistent()
+                                }
                             }
                         }
                     }
@@ -279,21 +371,21 @@ sealed class RelationBlockViewHolder(
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            indent(item, tvTitle)
+            indent(item, itemView)
         }
 
         private fun getViewByIndex(index: Int): RelationObjectItem? = when (index) {
-            0 -> content.obj0
-            1 -> content.obj1
-            2 -> content.obj2
-            3 -> content.obj3
+            0 -> binding.obj0
+            1 -> binding.obj1
+            2 -> binding.obj2
+            3 -> binding.obj3
             else -> null
         }
 
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
         override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-            applyContentDecorations(content.root, decorations)
+            super.applyContentDecorations(itemView, decorations)
         }
 
         companion object {
@@ -301,25 +393,34 @@ sealed class RelationBlockViewHolder(
         }
     }
 
-    class File(binding: ItemBlockRelationFileBinding) : RelationBlockViewHolder(binding.root) {
+    class File(private val binding: ItemBlockRelationFileBinding) :
+        RelationBlockViewHolder(binding.root) {
 
-        private val tvTitle = binding.content.tvRelationTitle
-        private val placeholder = binding.content.tvPlaceholder
-        private val content = binding.content
+        private val tvTitle = binding.tvRelationTitle
+        private val placeholder = binding.tvPlaceholder
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView.File) = with(itemView) {
-            tvTitle.text = item.name
-            if (item.files.isEmpty()) {
-                placeholder.visible()
-            } else {
-                placeholder.gone()
-            }
-            item.files.forEachIndexed { index, fileView ->
-                when (index) {
-                    in 0..MAX_VISIBLE_FILES_INDEX -> {
-                        getViewByIndex(index)?.let { view ->
-                            view.visible()
-                            view.setup(name = fileView.name, mime = fileView.mime)
+        fun bind(item: DocumentRelationView) {
+            applyRelationName(item.name)
+            applyRelationValue(item)
+        }
+
+        override fun applyRelationValue(item: DocumentRelationView) {
+            if (item is DocumentRelationView.File) {
+                if (item.files.isEmpty()) {
+                    placeholder.visible()
+                } else {
+                    placeholder.gone()
+                }
+                item.files.forEachIndexed { index, fileView ->
+                    when (index) {
+                        in 0..MAX_VISIBLE_FILES_INDEX -> {
+                            getViewByIndex(index)?.let { view ->
+                                view.visible()
+                                view.setup(name = fileView.name, mime = fileView.mime)
+                            }
                         }
                     }
                 }
@@ -327,20 +428,20 @@ sealed class RelationBlockViewHolder(
         }
 
         private fun getViewByIndex(index: Int): GridCellFileItem? = when (index) {
-            0 -> content.file0
-            1 -> content.file1
-            2 -> content.file2
+            0 -> binding.file0
+            1 -> binding.file1
+            2 -> binding.file2
             else -> null
         }
 
         override fun indentize(item: BlockView.Indentable) {
-            indent(item, tvTitle)
+            indent(item, itemView)
         }
 
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
         override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-            applyContentDecorations(content.root, decorations)
+            super.applyContentDecorations(itemView, decorations)
         }
 
         companion object {

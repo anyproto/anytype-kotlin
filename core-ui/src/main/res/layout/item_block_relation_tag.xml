@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -10,11 +11,119 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content"
-        layout="@layout/item_document_relation_tag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+        <TextView
+            android:id="@+id/tvRelationTitle"
+            style="@style/RelationBlockTitleStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Description of something" />
+
+        <TextView
+            android:id="@+id/tvPlaceholder"
+            style="@style/RelationPlaceholderTextStyle"
+            android:text="@string/select_tags"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/default_text_placeholder" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
+            android:id="@+id/tag0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="S"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
+            android:id="@+id/tag1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tag0"
+            app:layout_constraintStart_toEndOf="@id/tag0"
+            app:layout_constraintTop_toTopOf="@id/tag0"
+            tools:text="T"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
+            android:id="@+id/tag2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tag0"
+            app:layout_constraintStart_toEndOf="@id/tag1"
+            app:layout_constraintTop_toTopOf="@id/tag0"
+            tools:text="M"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
+            android:id="@+id/tag3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tag0"
+            app:layout_constraintStart_toEndOf="@id/tag2"
+            app:layout_constraintTop_toTopOf="@id/tag0"
+            tools:text="U"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
+            android:id="@+id/tag4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tag0"
+            app:layout_constraintStart_toEndOf="@id/tag3"
+            app:layout_constraintTop_toTopOf="@id/tag0"
+            tools:text="Y"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
+            android:id="@+id/tag5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tag0"
+            app:layout_constraintStart_toEndOf="@id/tag4"
+            app:layout_constraintTop_toTopOf="@id/tag0"
+            tools:text="P"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/item_block_multi_select_mode_selector"
         tools:background="@drawable/item_block_multi_select_selected" />
 

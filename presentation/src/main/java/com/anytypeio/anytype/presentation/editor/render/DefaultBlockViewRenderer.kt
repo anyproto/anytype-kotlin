@@ -2009,7 +2009,8 @@ class DefaultBlockViewRenderer @Inject constructor(
             return BlockView.Relation.Placeholder(
                 id = block.id,
                 indent = indent,
-                decorations = schema.toBlockViewDecoration(block)
+                decorations = schema.toBlockViewDecoration(block),
+                background = block.parseThemeBackgroundColor()
             )
         } else {
             val relation = relations.firstOrNull { it.key == content.key }
@@ -2031,14 +2032,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                     BlockView.Relation.Placeholder(
                         id = block.id,
                         indent = indent,
-                        decorations = schema.toBlockViewDecoration(block)
+                        decorations = schema.toBlockViewDecoration(block),
+                        background = block.parseThemeBackgroundColor()
                     )
                 }
             } else {
                 return BlockView.Relation.Placeholder(
                     id = block.id,
                     indent = indent,
-                    decorations = schema.toBlockViewDecoration(block)
+                    decorations = schema.toBlockViewDecoration(block),
+                    background = block.parseThemeBackgroundColor()
                 )
             }
         }

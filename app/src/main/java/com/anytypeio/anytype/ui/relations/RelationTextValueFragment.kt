@@ -30,6 +30,7 @@ import com.anytypeio.anytype.databinding.FragmentRelationTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
+import com.anytypeio.anytype.presentation.sets.RelationValueAction
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID

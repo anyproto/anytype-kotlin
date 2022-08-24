@@ -902,3 +902,39 @@ fun CoroutineScope.sendAnalyticsBlockActionEvent(
         )
     )
 }
+
+fun CoroutineScope.sendAnalyticsSlashMenuEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.slashMenu
+    )
+}
+
+fun CoroutineScope.sendAnalyticsStyleMenuEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.styleMenu
+    )
+}
+
+fun CoroutineScope.sendAnalyticsSelectionMenuEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.selectionMenu
+    )
+}
+
+fun CoroutineScope.sendAnalyticsMentionMenuEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.mentionMenu
+    )
+}

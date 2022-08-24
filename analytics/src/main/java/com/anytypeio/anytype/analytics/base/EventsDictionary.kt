@@ -109,6 +109,13 @@ object EventsDictionary {
 
     const val goBack = "HistoryBack"
 
+    //Toolbars
+    const val slashMenu = "KeyboardBarSlashMenu"
+    const val styleMenu = "KeyboardBarStyleMenu"
+    const val selectionMenu = "KeyboardBarSelectionMenu"
+    const val mentionMenu = "KeyboardBarMentionMenu"
+
+
     // Routes
     object Routes {
         const val home = "ScreenHome"

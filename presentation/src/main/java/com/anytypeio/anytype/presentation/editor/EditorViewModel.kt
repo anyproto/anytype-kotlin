@@ -164,6 +164,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeChangeEvent
@@ -171,8 +172,11 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEv
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSlashMenuEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
@@ -2322,6 +2326,7 @@ class EditorViewModel(
         } else {
             Timber.w("Failed to handle toolbar style click. Unknown focus for style toolbar: $focus")
         }
+        viewModelScope.sendAnalyticsStyleMenuEvent(analytics)
     }
 
     private fun proceedWithStyleToolbarEvent(target: BlockView) {
@@ -2496,6 +2501,7 @@ class EditorViewModel(
                 proceedWithEnteringActionMode(target = target, scrollTarget = false)
             }
         }
+        viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
     }
 
     fun onEnterScrollAndMoveClicked() {
@@ -4208,6 +4214,7 @@ class EditorViewModel(
     //region SLASH WIDGET
     fun onStartSlashWidgetClicked() {
         dispatch(Command.AddSlashWidgetTriggerToFocusedBlock)
+        viewModelScope.sendAnalyticsSlashMenuEvent(analytics)
     }
 
     fun onSlashItemClicked(item: SlashItem) {
@@ -5348,6 +5355,7 @@ class EditorViewModel(
 
     fun onStartMentionWidgetClicked() {
         dispatch(Command.AddMentionWidgetTriggerToFocusedBlock)
+        viewModelScope.sendAnalyticsMentionMenuEvent(analytics)
     }
 
     fun onMentionEvent(mentionEvent: MentionEvent) {

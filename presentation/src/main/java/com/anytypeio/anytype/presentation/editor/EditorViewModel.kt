@@ -2938,12 +2938,37 @@ class EditorViewModel(
     }
 
     private fun onPageClicked(block: Id) {
-        val target = blocks.firstOrNull { it.id == block }?.content<Content.Link>()?.target
-        if (target != null) {
-            proceedWithOpeningObjectByLayout(target = target)
-        } else {
-            sendToast("Couldn't find the target of the link")
-            Timber.e("Error while getting target of Block Page")
+        val block = blocks.firstOrNull { it.id == block }
+        when(val content = block?.content) {
+            is Content.Link -> {
+                proceedWithOpeningObjectByLayout(target = content.target)
+            }
+            is Content.Bookmark -> {
+                val target = content.targetObjectId
+                val details = orchestrator.stores.details.current().details[target]
+                if (target != null) {
+                    val obj = ObjectWrapper.Bookmark(details?.map ?: mapOf())
+                    if (obj.isArchived != true && obj.isDeleted != true) {
+                        proceedWithOpeningObjectByLayout(target = target)
+                    } else {
+                        val source = obj.source
+                        if (!source.isNullOrBlank()) {
+                            commands.postValue(
+                                EventWrapper(
+                                    Command.Browse(source)
+                                )
+                            )
+                        } else {
+                            sendToast("Source is missing for this object")
+                        }
+                    }
+                } else {
+                    sendToast("Couldn't find the target of the link")
+                }
+            }
+            else -> {
+                sendToast("Couldn't find the target of the link")
+            }
         }
     }
 

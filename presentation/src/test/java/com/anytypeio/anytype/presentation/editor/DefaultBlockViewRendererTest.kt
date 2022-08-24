@@ -5231,7 +5231,7 @@ class DefaultBlockViewRendererTest {
                             mapOf(
                                 Relations.NAME to bookmarkTitle,
                                 Relations.DESCRIPTION to bookmarkDescription,
-                                Relations.URL to bookmarkUrl
+                                Relations.SOURCE to bookmarkUrl
                             )
                         )
                     )

@@ -32,6 +32,7 @@ object Relations {
     const val SET_OF = "setOf"
     const val IS_HIGHLIGHTED = "isHighlighted"
     const val URL = "url"
+    const val SOURCE = "source"
 
     const val PAGE_COVER = "pageCover"
 

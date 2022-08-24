@@ -1259,7 +1259,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             } else {
                 BlockView.Media.Bookmark(
                     id = block.id,
-                    url = obj.url.orEmpty(),
+                    url = obj.source.orEmpty(),
                     title = obj.name,
                     description = obj.description,
                     imageUrl = obj.picture?.let { urlBuilder.image(it) },

@@ -51,7 +51,6 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
-import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.clipboard.Paste.Companion.DEFAULT_RANGE
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -342,11 +341,6 @@ class EditorViewModel(
      */
     var currentMediaUploadDescription: Media.Upload.Description? = null
         private set
-
-    /**
-     * Currently pending text update. If null, it is not present or already dispatched.
-     */
-    private var pendingTextUpdate: TextUpdate? = null
 
     private var analyticsContext: String? = null
 
@@ -818,9 +812,6 @@ class EditorViewModel(
             .proxies
             .saves
             .stream()
-            .onEach { pendingTextUpdate = it }
-            .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
-            .onEach { if (it == pendingTextUpdate) pendingTextUpdate = null }
             .filterNotNull()
             .onEach { update ->
                 val updated = blocks.map { block ->
@@ -1030,28 +1021,7 @@ class EditorViewModel(
     }
 
     fun proceedWithExitingBack() {
-        val update = pendingTextUpdate
-        if (update != null) {
-            viewModelScope.launch {
-                orchestrator.proxies.saves.send(null)
-                orchestrator.proxies.changes.send(null)
-            }
-            viewModelScope.launch {
-                orchestrator.updateText(
-                    UpdateText.Params(
-                        context = context,
-                        text = update.text,
-                        marks = update.markup,
-                        target = update.target
-                    )
-                ).proceed(
-                    failure = { exitBack() },
-                    success = { exitBack() }
-                )
-            }
-        } else {
-            exitBack()
-        }
+        exitBack()
     }
 
     private fun exitBack() {
@@ -1072,28 +1042,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithExitingToDashboard() {
-        val update = pendingTextUpdate
-        if (update != null) {
-            viewModelScope.launch {
-                orchestrator.proxies.saves.send(null)
-                orchestrator.proxies.changes.send(null)
-            }
-            viewModelScope.launch {
-                orchestrator.updateText(
-                    UpdateText.Params(
-                        context = context,
-                        text = update.text,
-                        marks = update.markup,
-                        target = update.target
-                    )
-                ).proceed(
-                    failure = { exitDashboard() },
-                    success = { exitDashboard() }
-                )
-            }
-        } else {
-            exitDashboard()
-        }
+        exitDashboard()
     }
 
     private fun exitDashboard() {
@@ -1418,27 +1367,6 @@ class EditorViewModel(
             val current = views[position]
             if (current is BlockView.Text && current.isStyleClearable()) {
                 viewModelScope.launch {
-                    val pending = pendingTextUpdate
-                    if (pending != null && pending.target == id) {
-                        val update = blocks.updateTextContent(
-                            target = id,
-                            text = "",
-                            marks = emptyList()
-                        )
-                        orchestrator.stores.document.update(update)
-                        with(orchestrator.proxies) {
-                            changes.send(null)
-                            saves.send(null)
-                            intents.send(
-                                Intent.Text.UpdateText(
-                                    context = context,
-                                    target = id,
-                                    marks = emptyList(),
-                                    text = ""
-                                )
-                            )
-                        }
-                    }
                     orchestrator.proxies.intents.send(
                         Intent.Text.UpdateStyle(
                             context = context,

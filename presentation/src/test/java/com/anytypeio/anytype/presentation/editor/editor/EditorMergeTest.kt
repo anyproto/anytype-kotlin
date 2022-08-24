@@ -2,10 +2,14 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
@@ -33,47 +37,11 @@ class EditorMergeTest : EditorPresentationTestSetup() {
     @Test
     fun `should update text and proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
 
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
 
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
-
-        val first = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
-
-        val second = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            children = emptyList()
-        )
+        val first = StubParagraph()
+        val second = StubParagraph()
 
         val page = Block(
             id = root,
@@ -98,13 +66,19 @@ class EditorMergeTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
+        vm.onSelectionChanged(
+            id = second.id,
+            selection = IntRange(0, 0)
+        )
+
         val text = MockDataFactory.randomString()
 
-        vm.onTextChanged(
+        val blockView = BlockView.Text.Paragraph(
             id = second.id,
-            marks = emptyList(),
             text = text
         )
+
+        vm.onTextBlockTextChanged(blockView)
 
         vm.onNonEmptyBlockBackspaceClicked(
             id = second.id,
@@ -114,7 +88,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
+        verifyBlocking(updateText, times(2)) {
             invoke(
                 params = eq(
                     UpdateText.Params(

@@ -70,7 +70,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -209,7 +208,6 @@ class ObjectSetViewModel(
             titleUpdateChannel
                 .consumeAsFlow()
                 .distinctUntilChanged()
-                .debounce(TITLE_CHANNEL_DISPATCH_DELAY)
                 .map {
                     UpdateText.Params(
                         context = context,

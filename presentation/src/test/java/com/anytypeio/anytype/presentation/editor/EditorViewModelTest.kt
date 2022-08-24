@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubFile
+import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -530,7 +531,9 @@ open class EditorViewModelTest {
         stubUpdateText()
 
         vm.onStart(pageId)
-        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
+
+        val blockView = BlockView.Text.Paragraph(id = blockId, text = text)
+        vm.onTextBlockTextChanged(blockView)
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
@@ -542,7 +545,7 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should debounce values when dispatching text changes`() {
+    fun `should not debounce values when dispatching text changes`() {
 
         val blockId = MockDataFactory.randomUuid()
         val pageId = MockDataFactory.randomUuid()
@@ -555,18 +558,38 @@ open class EditorViewModelTest {
 
         vm.onStart(pageId)
 
-        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
-        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
-        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = blockId,
+                text = text
+            )
+        )
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = blockId,
+                text = text
+            )
+        )
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = blockId,
+                text = text
+            )
+        )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        vm.onTextChanged(id = blockId, text = text, marks = emptyList())
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = blockId,
+                text = text
+            )
+        )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         runBlockingTest {
-            verify(updateText, times(2)).invoke(
+            verify(updateText, times(4)).invoke(
                 argThat { this.context == pageId && this.target == blockId && this.text == text }
             )
         }
@@ -1315,18 +1338,13 @@ open class EditorViewModelTest {
 
         val range = 0..3
 
-        val marks = listOf(
-            Block.Content.Text.Mark(
-                type = Block.Content.Text.Mark.Type.BOLD,
-                range = range
-            )
+        val blockView = BlockView.Text.Paragraph(
+            id = paragraph.id,
+            text = userInput,
+            marks = listOf(Markup.Mark.Bold(from = range.first, to = range.last))
         )
 
-        vm.onTextChanged(
-            id = paragraph.id,
-            marks = marks,
-            text = userInput
-        )
+        vm.onTextBlockTextChanged(blockView)
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
@@ -1391,7 +1409,12 @@ open class EditorViewModelTest {
 
         val userInput = MockDataFactory.randomString()
 
-        vm.onTextChanged(id = paragraph.id, text = userInput, marks = emptyList())
+        val blockView = BlockView.Text.Paragraph(
+            id = paragraph.id,
+            text = userInput
+        )
+
+        vm.onTextBlockTextChanged(blockView)
 
         val contentAfterChange = Block.Content.Text(
             text = userInput,
@@ -1483,7 +1506,15 @@ open class EditorViewModelTest {
             )
         )
 
-        vm.onTextChanged(id = paragraph.id, text = userInput, marks = marks)
+        val blockView = BlockView.Text.Paragraph(
+            id = paragraph.id,
+            text = userInput,
+            marks = listOf(
+                Markup.Mark.Bold(from = 0, to = 5)
+            )
+        )
+
+        vm.onTextBlockTextChanged(blockView)
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
@@ -2382,31 +2413,23 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should send update text style intent when is list and empty`() {
+    fun `should send update block text and split block commands on enter key 0 cursor position`() {
         // SETUP
 
         val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
+
+        val paragraph = StubParagraph()
 
         val page = listOf(
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Smart(SmartBlockType.PAGE),
-                children = listOf(header.id, child)
+                children = listOf(header.id, paragraph.id)
             ),
             header,
             title,
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                children = emptyList()
-            )
+            paragraph
         )
 
         val flow: Flow<List<Event.Command>> = flow {
@@ -2435,23 +2458,27 @@ open class EditorViewModelTest {
         // TESTING
 
         vm.onBlockFocusChanged(
-            id = child,
+            id = paragraph.id,
             hasFocus = true
         )
 
-        val index = MockDataFactory.randomInt()
-
-        val text = MockDataFactory.randomString()
-
-        vm.onTextChanged(
-            id = child,
-            text = text,
-            marks = emptyList()
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = IntRange(0, 0)
         )
 
+        val newText = MockDataFactory.randomString()
+
+        val blockView = BlockView.Text.Paragraph(
+            id = paragraph.id,
+            text = newText
+        )
+
+        vm.onTextBlockTextChanged(blockView)
+
         vm.onEnterKeyClicked(
-            target = child,
-            text = text,
+            target = paragraph.id,
+            text = newText,
             marks = emptyList(),
             range = 0..0
         )
@@ -2459,12 +2486,12 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         runBlockingTest {
-            verify(updateText, times(1)).invoke(
+            verify(updateText, times(2)).invoke(
                 params = eq(
                     UpdateText.Params(
                         context = root,
-                        text = text,
-                        target = child,
+                        text = newText,
+                        target = paragraph.id,
                         marks = emptyList()
                     )
                 )
@@ -2476,7 +2503,9 @@ open class EditorViewModelTest {
                 params = eq(
                     SplitBlock.Params(
                         context = root,
-                        block = page[3],
+                        block = paragraph.copy(
+                            content = paragraph.content.asText().copy(text = newText)
+                        ),
                         range = 0..0,
                         isToggled = null
                     )
@@ -2486,34 +2515,23 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should preserve text style while splitting`() {
-
+    fun `should send update block text and split block commands on enter key non 0 cursor position`() {
         // SETUP
 
         val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
 
-        val style = Block.Content.Text.Style.BULLET
+        val paragraph = StubParagraph()
 
         val page = listOf(
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
-                children = listOf(header.id, child)
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, paragraph.id)
             ),
             header,
             title,
-            Block(
-                id = child,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Text(
-                    text = MockDataFactory.randomString(),
-                    marks = emptyList(),
-                    style = style
-                ),
-                children = emptyList()
-            )
+            paragraph
         )
 
         val flow: Flow<List<Event.Command>> = flow {
@@ -2542,41 +2560,60 @@ open class EditorViewModelTest {
         // TESTING
 
         vm.onBlockFocusChanged(
-            id = child,
+            id = paragraph.id,
             hasFocus = true
         )
 
-        val index = MockDataFactory.randomInt()
-
-        val text = MockDataFactory.randomString()
-
-        vm.onTextChanged(
-            id = child,
-            text = text,
-            marks = emptyList()
+        vm.onSelectionChanged(
+            id = paragraph.id,
+            selection = IntRange(1, 1)
         )
+
+        val newText = MockDataFactory.randomString()
+
+        val blockView = BlockView.Text.Paragraph(
+            id = paragraph.id,
+            text = newText
+        )
+
+        vm.onTextBlockTextChanged(blockView)
 
         vm.onEnterKeyClicked(
-            target = child,
-            text = text,
+            target = paragraph.id,
+            text = newText,
             marks = emptyList(),
-            range = 1..1
+            range = 0..0
         )
+
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        runBlockingTest {
+            verify(updateText, times(2)).invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        text = newText,
+                        target = paragraph.id,
+                        marks = emptyList()
+                    )
+                )
+            )
+        }
 
         runBlockingTest {
             verify(splitBlock, times(1)).invoke(
                 params = eq(
                     SplitBlock.Params(
                         context = root,
-                        block = page[3],
-                        range = 1..1,
+                        block = paragraph.copy(
+                            content = paragraph.content.asText().copy(text = newText)
+                        ),
+                        range = 0..0,
                         isToggled = null
                     )
                 )
             )
         }
-
-        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -2897,21 +2934,12 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should ignore create-numbered-list-item pattern and update text with delay`() {
+    fun `should not ignore create-numbered-list-item pattern and replace block immediately`() {
 
         // SETUP
 
         val root = MockDataFactory.randomUuid()
-        val numbered = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.NUMBERED
-            ),
-            children = emptyList()
-        )
+        val numbered = StubNumbered()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -2940,6 +2968,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
+        stubReplaceBlock(root)
         givenViewModel()
 
         vm.onStart(root)
@@ -2950,39 +2979,30 @@ open class EditorViewModelTest {
 
         val update = "1. "
 
-        vm.onTextChanged(
+        val blockView = BlockView.Text.Paragraph(
             id = numbered.id,
-            marks = numbered.content<Block.Content.Text>().marks,
             text = update
         )
 
-        runBlockingTest {
-            verify(updateText, never()).invoke(
-                params = any()
-            )
-
-            verify(replaceBlock, never()).invoke(
-                params = any()
-            )
-        }
-
-        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        vm.onTextBlockTextChanged(blockView)
 
         runBlockingTest {
-            verify(replaceBlock, never()).invoke(
-                params = any()
-            )
+            verifyZeroInteractions(updateText)
 
-            verify(updateText, times(1)).invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        target = numbered.id,
-                        marks = numbered.content<Block.Content.Text>().marks,
-                        text = update
+            verify(replaceBlock, times(1)).invoke(
+                params = ReplaceBlock.Params(
+                    context = root,
+                    target = numbered.id,
+                    prototype = Block.Prototype.Text(
+                        style = Block.Content.Text.Style.NUMBERED
                     )
                 )
             )
+
+            coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+            verifyZeroInteractions(updateText)
+            verifyNoMoreInteractions(replaceBlock)
         }
     }
 

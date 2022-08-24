@@ -29,6 +29,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.verifyZeroInteractions
 import kotlin.test.assertEquals
 
@@ -128,7 +129,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should start updating title on title-text-changed event with delay`() {
+    fun `should start updating title on title-text-changed event without delay`() {
 
         // SETUP
 
@@ -157,10 +158,6 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
         vm.onTitleBlockTextChanged(title.id, update)
 
-        verifyZeroInteractions(updateText)
-
-        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
-
         verifyBlocking(updateText) {
             invoke(
                 UpdateText.Params(
@@ -171,6 +168,10 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 )
             )
         }
+
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        verifyNoMoreInteractions(updateText)
     }
 
     @Test

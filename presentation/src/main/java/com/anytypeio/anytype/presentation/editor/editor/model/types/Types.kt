@@ -36,6 +36,7 @@ object Types {
     const val HOLDER_BOOKMARK = 28
     const val HOLDER_BOOKMARK_PLACEHOLDER = 29
     const val HOLDER_BOOKMARK_ERROR = 30
+    const val HOLDER_BOOKMARK_UPLOAD = 57
 
     const val HOLDER_FILE = 31
     const val HOLDER_FILE_PLACEHOLDER = 32

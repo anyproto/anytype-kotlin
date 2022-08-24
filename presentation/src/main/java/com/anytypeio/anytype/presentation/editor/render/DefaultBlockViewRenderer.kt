@@ -1220,7 +1220,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             )
         }
         Content.Bookmark.State.FETCHING -> {
-            BlockView.MediaPlaceholder.Bookmark(
+            BlockView.Upload.Bookmark(
                 id = block.id,
                 indent = indent,
                 mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1230,9 +1230,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     selection = selection
                 ),
                 background = block.parseThemeBackgroundColor(),
-                isPreviousBlockMedia = isPreviousBlockMedia,
                 decorations = schema.toBlockViewDecoration(block),
-                isLoading = true
+                url = content.url
             )
         }
         Content.Bookmark.State.DONE -> {

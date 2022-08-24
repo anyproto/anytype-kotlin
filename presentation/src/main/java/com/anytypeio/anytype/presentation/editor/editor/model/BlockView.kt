@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CALLOUT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
@@ -843,6 +844,22 @@ sealed class BlockView : ViewType {
             override val decorations: List<Decoration> = emptyList()
         ) : Upload() {
             override fun getViewType() = HOLDER_PICTURE_UPLOAD
+        }
+
+        /**
+         * UI-model for bookmark block, with state UPLOADING.
+         * @property id block's id
+         */
+        data class Bookmark(
+            override val id: String,
+            override val indent: Int,
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override val background: ThemeColor = ThemeColor.DEFAULT,
+            override val decorations: List<Decoration> = emptyList(),
+            val url: Url? = null
+        ) : Upload() {
+            override fun getViewType() = HOLDER_BOOKMARK_UPLOAD
         }
     }
 

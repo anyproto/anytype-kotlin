@@ -58,7 +58,7 @@ abstract class MediaUpload(
         }
     }
 
-    fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
+    open fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
         check(item is BlockView.Upload) { "Expected upload block, but was: $item" }
         payloads.forEach { payload ->
             if (payload.isSelectionChanged) {

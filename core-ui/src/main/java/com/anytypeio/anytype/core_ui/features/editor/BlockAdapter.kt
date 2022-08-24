@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkErrorBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
@@ -108,6 +109,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
+import com.anytypeio.anytype.core_ui.features.editor.holders.upload.BookmarkUpload
 import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
@@ -123,6 +125,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CALLOUT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
@@ -583,6 +586,11 @@ class BlockAdapter(
             HOLDER_BOOKMARK_ERROR -> {
                 BookmarkError(
                     ItemBlockBookmarkErrorBinding.inflate(inflater, parent, false)
+                )
+            }
+            HOLDER_BOOKMARK_UPLOAD -> {
+                BookmarkUpload(
+                   ItemBlockBookmarkUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE -> {
@@ -1052,6 +1060,14 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
+                    is BookmarkUpload -> {
+                        val item = blocks[position] as BlockView.Upload.Bookmark
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = item
+                        )
+                        holder.setUrl(item.url)
+                    }
                     is Code -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1401,6 +1417,14 @@ class BlockAdapter(
             }
             is BookmarkError -> {
                 val item = blocks[position] as BlockView.Error.Bookmark
+                holder.bind(
+                    item = item,
+                    clicked = onClickListener
+                )
+                holder.setUrl(item.url)
+            }
+            is BookmarkUpload -> {
+                val item = blocks[position] as BlockView.Upload.Bookmark
                 holder.bind(
                     item = item,
                     clicked = onClickListener

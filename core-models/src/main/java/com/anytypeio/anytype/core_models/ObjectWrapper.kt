@@ -90,7 +90,7 @@ sealed class ObjectWrapper {
         private val default = map.withDefault { null }
         val name: String? by default
         val description: String? by default
-        val url: String? by default
+        val source: String? by default
         val iconEmoji: String? by default
         val iconImage: String? by default
         val picture: String? by default

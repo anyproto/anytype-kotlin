@@ -107,7 +107,7 @@ class RelationTextValueViewModel(
                             actions.value = buildList {
                                 add(RelationValueAction.Url.Browse(value))
                                 add(RelationValueAction.Url.Copy(value))
-                                if (relation.key == Relations.URL && obj.type.contains(ObjectType.BOOKMARK_TYPE)) {
+                                if (relation.key == Relations.SOURCE && obj.type.contains(ObjectType.BOOKMARK_TYPE)) {
                                     add(RelationValueAction.Url.Reload(value))
                                 }
                             }

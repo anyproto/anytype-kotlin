@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -65,7 +66,7 @@ class Paragraph(
 
     fun bind(
         item: BlockView.Text.Paragraph,
-        onTextChanged: (String, Editable) -> Unit,
+        onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -74,7 +75,13 @@ class Paragraph(
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
-        onTextChanged = onTextChanged,
+        onTextChanged = { _, editable ->
+            item.apply {
+                text = editable.toString()
+                marks = editable.marks()
+            }
+            onTextBlockTextChanged(item)
+        },
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

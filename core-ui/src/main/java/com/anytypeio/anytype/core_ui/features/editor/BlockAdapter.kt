@@ -1126,17 +1126,7 @@ class BlockAdapter(
             is Paragraph -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Text.Paragraph,
-                    onTextChanged = { _, editable ->
-                        if (holder.bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                            val item = views[holder.bindingAdapterPosition]
-                            check(item is BlockView.Text.Paragraph)
-                            item.apply {
-                                text = editable.toString()
-                                marks = editable.marks()
-                            }
-                            onTextBlockTextChanged(item)
-                        }
-                    },
+                    onTextBlockTextChanged = onTextBlockTextChanged,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,

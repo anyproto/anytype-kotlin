@@ -108,13 +108,19 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
                 .listener(listener)
                 .into(image)
         } else {
-            image.gone()
+            with(image) {
+                gone()
+                setImageDrawable(null)
+            }
         }
         if (item.faviconUrl != null) {
             logo.visible()
             Glide.with(logo).load(item.faviconUrl).into(logo)
         } else {
-            logo.gone()
+            with(logo) {
+                setImageDrawable(null)
+                gone()
+            }
         }
         applyBackground(item.background)
         applyRootMargins(item)

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
 import anytype.model.Block
+import anytype.model.InternalFlag
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.Range
@@ -408,11 +409,17 @@ class Middleware(
         isDraft?.let { details[Relations.IS_DRAFT] = it }
         type?.let { details[Relations.TYPE] = it }
 
+        val flags = buildList {
+            if (isDraft == true)
+                add(InternalFlag(InternalFlag.Value.editorDeleteEmpty))
+        }
+
         val request = Rpc.BlockLink.CreateWithObject.Request(
             contextId = ctx.orEmpty(),
             details = details,
             position = Block.Position.Inner,
-            templateId = template.orEmpty()
+            templateId = template.orEmpty(),
+            internalFlags = flags
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -435,12 +442,17 @@ class Middleware(
 
         val position: Block.Position = command.position.toMiddlewareModel()
 
+        val flags = buildList<InternalFlag> {
+            // Add flags when needed
+        }
+
         val request = Rpc.BlockLink.CreateWithObject.Request(
             contextId = command.context,
             targetId = command.target,
             position = position,
             details = details,
-            templateId = command.template.orEmpty()
+            templateId = command.template.orEmpty(),
+            internalFlags = flags
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -991,15 +1003,18 @@ class Middleware(
 
     @Throws(Exception::class)
     fun objectCreate(command: Command.CreateNewDocument): Id {
-        val details: MutableMap<String, Any> = mutableMapOf()
-        command.emoji?.let { details[Relations.ICON_EMOJI] = it }
-        command.name.let { details[Relations.NAME] = it }
-        command.type?.let { details[Relations.TYPE] = it }
+        val details: Map<String, Any> = buildMap {
+            command.emoji?.let { put(Relations.ICON_EMOJI, it) }
+            command.name.let { put(Relations.NAME, it) }
+            command.type?.let { put(Relations.TYPE, it) }
+        }
+        val flags = buildList<InternalFlag> {
 
+        }
         val request = Rpc.Object.Create.Request(
-            details = details.toMap()
+            details = details.toMap(),
+            internalFlags = flags
         )
-
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
         if (BuildConfig.DEBUG) logResponse(response)

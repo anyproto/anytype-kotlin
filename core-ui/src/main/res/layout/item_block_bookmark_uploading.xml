@@ -19,7 +19,7 @@
         android:background="@drawable/rectangle_media_block_placeholder">
 
         <ImageView
-            android:id="@+id/icFile"
+            android:id="@+id/ivBookmark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -29,7 +29,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_file_light" />
+            app:srcCompat="@drawable/ic_bookmark_placeholder" />
 
         <TextView
             android:id="@+id/editUrl"
@@ -42,9 +42,9 @@
             android:hint="@string/loading_wait"
             android:textColor="@color/glyph_inactive"
             android:textColorHint="@color/glyph_inactive"
-            app:layout_constraintBottom_toBottomOf="@+id/icFile"
-            app:layout_constraintStart_toEndOf="@+id/icFile"
-            app:layout_constraintTop_toTopOf="@+id/icFile" />
+            app:layout_constraintBottom_toBottomOf="@+id/ivBookmark"
+            app:layout_constraintStart_toEndOf="@+id/ivBookmark"
+            app:layout_constraintTop_toTopOf="@+id/ivBookmark" />
 
         <ProgressBar
             android:id="@+id/progressBar"

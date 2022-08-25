@@ -3124,6 +3124,10 @@ class EditorViewModel(
     }
 
     private fun onBookmarkPlaceholderClicked(target: String) {
+        proceedWithBookmarkSetter(target)
+    }
+
+    private fun proceedWithBookmarkSetter(target: String) {
         dispatch(
             command = Command.OpenBookmarkSetter(
                 context = context,
@@ -3135,8 +3139,13 @@ class EditorViewModel(
     private fun onBookmarkClicked(view: BlockView.Media.Bookmark) =
         dispatch(command = Command.Browse(view.url))
 
-    private fun onFailedBookmarkClicked(view: BlockView.Error.Bookmark) =
-        dispatch(command = Command.Browse(view.url))
+    private fun onFailedBookmarkClicked(view: BlockView.Error.Bookmark) {
+        if (view.url.isBlank()) {
+            proceedWithBookmarkSetter(target = view.id)
+        } else {
+            dispatch(command = Command.Browse(view.url))
+        }
+    }
 
     fun onTitleTextInputClicked() {
         Timber.d("onTitleTextInputClicked, ")

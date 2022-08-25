@@ -14,24 +14,34 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="7dp"
         android:layout_marginStart="@dimen/default_indent"
+        android:layout_marginTop="7dp"
         android:layout_marginEnd="@dimen/default_indent"
+        android:layout_marginBottom="7dp"
         android:background="@drawable/rectangle_media_block_placeholder">
+
+        <ImageView
+            android:id="@+id/ivBookmark"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:contentDescription="@string/content_description_file_icon"
+            android:src="@drawable/ic_bookmark_block_error" />
 
         <TextView
             android:id="@+id/errorBookmarkUrl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="48dp"
             android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:fontFamily="@font/inter_regular"
+            android:hint="@string/bookmark_error"
             android:maxLines="1"
-            android:layout_gravity="center_vertical"
-            android:text="@string/bookmark_error"
-            android:textColor="@color/text_tertiary"
+            android:textColor="@color/glyph_inactive"
+            android:textColorHint="@color/glyph_inactive"
             android:textSize="15sp"
             tools:text="error url medium.com/s/story/The Akari pull request as ready for review" />
 

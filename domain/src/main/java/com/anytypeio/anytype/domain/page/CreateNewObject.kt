@@ -15,7 +15,7 @@ class CreateNewObject(
 ) : ResultInteractor<Unit, Id>() {
 
     private suspend fun createPageWithType(type: Id): Id {
-        val template = getTemplates.run(GetTemplates.Params(type)).firstOrNull()?.id
+        val template = getTemplates.run(GetTemplates.Params(type)).singleOrNull()?.id
         return createPage.run(
             CreatePage.Params(
                 ctx = null,

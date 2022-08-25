@@ -764,9 +764,11 @@ class ObjectSetViewModel(
     }
 
     private fun resolvePrefilledRecordData(setOfObjects: ObjectSet): Map<Id, Any> = buildMap {
+        val block = setOfObjects.dataview
+        val dv = block.content as DV
         val viewer = setOfObjects.viewerById(session.currentViewerId)
         viewer.filters.forEach { filter ->
-            val relation = reducer.state.value.relations.find { it.key == filter.relationKey }
+            val relation = dv.relations.find { it.key == filter.relationKey }
             if (relation != null && !relation.isReadOnly) {
                 if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
                     filter.value?.let { put(filter.relationKey, it) }

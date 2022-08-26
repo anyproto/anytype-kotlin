@@ -328,6 +328,7 @@ class ObjectSetViewModel(
     fun onStop() {
         Timber.d("onStop, ")
         reducer.state.value = ObjectSet.reset()
+        _header.value = null
         jobs.forEach { it.cancel() }
     }
 

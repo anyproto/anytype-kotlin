@@ -4135,6 +4135,9 @@ class EditorViewModel(
             forEach { it.cancel() }
             clear()
         }
+        if (copyFileToCache.isActive()) {
+            copyFileToCache.cancel()
+        }
     }
 
     enum class Session { IDLE, OPEN, ERROR }

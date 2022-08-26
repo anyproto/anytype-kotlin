@@ -3,21 +3,22 @@ package com.anytypeio.anytype.presentation.util
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
 import java.lang.ref.WeakReference
-import kotlin.system.measureTimeMillis
 
 interface CopyFileToCacheDirectory {
 
     fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction)
     fun cancel()
+    fun isActive(): Boolean
 }
 
 const val SCHEME_CONTENT = "content"
@@ -26,8 +27,8 @@ const val TEMPORARY_DIRECTORY_NAME = "TemporaryFiles"
 
 sealed class CopyFileStatus {
     data class Error(val msg: String) : CopyFileStatus()
-    object Started: CopyFileStatus()
-    data class Completed(val result: String?): CopyFileStatus()
+    object Started : CopyFileStatus()
+    data class Completed(val result: String?) : CopyFileStatus()
 }
 
 class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirectory {
@@ -39,8 +40,14 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         mContext = WeakReference(context)
     }
 
+    override fun isActive(): Boolean = job?.isActive == true
+
     override fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction) {
-        getNewPathInCacheDir(uri, scope, listener)
+        getNewPathInCacheDir(
+            uri = uri,
+            scope = scope,
+            listener = listener,
+        )
     }
 
     override fun cancel() {
@@ -56,14 +63,9 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         var path: String? = null
         job = scope.launch {
             try {
-                val time = measureTimeMillis {
-                    path = flow {
-                        emit(copyFileToCacheDir(uri, job, listener))
-                    }
-                        .flowOn(Dispatchers.IO)
-                        .single()
+                withContext(Dispatchers.IO) {
+                    path = copyFileToCacheDir(uri, listener)
                 }
-                Timber.d("Total load file time: $time")
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
                 listener.onCopyFileError(e.localizedMessage ?: "Unknown error")
@@ -75,9 +77,8 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         }
     }
 
-    private fun copyFileToCacheDir(
+    fun copyFileToCacheDir(
         uri: Uri,
-        job: Job?,
         listener: OnCopyFileToCacheAction
     ): String? {
         var newFile: File? = null
@@ -93,11 +94,9 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
                     listener.onCopyFileStart()
                     Timber.d("Start copy file to cache : ${newFile?.path}")
                     FileOutputStream(newFile).use { output ->
-                        job?.ensureActive()
                         val buffer = ByteArray(1024)
                         var read: Int = input.read(buffer)
                         while (read != -1) {
-                            job?.ensureActive()
                             output.write(buffer, 0, read)
                             read = input.read(buffer)
                         }

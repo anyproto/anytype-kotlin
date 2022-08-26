@@ -111,7 +111,15 @@ interface PickerDelegate : PickiTCallbacks {
             pickitAlertDialog = null
             pickitProgressBar = null
             pickitProgressDialog = null
+            snackbar?.dismiss()
             snackbar = null
+        }
+
+        fun onStop() {
+            pickiT.cancelTask()
+            pickitAlertDialog?.dismiss()
+            pickitProgressDialog?.dismiss()
+            snackbar?.dismiss()
         }
 
         override fun deleteTemporaryFile() {
@@ -123,7 +131,7 @@ interface PickerDelegate : PickiTCallbacks {
             when (command) {
                 is CopyFileStatus.Error -> {
                     snackbar?.dismiss()
-                    fragment.activity?.toast("Error while loading file:${command.msg}")
+                    fragment.activity?.toast("Cancel loading file")
                 }
                 is CopyFileStatus.Completed -> {
                     snackbar?.dismiss()

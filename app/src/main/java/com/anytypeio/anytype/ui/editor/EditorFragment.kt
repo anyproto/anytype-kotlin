@@ -499,6 +499,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     override fun onStop() {
         vm.onStop()
+        pickerDelegate.onStop()
         super.onStop()
     }
 

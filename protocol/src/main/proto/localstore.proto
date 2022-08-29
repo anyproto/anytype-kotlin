@@ -58,4 +58,5 @@ message ObjectStoreChecksums {
     int32 fulltextRebuild = 7; // increased in order to perform fulltext indexing for all type of objects (useful when we change fulltext config)
     string bundledTemplates = 8;
     int32 bundledObjects = 9; // anytypeProfile and maybe some others in the feature
+    int32 filestoreKeysForceReindexCounter = 10;
 }

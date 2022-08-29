@@ -184,7 +184,6 @@ message Block {
         * Bookmark is to keep a web-link and to preview a content.
         */
         message Bookmark {
-            // Deprecated. Get this data from the target object.
             string url = 1;
             // Deprecated. Get this data from the target object.
             string title = 2;

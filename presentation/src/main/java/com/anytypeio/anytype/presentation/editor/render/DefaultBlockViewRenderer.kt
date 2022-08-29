@@ -1261,8 +1261,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     url = obj.source.orEmpty(),
                     title = obj.name,
                     description = obj.description,
-                    imageUrl = obj.picture?.let { urlBuilder.image(it) },
-                    faviconUrl = obj.iconImage?.let { urlBuilder.image(it) },
+                    imageUrl = obj.picture?.ifEmpty { null }?.let { urlBuilder.image(it) },
+                    faviconUrl = obj.iconImage?.ifEmpty { null }?.let { urlBuilder.image(it) },
                     indent = indent,
                     mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     isSelected = checkIfSelected(

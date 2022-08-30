@@ -25,11 +25,11 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:contentDescription="@string/content_description_file_icon"
+            android:contentDescription="@string/content_description_bookmark_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_bookmark_placeholder" />
+            app:srcCompat="@drawable/ic_bookmark_block_loading" />
 
         <TextView
             android:id="@+id/editUrl"

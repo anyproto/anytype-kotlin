@@ -28,7 +28,7 @@ class BookmarkError(
         get() = binding.card
 
     fun setUrl(url: String) {
-        urlView.text = url
+        urlView.text = url.ifEmpty { null }
     }
 
     override fun errorClick(item: BlockView.Error, clicked: (ListenerType) -> Unit) {

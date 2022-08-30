@@ -2981,7 +2981,8 @@ class EditorViewModel(
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
-            ObjectType.Layout.FILE -> {
+            ObjectType.Layout.FILE,
+            ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningPage(target = target)
             }
             ObjectType.Layout.SET -> {

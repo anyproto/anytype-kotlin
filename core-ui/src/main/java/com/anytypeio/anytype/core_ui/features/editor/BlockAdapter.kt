@@ -1421,7 +1421,6 @@ class BlockAdapter(
                     item = item,
                     clicked = onClickListener
                 )
-                holder.setUrl(item.url)
             }
             is BookmarkUpload -> {
                 val item = blocks[position] as BlockView.Upload.Bookmark

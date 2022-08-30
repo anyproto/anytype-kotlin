@@ -150,9 +150,11 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivImage.invisible()
             emojiContainer.invisible()
             ivCheckbox.invisible()
+            ivBookmark.setImageDrawable(null)
+            ivBookmark.gone()
             initialContainer.visible()
             initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
-            initial.setTextColor(context.color(R.color.text_primary))
+            initial.setTextColor(context.color(R.color.text_white))
             initial.setHintTextColor(context.color(R.color.text_tertiary))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
         }
@@ -164,6 +166,8 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivImage.invisible()
             emojiContainer.invisible()
             ivCheckbox.invisible()
+            ivBookmark.setImageDrawable(null)
+            ivBookmark.gone()
             initialContainer.visible()
             initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
             initial.setTextColor(textColor)
@@ -178,6 +182,8 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivCheckbox.invisible()
                 initialContainer.invisible()
                 ivImage.invisible()
+                ivBookmark.setImageDrawable(null)
+                ivBookmark.gone()
                 emojiContainer.visible()
             }
             try {
@@ -201,6 +207,8 @@ class ObjectIconWidget @JvmOverloads constructor(
                 initialContainer.invisible()
                 emojiContainer.invisible()
                 ivImage.visible()
+                ivBookmark.setImageDrawable(null)
+                ivBookmark.gone()
                 ivImage.setCircularShape()
             }
             Glide
@@ -220,6 +228,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 initialContainer.invisible()
                 emojiContainer.invisible()
                 ivBookmark.gone()
+                ivBookmark.setImageDrawable(null)
                 ivImage.visible()
                 ivImage.setCorneredShape(imageCornerRadius)
             }
@@ -240,6 +249,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivImage.invisible()
             emojiContainer.visible()
             ivBookmark.gone()
+            ivBookmark.setImageDrawable(null)
             ivEmoji.setImageDrawable(drawable)
         }
     }
@@ -251,6 +261,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             initialContainer.invisible()
             emojiContainer.invisible()
             ivBookmark.gone()
+            ivBookmark.setImageDrawable(null)
             ivImage.invisible()
         }
     }

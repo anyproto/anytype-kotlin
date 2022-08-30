@@ -198,6 +198,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.UploadFile
     ): String = remote.uploadFile(command)
 
+    override suspend fun downloadFile(
+        command: Command.DownloadFile
+    ): String = remote.downloadFile(command)
+
     override suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks =
         remote.getObjectInfoWithLinks(pageId)
 

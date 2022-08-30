@@ -48,8 +48,6 @@ import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -72,6 +70,8 @@ import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddFileToObject
+import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
@@ -108,14 +108,24 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.Dispatchers
 
-@Subcomponent(modules = [EditorSessionModule::class, EditorUseCaseModule::class])
+@Subcomponent(
+    modules = [
+        EditorSessionModule::class,
+        EditorUseCaseModule::class,
+        EditorUseCaseModule.Bindings::class
+    ]
+)
 @PerScreen
 interface EditorSubComponent {
 
@@ -134,23 +144,23 @@ interface EditorSubComponent {
     // Relations
 
     fun documentRelationSubComponent(): DocumentRelationSubComponent.Builder
-    fun relationAddToObjectComponent() : RelationAddToObjectSubComponent.Builder
-    fun relationCreateFromScratchForObjectComponent() : RelationCreateFromScratchForObjectSubComponent.Builder
-    fun relationCreateFromScratchForObjectBlockComponent() : RelationCreateFromScratchForObjectBlockSubComponent.Builder
+    fun relationAddToObjectComponent(): RelationAddToObjectSubComponent.Builder
+    fun relationCreateFromScratchForObjectComponent(): RelationCreateFromScratchForObjectSubComponent.Builder
+    fun relationCreateFromScratchForObjectBlockComponent(): RelationCreateFromScratchForObjectBlockSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
-    fun editDocRelationComponent() : ObjectObjectRelationValueSubComponent.Builder
+    fun editDocRelationComponent(): ObjectObjectRelationValueSubComponent.Builder
     fun editRelationDateComponent(): RelationDataValueSubComponent.Builder
 
-    fun objectCoverComponent() : SelectCoverObjectSubComponent.Builder
-    fun objectUnsplashComponent() : UnsplashSubComponent.Builder
-    fun objectMenuComponent() : ObjectMenuComponent.Builder
+    fun objectCoverComponent(): SelectCoverObjectSubComponent.Builder
+    fun objectUnsplashComponent(): UnsplashSubComponent.Builder
+    fun objectMenuComponent(): ObjectMenuComponent.Builder
 
-    fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
-    fun objectAppearanceSettingComponent() : ObjectAppearanceSettingSubComponent.Builder
-    fun objectAppearanceIconComponent() : ObjectAppearanceIconSubComponent.Builder
-    fun objectAppearancePreviewLayoutComponent() : ObjectAppearancePreviewLayoutSubComponent.Builder
-    fun objectAppearanceCoverComponent() : ObjectAppearanceCoverSubComponent.Builder
-    fun objectAppearanceChooseDescription() : ObjectAppearanceChooseDescriptionSubComponent.Builder
+    fun objectLayoutComponent(): ObjectLayoutSubComponent.Builder
+    fun objectAppearanceSettingComponent(): ObjectAppearanceSettingSubComponent.Builder
+    fun objectAppearanceIconComponent(): ObjectAppearanceIconSubComponent.Builder
+    fun objectAppearancePreviewLayoutComponent(): ObjectAppearancePreviewLayoutSubComponent.Builder
+    fun objectAppearanceCoverComponent(): ObjectAppearanceCoverSubComponent.Builder
+    fun objectAppearanceChooseDescription(): ObjectAppearanceChooseDescriptionSubComponent.Builder
 
     fun setBlockTextValueComponent(): SetBlockTextValueSubComponent.Builder
 }
@@ -253,7 +263,7 @@ object EditorSessionModule {
         getDefaultEditorType: GetDefaultEditorType,
         getTemplates: GetTemplates,
         createPage: CreatePage,
-    ) : CreateNewObject = CreateNewObject(
+    ): CreateNewObject = CreateNewObject(
         getDefaultEditorType,
         getTemplates,
         createPage
@@ -265,7 +275,7 @@ object EditorSessionModule {
     fun provideTemplateDelegate(
         getTemplates: GetTemplates,
         applyTemplate: ApplyTemplate
-    ) : EditorTemplateDelegate = DefaultEditorTemplateDelegate(
+    ): EditorTemplateDelegate = DefaultEditorTemplateDelegate(
         getTemplates = getTemplates,
         applyTemplate = applyTemplate
     )
@@ -274,7 +284,7 @@ object EditorSessionModule {
     @Provides
     @PerScreen
     fun provideSimpleTableDelegate(
-    ) : SimpleTableDelegate = DefaultSimpleTableDelegate()
+    ): SimpleTableDelegate = DefaultSimpleTableDelegate()
 
     @JvmStatic
     @Provides
@@ -294,7 +304,8 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
-    fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer = DocumentExternalEventReducer()
+    fun provideDocumentExternalEventReducer(): DocumentExternalEventReducer =
+        DocumentExternalEventReducer()
 
     @JvmStatic
     @Provides
@@ -349,7 +360,8 @@ object EditorSessionModule {
         redo: Redo,
         setRelationKey: SetRelationKey,
         analytics: Analytics,
-        updateBlocksMark: UpdateBlocksMark
+        updateBlocksMark: UpdateBlocksMark,
+        middlewareShareDownloader: MiddlewareShareDownloader
     ): Orchestrator = Orchestrator(
         stores = storage,
         createBlock = createBlock,
@@ -369,6 +381,7 @@ object EditorSessionModule {
         updateDivider = updateDivider,
         memory = memory,
         downloadFile = downloadFile,
+        middlewareShareDownloader = middlewareShareDownloader,
         turnIntoDocument = turnIntoDocument,
         textInteractor = Interactor.TextInteractor(
             proxies = proxer,
@@ -389,7 +402,7 @@ object EditorSessionModule {
         updateBlocksMark = updateBlocksMark,
         setObjectType = setObjectType,
         createTable = createTable,
-        fillTableRow = fillTableRow
+        fillTableRow = fillTableRow,
     )
 }
 
@@ -790,21 +803,21 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideDefaultObjectRelationProvider(
         storage: Editor.Storage
-    ) : ObjectRelationProvider = DefaultObjectRelationProvider(storage.relations)
+    ): ObjectRelationProvider = DefaultObjectRelationProvider(storage.relations)
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideDefaultObjectValueProvider(
         storage: Editor.Storage
-    ) : ObjectValueProvider = DefaultObjectValueProvider(storage.details)
+    ): ObjectValueProvider = DefaultObjectValueProvider(storage.details)
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideObjectTypeProvider(
         storage: Editor.Storage
-    ) : ObjectTypeProvider = object : ObjectTypeProvider {
+    ): ObjectTypeProvider = object : ObjectTypeProvider {
         override fun provide(): List<ObjectType> = storage.objectTypes.current()
     }
 
@@ -813,26 +826,26 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideObjectDetailProvider(
         storage: Editor.Storage
-    ) : ObjectDetailProvider = object : ObjectDetailProvider {
+    ): ObjectDetailProvider = object : ObjectDetailProvider {
         override fun provide(): Map<Id, Block.Fields> = storage.details.current().details
     }
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun providePayloadDispatcher() : Dispatcher<Payload> = Dispatcher.Default()
+    fun providePayloadDispatcher(): Dispatcher<Payload> = Dispatcher.Default()
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideDelegator() : Delegator<Action> = Delegator.Default()
+    fun provideDelegator(): Delegator<Action> = Delegator.Default()
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideDetailManager(
         storage: Editor.Storage
-    ) : DetailModificationManager = InternalDetailModificationManager(
+    ): DetailModificationManager = InternalDetailModificationManager(
         store = storage.details
     )
 
@@ -846,14 +859,14 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideUpdateDetailUseCase(
         repository: BlockRepository
-    ) : UpdateDetail = UpdateDetail(repository)
+    ): UpdateDetail = UpdateDetail(repository)
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideGetObjectTypesUseCase(
         repository: BlockRepository
-    ) : GetObjectTypes = GetObjectTypes(repository)
+    ): GetObjectTypes = GetObjectTypes(repository)
 
     @JvmStatic
     @Provides
@@ -934,7 +947,7 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun getTemplates(repo: BlockRepository) : GetTemplates = GetTemplates(
+    fun getTemplates(repo: BlockRepository): GetTemplates = GetTemplates(
         repo = repo,
         dispatchers = AppCoroutineDispatchers(
             io = Dispatchers.IO,
@@ -946,7 +959,7 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun applyTemplates(repo: BlockRepository) : ApplyTemplate = ApplyTemplate(
+    fun applyTemplates(repo: BlockRepository): ApplyTemplate = ApplyTemplate(
         repo = repo,
         dispatchers = AppCoroutineDispatchers(
             io = Dispatchers.IO,
@@ -954,4 +967,32 @@ object EditorUseCaseModule {
             main = Dispatchers.Main
         )
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun providesMiddlewareShareDownloader(
+        repo: BlockRepository,
+        context: Context,
+        fileProvider: UriFileProvider
+    ): MiddlewareShareDownloader = MiddlewareShareDownloader(
+        repo = repo,
+        dispatchers = AppCoroutineDispatchers(
+            io = Dispatchers.IO,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        ),
+        context = context.applicationContext,
+        uriFileProvider = fileProvider
+    )
+
+    @Module
+    interface Bindings {
+
+        @PerScreen
+        @Binds
+        fun bindUriFileProvider(
+            defaultProvider: DefaultUriFileProvider
+        ): UriFileProvider
+    }
 }

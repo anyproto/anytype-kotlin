@@ -156,6 +156,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun fileUpload(request: Rpc.File.Upload.Request): Rpc.File.Upload.Response
 
+    @Throws(Exception::class)
+    fun fileDownload(request: Rpc.File.Download.Request): Rpc.File.Download.Response
+
     //endregion
 
     //region UNSPLASH commands

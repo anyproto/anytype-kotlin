@@ -6,7 +6,5 @@ import com.anytypeio.anytype.device.download.AndroidDeviceDownloader
 class AndroidDevice(
     private val downloader: AndroidDeviceDownloader
 ) : Device {
-    override fun download(url: String, name: String) {
-        downloader.download(url = url, name = name)
-    }
+    override fun download(url: String, name: String) = downloader.download(url = url, name = name)
 }

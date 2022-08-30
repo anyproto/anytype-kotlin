@@ -225,6 +225,10 @@ class BlockMiddleware(
         command: Command.UploadFile
     ): String = middleware.fileUpload(command).hash
 
+    override suspend fun downloadFile(
+        command: Command.DownloadFile
+    ): String = middleware.fileDownload(command).localPath
+
     override suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
         return middleware.navigationGetObjectInfoWithLinks(pageId).toCoreModel()
     }

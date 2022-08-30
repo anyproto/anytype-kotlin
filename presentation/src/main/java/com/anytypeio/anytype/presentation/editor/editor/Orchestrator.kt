@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.FillTableRow
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeTextBlockStyleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCopyBlockEvent
@@ -48,6 +49,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderBlockEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSplitBlockEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUndoEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUploadMediaEvent
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import timber.log.Timber
 
 class Orchestrator(
@@ -64,6 +66,7 @@ class Orchestrator(
     private val turnIntoStyle: TurnIntoStyle,
     private val updateCheckbox: UpdateCheckbox,
     private val downloadFile: DownloadFile,
+    private val middlewareShareDownloader: MiddlewareShareDownloader,
     val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,
     private val uploadBlock: UploadBlock,
@@ -430,6 +433,20 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { analytics.sendAnalyticsDownloadMediaEvent(intent.type) }
+                    )
+                }
+                is Intent.Media.ShareFile -> {
+                    middlewareShareDownloader.execute(
+                        params = MiddlewareShareDownloader.Params(
+                            hash = intent.hash,
+                            name = intent.name
+                        )
+                    ).fold(
+                        onSuccess = { uri ->
+                            intent.onDownloaded(uri)
+                            analytics.sendAnalyticsDownloadMediaEvent(intent.type)
+                        },
+                        onFailure = { e -> Timber.e(e, "Error while sharing a file") }
                     )
                 }
                 is Intent.Media.Upload -> {

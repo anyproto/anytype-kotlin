@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
+import android.net.Uri
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -13,7 +14,9 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -50,8 +53,6 @@ import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
@@ -68,12 +69,14 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.templates.ApplyTemplate
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.FillTableRow
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -87,8 +90,6 @@ import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -111,6 +112,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.TXT
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
@@ -121,6 +123,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -132,6 +135,7 @@ import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.given
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -222,6 +226,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var downloadFile: DownloadFile
+
+    @Mock
+    lateinit var middlewareShareDownloader: MiddlewareShareDownloader
 
     @Mock
     lateinit var uploadBlock: UploadBlock
@@ -2617,6 +2624,63 @@ open class EditorViewModelTest {
     }
 
     @Test
+    fun `should start sharing a file`() {
+
+        val root = MockDataFactory.randomUuid()
+        val file = MockBlockFactory.makeFileBlock()
+        val title = MockBlockFactory.makeTitleBlock()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(),
+                children = listOf(title.id, file.id)
+            ),
+            title,
+            file
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(
+                listOf(
+                    Event.Command.ShowObject(
+                        root = root,
+                        blocks = page,
+                        context = root
+                    )
+                )
+            )
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        givenViewModel(builder)
+
+        givenSharedFile()
+
+        vm.onStart(root)
+
+        coroutineTestRule.advanceTime(100)
+
+        // TESTING
+
+        vm.startSharingFile(id = file.id)
+
+        runTest {
+            verify(middlewareShareDownloader, times(1)).execute(
+                params = eq(
+                    MiddlewareShareDownloader.Params(
+                        name = file.content<Block.Content.File>().name.orEmpty(),
+                        hash = file.content<Block.Content.File>().hash.orEmpty(),
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `should start downloading file`() {
 
         val root = MockDataFactory.randomUuid()
@@ -3817,6 +3881,12 @@ open class EditorViewModelTest {
         }
     }
 
+    private fun givenSharedFile() {
+        middlewareShareDownloader.stub {
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(Uri.EMPTY)
+        }
+    }
+
     private fun stubUpdateTextColor(root: String) {
         updateTextColor.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
@@ -3878,7 +3948,9 @@ open class EditorViewModelTest {
         vm = EditorViewModel(
             openPage = openPage,
             closePage = closePage,
+            createDocument = createDocument,
             createObject = createObject,
+            createNewDocument = createNewDocument,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
@@ -3890,16 +3962,13 @@ open class EditorViewModelTest {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
-            createDocument = createDocument,
-            createNewDocument = createNewDocument,
-            analytics = analytics,
-            getDefaultEditorType = getDefaultEditorType,
             orchestrator = Orchestrator(
                 createBlock = createBlock,
                 replaceBlock = replaceBlock,
                 updateTextColor = updateTextColor,
                 duplicateBlock = duplicateBlock,
                 downloadFile = downloadFile,
+                middlewareShareDownloader = middlewareShareDownloader,
                 undo = undo,
                 redo = redo,
                 updateText = updateText,
@@ -3935,22 +4004,24 @@ open class EditorViewModelTest {
                 createTable = createTable,
                 fillTableRow = fillTableRow
             ),
+            analytics = analytics,
             dispatcher = Dispatcher.Default(),
+            delegator = delegator,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
             objectTypesProvider = objectTypesProvider,
             searchObjects = searchObjects,
+            getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
             copyFileToCache = copyFileToCacheDirectory,
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            delegator = delegator,
             templateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject,
-            simpleTableDelegate = simpleTableDelegate
+            simpleTableDelegate = simpleTableDelegate,
+            createNewObject = createNewObject
         )
     }
 

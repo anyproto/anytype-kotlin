@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
+import android.net.Uri
 import android.os.Parcelable
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -172,6 +174,13 @@ sealed class Intent {
             val url: String,
             val name: String,
             val type: Block.Content.File.Type?
+        ) : Media()
+
+        class ShareFile(
+            val hash: Hash,
+            val name: String,
+            val type: Block.Content.File.Type?,
+            val onDownloaded: (Uri) -> Unit
         ) : Media()
 
         class Upload(

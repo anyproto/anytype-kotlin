@@ -7,6 +7,11 @@ sealed class Command {
         val type: Block.Content.File.Type?
     )
 
+    class DownloadFile(
+        val path: String,
+        val hash: Hash
+    )
+
     /**
      * Command for turning simple blocks into documents
      * @property context id of the context

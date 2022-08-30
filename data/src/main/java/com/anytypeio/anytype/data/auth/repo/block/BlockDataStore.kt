@@ -77,6 +77,7 @@ interface BlockDataStore {
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload
 
     suspend fun uploadFile(command: Command.UploadFile): String
+    suspend fun downloadFile(command: Command.DownloadFile): String
 
     suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks
 

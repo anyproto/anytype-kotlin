@@ -256,6 +256,10 @@ class BlockDataRepository(
         command: Command.UploadFile
     ): Hash = remote.uploadFile(command)
 
+    override suspend fun downloadFile(
+        command: Command.DownloadFile
+    ): String = remote.downloadFile(command)
+
     override suspend fun getObjectInfoWithLinks(
         pageId: String
     ): ObjectInfoWithLinks = remote.getObjectInfoWithLinks(pageId)

@@ -20,6 +20,7 @@ import dagger.Subcomponent
     modules = [
         ArchiveModule::class,
         EditorUseCaseModule::class,
+        EditorUseCaseModule.Bindings::class,
         EditorSessionModule::class
     ]
 )

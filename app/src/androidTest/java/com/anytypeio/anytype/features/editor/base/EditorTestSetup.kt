@@ -95,6 +95,8 @@ import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
@@ -127,8 +129,11 @@ open class EditorTestSetup {
     lateinit var updateDetail: UpdateDetail
     lateinit var getCompatibleObjectTypes: GetCompatibleObjectTypes
 
-    @Mock
+
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
+
+    @Mock
+    lateinit var middlewareShareDownloader: MiddlewareShareDownloader
 
     @Mock
     lateinit var openPage: OpenPage
@@ -352,6 +357,7 @@ open class EditorTestSetup {
                 duplicateBlock = duplicateBlock,
                 updateAlignment = updateAlignment,
                 downloadFile = downloadFile,
+                middlewareShareDownloader = middlewareShareDownloader,
                 mergeBlocks = mergeBlocks,
                 updateTextColor = updateTextColor,
                 replaceBlock = replaceBlock,

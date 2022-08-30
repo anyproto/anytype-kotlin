@@ -583,6 +583,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun fileDownload(request: Rpc.File.Download.Request): Rpc.File.Download.Response {
+        val encoded = Service.fileDownload(Rpc.File.Download.Request.ADAPTER.encode(request))
+        val response = Rpc.File.Download.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.File.Download.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun navigationListObjects(request: Rpc.Navigation.ListObjects.Request): Rpc.Navigation.ListObjects.Response {
         val encoded =
             Service.navigationListObjects(Rpc.Navigation.ListObjects.Request.ADAPTER.encode(request))

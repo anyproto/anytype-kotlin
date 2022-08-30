@@ -75,6 +75,7 @@ interface BlockRemote {
     suspend fun copy(command: Command.Copy) : Response.Clipboard.Copy
 
     suspend fun uploadFile(command: Command.UploadFile): String
+    suspend fun downloadFile(command: Command.DownloadFile): String
 
     suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks
 

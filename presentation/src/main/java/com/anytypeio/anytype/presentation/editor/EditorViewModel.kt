@@ -194,6 +194,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -3882,6 +3883,31 @@ class EditorViewModel(
         }
     }
 
+    fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {
+
+        Timber.d("startDownloadingFile, id:[$id]")
+
+        sendToast("Preparing file to share...")
+
+        val block = blocks.firstOrNull { it.id == id }
+        val content = block?.content
+
+        if (content is Content.File && content.state == Content.File.State.DONE) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Media.ShareFile(
+                        hash = content.hash.orEmpty(),
+                        name = content.name.orEmpty(),
+                        type = content.type,
+                        onDownloaded = onDownloaded
+                    )
+                )
+            }
+        } else {
+            Timber.e("Block is not File or with wrong state, can't proceed with share!")
+        }
+    }
+
     fun startDownloadingFile(id: String) {
 
         Timber.d("startDownloadingFile, id:[$id]")
@@ -4524,11 +4550,15 @@ class EditorViewModel(
         }
     }
 
-    private fun getObjectTypes(excluded: List<Id> = emptyList(), action: (List<ObjectType>) -> Unit) {
+    private fun getObjectTypes(
+        excluded: List<Id> = emptyList(),
+        action: (List<ObjectType>) -> Unit
+    ) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
-                    smartBlockType = blocks.first { it.id == context }.content<Content.Smart>().type,
+                    smartBlockType = blocks.first { it.id == context }
+                        .content<Content.Smart>().type,
                     excludedTypes = excluded
                 )
             ).proceed(
@@ -5115,7 +5145,9 @@ class EditorViewModel(
         when (val content = selected.content) {
             is Content.Bookmark -> {
                 val target = content.targetObjectId
-                if (target != null) { proceedWithOpeningPage(target) }
+                if (target != null) {
+                    proceedWithOpeningPage(target)
+                }
             }
             else -> sendToast("Unexpected object")
         }

@@ -83,6 +83,7 @@ import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.flow.Flow
@@ -163,6 +164,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var downloadFile: DownloadFile
+
+    @Mock
+    lateinit var middlewareShareDownloader: MiddlewareShareDownloader
 
     @Mock
     lateinit var uploadBlock: UploadBlock
@@ -298,6 +302,7 @@ open class EditorPresentationTestSetup {
             updateTextColor = updateTextColor,
             duplicateBlock = duplicateBlock,
             downloadFile = downloadFile,
+            middlewareShareDownloader = middlewareShareDownloader,
             undo = undo,
             redo = redo,
             updateText = updateText,
@@ -337,11 +342,13 @@ open class EditorPresentationTestSetup {
         return EditorViewModel(
             openPage = openPage,
             closePage = closePage,
+            createDocument = createDocument,
+            createObject = createObject,
+            createNewDocument = createNewDocument,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
-            createObject = createObject,
             reducer = DocumentExternalEventReducer(),
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(
@@ -349,11 +356,10 @@ open class EditorPresentationTestSetup {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
-            createDocument = createDocument,
-            createNewDocument = createNewDocument,
-            analytics = analytics,
             orchestrator = orchestrator,
+            analytics = analytics,
             dispatcher = Dispatcher.Default(),
+            delegator = delegator,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
@@ -363,13 +369,12 @@ open class EditorPresentationTestSetup {
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
             copyFileToCache = copyFileToCacheDirectory,
-            delegator = delegator,
+            downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            downloadUnsplashImage = downloadUnsplashImage,
             templateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject,
-            simpleTableDelegate = simpleTableDelegate
+            simpleTableDelegate = simpleTableDelegate,
+            createNewObject = createNewObject
         )
     }
 

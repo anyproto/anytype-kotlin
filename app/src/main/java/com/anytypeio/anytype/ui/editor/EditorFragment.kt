@@ -2,9 +2,13 @@ package com.anytypeio.anytype.ui.editor
 
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.ClipData
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
@@ -22,6 +26,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
@@ -1104,7 +1109,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.ShowKeyboard -> {
                     binding.recycler.findFocus()?.focusAndShowKeyboard()
                 }
-                is Command.OpenFileByDefaultApp -> openFileByDefaultApp(command)
+                is Command.OpenFileByDefaultApp -> {
+                    vm.startSharingFile(command.id) { uri ->
+                        openFileByDefaultApp(uri)
+                    }
+                }
                 Command.ShowTextLinkMenu -> {
                     val urlButton = binding.markupToolbar.findViewById<View>(R.id.url)
                     val popup = TextLinkPopupMenu(
@@ -1149,22 +1158,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun openFileByDefaultApp(command: Command.OpenFileByDefaultApp) {
+    private fun openFileByDefaultApp(uri: Uri) {
         try {
-            val uri = Uri.parse(command.uri)
-            val intent = Intent().apply {
-                action = Intent.ACTION_VIEW
-                if (command.mime.isNotEmpty()) {
-                    setDataAndTypeAndNormalize(uri, command.mime)
-                } else {
-                    data = uri
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+                .apply {
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(intent)
+            startActivity(
+                intent
+            )
         } catch (e: Exception) {
             if (e is ActivityNotFoundException) {
-                toast("No Application found to open the selected file")
+                toast("No application found to open the selected file")
             } else {
                 toast("Could not open file: ${e.message}")
             }

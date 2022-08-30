@@ -912,6 +912,18 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun fileDownload(command: Command.DownloadFile): Rpc.File.Download.Response {
+        val request = Rpc.File.Download.Request(
+            hash = command.hash,
+            path = command.path
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.fileDownload(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response
+    }
+
+    @Throws(Exception::class)
     fun getConfig(): Config {
         TODO()
 //        val request = Rpc.Config.Get.Request()

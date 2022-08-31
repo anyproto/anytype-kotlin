@@ -4,28 +4,28 @@
 
 ### New features & enhancements 🚀
 
-Objects | Introduced reloadable bookmark object (#2504)
-Editor | Introduced underline markup (#2508)
-Sets | Pre-populate records with data taken from filters when creating new record (#2517)
+* Objects | Introduced reloadable bookmark object (#2504)
+* Editor | Introduced underline markup (#2508)
+* Sets | Pre-populate records with data taken from filters when creating new record (#2517)
 
 ### Fixes & tech 🚒
 
-Dashboard | Should filter profile objects in the "recent" tab (#2510)
-Sets | Do not allow multiple sorts of the same relation (#2497)
+* Dashboard | Should filter profile objects in the "recent" tab (#2510)
+* Sets | Do not allow multiple sorts of the same relation (#2497)
 
 ### Design & UX 🔳
 
-Editor | Loading state for bookmark block (#2559)
-Editor | Show Loading state when opening object (#2473)
-Editor | Draw diagonal line for circle designing default background or text color color in color (#2502)
-Editor | Improve keyboard experience by taking advantage of the new WindowInsets API (#2524)
-Editor | Make "Create new object" the last option of the mention menu (#2519)
-Editor | Introduced archived state for mentions (#2518)
-Dashboard | Tab headers should not jump when switching between tabs (#2509)
-Dashboard | Hide bin object menu when scrolling (#2505)
-Sets | When url is too long, create button overlaps with url when trying to create a bookmark from set (#2479)
-Sets | Introduced relative values for date filters (#2452)
-Settings | Added "Show and copy phrase" button to "Backup your recovery phrase" screen (#2487)
+* Editor | Loading state for bookmark block (#2559)
+* Editor | Show Loading state when opening object (#2473)
+* Editor | Draw diagonal line for circle designing default background or text color color in color (#2502)
+* Editor | Improve keyboard experience by taking advantage of the new WindowInsets API (#2524)
+* Editor | Make "Create new object" the last option of the mention menu (#2519)
+* Editor | Introduced archived state for mentions (#2518)
+* Dashboard | Tab headers should not jump when switching between tabs (#2509)
+* Dashboard | Hide bin object menu when scrolling (#2505)
+* Sets | When url is too long, create button overlaps with url when trying to create a bookmark from set (#2479)
+* Sets | Introduced relative values for date filters (#2452)
+* Settings | Added "Show and copy phrase" button to "Backup your recovery phrase" screen (#2487)
 
 ## Version 0.9.0
 

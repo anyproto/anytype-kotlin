@@ -196,7 +196,6 @@ import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
-import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -967,9 +966,14 @@ class EditorViewModel(
         }
     }
 
-    fun onAddLinkPressed(blockId: String, link: String, range: IntRange) {
-        Timber.d("onAddLinkPressed, blockId:[$blockId] link:[$link] range:[$range]")
-        applyLinkMarkup(blockId, link, range)
+    fun onAddWebLinkToBlock(blockId: Id, link: Id) {
+        Timber.d("onAddWebUrlLinkToBlock, blockId:[$blockId] link:[$link]")
+        onUpdateBlockListMarkup(ids = listOf(blockId), type = Markup.Type.LINK, param = link)
+    }
+
+    fun onAddObjectLinkToBlock(blockId: Id, objectId: Id) {
+        Timber.d("onAddObjectIdLinkToBlock, blockId:[$blockId] objectId:[$objectId]")
+        onUpdateBlockListMarkup(ids = listOf(blockId), type = Markup.Type.OBJECT, param = objectId)
     }
 
     fun onSystemBackPressed(editorHasChildrenScreens: Boolean) {
@@ -1823,12 +1827,19 @@ class EditorViewModel(
         val target = blocks.first { it.id == id }
         val range = IntRange(
             start = 0,
-            endInclusive = target.content<Content.Text>().text.length.dec()
+            endInclusive = target.content<Content.Text>().text.length
         )
-        stateData.value = ViewState.OpenLinkScreen(context, target, range)
+        dispatch(
+            Command.OpenLinkToObjectOrWebScreen(
+                ctx = context,
+                target = target.id,
+                range = range,
+                isWholeBlockMarkup = true
+            )
+        )
     }
 
-    private fun onUpdateBlockListMarkup(ids: List<Id>, type: Markup.Type) {
+    private fun onUpdateBlockListMarkup(ids: List<Id>, type: Markup.Type, param: String? = null) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateMark(
@@ -1836,7 +1847,8 @@ class EditorViewModel(
                     targets = ids,
                     mark = Content.Text.Mark(
                         range = IntRange(0, Int.MAX_VALUE),
-                        type = type.toCoreModel()
+                        type = type.toCoreModel(),
+                        param = param
                     )
                 )
             )
@@ -4866,11 +4878,6 @@ class EditorViewModel(
 
     //region MARKUP TOOLBAR
 
-    fun onMarkupUrlClicked() {
-        Timber.d("onMarkupUrlClicked, ")
-        dispatch(Command.ShowTextLinkMenu)
-    }
-
     fun onUnlinkPressed(blockId: String, range: IntRange) {
         Timber.d("onUnlinkPressed, blockId:[$blockId] range:[$range]")
 
@@ -5813,10 +5820,16 @@ class EditorViewModel(
         val target = orchestrator.stores.focus.current().id
         val range = orchestrator.stores.textSelection.current().selection
         val block = blocks.firstOrNull { it.id == target }
-        val uri = block?.getFirstLinkOrObjectMarkupParam(range).orEmpty()
-        dispatch(
-            Command.OpenLinkToObjectOrWebScreen(uri = uri)
-        )
+        if (block != null && range != null) {
+            dispatch(
+                Command.OpenLinkToObjectOrWebScreen(
+                    ctx = context,
+                    target = target,
+                    range = range,
+                    isWholeBlockMarkup = false
+                )
+            )
+        }
     }
 
     fun onUnlinkClicked() {
@@ -5838,6 +5851,10 @@ class EditorViewModel(
         val block = blocks.firstOrNull { it.id == target }
         val uri = block?.getFirstLinkOrObjectMarkupParam(range).orEmpty()
         dispatch(Command.SaveTextToSystemClipboard(uri))
+    }
+
+    fun onCopyLinkClicked(link: String) {
+        dispatch(Command.SaveTextToSystemClipboard(link))
     }
 
     private suspend fun createObjectAddProceedToAddToTextAsLink(name: String, type: String?) {

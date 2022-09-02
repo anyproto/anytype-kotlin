@@ -33,6 +33,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_utils.clipboard.parseUrlFromClipboard
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -405,7 +406,7 @@ interface TextBlockHolder : TextHolder {
         val bookmarkMenuItemTitle = content.resources.getString(R.string.bookmark)
         content.customInsertionActionModeCallback = object : ActionMode.Callback2() {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                val url = content.parseUrlFromPastedText()
+                val url = content.context.parseUrlFromClipboard()
                 if (url != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         menu.apply {
@@ -431,7 +432,7 @@ interface TextBlockHolder : TextHolder {
                             bookmarkMenuItemTitle -> {
                                 mode.finish()
                                 content.clipboardInterceptor?.onUrlPasted(
-                                    content.parseUrlFromPastedText().toString()
+                                    content.context.parseUrlFromClipboard().toString()
                                 )
                                 true
                             }
@@ -440,7 +441,7 @@ interface TextBlockHolder : TextHolder {
                     }
                     R.id.menuBookmark -> {
                         content.clipboardInterceptor?.onUrlPasted(
-                            content.parseUrlFromPastedText().toString()
+                            content.context.parseUrlFromClipboard().toString()
                         )
                         mode.finish()
                         true

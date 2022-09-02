@@ -163,6 +163,8 @@ interface EditorSubComponent {
     fun objectAppearanceChooseDescription(): ObjectAppearanceChooseDescriptionSubComponent.Builder
 
     fun setBlockTextValueComponent(): SetBlockTextValueSubComponent.Builder
+
+    fun linkToObjectOrWebBuilder(): LinkToObjectOrWebSubComponent.Builder
 }
 
 

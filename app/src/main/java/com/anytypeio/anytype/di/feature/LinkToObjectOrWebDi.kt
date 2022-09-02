@@ -1,11 +1,12 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.core_utils.tools.UrlValidator
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import dagger.Module
@@ -15,7 +16,7 @@ import dagger.Subcomponent
 @Subcomponent(
     modules = [LinkToObjectOrWebModule::class]
 )
-@PerScreen
+@PerModal
 interface LinkToObjectOrWebSubComponent {
 
     @Subcomponent.Builder
@@ -31,27 +32,21 @@ interface LinkToObjectOrWebSubComponent {
 object LinkToObjectOrWebModule {
 
     @JvmStatic
-    @PerScreen
+    @PerModal
     @Provides
     fun provideLinkToObjectViewModelFactory(
         urlBuilder: UrlBuilder,
-        getObjectTypes: GetObjectTypes,
+        objectTypesProvider: ObjectTypesProvider,
         searchObjects: SearchObjects,
-        analytics: Analytics
+        analytics: Analytics,
+        stores: Editor.Storage,
+        urlValidator: UrlValidator
     ): LinkToObjectOrWebViewModelFactory = LinkToObjectOrWebViewModelFactory(
         urlBuilder = urlBuilder,
-        getObjectTypes = getObjectTypes,
+        objectTypesProvider = objectTypesProvider,
         searchObjects = searchObjects,
-        analytics = analytics
+        analytics = analytics,
+        stores = stores,
+        urlValidator = urlValidator
     )
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun getObjectTypes(repo: BlockRepository): GetObjectTypes = GetObjectTypes(repo = repo)
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun searchObjects(repo: BlockRepository): SearchObjects = SearchObjects(repo = repo)
 }

@@ -2,13 +2,9 @@ package com.anytypeio.anytype.ui.editor
 
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.app.DownloadManager
 import android.content.ActivityNotFoundException
-import android.content.BroadcastReceiver
 import android.content.ClipData
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
@@ -26,7 +22,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
@@ -55,8 +50,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
-import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
@@ -65,7 +58,6 @@ import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
-import com.anytypeio.anytype.core_ui.menu.TextLinkPopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
@@ -128,7 +120,6 @@ import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
-import com.anytypeio.anytype.ui.editor.modals.SetLinkFragment
 import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
@@ -651,7 +642,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.markupToolbar
             .linkClicks()
-            .onEach { vm.onMarkupUrlClicked() }
+            .onEach { vm.onEditLinkClicked() }
             .launchIn(lifecycleScope)
 
         binding.markupToolbar
@@ -775,12 +766,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onAddBookmarkUrl(target = target, url = url)
     }
 
-    override fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange) {
-        vm.onAddLinkPressed(blockId, link, range)
+    override fun onSetBlockWebLink(blockId: Id, link: Id) {
+        vm.onAddWebLinkToBlock(blockId = blockId, link = link)
+    }
+
+    override fun onSetBlockObjectLink(blockId: Id, objectId: Id) {
+        vm.onAddObjectLinkToBlock(blockId = blockId, objectId = objectId)
     }
 
     override fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange) {
-        vm.onUnlinkPressed(blockId, range)
+        vm.onUnlinkPressed(blockId = blockId, range = range)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -1103,7 +1098,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenLinkToObjectOrWebScreen -> {
                     hideSoftInput()
-                    val fr = LinkToObjectOrWebPagesFragment.newInstance(command.uri)
+                    val fr = LinkToObjectOrWebPagesFragment.newInstance(
+                        ctx = command.ctx,
+                        blockId = command.target,
+                        rangeStart = command.range.first,
+                        rangeEnd = command.range.last,
+                        isWholeBlockMarkup = command.isWholeBlockMarkup
+                    )
                     fr.show(childFragmentManager, null)
                 }
                 is Command.ShowKeyboard -> {
@@ -1113,17 +1114,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     vm.startSharingFile(command.id) { uri ->
                         openFileByDefaultApp(uri)
                     }
-                }
-                Command.ShowTextLinkMenu -> {
-                    val urlButton = binding.markupToolbar.findViewById<View>(R.id.url)
-                    val popup = TextLinkPopupMenu(
-                        context = requireContext(),
-                        view = urlButton,
-                        onCopyLinkClicked = { vm.onCopyLinkClicked() },
-                        onEditLinkClicked = { vm.onEditLinkClicked() },
-                        onUnlinkClicked = { vm.onUnlinkClicked() }
-                    )
-                    popup.show()
                 }
                 is Command.SaveTextToSystemClipboard -> {
                     val clipData = ClipData.newPlainText("Uri", command.text)
@@ -1208,17 +1198,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.topToolbar.setIsLocked(isLocked)
                 resetDocumentTitle(state)
                 binding.loadingContainer.root.gone()
-            }
-            is ViewState.OpenLinkScreen -> {
-                if (childFragmentManager.findFragmentByTag(TAG_LINK) == null) {
-                    SetLinkFragment.newInstance(
-                        blockId = state.block.id,
-                        initUrl = state.block.getFirstLinkOrObjectMarkupParam(state.range),
-                        text = state.block.getSubstring(state.range),
-                        rangeEnd = state.range.last,
-                        rangeStart = state.range.first
-                    ).show(childFragmentManager, TAG_LINK)
-                }
             }
             ViewState.Loading -> {}
             ViewState.NotExist -> {
@@ -2014,8 +1993,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToAddObjectToTextAsLink(id)
     }
 
-    override fun onSetWebLink(uri: String) {
-        vm.proceedToAddUriToTextAsLink(uri)
+    override fun onSetWebLink(link: String) {
+        vm.proceedToAddUriToTextAsLink(link)
+    }
+
+    override fun onCopyLink(link: String) {
+        vm.onCopyLinkClicked(link)
     }
 
     override fun onCreateObject(name: String) {
@@ -2111,14 +2094,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 }
 
 interface OnFragmentInteractionListener {
-    fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange)
+    fun onSetBlockWebLink(blockId: String, link: String)
+    fun onSetBlockObjectLink(blockId: Id, objectId: Id)
     fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange)
     fun onAddBookmarkUrlClicked(target: String, url: String)
     fun onExitToDesktopClicked()
     fun onSetRelationKeyClicked(blockId: Id, key: Id)
-    fun onSetObjectLink(id: Id)
-    fun onSetWebLink(uri: String)
+    fun onSetObjectLink(objectId: Id)
+    fun onSetWebLink(link: String)
     fun onCreateObject(name: String)
     fun onSetTextBlockValue()
     fun onMentionClicked(target: Id)
+    fun onCopyLink(link: String)
 }

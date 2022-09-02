@@ -17,12 +17,12 @@ class ActionMenuHolder(val binding: ItemSlashWidgetStyleBinding) : RecyclerView.
             }
             SlashItem.Actions.Copy -> {
                 tvTitle.setText(R.string.slash_widget_actions_copy)
-                ivIcon.setImageResource(R.drawable.ic_slash_actions_copy)
+                ivIcon.setImageResource(R.drawable.ic_copy_24)
                 tvSubtitle.gone()
             }
             SlashItem.Actions.Delete -> {
                 tvTitle.setText(R.string.slash_widget_actions_delete)
-                ivIcon.setImageResource(R.drawable.ic_slash_actions_delete)
+                ivIcon.setImageResource(R.drawable.ic_delete_24)
                 tvSubtitle.gone()
             }
             SlashItem.Actions.Duplicate -> {

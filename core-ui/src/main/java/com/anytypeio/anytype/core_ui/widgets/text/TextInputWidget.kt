@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.widgets.text
 
 import android.R.id.copy
 import android.R.id.paste
-import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Canvas
 import android.text.InputType
@@ -10,15 +9,12 @@ import android.text.Spanned
 import android.text.TextWatcher
 import android.text.util.Linkify
 import android.util.AttributeSet
-import android.util.Patterns
 import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.toIMECode
@@ -252,30 +248,6 @@ class TextInputWidget : AppCompatEditText {
             super.onTextContextMenuItem(id)
         } else {
             consumed
-        }
-    }
-
-    fun parseUrlFromPastedText(): Url? {
-        return try {
-            val mng = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = mng.primaryClip
-            if (clip != null && clip.itemCount > 0) {
-                val txt = clip.getItemAt(0).text
-                if (txt.isNullOrEmpty())
-                    null
-                else {
-                    val matcher = Patterns.WEB_URL.matcher(txt)
-                    if (matcher.matches()) {
-                        txt.toString()
-                    } else {
-                        null
-                    }
-                }
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            null
         }
     }
 

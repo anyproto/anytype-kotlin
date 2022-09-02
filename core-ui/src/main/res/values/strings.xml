@@ -250,6 +250,8 @@
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
     <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
+    <string name="content_desc_link_to_remove_link">Remove link icon</string>
+    <string name="content_desc_link_to_copy_link">Copy link icon</string>
     <string name="content_desc_object_icon">Object image or emoji</string>
     <string name="content_desc_checkbox_icon">Checkbox icon</string>
     <string name="content_desc_layout_icon">Layout icon</string>
@@ -257,6 +259,8 @@
     <string name="move_to">Move to</string>
     <string name="preview">Preview</string>
     <string name="link_to">Link to</string>
+    <string name="linked_to">Linked to</string>
+    <string name="remove_link">Remove link</string>
     <string name="mention_suggester_new_page">Create new object</string>
     <string name="mention_suggester_create_object">Create object</string>
     <string name="your_search_query">Search</string>
@@ -479,6 +483,7 @@
     <string name="open_set">Open set</string>
     <string name="deleted">Deleted</string>
     <string name="paste_link_or_search">Paste link or search objects</string>
+    <string name="paste_from_clipboard">Paste from clipboard</string>
     <string name="create_object_with_name">Create object \"%1$s\"</string>
     <string name="layout_basic_name">Basic</string>
     <string name="layout_basic_description">Standard layout for canvas blocks</string>
@@ -553,5 +558,8 @@
     <string name="send_email">Send email</string>
     <string name="call_phone_number">Call phone number</string>
     <string name="bookmark_icon">Bookmark icon</string>
+
+    <string name="error_find_block">Could\'t find the selected block</string>
+    <string name="error_block_selection">Block selection error</string>
 
 </resources>

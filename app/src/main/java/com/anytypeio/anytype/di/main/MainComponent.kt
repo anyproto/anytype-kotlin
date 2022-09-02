@@ -42,11 +42,9 @@ interface MainComponent : AppearanceDependencies {
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
-    fun linkAddComponentBuilder(): LinkSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
     fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
-    fun linkToObjectOrWebBuilder(): LinkToObjectOrWebSubComponent.Builder
     fun moveToBuilder(): MoveToSubComponent.Builder
     fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder

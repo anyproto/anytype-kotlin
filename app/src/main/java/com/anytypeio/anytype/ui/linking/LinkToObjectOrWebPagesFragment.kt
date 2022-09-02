@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.linking
 
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +16,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.ObjectLinksAdapter
+import com.anytypeio.anytype.core_utils.clipboard.parseUrlFromClipboard
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentLinkToObjectOrWebBinding
@@ -29,7 +33,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToObjectOrWebBinding>() {
+class LinkToObjectOrWebPagesFragment() :
+    BaseBottomSheetFragment<FragmentLinkToObjectOrWebBinding>() {
 
     private val vm by viewModels<LinkToObjectOrWebViewModel> { factory }
 
@@ -38,7 +43,12 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToO
 
     private val clearSearchText: View get() = binding.searchView.root.findViewById(R.id.clearSearchText)
     private val filterInputField: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
-    private val uri get() = arg<String>(LINK_TO_OBJ_OR_WEB_FILTER_ARG)
+
+    private val ctx get() = arg<String>(CTX_KEY)
+    private val blockId get() = arg<String>(BLOCK_KEY)
+    private val rangeStart get() = arg<Int>(RANGE_START_KEY)
+    private val rangeEnd get() = arg<Int>(RANGE_END_KEY)
+    private val isWholeBlockMarkup get() = arg<Boolean>(UPDATE_WHOLE_BLOCK_KEY)
 
     private val objectLinksAdapter by lazy {
         ObjectLinksAdapter(onClicked = { vm.onClicked(it) })
@@ -99,8 +109,18 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToO
             }
         }
         super.onStart()
-        vm.onStart(uri)
+        vm.onStart(
+            blockId = blockId,
+            rangeStart = rangeStart,
+            rangeEnd = rangeEnd,
+            clipboardUrl = context?.parseUrlFromClipboard()
+        )
         expand()
+    }
+
+    override fun onStop() {
+        vm.onStop()
+        super.onStop()
     }
 
     private fun execute(command: LinkToObjectOrWebViewModel.Command) {
@@ -110,18 +130,72 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToO
                 hideSoftInput()
                 dismiss()
             }
-            is LinkToObjectOrWebViewModel.Command.SetWebLink -> {
-                withParent<OnFragmentInteractionListener> { onSetWebLink(command.url) }
+            is LinkToObjectOrWebViewModel.Command.SetUrlAsLink -> {
+                withParent<OnFragmentInteractionListener> {
+                    if (isWholeBlockMarkup) {
+                        onSetBlockWebLink(
+                            blockId = blockId,
+                            link = command.url
+                        )
+                    } else {
+                        onSetWebLink(
+                            link = command.url
+                        )
+                    }
+                }
                 hideSoftInput()
                 dismiss()
             }
-            is LinkToObjectOrWebViewModel.Command.SetObjectLink -> {
-                withParent<OnFragmentInteractionListener> { onSetObjectLink(command.target) }
+            is LinkToObjectOrWebViewModel.Command.SetObjectAsLink -> {
+                withParent<OnFragmentInteractionListener> {
+                    if (isWholeBlockMarkup) {
+                        onSetBlockObjectLink(blockId = blockId, objectId = command.objectId)
+                    } else {
+                        onSetObjectLink(
+                            objectId = command.objectId
+                        )
+                    }
+                }
                 hideSoftInput()
                 dismiss()
             }
-            is LinkToObjectOrWebViewModel.Command.CreateObject -> {
-                withParent<OnFragmentInteractionListener> { onCreateObject(command.name) }
+            is LinkToObjectOrWebViewModel.Command.CreateAndSetObjectAsLink -> {
+                withParent<OnFragmentInteractionListener> {
+                    onCreateObject(name = command.objectName)
+                }
+                hideSoftInput()
+                dismiss()
+            }
+            is LinkToObjectOrWebViewModel.Command.CopyLink -> {
+                withParent<OnFragmentInteractionListener> { onCopyLink(command.link) }
+                hideSoftInput()
+                dismiss()
+            }
+            LinkToObjectOrWebViewModel.Command.RemoveLink -> {
+                withParent<OnFragmentInteractionListener> {
+                    onRemoveMarkupLinkClicked(
+                        blockId = blockId,
+                        range = IntRange(rangeStart, rangeEnd)
+                    )
+                }
+                hideSoftInput()
+                dismiss()
+            }
+            is LinkToObjectOrWebViewModel.Command.OpenObject -> {
+                withParent<OnFragmentInteractionListener> { onMentionClicked(target = command.objectId) }
+                hideSoftInput()
+                dismiss()
+            }
+            is LinkToObjectOrWebViewModel.Command.OpenUrl -> {
+                try {
+                    Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(command.url)
+                    }.let {
+                        startActivity(it)
+                    }
+                } catch (e: Throwable) {
+                    toast("Couldn't parse url: ${command.url}")
+                }
                 hideSoftInput()
                 dismiss()
             }
@@ -139,6 +213,14 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToO
             }
             is LinkToObjectOrWebViewModel.ViewState.SetFilter -> {
                 filterInputField.setText(state.filter)
+            }
+            is LinkToObjectOrWebViewModel.ViewState.ErrorSelectedBlock -> {
+                toast(getString(R.string.error_find_block))
+                dismiss()
+            }
+            LinkToObjectOrWebViewModel.ViewState.ErrorSelection -> {
+                toast(getString(R.string.error_block_selection))
+                dismiss()
             }
         }
     }
@@ -158,11 +240,11 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToO
     }
 
     override fun injectDependencies() {
-        componentManager().linkToObjectOrWebComponent.get().inject(this)
+        componentManager().linkToObjectOrWebComponent.get(ctx).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().linkToObjectOrWebComponent.release()
+        componentManager().linkToObjectOrWebComponent.release(ctx)
     }
 
     override fun inflateBinding(
@@ -173,10 +255,27 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToO
     )
 
     companion object {
-        const val LINK_TO_OBJ_OR_WEB_FILTER_ARG = "link-to-object-or-web.filter.arg"
+        const val CTX_KEY = "arg.link-to.ctx"
+        const val BLOCK_KEY = "arg.link-to.block.id"
+        const val RANGE_START_KEY = "arg.link-to.start"
+        const val RANGE_END_KEY = "arg.link-to.end"
+        const val UPDATE_WHOLE_BLOCK_KEY = "arg.link-to.update.block"
 
-        fun newInstance(filter: String) = LinkToObjectOrWebPagesFragment().apply {
-            arguments = bundleOf(LINK_TO_OBJ_OR_WEB_FILTER_ARG to filter)
-        }
+        fun newInstance(
+            ctx: Id,
+            blockId: Id,
+            rangeStart: Int,
+            rangeEnd: Int,
+            isWholeBlockMarkup: Boolean
+        ) =
+            LinkToObjectOrWebPagesFragment().apply {
+                arguments = bundleOf(
+                    CTX_KEY to ctx,
+                    BLOCK_KEY to blockId,
+                    RANGE_START_KEY to rangeStart,
+                    RANGE_END_KEY to rangeEnd,
+                    UPDATE_WHOLE_BLOCK_KEY to isWholeBlockMarkup
+                )
+            }
     }
 }

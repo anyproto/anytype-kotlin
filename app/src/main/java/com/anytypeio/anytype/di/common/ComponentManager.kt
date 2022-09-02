@@ -21,7 +21,6 @@ import com.anytypeio.anytype.di.feature.EditorUseCaseModule
 import com.anytypeio.anytype.di.feature.HomeDashboardModule
 import com.anytypeio.anytype.di.feature.KeychainLoginModule
 import com.anytypeio.anytype.di.feature.KeychainPhraseModule
-import com.anytypeio.anytype.di.feature.LinkModule
 import com.anytypeio.anytype.di.feature.LinkToObjectModule
 import com.anytypeio.anytype.di.feature.LinkToObjectOrWebModule
 import com.anytypeio.anytype.di.feature.MainEntryModule
@@ -214,13 +213,6 @@ class ComponentManager(
             .build()
     }
 
-    val linkAddComponent = Component {
-        main
-            .linkAddComponentBuilder()
-            .linkModule(LinkModule())
-            .build()
-    }
-
     val objectIconPickerComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)
@@ -326,8 +318,9 @@ class ComponentManager(
             .build()
     }
 
-    val linkToObjectOrWebComponent = Component {
-        main.linkToObjectOrWebBuilder()
+    val linkToObjectOrWebComponent = DependentComponentMap { id ->
+        editorComponent.get(id)
+            .linkToObjectOrWebBuilder()
             .module(LinkToObjectOrWebModule)
             .build()
     }

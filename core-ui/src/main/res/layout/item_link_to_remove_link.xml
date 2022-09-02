@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="@dimen/list_item_object_icon_width"
+        android:layout_height="@dimen/list_item_object_icon_height"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/list_item_object_icon_margin_top"
+        android:layout_marginBottom="@dimen/list_item_object_icon_margin_bottom"
+        android:contentDescription="@string/content_desc_link_to_remove_link"
+        android:scaleType="center"
+        app:srcCompat="@drawable/ic_delete_24" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="76dp"
+        android:layout_marginEnd="23dp"
+        style="@style/ObjectListItemTitle"
+        android:layout_gravity="center_vertical"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/remove_link" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="68dp"
+        android:background="@drawable/divider_relations"
+        android:layout_marginEnd="@dimen/dp_16" />
+
+</FrameLayout>

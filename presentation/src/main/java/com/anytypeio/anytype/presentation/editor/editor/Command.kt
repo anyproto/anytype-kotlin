@@ -120,14 +120,17 @@ sealed class Command {
 
     data class OpenLinkToScreen(val target: Id, val position: Int?) : Command()
 
-    data class OpenLinkToObjectOrWebScreen(val uri: String) : Command()
+    data class OpenLinkToObjectOrWebScreen(
+        val ctx: Id,
+        val target: Id,
+        val range: IntRange,
+        val isWholeBlockMarkup: Boolean
+    ) : Command()
 
     data class OpenAddRelationScreen(
         val ctx: Id,
         val target: Id
     ) : Command()
-
-    object ShowTextLinkMenu : Command()
 
     data class SaveTextToSystemClipboard(val text: String) : Command()
 

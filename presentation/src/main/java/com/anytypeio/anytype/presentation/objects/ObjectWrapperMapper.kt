@@ -51,6 +51,26 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
         )
     }
 
+fun ObjectWrapper.Basic.toLinkToObjectView(
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectType>
+): LinkToItemView.LinkedTo.Object {
+    val typeUrl = this.getProperType()
+    val layout = this.getProperLayout()
+    return LinkToItemView.LinkedTo.Object(
+        id = this.id,
+        title = this.getProperName(),
+        subtitle = getProperTypeName(url = typeUrl, types = objectTypes),
+        type = typeUrl,
+        layout = layout,
+        icon = ObjectIcon.from(
+            obj = this,
+            layout = layout,
+            builder = urlBuilder
+        )
+    )
+}
+
 fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
     ids: List<*>? = null,
     urlBuilder: UrlBuilder,

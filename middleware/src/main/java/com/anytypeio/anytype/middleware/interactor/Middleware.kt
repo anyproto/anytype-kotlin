@@ -1721,6 +1721,18 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun objectToSet(ctx: String, source: List<String>) : String {
+        val request = Rpc.Object.ToSet.Request(
+            contextId = ctx,
+            source = source
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectToSet(request)
+        if(BuildConfig.DEBUG) logResponse(response)
+        return response.setId
+    }
+
     private fun logRequest(any: Any) {
         val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)

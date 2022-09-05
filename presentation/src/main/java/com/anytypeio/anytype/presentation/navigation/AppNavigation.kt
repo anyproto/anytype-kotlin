@@ -19,7 +19,7 @@ interface AppNavigation {
     fun openSettings()
 
     fun openArchive(target: String)
-    fun openObjectSet(target: String)
+    fun openObjectSet(target: String, isPopUpToDashboard: Boolean)
     fun openDocument(id: String, editorSettings: EditorSettings?)
 
     fun launchDocument(id: String)
@@ -67,7 +67,7 @@ interface AppNavigation {
         data class OpenCreateAccount(val invitationCode: String) : Command()
         object ChoosePinCodeScreen : Command()
         object InvitationCodeScreen : Command()
-        object AboutAnalyticsScreen: Command()
+        object AboutAnalyticsScreen : Command()
         object ExitToInvitationCodeScreen : Command()
         object SetupNewAccountScreen : Command()
         data class SetupSelectedAccountScreen(val id: String) : Command()
@@ -76,7 +76,9 @@ interface AppNavigation {
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
 
-        data class OpenObject(val id: String, val editorSettings: EditorSettings? = null) : Command()
+        data class OpenObject(val id: String, val editorSettings: EditorSettings? = null) :
+            Command()
+
         data class LaunchDocument(val id: String) : Command()
         data class LaunchObjectFromSplash(val target: Id) : Command()
         data class LaunchObjectSetFromSplash(val target: Id) : Command()
@@ -94,7 +96,7 @@ interface AppNavigation {
         object OpenEditDatabase : Command()
         object OpenSwitchDisplayView : Command()
         object OpenCustomizeDisplayView : Command()
-        object OpenDebugSettingsScreen: Command()
+        object OpenDebugSettingsScreen : Command()
 
         data class OpenPageNavigationScreen(val target: String) : Command()
 
@@ -102,7 +104,9 @@ interface AppNavigation {
         object OpenPageSearch : Command()
 
         data class OpenArchive(val target: String) : Command()
-        data class OpenObjectSet(val target: String) : Command()
+        data class OpenObjectSet(val target: String, val isPopUpToDashboard: Boolean = false) :
+            Command()
+
         data class LaunchObjectSet(val target: Id) : Command()
 
         data class OpenCreateSetScreen(val ctx: Id) : Command()

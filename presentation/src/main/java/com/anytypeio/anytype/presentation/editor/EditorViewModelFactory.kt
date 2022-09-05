@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -69,7 +70,8 @@ open class EditorViewModelFactory(
     private val setDocImageIcon: SetDocumentImageIcon,
     private val editorTemplateDelegate: EditorTemplateDelegate,
     private val simpleTablesDelegate: SimpleTableDelegate,
-    private val createNewObject: CreateNewObject
+    private val createNewObject: CreateNewObject,
+    private val objectToSet: ConvertObjectToSet
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -105,7 +107,8 @@ open class EditorViewModelFactory(
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            simpleTableDelegate = simpleTablesDelegate
+            simpleTableDelegate = simpleTablesDelegate,
+            objectToSet = objectToSet
         ) as T
     }
 }

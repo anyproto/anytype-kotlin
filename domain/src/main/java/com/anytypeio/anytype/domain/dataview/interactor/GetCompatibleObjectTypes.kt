@@ -21,7 +21,8 @@ class GetCompatibleObjectTypes(
                 validateObjectType(
                     type = type,
                     targetType = params.smartBlockType,
-                    excludedTypes = params.excludedTypes
+                    excludedTypes = params.excludedTypes,
+                    isSetIncluded = params.isSetIncluded
                 )
             }
             .sortedWith(ObjectTypeComparator())
@@ -30,16 +31,25 @@ class GetCompatibleObjectTypes(
     private fun validateObjectType(
         excludedTypes: List<Id>,
         targetType: SmartBlockType,
-        type: ObjectType
-    ) = (!excludedTypes.contains(type.url)
-            && type.smartBlockTypes.contains(targetType)
-            && !type.isArchived)
+        type: ObjectType,
+        isSetIncluded: Boolean
+    ) =
+        if (isSetIncluded) {
+            (!excludedTypes.contains(type.url)
+                    && type.smartBlockTypes.contains(targetType)
+                    && !type.isArchived) || type.url == ObjectType.SET_URL
+        } else {
+            (!excludedTypes.contains(type.url)
+                    && type.smartBlockTypes.contains(targetType)
+                    && !type.isArchived)
+        }
 
     /**
      * @property [smartBlockType] target smart block type for filtering purposes.
      */
     class Params(
         val smartBlockType: SmartBlockType,
-        val excludedTypes: List<Id> = emptyList()
+        val excludedTypes: List<Id> = emptyList(),
+        val isSetIncluded: Boolean = false
     )
 }

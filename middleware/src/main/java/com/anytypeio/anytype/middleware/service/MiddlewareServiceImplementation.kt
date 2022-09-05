@@ -699,6 +699,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun objectToSet(request: Rpc.Object.ToSet.Request): Rpc.Object.ToSet.Response {
+        val encoded = Service.objectToSet(Rpc.Object.ToSet.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.ToSet.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.ToSet.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun navigationGetObjectInfoWithLinks(request: Rpc.Navigation.GetObjectInfoWithLinks.Request): Rpc.Navigation.GetObjectInfoWithLinks.Response {
         val encoded = Service.navigationGetObjectInfoWithLinks(
             Rpc.Navigation.GetObjectInfoWithLinks.Request.ADAPTER.encode(request)

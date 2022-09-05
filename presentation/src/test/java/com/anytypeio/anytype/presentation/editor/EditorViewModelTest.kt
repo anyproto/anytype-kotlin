@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
@@ -135,7 +136,6 @@ import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.given
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -341,6 +341,7 @@ open class EditorViewModelTest {
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var setDocImageIcon: SetDocumentImageIcon
+    private lateinit var objectToSet: ConvertObjectToSet
 
     val root = MockDataFactory.randomUuid()
 
@@ -3940,6 +3941,7 @@ open class EditorViewModelTest {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
+        objectToSet = ConvertObjectToSet(repo)
         updateDetail = UpdateDetail(repo)
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)
@@ -4021,7 +4023,8 @@ open class EditorViewModelTest {
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             simpleTableDelegate = simpleTableDelegate,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            objectToSet = objectToSet
         )
     }
 

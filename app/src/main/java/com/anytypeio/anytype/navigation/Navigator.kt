@@ -211,11 +211,21 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openObjectSet(target: String) {
-        navController?.navigate(
-            R.id.dataViewNavigation,
-            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target)
-        )
+    override fun openObjectSet(target: String, isPopUpToDashboard: Boolean) {
+        if (isPopUpToDashboard) {
+            navController?.navigate(
+                R.id.dataViewNavigation,
+                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target),
+                navOptions {
+                    popUpTo(R.id.objectNavigation) { inclusive = true }
+                }
+            )
+        } else {
+            navController?.navigate(
+                R.id.dataViewNavigation,
+                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target)
+            )
+        }
     }
 
     override fun openCreateSetScreen(ctx: Id) {
@@ -245,9 +255,9 @@ class Navigator : AppNavigation {
         navController?.navigate(
             R.id.deletedAccountNavigation,
             bundleOf(DeletedAccountFragment.DEADLINE_KEY to deadline),
-                navOptions {
-                    popUpTo = R.id.main_navigation
-                }
+            navOptions {
+                popUpTo = R.id.main_navigation
+            }
         )
     }
 

@@ -252,4 +252,6 @@ interface BlockRemote {
     ): Payload
 
     suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload
+
+    suspend fun objectToSet(ctx: Id, source: List<String>): Id
 }

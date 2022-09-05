@@ -412,9 +412,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         super.onCreate(savedInstanceState)
         pickerDelegate.initPicker(vm, ctx)
         setFragmentResultListener(OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
-            val id = bundle.getString(OBJECT_TYPE_URL_KEY)
-            val isDraft = bundle.getBoolean(OBJECT_IS_DRAFT_KEY, false)
-            onObjectTypePicked(id = id, isDraft = isDraft)
+            val type = bundle.getString(OBJECT_TYPE_URL_KEY)
+            val isObjectDraft = bundle.getBoolean(OBJECT_IS_DRAFT_KEY, false)
+            if (type != null) {
+                onObjectTypePicked(type = type, isObjectDraft = isObjectDraft)
+            } else {
+                toast("Cannot change object type, when new one is unknown")
+            }
         }
         setupOnBackPressedDispatcher()
         getEditorSettings()
@@ -875,8 +879,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onSetRelationKeyClicked(blockId = blockId, key = key)
     }
 
-    private fun onObjectTypePicked(id: Id?, isDraft: Boolean = false) {
-        vm.onObjectTypeChanged(id = id)
+    private fun onObjectTypePicked(type: Id, isObjectDraft: Boolean) {
+        vm.onObjectTypeChanged(type = type, isObjectDraft = isObjectDraft)
     }
 
     private fun execute(event: EventWrapper<Command>) {
@@ -1055,7 +1059,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             R.id.objectTypeChangeScreen,
                             bundleOf(
                                 ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType,
-                                ObjectTypeChangeFragment.ARG_EXCLUDED_TYPES to command.excludedTypes
+                                ObjectTypeChangeFragment.ARG_EXCLUDED_TYPES to command.excludedTypes,
+                                ObjectTypeChangeFragment.OBJECT_IS_DRAFT_KEY to command.isDraft
                             )
                         )
                 }

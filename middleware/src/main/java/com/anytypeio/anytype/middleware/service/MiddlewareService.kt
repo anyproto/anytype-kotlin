@@ -114,6 +114,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectRedo(request: Rpc.Object.Redo.Request): Rpc.Object.Redo.Response
 
+    @Throws(Exception::class)
+    fun objectToSet(request: Rpc.Object.ToSet.Request): Rpc.Object.ToSet.Response
+
     //endregion
 
     //region OBJECT'S RELATIONS command

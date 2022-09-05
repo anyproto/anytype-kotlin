@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
@@ -274,6 +275,7 @@ open class EditorPresentationTestSetup {
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var setDocImageIcon: SetDocumentImageIcon
+    private lateinit var objectToSet: ConvertObjectToSet
 
     open lateinit var orchestrator: Orchestrator
 
@@ -286,6 +288,7 @@ open class EditorPresentationTestSetup {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
+        objectToSet = ConvertObjectToSet(repo)
         updateDetail = UpdateDetail(repo)
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)
@@ -374,7 +377,8 @@ open class EditorPresentationTestSetup {
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             simpleTableDelegate = simpleTableDelegate,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            objectToSet = objectToSet
         )
     }
 

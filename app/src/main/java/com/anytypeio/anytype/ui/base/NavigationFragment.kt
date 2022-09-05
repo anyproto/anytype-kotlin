@@ -51,7 +51,7 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
             is Command.OpenSettings -> navigation.openSettings()
             is Command.OpenObject -> navigation.openDocument(command.id, command.editorSettings)
             is Command.OpenArchive -> navigation.openArchive(command.target)
-            is Command.OpenObjectSet -> navigation.openObjectSet(command.target)
+            is Command.OpenObjectSet -> navigation.openObjectSet(command.target, command.isPopUpToDashboard)
             is Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
             is Command.LaunchDocument -> navigation.launchDocument(command.id)
             is Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(command.target)

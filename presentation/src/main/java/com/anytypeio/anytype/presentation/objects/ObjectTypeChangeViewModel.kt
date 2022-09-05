@@ -29,18 +29,23 @@ class ObjectTypeChangeViewModel(
             views.filter { view -> view.name.contains(query, true) }
     }
 
-    fun onStart(smartBlockType: SmartBlockType, excludedTypes: List<Id> = emptyList()) {
+    fun onStart(
+        smartBlockType: SmartBlockType,
+        excludedTypes: List<Id> = emptyList(),
+        isDraft: Boolean
+    ) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
-                    smartBlockType = smartBlockType
+                    smartBlockType = smartBlockType,
+                    isSetIncluded = isDraft
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = { types ->
                     if (excludedTypes.isEmpty()) {
                         setViews(objectTypes = types)
-                    }  else {
+                    } else {
                         setViews(objectTypes = types.filter { t -> !excludedTypes.contains(t.url) })
                     }
                 }

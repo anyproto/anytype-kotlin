@@ -26,14 +26,16 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFacto
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import javax.inject.Inject
 
-class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObjectTypeChangeBinding>() {
+class ObjectTypeChangeFragment :
+    BaseBottomSheetTextInputFragment<FragmentObjectTypeChangeBinding>() {
 
     private val smartBlockType: SmartBlockType get() = arg(ARG_SMART_BLOCK_TYPE)
-    private val excludedTypes: List<Id> get() = argOrNull<List<Id>>(ARG_EXCLUDED_TYPES) ?: emptyList()
+    private val excludedTypes: List<Id>
+        get() = argOrNull<List<Id>>(ARG_EXCLUDED_TYPES) ?: emptyList()
 
     private val vm by viewModels<ObjectTypeChangeViewModel> { factory }
 
-    private val isDraft : Boolean get() = argOrNull<Boolean>(OBJECT_IS_DRAFT_KEY) ?: false
+    private val isDraft: Boolean get() = argOrNull<Boolean>(OBJECT_IS_DRAFT_KEY) ?: false
 
     @Inject
     lateinit var factory: ObjectTypeChangeViewModelFactory
@@ -80,7 +82,8 @@ class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObject
         super.onStart()
         vm.onStart(
             smartBlockType = smartBlockType,
-            excludedTypes = excludedTypes
+            excludedTypes = excludedTypes,
+            isDraft = isDraft
         )
     }
 

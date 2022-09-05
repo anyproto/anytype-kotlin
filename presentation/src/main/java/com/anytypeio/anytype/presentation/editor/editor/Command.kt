@@ -108,7 +108,7 @@ sealed class Command {
         val ctx: Id,
         val smartBlockType: SmartBlockType,
         val excludedTypes: List<Id>,
-        val isDraft: Boolean = false,
+        val isDraft: Boolean
     ) : Command()
 
     data class OpenMoveToScreen(

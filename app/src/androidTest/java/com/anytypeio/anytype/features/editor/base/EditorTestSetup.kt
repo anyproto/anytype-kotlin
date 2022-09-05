@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -96,7 +97,6 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
-import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
@@ -187,6 +187,7 @@ open class EditorTestSetup {
     lateinit var turnIntoDocument: TurnIntoDocument
     lateinit var turnIntoStyle: TurnIntoStyle
     lateinit var setObjectType: SetObjectType
+    lateinit var objectToSet: ConvertObjectToSet
 
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
@@ -272,6 +273,7 @@ open class EditorTestSetup {
         createDocument = CreateDocument(repo, documentEmojiIconProvider)
         undo = Undo(repo)
         redo = Redo(repo)
+        objectToSet = ConvertObjectToSet(repo)
         replaceBlock = ReplaceBlock(repo)
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
@@ -405,7 +407,8 @@ open class EditorTestSetup {
             setDocImageIcon = setDocImageIcon,
             editorTemplateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            simpleTablesDelegate = simpleTableDelegate
+            simpleTablesDelegate = simpleTableDelegate,
+            objectToSet = objectToSet
         )
     }
 

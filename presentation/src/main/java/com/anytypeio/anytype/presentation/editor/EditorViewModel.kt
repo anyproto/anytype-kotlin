@@ -89,6 +89,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.SideEffect
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -247,7 +248,8 @@ class EditorViewModel(
     private val setDocImageIcon: SetDocumentImageIcon,
     private val templateDelegate: EditorTemplateDelegate,
     private val simpleTableDelegate: SimpleTableDelegate,
-    private val createNewObject: CreateNewObject
+    private val createNewObject: CreateNewObject,
+    private val objectToSet: ConvertObjectToSet
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -2886,7 +2888,7 @@ class EditorViewModel(
 
     private fun onPageClicked(block: Id) {
         val block = blocks.firstOrNull { it.id == block }
-        when(val content = block?.content) {
+        when (val content = block?.content) {
             is Content.Link -> {
                 proceedWithOpeningObjectByLayout(target = content.target)
             }
@@ -3767,7 +3769,8 @@ class EditorViewModel(
                         Command.OpenChangeObjectTypeScreen(
                             ctx = context,
                             smartBlockType = getObjectSmartBlockType(),
-                            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
+                            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE),
+                            isDraft = isObjectTypesWidgetVisible
                         )
                     )
                 } else {
@@ -4045,15 +4048,29 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningSet(target: Id) {
+    private fun proceedWithOpeningSet(target: Id, isPopUpToDashboard: Boolean = false) {
         viewModelScope.launch {
             closePage(CloseBlock.Params(context)).process(
                 failure = {
                     Timber.e(it, "Error while closing object")
-                    navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenObjectSet(
+                                target,
+                                isPopUpToDashboard
+                            )
+                        )
+                    )
                 },
                 success = {
-                    navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenObjectSet(
+                                target,
+                                isPopUpToDashboard
+                            )
+                        )
+                    )
                 }
             )
         }
@@ -4139,27 +4156,38 @@ class EditorViewModel(
         }
     }
 
-    fun onObjectTypeChanged(id: Id?, isDraft: Boolean = false) {
-        Timber.d("onObjectTypeChanged, typeId:[$id]")
-        if (id == null) {
-            sendToast(CANNOT_CHANGE_NULL_OBJECT_TYPE)
-            return
-        }
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Document.SetObjectType(
-                    context = context,
-                    typeId = id
+    fun onObjectTypeChanged(type: Id, isObjectDraft: Boolean) {
+        Timber.d("onObjectTypeChanged, typeId:[$type], isObjectDraft:[$isObjectDraft]")
+        if (type == ObjectType.SET_URL) {
+            viewModelScope.launch {
+                val params = ConvertObjectToSet.Params(
+                    ctx = context,
+                    sources = emptyList()
                 )
-            )
-            sendAnalyticsObjectTypeChangeEvent(
-                analytics = analytics,
-                typeId = id,
-                context = analyticsContext
-            )
-        }
-        if (isDraft) {
-            proceedWithTemplateSelection(id)
+                objectToSet.invoke(params).proceed(
+                    failure = { error -> Timber.e(error, "Error convert object to set") },
+                    success = { setId ->
+                        proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
+                    }
+                )
+            }
+        } else {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Document.SetObjectType(
+                        context = context,
+                        typeId = type
+                    )
+                )
+                sendAnalyticsObjectTypeChangeEvent(
+                    analytics = analytics,
+                    typeId = type,
+                    context = analyticsContext
+                )
+            }
+            if (isObjectDraft) {
+                proceedWithTemplateSelection(type)
+            }
         }
     }
 
@@ -4176,8 +4204,6 @@ class EditorViewModel(
         const val FORMAT_WEBP = "webp"
         const val CANNOT_MOVE_BLOCK_ON_SAME_POSITION = "Selected block is already on the position"
         const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."
-        const val CANNOT_CHANGE_NULL_OBJECT_TYPE =
-            "Cannot change object type, when new one is unknown"
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
         const val CANNOT_MOVE_PARENT_INTO_CHILD = "Cannot move parent into child."
 
@@ -5627,15 +5653,30 @@ class EditorViewModel(
         Timber.d("onObjectTypesWidgetItemClicked, id:[$typeId]")
         dispatchObjectCreateEvent(typeId)
         proceedWithHidingObjectTypeWidget()
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Document.SetObjectType(
-                    context = context,
-                    typeId = typeId
+        if (typeId == ObjectType.SET_URL) {
+            viewModelScope.launch {
+                val params = ConvertObjectToSet.Params(
+                    ctx = context,
+                    sources = emptyList()
                 )
-            )
+                objectToSet.invoke(params).proceed(
+                    failure = { error -> Timber.e(error, "Error convert object to set") },
+                    success = { setId ->
+                        proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
+                    }
+                )
+            }
+        } else {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Document.SetObjectType(
+                        context = context,
+                        typeId = typeId
+                    )
+                )
+            }
+            proceedWithTemplateSelection(typeId)
         }
-        proceedWithTemplateSelection(typeId)
     }
 
     fun onObjectTypesWidgetSearchClicked() {
@@ -5644,7 +5685,8 @@ class EditorViewModel(
             Command.OpenChangeObjectTypeScreen(
                 ctx = context,
                 smartBlockType = getObjectSmartBlockType(),
-                excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
+                excludedTypes = listOf(ObjectType.BOOKMARK_TYPE),
+                isDraft = true
             )
         )
     }
@@ -5693,7 +5735,8 @@ class EditorViewModel(
         val smartBlockType = getObjectSmartBlockType()
         val params = GetCompatibleObjectTypes.Params(
             smartBlockType = smartBlockType,
-            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
+            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE),
+            isSetIncluded = true
         )
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(params).proceed(

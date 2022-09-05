@@ -580,4 +580,8 @@ class BlockMiddleware(
 
     override suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload =
         middleware.fillTableRow(ctx, targetIds)
+
+    override suspend fun objectToSet(ctx: Id, source: List<String>): Id {
+        return middleware.objectToSet(ctx, source)
+    }
 }

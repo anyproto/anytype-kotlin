@@ -12,6 +12,7 @@ import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponen
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -223,7 +224,8 @@ object EditorSessionModule {
         setDocImageIcon: SetDocumentImageIcon,
         editorTemplateDelegate: EditorTemplateDelegate,
         createNewObject: CreateNewObject,
-        simpleTableDelegate: SimpleTableDelegate
+        simpleTableDelegate: SimpleTableDelegate,
+        objectToSet: ConvertObjectToSet
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -255,7 +257,8 @@ object EditorSessionModule {
         setDocImageIcon = setDocImageIcon,
         editorTemplateDelegate = editorTemplateDelegate,
         createNewObject = createNewObject,
-        simpleTablesDelegate = simpleTableDelegate
+        simpleTablesDelegate = simpleTableDelegate,
+        objectToSet = objectToSet
     )
 
     @JvmStatic
@@ -797,6 +800,15 @@ object EditorUseCaseModule {
     fun provideTableRowFill(
         repo: BlockRepository
     ): FillTableRow = FillTableRow(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideObjectToSet(
+        repo: BlockRepository
+    ): ConvertObjectToSet = ConvertObjectToSet(
         repo = repo
     )
 

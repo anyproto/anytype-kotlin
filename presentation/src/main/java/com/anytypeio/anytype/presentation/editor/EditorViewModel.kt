@@ -28,7 +28,6 @@ import com.anytypeio.anytype.core_models.ext.addMention
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
-import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
 import com.anytypeio.anytype.core_models.ext.parents
@@ -5875,27 +5874,6 @@ class EditorViewModel(
         }
     }
 
-    fun onUnlinkClicked() {
-        val range = orchestrator.stores.textSelection.current().selection
-        val target = orchestrator.stores.focus.current().id
-        if (range != null) {
-            onUnlinkPressed(
-                blockId = target,
-                range = range.first..range.last.dec()
-            )
-        } else {
-            Timber.e("Can't add uri to text, range is null")
-        }
-    }
-
-    fun onCopyLinkClicked() {
-        val target = orchestrator.stores.focus.current().id
-        val range = orchestrator.stores.textSelection.current().selection
-        val block = blocks.firstOrNull { it.id == target }
-        val uri = block?.getFirstLinkOrObjectMarkupParam(range).orEmpty()
-        dispatch(Command.SaveTextToSystemClipboard(uri))
-    }
-
     fun onCopyLinkClicked(link: String) {
         dispatch(Command.SaveTextToSystemClipboard(link))
     }
@@ -5923,17 +5901,42 @@ class EditorViewModel(
     }
 
     fun proceedToAddObjectToTextAsLink(id: Id) {
-        Timber.d("proceedToAddObjectToTextAsLink, target:[$id]")
-        val range = orchestrator.stores.textSelection.current().selection
-        if (range != null) {
-            dispatch(Command.ShowKeyboard)
-            viewModelScope.launch {
-                markupActionPipeline.send(
-                    MarkupAction(
+        Timber.d("proceedToAddObjectToTextAsLink, target:[$id], mode:$mode")
+        when (mode) {
+            EditorMode.Edit -> {
+                val range = orchestrator.stores.textSelection.current().selection
+                if (range != null) {
+                    dispatch(Command.ShowKeyboard)
+                    viewModelScope.launch {
+                        markupActionPipeline.send(
+                            MarkupAction(
+                                type = Markup.Type.OBJECT,
+                                param = id
+                            )
+                        )
+                    }
+                }
+            }
+            is EditorMode.Styling.Single -> {
+                val target = (mode as EditorMode.Styling.Single).target
+                onUpdateBlockListMarkup(
+                    ids = listOf(target),
+                    type = Markup.Type.OBJECT,
+                    param = id
+                )
+            }
+            is EditorMode.Styling.Multi -> {
+                val targets = (mode as EditorMode.Styling.Multi).targets.toList()
+                if (targets.size == 1) {
+                    onUpdateBlockListMarkup(
+                        ids = targets,
                         type = Markup.Type.OBJECT,
                         param = id
                     )
-                )
+                }
+            }
+            else -> {
+                Timber.e("Error to proceedToAddObjectToTextAsLink, wrong mode:[$mode]")
             }
         }
     }

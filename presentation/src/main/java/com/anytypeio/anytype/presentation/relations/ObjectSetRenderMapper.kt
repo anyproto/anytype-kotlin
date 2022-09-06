@@ -80,7 +80,6 @@ fun ObjectSet.tabs(activeViewerId: String? = null): List<ViewerTabView> {
 // TODO rework the function to exclude index == -1 scenario
 fun ObjectSet.render(
     index: Int = 0,
-    ctx: Id,
     builder: UrlBuilder,
     useFallbackView: Boolean = false
 ): ObjectSetViewState {
@@ -105,7 +104,6 @@ fun ObjectSet.render(
             largeCards = viewer.cardSize != DVViewerCardSize.SMALL
         )
         return ObjectSetViewState(
-            title = title(ctx = ctx, urlBuilder = builder),
             viewer = view
         )
     }
@@ -185,17 +183,15 @@ fun ObjectSet.render(
         }
     }
 
-    return ObjectSetViewState(
-        title = title(ctx = ctx, urlBuilder = builder),
-        viewer = dvview
-    )
+    return ObjectSetViewState(viewer = dvview)
 }
 
-fun ObjectSet.title(
+fun title(
+    title: Block,
     ctx: Id,
-    urlBuilder: UrlBuilder
-): BlockView.Title.Basic? {
-    val title = blocks.title() ?: return null
+    urlBuilder: UrlBuilder,
+    details: Map<Id, Block.Fields>
+): BlockView.Title.Basic {
 
     val objectDetails = details[ctx]
 

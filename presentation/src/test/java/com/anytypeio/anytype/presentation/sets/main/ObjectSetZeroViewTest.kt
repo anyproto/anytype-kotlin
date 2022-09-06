@@ -57,49 +57,6 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should show error if data view contains no view`() {
-
-        // SETUP
-
-        val dv = Block(
-            id = MockDataFactory.randomUuid(),
-            content = DV(
-                sources = listOf(MockDataFactory.randomString()),
-                relations = emptyList(),
-                viewers = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        stubInterceptEvents()
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title,
-                dv
-            ),
-            details = objectSetDetails
-        )
-
-        val vm = givenViewModel()
-
-        // TESTING
-
-        assertEquals(
-            expected = null,
-            actual = vm.error.value
-        )
-
-        vm.onStart(root)
-
-        assertEquals(
-            expected = ObjectSetViewModel.DATA_VIEW_HAS_NO_VIEW_MSG,
-            actual = vm.error.value
-        )
-    }
-
-    @Test
     fun `should not crash when trying to open relations, filters or sorts for data view containing no view`() {
 
         // SETUP

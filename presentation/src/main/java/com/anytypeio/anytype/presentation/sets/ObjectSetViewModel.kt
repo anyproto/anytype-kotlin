@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.Result
@@ -133,7 +134,7 @@ class ObjectSetViewModel(
     val commands: SharedFlow<ObjectSetCommand> = _commands
     val toasts = Proxy.Subject<String>()
 
-    private val _currentViewer = MutableStateFlow(Viewer.GridView.empty())
+    private val _currentViewer : MutableStateFlow<Viewer?> = MutableStateFlow(null)
     val currentViewer = _currentViewer
 
     private val _header = MutableStateFlow<BlockView.Title.Basic?>(null)
@@ -145,7 +146,7 @@ class ObjectSetViewModel(
 
     private var analyticsContext: String? = null
 
-    private lateinit var context: Id
+    private var context: Id = ""
 
     init {
 
@@ -154,30 +155,33 @@ class ObjectSetViewModel(
         }
 
         viewModelScope.launch {
-            reducer.state.filter { it.isInitialized }.collect { set ->
-                Timber.d("Got ObjectSetViewModel new state")
-                if (set.viewers.isNotEmpty()) {
-                    _viewerTabs.value = set.tabs(session.currentViewerId)
+            reducer.state.filter { context.isNotEmpty() }.collect { obj ->
+                featured.value = obj.featuredRelations(
+                    ctx = context,
+                    urlBuilder = urlBuilder
+                )
+                _header.value = obj.blocks.title()?.let {
+                    title(
+                        ctx = context,
+                        urlBuilder = urlBuilder,
+                        details = obj.details,
+                        title = it
+                    )
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            reducer.state.collect { set ->
+                if (set.isInitialized && set.viewers.isNotEmpty()) {
                     val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
-                    set.render(viewerIndex, context, urlBuilder).let { vs ->
+                    _viewerTabs.value = set.tabs(session.currentViewerId)
+                    set.render(viewerIndex, urlBuilder).let { vs ->
                         _currentViewer.value = vs.viewer
-                        _header.value = vs.title
                     }
-                    featured.value = set.featuredRelations(
-                        ctx = context,
-                        urlBuilder = urlBuilder
-                    )
                 } else {
-                    Timber.w("Data view contained no view")
-                    error.value = DATA_VIEW_HAS_NO_VIEW_MSG
-                    _header.value = set.title(
-                        ctx = context,
-                        urlBuilder = urlBuilder
-                    )
-                    featured.value = set.featuredRelations(
-                        ctx = context,
-                        urlBuilder = urlBuilder
-                    )
+                    _viewerTabs.value = emptyList()
+                    _currentViewer.value = null
                 }
             }
         }
@@ -207,6 +211,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             titleUpdateChannel
                 .consumeAsFlow()
+                .filter { context.isNotEmpty() }
                 .distinctUntilChanged()
                 .map {
                     UpdateText.Params(
@@ -1133,12 +1138,10 @@ class ObjectSetViewModel(
             val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
             val state = set.render(
                 index = viewerIndex,
-                ctx = context,
                 builder = urlBuilder,
                 useFallbackView = true
             )
             _currentViewer.value = state.viewer
-            _header.value = state.title
         }
     }
 

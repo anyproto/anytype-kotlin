@@ -343,9 +343,8 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setupViewer(viewer: Viewer) {
-        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text =
-            viewer.title
+    private fun setupViewer(viewer: Viewer?) {
+        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer?.title
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
@@ -396,6 +395,16 @@ open class ObjectSetFragment :
                     listView.setViews(emptyList())
                     unsupportedViewError.visible()
                     unsupportedViewError.text = viewer.error
+                }
+            }
+            null -> {
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                with(binding) {
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
                 }
             }
         }

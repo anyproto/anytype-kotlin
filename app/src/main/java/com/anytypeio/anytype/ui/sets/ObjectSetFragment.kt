@@ -23,6 +23,7 @@ import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STO
 import androidx.core.view.children
 import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
@@ -69,6 +71,7 @@ import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
+import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -111,7 +114,7 @@ open class ObjectSetFragment :
     private val topToolbarStatusText: TextView
         get() = binding.topToolbar.root.findViewById(R.id.tvStatus)
 
-    private val addNewButton: ImageView
+    private val addNewButton: TextView
         get() = binding.dataViewHeader.root.findViewById(R.id.addNewButton)
 
     private val customizeViewButton: ImageView
@@ -242,6 +245,14 @@ open class ObjectSetFragment :
         binding.listView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
+        setFragmentResultListener(ObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
+            val source = bundle.getString(ObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
+            if (source != null) {
+                vm.onDataViewSourcePicked(source = source)
+            } else {
+                toast("Error while setting Set source. Source is empty")
+            }
+        }
     }
 
     private fun setupWindowInsetAnimation() {
@@ -313,19 +324,6 @@ open class ObjectSetFragment :
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         lifecycleScope.subscribe(vm.toasts.stream()) { toast(it) }
         lifecycleScope.subscribe(vm.status) { setStatus(it) }
-        lifecycleScope.subscribe(vm.featured) { featured ->
-            if (featured != null) {
-                featuredRelations.visible()
-                featuredRelations.set(
-                    item = featured,
-                    click = {},
-                    isObjectSet = true
-                )
-            } else {
-                featuredRelations.clear()
-                featuredRelations.gone()
-            }
-        }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
@@ -348,6 +346,7 @@ open class ObjectSetFragment :
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
+                    dataViewHeader.root.visible()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                     galleryView.clear()
@@ -362,6 +361,7 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
+                    dataViewHeader.root.visible()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                     listView.gone()
@@ -377,6 +377,7 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
+                    dataViewHeader.root.visible()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                     galleryView.gone()
@@ -389,6 +390,7 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
+                    dataViewHeader.root.visible()
                     galleryView.gone()
                     galleryView.clear()
                     listView.gone()
@@ -401,6 +403,7 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
+                    dataViewHeader.root.invisible()
                     galleryView.gone()
                     galleryView.clear()
                     listView.gone()
@@ -612,8 +615,8 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.SetNameForCreatedRecord -> {
                 findNavController().navigate(
-                        R.id.setNameForNewRecordScreen,
-                        bundleOf(SetObjectSetRecordNameFragment.CONTEXT_KEY to command.ctx)
+                    R.id.setNameForNewRecordScreen,
+                    bundleOf(SetObjectSetRecordNameFragment.CONTEXT_KEY to command.ctx)
                 )
             }
             is ObjectSetCommand.Intent.MailTo -> {
@@ -680,6 +683,17 @@ open class ObjectSetFragment :
                         SetObjectCreateBookmarkRecordFragment.CTX_KEY to command.ctx
                     )
                 )
+            }
+            is ObjectSetCommand.Modal.OpenSelectSourceScreen -> {
+                findNavController()
+                    .navigate(
+                        R.id.objectTypeChangeScreen,
+                        bundleOf(
+                            ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType,
+                            ObjectTypeChangeFragment.ARG_IS_SET_SOURCE to true,
+                            ObjectTypeChangeFragment.ARG_SOURCES to command.sources
+                        )
+                    )
             }
         }
     }
@@ -754,6 +768,19 @@ open class ObjectSetFragment :
                 binding.dvProgressBar.show()
             } else {
                 binding.dvProgressBar.hide()
+            }
+        }
+        jobs += lifecycleScope.subscribe(vm.featured) { featured ->
+            if (featured != null) {
+                featuredRelations.visible()
+                featuredRelations.set(
+                    item = featured,
+                    click = vm::onClickListener,
+                    isObjectSet = true
+                )
+            } else {
+                featuredRelations.clear()
+                featuredRelations.gone()
             }
         }
         vm.onStart(ctx)

@@ -10,6 +10,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
@@ -37,6 +38,11 @@ class ObjectTypeChangeFragment :
 
     private val isDraft: Boolean get() = argOrNull<Boolean>(OBJECT_IS_DRAFT_KEY) ?: false
 
+    private val isSetSource: Boolean get() = argOrNull<Boolean>(ARG_IS_SET_SOURCE) ?: false
+
+    private val selectedSources : List<Id>
+        get() = argOrNull<List<Id>>(ARG_SOURCES) ?: emptyList()
+
     @Inject
     lateinit var factory: ObjectTypeChangeViewModelFactory
 
@@ -51,6 +57,9 @@ class ObjectTypeChangeFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (isSetSource) {
+            binding.tvTitle.text = getString(R.string.select_source)
+        }
         binding.recycler.apply {
             adapter = objectTypeAdapter
             layoutManager = LinearLayoutManager(context)
@@ -83,7 +92,8 @@ class ObjectTypeChangeFragment :
         vm.onStart(
             smartBlockType = smartBlockType,
             excludedTypes = excludedTypes,
-            isDraft = isDraft
+            isDraft = isDraft,
+            selectedSources = selectedSources
         )
     }
 
@@ -105,6 +115,8 @@ class ObjectTypeChangeFragment :
     companion object {
         const val ARG_SMART_BLOCK_TYPE = "arg.object-type.smart-block-type"
         const val ARG_EXCLUDED_TYPES = "arg.object-type.excluded-types"
+        const val ARG_IS_SET_SOURCE = "arg.object-type.is-set-source"
+        const val ARG_SOURCES = "arg.object-type.sources"
         const val OBJECT_TYPE_URL_KEY = "object-type-url.key"
         const val OBJECT_TYPE_NAME_KEY = "object-type-name.key"
         const val OBJECT_TYPE_REQUEST_KEY = "object-type.request"

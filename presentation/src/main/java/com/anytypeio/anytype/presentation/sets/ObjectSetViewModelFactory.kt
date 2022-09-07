@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
@@ -44,7 +45,8 @@ class ObjectSetViewModelFactory(
     private val session: ObjectSetSession,
     private val analytics: Analytics,
     private val getTemplates: GetTemplates,
-    private val createNewObject: CreateNewObject
+    private val createNewObject: CreateNewObject,
+    private val setDataViewSource: SetDataViewSource
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -69,7 +71,8 @@ class ObjectSetViewModelFactory(
             session = session,
             analytics = analytics,
             getTemplates = getTemplates,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            setDataViewSource = setDataViewSource
         ) as T
     }
 }

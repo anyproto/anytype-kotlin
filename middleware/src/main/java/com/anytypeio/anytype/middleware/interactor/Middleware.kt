@@ -1595,7 +1595,8 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectShow(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.objectView?.toPayload() ?: throw IllegalStateException("Object view was null")
+        return response.objectView?.toPayload()
+            ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)
@@ -1722,15 +1723,32 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectToSet(ctx: String, source: List<String>) : String {
+    fun objectToSet(ctx: String, source: List<String>): String {
         val request = Rpc.Object.ToSet.Request(
             contextId = ctx,
             source = source
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectToSet(request)
-        if(BuildConfig.DEBUG) logResponse(response)
+        if (BuildConfig.DEBUG) logResponse(response)
         return response.setId
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewSetSource(
+        ctx: Id,
+        blockId: Id,
+        sources: List<Id>
+    ): Payload {
+        val request = Rpc.BlockDataview.SetSource.Request(
+            contextId = ctx,
+            blockId = blockId,
+            source = sources
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewSetSource(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
     }
 
     private fun logRequest(any: Any) {

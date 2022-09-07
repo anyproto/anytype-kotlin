@@ -46,36 +46,6 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should show empty-source error`() {
-
-        // SETUP
-
-        stubInterceptEvents()
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title
-            )
-        )
-
-        val vm = givenViewModel()
-
-        // TESTING
-
-        assertEquals(
-            expected = null,
-            actual = vm.error.value
-        )
-
-        vm.onStart(root)
-
-        assertEquals(
-            expected = ObjectSetViewModel.OBJECT_SET_HAS_EMPTY_SOURCE_ERROR,
-            actual = vm.error.value
-        )
-    }
-
-    @Test
     fun `should show no-content error because of missing dv`() {
 
         // SETUP

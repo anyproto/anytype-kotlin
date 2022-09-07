@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -7,19 +7,26 @@
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/objectIcon"
+        style="@style/ObjectIcon15Style"
         android:layout_width="18dp"
         android:layout_height="18dp"
-        style="@style/ObjectIcon15Style"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/objectName"
         style="@style/GridCellDateTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:gravity="center_vertical"
+        android:layout_marginStart="4dp"
         android:textColor="@color/black"
+        app:layout_goneMarginStart="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/objectIcon"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Feature" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

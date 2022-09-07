@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_FILE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_OBJECT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_SOURCE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TABLE
@@ -1196,6 +1197,7 @@ sealed class BlockView : ViewType {
                 is DocumentRelationView.Object -> HOLDER_RELATION_OBJECT
                 is DocumentRelationView.File -> HOLDER_RELATION_FILE
                 is DocumentRelationView.ObjectType -> HOLDER_OBJECT_TYPE
+                is DocumentRelationView.Source -> HOLDER_RELATION_SOURCE
             }
         }
     }

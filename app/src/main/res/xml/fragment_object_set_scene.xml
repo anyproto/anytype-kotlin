@@ -29,7 +29,16 @@
             android:layout_height="@dimen/default_toolbar_height"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            motion:layout_constraintTop_toBottomOf="@+id/objectHeader" />
+            motion:layout_constraintTop_toBottomOf="@+id/objectHeader"
+            motion:visibilityMode="ignore" />
+        <Constraint
+            android:id="@+id/controlDivider2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/data_view_divider_height"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/dataViewHeader"
+            motion:visibilityMode="ignore" />
         <Constraint
             android:id="@+id/paginatorToolbar"
             android:layout_width="0dp"
@@ -85,7 +94,16 @@
             android:layout_height="@dimen/default_toolbar_height"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            motion:layout_constraintTop_toBottomOf="@+id/topToolbar" />
+            motion:layout_constraintTop_toBottomOf="@+id/topToolbar"
+            motion:visibilityMode="ignore"/>
+        <Constraint
+            android:id="@+id/controlDivider2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/data_view_divider_height"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/dataViewHeader"
+            motion:visibilityMode="ignore"/>
         <Constraint
             android:id="@+id/paginatorToolbar"
             android:layout_width="0dp"

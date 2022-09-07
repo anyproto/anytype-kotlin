@@ -301,4 +301,6 @@
 
     <dimen name="block_text_markup_underline_height">0.5dp</dimen>
 
+    <dimen name="featured_relations_text_size">13sp</dimen>
+
 </resources>

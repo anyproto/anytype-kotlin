@@ -53,6 +53,7 @@ object Types {
     const val HOLDER_RELATION_OBJECT = 43
     const val HOLDER_RELATION_FILE = 44
     const val HOLDER_RELATION_CHECKBOX = 45
+    const val HOLDER_RELATION_SOURCE = 58
 
     const val HOLDER_DESCRIPTION = 46
     const val HOLDER_FEATURED_RELATION = 47

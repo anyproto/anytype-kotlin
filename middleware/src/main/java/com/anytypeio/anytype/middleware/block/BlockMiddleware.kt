@@ -584,4 +584,12 @@ class BlockMiddleware(
     override suspend fun objectToSet(ctx: Id, source: List<String>): Id {
         return middleware.objectToSet(ctx, source)
     }
+
+    override suspend fun blockDataViewSetSource(
+        ctx: Id,
+        block: Id,
+        sources: List<Id>
+    ): Payload {
+        return middleware.blockDataViewSetSource(ctx, block, sources)
+    }
 }

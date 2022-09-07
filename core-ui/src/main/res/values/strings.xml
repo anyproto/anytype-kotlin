@@ -443,6 +443,8 @@
     <string name="select_tags">Select tags</string>
     <string name="select_status">Select status</string>
     <string name="select_objects">Select objects</string>
+    <string name="source">Source</string>
+    <string name="select_source">Select source</string>
     <string name="objects">Objects</string>
     <string name="web_pages">Web pages</string>
     <string name="select_files">Select files</string>

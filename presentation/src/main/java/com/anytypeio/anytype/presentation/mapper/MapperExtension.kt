@@ -760,14 +760,16 @@ fun Relation.Format.toView() = when (this) {
     Relation.Format.RELATIONS -> ColumnView.Format.RELATIONS
 }
 
-fun List<ObjectType>.toObjectTypeView(): List<ObjectTypeView.Item> = map { oType ->
-    ObjectTypeView.Item(
-        id = oType.url,
-        name = oType.name,
-        emoji = oType.emoji,
-        description = oType.description
-    )
-}
+fun List<ObjectType>.toObjectTypeView(selectedSources: List<Id> = emptyList()): List<ObjectTypeView.Item> =
+    map { oType ->
+        ObjectTypeView.Item(
+            id = oType.url,
+            name = oType.name,
+            emoji = oType.emoji,
+            description = oType.description,
+            isSelected = selectedSources.contains(oType.url)
+        )
+    }
 
 fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
     when (layout) {

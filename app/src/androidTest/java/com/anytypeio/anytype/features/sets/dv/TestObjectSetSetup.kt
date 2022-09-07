@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
@@ -64,6 +65,7 @@ abstract class TestObjectSetSetup {
     private lateinit var interceptThreadStatus: InterceptThreadStatus
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
+    private lateinit var setDataViewSource: SetDataViewSource
 
     lateinit var urlBuilder: UrlBuilder
 
@@ -123,6 +125,7 @@ abstract class TestObjectSetSetup {
     open fun setup() {
         MockitoAnnotations.openMocks(this)
 
+        setDataViewSource = SetDataViewSource(repo)
         addDataViewRelation = AddNewRelationToDataView(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
@@ -143,6 +146,7 @@ abstract class TestObjectSetSetup {
                 computation = StandardTestDispatcher()
             )
         )
+
 
         TestObjectSetFragment.testVmFactory = ObjectSetViewModelFactory(
             openObjectSet = openObjectSet,
@@ -165,7 +169,8 @@ abstract class TestObjectSetSetup {
             setDocCoverImage = setDocCoverImage,
             delegator = delegator,
             getTemplates = getTemplates,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            setDataViewSource = setDataViewSource
         )
     }
 

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
@@ -96,6 +97,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var createNewObject: CreateNewObject
 
+    @Mock
+    lateinit var setDataViewSource: SetDataViewSource
+
     val dispatcher = Dispatcher.Default<Payload>()
     val delegator = Delegator.Default<Action>()
     val reducer = ObjectSetReducer()
@@ -126,7 +130,8 @@ open class ObjectSetViewModelTestSetup {
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
         getTemplates = getTemplates,
-        createNewObject = createNewObject
+        createNewObject = createNewObject,
+        setDataViewSource = setDataViewSource
     )
 
     fun stubInterceptEvents(

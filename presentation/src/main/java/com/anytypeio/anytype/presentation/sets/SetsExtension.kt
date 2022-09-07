@@ -223,40 +223,14 @@ fun Map<String, Any?>.buildObjectViews(
     val value = this.getOrDefault(columnKey, null)
     if (value is Id) {
         val wrapper = ObjectWrapper.Basic(details[value]?.map ?: emptyMap())
-        if (wrapper.isDeleted == true) {
-            objects.add(ObjectView.Deleted(id = value))
-        } else {
-            objects.add(
-                ObjectView.Default(
-                    id = value,
-                    name = wrapper.getProperName(),
-                    icon = ObjectIcon.from(
-                        obj = wrapper,
-                        layout = wrapper.layout,
-                        builder = builder
-                    ),
-                    types = wrapper.type
-                )
-            )
+        if (!wrapper.isEmpty()) {
+            objects.add(wrapper.toObjectView(urlBuilder = builder))
         }
     } else if (value is List<*>) {
         value.typeOf<Id>().forEach { id ->
             val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
-            if (wrapper.isDeleted == true) {
-                objects.add(ObjectView.Deleted(id = id))
-            } else {
-                objects.add(
-                    ObjectView.Default(
-                        id = id,
-                        name = wrapper.getProperName(),
-                        icon = ObjectIcon.from(
-                            obj = wrapper,
-                            layout = wrapper.layout,
-                            builder = builder
-                        ),
-                        types = wrapper.type
-                    )
-                )
+            if (!wrapper.isEmpty()) {
+                objects.add(wrapper.toObjectView(urlBuilder = builder))
             }
         }
     }

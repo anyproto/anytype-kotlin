@@ -255,4 +255,6 @@ interface BlockDataStore {
     suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload
 
     suspend fun objectToSet(ctx: Id, source: List<String>): Id
+
+    suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 }

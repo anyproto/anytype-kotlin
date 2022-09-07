@@ -16,8 +16,10 @@ import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
@@ -248,6 +250,50 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     }
                     addView(view)
                     ids.add(view.id)
+                }
+                is DocumentRelationView.Source -> {
+                    relation.sources.forEach { obj ->
+                        val view = ObjectIconTextWidget(context).apply {
+                            id = generateViewId()
+                            when (obj) {
+                                is ObjectView.Default -> {
+                                    setTextColor(context.color(R.color.text_secondary))
+                                    setTextSize(context.dimen(R.dimen.featured_relations_text_size))
+                                    setup(
+                                        name = obj.name,
+                                        icon = obj.icon
+                                    )
+                                }
+                                is ObjectView.Deleted -> {
+                                    setTextColor(context.color(R.color.glyph_active))
+                                    setTextSize(context.dimen(R.dimen.featured_relations_text_size))
+                                    setup(
+                                        name = context.getString(R.string.deleted),
+                                        icon = ObjectIcon.None
+                                    )
+                                }
+                            }
+                        }
+                        view.setOnClickListener {
+                            click(
+                                ListenerType.Relation.SetSource(sources = relation.sources)
+                            )
+                        }
+                        addView(view)
+                        ids.add(view.id)
+                    }
+                    if (relation.sources.isEmpty()) {
+                        val placeholder =
+                            buildPlaceholderView(resources.getString(R.string.source)).apply {
+                                setOnClickListener {
+                                    click(
+                                        ListenerType.Relation.SetSource(sources = emptyList())
+                                    )
+                                }
+                            }
+                        addView(placeholder)
+                        ids.add(placeholder.id)
+                    }
                 }
             }
 

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Event.Command
 import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.unset
+import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.presentation.extension.updateFields
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -174,6 +175,19 @@ class ObjectSetReducer {
                         target = event.target,
                         keys = event.keys
                     )
+                )
+            }
+            is Command.UpdateStructure -> {
+                state.copy(
+                    blocks = state.blocks.replace(
+                        replacement = { target -> target.copy(children = event.children) },
+                        target = { block -> block.id == event.id }
+                    )
+                )
+            }
+            is Command.AddBlock -> {
+                state.copy(
+                    blocks = state.blocks + event.blocks
                 )
             }
             else -> {

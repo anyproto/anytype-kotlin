@@ -59,6 +59,7 @@ import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
+import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
 
@@ -517,21 +518,8 @@ fun Relation.toObjects(
     val list = arrayListOf<ObjectView>()
     ids.forEach { id ->
         val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
-        if (wrapper.isDeleted == true) {
-            list.add(ObjectView.Deleted(id = id))
-        } else {
-            list.add(
-                ObjectView.Default(
-                    id = id,
-                    name = wrapper.getProperName(),
-                    icon = ObjectIcon.from(
-                        obj = wrapper,
-                        layout = wrapper.layout,
-                        builder = urlBuilder
-                    ),
-                    types = wrapper.type
-                )
-            )
+        if (!wrapper.isEmpty()) {
+            list.add(wrapper.toObjectView(urlBuilder))
         }
     }
     list

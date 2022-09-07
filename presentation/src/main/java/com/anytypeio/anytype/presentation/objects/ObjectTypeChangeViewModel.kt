@@ -32,7 +32,8 @@ class ObjectTypeChangeViewModel(
     fun onStart(
         smartBlockType: SmartBlockType,
         excludedTypes: List<Id> = emptyList(),
-        isDraft: Boolean
+        isDraft: Boolean,
+        selectedSources: List<Id>
     ) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
@@ -44,17 +45,25 @@ class ObjectTypeChangeViewModel(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = { types ->
                     if (excludedTypes.isEmpty()) {
-                        setViews(objectTypes = types)
+                        setViews(
+                            objectTypes = types,
+                            selectedSources = selectedSources
+                        )
                     } else {
-                        setViews(objectTypes = types.filter { t -> !excludedTypes.contains(t.url) })
+                        setViews(
+                            objectTypes = types.filter { !excludedTypes.contains(it.url) },
+                            selectedSources = selectedSources
+                        )
                     }
                 }
             )
         }
     }
 
-    private fun setViews(objectTypes: List<ObjectType>) {
-        views.value = objectTypes.toObjectTypeView()
+    private fun setViews(objectTypes: List<ObjectType>, selectedSources: List<Id>) {
+        views.value = objectTypes
+            .toObjectTypeView(selectedSources = selectedSources)
+            .sortedBy { !selectedSources.contains(it.id) }
     }
 
     fun onQueryChanged(input: String) {

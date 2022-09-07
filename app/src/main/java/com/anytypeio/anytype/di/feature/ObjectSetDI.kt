@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -89,8 +90,8 @@ interface ObjectSetSubComponent {
     fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
     fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
     fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder
-    fun relationAddToDataViewComponent() : RelationAddToDataViewSubComponent.Builder
-    fun relationCreateFromScratchForDataViewComponent() : RelationCreateFromScratchForDataViewSubComponent.Builder
+    fun relationAddToDataViewComponent(): RelationAddToDataViewSubComponent.Builder
+    fun relationCreateFromScratchForDataViewComponent(): RelationCreateFromScratchForDataViewSubComponent.Builder
     fun dataviewViewerActionComponent(): DataViewViewerActionSubComponent.Builder
     fun selectSortRelationComponent(): SelectSortRelationSubComponent.Builder
     fun selectFilterRelationComponent(): SelectFilterRelationSubComponent.Builder
@@ -101,10 +102,10 @@ interface ObjectSetSubComponent {
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
     fun relationDateValueComponent(): RelationDataValueSubComponent.Builder
 
-    fun objectSetMenuComponent() : ObjectSetMenuComponent.Builder
-    fun objectSetIconPickerComponent() : ObjectSetIconPickerComponent.Builder
-    fun objectSetCoverComponent() : SelectCoverObjectSetSubComponent.Builder
-    fun objectUnsplashComponent() : UnsplashSubComponent.Builder
+    fun objectSetMenuComponent(): ObjectSetMenuComponent.Builder
+    fun objectSetIconPickerComponent(): ObjectSetIconPickerComponent.Builder
+    fun objectSetCoverComponent(): SelectCoverObjectSetSubComponent.Builder
+    fun objectUnsplashComponent(): UnsplashSubComponent.Builder
 }
 
 @Module
@@ -141,7 +142,8 @@ object ObjectSetModule {
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
         getTemplates: GetTemplates,
-        createNewObject: CreateNewObject
+        createNewObject: CreateNewObject,
+        setDataViewSource: SetDataViewSource
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -163,7 +165,8 @@ object ObjectSetModule {
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
         getTemplates = getTemplates,
-        createNewObject = createNewObject
+        createNewObject = createNewObject,
+        setDataViewSource = setDataViewSource
     )
 
     @JvmStatic
@@ -173,11 +176,18 @@ object ObjectSetModule {
         getDefaultEditorType: GetDefaultEditorType,
         getTemplates: GetTemplates,
         createPage: CreatePage,
-    ) : CreateNewObject = CreateNewObject(
+    ): CreateNewObject = CreateNewObject(
         getDefaultEditorType,
         getTemplates,
         createPage
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDataViewSource(
+        repo: BlockRepository
+    ): SetDataViewSource = SetDataViewSource(repo)
 
     @JvmStatic
     @Provides
@@ -259,7 +269,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideInterceptThreadStatus(
         channel: ThreadStatusChannel
-    ) : InterceptThreadStatus = InterceptThreadStatus(
+    ): InterceptThreadStatus = InterceptThreadStatus(
         channel = channel
     )
 
@@ -295,7 +305,7 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideDelegator() : Delegator<Action> = Delegator.Default()
+    fun provideDelegator(): Delegator<Action> = Delegator.Default()
 
     @JvmStatic
     @Provides
@@ -307,7 +317,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideDataViewObjectRelationProvider(
         state: StateFlow<ObjectSet>
-    ) : ObjectRelationProvider = DataViewObjectRelationProvider(state)
+    ): ObjectRelationProvider = DataViewObjectRelationProvider(state)
 
     @JvmStatic
     @Provides
@@ -315,14 +325,14 @@ object ObjectSetModule {
     fun provideDataViewObjectValueProvider(
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession
-    ) : ObjectValueProvider = DataViewObjectValueProvider(state, session)
+    ): ObjectValueProvider = DataViewObjectValueProvider(state, session)
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideObjectTypeProvider(
         state: StateFlow<ObjectSet>,
-    ) : ObjectTypeProvider = object : ObjectTypeProvider {
+    ): ObjectTypeProvider = object : ObjectTypeProvider {
         override fun provide(): List<ObjectType> = state.value.objectTypes
     }
 
@@ -331,7 +341,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideObjectDetailProvider(
         state: StateFlow<ObjectSet>,
-    ) : ObjectDetailProvider = object : ObjectDetailProvider {
+    ): ObjectDetailProvider = object : ObjectDetailProvider {
         override fun provide(): Map<Id, Block.Fields> = state.value.details
     }
 
@@ -340,7 +350,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideUpdateDetailUseCase(
         repository: BlockRepository
-    ) : UpdateDetail = UpdateDetail(repository)
+    ): UpdateDetail = UpdateDetail(repository)
 
     @JvmStatic
     @Provides

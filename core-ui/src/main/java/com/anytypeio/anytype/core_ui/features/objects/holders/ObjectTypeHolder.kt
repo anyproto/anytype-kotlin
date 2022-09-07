@@ -15,6 +15,11 @@ class ObjectTypeHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: ObjectTypeView.Item) = with(binding) {
+        if (item.isSelected) {
+            icSelected.visible()
+        } else {
+            icSelected.gone()
+        }
         ivIcon.setIcon(
             emoji = item.emoji,
             image = null,

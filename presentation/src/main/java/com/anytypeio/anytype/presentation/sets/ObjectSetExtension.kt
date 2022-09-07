@@ -3,9 +3,12 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.view
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
 fun ObjectSet.updateRecord(
@@ -27,7 +30,7 @@ fun ObjectSet.updateRecord(
 fun ObjectSet.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder
-) : BlockView.FeaturedRelation? {
+): BlockView.FeaturedRelation? {
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
         val views = mutableListOf<DocumentRelationView>()
@@ -71,6 +74,22 @@ private fun mapFeaturedRelations(
             } else {
                 null
             }
+        }
+        Relations.SET_OF -> {
+            val objectSet = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty())
+            val sources = mutableListOf<ObjectView>()
+            objectSet.setOf.forEach { objectTypeId ->
+                val wrapper = ObjectWrapper.Basic(details.details[objectTypeId]?.map.orEmpty())
+                if (!wrapper.isEmpty()) {
+                    sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
+                }
+            }
+            DocumentRelationView.Source(
+                relationId = id,
+                name = Relations.RELATION_NAME_EMPTY,
+                isFeatured = true,
+                sources = sources
+            )
         }
         else -> {
             val relation = relations.firstOrNull { it.key == id }
@@ -121,4 +140,18 @@ fun DV.getRelation(relationKey: Id): Relation? = relations.firstOrNull { it.key 
 fun DV.isRelationReadOnly(relationKey: Id): Boolean {
     val relation = getRelation(relationKey)
     return relation != null && relation.isReadOnly
+}
+
+fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when (isDeleted) {
+    true -> ObjectView.Deleted(id)
+    else -> ObjectView.Default(
+        id = id,
+        name = getProperName(),
+        icon = ObjectIcon.from(
+            obj = this,
+            layout = layout,
+            builder = urlBuilder
+        ),
+        types = type
+    )
 }

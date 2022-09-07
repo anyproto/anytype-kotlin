@@ -277,6 +277,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockDataViewRelationDelete(request: Rpc.BlockDataview.Relation.Delete.Request): Rpc.BlockDataview.Relation.Delete.Response
 
+    @Throws(Exception::class)
+    fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response
+
     //endregion
 
     //region TEXT BLOCK commands

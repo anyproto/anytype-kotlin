@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.title
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
@@ -44,6 +46,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -100,7 +103,8 @@ class ObjectSetViewModel(
     private val session: ObjectSetSession,
     private val analytics: Analytics,
     private val getTemplates: GetTemplates,
-    private val createNewObject: CreateNewObject
+    private val createNewObject: CreateNewObject,
+    private val setDataViewSource: SetDataViewSource
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -1028,7 +1032,12 @@ class ObjectSetViewModel(
                 error.value = DATA_VIEW_NOT_FOUND_ERROR
             }
         } else {
-            error.value = OBJECT_SET_HAS_EMPTY_SOURCE_ERROR
+            dispatch(
+                ObjectSetCommand.Modal.OpenSelectSourceScreen(
+                    sources = emptyList(),
+                    smartBlockType = SmartBlockType.PAGE
+                )
+            )
         }
     }
 
@@ -1195,11 +1204,39 @@ class ObjectSetViewModel(
         }
     }
 
+    fun onClickListener(clicked: ListenerType) {
+        Timber.d("onClickListener, clicked:[$clicked]")
+        when (clicked) {
+            is ListenerType.Relation.SetSource -> {
+                val sources = clicked.sources.map { it.id }
+                dispatch(
+                    ObjectSetCommand.Modal.OpenSelectSourceScreen(
+                        sources = sources,
+                        smartBlockType = SmartBlockType.PAGE
+                    )
+                )
+            }
+            else -> {}
+        }
+    }
+
+    fun onDataViewSourcePicked(source: Id) {
+        viewModelScope.launch {
+            val params = SetDataViewSource.Params(
+                ctx = context,
+                sources = listOf(source)
+            )
+            setDataViewSource(params).proceed(
+                failure = { e -> Timber.e(e, "Error while setting Set source") },
+                success = { payload -> defaultPayloadConsumer(payload) }
+            )
+        }
+    }
+
     companion object {
         const val TITLE_CHANNEL_DISPATCH_DELAY = 300L
         const val NOT_ALLOWED = "Not allowed for this set"
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
-        const val OBJECT_TYPE_UNKNOWN = "Can't open object, object type unknown"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val DATA_VIEW_NOT_FOUND_ERROR =
             "Content missing for this set. Please, try again later."

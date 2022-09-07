@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SmartBlockType
 
 sealed class ObjectSetCommand {
 
@@ -76,6 +77,11 @@ sealed class ObjectSetCommand {
 
         data class OpenCoverActionMenu(
             val ctx: Id
+        ) : Modal()
+
+        data class OpenSelectSourceScreen(
+            val smartBlockType: SmartBlockType,
+            val sources: List<Id>
         ) : Modal()
     }
 

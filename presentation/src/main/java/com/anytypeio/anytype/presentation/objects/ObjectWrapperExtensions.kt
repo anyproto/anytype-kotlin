@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
+import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
 fun ObjectWrapper.Basic.values(
@@ -261,22 +262,7 @@ fun ObjectWrapper.Basic.objects(
 
     ids.forEach { id ->
         val wrapper = ObjectWrapper.Basic(details[id]?.map ?: return@forEach)
-        if (wrapper.isDeleted == true) {
-            result.add(ObjectView.Deleted(id = id))
-        } else {
-            result.add(
-                ObjectView.Default(
-                    id = id,
-                    name = wrapper.getProperName(),
-                    icon = ObjectIcon.from(
-                        obj = wrapper,
-                        layout = wrapper.layout,
-                        builder = urlBuilder
-                    ),
-                    types = wrapper.type
-                )
-            )
-        }
+        result.add(wrapper.toObjectView(urlBuilder))
     }
     return result
 }

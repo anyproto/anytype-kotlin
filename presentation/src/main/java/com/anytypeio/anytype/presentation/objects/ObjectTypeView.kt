@@ -9,7 +9,8 @@ sealed class ObjectTypeView {
         val id: String,
         val name: String,
         val description: String?,
-        val emoji: String?
+        val emoji: String?,
+        val isSelected: Boolean = false
     ) : ObjectTypeView()
 
     object Search : ObjectTypeView()

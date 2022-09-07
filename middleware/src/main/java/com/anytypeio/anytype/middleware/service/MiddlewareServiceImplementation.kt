@@ -1103,4 +1103,16 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response {
+        val encoded =
+            Service.blockDataviewSetSource(Rpc.BlockDataview.SetSource.Request.ADAPTER.encode(request))
+        val response = Rpc.BlockDataview.SetSource.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.SetSource.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

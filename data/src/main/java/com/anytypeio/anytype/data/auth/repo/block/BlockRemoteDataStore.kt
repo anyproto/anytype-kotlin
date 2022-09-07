@@ -545,4 +545,12 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun objectToSet(ctx: Id, source: List<String>): Id {
         return remote.objectToSet(ctx, source)
     }
+
+    override suspend fun blockDataViewSetSource(
+        ctx: Id,
+        block: Id,
+        sources: List<Id>
+    ): Payload {
+        return remote.blockDataViewSetSource(ctx, block, sources)
+    }
 }

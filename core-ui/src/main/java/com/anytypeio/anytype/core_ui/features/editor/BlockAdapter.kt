@@ -774,6 +774,7 @@ class BlockAdapter(
                             onDragAndDropTrigger(holder, it)
                         }
                     }
+                    is Title -> {}
                     else -> {
                         holder.itemView.setOnLongClickListener {
                             val pos = holder.bindingAdapterPosition

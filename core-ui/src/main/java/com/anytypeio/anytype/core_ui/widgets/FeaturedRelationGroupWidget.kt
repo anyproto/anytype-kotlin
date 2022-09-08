@@ -274,11 +274,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                                 }
                             }
                         }
-                        view.setOnClickListener {
-                            click(
-                                ListenerType.Relation.SetSource(sources = relation.sources)
-                            )
-                        }
+//                        todo https://linear.app/anytype/issue/DROID-434/set-or-change-set-source
+//                        view.setOnClickListener {
+//                            click(
+//                                ListenerType.Relation.SetSource(sources = relation.sources)
+//                            )
+//                        }
                         addView(view)
                         ids.add(view.id)
                     }

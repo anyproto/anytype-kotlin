@@ -186,6 +186,7 @@ class ObjectSetReducer {
                 )
             }
             is Command.AddBlock -> {
+                effects.add(SideEffect.ResetViewer)
                 state.copy(
                     blocks = state.blocks + event.blocks
                 )

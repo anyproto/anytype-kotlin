@@ -28,7 +28,13 @@ interface Span {
     class Italic : StyleSpan(Typeface.ITALIC), Span
     class Strikethrough : StrikethroughSpan(), Span
     class TextColor(color: Int, val value: String) : ForegroundColorSpan(color), Span
-    class Url(url: String, val color: Int, private val underlineHeight: Float) : URLSpan(url), Span {
+
+    class Url(
+        val url: String,
+        val color: Int,
+        private val underlineHeight: Float
+    ) :
+        ClickableSpan(), Span {
 
         override fun updateDrawState(ds: TextPaint) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

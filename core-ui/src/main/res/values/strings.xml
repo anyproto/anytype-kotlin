@@ -390,8 +390,8 @@
     <string name="slash_widget_other_line">Line divider</string>
     <string name="slash_widget_other_dots">Dots divider</string>
     <string name="slash_widget_other_toc">Table of contents</string>
-    <string name="slash_widget_other_simple_table">Simple table</string>
-    <string name="slash_widgth_other_simple_table_rows_columns_count">Simple table %1$dx%2$d</string>
+    <string name="slash_widget_other_simple_table">Table 3x3</string>
+    <string name="slash_widgth_other_simple_table_rows_columns_count">Table %1$dx%2$d</string>
     <string name="slash_widget_other_simple_table_subtitle">Create a simple table</string>
 
     <string name="slash_widget_actions_delete">Delete</string>

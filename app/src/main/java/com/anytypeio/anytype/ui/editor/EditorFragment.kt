@@ -1150,17 +1150,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     lm.scrollToPositionWithOffset(command.pos, margin)
                 }
                 is Command.OpenSetBlockTextValueScreen -> {
-                    val fr = SetBlockTextValueFragment.new(
-                        ctx = command.ctx,
-                        block = command.block,
-                        table = command.table
-                    ).apply {
-                        onDismissListener = {
-                            vm.onSetBlockTextValueScreenDismiss()
-                            hideKeyboard()
-                        }
-                    }
-                    fr.show(childFragmentManager, null)
+//                    val fr = SetBlockTextValueFragment.new(
+//                        ctx = command.ctx,
+//                        block = command.block,
+//                        table = command.table
+//                    ).apply {
+//                        onDismissListener = {
+//                            vm.onSetBlockTextValueScreenDismiss()
+//                            hideKeyboard()
+//                        }
+//                    }
+//                    fr.show(childFragmentManager, null)
                 }
             }
         }

@@ -2,18 +2,19 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_width="140dp"
+    android:layout_height="wrap_content"
     android:minWidth="@dimen/item_block_table_cell_width"
     android:minHeight="@dimen/item_block_table_cell_height">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/textContent"
         style="@style/BlockCellTextContentStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:ellipsize="end"
-        android:singleLine="false"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:focusable="true"
+        android:textIsSelectable="true"
         tools:text="@string/default_text_placeholder" />
 
     <View

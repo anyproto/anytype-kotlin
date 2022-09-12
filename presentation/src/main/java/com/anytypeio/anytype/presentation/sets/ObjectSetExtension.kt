@@ -27,6 +27,29 @@ fun ObjectSet.updateRecord(
     }
 }
 
+fun ObjectSet.deleteRecords(
+    viewer: Id,
+    recordIds: List<String>
+): ObjectSet {
+    val current = viewerDb[viewer]
+    return if (current != null) {
+        val new = current.records.mapNotNull { rec ->
+            val id = rec[ID_KEY]
+            if (id != null && !recordIds.contains(id)) {
+                rec
+            } else {
+                null
+            }
+        }
+        val updatedRecords = viewerDb.toMutableMap().apply {
+            put(viewer, current.copy(records = new))
+        }
+        this.copy(viewerDb = updatedRecords)
+    } else {
+        this.copy()
+    }
+}
+
 fun ObjectSet.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder

@@ -32,6 +32,7 @@ class MiddlewareEventChannel(
             msg.blockDataviewRecordsSet,
             msg.blockDataviewRelationSet,
             msg.blockDataviewRecordsUpdate,
+            msg.blockDataviewRecordsDelete,
             msg.blockDataviewViewDelete,
             msg.blockDataviewViewSet,
             msg.objectRelationsAmend,

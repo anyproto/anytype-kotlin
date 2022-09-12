@@ -252,6 +252,13 @@ sealed class Event {
                 val records: List<DVRecord>
             ) : DataView()
 
+            data class DeleteRecord(
+                override val context: String,
+                val dataViewId: String,
+                val viewerId: String,
+                val recordIds: List<String>
+            ) : DataView()
+
             /**
              * Sent when a data-view's view has been changed or added.
              * @property [target] data view's block id

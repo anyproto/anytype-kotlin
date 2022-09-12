@@ -135,6 +135,12 @@ class ObjectSetReducer {
             is Command.DataView.UpdateRecord -> {
                 state.updateRecord(event.viewer, event.records)
             }
+            is Command.DataView.DeleteRecord -> {
+                state.deleteRecords(
+                    viewer = event.viewerId,
+                    recordIds = event.recordIds
+                )
+            }
             is Command.DataView.SetRelation -> {
                 state.copy(
                     blocks = state.blocks.map { block ->

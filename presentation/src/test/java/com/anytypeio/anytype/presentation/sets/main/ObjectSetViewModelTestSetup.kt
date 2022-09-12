@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -174,7 +175,8 @@ open class ObjectSetViewModelTestSetup {
                                 details = details,
                                 relations = relations,
                                 objectTypes = objectTypes,
-                                dataViewRestrictions = dataViewRestrictions
+                                dataViewRestrictions = dataViewRestrictions,
+                                type = SmartBlockType.SET
                             )
                         ) + additionalEvents
                     )

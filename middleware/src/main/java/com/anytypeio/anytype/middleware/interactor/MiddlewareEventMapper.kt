@@ -182,6 +182,16 @@ fun anytype.Event.Message.toCoreModels(
             records = event.records.map { it?.toMap().orEmpty() },
         )
     }
+    blockDataviewRecordsDelete != null -> {
+        val event = blockDataviewRecordsDelete
+        checkNotNull(event)
+        Event.Command.DataView.DeleteRecord(
+            context = context,
+            dataViewId = event.id,
+            viewerId = event.viewId,
+            recordIds = event.removed
+        )
+    }
     blockSetDiv != null -> {
         val event = blockSetDiv
         checkNotNull(event)

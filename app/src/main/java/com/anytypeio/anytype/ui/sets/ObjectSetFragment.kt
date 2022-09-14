@@ -51,9 +51,11 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
@@ -87,6 +89,8 @@ import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 open class ObjectSetFragment :
@@ -183,7 +187,7 @@ open class ObjectSetFragment :
         binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks()) { vm.onCreateNewRecord() }
+            subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewRecord() }
             subscribe(title.afterTextChanges()) { vm.onTitleChanged(it.toString()) }
             subscribe(title.editorActionEvents(actionHandler)) {
                 title.apply {
@@ -191,35 +195,50 @@ open class ObjectSetFragment :
                     clearFocus()
                 }
             }
-            subscribe(menuButton.clicks()) { vm.onMenuClicked() }
-            subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
-            subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
-            subscribe(binding.unsupportedViewError.clicks()) { vm.onUnsupportedViewErrorClicked() }
+            subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
+            subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
+            subscribe(tvCurrentViewerName.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
+            subscribe(binding.unsupportedViewError.clicks().throttleFirst()) { vm.onUnsupportedViewErrorClicked() }
 
-            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
+            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnFilter).clicks().throttleFirst()) {
                 vm.onViewerFiltersClicked()
             }
-            subscribe(
-                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSettings).clicks()
+            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSettings).clicks()
+                    .throttleFirst()
             ) {
                 vm.onViewerSettingsClicked()
             }
-            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()) {
+            subscribe(
+                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()
+                    .throttleFirst()
+            ) {
                 vm.onViewerSortsClicked()
             }
-            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnGroup).clicks()) {
+            subscribe(
+                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnGroup).clicks()
+                    .throttleFirst()
+            ) {
                 toast(getString(R.string.coming_soon))
             }
-            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnView).clicks()) {
+            subscribe(
+                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnView).clicks()
+                    .throttleFirst()
+            ) {
                 vm.onViewerEditClicked()
             }
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            subscribe(binding.bottomToolbar.homeClicks()) { vm.onHomeButtonClicked() }
-            subscribe(binding.bottomToolbar.backClicks()) { vm.onBackButtonClicked() }
-            subscribe(binding.bottomToolbar.searchClicks()) { vm.onSearchButtonClicked() }
-            subscribe(binding.bottomToolbar.addDocClicks()) { vm.onAddNewDocumentClicked() }
+            subscribe(binding.bottomToolbar.homeClicks().throttleFirst()) { vm.onHomeButtonClicked() }
+            subscribe(
+                binding.bottomToolbar.backClicks().throttleFirst()
+            ) { vm.onBackButtonClicked() }
+            subscribe(
+                binding.bottomToolbar.searchClicks().throttleFirst()
+            ) { vm.onSearchButtonClicked() }
+            subscribe(
+                binding.bottomToolbar.addDocClicks().throttleFirst()
+            ) { vm.onAddNewDocumentClicked() }
         }
 
         with(binding.paginatorToolbar) {
@@ -342,7 +361,8 @@ open class ObjectSetFragment :
     }
 
     private fun setupViewer(viewer: Viewer?) {
-        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer?.title
+        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text =
+            viewer?.title
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
@@ -419,12 +439,18 @@ open class ObjectSetFragment :
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
             if (title.emoji != null) visible() else gone()
-            setOnClickListener { vm.onIconClicked() }
+            jobs += this.clicks()
+                .throttleFirst()
+                .onEach { vm.onIconClicked() }
+                .launchIn(lifecycleScope)
         }
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docImageIconContainer).apply {
             if (title.image != null) visible() else gone()
-            setOnClickListener { vm.onIconClicked() }
+            jobs += this.clicks()
+                .throttleFirst()
+                .onEach { vm.onIconClicked() }
+                .launchIn(lifecycleScope)
         }
 
         binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
@@ -457,7 +483,12 @@ open class ObjectSetFragment :
         val ivCover = binding.objectHeader.root.findViewById<ImageView>(R.id.cover)
         val container =
             binding.objectHeader.root.findViewById<FrameLayout>(R.id.coverAndIconContainer)
-        ivCover.setOnClickListener { vm.onCoverClicked() }
+
+        ivCover.clicks()
+            .throttleFirst()
+            .onEach { vm.onCoverClicked() }
+            .launchIn(lifecycleScope)
+
         when {
             coverColor != null -> {
                 ivCover?.apply {
@@ -537,7 +568,8 @@ open class ObjectSetFragment :
     private fun observeCommands(command: ObjectSetCommand) {
         when (command) {
             is ObjectSetCommand.Modal.Menu -> {
-                findNavController().navigate(
+                findNavController().safeNavigate(
+                    R.id.objectSetScreen,
                     R.id.objectSetMainMenuScreen,
                     bundleOf(
                         ObjectMenuBaseFragment.CTX_KEY to command.ctx,
@@ -567,7 +599,8 @@ open class ObjectSetFragment :
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditRelationCell -> {
-                findNavController().navigate(
+                findNavController().safeNavigate(
+                    R.id.objectSetScreen,
                     R.id.dataViewRelationValueScreen,
                     bundleOf(
                         RelationValueBaseFragment.CTX_KEY to command.ctx,
@@ -614,7 +647,8 @@ open class ObjectSetFragment :
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.SetNameForCreatedRecord -> {
-                findNavController().navigate(
+                findNavController().safeNavigate(
+                    R.id.objectSetScreen,
                     R.id.setNameForNewRecordScreen,
                     bundleOf(SetObjectSetRecordNameFragment.CONTEXT_KEY to command.ctx)
                 )
@@ -642,7 +676,8 @@ open class ObjectSetFragment :
                 }
             }
             is ObjectSetCommand.Modal.OpenIconActionMenu -> {
-                findNavController().navigate(
+                findNavController().safeNavigate(
+                    R.id.objectSetScreen,
                     R.id.action_objectSetScreen_to_objectSetIconPickerScreen,
                     bundleOf(
                         IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
@@ -671,13 +706,15 @@ open class ObjectSetFragment :
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
-                findNavController().navigate(
+                findNavController().safeNavigate(
+                    R.id.objectSetScreen,
                     R.id.action_objectSetScreen_to_objectSetCoverScreen,
                     bundleOf(SelectCoverObjectSetFragment.CTX_KEY to command.ctx)
                 )
             }
             is ObjectSetCommand.Modal.CreateBookmark -> {
-                findNavController().navigate(
+                findNavController().safeNavigate(
+                    R.id.objectSetScreen,
                     R.id.setUrlForNewBookmark,
                     bundleOf(
                         SetObjectCreateBookmarkRecordFragment.CTX_KEY to command.ctx
@@ -686,7 +723,8 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.OpenSelectSourceScreen -> {
                 findNavController()
-                    .navigate(
+                    .safeNavigate(
+                        R.id.objectSetScreen,
                         R.id.objectTypeChangeScreen,
                         bundleOf(
                             ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType,

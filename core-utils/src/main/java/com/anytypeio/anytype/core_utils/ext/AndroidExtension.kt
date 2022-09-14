@@ -12,6 +12,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
@@ -30,6 +31,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.DimenRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -37,6 +39,8 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
@@ -334,5 +338,19 @@ class GetImageContract : ActivityResultContract<Int, Uri?>() {
             return intent?.data
         }
         return null
+    }
+}
+
+fun NavController.safeNavigate(direction: NavDirections) {
+    currentDestination?.getAction(direction.actionId)?.run { navigate(direction) }
+}
+
+fun NavController.safeNavigate(
+    @IdRes currentDestinationId: Int,
+    @IdRes id: Int,
+    args: Bundle? = null
+) {
+    if (currentDestinationId == currentDestination?.id) {
+        navigate(id, args)
     }
 }

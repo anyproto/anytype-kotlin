@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.visible
 
 class BlockToolbarWidget @JvmOverloads constructor(
@@ -62,9 +63,9 @@ class BlockToolbarWidget @JvmOverloads constructor(
         orientation = HORIZONTAL
     }
 
-    fun hideKeyboardClicks() = done.clicks()
-    fun blockActionsClick() = blockActions.clicks()
-    fun openSlashWidgetClicks() = slashWidgetButton.clicks()
-    fun changeStyleClicks() = changeStyleButton.clicks()
-    fun mentionClicks() = blockMentionButton.clicks()
+    fun hideKeyboardClicks() = done.clicks().throttleFirst()
+    fun blockActionsClick() = blockActions.clicks().throttleFirst()
+    fun openSlashWidgetClicks() = slashWidgetButton.clicks().throttleFirst()
+    fun changeStyleClicks() = changeStyleButton.clicks().throttleFirst()
+    fun mentionClicks() = blockMentionButton.clicks().throttleFirst()
 }

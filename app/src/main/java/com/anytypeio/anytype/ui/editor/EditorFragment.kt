@@ -100,6 +100,8 @@ import com.anytypeio.anytype.presentation.editor.Snack
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar.Main
@@ -581,6 +583,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.scrollAndMoveBottomAction
             .apply
             .clicks()
+            .throttleFirst()
             .onEach {
                 vm.onApplyScrollAndMoveClicked()
                 onApplyScrollAndMoveClicked()
@@ -590,6 +593,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.scrollAndMoveBottomAction
             .cancel
             .clicks()
+            .throttleFirst()
             .onEach { vm.onExitScrollAndMoveClicked() }
             .launchIn(lifecycleScope)
 
@@ -606,6 +610,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.multiSelectTopToolbar
             .doneButton
             .clicks()
+            .throttleFirst()
             .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
@@ -631,6 +636,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.topToolbar.menu
             .clicks()
+            .throttleFirst()
             .onEach { vm.onDocumentMenuClicked() }
             .launchIn(lifecycleScope)
 
@@ -670,11 +676,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
-        binding.undoRedoToolbar.undo.clicks().onEach {
+        binding.undoRedoToolbar.undo.clicks()
+            .throttleFirst()
+            .onEach {
             vm.onActionUndoClicked()
         }.launchIn(lifecycleScope)
 
-        binding.undoRedoToolbar.redo.clicks().onEach {
+        binding.undoRedoToolbar.redo.clicks()
+            .throttleFirst()
+            .onEach {
             vm.onActionRedoClicked()
         }.launchIn(lifecycleScope)
 
@@ -719,17 +729,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
-        binding.typeHasTemplateToolbar.binding.btnShow.setOnClickListener {
-            vm.onShowTemplateClicked()
-        }
+        binding.typeHasTemplateToolbar.binding.btnShow.clicks()
+            .throttleFirst()
+            .onEach { vm.onShowTemplateClicked() }
+            .launchIn(lifecycleScope)
 
         lifecycleScope.launch {
             binding.searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
         }
 
-        binding.objectNotExist.root.findViewById<TextView>(R.id.btnToDashboard).setOnClickListener {
-            vm.onHomeButtonClicked()
-        }
+        binding.objectNotExist.root.findViewById<TextView>(R.id.btnToDashboard).clicks()
+            .throttleFirst()
+            .onEach { vm.onHomeButtonClicked() }
+            .launchIn(lifecycleScope)
 
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
@@ -896,7 +908,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
                         R.id.action_pageScreen_to_objectIconPickerScreen,
                         bundleOf(
                             IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
@@ -944,7 +957,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenProfileMenu -> {
                     hideKeyboard()
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
                         R.id.objectMainMenuScreen,
                         bundleOf(
                             ObjectMenuBaseFragment.CTX_KEY to ctx,
@@ -956,15 +970,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     )
                 }
                 is Command.OpenCoverGallery -> {
-                    try {
-                        findNavController().navigate(
-                            R.id.action_pageScreen_to_objectCoverScreen,
-                            bundleOf(SelectCoverObjectFragment.CTX_KEY to command.ctx)
-                        )
-                    } catch (e: Exception) {
-                        Timber.e(e, "Error while opening object cover screen")
-                        toast("Error while opening object cover screen: ${e.message}")
-                    }
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
+                        R.id.action_pageScreen_to_objectCoverScreen,
+                        bundleOf(SelectCoverObjectFragment.CTX_KEY to command.ctx)
+                    )
                 }
                 is Command.OpenObjectLayout -> {
                     val fr = ObjectLayoutFragment.new(command.ctx).apply {
@@ -1009,7 +1019,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
                         R.id.objectRelationListScreen,
                         bundleOf(
                             RelationListFragment.ARG_CTX to command.ctx,
@@ -1055,7 +1066,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenChangeObjectTypeScreen -> {
                     hideKeyboard()
                     findNavController()
-                        .navigate(
+                        .safeNavigate(
+                            R.id.pageScreen,
                             R.id.objectTypeChangeScreen,
                             bundleOf(
                                 ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType,
@@ -1065,7 +1077,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         )
                 }
                 is Command.OpenMoveToScreen -> {
-                    lifecycleScope.launch {
+                    jobs += lifecycleScope.launch {
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = MoveToFragment.new(
@@ -1078,7 +1090,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenLinkToScreen -> {
-                    lifecycleScope.launch {
+                    jobs += lifecycleScope.launch {
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = LinkToObjectFragment.new(
@@ -1093,7 +1105,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenAddRelationScreen -> {
                     hideSoftInput()
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
                         R.id.action_pageScreen_to_relationAddToObjectBlockFragment,
                         bundleOf(
                             CTX_KEY to command.ctx,
@@ -1923,7 +1936,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onSetIconClicked() {
-        findNavController().navigate(
+        findNavController().safeNavigate(
+            R.id.pageScreen,
             R.id.objectIconPickerScreen,
             bundleOf(
                 IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,

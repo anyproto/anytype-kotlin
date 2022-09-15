@@ -138,7 +138,7 @@ class ObjectSetViewModel(
     val commands: SharedFlow<ObjectSetCommand> = _commands
     val toasts = Proxy.Subject<String>()
 
-    private val _currentViewer : MutableStateFlow<Viewer?> = MutableStateFlow(null)
+    private val _currentViewer: MutableStateFlow<Viewer?> = MutableStateFlow(null)
     val currentViewer = _currentViewer
 
     private val _header = MutableStateFlow<BlockView.Title.Basic?>(null)
@@ -898,7 +898,7 @@ class ObjectSetViewModel(
     fun onMenuClicked() {
         Timber.d("onMenuClicked, ")
         val set = reducer.state.value
-        if (set.isInitialized) {
+        if (!isLoading.value) {
             dispatch(
                 ObjectSetCommand.Modal.Menu(
                     ctx = context,
@@ -907,27 +907,29 @@ class ObjectSetViewModel(
                 )
             )
         } else {
-            toast("Set is not initialized. Please, try again later.")
+            toast("Still loading ...")
         }
     }
 
     fun onIconClicked() {
         Timber.d("onIconClicked, ")
-        val set = reducer.state.value
-        if (set.isInitialized) {
+        if (!isLoading.value) {
             dispatch(
                 ObjectSetCommand.Modal.OpenIconActionMenu(target = context)
             )
+        } else {
+            toast("Still loading ...")
         }
     }
 
     fun onCoverClicked() {
         Timber.d("onCoverClicked, ")
-        val set = reducer.state.value
-        if (set.isInitialized) {
+        if (!isLoading.value) {
             dispatch(
                 ObjectSetCommand.Modal.OpenCoverActionMenu(ctx = context)
             )
+        } else {
+            toast("Still loading ...")
         }
     }
 

@@ -29,7 +29,7 @@
             android:layout_height="52dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/rect_data_view_customize_view_button"
-            app:layout_constraintEnd_toStartOf="@+id/btnGroup"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btnSort"
             app:layout_constraintTop_toBottomOf="@+id/dragger">
@@ -99,25 +99,6 @@
 
         </FrameLayout>
 
-        <FrameLayout
-            android:id="@+id/btnGroup"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/rect_data_view_customize_view_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btnFilter"
-            app:layout_constraintTop_toBottomOf="@+id/dragger">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_dv_customize_panel_group" />
-
-        </FrameLayout>
-
         <TextView
             android:id="@+id/tvView"
             style="@style/DataViewCustomizePanelTextStyle"
@@ -169,19 +150,6 @@
             app:layout_constraintEnd_toEndOf="@+id/btnFilter"
             app:layout_constraintStart_toStartOf="@+id/btnFilter"
             app:layout_constraintTop_toBottomOf="@+id/btnFilter" />
-
-        <TextView
-            android:id="@+id/tvGroup"
-            style="@style/DataViewCustomizePanelTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/group"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/btnGroup"
-            app:layout_constraintStart_toStartOf="@+id/btnGroup"
-            app:layout_constraintTop_toBottomOf="@+id/btnGroup" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

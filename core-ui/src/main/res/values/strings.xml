@@ -123,7 +123,6 @@
     <string name="filter_empty_state">No filters here. You can add some</string>
     <string name="filter_by">Filter by</string>
     <string name="filter">Filter</string>
-    <string name="group">Group</string>
     <string name="modal_view">View</string>
     <string name="modal_properties">Properties</string>
     <string name="detail_title">Title</string>

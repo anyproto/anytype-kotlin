@@ -215,12 +215,6 @@ open class ObjectSetFragment :
                 vm.onViewerSortsClicked()
             }
             subscribe(
-                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnGroup).clicks()
-                    .throttleFirst()
-            ) {
-                toast(getString(R.string.coming_soon))
-            }
-            subscribe(
                 binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnView).clicks()
                     .throttleFirst()
             ) {

@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
@@ -30,13 +30,12 @@ object ObjectSetRecordModule {
     @Provides
     @ObjectSetRecordScope
     fun provideObjectSetRecordViewModelFactory(
-        updateDataViewRecord: UpdateDataViewRecord,
+        setObjectDetails: UpdateDetail,
         objectSetState: StateFlow<ObjectSet>,
         objectSetRecordCache: ObjectSetRecordCache
     ): ObjectSetRecordViewModel.Factory = ObjectSetRecordViewModel.Factory(
-        objectSetState = objectSetState,
-        objectSetRecordCache = objectSetRecordCache,
-        updateDataViewRecord = updateDataViewRecord
+        setObjectDetails = setObjectDetails,
+        objectSetRecordCache = objectSetRecordCache
     )
 }
 

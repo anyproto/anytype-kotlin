@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -46,6 +48,8 @@ class ObjectSetViewerDeleteTest {
         children = listOf(title.id)
     )
 
+    val paginator = ObjectSetPaginator()
+
     @Mock
     lateinit var dispatcher: Dispatcher<Payload>
 
@@ -62,9 +66,6 @@ class ObjectSetViewerDeleteTest {
     lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     @Mock
-    lateinit var setActiveViewer: SetActiveViewer
-
-    @Mock
     lateinit var analytics: Analytics
 
     private val ctx: Id = MockDataFactory.randomUuid()
@@ -75,7 +76,7 @@ class ObjectSetViewerDeleteTest {
     }
 
     @Test
-    fun `should not update active view after inactive view is deleted`() = runBlockingTest {
+    fun `should not update active view after inactive view is deleted`() = runTest {
         // SETUP
 
         val firstViewer = DVViewer(
@@ -93,7 +94,7 @@ class ObjectSetViewerDeleteTest {
         val activeViewerId = firstViewer.id
 
         val objectSetSession = ObjectSetSession().apply {
-            currentViewerId = activeViewerId
+            currentViewerId.value = activeViewerId
         }
 
         val dv = Block(
@@ -144,7 +145,7 @@ class ObjectSetViewerDeleteTest {
                 )
             )
         }
-        verifyNoMoreInteractions(setActiveViewer)
+//        verifyNoMoreInteractions(setActiveViewer)
     }
 
     @Test
@@ -167,7 +168,7 @@ class ObjectSetViewerDeleteTest {
         val activeViewerId = firstViewer.id
 
         val objectSetSession = ObjectSetSession().apply {
-            currentViewerId = activeViewerId
+            currentViewerId.value = activeViewerId
         }
 
         val dv = Block(
@@ -218,17 +219,17 @@ class ObjectSetViewerDeleteTest {
                 )
             )
         }
-        verifyBlocking(setActiveViewer, times(1)) {
-            invoke(
-                SetActiveViewer.Params(
-                    context = ctx,
-                    block = dv.id,
-                    view = secondViewer.id,
-                    offset = 0,
-                    limit = ObjectSetConfig.DEFAULT_LIMIT
-                )
-            )
-        }
+//        verifyBlocking(setActiveViewer, times(1)) {
+//            invoke(
+//                SetActiveViewer.Params(
+//                    context = ctx,
+//                    block = dv.id,
+//                    view = secondViewer.id,
+//                    offset = 0,
+//                    limit = ObjectSetConfig.DEFAULT_LIMIT
+//                )
+//            )
+//        }
     }
 
     @Test
@@ -251,7 +252,7 @@ class ObjectSetViewerDeleteTest {
         val activeViewerId = thirdViewer.id
 
         val objectSetSession = ObjectSetSession().apply {
-            currentViewerId = activeViewerId
+            currentViewerId.value = activeViewerId
         }
 
         val dv = Block(
@@ -302,17 +303,17 @@ class ObjectSetViewerDeleteTest {
                 )
             )
         }
-        verifyBlocking(setActiveViewer, times(1)) {
-            invoke(
-                SetActiveViewer.Params(
-                    context = ctx,
-                    block = dv.id,
-                    view = secondViewer.id,
-                    offset = 0,
-                    limit = ObjectSetConfig.DEFAULT_LIMIT
-                )
-            )
-        }
+//        verifyBlocking(setActiveViewer, times(1)) {
+//            invoke(
+//                SetActiveViewer.Params(
+//                    context = ctx,
+//                    block = dv.id,
+//                    view = secondViewer.id,
+//                    offset = 0,
+//                    limit = ObjectSetConfig.DEFAULT_LIMIT
+//                )
+//            )
+//        }
     }
 
     fun buildViewModel(
@@ -324,12 +325,12 @@ class ObjectSetViewerDeleteTest {
             renameDataViewViewer = renameDataViewViewer,
             deleteDataViewViewer = deleteDataViewViewer,
             duplicateDataViewViewer = duplicateDataViewViewer,
-            setActiveViewer = setActiveViewer,
             objectSetSession = objectSetSession,
             objectSetState = objectSetState,
             dispatcher = dispatcher,
             updateDataViewViewer = updateDataViewViewer,
-            analytics = analytics
+            analytics = analytics,
+            paginator = paginator
         )
     }
 
@@ -344,30 +345,6 @@ class ObjectSetViewerDeleteTest {
                         ctx = ctx,
                         viewer = viewer,
                         dataview = dv
-                    )
-                )
-            } doReturn Either.Right(
-                Payload(
-                    context = ctx,
-                    events = emptyList()
-                )
-            )
-        }
-    }
-
-    private fun stubSetActiveViewer(
-        viewer: Id,
-        dv: Id
-    ) {
-        setActiveViewer.stub {
-            onBlocking {
-                invoke(
-                    SetActiveViewer.Params(
-                        context = ctx,
-                        view = viewer,
-                        block = dv,
-                        offset = 0,
-                        limit = ObjectSetConfig.DEFAULT_LIMIT
                     )
                 )
             } doReturn Either.Right(

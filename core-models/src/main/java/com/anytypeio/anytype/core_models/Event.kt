@@ -232,34 +232,6 @@ sealed class Event {
         sealed class DataView : Command() {
 
             /**
-             * Sent when the active view's visible records have been changed either by the view settings (filters/sort/limit/offset) or by the data itself.
-             * @property [id] data view's block id
-             * @property [records] new records to replace
-             * @property [total] total number of records
-             */
-            data class SetRecords(
-                override val context: Id,
-                val id: Id,
-                val view: Id,
-                val records: List<DVRecord>,
-                val total: Int
-            ) : DataView()
-
-            data class UpdateRecord(
-                override val context: Id,
-                val target: Id,
-                val viewer: Id,
-                val records: List<DVRecord>
-            ) : DataView()
-
-            data class DeleteRecord(
-                override val context: String,
-                val dataViewId: String,
-                val viewerId: String,
-                val recordIds: List<String>
-            ) : DataView()
-
-            /**
              * Sent when a data-view's view has been changed or added.
              * @property [target] data view's block id
              */
@@ -267,9 +239,7 @@ sealed class Event {
                 override val context: Id,
                 val target: Id,
                 val viewerId: Id,
-                val viewer: DVViewer,
-                val offset: Int,
-                val limit: Int
+                val viewer: DVViewer
             ) : DataView()
 
             data class DeleteView(

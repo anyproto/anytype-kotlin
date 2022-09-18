@@ -39,10 +39,8 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
     override fun onAddButtonClicked() {
         vm.onAddSelectedValuesToDataViewClicked(
             ctx = ctx,
-            viewer = viewer,
             target = target,
-            relation = relation,
-            dataview = dataview
+            relation = relation
         )
     }
 

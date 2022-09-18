@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.middleware.mappers.parse
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
@@ -96,6 +97,18 @@ class MiddlewareSubscriptionEventChannel(
                             SubscriptionEvent.Position(
                                 target = event.id,
                                 afterId = event.afterId
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                    e.subscriptionCounters != null -> {
+                        Timber.d("Subscription COUNTERS")
+                        val event = e.subscriptionCounters
+                        checkNotNull(event)
+                        if (subscriptions.any { it == event.subId }) {
+                            SubscriptionEvent.Counter(
+                                counter = event.parse()
                             )
                         } else {
                             null

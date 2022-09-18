@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -35,13 +34,11 @@ object ManageViewerModule {
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
-        setActiveViewer: SetActiveViewer,
         analytics: Analytics
     ): ManageViewerViewModel.Factory = ManageViewerViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,
-        setActiveViewer = setActiveViewer,
         analytics = analytics
     )
 }

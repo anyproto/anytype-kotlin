@@ -16,10 +16,13 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.timeInSecondsFormat
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -48,16 +51,16 @@ class ObjectRelationDateValueTest {
     val root = MockDataFactory.randomUuid()
 
     private val state = MutableStateFlow(ObjectSet.init())
-    private val session = ObjectSetSession()
+    private val store: ObjectStore = DefaultObjectStore()
+    private val db = ObjectSetDatabase(store)
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        TestRelationDateValueFragment.testVmFactory =
-            RelationDateValueViewModel.Factory(
-                relations = DataViewObjectRelationProvider(state),
-                values = DataViewObjectValueProvider(state, session)
-            )
+        TestRelationDateValueFragment.testVmFactory = RelationDateValueViewModel.Factory(
+            relations = DataViewObjectRelationProvider(state),
+            values = DataViewObjectValueProvider(db = db)
+        )
     }
 
     @Test
@@ -106,12 +109,12 @@ class ObjectRelationDateValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -177,12 +180,12 @@ class ObjectRelationDateValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -249,12 +252,12 @@ class ObjectRelationDateValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -321,12 +324,12 @@ class ObjectRelationDateValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -393,12 +396,12 @@ class ObjectRelationDateValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -466,12 +469,12 @@ class ObjectRelationDateValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         val fragment = launchFragment(
@@ -552,12 +555,12 @@ class ObjectRelationDateValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         val fragment = launchFragment(

@@ -35,7 +35,7 @@ class ModifyViewerSortViewModel(
         jobs += viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { state ->
                 val dv = state.dataview.content as DV
-                val viewer = state.viewerById(session.currentViewerId)
+                val viewer = state.viewerById(session.currentViewerId.value)
                 val sort = viewer.sorts.first { it.relationKey == relationId }
                 val relation = dv.relations.first { it.key == relationId }
                 viewState.value = ViewState(
@@ -65,7 +65,7 @@ class ModifyViewerSortViewModel(
         type: Block.Content.DataView.Sort.Type
     ) {
         val state = objectSetState.value
-        val viewer = state.viewerById(session.currentViewerId)
+        val viewer = state.viewerById(session.currentViewerId.value)
         viewModelScope.launch {
             updateDataViewViewer(
                 UpdateDataViewViewer.Params(

@@ -16,10 +16,10 @@ import kotlin.test.assertEquals
 class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
 
     @get:Rule
-    val rule = InstantTaskExecutorRule()
+    internal val rule = InstantTaskExecutorRule()
 
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    internal val coroutineTestRule = CoroutinesTestRule()
 
     val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -54,6 +54,7 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
     }
 
     @Test

@@ -1,14 +1,20 @@
 package com.anytypeio.anytype.presentation.relations.add
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView.Option.Tag
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider.Options
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -19,6 +25,9 @@ import timber.log.Timber
 
 abstract class BaseAddOptionsRelationViewModel(
     private val optionsProvider: AddOptionsRelationProvider,
+    private val setObjectDetail: UpdateDetail,
+    private val analytics: Analytics,
+    private val dispatcher: Dispatcher<Payload>,
     protected val values: ObjectValueProvider,
     protected val relations: ObjectRelationProvider,
 ) : BaseViewModel() {
@@ -80,9 +89,8 @@ abstract class BaseAddOptionsRelationViewModel(
 
     fun onStart(target: Id, relationId: Id) {
         val s1 = relations.observe(relationId)
-        val s2 = values.subscribe(target)
         jobs += viewModelScope.launch {
-            s1.combine(s2) { relation, record ->
+            s1.combine(values.subscribe(target)) { relation, record ->
                 buildViews(relation, record, relationId)
                 if (relation.format == Relation.Format.STATUS) {
                     isAddButtonVisible.value = false
@@ -121,6 +129,65 @@ abstract class BaseAddOptionsRelationViewModel(
         choosingRelationOptions.value = newOptions
         counter.value =
             newOptions.count { it is Tag && it.isSelected }
+    }
+
+    fun proceedWithAddingTagToObject(
+        target: Id,
+        ctx: Id,
+        relation: Id,
+        tags: List<Id>
+    ) {
+        Timber.d("Relations | Adding tag to object with id: $target")
+        viewModelScope.launch {
+            val obj = values.get(target = target)
+            val result = mutableListOf<Id>()
+            val value = obj[relation]
+            if (value is List<*>) {
+                result.addAll(value.typeOf())
+            } else if (value is Id) {
+                result.add(value)
+            }
+            result.addAll(tags)
+            setObjectDetail(
+                UpdateDetail.Params(
+                    ctx = target,
+                    key = relation,
+                    value = result
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while adding tag to object") },
+                success = {
+                    dispatcher.send(it).also {
+                        sendAnalyticsRelationValueEvent(analytics)
+                        isDismissed.value = true
+                    }
+                }
+            )
+        }
+    }
+
+    fun proceedWithAddingStatusToObject(
+        ctx: Id,
+        relation: Id,
+        status: Id
+    ) {
+        viewModelScope.launch {
+            setObjectDetail(
+                UpdateDetail.Params(
+                    ctx = ctx,
+                    key = relation,
+                    value = listOf(status)
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while adding status to object") },
+                success = {
+                    dispatcher.send(it).also {
+                        sendAnalyticsRelationValueEvent(analytics)
+                        isParentDismissed.value = true
+                    }
+                }
+            )
+        }
     }
 }
 

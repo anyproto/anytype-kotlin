@@ -35,7 +35,7 @@ abstract class SearchRelationViewModel(
         // Initializing views before any query.
         viewModelScope.launch {
             _views.value =
-                filterRelationsFromAlreadyInUse(objectSetState.value, session.currentViewerId)
+                filterRelationsFromAlreadyInUse(objectSetState.value, session.currentViewerId.value)
                     .filterNot { notAllowedRelations(it) }
         }
         // Searching and mapping views based on query changes.
@@ -43,7 +43,7 @@ abstract class SearchRelationViewModel(
             query
                 .consumeAsFlow()
                 .withLatestFrom(objectSetState) { query, state ->
-                    val relations = filterRelationsFromAlreadyInUse(state, session.currentViewerId)
+                    val relations = filterRelationsFromAlreadyInUse(state, session.currentViewerId.value)
                     if (query.isEmpty()) {
                         relations
                     } else {

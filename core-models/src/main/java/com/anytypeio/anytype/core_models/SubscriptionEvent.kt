@@ -52,6 +52,13 @@ sealed class SubscriptionEvent {
     ) : SubscriptionEvent()
 
     /**
+     * @property [counter] updated counter
+     */
+    data class Counter(
+        val counter: SearchResult.Counter
+    ) : SubscriptionEvent()
+
+    /**
      * @property [target] id of the object to add.
      * @property [afterId] id of the previous object in order, empty means first
      */

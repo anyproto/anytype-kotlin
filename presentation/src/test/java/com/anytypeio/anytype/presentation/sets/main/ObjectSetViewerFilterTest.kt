@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.sets.main
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.TypicalTwoRecordObjectSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -18,6 +17,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
+import kotlin.test.assertEquals
 
 class ObjectSetViewerFilterTest : ObjectSetViewModelTestSetup() {
 
@@ -30,6 +30,7 @@ class ObjectSetViewerFilterTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
     }
 
     val doc = TypicalTwoRecordObjectSet()
@@ -40,23 +41,14 @@ class ObjectSetViewerFilterTest : ObjectSetViewModelTestSetup() {
         // SETUP
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenObjectSet(
             doc = listOf(
                 doc.header,
                 doc.title,
                 doc.dv
-            ),
-            additionalEvents = listOf(
-                Event.Command.DataView.SetRecords(
-                    context = root,
-                    view = doc.viewer1.id,
-                    id = doc.dv.id,
-                    total = MockDataFactory.randomInt(),
-                    records = doc.initialRecords
-                )
             )
         )
-        stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
@@ -67,19 +59,12 @@ class ObjectSetViewerFilterTest : ObjectSetViewModelTestSetup() {
 
         vm.onViewerTabClicked(viewer = doc.viewer2.id)
 
-        // Verifying that we want to make second viewer active.
+        // Verifying that the second view is now active
 
-        verifyBlocking(setActiveViewer, times(1)) {
-            invoke(
-                SetActiveViewer.Params(
-                    context = root,
-                    block = doc.dv.id,
-                    view = doc.viewer2.id,
-                    limit = ObjectSetConfig.DEFAULT_LIMIT,
-                    offset = 0
-                )
-            )
-        }
+        assertEquals(
+            expected = doc.viewer2.id,
+            actual = session.currentViewerId.value
+        )
 
         val filters = listOf(
             FilterExpression(

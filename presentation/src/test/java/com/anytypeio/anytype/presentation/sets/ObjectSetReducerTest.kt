@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 
 class ObjectSetReducerTest {
 
-    lateinit var reducer: ObjectSetReducer
+    private lateinit var reducer: ObjectSetReducer
 
     @Before
     fun reduce() {
@@ -166,9 +166,7 @@ class ObjectSetReducerTest {
                 ),
                 filters = listOf(),
                 viewerRelations = viewerGrid.viewerRelations
-            ),
-            offset = 10,
-            limit = 10
+            )
         )
 
         val result = reducer.reduce(state = objectSet, events = listOf(event))
@@ -204,7 +202,7 @@ class ObjectSetReducerTest {
 
         val expected = ObjectSetReducer.Transformation(
             state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = listOf(ObjectSetReducer.SideEffect.ResetOffset(event.offset))
+            effects = emptyList()
         )
 
         assertEquals(expected, result)
@@ -318,9 +316,7 @@ class ObjectSetReducerTest {
                 ),
                 filters = listOf(),
                 viewerRelations = viewerGrid.viewerRelations
-            ),
-            offset = 10,
-            limit = 10
+            )
         )
 
         val result = reducer.reduce(state = objectSet, events = listOf(event))
@@ -360,7 +356,7 @@ class ObjectSetReducerTest {
 
         val expected = ObjectSetReducer.Transformation(
             state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = listOf(ObjectSetReducer.SideEffect.ResetOffset(event.offset))
+            effects = emptyList()
         )
 
         assertEquals(expected, result)

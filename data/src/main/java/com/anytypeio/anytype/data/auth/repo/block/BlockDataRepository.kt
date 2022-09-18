@@ -490,8 +490,9 @@ class BlockDataRepository(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         keys: List<String>,
+        source: List<String>,
         offset: Long,
-        limit: Long,
+        limit: Int,
         beforeId: Id?,
         afterId: Id?
     ): SearchResult = remote.searchObjectsWithSubscription(
@@ -499,6 +500,7 @@ class BlockDataRepository(
         sorts = sorts,
         filters = filters,
         keys = keys,
+        source = source,
         offset = offset,
         limit = limit,
         afterId = afterId,

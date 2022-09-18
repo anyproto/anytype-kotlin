@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment
 import dagger.Module
 import dagger.Provides
@@ -31,12 +30,10 @@ object ObjectSetCreateBookmarkRecordModule {
     @PerDialog
     fun provideObjectSetRecordViewModelFactory(
         createBookmarkObject: CreateBookmarkObject,
-        urlValidator: UrlValidator,
-        reducer: ObjectSetReducer
+        urlValidator: UrlValidator
     ): ObjectSetCreateBookmarkRecordViewModel.Factory = ObjectSetCreateBookmarkRecordViewModel.Factory(
-        createBookmarkObject = createBookmarkObject,
-        urlValidator = urlValidator,
-        sideEffectDelegator = reducer.effects
+            createBookmarkObject = createBookmarkObject,
+            urlValidator = urlValidator
     )
 
     @JvmStatic
@@ -44,7 +41,7 @@ object ObjectSetCreateBookmarkRecordModule {
     @PerDialog
     fun provideCreateBookmarkObjectUseCase(
         repo: BlockRepository
-    ) : CreateBookmarkObject = CreateBookmarkObject(
+    ): CreateBookmarkObject = CreateBookmarkObject(
         repo = repo
     )
 }

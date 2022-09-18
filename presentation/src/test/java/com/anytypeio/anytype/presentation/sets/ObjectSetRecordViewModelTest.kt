@@ -5,13 +5,13 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -31,7 +31,7 @@ class ObjectSetRecordViewModelTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
-    lateinit var updateDataViewRecord: UpdateDataViewRecord
+    lateinit var setObjectDetails: UpdateDetail
 
     private val ctx: Id = MockDataFactory.randomUuid()
     private val obj: Id = MockDataFactory.randomUuid()
@@ -93,20 +93,9 @@ class ObjectSetRecordViewModelTest {
 
         // SETUP
 
-        val doc = listOf(
-            header,
-            title,
-            dv
-        )
-
-        val state = MutableStateFlow(ObjectSet(blocks = doc))
-
         val emptyCache = ObjectSetRecordCache()
 
-        val vm = buildViewModel(
-            state = state,
-            cache = emptyCache
-        )
+        val vm = buildViewModel(cache = emptyCache)
 
         // TESTING
 
@@ -115,7 +104,7 @@ class ObjectSetRecordViewModelTest {
             input = MockDataFactory.randomString()
         )
 
-        verifyZeroInteractions(updateDataViewRecord)
+        verifyZeroInteractions(setObjectDetails)
     }
 
     @Test
@@ -136,20 +125,18 @@ class ObjectSetRecordViewModelTest {
         }
 
         val vm = buildViewModel(
-            state = state,
             cache = cache
         )
 
         val input = MockDataFactory.randomString()
 
-        val params = UpdateDataViewRecord.Params(
-            context = ctx,
-            record = obj,
-            target = dv.id,
-            values = mapOf(Relations.NAME to input)
+        val params = UpdateDetail.Params(
+            ctx = obj,
+            key = Relations.NAME,
+            value = input
         )
 
-        stubUpdateDataViewRecord(params)
+        stubSetObjectDetails(params)
 
         // TESTING
 
@@ -158,7 +145,7 @@ class ObjectSetRecordViewModelTest {
             input = input
         )
 
-        verifyBlocking(updateDataViewRecord, times(1)) {
+        verifyBlocking(setObjectDetails, times(1)) {
             invoke(params)
         }
     }
@@ -182,17 +169,15 @@ class ObjectSetRecordViewModelTest {
 
         val input = MockDataFactory.randomString()
 
-        val params = UpdateDataViewRecord.Params(
-            context = ctx,
-            record = obj,
-            target = dv.id,
-            values = mapOf(Relations.NAME to input)
+        val params = UpdateDetail.Params(
+            ctx = obj,
+            key = Relations.NAME,
+            value = input
         )
 
-        stubUpdateDataViewRecord(params)
+        stubSetObjectDetails(params)
 
         val vm = buildViewModel(
-            state = state,
             cache = cache
         )
 
@@ -211,7 +196,7 @@ class ObjectSetRecordViewModelTest {
             )
         }
 
-        verifyBlocking(updateDataViewRecord, times(1)) {
+        verifyBlocking(setObjectDetails, times(1)) {
             invoke(params)
         }
     }
@@ -235,19 +220,15 @@ class ObjectSetRecordViewModelTest {
 
         val emptyInput = ""
 
-        val params = UpdateDataViewRecord.Params(
-            context = ctx,
-            record = obj,
-            target = dv.id,
-            values = mapOf(Relations.NAME to emptyInput)
+        val params = UpdateDetail.Params(
+            ctx = obj,
+            key = Relations.NAME,
+            value = emptyInput
         )
 
-        stubUpdateDataViewRecord(params)
+        stubSetObjectDetails(params)
 
-        val vm = buildViewModel(
-            state = state,
-            cache = cache
-        )
+        val vm = buildViewModel(cache = cache)
 
         // TESTING
 
@@ -264,23 +245,27 @@ class ObjectSetRecordViewModelTest {
             )
         }
 
-        verifyZeroInteractions(updateDataViewRecord)
+        verifyZeroInteractions(setObjectDetails)
     }
 
     fun buildViewModel(
-        state: StateFlow<ObjectSet>,
         cache: ObjectSetRecordCache
     ) : ObjectSetRecordViewModel = ObjectSetRecordViewModel(
-        updateDataViewRecord = updateDataViewRecord,
-        objectSetRecordCache = cache,
-        objectSetState = state
+        setObjectDetails = setObjectDetails,
+        objectSetRecordCache = cache
     )
 
-    private fun stubUpdateDataViewRecord(params: UpdateDataViewRecord.Params) {
-        updateDataViewRecord.stub {
+    private fun stubSetObjectDetails(
+        params: UpdateDetail.Params,
+        payload: Payload = Payload(
+            context = MockDataFactory.randomUuid(),
+            events = emptyList()
+        )
+    ) {
+        setObjectDetails.stub {
             onBlocking {
                 invoke(params)
-            } doReturn Either.Right(Unit)
+            } doReturn Either.Right(payload)
         }
     }
 }

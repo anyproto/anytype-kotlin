@@ -10,19 +10,20 @@ import kotlinx.coroutines.flow.*
 class ObjectSearchSubscriptionContainer(
     private val repo: BlockRepository,
     private val channel: SubscriptionEventChannel,
-    private val store: ObjectStore,
+    val store: ObjectStore,
     private val dispatchers: AppCoroutineDispatchers
 ) {
 
-    fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
+    private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
 
     // TODO refact: replace parameters with one param class
     fun observe(
         subscription: Id,
         sorts: List<DVSort> = emptyList(),
         filters: List<DVFilter> = emptyList(),
+        source: List<String> = emptyList(),
         offset: Long,
-        limit: Long,
+        limit: Int,
         keys: List<String>
     ): Flow<Subscription> {
         return flow {
@@ -35,7 +36,8 @@ class ObjectSearchSubscriptionContainer(
                 limit = limit,
                 keys = keys,
                 afterId = null,
-                beforeId = null
+                beforeId = null,
+                source = source
             )
 
             store.merge(

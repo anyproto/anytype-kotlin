@@ -32,7 +32,7 @@ class ViewerCardSizeSelectViewModel(
     init {
         viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect {
-                val viewer = it.viewerById(session.currentViewerId)
+                val viewer = it.viewerById(session.currentViewerId.value)
                 when(viewer.cardSize) {
                     Block.Content.DataView.Viewer.Size.SMALL -> {
                         state.value = STATE_SMALL_CARD_SELECTED
@@ -78,7 +78,7 @@ class ViewerCardSizeSelectViewModel(
                     UpdateDataViewViewer.Params(
                         context = ctx,
                         target = currObjectSetState.dataview.id,
-                        viewer = currObjectSetState.viewerById(session.currentViewerId).copy(
+                        viewer = currObjectSetState.viewerById(session.currentViewerId.value).copy(
                             cardSize = size
                         )
                     )

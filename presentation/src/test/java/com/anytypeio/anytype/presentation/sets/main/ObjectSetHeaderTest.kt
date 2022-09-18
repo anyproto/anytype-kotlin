@@ -43,6 +43,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
     }
 
     @Test
@@ -71,6 +72,9 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription()
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -124,6 +128,9 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription()
         stubOpenObjectSet(
             doc = listOf(
                 header,

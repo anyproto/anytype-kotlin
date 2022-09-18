@@ -33,7 +33,7 @@ class ViewerSortViewModel(
         viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { state ->
                 val dv = state.dataview.content as DV
-                val viewer = dv.viewers.find { it.id == session.currentViewerId }
+                val viewer = dv.viewers.find { it.id == session.currentViewerId.value }
                     ?: dv.viewers.first()
                 val sorts = viewer.sorts
                 if (sorts.isEmpty()) {
@@ -79,7 +79,7 @@ class ViewerSortViewModel(
     fun onRemoveViewerSortClicked(ctx: Id, view: ViewerSortView) {
         viewModelScope.launch {
             val state = objectSetState.value
-            val viewer = state.viewerById(session.currentViewerId)
+            val viewer = state.viewerById(session.currentViewerId.value)
             val sorts = viewer.sorts.filter { it.relationKey != view.relation }
             updateDataViewViewer(
                 UpdateDataViewViewer.Params(

@@ -160,12 +160,12 @@ class ModifyInputValueFilterTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // Launching fragment
@@ -284,12 +284,12 @@ class ModifyInputValueFilterTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // Launching fragment

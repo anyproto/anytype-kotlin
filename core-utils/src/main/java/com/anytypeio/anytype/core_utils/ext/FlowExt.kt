@@ -26,7 +26,7 @@ fun <T> Flow<T>.throttleFirst(windowDuration: Long = DEFAULT_THROTTLE_DURATION):
     }
 }
 
-fun <A, B : Any, R> Flow<A>.withLatestFrom(
+fun <A, B : Any?, R> Flow<A>.withLatestFrom(
     other: Flow<B>,
     transform: suspend (A, B) -> R
 ): Flow<R> = flow {
@@ -66,7 +66,7 @@ fun <A, B : Any> Flow<A>.switchToLatestFrom(other: Flow<B>): Flow<B> = flow {
     }
 }
 
-fun <A, B, C : Any, R> Flow<A>.withLatestFrom(
+fun <A, B, C : Any?, R> Flow<A>.withLatestFrom(
     other: Flow<B>,
     another: Flow<C>,
     transform: suspend (A, B, C) -> R

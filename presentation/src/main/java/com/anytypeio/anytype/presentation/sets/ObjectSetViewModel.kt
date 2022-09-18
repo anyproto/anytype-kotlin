@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerRelation
@@ -25,20 +24,22 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -54,7 +55,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowSetEvent
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.relations.tabs
 import com.anytypeio.anytype.presentation.relations.title
@@ -75,21 +76,22 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.math.ceil
 
 class ObjectSetViewModel(
+    private val database: ObjectSetDatabase,
     private val reducer: ObjectSetReducer,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
-    private val setActiveViewer: SetActiveViewer,
     private val addDataViewRelation: AddNewRelationToDataView,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val updateDataViewRecord: UpdateDataViewRecord,
+    private val setObjectDetails: UpdateDetail,
     private val createDataViewRecord: CreateDataViewRecord,
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
@@ -104,22 +106,17 @@ class ObjectSetViewModel(
     private val analytics: Analytics,
     private val getTemplates: GetTemplates,
     private val createNewObject: CreateNewObject,
-    private val setDataViewSource: SetDataViewSource
+    private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
+    private val cancelSearchSubscription: CancelSearchSubscription,
+    private val setDataViewSource: SetDataViewSource,
+    private val paginator: ObjectSetPaginator
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
     val error = MutableStateFlow<String?>(null)
 
-    private val total = MutableStateFlow(0)
-    private val offset = MutableStateFlow(0)
-
+    val title = MutableStateFlow<BlockView.Title?>(null)
     val featured = MutableStateFlow<BlockView.FeaturedRelation?>(null)
-
-    val pagination = total.combine(offset) { t, o ->
-        val idx = ceil(o.toDouble() / ObjectSetConfig.DEFAULT_LIMIT).toInt()
-        val pages = ceil(t.toDouble() / ObjectSetConfig.DEFAULT_LIMIT).toInt()
-        Pair(idx, pages)
-    }
 
     private val _viewerTabs = MutableStateFlow<List<ViewerTabView>>(emptyList())
     val viewerTabs = _viewerTabs.asStateFlow()
@@ -131,6 +128,8 @@ class ObjectSetViewModel(
     private val defaultPayloadConsumer: suspend (Payload) -> Unit = { payload ->
         reducer.dispatch(payload.events)
     }
+
+    val pagination get() = paginator.pagination
 
     private val jobs = mutableListOf<Job>()
 
@@ -159,58 +158,99 @@ class ObjectSetViewModel(
         }
 
         viewModelScope.launch {
-            reducer.state.filter { context.isNotEmpty() }.collect { obj ->
-                featured.value = obj.featuredRelations(
+            reducer.state.filter { it.isInitialized }.collect { set ->
+                Timber.d("FLOW:: Updating header and tabs")
+                featured.value = set.featuredRelations(
                     ctx = context,
                     urlBuilder = urlBuilder
                 )
-                _header.value = obj.blocks.title()?.let {
+                _header.value = set.blocks.title()?.let {
                     title(
                         ctx = context,
                         urlBuilder = urlBuilder,
-                        details = obj.details,
+                        details = set.details,
                         title = it
                     )
+                }
+                if (set.viewers.isEmpty()) {
+                    error.value = DATA_VIEW_HAS_NO_VIEW_MSG
+                    _viewerTabs.value = emptyList()
+                } else {
+                    _viewerTabs.value = set.tabs(session.currentViewerId.value)
                 }
             }
         }
 
         viewModelScope.launch {
-            reducer.state.collect { set ->
-                if (set.isInitialized && set.viewers.isNotEmpty()) {
-                    val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
-                    _viewerTabs.value = set.tabs(session.currentViewerId)
-                    set.render(viewerIndex, urlBuilder).let { vs ->
-                        _currentViewer.value = vs.viewer
-                    }
+            combine(
+                reducer.state.filter { it.isInitialized },
+                session.currentViewerId,
+                paginator.offset
+            ) { s, v, o ->
+                val dv = s.dv
+                val view = dv.viewers.find { it.id == v } ?: dv.viewers.firstOrNull()
+                if (view != null) {
+                    DataViewSubscriptionContainer.Params(
+                        subscription = context,
+                        sorts = view.sorts,
+                        filters = view.filters,
+                        sources = dv.sources,
+                        keys = dv.relations.map { it.key },
+                        limit = DEFAULT_LIMIT,
+                        offset = o
+                    )
                 } else {
-                    _viewerTabs.value = emptyList()
-                    _currentViewer.value = null
+                    null
                 }
+            }.distinctUntilChanged().flatMapLatest { params ->
+                if (params != null) {
+                    dataViewSubscriptionContainer.observe(params)
+                } else {
+                    emptyFlow()
+                }
+            }.collect { index ->
+                database.update(update = index)
+            }
+        }
+
+        viewModelScope.launch {
+            combine(
+                reducer.state.filter { it.isInitialized },
+                database.index,
+                session.currentViewerId
+            ) { state, db, view ->
+                val dv = state.dv
+                Timber.d("FLOW:: Rendering")
+                (dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull())?.render(
+                    builder = urlBuilder,
+                    objects = db.objects,
+                    dataViewRelations = dv.relations,
+                    details = state.details,
+                    store = dataViewSubscriptionContainer.store
+                )
+            }.collect {
+                _currentViewer.value = it?.viewer
+            }
+        }
+
+        viewModelScope.launch {
+            dataViewSubscriptionContainer.counter.collect { counter ->
+                Timber.d("SET-DB: counter —>\n$counter")
+                paginator.total.value = counter.total
             }
         }
 
         viewModelScope.launch {
             reducer.effects.collect { effects ->
                 effects.forEach { effect ->
-                    when (effect) {
-                        is ObjectSetReducer.SideEffect.ResetOffset -> {
-                            offset.value = effect.offset
-                        }
-                        is ObjectSetReducer.SideEffect.ResetCount -> {
-                            total.value = effect.count
-                        }
-                        is ObjectSetReducer.SideEffect.ResetViewer -> {
-                            proceedWithRefreshingViewerAfterObjectCreation()
-                        }
-                    }
+                    Timber.d("Received side effect: $effect")
                 }
             }
         }
 
         viewModelScope.launch { reducer.run() }
 
-        // Title updates pipleine
+        // Title updates pipeline
 
         viewModelScope.launch {
             titleUpdateChannel
@@ -288,7 +328,7 @@ class ObjectSetViewModel(
                 .collect { status.value = it }
         }
 
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             isLoading.value = true
             openObjectSet(ctx).process(
                 success = { result ->
@@ -310,7 +350,7 @@ class ObjectSetViewModel(
                         }
                         is Result.Success -> {
                             defaultPayloadConsumer(result.data)
-                            proceedWithStartupPaging()
+                            proceedWithSourceCheck()
                             setAnalyticsContext(result.data.events)
                             sendAnalyticsShowSetEvent(analytics, analyticsContext)
                         }
@@ -320,6 +360,23 @@ class ObjectSetViewModel(
                     isLoading.value = false
                     Timber.e(it, "Error while opening object set: $ctx")
                 }
+            )
+        }
+    }
+
+    private fun proceedWithSourceCheck() {
+        val state = reducer.state.value
+        val obj = ObjectWrapper.Basic(state.details[context]?.map ?: emptyMap())
+        if (obj.setOf.isNotEmpty()) {
+            if (!state.isInitialized) {
+                error.value = DATA_VIEW_NOT_FOUND_ERROR
+            }
+        } else {
+            dispatch(
+                ObjectSetCommand.Modal.OpenSelectSourceScreen(
+                    sources = emptyList(),
+                    smartBlockType = SmartBlockType.PAGE
+                )
             )
         }
     }
@@ -338,7 +395,7 @@ class ObjectSetViewModel(
         Timber.d("onStop, ")
         reducer.state.value = ObjectSet.reset()
         _header.value = null
-        jobs.forEach { it.cancel() }
+        jobs.cancel()
     }
 
     fun onSystemBackPressed() {
@@ -348,15 +405,27 @@ class ObjectSetViewModel(
 
     private fun proceedWithExiting() {
         viewModelScope.launch {
-            closeBlock(CloseBlock.Params(context)).process(
-                success = { dispatch(AppNavigation.Command.Exit) },
+            cancelSearchSubscription(CancelSearchSubscription.Params(listOf(context))).process(
                 failure = {
-                    Timber.e(it, "Error while closing object set: $context").also {
-                        dispatch(AppNavigation.Command.Exit)
-                    }
+                    Timber.e(it, "Failed to cancel subscription")
+                    proceedWithClosingAndExit()
+                },
+                success = {
+                    proceedWithClosingAndExit()
                 }
             )
         }
+    }
+
+    private suspend fun proceedWithClosingAndExit() {
+        closeBlock(CloseBlock.Params(context)).process(
+            success = { dispatch(AppNavigation.Command.Exit) },
+            failure = {
+                Timber.e(it, "Error while closing object set: $context").also {
+                    dispatch(AppNavigation.Command.Exit)
+                }
+            }
+        )
     }
 
     fun onCreateNewViewerClicked() {
@@ -369,24 +438,9 @@ class ObjectSetViewModel(
         )
     }
 
-    @Deprecated("uses only in tests")
     fun onViewerTabClicked(viewer: Id) {
         Timber.d("onViewerTabClicked, viewer:[$viewer]")
-        viewModelScope.launch {
-            session.currentViewerId = viewer
-            setActiveViewer(
-                SetActiveViewer.Params(
-                    context = context,
-                    block = reducer.state.value.dataview.id,
-                    view = viewer,
-                    limit = ObjectSetConfig.DEFAULT_LIMIT,
-                    offset = 0
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while setting active viewer") },
-                success = defaultPayloadConsumer
-            )
-        }
+        session.currentViewerId.value = viewer
     }
 
     fun onRelationPrototypeCreated(
@@ -421,7 +475,7 @@ class ObjectSetViewModel(
         val block = state.dataview
         val dv = block.content as DV
         val viewer = dv.viewers.find {
-            it.id == session.currentViewerId
+            it.id == session.currentViewerId.value
         } ?: dv.viewers.first()
         updateDataViewViewer(
             UpdateDataViewViewer.Params(
@@ -478,7 +532,7 @@ class ObjectSetViewModel(
         val block = state.dataview
         val dv = block.content as DV
         val viewer =
-            dv.viewers.find { it.id == session.currentViewerId }?.id ?: dv.viewers.first().id
+            dv.viewers.find { it.id == session.currentViewerId.value }?.id ?: dv.viewers.first().id
 
         if (dv.isRelationReadOnly(relationKey = cell.key)) {
             val relation = dv.relations.first { it.key == cell.key }
@@ -542,31 +596,19 @@ class ObjectSetViewModel(
                 )
             }
             is CellView.Checkbox -> {
-                val records = reducer.state.value.viewerDb[viewer] ?: return
-                val record = records.records.find { it[ObjectSetConfig.ID_KEY] == cell.id }
-                if (record != null) {
-                    val updated = mapOf<String, Any?>(
-                        Relations.ID to cell.id,
-                        cell.key to !cell.isChecked
-                    )
-                    viewModelScope.launch {
-                        updateDataViewRecord(
-                            UpdateDataViewRecord.Params(
-                                context = context,
-                                record = cell.id,
-                                target = block.id,
-                                values = updated
-                            )
-                        ).process(
-                            failure = { Timber.e(it, "Error while updating data view record") },
-                            success = { Timber.d("Data view record updated successfully") }
+                viewModelScope.launch {
+                    setObjectDetails(
+                        UpdateDetail.Params(
+                            ctx = cell.id,
+                            key = cell.key,
+                            value = !cell.isChecked
                         )
-                    }
-                } else {
-                    Timber.e("Couldn't found record for this checkobx")
+                    ).process(
+                        failure = { Timber.e(it, "Error while updating data view record") },
+                        success = { Timber.d("Data view record updated successfully") }
+                    )
                 }
             }
-            else -> toast("Not implemented")
         }
     }
 
@@ -592,88 +634,62 @@ class ObjectSetViewModel(
         Timber.d("onObjectHeaderClicked, id:[$target]")
         val set = reducer.state.value
         if (set.isInitialized) {
-            val viewer = session.currentViewerId ?: set.viewers.first().id
-            val records = reducer.state.value.viewerDb[viewer] ?: return
-            val record = records.records.find { rec -> rec[Relations.ID] == target }
-            if (record != null) {
-                val obj = ObjectWrapper.Basic(record)
-                proceedWithNavigation(
-                    target = target,
-                    layout = obj.layout
-                )
-            } else {
-                toast("Record not found. Please, try again later.")
+            viewModelScope.launch {
+                val obj = database.store.get(target)
+                if (obj != null) {
+                    proceedWithNavigation(
+                        target = target,
+                        layout = obj.layout
+                    )
+                } else {
+                    toast("Record not found. Please, try again later.")
+                }
             }
         }
     }
 
     fun onTaskCheckboxClicked(target: Id) {
-        val set = reducer.state.value
-        if (set.isInitialized) {
-            val viewer = session.currentViewerId ?: set.viewers.first().id
-            val records = reducer.state.value.viewerDb[viewer] ?: return
-            val record = records.records.find { rec -> rec[Relations.ID] == target }
-            if (record != null) {
-                val obj = ObjectWrapper.Basic(record)
-                viewModelScope.launch {
-                    updateDataViewRecord(
-                        UpdateDataViewRecord.Params(
-                            context = context,
-                            target = set.dataview.id,
-                            record = target,
-                            values = mapOf(
-                                Relations.DONE to !(obj.done ?: false)
-                            )
-                        )
-                    ).process(
-                        failure = {
-                            Timber.e(it, "Error while updating checkbox")
-                        },
-                        success = {
-                            Timber.d("Checkbox successfully updated for record: $target")
-                        }
+        viewModelScope.launch {
+            val obj = database.store.get(target)
+            if (obj != null) {
+                setObjectDetails(
+                    UpdateDetail.Params(
+                        ctx = target,
+                        key = Relations.DONE,
+                        value = !(obj.done ?: false)
                     )
-                }
+                ).process(
+                    failure = {
+                        Timber.e(it, "Error while updating checkbox")
+                    },
+                    success = {
+                        Timber.d("Checkbox successfully updated for record: $target")
+                    }
+                )
             } else {
-                toast("Record not found. Please, try again later.")
+                toast("Object not found")
             }
         }
     }
 
     fun onRelationTextValueChanged(
-        ctx: String,
         value: Any?,
         objectId: Id,
         relationKey: Id
     ) {
-        Timber.d("onRelationTextValueChanged, ctx:[$ctx], value:[$value], objectId:[$objectId], relationKey:[$relationKey]")
-        val block = reducer.state.value.dataview
-        val viewer = reducer.state.value.viewerById(session.currentViewerId)
-        val records = reducer.state.value.viewerDb[viewer.id]
-        if (records == null) {
-            Timber.e("Error onRelationTextValueChanged, records is null")
-            return
-        }
-        val record = records.records.find { it[ObjectSetConfig.ID_KEY] == objectId }
-        if (record != null) {
-            val updated = mapOf(relationKey to value)
-            viewModelScope.launch {
-                updateDataViewRecord(
-                    UpdateDataViewRecord.Params(
-                        context = ctx,
-                        record = objectId,
-                        target = block.id,
-                        values = updated
-                    )
-                ).process(
-                    failure = { Timber.e(it, "Error while updating data view record") },
-                    success = {
-                        Timber.d("Data view record updated successfully")
-                    }
+        viewModelScope.launch {
+            setObjectDetails(
+                UpdateDetail.Params(
+                    ctx = objectId,
+                    key = relationKey,
+                    value = value
                 )
-            }
-        } else {
-            Timber.e("Couldn't found record for the edited soft-input value cell")
+            ).process(
+                failure = { Timber.e(it, "Error while updating data view record") },
+                success = {
+                    Timber.d("Data view record updated successfully")
+                }
+            )
         }
     }
 
@@ -682,7 +698,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val block = reducer.state.value.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             updateDataViewViewer(
                 UpdateDataViewViewer.Params(
                     context = context,
@@ -703,7 +719,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val block = reducer.state.value.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             updateDataViewViewer(
                 UpdateDataViewViewer.Params(
                     context = context,
@@ -747,8 +763,9 @@ class ObjectSetViewModel(
                             success = { record ->
                                 val middleTime = System.currentTimeMillis()
                                 val wrapper = ObjectWrapper.Basic(record)
-                                total.value = total.value.inc()
-                                proceedWithRefreshingViewerAfterObjectCreation()
+                                // TODO fix or remove
+                                paginator.total.value = paginator.total.value.inc()
+//                                proceedWithRefreshingViewerAfterObjectCreation()
                                 sendAnalyticsObjectCreateEvent(
                                     analytics = analytics,
                                     objType = wrapper.type.firstOrNull(),
@@ -773,9 +790,9 @@ class ObjectSetViewModel(
     }
 
     private fun resolvePrefilledRecordData(setOfObjects: ObjectSet): Map<Id, Any> = buildMap {
+        val viewer = setOfObjects.viewerById(session.currentViewerId.value)
         val block = setOfObjects.dataview
         val dv = block.content as DV
-        val viewer = setOfObjects.viewerById(session.currentViewerId)
         viewer.filters.forEach { filter ->
             val relation = dv.relations.find { it.key == filter.relationKey }
             if (relation != null && !relation.isReadOnly) {
@@ -801,33 +818,6 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithRefreshingViewerAfterObjectCreation() {
-        val set = reducer.state.value
-        if (set.isInitialized) {
-            val viewer = try {
-                set.viewerById(session.currentViewerId).id
-            } catch (e: Exception) {
-                null
-            }
-            if (viewer != null) {
-                setActiveViewer(
-                    SetActiveViewer.Params(
-                        context = context,
-                        block = set.dataview.id,
-                        view = viewer,
-                        limit = ObjectSetConfig.DEFAULT_LIMIT,
-                        offset = offset.value
-                    )
-                ).process(
-                    success = { payload -> defaultPayloadConsumer(payload) },
-                    failure = { Timber.e(it, "Error while refreshing viewer") }
-                )
-            } else {
-                toast("Target view was missing on refresh")
-            }
-        }
-    }
-
     fun onViewerCustomizeButtonClicked() {
         Timber.d("onViewerCustomizeButtonClicked, ")
         if (!reducer.state.value.isInitialized) {
@@ -848,7 +838,7 @@ class ObjectSetViewModel(
         if (set.isInitialized) {
             val block = set.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             dispatch(
                 ObjectSetCommand.Modal.ViewerCustomizeScreen(
                     ctx = context,
@@ -883,7 +873,7 @@ class ObjectSetViewModel(
         if (set.isInitialized) {
             val block = set.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             dispatch(
                 ObjectSetCommand.Modal.EditDataViewViewer(
                     ctx = context,
@@ -944,7 +934,7 @@ class ObjectSetViewModel(
                 val dv = block.content as DV
                 if (dv.viewers.isNotEmpty()) {
                     val viewer =
-                        dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                        dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
                     dispatch(
                         ObjectSetCommand.Modal.OpenSettings(
                             ctx = context,
@@ -1016,45 +1006,13 @@ class ObjectSetViewModel(
 
     //region { PAGINATION LOGIC }
 
-    private suspend fun proceedWithStartupPaging() {
-        val state = reducer.state.value
-        val obj = ObjectWrapper.Basic(state.details[context]?.map ?: emptyMap())
-        if (obj.setOf.isNotEmpty()) {
-            if (state.isInitialized) {
-                val set = state.dataview
-                val dv = set.content<Block.Content.DataView>()
-                if (dv.viewers.isNotEmpty()) {
-                    val viewer =
-                        dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-                    proceedWithViewerPaging(set = set, viewer = viewer.id)
-                } else {
-                    Timber.e("Stopped initial paging: data view contained no view")
-                }
-            } else {
-                error.value = DATA_VIEW_NOT_FOUND_ERROR
-            }
-        } else {
-            dispatch(
-                ObjectSetCommand.Modal.OpenSelectSourceScreen(
-                    sources = emptyList(),
-                    smartBlockType = SmartBlockType.PAGE
-                )
-            )
-        }
-    }
-
     fun onPaginatorToolbarNumberClicked(number: Int, isSelected: Boolean) {
         Timber.d("onPaginatorToolbarNumberClicked, number:[$number], isSelected:[$isSelected]")
         if (isSelected) {
             Timber.d("This page is already selected")
         } else {
             viewModelScope.launch {
-                offset.value = number * ObjectSetConfig.DEFAULT_LIMIT
-                val set = reducer.state.value.dataview
-                val dv = set.content<Block.Content.DataView>()
-                val viewer =
-                    dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-                proceedWithViewerPaging(set = set, viewer = viewer.id)
+                paginator.offset.value = number.toLong() * DEFAULT_LIMIT
             }
         }
     }
@@ -1062,36 +1020,12 @@ class ObjectSetViewModel(
     fun onPaginatorNextElsePrevious(next: Boolean) {
         Timber.d("onPaginatorNextElsePrevious, next:[$next]")
         viewModelScope.launch {
-            offset.value = if (next) {
-                offset.value + ObjectSetConfig.DEFAULT_LIMIT
+            paginator.offset.value = if (next) {
+                paginator.offset.value + DEFAULT_LIMIT
             } else {
-                offset.value - ObjectSetConfig.DEFAULT_LIMIT
+                paginator.offset.value - DEFAULT_LIMIT
             }
-            val set = reducer.state.value.dataview
-            val dv = set.content<Block.Content.DataView>()
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-            proceedWithViewerPaging(set = set, viewer = viewer.id)
         }
-    }
-
-    private suspend fun proceedWithViewerPaging(
-        set: Block,
-        viewer: Id
-    ) {
-        setActiveViewer(
-            SetActiveViewer.Params(
-                context = context,
-                block = set.id,
-                view = viewer,
-                limit = ObjectSetConfig.DEFAULT_LIMIT,
-                offset = offset.value
-            )
-        ).process(
-            success = { payload ->
-                defaultPayloadConsumer(payload)
-            },
-            failure = { Timber.e(it, "Error while setting view during pagination") }
-        )
     }
 
     //endregion
@@ -1144,16 +1078,7 @@ class ObjectSetViewModel(
     //endregion NAVIGATION
 
     fun onUnsupportedViewErrorClicked() {
-        val set = reducer.state.value
-        if (set.isInitialized) {
-            val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
-            val state = set.render(
-                index = viewerIndex,
-                builder = urlBuilder,
-                useFallbackView = true
-            )
-            _currentViewer.value = state.viewer
-        }
+        toast("This view is not supported on Android yet.")
     }
 
     override fun onCleared() {

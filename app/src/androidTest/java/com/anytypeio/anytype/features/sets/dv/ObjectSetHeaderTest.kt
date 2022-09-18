@@ -80,7 +80,8 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
+        stubSearchWithSubscription()
+        stubSubscriptionEventChannel()
         stubOpenObjectSet(
             set = set,
             relations = emptyList(),

@@ -15,12 +15,8 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
-import com.anytypeio.anytype.domain.dataview.interactor.AddFileToRecord
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -40,7 +36,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -50,7 +45,11 @@ abstract class RelationValueBaseViewModel(
     private val details: ObjectDetailProvider,
     private val types: ObjectTypesProvider,
     private val urlBuilder: UrlBuilder,
-    private val copyFileToCache: CopyFileToCacheDirectory
+    private val copyFileToCache: CopyFileToCacheDirectory,
+    private val dispatcher: Dispatcher<Payload>,
+    private val setObjectDetails: UpdateDetail,
+    private val analytics: Analytics,
+    private val addFileToObject: AddFileToObject
 ) : BaseViewModel() {
 
     val navigation = MutableSharedFlow<AppNavigation.Command>()
@@ -68,11 +67,10 @@ abstract class RelationValueBaseViewModel(
     fun onStart(objectId: Id, relationId: Id) {
         Timber.d("onStart")
         jobs += viewModelScope.launch {
-            val s1 = relations.observe(relationId)
-            val s2 = values.subscribe(objectId)
-            s1.combine(s2) { relation, record ->
-                initDataViewUIState(relation, record, relationId)
-            }.collect()
+            combine(
+                relations.observe(relationId),
+                values.subscribe(objectId)
+            ) { relation, record -> initDataViewUIState(relation, record, relationId) }.collect()
         }
     }
 
@@ -81,7 +79,7 @@ abstract class RelationValueBaseViewModel(
         jobs.cancel()
     }
 
-    private fun initDataViewUIState(relation: Relation, record: Map<String, Any?>, relationId: Id) {
+    private suspend fun initDataViewUIState(relation: Relation, record: Map<String, Any?>, relationId: Id) {
         val options = relation.selections
 
         val result = mutableListOf<RelationValueView>()
@@ -143,8 +141,7 @@ abstract class RelationValueBaseViewModel(
                 val value = record.getOrDefault(relationId, null)
                 if (value is List<*>) {
                     value.typeOf<Id>().forEach { id ->
-                        val detail = details.provide()[id]
-                        val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                        val wrapper = resolveWrapperForObject(id)
                         val type = wrapper.type.firstOrNull()
                         val objectType = types.get().find { it.url == type }
                         if (wrapper.isDeleted == true) {
@@ -173,8 +170,7 @@ abstract class RelationValueBaseViewModel(
                         }
                     }
                 } else if (value is Id) {
-                    val detail = details.provide()[value]
-                    val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                    val wrapper = resolveWrapperForObject(value)
                     val type = wrapper.type.firstOrNull()
                     val objectType = types.get().find { it.url == type }
                     if (wrapper.isDeleted == true) {
@@ -242,6 +238,11 @@ abstract class RelationValueBaseViewModel(
         name.value = relation.name
     }
 
+    open suspend fun resolveWrapperForObject(id: Id): ObjectWrapper.Basic {
+        val detail = details.provide()[id]
+        return ObjectWrapper.Basic(detail?.map ?: emptyMap())
+    }
+
     fun onEditOrDoneClicked(isLocked: Boolean) {
         if (isLocked) {
             sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
@@ -284,6 +285,124 @@ abstract class RelationValueBaseViewModel(
                 else -> {
                 }
             }
+        }
+    }
+
+    fun onRemoveTagFromObjectClicked(
+        target: Id,
+        relation: Id,
+        tag: Id
+    ) {
+        viewModelScope.launch {
+            val obj = values.get(target)
+            val remaining = obj[relation].filterIdsById(tag)
+            setObjectDetails(
+                UpdateDetail.Params(
+                    ctx = target,
+                    key = relation,
+                    value = remaining
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing tag from object") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
+            )
+        }
+    }
+
+    fun onRemoveStatusFromObjectClicked(
+        target: Id,
+        relation: Id,
+        status: Id
+    ) {
+        viewModelScope.launch {
+            val obj = values.get(target)
+            val remaining = obj[relation].filterIdsById(status)
+            setObjectDetails(
+                UpdateDetail.Params(
+                    ctx = target,
+                    key = relation,
+                    value = remaining
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing status from object") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
+            )
+        }
+    }
+
+    fun onRemoveObjectFromObjectClicked(
+        target: Id,
+        relation: Id,
+        objectId: Id
+    ) {
+        viewModelScope.launch {
+            val obj = values.get(target)
+            val remaining = obj[relation].filterIdsById(objectId)
+            setObjectDetails(
+                UpdateDetail.Params(
+                    ctx = target,
+                    key = relation,
+                    value = remaining
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing object from object") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
+            )
+        }
+    }
+
+    fun onRemoveFileFromObjectClicked(
+        target: Id,
+        relation: Id,
+        fileId: Id
+    ) {
+        viewModelScope.launch {
+            val obj = values.get(target)
+            val remaining = obj[relation].filterIdsById(fileId)
+            setObjectDetails(
+                UpdateDetail.Params(
+                    ctx = target,
+                    key = relation,
+                    value = remaining
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing file from object") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
+            )
+        }
+    }
+
+    fun onObjectValueOrderChanged(
+        target: Id,
+        relation: Id,
+        order: List<Id>
+    ) {
+        viewModelScope.launch {
+            setObjectDetails(
+                UpdateDetail.Params(
+                    ctx = target,
+                    key = relation,
+                    value = order
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while updating object value order") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
+            )
         }
     }
 
@@ -333,6 +452,36 @@ abstract class RelationValueBaseViewModel(
     fun onFileClicked(id: Id) {
         viewModelScope.launch {
             navigation.emit(AppNavigation.Command.OpenObject(id))
+        }
+    }
+
+    fun onAddFileToObject(
+        ctx: Id,
+        target: Id,
+        relation: Id,
+        filePath: String
+    ) {
+        viewModelScope.launch {
+            isLoading.emit(true)
+            val obj = values.get(target)
+            addFileToObject(
+                params = AddFileToObject.Params(
+                    ctx = target,
+                    relation = relation,
+                    obj = obj,
+                    path = filePath
+                )
+            ).process(
+                failure = {
+                    isLoading.emit(false)
+                    Timber.e(it, "Error while adding new file to object")
+                },
+                success = {
+                    isLoading.emit(false)
+                    Timber.d("Successfully add new file to object")
+                    dispatcher.send(it)
+                }
+            )
         }
     }
 
@@ -389,110 +538,26 @@ class RelationValueDVViewModel(
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
     private val types: ObjectTypesProvider,
-    private val removeTagFromDataViewRecord: RemoveTagFromDataViewRecord,
-    private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
-    private val updateDataViewRecord: UpdateDataViewRecord,
+    private val setObjectDetails: UpdateDetail,
     private val urlBuilder: UrlBuilder,
-    private val addFileToRecord: AddFileToRecord,
-    copyFileToCache: CopyFileToCacheDirectory
+    private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics,
+    copyFileToCache: CopyFileToCacheDirectory,
+    addFileToObject: AddFileToObject
 ) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
     details = details,
     types = types,
     urlBuilder = urlBuilder,
-    copyFileToCache = copyFileToCache
+    copyFileToCache = copyFileToCache,
+    setObjectDetails = setObjectDetails,
+    addFileToObject = addFileToObject,
+    dispatcher = dispatcher,
+    analytics = analytics
 ) {
 
-    fun onRemoveTagFromDataViewRecordClicked(
-        ctx: Id,
-        dataview: Id,
-        target: Id,
-        relation: Id,
-        viewer: Id,
-        tag: Id
-    ) {
-        viewModelScope.launch {
-            val record = values.get(target)
-            removeTagFromDataViewRecord(
-                RemoveTagFromDataViewRecord.Params(
-                    ctx = ctx,
-                    tag = tag,
-                    record = record,
-                    dataview = dataview,
-                    relation = relation,
-                    viewer = viewer,
-                    target = target
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing tag") },
-                success = { Timber.d("Successfully removed tag") }
-            )
-        }
-    }
-
-    fun onRemoveStatusFromDataViewRecordClicked(
-        ctx: Id,
-        dataview: Id,
-        target: Id,
-        relation: Id,
-        viewer: Id,
-        status: Id
-    ) {
-        viewModelScope.launch {
-            val record = values.get(target)
-            removeStatusFromDataViewRecord(
-                RemoveStatusFromDataViewRecord.Params(
-                    ctx = ctx,
-                    status = status,
-                    record = record,
-                    dataview = dataview,
-                    relation = relation,
-                    viewer = viewer,
-                    target = target
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing status") },
-                success = { Timber.d("Successfully removed status") }
-            )
-        }
-    }
-
-    fun onAddFileToRecord(
-        ctx: Id,
-        dataview: Id,
-        record: Id,
-        relation: Id,
-        filePath: String
-    ) {
-        viewModelScope.launch {
-            isLoading.emit(true)
-            val value = values.subscribe(record).first()
-            addFileToRecord(
-                params = AddFileToRecord.Params(
-                    context = ctx,
-                    target = dataview,
-                    record = record,
-                    relation = relation,
-                    value = value,
-                    path = filePath
-                )
-            ).process(
-                failure = {
-                    isLoading.emit(false)
-                    Timber.e(it, "Error while adding new file to record")
-                },
-                success = {
-                    isLoading.emit(false)
-                    Timber.d("Successfully add new file to record")
-                }
-            )
-        }
-    }
-
     fun onAddObjectsOrFilesValueToRecord(
-        ctx: Id,
-        dataview: Id,
         record: Id,
         relation: Id,
         ids: List<Id>
@@ -500,13 +565,11 @@ class RelationValueDVViewModel(
         viewModelScope.launch {
             val rec = values.get(record)
             val value = rec[relation].addIds(ids)
-            val updated = mapOf(relation to value)
-            updateDataViewRecord(
-                UpdateDataViewRecord.Params(
-                    context = ctx,
-                    target = dataview,
-                    record = record,
-                    values = updated
+            setObjectDetails(
+                UpdateDetail.Params(
+                    ctx = record,
+                    key = relation,
+                    value = value
                 )
             ).process(
                 failure = { Timber.e(it, "Error while add objects or files value to record") },
@@ -515,77 +578,9 @@ class RelationValueDVViewModel(
         }
     }
 
-    fun onRemoveObjectFromDataViewRecordClicked(
-        ctx: Id,
-        dataview: Id,
-        target: Id,
-        relation: Id,
-        objectId: Id
-    ) {
-        viewModelScope.launch {
-            val rec = values.get(target)
-            val value = rec[relation].filterIdsById(objectId)
-            val updated = mapOf(relation to value)
-            updateDataViewRecord(
-                UpdateDataViewRecord.Params(
-                    context = ctx,
-                    target = dataview,
-                    record = target,
-                    values = updated
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing object") },
-                success = { Timber.d("Successfully removed object") }
-            )
-        }
-    }
-
-    fun onRemoveFileFromDataViewRecordClicked(
-        ctx: Id,
-        dataview: Id,
-        target: Id,
-        relation: Id,
-        fileId: Id
-    ) {
-        viewModelScope.launch {
-            val rec = values.get(target)
-            val value = rec[relation].filterIdsById(fileId)
-            val updated = mapOf(relation to value)
-            updateDataViewRecord(
-                UpdateDataViewRecord.Params(
-                    context = ctx,
-                    target = dataview,
-                    record = target,
-                    values = updated
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing file") },
-                success = { Timber.d("Successfully removed file") }
-            )
-        }
-    }
-
-    fun onDataViewValueOrderChanged(
-        ctx: Id,
-        dv: Id,
-        obj: Id,
-        relation: Id,
-        order: List<Id>
-    ) {
-        viewModelScope.launch {
-            val updated = mapOf(relation to order)
-            updateDataViewRecord(
-                UpdateDataViewRecord.Params(
-                    context = ctx,
-                    target = dv,
-                    record = obj,
-                    values = updated
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while updating DV record order") },
-                success = { Timber.d("DV record order updated") }
-            )
-        }
+    override suspend fun resolveWrapperForObject(id: Id): ObjectWrapper.Basic {
+        // For sets, we need to take values from db / store, and not from details.
+        return ObjectWrapper.Basic(values.get(target = id))
     }
 
     class Factory(
@@ -593,12 +588,12 @@ class RelationValueDVViewModel(
         private val values: ObjectValueProvider,
         private val details: ObjectDetailProvider,
         private val types: ObjectTypesProvider,
-        private val updateDataViewRecord: UpdateDataViewRecord,
-        private val removeTagFromRecord: RemoveTagFromDataViewRecord,
-        private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
+        private val setObjectDetails: UpdateDetail,
         private val urlBuilder: UrlBuilder,
-        private val addFileToRecord: AddFileToRecord,
-        private val copyFileToCache: CopyFileToCacheDirectory
+        private val addFileToObject: AddFileToObject,
+        private val copyFileToCache: CopyFileToCacheDirectory,
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RelationValueDVViewModel(
@@ -606,12 +601,12 @@ class RelationValueDVViewModel(
             values = values,
             details = details,
             types = types,
-            removeTagFromDataViewRecord = removeTagFromRecord,
-            removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
-            updateDataViewRecord = updateDataViewRecord,
-            addFileToRecord = addFileToRecord,
-            copyFileToCache = copyFileToCache
+            setObjectDetails = setObjectDetails,
+            addFileToObject = addFileToObject,
+            copyFileToCache = copyFileToCache,
+            dispatcher = dispatcher,
+            analytics = analytics
         ) as T
     }
 }
@@ -624,139 +619,21 @@ class RelationValueViewModel(
     private val updateDetail: UpdateDetail,
     private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder,
-    private val addFileToObject: AddFileToObject,
     private val analytics: Analytics,
-    copyFileToCache: CopyFileToCacheDirectory
+    copyFileToCache: CopyFileToCacheDirectory,
+    addFileToObject: AddFileToObject
 ) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
     details = details,
     types = types,
     urlBuilder = urlBuilder,
-    copyFileToCache = copyFileToCache
+    copyFileToCache = copyFileToCache,
+    analytics = analytics,
+    dispatcher = dispatcher,
+    setObjectDetails = updateDetail,
+    addFileToObject = addFileToObject
 ) {
-
-    fun onObjectValueOrderChanged(
-        ctx: Id,
-        relation: Id,
-        order: List<Id>
-    ) {
-        viewModelScope.launch {
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
-                    value = order
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while updating object value order") },
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
-                }
-            )
-        }
-    }
-
-    fun onRemoveObjectFromObjectClicked(
-        ctx: Id,
-        target: Id,
-        relation: Id,
-        objectId: Id
-    ) {
-        viewModelScope.launch {
-            val obj = values.get(target)
-            val remaining = obj[relation].filterIdsById(objectId)
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
-                    value = remaining
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing object from object") },
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
-                }
-            )
-        }
-    }
-
-    fun onRemoveFileFromObjectClicked(
-        ctx: Id,
-        target: Id,
-        relation: Id,
-        fileId: Id
-    ) {
-        viewModelScope.launch {
-            val obj = values.get(target)
-            val remaining = obj[relation].filterIdsById(fileId)
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
-                    value = remaining
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing file from object") },
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
-                }
-            )
-        }
-    }
-
-    fun onRemoveTagFromObjectClicked(
-        ctx: Id,
-        target: Id,
-        relation: Id,
-        tag: Id
-    ) {
-        viewModelScope.launch {
-            val obj = values.get(target)
-            val remaining = obj[relation].filterIdsById(tag)
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
-                    value = remaining
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing tag from object") },
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
-                }
-            )
-        }
-    }
-
-    fun onRemoveStatusFromObjectClicked(
-        ctx: Id,
-        target: Id,
-        relation: Id,
-        status: Id
-    ) {
-        viewModelScope.launch {
-            val obj = values.get(target)
-            val remaining = obj[relation].filterIdsById(status)
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
-                    value = remaining
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing tag from object") },
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
-                }
-            )
-        }
-    }
 
     fun onAddObjectsOrFilesValueToObject(
         ctx: Id,
@@ -778,36 +655,6 @@ class RelationValueViewModel(
                 success = {
                     dispatcher.send(it)
                     sendAnalyticsRelationValueEvent(analytics)
-                }
-            )
-        }
-    }
-
-    fun onAddFileToObject(
-        ctx: Id,
-        target: Id,
-        relation: Id,
-        filePath: String
-    ) {
-        viewModelScope.launch {
-            isLoading.emit(true)
-            val obj = values.get(target)
-            addFileToObject(
-                params = AddFileToObject.Params(
-                    ctx = ctx,
-                    relation = relation,
-                    obj = obj,
-                    path = filePath
-                )
-            ).process(
-                failure = {
-                    isLoading.emit(false)
-                    Timber.e(it, "Error while adding new file to object")
-                },
-                success = {
-                    isLoading.emit(false)
-                    Timber.d("Successfully add new file to object")
-                    dispatcher.send(it)
                 }
             )
         }

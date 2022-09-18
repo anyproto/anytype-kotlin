@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
@@ -156,6 +157,7 @@ interface BlockRepository {
         objectType: String? = null
     ): CreateObjectSet.Response
 
+    @Deprecated("To be deleted")
     suspend fun setActiveDataViewViewer(
         context: Id,
         block: Id,
@@ -243,9 +245,10 @@ interface BlockRepository {
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
-        keys: List<String>,
+        keys: List<Key>,
+        source: List<String>,
         offset: Long,
-        limit: Long,
+        limit: Int,
         beforeId: Id?,
         afterId: Id?,
     ): SearchResult

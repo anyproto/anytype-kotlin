@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+// TODO rename to SetObjectDetails
 class UpdateDetail(private val repo: BlockRepository): BaseUseCase<Payload, UpdateDetail.Params>() {
 
     override suspend fun run(params: Params) = safe {

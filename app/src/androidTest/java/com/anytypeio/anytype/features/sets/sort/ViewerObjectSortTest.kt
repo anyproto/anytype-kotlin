@@ -76,15 +76,9 @@ class ViewerObjectSortTest {
 
         // SETUP
 
-        val name = "Some object"
+        val name = "Author"
 
         val relationId = MockDataFactory.randomUuid()
-        val target = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationId to emptyList<String>()
-        )
 
         // Defining viewer containing one filter
 
@@ -133,12 +127,6 @@ class ViewerObjectSortTest {
                         )
                     )
                 )
-            ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
             )
         )
 
@@ -164,7 +152,7 @@ class ViewerObjectSortTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestViewerSortFragment> {
-        return launchFragmentInContainer<TestViewerSortFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

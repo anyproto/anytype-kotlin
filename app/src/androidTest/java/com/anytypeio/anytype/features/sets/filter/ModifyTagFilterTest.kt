@@ -64,9 +64,9 @@ class ModifyTagFilterTest {
     @Mock
     lateinit var analytics: Analytics
 
-    lateinit var updateDataViewViewer: UpdateDataViewViewer
-    lateinit var searchObjects: SearchObjects
-    lateinit var urlBuilder: UrlBuilder
+    private lateinit var updateDataViewViewer: UpdateDataViewViewer
+    private lateinit var searchObjects: SearchObjects
+    private lateinit var urlBuilder: UrlBuilder
 
     private val root = MockDataFactory.randomUuid()
     private val session = ObjectSetSession()
@@ -171,12 +171,12 @@ class ModifyTagFilterTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // Launching fragment
@@ -255,7 +255,7 @@ class ModifyTagFilterTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestModifyFilterFromSelectedValueFragment> {
-        return launchFragmentInContainer<TestModifyFilterFromSelectedValueFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

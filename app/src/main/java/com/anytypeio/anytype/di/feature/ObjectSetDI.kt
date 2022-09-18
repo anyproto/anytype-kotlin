@@ -24,21 +24,24 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
-import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreatePage
-import com.anytypeio.anytype.domain.dataview.interactor.AddFileToRecord
+import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
@@ -54,6 +57,8 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
+import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -65,6 +70,7 @@ import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Named
 
 @Subcomponent(modules = [ObjectSetModule::class])
 @PerScreen
@@ -124,10 +130,9 @@ object ObjectSetModule {
     fun provideObjectSetViewModelFactory(
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
-        setActiveViewer: SetActiveViewer,
         addDataViewRelation: AddNewRelationToDataView,
         updateDataViewViewer: UpdateDataViewViewer,
-        updateDataViewRecord: UpdateDataViewRecord,
+        setObjectDetails: UpdateDetail,
         updateText: UpdateText,
         interceptEvents: InterceptEvents,
         interceptThreadStatus: InterceptThreadStatus,
@@ -142,15 +147,18 @@ object ObjectSetModule {
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
         getTemplates: GetTemplates,
+        dataViewSubscriptionContainer: DataViewSubscriptionContainer,
+        cancelSearchSubscription: CancelSearchSubscription,
         createNewObject: CreateNewObject,
-        setDataViewSource: SetDataViewSource
+        setDataViewSource: SetDataViewSource,
+        database: ObjectSetDatabase,
+        paginator: ObjectSetPaginator
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
-        setActiveViewer = setActiveViewer,
         addDataViewRelation = addDataViewRelation,
         updateDataViewViewer = updateDataViewViewer,
-        updateDataViewRecord = updateDataViewRecord,
+        setObjectDetails = setObjectDetails,
         createDataViewRecord = createDataViewRecord,
         updateText = updateText,
         interceptEvents = interceptEvents,
@@ -166,7 +174,11 @@ object ObjectSetModule {
         setDocCoverImage = setDocCoverImage,
         getTemplates = getTemplates,
         createNewObject = createNewObject,
-        setDataViewSource = setDataViewSource
+        dataViewSubscriptionContainer = dataViewSubscriptionContainer,
+        cancelSearchSubscription = cancelSearchSubscription,
+        setDataViewSource = setDataViewSource,
+        database = database,
+        paginator = paginator
     )
 
     @JvmStatic
@@ -215,13 +227,6 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideSetActiveViewerUseCase(
-        repo: BlockRepository
-    ): SetActiveViewer = SetActiveViewer(repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideAddDataViewRelationUseCase(
         repo: BlockRepository
     ): AddNewRelationToDataView = AddNewRelationToDataView(repo = repo)
@@ -239,13 +244,6 @@ object ObjectSetModule {
     fun provideCreateDataViewRecordUseCase(
         repo: BlockRepository
     ): CreateDataViewRecord = CreateDataViewRecord(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideUpdateDataViewRecordUseCase(
-        repo: BlockRepository
-    ): UpdateDataViewRecord = UpdateDataViewRecord(repo = repo)
 
     @JvmStatic
     @Provides
@@ -323,9 +321,10 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideDataViewObjectValueProvider(
-        state: StateFlow<ObjectSet>,
-        session: ObjectSetSession
-    ): ObjectValueProvider = DataViewObjectValueProvider(state, session)
+        db: ObjectSetDatabase
+    ) : ObjectValueProvider = DataViewObjectValueProvider(
+        db = db
+    )
 
     @JvmStatic
     @Provides
@@ -351,13 +350,6 @@ object ObjectSetModule {
     fun provideUpdateDetailUseCase(
         repository: BlockRepository
     ): UpdateDetail = UpdateDetail(repository)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideAddFileToRecordUseCase(
-        repo: BlockRepository
-    ): AddFileToRecord = AddFileToRecord(repo = repo)
 
     @JvmStatic
     @Provides
@@ -407,4 +399,60 @@ object ObjectSetModule {
             main = Dispatchers.Main
         )
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun objectSearchSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        @Named("object-set-store") store: ObjectStore
+    ): DataViewSubscriptionContainer = DataViewSubscriptionContainer(
+        repo = repo,
+        channel = channel,
+        store = store,
+        dispatchers = AppCoroutineDispatchers(
+            io = Dispatchers.IO,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        )
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    @Named("object-set-store")
+    fun provideObjectStore() : ObjectStore = DefaultObjectStore()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun cancelSearchSubscription(
+        repo: BlockRepository,
+        @Named("object-set-store") store: ObjectStore
+    ): CancelSearchSubscription = CancelSearchSubscription(
+        repo = repo,
+        store = store
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideObjectSetDatabase(
+        @Named("object-set-store") store: ObjectStore
+    ): ObjectSetDatabase = ObjectSetDatabase(
+        store = store
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun providePaginator() : ObjectSetPaginator = ObjectSetPaginator()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddFileToObjectUseCase(
+        repo: BlockRepository
+    ): AddFileToObject = AddFileToObject(repo = repo)
 }

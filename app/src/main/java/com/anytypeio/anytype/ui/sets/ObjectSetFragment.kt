@@ -852,7 +852,6 @@ open class ObjectSetFragment :
         objectId: String,
         relationId: String
     ) = vm.onRelationTextValueChanged(
-        ctx = ctx,
         value = text,
         objectId = objectId,
         relationKey = relationId
@@ -864,7 +863,6 @@ open class ObjectSetFragment :
         objectId: Id,
         relationId: Id
     ) = vm.onRelationTextValueChanged(
-        ctx = ctx,
         value = number,
         objectId = objectId,
         relationKey = relationId
@@ -877,7 +875,6 @@ open class ObjectSetFragment :
         relationId: Id
     ) {
         vm.onRelationTextValueChanged(
-            ctx = ctx,
             value = timeInSeconds,
             objectId = objectId,
             relationKey = relationId

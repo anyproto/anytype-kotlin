@@ -1,20 +1,27 @@
 package com.anytypeio.anytype.presentation.relations
 
 import app.cash.turbine.test
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.StubRelation
 import com.anytypeio.anytype.core_models.StubRelationOption
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.relations.RelationValueView.Option.Tag
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
 import com.anytypeio.anytype.presentation.relations.add.BaseAddOptionsRelationViewModel
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectValueProvider
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -37,6 +44,20 @@ class BaseAddOptionsRelationViewModelTest {
             targetId to mapOf(relationId to listOf(selectedOption.id))
         )
     )
+
+    @Mock
+    lateinit var setObjectDetails: UpdateDetail
+
+    @Mock
+    lateinit var dispatcher: Dispatcher<Payload>
+
+    @Mock
+    lateinit var analytics: Analytics
+
+    @Before
+    fun setup() {
+        MockitoAnnotations.openMocks(this)
+    }
 
     @Test
     fun `query is empty - there is only tag view`() {
@@ -162,8 +183,11 @@ class BaseAddOptionsRelationViewModelTest {
 
     private fun createViewModel(): BaseAddOptionsRelationViewModel = object :
         BaseAddOptionsRelationViewModel(
-            AddOptionsRelationProvider(),
-            valuesProvider,
-            relationsProvider,
+            optionsProvider = AddOptionsRelationProvider(),
+            values = valuesProvider,
+            relations = relationsProvider,
+            dispatcher = dispatcher,
+            setObjectDetail = setObjectDetails,
+            analytics = analytics
         ) {}
 }

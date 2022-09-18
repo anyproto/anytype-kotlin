@@ -222,7 +222,7 @@ object ObjectSearchConstants {
         )
     )
 
-    const val limitTabRecent = 50L
+    const val limitTabRecent = 50
 
     //endregion
 

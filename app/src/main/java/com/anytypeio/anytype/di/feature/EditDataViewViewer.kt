@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
@@ -38,20 +39,20 @@ object EditDataViewViewerModule {
         deleteDataViewViewer: DeleteDataViewViewer,
         duplicateDataViewViewer: DuplicateDataViewViewer,
         updateDataViewViewer: UpdateDataViewViewer,
-        setActiveViewer: SetActiveViewer,
         dispatcher: Dispatcher<Payload>,
         objectSetState: StateFlow<ObjectSet>,
         objectSetSession: ObjectSetSession,
+        paginator: ObjectSetPaginator,
         analytics: Analytics
     ): EditDataViewViewerViewModel.Factory = EditDataViewViewerViewModel.Factory(
         renameDataViewViewer = renameDataViewViewer,
         deleteDataViewViewer = deleteDataViewViewer,
         duplicateDataViewViewer = duplicateDataViewViewer,
         updateDataViewViewer = updateDataViewViewer,
-        setActiveViewer = setActiveViewer,
         dispatcher = dispatcher,
         objectSetState = objectSetState,
         objectSetSession = objectSetSession,
+        paginator = paginator,
         analytics = analytics
     )
 

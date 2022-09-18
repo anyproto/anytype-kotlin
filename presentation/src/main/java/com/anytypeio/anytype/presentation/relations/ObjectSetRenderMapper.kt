@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_utils.ext.CURRENT_MONTH
 import com.anytypeio.anytype.core_utils.ext.CURRENT_WEEK
 import com.anytypeio.anytype.core_utils.ext.EXACT_DAY
@@ -29,6 +28,7 @@ import com.anytypeio.anytype.core_utils.ext.TODAY
 import com.anytypeio.anytype.core_utils.ext.TOMORROW
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
@@ -42,8 +42,6 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewState
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
@@ -62,11 +60,14 @@ import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
 import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
-
 fun ObjectSet.tabs(activeViewerId: String? = null): List<ViewerTabView> {
     val block = blocks.first { it.content is DV }
     val dv = block.content as DV
-    return dv.viewers.mapIndexed { index, viewer ->
+    return dv.tabs(activeViewerId)
+}
+
+fun DV.tabs(activeViewerId: String? = null): List<ViewerTabView> {
+    return viewers.mapIndexed { index, viewer ->
         ViewerTabView(
             id = viewer.id,
             name = viewer.name,
@@ -78,113 +79,118 @@ fun ObjectSet.tabs(activeViewerId: String? = null): List<ViewerTabView> {
     }
 }
 
-// TODO rework the function to exclude index == -1 scenario
-fun ObjectSet.render(
-    index: Int = 0,
+suspend fun DVViewer.render(
     builder: UrlBuilder,
-    useFallbackView: Boolean = false
+    useFallbackView: Boolean = false,
+    objects: List<Id>,
+    details: Map<Id, Block.Fields>,
+    dataViewRelations: List<Relation>,
+    store: ObjectStore
 ): ObjectSetViewState {
-
-    val block = blocks.first { it.content is DV }
-
-    val dv = block.content as DV
-
-    val viewer = if (index >= 0) dv.viewers[index] else dv.viewers.first()
-
-    if (viewer.type == DVViewerType.GALLERY) {
-        val records = viewerDb[viewer.id]?.records ?: emptyList()
-        val view = Viewer.GalleryView(
-            id = viewer.id,
-            items = viewer.buildGalleryViews(
-                objects = records.map { ObjectWrapper.Basic(it) },
-                details = details,
-                relations = dv.relations,
-                urlBuilder = builder
-            ),
-            title = viewer.name,
-            largeCards = viewer.cardSize != DVViewerCardSize.SMALL
-        )
-        return ObjectSetViewState(
-            viewer = view
-        )
-    }
-
-    val vmap = viewer.viewerRelations.associateBy { it.key }
-
-    val relations = dv.relations.filter { relation ->
-        val vr = vmap[relation.key]
-        vr?.isVisible ?: false
-    }
-
-    val columns = viewer.viewerRelations.toViewerColumns(
-        relations = relations,
-        filterBy = listOf(ObjectSetConfig.NAME_KEY)
-    )
-
-    val rows = mutableListOf<Viewer.GridView.Row>()
-
-    viewerDb[viewer.id]?.let { data ->
-        rows.addAll(
-            data.records.toGridRecordRows(
-                showIcon = !viewer.hideIcon,
-                columns = columns,
-                relations = relations,
+    return when(type) {
+        DVViewerType.GRID -> {
+            buildGridView(
+                dataViewRelations = dataViewRelations,
+                objects = objects,
                 details = details,
                 builder = builder,
-            )
-        )
-    }
-
-    val dvview = when (viewer.type) {
-        Block.Content.DataView.Viewer.Type.GRID -> {
-            Viewer.GridView(
-                id = viewer.id,
-                source = dv.sources.firstOrNull().orEmpty(),
-                name = viewer.name,
-                columns = columns,
-                rows = rows
+                store = store
             )
         }
-        Block.Content.DataView.Viewer.Type.GALLERY -> {
-            Viewer.GalleryView(
-                id = viewer.id,
-                items = emptyList(),
-                title = viewer.name
+        DVViewerType.GALLERY -> {
+            ObjectSetViewState(
+                viewer = Viewer.GalleryView(
+                    id = id,
+                    items = buildGalleryViews(
+                        objects = objects,
+                        details = details,
+                        relations = dataViewRelations,
+                        urlBuilder = builder,
+                        store = store
+                    ),
+                    title = name,
+                    largeCards = cardSize != DVViewerCardSize.SMALL
+                )
             )
         }
-        Block.Content.DataView.Viewer.Type.LIST -> {
-            Viewer.ListView(
-                id = viewer.id,
-                items = viewer.buildListViews(
-                    objects = (viewerDb[viewer.id]?.records
-                        ?: emptyList()).map { ObjectWrapper.Basic(it) },
-                    details = details,
-                    relations = relations,
-                    urlBuilder = builder
-                ),
-                title = viewer.name
+        DVViewerType.LIST -> {
+            val vmap = viewerRelations.associateBy { it.key }
+            val visibleRelations = dataViewRelations.filter { relation ->
+                val vr = vmap[relation.key]
+                vr?.isVisible ?: false
+            }
+            ObjectSetViewState(
+                viewer = Viewer.ListView(
+                    id = id,
+                    items = buildListViews(
+                        objects = objects,
+                        details = details,
+                        relations = visibleRelations,
+                        urlBuilder = builder,
+                        store = store
+                    ),
+                    title = name
+                )
             )
         }
         else -> {
             if (useFallbackView) {
-                Viewer.GridView(
-                    id = viewer.id,
-                    source = dv.sources.firstOrNull().orEmpty(),
-                    name = viewer.name,
-                    columns = columns,
-                    rows = rows
+                buildGridView(
+                    dataViewRelations = dataViewRelations,
+                    objects = objects,
+                    details = details,
+                    builder = builder,
+                    store = store
                 )
             } else {
-                Viewer.Unsupported(
-                    id = viewer.id,
-                    title = viewer.name,
-                    error = "This view type (${viewer.type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
+                ObjectSetViewState(
+                    viewer = Viewer.Unsupported(
+                        id = id,
+                        title = name,
+                        error = "This view type (${type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
+                    )
                 )
             }
         }
     }
+}
 
-    return ObjectSetViewState(viewer = dvview)
+private suspend fun DVViewer.buildGridView(
+    dataViewRelations: List<Relation>,
+    objects: List<Id>,
+    details: Map<Id, Block.Fields>,
+    builder: UrlBuilder,
+    store: ObjectStore
+): ObjectSetViewState {
+    val vmap = viewerRelations.associateBy { it.key }
+    val visibleRelations = dataViewRelations.filter { relation ->
+        val vr = vmap[relation.key]
+        vr?.isVisible ?: false
+    }
+    val columns = viewerRelations.toViewerColumns(
+        relations = visibleRelations,
+        filterBy = listOf(ObjectSetConfig.NAME_KEY)
+    )
+    val rows = buildList {
+        addAll(
+            objects.toGridRecordRows(
+                showIcon = !hideIcon,
+                columns = columns,
+                relations = visibleRelations,
+                details = details,
+                builder = builder,
+                store = store
+            )
+        )
+    }
+    return ObjectSetViewState(
+        viewer = Viewer.GridView(
+            id = id,
+            name = name,
+            columns = columns,
+            rows = rows
+        )
+    )
 }
 
 fun title(

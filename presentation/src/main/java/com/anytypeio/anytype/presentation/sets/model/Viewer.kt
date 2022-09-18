@@ -23,7 +23,6 @@ sealed class Viewer {
 
     data class GridView(
         override val id: String,
-        val source: String,
         val name: String,
         val columns: List<ColumnView>,
         val rows: @RawValue List<Row> = listOf()
@@ -47,7 +46,6 @@ sealed class Viewer {
 
             fun empty(): Viewer = GridView(
                 id = "",
-                source = "",
                 name = "",
                 columns = emptyList(),
                 rows = emptyList()

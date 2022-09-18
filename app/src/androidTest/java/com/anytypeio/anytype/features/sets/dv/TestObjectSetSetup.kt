@@ -6,12 +6,18 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVRecord
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
@@ -22,11 +28,11 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -38,12 +44,18 @@ import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
+import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
@@ -57,11 +69,10 @@ abstract class TestObjectSetSetup {
     private lateinit var openObjectSet: OpenObjectSet
     private lateinit var addDataViewRelation: AddNewRelationToDataView
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
-    private lateinit var updateDataViewRecord: UpdateDataViewRecord
+    private lateinit var setObjectDetails: UpdateDetail
     private lateinit var updateText: UpdateText
     private lateinit var createDataViewRecord: CreateDataViewRecord
     private lateinit var closeBlock: CloseBlock
-    private lateinit var setActiveViewer: SetActiveViewer
     private lateinit var interceptThreadStatus: InterceptThreadStatus
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
@@ -85,7 +96,11 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var threadStatusChannel: ThreadStatusChannel
     @Mock
+    lateinit var subscriptionEventChannel: SubscriptionEventChannel
+    @Mock
     lateinit var analytics: Analytics
+    @Mock
+    lateinit var cancelSearchSubscription: CancelSearchSubscription
 
     @Mock
     lateinit var createNewObject: CreateNewObject
@@ -96,6 +111,11 @@ abstract class TestObjectSetSetup {
     private val reducer = ObjectSetReducer()
     private val dispatcher: Dispatcher<Payload> = Dispatcher.Default()
     private val objectSetRecordCache = ObjectSetRecordCache()
+    private val paginator = ObjectSetPaginator()
+    private val store: ObjectStore = DefaultObjectStore()
+
+    lateinit var database: ObjectSetDatabase
+    lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
 
     val ctx : Id = MockDataFactory.randomUuid()
 
@@ -130,9 +150,8 @@ abstract class TestObjectSetSetup {
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
         createDataViewRecord = CreateDataViewRecord(repo)
-        updateDataViewRecord = UpdateDataViewRecord(repo)
+        setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)
-        setActiveViewer = SetActiveViewer(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         closeBlock = CloseBlock(repo)
         urlBuilder = UrlBuilder(gateway)
@@ -146,8 +165,17 @@ abstract class TestObjectSetSetup {
                 computation = StandardTestDispatcher()
             )
         )
-
-
+        database = ObjectSetDatabase(store)
+        dataViewSubscriptionContainer = DataViewSubscriptionContainer(
+            repo = repo,
+            store = store,
+            channel = subscriptionEventChannel,
+            dispatchers = AppCoroutineDispatchers(
+                StandardTestDispatcher(),
+                StandardTestDispatcher(),
+                StandardTestDispatcher()
+            )
+        )
         TestObjectSetFragment.testVmFactory = ObjectSetViewModelFactory(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -155,9 +183,8 @@ abstract class TestObjectSetSetup {
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateDataViewViewer = updateDataViewViewer,
-            setActiveViewer = setActiveViewer,
             createDataViewRecord = createDataViewRecord,
-            updateDataViewRecord = updateDataViewRecord,
+            setObjectDetails = setObjectDetails,
             updateText = updateText,
             urlBuilder = urlBuilder,
             session = session,
@@ -170,7 +197,11 @@ abstract class TestObjectSetSetup {
             delegator = delegator,
             getTemplates = getTemplates,
             createNewObject = createNewObject,
-            setDataViewSource = setDataViewSource
+            setDataViewSource = setDataViewSource,
+            cancelSearchSubscription = cancelSearchSubscription,
+            paginator = paginator,
+            database = database,
+            dataViewSubscriptionContainer = dataViewSubscriptionContainer
         )
     }
 
@@ -180,6 +211,7 @@ abstract class TestObjectSetSetup {
         }
     }
 
+    @Deprecated("To be deleted")
     fun stubSetActiveViewer() {
         repo.stub {
             onBlocking {
@@ -226,6 +258,7 @@ abstract class TestObjectSetSetup {
         }
     }
 
+    @Deprecated("To be deleted")
     fun stubOpenObjectSetWithRecord(
         set: List<Block>,
         details: Block.Details = Block.Details(),
@@ -248,17 +281,71 @@ abstract class TestObjectSetSetup {
                             blocks = set,
                             relations = relations,
                             objectTypes = objectTypes
-                        ),
-                        Event.Command.DataView.SetRecords(
-                            context = ctx,
-                            id = dataview,
-                            view = viewer,
-                            total = total,
-                            records = records
                         )
                     )
                 )
             )
+        }
+    }
+
+    fun stubSearchWithSubscription(
+        subscription: Id,
+        filters: List<DVFilter>,
+        sorts: List<DVSort>,
+        afterId: Id? = null,
+        beforeId: Id? = null,
+        sources: List<Id> = emptyList(),
+        keys: List<Key>,
+        offset: Long,
+        limit: Int,
+        result: SearchResult
+    ) {
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    subscription = subscription,
+                    filters = filters,
+                    sorts = sorts,
+                    afterId = afterId,
+                    beforeId = beforeId,
+                    source = sources,
+                    keys = keys,
+                    limit = limit,
+                    offset = offset
+                )
+            } doReturn result
+        }
+    }
+
+    fun stubSearchWithSubscription() {
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    subscription = any(),
+                    filters = any(),
+                    sorts = any(),
+                    afterId = any(),
+                    beforeId = any(),
+                    source = any(),
+                    keys = any(),
+                    limit = any(),
+                    offset = any()
+                )
+            } doReturn SearchResult(
+                results = emptyList(),
+                dependencies = emptyList(),
+                counter = null
+            )
+        }
+    }
+
+    fun stubSubscriptionEventChannel(
+        flow: Flow<List<SubscriptionEvent>> = emptyFlow()
+    ) {
+        subscriptionEventChannel.stub {
+            onBlocking {
+                subscribe(listOf(ctx))
+            } doReturn flow
         }
     }
 

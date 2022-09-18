@@ -18,10 +18,9 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
-import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
@@ -29,6 +28,7 @@ import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvid
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -76,9 +76,6 @@ class AddRelationStatusValueTest {
 
     private lateinit var addRelationOption: AddDataViewRelationOption
     private lateinit var addObjectRelationOption: AddObjectRelationOption
-    private lateinit var removeTagFromDataViewRecord: RemoveTagFromDataViewRecord
-    private lateinit var addTagToDataViewRecord: AddTagToDataViewRecord
-    private lateinit var addStatusToDataViewRecord: AddStatusToDataViewRecord
     private lateinit var updateDetail: UpdateDetail
     private lateinit var urlBuilder: UrlBuilder
 
@@ -90,26 +87,26 @@ class AddRelationStatusValueTest {
 
     private val ctx = MockDataFactory.randomUuid()
     private val state = MutableStateFlow(ObjectSet.init())
-    private val session = ObjectSetSession()
+    private val store : ObjectStore = DefaultObjectStore()
+    private val db = ObjectSetDatabase(store = store)
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         addRelationOption = AddDataViewRelationOption(repo)
-        addTagToDataViewRecord = AddTagToDataViewRecord(repo)
         addObjectRelationOption = AddObjectRelationOption(repo)
-        addStatusToDataViewRecord = AddStatusToDataViewRecord(repo)
-        removeTagFromDataViewRecord = RemoveTagFromDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
         TestRelationOptionValueDVAddFragment.testVmFactory = AddOptionsRelationDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
-            values = DataViewObjectValueProvider(state, session),
+            values = DataViewObjectValueProvider(
+                db = db
+            ),
             addDataViewRelationOption = addRelationOption,
-            addTagToDataViewRecord = addTagToDataViewRecord,
-            addStatusToDataViewRecord = addStatusToDataViewRecord,
             dispatcher = dispatcher,
-            optionsProvider = AddOptionsRelationProvider()
+            optionsProvider = AddOptionsRelationProvider(),
+            setObjectDetail = updateDetail,
+            analytics = analytics
         )
     }
 
@@ -161,12 +158,12 @@ class AddRelationStatusValueTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         repo.stub {
@@ -276,12 +273,12 @@ class AddRelationStatusValueTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         repo.stub {
@@ -388,12 +385,12 @@ class AddRelationStatusValueTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // TESTING
@@ -482,12 +479,12 @@ class AddRelationStatusValueTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // TESTING
@@ -585,12 +582,12 @@ class AddRelationStatusValueTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // TESTING

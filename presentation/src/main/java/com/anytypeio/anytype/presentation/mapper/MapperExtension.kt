@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -668,23 +669,28 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
     is Viewer.Filter.Condition.Text.None -> DVFilterCondition.NONE
 }
 
-fun List<Map<String, Any?>>.toGridRecordRows(
+suspend fun List<Id>.toGridRecordRows(
     showIcon: Boolean,
     columns: List<ColumnView>,
     relations: List<Relation>,
     details: Map<Id, Block.Fields>,
-    builder: UrlBuilder
+    builder: UrlBuilder,
+    store: ObjectStore,
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
-    forEach { record ->
-        val row = columns.buildGridRow(
-            showIcon = showIcon,
-            record = record,
-            relations = relations,
-            details = details,
-            builder = builder,
-        )
-        rows.add(row)
+    forEach { id ->
+        val record = store.get(id)
+        if (record != null) {
+            val row = columns.buildGridRow(
+                showIcon = showIcon,
+                obj = record,
+                relations = relations,
+                store = store,
+                builder = builder,
+                details = details
+            )
+            rows.add(row)
+        }
     }
     return rows
 }

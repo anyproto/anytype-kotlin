@@ -30,7 +30,10 @@ class AddOptionsRelationViewModel(
 ) : BaseAddOptionsRelationViewModel(
     values = values,
     relations = relations,
-    optionsProvider = optionsProvider
+    optionsProvider = optionsProvider,
+    analytics = analytics,
+    dispatcher = dispatcher,
+    setObjectDetail = updateDetail
 ) {
 
     fun onAddObjectStatusClicked(
@@ -42,30 +45,6 @@ class AddOptionsRelationViewModel(
         relation = relation,
         status = status.id
     )
-
-    private fun proceedWithAddingStatusToObject(
-        ctx: Id,
-        relation: Id,
-        status: Id
-    ) {
-        viewModelScope.launch {
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
-                    value = listOf(status)
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding tag") },
-                success = {
-                    dispatcher.send(it).also {
-                        sendAnalyticsRelationValueEvent(analytics)
-                        isParentDismissed.value = true
-                    }
-                }
-            )
-        }
-    }
 
     fun onAddSelectedValuesToObjectClicked(
         ctx: Id,
@@ -79,45 +58,11 @@ class AddOptionsRelationViewModel(
                 null
         }
         proceedWithAddingTagToObject(
-            obj = obj,
+            target = obj,
             ctx = ctx,
             relation = relation,
             tags = tags
         )
-    }
-
-    private fun proceedWithAddingTagToObject(
-        obj: Id,
-        ctx: Id,
-        relation: Id,
-        tags: List<Id>
-    ) {
-        viewModelScope.launch {
-            val obj = values.get(target = obj)
-            val result = mutableListOf<Id>()
-            val value = obj[relation]
-            if (value is List<*>) {
-                result.addAll(value.typeOf())
-            } else if (value is Id) {
-                result.add(value)
-            }
-            result.addAll(tags)
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
-                    value = result
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding tag") },
-                success = {
-                    dispatcher.send(it).also {
-                        sendAnalyticsRelationValueEvent(analytics)
-                        isDismissed.value = true
-                    }
-                }
-            )
-        }
     }
 
     fun onCreateObjectRelationOptionClicked(
@@ -143,7 +88,7 @@ class AddOptionsRelationViewModel(
                                 proceedWithAddingTagToObject(
                                     ctx = ctx,
                                     relation = relation,
-                                    obj = obj,
+                                    target = obj,
                                     tags = listOf(option)
                                 )
                             }

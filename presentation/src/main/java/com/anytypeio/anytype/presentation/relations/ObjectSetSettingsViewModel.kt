@@ -44,7 +44,7 @@ class ObjectSetSettingsViewModel(
         viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { objectSet ->
                 val result = mutableListOf<ViewerRelationListView>()
-                val viewer = objectSet.viewerById(session.currentViewerId)
+                val viewer = objectSet.viewerById(session.currentViewerId.value)
                 when (viewer.type) {
                     Block.Content.DataView.Viewer.Type.GALLERY -> {
                         result.add(ViewerRelationListView.Section.Settings)
@@ -94,7 +94,7 @@ class ObjectSetSettingsViewModel(
                     }
                 }
                 val relations = objectSet
-                    .simpleRelations(session.currentViewerId)
+                    .simpleRelations(session.currentViewerId.value)
                     .filterHiddenRelations()
                     .map { view ->
                         ViewerRelationListView.Relation(view)
@@ -126,7 +126,7 @@ class ObjectSetSettingsViewModel(
         val state = objectSetState.value
         if (state.isInitialized) {
             viewModelScope.launch {
-                val viewer = state.viewerById(session.currentViewerId)
+                val viewer = state.viewerById(session.currentViewerId.value)
                 val block = state.dataview
 
                 val updated = when (toggle) {
@@ -181,7 +181,7 @@ class ObjectSetSettingsViewModel(
 
     private fun proceedWithUpdatingCurrentViewAfterRelationDeletion(ctx: Id, relation: Id) {
         viewModelScope.launch {
-            val viewer = objectSetState.value.viewerById(session.currentViewerId)
+            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
             val block = objectSetState.value.blocks.first { it.content is DV }
             val updated = viewer.copy(
                 viewerRelations = viewer.viewerRelations.filter { it.key != relation },
@@ -213,7 +213,7 @@ class ObjectSetSettingsViewModel(
 
     private fun proceedWithChangeOrderUpdate(ctx: Id, order: List<String>) {
         viewModelScope.launch {
-            val viewer = objectSetState.value.viewerById(session.currentViewerId)
+            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
             val relations = viewer.viewerRelations.toMutableList().apply {
                 sortBy { order.indexOf(it.key) }
             }
@@ -234,7 +234,7 @@ class ObjectSetSettingsViewModel(
     }
 
     private fun proceedWithVisibilityUpdate(ctx: Id, item: SimpleRelationView) {
-        val viewer = objectSetState.value.viewerById(session.currentViewerId)
+        val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
         val block = objectSetState.value.blocks.first { it.content is DV }
         val updated = viewer.copy(
             viewerRelations = viewer.viewerRelations.map {

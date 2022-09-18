@@ -1,7 +1,11 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -43,6 +47,7 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
     }
 
     @Test
@@ -71,6 +76,9 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubUpdateDataViewViewer()
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -79,7 +87,7 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = givenViewModel()
+            val vm = givenViewModel()
 
         // TESTING
 
@@ -96,8 +104,6 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
             context = root,
             viewerId = MockDataFactory.randomUuid(),
             viewer = new,
-            limit = MockDataFactory.randomInt(),
-            offset = MockDataFactory.randomInt(),
             target = dv.id
         )
 
@@ -172,6 +178,9 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateDataViewViewer()
+        stubSubscriptionEventChannel()
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -190,8 +199,6 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
             context = root,
             viewerId = viewer.id,
             viewer = viewer.copy(name = newName),
-            limit = MockDataFactory.randomInt(),
-            offset = MockDataFactory.randomInt(),
             target = dv.id
         )
 

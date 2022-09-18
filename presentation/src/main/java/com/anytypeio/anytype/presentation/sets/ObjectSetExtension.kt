@@ -11,45 +11,6 @@ import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
-fun ObjectSet.updateRecord(
-    viewer: Id,
-    update: List<DVRecord>
-): ObjectSet {
-    val current = viewerDb[viewer]
-    return if (current != null) {
-        val new = current.records.update(update)
-        val updatedRecords = viewerDb.toMutableMap().apply {
-            put(viewer, current.copy(records = new))
-        }
-        this.copy(viewerDb = updatedRecords)
-    } else {
-        this.copy()
-    }
-}
-
-fun ObjectSet.deleteRecords(
-    viewer: Id,
-    recordIds: List<String>
-): ObjectSet {
-    val current = viewerDb[viewer]
-    return if (current != null) {
-        val new = current.records.mapNotNull { rec ->
-            val id = rec[ID_KEY]
-            if (id != null && !recordIds.contains(id)) {
-                rec
-            } else {
-                null
-            }
-        }
-        val updatedRecords = viewerDb.toMutableMap().apply {
-            put(viewer, current.copy(records = new))
-        }
-        this.copy(viewerDb = updatedRecords)
-    } else {
-        this.copy()
-    }
-}
-
 fun ObjectSet.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder

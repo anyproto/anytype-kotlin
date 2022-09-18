@@ -90,14 +90,14 @@ class DefaultObjectStore : ObjectStore {
                 map[d.id] = Holder(
                     obj = d,
                     subscriptions = subscriptions.map {
-                        it + DEPENDENT_SUBSRIPTION_POSTFIX
+                        it + DEPENDENT_SUBSCRIPTION_POSTFIX
                     }
                 )
             } else {
                 map[d.id] = current.copy(
                     obj = current.obj.amend(d.map),
                     subscriptions = current.subscriptions + subscriptions.map {
-                        it + DEPENDENT_SUBSRIPTION_POSTFIX
+                        it + DEPENDENT_SUBSCRIPTION_POSTFIX
                     }
                 )
             }
@@ -160,7 +160,7 @@ class DefaultObjectStore : ObjectStore {
     }
 
     override suspend fun unsubscribe(subscriptions: List<Id>) = mutex.withLock {
-        val all = subscriptions + subscriptions.map { "$it$DEPENDENT_SUBSRIPTION_POSTFIX" }
+        val all = subscriptions + subscriptions.map { "$it$DEPENDENT_SUBSCRIPTION_POSTFIX" }
         val unsubscribed = mutableListOf<Id>()
         map.forEach { (id, holder) ->
             val remaining = (holder.subscriptions - all)
@@ -201,6 +201,6 @@ class DefaultObjectStore : ObjectStore {
     )
 
     companion object {
-        const val DEPENDENT_SUBSRIPTION_POSTFIX = "/dep"
+        const val DEPENDENT_SUBSCRIPTION_POSTFIX = "/dep"
     }
 }

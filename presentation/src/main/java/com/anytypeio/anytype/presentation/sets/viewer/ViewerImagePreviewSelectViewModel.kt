@@ -31,7 +31,7 @@ class ViewerImagePreviewSelectViewModel(
     init {
         viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { objectSet ->
-                val viewer = objectSet.viewerById(session.currentViewerId)
+                val viewer = objectSet.viewerById(session.currentViewerId.value)
                 val dv = objectSet.dataview.content<DV>()
                 val result = mutableListOf<ViewerImagePreviewSelectView>().apply {
                     add(ViewerImagePreviewSelectView.Item.None(isSelected = viewer.coverRelationKey == null))
@@ -64,7 +64,7 @@ class ViewerImagePreviewSelectViewModel(
                     UpdateDataViewViewer.Params(
                         context = ctx,
                         target = currObjectSetState.dataview.id,
-                        viewer = currObjectSetState.viewerById(session.currentViewerId).copy(
+                        viewer = currObjectSetState.viewerById(session.currentViewerId.value).copy(
                             coverRelationKey = when(item) {
                                 is ViewerImagePreviewSelectView.Item.Relation -> {
                                     item.id

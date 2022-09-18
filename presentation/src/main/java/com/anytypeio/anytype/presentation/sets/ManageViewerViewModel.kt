@@ -7,13 +7,13 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
-import com.anytypeio.anytype.presentation.extension.getPropName
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSwitchViewEvent
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -21,7 +21,6 @@ class ManageViewerViewModel(
     private val state: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
-    private val setActiveViewer: SetActiveViewer,
     private val analytics: Analytics
 ) : BaseListViewModel<ViewerView>() {
 
@@ -37,8 +36,8 @@ class ManageViewerViewModel(
                         id = viewer.id,
                         name = viewer.name,
                         type = viewer.type,
-                        isActive = if (session.currentViewerId != null)
-                            viewer.id == session.currentViewerId
+                        isActive = if (session.currentViewerId.value != null)
+                            viewer.id == session.currentViewerId.value
                         else
                             index == 0,
                         showActionMenu = isEditEnabled.value
@@ -77,25 +76,8 @@ class ManageViewerViewModel(
     ) {
         if (!isEditEnabled.value)
             viewModelScope.launch {
-                session.currentViewerId = view.id
-                setActiveViewer(
-                    SetActiveViewer.Params(
-                        context = ctx,
-                        block = state.value.dataview.id,
-                        view = view.id
-                    )
-                ).process(
-                    failure = { Timber.e(it, "Error while setting active viewer") },
-                    success = {
-                        dispatcher.send(it).also {
-                            sendAnalyticsSwitchViewEvent(
-                                analytics = analytics,
-                                type = view.type.getPropName()
-                            )
-                            isDismissed.emit(true)
-                        }
-                    }
-                )
+                session.currentViewerId.value = view.id
+                isDismissed.emit(true)
             }
         else
             Timber.d("Skipping click in edit mode")
@@ -110,7 +92,6 @@ class ManageViewerViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
-        private val setActiveViewer: SetActiveViewer,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -118,7 +99,6 @@ class ManageViewerViewModel(
             return ManageViewerViewModel(
                 state = state,
                 session = session,
-                setActiveViewer = setActiveViewer,
                 dispatcher = dispatcher,
                 analytics = analytics
             ) as T

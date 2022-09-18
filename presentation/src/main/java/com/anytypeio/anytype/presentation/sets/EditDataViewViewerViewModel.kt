@@ -21,10 +21,10 @@ class EditDataViewViewerViewModel(
     private val deleteDataViewViewer: DeleteDataViewViewer,
     private val duplicateDataViewViewer: DuplicateDataViewViewer,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val setActiveViewer: SetActiveViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetState: StateFlow<ObjectSet>,
     private val objectSetSession: ObjectSetSession,
+    private val paginator: ObjectSetPaginator,
     private val analytics: Analytics
 ) : BaseViewModel() {
 
@@ -79,8 +79,8 @@ class EditDataViewViewerViewModel(
         val state = objectSetState.value
         if (state.viewers.size > 1) {
             val targetIdx = state.viewers.indexOfFirst { it.id == viewer }
-            val isActive = if (objectSetSession.currentViewerId != null) {
-                objectSetSession.currentViewerId == viewer
+            val isActive = if (objectSetSession.currentViewerId.value != null) {
+                objectSetSession.currentViewerId.value == viewer
             } else {
                 targetIdx == 0
             }
@@ -145,22 +145,8 @@ class EditDataViewViewerViewModel(
         nextViewerId: Id
     ) {
         viewModelScope.launch {
-            setActiveViewer(
-                SetActiveViewer.Params(
-                    context = ctx,
-                    block = state.dataview.id,
-                    view = nextViewerId,
-                    limit = ObjectSetConfig.DEFAULT_LIMIT,
-                    offset = 0
-                )
-            ).process(
-                failure = { e ->
-                    Timber.e(e, "Error while setting active viewer after deletion")
-                },
-                success = { secondPayload ->
-                    dispatcher.send(secondPayload).also { isDismissed.emit(true) }
-                }
-            )
+            objectSetSession.currentViewerId.value = nextViewerId
+            paginator.offset.value = 0
         }
     }
 
@@ -233,10 +219,10 @@ class EditDataViewViewerViewModel(
         private val deleteDataViewViewer: DeleteDataViewViewer,
         private val duplicateDataViewViewer: DuplicateDataViewViewer,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val setActiveViewer: SetActiveViewer,
         private val dispatcher: Dispatcher<Payload>,
         private val objectSetState: StateFlow<ObjectSet>,
         private val objectSetSession: ObjectSetSession,
+        private val paginator: ObjectSetPaginator,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -246,10 +232,10 @@ class EditDataViewViewerViewModel(
                 deleteDataViewViewer = deleteDataViewViewer,
                 duplicateDataViewViewer = duplicateDataViewViewer,
                 updateDataViewViewer = updateDataViewViewer,
-                setActiveViewer = setActiveViewer,
                 dispatcher = dispatcher,
                 objectSetState = objectSetState,
                 objectSetSession = objectSetSession,
+                paginator = paginator,
                 analytics = analytics
             ) as T
         }

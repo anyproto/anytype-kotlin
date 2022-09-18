@@ -18,10 +18,13 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.`object`.ReloadObject
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -57,14 +60,15 @@ class DisplayObjectRelationTextValueTest {
     val root = MockDataFactory.randomUuid()
 
     private val state = MutableStateFlow(ObjectSet.init())
-    private val session = ObjectSetSession()
+    private val store: ObjectStore = DefaultObjectStore()
+    private val db = ObjectSetDatabase(store = store)
 
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
-            values = DataViewObjectValueProvider(state, session),
+            values = DataViewObjectValueProvider(db = db),
             reloadObject = reloadObject,
             analytics = analytics
         )
@@ -116,12 +120,12 @@ class DisplayObjectRelationTextValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -194,12 +198,12 @@ class DisplayObjectRelationTextValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // TESTING
@@ -274,12 +278,12 @@ class DisplayObjectRelationTextValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // TESTING
@@ -354,12 +358,12 @@ class DisplayObjectRelationTextValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -432,12 +436,12 @@ class DisplayObjectRelationTextValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -511,12 +515,12 @@ class DisplayObjectRelationTextValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         launchFragment(
@@ -546,7 +550,7 @@ class DisplayObjectRelationTextValueTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestRelationTextValueFragment> {
-        return launchFragmentInContainer<TestRelationTextValueFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

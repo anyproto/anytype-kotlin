@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.main
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -10,6 +11,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -18,6 +20,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
 
 class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
@@ -36,17 +40,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         .onlyLogWhenTestFails(true)
         .build()
 
-    @Before
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
-    }
-
-    @After
-    fun after() {
-        coroutineTestRule.advanceTime(ObjectSetViewModel.TITLE_CHANNEL_DISPATCH_DELAY)
-    }
-
-    val title = Block(
+    private val title = Block(
         id = MockDataFactory.randomUuid(),
         content = Block.Content.Text(
             style = Block.Content.Text.Style.TITLE,
@@ -57,7 +51,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         fields = Block.Fields.empty()
     )
 
-    val header = Block(
+    private val header = Block(
         id = MockDataFactory.randomUuid(),
         content = Block.Content.Layout(
             type = Block.Content.Layout.Type.HEADER
@@ -66,7 +60,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         children = listOf(title.id)
     )
 
-    val relations = listOf(
+    private val relations = listOf(
         Relation(
             key = MockDataFactory.randomString(),
             name = MockDataFactory.randomString(),
@@ -91,21 +85,21 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         )
     )
 
-    val vrelations = relations.map { relation ->
+    private val vrelations = relations.map { relation ->
         DVViewerRelation(
             key = relation.key,
             isVisible = true
         )
     }
 
-    val firstRecordId = "firstRecordId"
-    val secondRecordId = "secondRecordId"
-    val firstRecordName = MockDataFactory.randomString()
-    val secondRecordName = MockDataFactory.randomString()
-    val firstRecordType = MockDataFactory.randomString()
-    val secondRecordType = MockDataFactory.randomString()
+    private val firstRecordId = "firstRecordId"
+    private val secondRecordId = "secondRecordId"
+    private val firstRecordName = MockDataFactory.randomString()
+    private val secondRecordName = MockDataFactory.randomString()
+    private val firstRecordType = MockDataFactory.randomString()
+    private val secondRecordType = MockDataFactory.randomString()
 
-    val firstRecord = mapOf(
+    private val firstRecord = mapOf(
         ObjectSetConfig.ID_KEY to firstRecordId,
         ObjectSetConfig.NAME_KEY to firstRecordName,
         ObjectSetConfig.TYPE_KEY to firstRecordType,
@@ -113,7 +107,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         relations[1].key to MockDataFactory.randomString()
     )
 
-    val secondRecord = mapOf(
+    private val firstObject = ObjectWrapper.Basic(firstRecord)
+
+    private val secondRecord = mapOf(
         ObjectSetConfig.ID_KEY to secondRecordId,
         ObjectSetConfig.NAME_KEY to secondRecordName,
         ObjectSetConfig.TYPE_KEY to secondRecordType,
@@ -121,7 +117,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         relations[1].key to MockDataFactory.randomString()
     )
 
-    val initialRecords = listOf(firstRecord, secondRecord)
+    private val secondObject = ObjectWrapper.Basic(secondRecord)
+
+    private val initialObjects = listOf(firstObject, secondObject)
 
     private val viewer1 = DVViewer(
         id = MockDataFactory.randomUuid(),
@@ -146,7 +144,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         }
     )
 
-    val dv = Block(
+    private val dv = Block(
         id = MockDataFactory.randomUuid(),
         content = DV(
             sources = listOf(MockDataFactory.randomString()),
@@ -157,16 +155,51 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         fields = Block.Fields.empty()
     )
 
+    private val dvRestrictions = listOf(
+        DataViewRestrictions(
+            block = dv.id,
+            restrictions = listOf(DataViewRestriction.VIEWS)
+        )
+    )
+
+    @Before
+    fun setup() {
+        MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
+    }
+
+    @After
+    fun after() {
+        coroutineTestRule.advanceTime(ObjectSetViewModel.TITLE_CHANNEL_DISPATCH_DELAY)
+    }
+
     @Test
     fun `should show error toast when clicked on read only cell`() = runBlocking {
 
-        val dvRestrictions = listOf(
-            DataViewRestrictions(
-                block = dv.id,
-                restrictions = listOf(DataViewRestriction.VIEWS)
+        // SETUP
+
+        stubSearchWithSubscription(
+            subscription = root,
+            filters = dv.content<DV>().viewers.first().filters,
+            sorts = dv.content<DV>().viewers.first().sorts,
+            afterId = null,
+            beforeId = null,
+            sources = dv.content<DV>().sources,
+            keys = dv.content<DV>().relations.map { it.key },
+            limit = ObjectSetConfig.DEFAULT_LIMIT,
+            offset = 0,
+            result = SearchResult(
+                results = initialObjects,
+                dependencies = emptyList(),
+                counter = SearchResult.Counter(
+                    total = initialObjects.size,
+                    prev = 0,
+                    next = 0
+                )
             )
         )
 
+        stubSubscriptionEventChannel()
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObjectSet(
@@ -177,9 +210,6 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
-
-        stubSetActiveViewer()
-        stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
 

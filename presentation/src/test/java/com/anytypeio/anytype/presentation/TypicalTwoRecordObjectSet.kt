@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
@@ -77,6 +78,8 @@ class TypicalTwoRecordObjectSet {
         relations[1].key to MockDataFactory.randomString()
     )
 
+    val firstObject = ObjectWrapper.Basic(firstRecord)
+
     val secondRecord = mapOf(
         ObjectSetConfig.ID_KEY to secondRecordId,
         ObjectSetConfig.NAME_KEY to secondRecordName,
@@ -85,7 +88,9 @@ class TypicalTwoRecordObjectSet {
         relations[1].key to MockDataFactory.randomString()
     )
 
-    val initialRecords = listOf(firstRecord, secondRecord)
+    val secondObject = ObjectWrapper.Basic(secondRecord)
+
+    val initialObjects = listOf(firstObject, secondObject)
 
     val viewer1 = DVViewer(
         id = MockDataFactory.randomUuid(),

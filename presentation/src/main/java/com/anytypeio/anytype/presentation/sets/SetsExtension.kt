@@ -5,8 +5,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -20,16 +22,17 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import timber.log.Timber
 
-fun List<ColumnView>.buildGridRow(
+suspend fun List<ColumnView>.buildGridRow(
     showIcon: Boolean,
-    record: Map<String, Any?>,
+    obj: ObjectWrapper.Basic,
     relations: List<Relation>,
     details: Map<Id, Block.Fields>,
-    builder: UrlBuilder
+    builder: UrlBuilder,
+    store: ObjectStore
 ): Viewer.GridView.Row {
 
-    val obj = ObjectWrapper.Basic(record)
     val type = obj.type.firstOrNull()
     val name = obj.getProperName()
     val emoji = obj.iconEmoji
@@ -43,136 +46,125 @@ fun List<ColumnView>.buildGridRow(
             // Drawing name column rows without content.
             cells.add(
                 CellView.Description(
-                    id = record[ObjectSetConfig.ID_KEY] as String,
+                    id = obj.id,
                     key = column.key,
                     text = ""
                 )
             )
         } else {
+            // TODO refact
+            if (column.format == ColumnView.Format.EMOJI) return@map
             cells.add(
                 when (column.format) {
                     ColumnView.Format.SHORT_TEXT, ColumnView.Format.LONG_TEXT -> {
                         CellView.Description(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
-                            text = if (record.containsKey(column.key)) {
-                                record[column.key].toString()
-                            } else {
-                                ""
-                            }
+                            text = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
                     ColumnView.Format.NUMBER -> {
-                        val value = record[column.key]
+                        val value = obj.getValue<Any?>(column.key)
                         CellView.Number(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
                             number = NumberParser.parse(value)
                         )
                     }
                     ColumnView.Format.DATE -> {
-                        val value = record[column.key]
+                        val value = obj.getValue<Any?>(column.key)
                         CellView.Date(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
                             timeInSecs = DateParser.parse(value),
                             dateFormat = column.getDateRelationFormat()
                         )
                     }
                     ColumnView.Format.FILE -> {
-                        val files = record.buildFileViews(
+                        val files = obj.map.buildFileViews(
                             columnKey = column.key,
                             details = details
                         )
                         CellView.File(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
                             files = files
                         )
                     }
                     ColumnView.Format.CHECKBOX -> {
                         CellView.Checkbox(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
-                            isChecked = if (record.containsKey(column.key)) {
-                                (record[column.key] as? Boolean) ?: false
-                            } else {
-                                false
-                            }
+                            isChecked = obj.getValue<Boolean>(column.key) ?: false
                         )
                     }
                     ColumnView.Format.URL -> {
                         CellView.Url(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
-                            url = record[column.key]?.toString()
+                            url = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
                     ColumnView.Format.EMAIL -> {
                         CellView.Email(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
-                            email = record[column.key]?.toString()
+                            email = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
                     ColumnView.Format.PHONE -> {
                         CellView.Phone(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
-                            phone = if (record.containsKey(column.key)) {
-                                record[column.key].toString()
-                            } else {
-                                ""
-                            }
+                            phone = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
                     ColumnView.Format.OBJECT -> {
-                        val objects = record.buildObjectViews(
+                        val objects = obj.map.buildObjectViews(
                             columnKey = column.key,
-                            details = details,
-                            builder = builder
+                            builder = builder,
+                            store = store
                         )
                         CellView.Object(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
                             objects = objects
                         )
                     }
                     ColumnView.Format.TAG -> {
                         val relation = relations.firstOrNull { it.key == column.key }
-                        val tags = record.buildTagViews(
+                        val tags = obj.map.buildTagViews(
                             selOptions = relation?.selections,
                             columnKey = column.key
                         )
                         CellView.Tag(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
                             tags = tags
                         )
                     }
                     ColumnView.Format.STATUS -> {
                         val relation = relations.firstOrNull { it.key == column.key }
-                        val status = record.buildStatusViews(
+                        val status = obj.map.buildStatusViews(
                             selOptions = relation?.selections,
                             columnKey = column.key
                         )
                         CellView.Status(
-                            id = record[ObjectSetConfig.ID_KEY] as String,
+                            id = obj.id,
                             key = column.key,
                             status = status
                         )
                     }
-                    ColumnView.Format.EMOJI -> TODO()
-                    ColumnView.Format.RELATIONS -> TODO()
+                    else -> {
+                        TODO()
+                    }
                 }
             )
         }
     }
 
-    val objectId = record[ObjectSetConfig.ID_KEY] as String
-
     return Viewer.GridView.Row(
-        id = objectId,
+        id = obj.id,
         type = type,
         name = name,
         emoji = emoji,
@@ -184,7 +176,7 @@ fun List<ColumnView>.buildGridRow(
     )
 }
 
-fun Map<String, Any?>.buildFileViews(
+fun Struct.buildFileViews(
     columnKey: Id,
     details: Map<Id, Block.Fields>
 ): List<FileView> {
@@ -214,7 +206,7 @@ fun Map<String, Any?>.buildFileViews(
     return files
 }
 
-fun Map<String, Any?>.buildObjectViews(
+fun Struct.buildObjectViews(
     columnKey: Id,
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder
@@ -237,7 +229,64 @@ fun Map<String, Any?>.buildObjectViews(
     return objects
 }
 
-fun Map<String, Any?>.buildTagViews(
+suspend fun Struct.buildObjectViews(
+    columnKey: Id,
+    store: ObjectStore,
+    builder: UrlBuilder
+): List<ObjectView> {
+    val objects = mutableListOf<ObjectView>()
+    val value = this.getOrDefault(columnKey, null)
+    if (value is Id) {
+        val wrapper = store.get(value)
+        if (wrapper != null) {
+            if (wrapper.isDeleted == true) {
+                objects.add(ObjectView.Deleted(id = value))
+            } else {
+                objects.add(
+                    ObjectView.Default(
+                        id = value,
+                        name = wrapper.getProperName(),
+                        icon = ObjectIcon.from(
+                            obj = wrapper,
+                            layout = wrapper.layout,
+                            builder = builder
+                        ),
+                        types = wrapper.type
+                    )
+                )
+            }
+        } else {
+            Timber.w("Object was missing in object store: $value")
+        }
+    } else if (value is List<*>) {
+        value.typeOf<Id>().forEach { id ->
+            val wrapper = store.get(id)
+            if (wrapper != null) {
+                if (wrapper.isDeleted == true) {
+                    objects.add(ObjectView.Deleted(id = id))
+                } else {
+                    objects.add(
+                        ObjectView.Default(
+                            id = id,
+                            name = wrapper.getProperName(),
+                            icon = ObjectIcon.from(
+                                obj = wrapper,
+                                layout = wrapper.layout,
+                                builder = builder
+                            ),
+                            types = wrapper.type
+                        )
+                    )
+                }
+            } else {
+                Timber.w("Object was missing in object store: $id")
+            }
+        }
+    }
+    return objects
+}
+
+fun Struct.buildTagViews(
     selOptions: List<Relation.Option>?,
     columnKey: String
 ): List<TagView> {
@@ -254,7 +303,7 @@ fun Map<String, Any?>.buildTagViews(
     return views
 }
 
-fun Map<String, Any?>.buildStatusViews(
+fun Struct.buildStatusViews(
     selOptions: List<Relation.Option>?,
     columnKey: String
 ): List<StatusView> {
@@ -271,6 +320,7 @@ fun Map<String, Any?>.buildStatusViews(
     return views
 }
 
+@Deprecated("Part of soon-to-be-deleted api")
 private fun getColumnOptions(
     options: List<Relation.Option>?,
     records: Map<String, Any?>,

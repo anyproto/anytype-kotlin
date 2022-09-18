@@ -36,7 +36,7 @@ class SelectSortRelationViewModel(
                         type = DVSortType.ASC
                     ),
                     dataview = objectSetState.value.dataview.id,
-                    viewer = objectSetState.value.viewerById(session.currentViewerId)
+                    viewer = objectSetState.value.viewerById(session.currentViewerId.value)
                 )
             ).process(
                 success = {

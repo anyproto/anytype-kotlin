@@ -41,7 +41,7 @@ class ViewerFilterViewModel(
             objectSetState.filter { it.isInitialized }.collect { objectSet ->
                 val block = objectSet.dataview
                 val dv = block.content as DV
-                val filterExpression = objectSet.filterExpression(session.currentViewerId)
+                val filterExpression = objectSet.filterExpression(session.currentViewerId.value)
                 if (filterExpression.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
                 } else {
@@ -163,7 +163,7 @@ class ViewerFilterViewModel(
     }
 
     private fun onRemoveFilterClicked(ctx: Id, filterIndex: Int) {
-        val viewer = objectSetState.value.viewerById(session.currentViewerId)
+        val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
         val block = objectSetState.value.blocks.first { it.content is DV }
         val filters = viewer.filters.mapIndexedNotNull { index, filter ->
             if (index != filterIndex) {

@@ -4,6 +4,6 @@ import com.anytypeio.anytype.core_models.Id
 import kotlinx.coroutines.flow.Flow
 
 interface ObjectValueProvider {
-    fun get(target: Id): Map<String, Any?>
-    fun subscribe(target: Id) : Flow<Map<String, Any?>>
+    suspend fun get(target: Id): Map<String, Any?>
+    suspend fun subscribe(target: Id) : Flow<Map<String, Any?>>
 }

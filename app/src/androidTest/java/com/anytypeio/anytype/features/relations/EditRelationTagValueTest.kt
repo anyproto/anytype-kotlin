@@ -7,6 +7,7 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -18,18 +19,17 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
-import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.dataview.interactor.AddFileToRecord
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -72,16 +72,15 @@ class EditRelationTagValueTest {
     lateinit var dispatcher: Dispatcher<Payload>
 
     @Mock
+    lateinit var analytics: Analytics
+
+    @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     private lateinit var addRelationOption: AddDataViewRelationOption
-    private lateinit var removeTagFromDataViewRecord: RemoveTagFromDataViewRecord
-    private lateinit var removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord
-    private lateinit var updateDataViewRecord: UpdateDataViewRecord
-    private lateinit var addTagToDataViewRecord: AddTagToDataViewRecord
     private lateinit var updateDetail: UpdateDetail
     private lateinit var urlBuilder: UrlBuilder
-    private lateinit var addFileToRecord: AddFileToRecord
+    private lateinit var addFileToObject: AddFileToObject
 
     @get:Rule
     val animationsRule = DisableAnimationsRule()
@@ -91,22 +90,19 @@ class EditRelationTagValueTest {
 
     private val ctx = MockDataFactory.randomUuid()
     private val state = MutableStateFlow(ObjectSet.init())
-    private val session = ObjectSetSession()
+    private val store: ObjectStore = DefaultObjectStore()
+    private val db = ObjectSetDatabase(store = store)
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         addRelationOption = AddDataViewRelationOption(repo)
-        addTagToDataViewRecord = AddTagToDataViewRecord(repo)
-        removeTagFromDataViewRecord = RemoveTagFromDataViewRecord(repo)
-        removeStatusFromDataViewRecord = RemoveStatusFromDataViewRecord(repo)
-        updateDataViewRecord = UpdateDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
-        addFileToRecord = AddFileToRecord(repo)
+        addFileToObject = AddFileToObject(repo)
         TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
-            values = DataViewObjectValueProvider(state, session),
+            values = DataViewObjectValueProvider(db = db),
             details = object : ObjectDetailProvider {
                 override fun provide(): Map<Id, Block.Fields> = state.value.details
             },
@@ -114,12 +110,12 @@ class EditRelationTagValueTest {
                 override fun set(objectTypes: List<ObjectType>) {}
                 override fun get(): List<ObjectType> = state.value.objectTypes
             },
-            removeTagFromRecord = removeTagFromDataViewRecord,
-            removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
-            updateDataViewRecord = updateDataViewRecord,
-            addFileToRecord = addFileToRecord,
-            copyFileToCache = copyFileToCacheDirectory
+            copyFileToCache = copyFileToCacheDirectory,
+            addFileToObject = addFileToObject,
+            dispatcher = dispatcher,
+            analytics = analytics,
+            setObjectDetails = updateDetail
         )
     }
 
@@ -193,12 +189,12 @@ class EditRelationTagValueTest {
                     )
                 )
             ),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // TESTING
@@ -313,12 +309,12 @@ class EditRelationTagValueTest {
 
         state.value = ObjectSet(
             blocks = listOf(dv),
-            viewerDb = mapOf(
-                viewer.id to ObjectSet.ViewerData(
-                    records = listOf(record),
-                    total = 1
-                )
-            )
+//            viewerDb = mapOf(
+//                viewer.id to ObjectSet.ViewerData(
+//                    records = listOf(record),
+//                    total = 1
+//                )
+//            )
         )
 
         // TESTING

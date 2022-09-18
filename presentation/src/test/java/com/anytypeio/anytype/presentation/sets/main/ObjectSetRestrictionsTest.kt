@@ -26,6 +26,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
     }
 
     @After
@@ -38,7 +39,9 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on viewer button`() = runBlocking {
 
-        val dvRestrictions = listOf<DataViewRestrictions>(
+        // SETUP
+
+        val dvRestrictions = listOf(
             DataViewRestrictions(
                 block = doc.dv.id,
                 restrictions = listOf(DataViewRestriction.VIEWS)
@@ -46,6 +49,9 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription()
         stubOpenObjectSet(
             doc = listOf(
                 doc.header,
@@ -54,8 +60,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
-
-        stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
@@ -74,6 +78,8 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on add object button`() = runBlocking {
 
+        // SETUP
+
         val dvRestrictions = listOf(
             DataViewRestrictions(
                 block = doc.dv.id,
@@ -90,8 +96,10 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription()
 
-        stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
@@ -110,6 +118,8 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on add filter button`() = runBlocking {
 
+        // SETUP
+
         val dvRestrictions = listOf(
             DataViewRestrictions(
                 block = doc.dv.id,
@@ -126,8 +136,9 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
-
-        stubSetActiveViewer()
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription()
         stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
@@ -146,6 +157,8 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on add sorts button`() = runBlocking {
 
+        // SETUP
+
         val dvRestrictions = listOf(
             DataViewRestrictions(
                 block = doc.dv.id,
@@ -162,8 +175,9 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
-
-        stubSetActiveViewer()
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription()
         stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
@@ -182,6 +196,8 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on relations button`() = runBlocking {
 
+        // SETUP
+
         val dvRestrictions = listOf(
             DataViewRestrictions(
                 block = doc.dv.id,
@@ -198,8 +214,9 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
-
-        stubSetActiveViewer()
+        stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription()
         stubUpdateDataViewViewer()
 
         val vm = givenViewModel()

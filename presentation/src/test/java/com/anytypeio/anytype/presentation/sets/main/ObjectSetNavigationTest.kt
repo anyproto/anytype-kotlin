@@ -8,13 +8,16 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -22,11 +25,14 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.stub
@@ -47,6 +53,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
     }
 
     @After
@@ -108,7 +115,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
     @ExperimentalTime
     @Test
-    fun `should emit navigation command for editing relation-object cell`() {
+    fun `should emit navigation command for editing relation-object cell`() = runTest {
 
         // SETUP
 
@@ -120,47 +127,72 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             linkedProjectRelation.key to linkedProjectTargetId
         )
 
+        val obj = ObjectWrapper.Basic(record)
+
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription(
+            subscription = root,
+            filters = dv.content<DV>().viewers.first().filters,
+            sorts = dv.content<DV>().viewers.first().sorts,
+            afterId = null,
+            beforeId = null,
+            sources = dv.content<DV>().sources,
+            keys = dv.content<DV>().relations.map { it.key },
+            limit = ObjectSetConfig.DEFAULT_LIMIT,
+            offset = 0,
+            result = SearchResult(
+                results = listOf(obj),
+                dependencies = emptyList(),
+                counter = SearchResult.Counter(
+                    total = 1,
+                    prev = 0,
+                    next = 0
+                )
+            )
+        )
         stubOpenObjectSet(
             doc = listOf(
                 header,
                 title,
                 dv
             ),
-            dataViewRestrictions = emptyList(),
-            additionalEvents = listOf(
-                Event.Command.DataView.SetRecords(
-                    records = listOf(record),
-                    view = viewer.id,
-                    id = dv.id,
-                    total = 1,
-                    context = root
-                )
-            )
+            dataViewRestrictions = emptyList()
         )
 
         val vm = givenViewModel()
 
-        vm.onStart(root)
-
         // TESTING
 
-        val state = vm.currentViewer.value
+        vm.onStart(root)
 
-        assertIs<Viewer.GridView>(state)
 
-        assertEquals(
-            expected = 1,
-            actual = state.rows.size
-        )
+        vm.currentViewer.test {
+            // State before objects are laoded
+            val first = awaitItem()
 
-        // Clicking on cell with linked projects.
+            assertIs<Viewer.GridView>(first)
 
-        runBlocking {
+            assertEquals(
+                expected = 0,
+                actual = first.rows.size
+            )
+
+            // Now object is loaded
+            val second = awaitItem()
+
+            assertIs<Viewer.GridView>(second)
+
+            assertEquals(
+                expected = 1,
+                actual = second.rows.size
+            )
+
+            // Clicking on cell with linked projects.
+
             vm.commands.test {
-                vm.onGridCellClicked(state.rows.first().cells.last())
+                vm.onGridCellClicked(second.rows.first().cells.last())
                 assertEquals(
                     awaitItem(),
                     ObjectSetCommand.Modal.EditRelationCell(
@@ -178,7 +210,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should emit navigation command for opening an object contained in given relation if this relation is read-only and object's layout is supported`() {
+    fun `should emit navigation command for opening an object contained in given relation if this relation is read-only and object's layout is supported`() = runTest {
 
         // SETUP
 
@@ -198,6 +230,15 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             linkedProjectRelation.key to linkedProjectTargetId
         )
 
+        val obj = ObjectWrapper.Basic(record)
+        val linkedObject = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to linkedProjectTargetId,
+                Relations.NAME to MockDataFactory.randomString(),
+                Relations.LAYOUT to ObjectType.Layout.BASIC
+            )
+        )
+
         val details = Block.Details(
             details = mapOf(
                 linkedProjectTargetId to Block.Fields(
@@ -211,8 +252,28 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubCloseBlock()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription(
+            subscription = root,
+            filters = dv.content<DV>().viewers.first().filters,
+            sorts = dv.content<DV>().viewers.first().sorts,
+            afterId = null,
+            beforeId = null,
+            sources = dv.content<DV>().sources,
+            keys = dv.content<DV>().relations.map { it.key },
+            limit = ObjectSetConfig.DEFAULT_LIMIT,
+            offset = 0,
+            result = SearchResult(
+                results = listOf(obj),
+                dependencies = listOf(linkedObject),
+                counter = SearchResult.Counter(
+                    total = 1,
+                    prev = 0,
+                    next = 0
+                )
+            )
+        )
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -228,15 +289,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 )
             ),
             dataViewRestrictions = emptyList(),
-            additionalEvents = listOf(
-                Event.Command.DataView.SetRecords(
-                    records = listOf(record),
-                    view = viewer.id,
-                    id = dv.id,
-                    total = 1,
-                    context = root
-                )
-            ),
             details = details
         )
 
@@ -246,29 +298,39 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.currentViewer.value
+        vm.currentViewer.test {
+            val stateBeforeLoaded = awaitItem()
 
-        assertIs<Viewer.GridView>(state)
+            assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        assertEquals(
-            expected = 1,
-            actual = state.rows.size
-        )
+            assertEquals(
+                expected = 0,
+                actual = stateBeforeLoaded.rows.size
+            )
 
-        // Clicking on cell with linked projects.
+            val stateAfterLoaded = awaitItem()
 
-        val testObserver = vm.navigation.test()
+            assertIs<Viewer.GridView>(stateAfterLoaded)
 
-        vm.onGridCellClicked(state.rows.first().cells.last())
+            assertEquals(
+                expected = 1,
+                actual = stateAfterLoaded.rows.size
+            )
 
-        testObserver.assertValue { value ->
-            val content = value.peekContent()
-            content == AppNavigation.Command.OpenObject(linkedProjectTargetId)
+            // Clicking on cell with linked projects.
+            val testObserver = vm.navigation.test()
+
+            vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
+
+            testObserver.assertValue { value ->
+                val content = value.peekContent()
+                content == AppNavigation.Command.OpenObject(linkedProjectTargetId)
+            }
         }
     }
 
     @Test
-    fun `should close current object before navigating to some other object`() {
+    fun `should close current object before navigating to some other object`() = runTest {
 
         // SETUP
 
@@ -278,6 +340,14 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         val record = mapOf(
             Relations.ID to firstRecordId,
             linkedProjectRelation.key to linkedProjectTargetId
+        )
+        val obj = ObjectWrapper.Basic(record)
+        val linkedObject = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to linkedProjectTargetId,
+                Relations.NAME to MockDataFactory.randomString(),
+                Relations.LAYOUT to ObjectType.Layout.BASIC
+            )
         )
 
         val details = Block.Details(
@@ -293,8 +363,28 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubCloseBlock()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription(
+            subscription = root,
+            filters = dv.content<DV>().viewers.first().filters,
+            sorts = dv.content<DV>().viewers.first().sorts,
+            afterId = null,
+            beforeId = null,
+            sources = dv.content<DV>().sources,
+            keys = dv.content<DV>().relations.map { it.key },
+            limit = ObjectSetConfig.DEFAULT_LIMIT,
+            offset = 0,
+            result = SearchResult(
+                results = listOf(obj),
+                dependencies = listOf(linkedObject),
+                counter = SearchResult.Counter(
+                    total = 1,
+                    prev = 0,
+                    next = 0
+                )
+            )
+        )
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -310,15 +400,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 )
             ),
             dataViewRestrictions = emptyList(),
-            additionalEvents = listOf(
-                Event.Command.DataView.SetRecords(
-                    records = listOf(record),
-                    view = viewer.id,
-                    id = dv.id,
-                    total = 1,
-                    context = root
-                )
-            ),
             details = details
         )
 
@@ -328,26 +409,39 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.currentViewer.value
+        vm.currentViewer.test {
+            val stateBeforeLoaded = awaitItem()
 
-        assertIs<Viewer.GridView>(state)
+            assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        assertEquals(
-            expected = 1,
-            actual = state.rows.size
-        )
+            assertEquals(
+                expected = 0,
+                actual = stateBeforeLoaded.rows.size
+            )
 
-        // Clicking on cell with linked projects.
+            assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        vm.onGridCellClicked(state.rows.first().cells.last())
+            val stateAfterLoaded = awaitItem()
 
-        verifyBlocking(closeBlock, times(1)) {
-            invoke(CloseBlock.Params(root))
+            assertIs<Viewer.GridView>(stateAfterLoaded)
+
+            assertEquals(
+                expected = 1,
+                actual = stateAfterLoaded.rows.size
+            )
+
+            // Clicking on cell with linked projects.
+
+            vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
+
+            verifyBlocking(closeBlock, times(1)) {
+                invoke(CloseBlock.Params(root))
+            }
         }
     }
 
     @Test
-    fun `should not emit any navigation command for opening an object contained in given relation if object's layout is not supported`() {
+    fun `should not emit any navigation command for opening an object contained in given relation if object's layout is not supported`() = runTest {
 
         // SETUP
 
@@ -359,6 +453,14 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         val record = mapOf(
             Relations.ID to firstRecordId,
             linkedProjectRelation.key to linkedProjectTargetId
+        )
+        val obj = ObjectWrapper.Basic(record)
+        val linkedObject = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to linkedProjectTargetId,
+                Relations.NAME to MockDataFactory.randomString(),
+                Relations.LAYOUT to ObjectType.Layout.BASIC
+            )
         )
 
         val details = Block.Details(
@@ -374,8 +476,28 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubCloseBlock()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription(
+            subscription = root,
+            filters = dv.content<DV>().viewers.first().filters,
+            sorts = dv.content<DV>().viewers.first().sorts,
+            afterId = null,
+            beforeId = null,
+            sources = dv.content<DV>().sources,
+            keys = dv.content<DV>().relations.map { it.key },
+            limit = ObjectSetConfig.DEFAULT_LIMIT,
+            offset = 0,
+            result = SearchResult(
+                results = listOf(obj),
+                dependencies = listOf(linkedObject),
+                counter = SearchResult.Counter(
+                    total = 1,
+                    prev = 0,
+                    next = 0
+                )
+            )
+        )
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -391,15 +513,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 )
             ),
             dataViewRestrictions = emptyList(),
-            additionalEvents = listOf(
-                Event.Command.DataView.SetRecords(
-                    records = listOf(record),
-                    view = viewer.id,
-                    id = dv.id,
-                    total = 1,
-                    context = root
-                )
-            ),
             details = details
         )
 
@@ -409,26 +522,39 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.currentViewer.value
+        vm.currentViewer.test {
+            val stateBeforeLoaded = awaitItem()
 
-        assertIs<Viewer.GridView>(state)
+            assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        assertEquals(
-            expected = 1,
-            actual = state.rows.size
-        )
+            assertEquals(
+                expected = 0,
+                actual = stateBeforeLoaded.rows.size
+            )
 
-        // Clicking on cell with linked projects.
+            assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        val testObserver = vm.navigation.test()
+            val stateAfterLoaded = awaitItem()
 
-        vm.onGridCellClicked(state.rows.first().cells.last())
+            assertIs<Viewer.GridView>(stateAfterLoaded)
 
-        testObserver.assertNoValue()
+            assertEquals(
+                expected = 1,
+                actual = stateAfterLoaded.rows.size
+            )
+
+            // Clicking on cell with linked projects.
+
+            val testObserver = vm.navigation.test()
+
+            vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
+
+            testObserver.assertNoValue()
+        }
     }
 
     @Test
-    fun `should emit navigation command opening an object set contained in given relation if this relation is read-only`() {
+    fun `should emit navigation command opening an object set contained in given relation if this relation is read-only`() = runTest {
 
         // SETUP
 
@@ -438,6 +564,14 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         val record = mapOf(
             Relations.ID to firstRecordId,
             linkedProjectRelation.key to linkedProjectTargetId
+        )
+        val obj = ObjectWrapper.Basic(record)
+        val linkedObject = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to linkedProjectTargetId,
+                Relations.NAME to MockDataFactory.randomString(),
+                Relations.LAYOUT to ObjectType.Layout.BASIC
+            )
         )
 
         val details = Block.Details(
@@ -453,8 +587,28 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubCloseBlock()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription(
+            subscription = root,
+            filters = dv.content<DV>().viewers.first().filters,
+            sorts = dv.content<DV>().viewers.first().sorts,
+            afterId = null,
+            beforeId = null,
+            sources = dv.content<DV>().sources,
+            keys = dv.content<DV>().relations.map { it.key },
+            limit = ObjectSetConfig.DEFAULT_LIMIT,
+            offset = 0,
+            result = SearchResult(
+                results = listOf(obj),
+                dependencies = listOf(linkedObject),
+                counter = SearchResult.Counter(
+                    total = 1,
+                    prev = 0,
+                    next = 0
+                )
+            )
+        )
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -470,15 +624,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 )
             ),
             dataViewRestrictions = emptyList(),
-            additionalEvents = listOf(
-                Event.Command.DataView.SetRecords(
-                    records = listOf(record),
-                    view = viewer.id,
-                    id = dv.id,
-                    total = 1,
-                    context = root
-                )
-            ),
             details = details
         )
 
@@ -488,24 +633,37 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.currentViewer.value
+        vm.currentViewer.test {
+            val stateBeforeLoaded = awaitItem()
 
-        assertIs<Viewer.GridView>(state)
+            assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        assertEquals(
-            expected = 1,
-            actual = state.rows.size
-        )
+            assertEquals(
+                expected = 0,
+                actual = stateBeforeLoaded.rows.size
+            )
 
-        // Clicking on cell with linked projects.
+            assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        val testObserver = vm.navigation.test()
+            val stateAfterLoaded = awaitItem()
 
-        vm.onGridCellClicked(state.rows.first().cells.last())
+            assertIs<Viewer.GridView>(stateAfterLoaded)
 
-        testObserver.assertValue { value ->
-            val content = value.peekContent()
-            content == AppNavigation.Command.OpenObjectSet(linkedProjectTargetId)
+            assertEquals(
+                expected = 1,
+                actual = stateAfterLoaded.rows.size
+            )
+
+            // Clicking on cell with linked projects.
+
+            val testObserver = vm.navigation.test()
+
+            vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
+
+            testObserver.assertValue { value ->
+                val content = value.peekContent()
+                content == AppNavigation.Command.OpenObjectSet(linkedProjectTargetId)
+            }
         }
     }
 

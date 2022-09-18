@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.middleware.mappers.toCoreLinkRelationModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
@@ -149,17 +148,6 @@ fun anytype.Event.Message.toCoreModels(
             state = event.state?.value_?.toCoreModelsBookmarkState()
         )
     }
-    blockDataviewRecordsSet != null -> {
-        val event = blockDataviewRecordsSet
-        checkNotNull(event)
-        Event.Command.DataView.SetRecords(
-            id = event.id,
-            view = event.viewId,
-            records = event.records.map { it?.toMap().orEmpty() },
-            total = event.total,
-            context = context
-        )
-    }
     blockDataviewRelationSet != null -> {
         val event = blockDataviewRelationSet
         checkNotNull(event)
@@ -170,26 +158,6 @@ fun anytype.Event.Message.toCoreModels(
             context = context,
             key = event.relationKey,
             relation = relation.toCoreModels()
-        )
-    }
-    blockDataviewRecordsUpdate != null -> {
-        val event = blockDataviewRecordsUpdate
-        checkNotNull(event)
-        Event.Command.DataView.UpdateRecord(
-            context = context,
-            viewer = event.viewId,
-            target = event.id,
-            records = event.records.map { it?.toMap().orEmpty() },
-        )
-    }
-    blockDataviewRecordsDelete != null -> {
-        val event = blockDataviewRecordsDelete
-        checkNotNull(event)
-        Event.Command.DataView.DeleteRecord(
-            context = context,
-            dataViewId = event.id,
-            viewerId = event.viewId,
-            recordIds = event.removed
         )
     }
     blockSetDiv != null -> {
@@ -212,9 +180,7 @@ fun anytype.Event.Message.toCoreModels(
             context = context,
             target = event.id,
             viewerId = event.viewId,
-            viewer = view.toCoreModels(),
-            offset = event.offset,
-            limit = event.limit
+            viewer = view.toCoreModels()
         )
     }
     blockDataviewViewDelete != null -> {

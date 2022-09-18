@@ -1,11 +1,16 @@
 package com.anytypeio.anytype.domain.misc
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.CoroutineTestRule
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
-import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
@@ -18,8 +23,9 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-class ObjectSearchSubscriptionContainerTest {
+class DataViewSubscriptionContainerTest {
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -28,7 +34,7 @@ class ObjectSearchSubscriptionContainerTest {
     @Mock
     lateinit var repo: BlockRepository
 
-    private lateinit var container: ObjectSearchSubscriptionContainer
+    private lateinit var container: DataViewSubscriptionContainer
 
     private val defaultLimit = 0
     private val defaultOffset = 0L
@@ -134,36 +140,44 @@ class ObjectSearchSubscriptionContainerTest {
             }
         }
 
+        val params = DataViewSubscriptionContainer.Params(
+            subscription = subscription1,
+            limit = defaultLimit,
+            offset = defaultOffset,
+            keys = keys1,
+            filters = emptyList(),
+            sorts = emptyList(),
+            sources = emptyList()
+        )
+
         runTest {
-            container.observe(
-                subscription1,
-                limit = defaultLimit,
-                offset = defaultOffset,
-                keys = keys1
-            ).test {
+            container.observe(params).test {
 
                 // checking subscription
 
-                assertEquals(
-                    expected = Subscription(
-                        listOf("obj1")
-                    ),
-                    actual = awaitItem()
-                )
+                val firstEmission = awaitItem()
 
-                assertEquals(
-                    expected = Subscription(
-                        listOf("obj1", "obj4")
-                    ),
-                    actual = awaitItem()
-                )
+                assertTrue {
+                    with(firstEmission) {
+                        objects == listOf("obj1") && dependencies == listOf("obj2")
+                    }
+                }
 
-                assertEquals(
-                    expected = Subscription(
-                        listOf("obj4", "obj1")
-                    ),
-                    actual = awaitItem()
-                )
+                val secondEmission = awaitItem()
+
+                assertTrue {
+                    with(secondEmission) {
+                        objects == listOf("obj1", "obj4") && dependencies ==  listOf("obj2")
+                    }
+                }
+
+                val thirdEmission = awaitItem()
+
+                assertTrue {
+                    with(thirdEmission) {
+                        objects == listOf("obj4", "obj1") && dependencies ==  listOf("obj2")
+                    }
+                }
 
                 awaitComplete()
 
@@ -190,7 +204,7 @@ class ObjectSearchSubscriptionContainerTest {
     }
 
     private fun setupContainer() {
-        container = ObjectSearchSubscriptionContainer(
+        container = DataViewSubscriptionContainer(
             repo = repo,
             channel = channel,
             store = store,

@@ -3,18 +3,16 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ObjectSetRecordViewModel(
-    private val updateDataViewRecord: UpdateDataViewRecord,
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val setObjectDetails: UpdateDetail,
     private val objectSetRecordCache: ObjectSetRecordCache
 ) : ObjectSetCreateRecordViewModelBase() {
 
@@ -24,15 +22,12 @@ class ObjectSetRecordViewModel(
         val record = objectSetRecordCache.map[ctx]
         val id = record?.get(ObjectSetConfig.ID_KEY) as String?
         if (record != null && id != null) {
-            val block = objectSetState.value.blocks.first { it.content is DV }
-            val update = mapOf(ObjectSetConfig.NAME_KEY to input)
             viewModelScope.launch {
-                updateDataViewRecord(
-                    UpdateDataViewRecord.Params(
-                        context = ctx,
-                        record = id,
-                        target = block.id,
-                        values = update
+                setObjectDetails(
+                    UpdateDetail.Params(
+                        ctx = id,
+                        key = Relations.NAME,
+                        value = input
                     )
                 ).process(
                     failure = { Timber.e(it, "Error while updating data view record") },
@@ -52,14 +47,11 @@ class ObjectSetRecordViewModel(
                 if (input.isEmpty()) {
                     commands.emit(Command.OpenObject(id))
                 } else {
-                    val block = objectSetState.value.blocks.first { it.content is DV }
-                    val update = mapOf(ObjectSetConfig.NAME_KEY to input)
-                    updateDataViewRecord(
-                        UpdateDataViewRecord.Params(
-                            context = ctx,
-                            record = id,
-                            target = block.id,
-                            values = update
+                    setObjectDetails(
+                        UpdateDetail.Params(
+                            ctx = id,
+                            key = Relations.NAME,
+                            value = input
                         )
                     ).process(
                         failure = {
@@ -78,15 +70,13 @@ class ObjectSetRecordViewModel(
     }
 
     class Factory(
-        private val updateDataViewRecord: UpdateDataViewRecord,
-        private val objectSetState: StateFlow<ObjectSet>,
+        private val setObjectDetails: UpdateDetail,
         private val objectSetRecordCache: ObjectSetRecordCache
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetRecordViewModel(
-                objectSetState = objectSetState,
-                updateDataViewRecord = updateDataViewRecord,
+                setObjectDetails = setObjectDetails,
                 objectSetRecordCache = objectSetRecordCache
             ) as T
         }

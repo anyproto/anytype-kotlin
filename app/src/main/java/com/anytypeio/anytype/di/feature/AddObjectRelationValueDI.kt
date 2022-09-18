@@ -6,8 +6,6 @@ import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
-import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
@@ -45,16 +43,16 @@ object AddObjectRelationValueModule {
         values: ObjectValueProvider,
         dispatcher: Dispatcher<Payload>,
         addDataViewRelationOption: AddDataViewRelationOption,
-        addTagToDataViewRecord: AddTagToDataViewRecord,
-        addStatusToDataViewRecord: AddStatusToDataViewRecord,
+        analytics: Analytics,
+        setObjectDetail: UpdateDetail,
     ): AddOptionsRelationDVViewModel.Factory = AddOptionsRelationDVViewModel.Factory(
         relations = relations,
         values = values,
         dispatcher = dispatcher,
         addDataViewRelationOption = addDataViewRelationOption,
-        addTagToDataViewRecord = addTagToDataViewRecord,
-        addStatusToDataViewRecord = addStatusToDataViewRecord,
-        optionsProvider = AddOptionsRelationProvider()
+        optionsProvider = AddOptionsRelationProvider(),
+        analytics = analytics,
+        setObjectDetail = setObjectDetail
     )
 
     @JvmStatic
@@ -83,11 +81,4 @@ object AddObjectRelationValueModule {
     fun provideAddObjectRelationOptionUseCase(
         repo: BlockRepository
     ): AddObjectRelationOption = AddObjectRelationOption(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideAddStatusToDataViewRecordUseCase(
-        repo: BlockRepository
-    ): AddStatusToDataViewRecord = AddStatusToDataViewRecord(repo)
 }

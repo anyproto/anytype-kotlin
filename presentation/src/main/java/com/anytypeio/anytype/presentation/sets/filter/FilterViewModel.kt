@@ -106,7 +106,7 @@ open class FilterViewModel(
             objectSetState.filter { it.isInitialized }.collect { state ->
                 val dv = state.dataview.content as DV
                 val viewer =
-                    dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                    dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
                 val relation = dv.relations.first { it.key == relationId }
                 this@FilterViewModel.relation = relation
 
@@ -209,7 +209,7 @@ open class FilterViewModel(
 
         val block = objectSet.dataview
         val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+        val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
         val relation = dv.relations.first { it.key == relationId }
 
         if (index == null) {
@@ -531,7 +531,7 @@ open class FilterViewModel(
         viewModelScope.launch {
             val block = objectSetState.value.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             proceedWithUpdatingFilter(
                 ctx = ctx,
                 target = block.id,
@@ -560,7 +560,7 @@ open class FilterViewModel(
         viewModelScope.launch {
             val block = objectSetState.value.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             val format = relationState.value?.format
             if (format != null) {
                 when (format) {
@@ -708,7 +708,7 @@ open class FilterViewModel(
     private suspend fun proceedWithCreatingFilter(ctx: Id, filter: DVFilter) {
         val block = objectSetState.value.dataview
         val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+        val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
         updateDataViewViewer(
             UpdateDataViewViewer.Params(
                 context = ctx,

@@ -20,7 +20,8 @@ class SearchObjectsWithSubscription(
             offset = params.offset,
             limit = params.limit,
             afterId = params.afterId,
-            beforeId = params.beforeId
+            beforeId = params.beforeId,
+            source = params.source
         )
     }
 
@@ -30,15 +31,16 @@ class SearchObjectsWithSubscription(
         val filters: List<DVFilter> = emptyList(),
         val fulltext: String = EMPTY_TEXT,
         val keys: List<String>,
+        val source: List<String> = emptyList(),
         val offset: Long = INIT_OFFSET,
-        val limit: Long = LIMIT,
+        val limit: Int = LIMIT,
         val beforeId: Id?,
         val afterId: Id?,
     )
 
     companion object {
         const val EMPTY_TEXT = ""
-        const val LIMIT = 1000L
+        const val LIMIT = 1000
         const val INIT_OFFSET = 0L
     }
 }

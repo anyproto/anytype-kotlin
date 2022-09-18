@@ -89,7 +89,13 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
     private val dndBehavior by lazy {
         object : DefaultDragAndDropBehavior(
             onItemMoved = { from, to -> relationValueAdapter.onItemMove(from, to) },
-            onItemDropped = { onItemDropped() }
+            onItemDropped = {
+                vm.onObjectValueOrderChanged(
+                    target = target,
+                    relation = relation,
+                    order = relationValueAdapter.order()
+                )
+            }
         ) {
             override fun getMovementFlags(
                 recyclerView: RecyclerView,
@@ -109,8 +115,20 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
             onCreateOptionClicked = {},
             onTagClicked = {},
             onStatusClicked = {},
-            onRemoveStatusClicked = { status -> onRemoveStatusClicked(status) },
-            onRemoveTagClicked = { tag -> onRemoveTagClicked(tag) },
+            onRemoveStatusClicked = { status ->
+                vm.onRemoveStatusFromObjectClicked(
+                    target = target,
+                    relation = relation,
+                    status = status.id
+                )
+            },
+            onRemoveTagClicked = { tag ->
+                vm.onRemoveTagFromObjectClicked(
+                    target = target,
+                    relation = relation,
+                    tag = tag.id
+                )
+            },
             onObjectClicked = { o ->
                 if (o is RelationValueView.Object.Default) {
                     vm.onObjectClicked(
@@ -125,9 +143,21 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
                     )
                 }
             },
-            onRemoveObjectClicked = { obj -> onRemoveObjectClicked(obj) },
+            onRemoveObjectClicked = { obj ->
+                vm.onRemoveObjectFromObjectClicked(
+                    target = target,
+                    relation = relation,
+                    objectId = obj
+                )
+            },
             onFileClicked = { o -> vm.onFileClicked(o.id) },
-            onRemoveFileClicked = { file -> onRemoveFileClicked(file) }
+            onRemoveFileClicked = { file ->
+                vm.onRemoveFileFromObjectClicked(
+                    target = target,
+                    relation = relation,
+                    fileId = file
+                )
+            }
         )
     }
 
@@ -410,11 +440,6 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
     }
 
     abstract fun observeCommands(command: RelationValueBaseViewModel.ObjectRelationValueCommand)
-    abstract fun onItemDropped()
-    abstract fun onRemoveTagClicked(tag: RelationValueView.Option.Tag)
-    abstract fun onRemoveStatusClicked(status: RelationValueView.Option.Status)
-    abstract fun onRemoveObjectClicked(objectId: Id)
-    abstract fun onRemoveFileClicked(fileId: Id)
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -440,58 +465,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
     lateinit var factory: RelationValueDVViewModel.Factory
     override val vm: RelationValueDVViewModel by viewModels { factory }
 
-    override fun onRemoveTagClicked(tag: RelationValueView.Option.Tag) {
-        vm.onRemoveTagFromDataViewRecordClicked(
-            ctx = ctx,
-            dataview = dataview,
-            target = target,
-            relation = relation,
-            tag = tag.id,
-            viewer = viewer
-        )
-    }
-
-    override fun onRemoveStatusClicked(status: RelationValueView.Option.Status) {
-        vm.onRemoveStatusFromDataViewRecordClicked(
-            ctx = ctx,
-            dataview = dataview,
-            target = target,
-            relation = relation,
-            status = status.id,
-            viewer = viewer
-        )
-    }
-
-    override fun onRemoveObjectClicked(objectId: Id) {
-        vm.onRemoveObjectFromDataViewRecordClicked(
-            ctx = ctx,
-            dataview = dataview,
-            target = target,
-            relation = relation,
-            objectId = objectId
-        )
-    }
-
-    override fun onRemoveFileClicked(fileId: Id) {
-        vm.onRemoveFileFromDataViewRecordClicked(
-            ctx = ctx,
-            dataview = dataview,
-            target = target,
-            relation = relation,
-            fileId = fileId
-        )
-    }
-
-    override fun onItemDropped() {
-        vm.onDataViewValueOrderChanged(
-            ctx = ctx,
-            obj = target,
-            dv = dataview,
-            relation = relation,
-            order = relationValueAdapter.order()
-        )
-    }
-
     override fun onObjectValueChanged(
         ctx: Id,
         objectId: Id,
@@ -499,8 +472,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
         ids: List<Id>
     ) {
         vm.onAddObjectsOrFilesValueToRecord(
-            ctx = ctx,
-            dataview = dataview,
             record = target,
             relation = relation,
             ids = ids
@@ -509,8 +480,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
 
     override fun onFileValueChanged(ctx: Id, objectId: Id, relationId: Id, ids: List<Id>) {
         vm.onAddObjectsOrFilesValueToRecord(
-            ctx = ctx,
-            dataview = dataview,
             record = target,
             relation = relation,
             ids = ids
@@ -571,10 +540,9 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
      */
     override fun onFilePathReady(filePath: String?) {
         if (filePath != null) {
-            vm.onAddFileToRecord(
+            vm.onAddFileToObject(
                 ctx = ctx,
-                dataview = dataview,
-                record = target,
+                target = target,
                 relation = relation,
                 filePath = filePath
             )
@@ -610,50 +578,6 @@ class RelationValueFragment : RelationValueBaseFragment() {
     @Inject
     lateinit var factory: RelationValueViewModel.Factory
     override val vm: RelationValueViewModel by viewModels { factory }
-
-    override fun onRemoveTagClicked(tag: RelationValueView.Option.Tag) {
-        vm.onRemoveTagFromObjectClicked(
-            ctx = ctx,
-            target = target,
-            relation = relation,
-            tag = tag.id
-        )
-    }
-
-    override fun onRemoveStatusClicked(status: RelationValueView.Option.Status) {
-        vm.onRemoveStatusFromObjectClicked(
-            ctx = ctx,
-            target = target,
-            relation = relation,
-            status = status.id
-        )
-    }
-
-    override fun onRemoveObjectClicked(objectId: Id) {
-        vm.onRemoveObjectFromObjectClicked(
-            ctx = ctx,
-            target = target,
-            relation = relation,
-            objectId = objectId
-        )
-    }
-
-    override fun onRemoveFileClicked(fileId: Id) {
-        vm.onRemoveFileFromObjectClicked(
-            ctx = ctx,
-            target = target,
-            relation = relation,
-            fileId = fileId
-        )
-    }
-
-    override fun onItemDropped() {
-        vm.onObjectValueOrderChanged(
-            ctx = ctx,
-            relation = relation,
-            order = relationValueAdapter.order()
-        )
-    }
 
     override fun onObjectValueChanged(
         ctx: Id,

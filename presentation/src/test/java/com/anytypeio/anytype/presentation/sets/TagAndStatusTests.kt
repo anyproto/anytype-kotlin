@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -12,6 +14,7 @@ import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -23,13 +26,16 @@ class TagAndStatusTests {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var store: ObjectStore
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
     }
 
     @Test
-    fun `should create row with text and tag cells`() {
+    fun `should create row with text and tag cells`() = runTest {
 
         val viewerRelations = listOf(
             Block.Content.DataView.Viewer.ViewerRelation(
@@ -134,11 +140,12 @@ class TagAndStatusTests {
         )
 
         val result = columns.buildGridRow(
-            record = records,
+            obj = ObjectWrapper.Basic(records),
             relations = dataViewRelations,
             builder = UrlBuilder(gateway),
             details = emptyMap(),
             showIcon = false,
+            store = store
         )
 
         val expected = Viewer.GridView.Row(
@@ -178,7 +185,7 @@ class TagAndStatusTests {
     }
 
     @Test
-    fun `should create row with text and status cells`() {
+    fun `should create row with text and status cells`() = runTest {
 
         val viewerRelations = listOf(
             Block.Content.DataView.Viewer.ViewerRelation(
@@ -279,11 +286,12 @@ class TagAndStatusTests {
         )
 
         val result = columns.buildGridRow(
-            record = records,
+            obj = ObjectWrapper.Basic(records),
             relations = dataViewRelations,
             builder = UrlBuilder(gateway),
             details = emptyMap(),
             showIcon = false,
+            store = store
         )
 
         val expected = Viewer.GridView.Row(

@@ -182,8 +182,9 @@ interface BlockDataStore {
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         keys: List<String>,
+        source: List<String>,
         offset: Long,
-        limit: Long,
+        limit: Int,
         beforeId: Id?,
         afterId: Id?,
     ): SearchResult

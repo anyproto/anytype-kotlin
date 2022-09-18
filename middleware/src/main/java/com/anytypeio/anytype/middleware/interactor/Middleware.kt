@@ -33,6 +33,7 @@ import com.anytypeio.anytype.middleware.mappers.MObjectType
 import com.anytypeio.anytype.middleware.mappers.MRelation
 import com.anytypeio.anytype.middleware.mappers.MRelationOption
 import com.anytypeio.anytype.middleware.mappers.core
+import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toPayload
@@ -1108,6 +1109,7 @@ class Middleware(
                 else
                     null
             },
+            counter = null
         )
     }
 
@@ -1334,8 +1336,9 @@ class Middleware(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         keys: List<String>,
+        source: List<String>,
         offset: Long,
-        limit: Long,
+        limit: Int,
         beforeId: Id?,
         afterId: Id?,
     ): SearchResult {
@@ -1345,9 +1348,10 @@ class Middleware(
             filters = filters.map { it.toMiddlewareModel() },
             keys = keys,
             offset = offset,
-            limit = limit,
+            limit = limit.toLong(),
             beforeId = beforeId.orEmpty(),
-            afterId = afterId.orEmpty()
+            afterId = afterId.orEmpty(),
+            source = source
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSearchSubscribe(request)
@@ -1365,6 +1369,7 @@ class Middleware(
                 else
                     null
             },
+            counter = response.counters?.parse()
         )
     }
 

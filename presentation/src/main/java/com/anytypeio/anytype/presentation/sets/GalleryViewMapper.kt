@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -11,11 +12,12 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import timber.log.Timber
 
 
-fun DVViewer.buildGalleryViews(
-    objects: List<ObjectWrapper.Basic>,
+suspend fun DVViewer.buildGalleryViews(
+    objects: List<Id>,
     relations: List<Relation>,
     details: Map<Id, Block.Fields>,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    store: ObjectStore
 ) : List<Viewer.GalleryView.Item> {
     val filteredRelations = viewerRelations.mapNotNull { setting ->
         if (setting.isVisible && setting.key != Relations.NAME) {
@@ -24,7 +26,7 @@ fun DVViewer.buildGalleryViews(
             null
         }
     }
-    return objects.map { obj ->
+    return objects.mapNotNull { id -> store.get(id) }.map { obj ->
         if (coverRelationKey == null) {
             Viewer.GalleryView.Item.Default(
                 objectId = obj.id,

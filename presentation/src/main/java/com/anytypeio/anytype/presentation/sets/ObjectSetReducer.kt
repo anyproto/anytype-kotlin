@@ -53,11 +53,9 @@ class ObjectSetReducer {
     }
 
     private fun reduce(state: ObjectSet, event: Event): Transformation {
-        Timber.d("Reducing event: $event")
         val effects = mutableListOf<SideEffect>()
         val newState = when (event) {
             is Command.ShowObject -> {
-                Timber.d("Relations in data view: ${event.relations.size}")
                 state.copy(
                     blocks = event.blocks,
                     details = state.details.updateFields(event.details.details),
@@ -68,7 +66,6 @@ class ObjectSetReducer {
                 )
             }
             is Command.DataView.SetView -> {
-                effects.add(SideEffect.ResetOffset(event.offset))
                 state.copy(
                     blocks = state.blocks.map { block ->
                         if (block.id == event.target) {
@@ -116,29 +113,6 @@ class ObjectSetReducer {
                             block
                         }
                     }
-                )
-            }
-            is Command.DataView.SetRecords -> {
-                effects.add(SideEffect.ResetCount(event.total))
-                val current = state.viewerDb.toMutableMap().apply { clear() }
-                val result = current.apply {
-                    put(
-                        event.view,
-                        ObjectSet.ViewerData(
-                            records = event.records,
-                            total = event.total
-                        )
-                    )
-                }
-                state.copy(viewerDb = result)
-            }
-            is Command.DataView.UpdateRecord -> {
-                state.updateRecord(event.viewer, event.records)
-            }
-            is Command.DataView.DeleteRecord -> {
-                state.deleteRecords(
-                    viewer = event.viewerId,
-                    recordIds = event.recordIds
                 )
             }
             is Command.DataView.SetRelation -> {
@@ -192,10 +166,7 @@ class ObjectSetReducer {
                 )
             }
             is Command.AddBlock -> {
-                effects.add(SideEffect.ResetViewer)
-                state.copy(
-                    blocks = state.blocks + event.blocks
-                )
+                state.copy(blocks = state.blocks + event.blocks)
             }
             else -> {
                 Timber.d("Ignoring event: $event")
@@ -217,11 +188,10 @@ class ObjectSetReducer {
         }
     }
 
-    sealed class SideEffect {
-        data class ResetOffset(val offset: Int) : SideEffect()
-        data class ResetCount(val count: Int) : SideEffect()
-        object ResetViewer : SideEffect()
-    }
+    /**
+     * Can be used to send side effects from reducer
+     */
+    sealed class SideEffect
 
     fun clear() {
         eventChannel.close()

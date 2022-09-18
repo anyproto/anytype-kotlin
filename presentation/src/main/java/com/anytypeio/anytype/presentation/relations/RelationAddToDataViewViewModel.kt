@@ -72,7 +72,7 @@ class RelationAddToDataViewViewModel(
         val state = state.value
         val block = state.dataview
         val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+        val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
 
         updateDataViewViewer(
             UpdateDataViewViewer.Params(

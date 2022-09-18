@@ -168,7 +168,13 @@ class HomeDashboardViewModelTest {
     private fun captureObserveKeys(spannable: ObjectSearchSubscriptionContainer): KArgumentCaptor<List<String>> {
         val captor = argumentCaptor<List<String>>()
         verify(spannable, atLeast(3)).observe(
-            any(), any(), any(), any(), any(), captor.capture()
+            subscription = any(),
+            sorts = any(),
+            filters = any(),
+            source = any(),
+            offset = any(),
+            limit = any(),
+            keys = captor.capture()
         )
         return captor
     }

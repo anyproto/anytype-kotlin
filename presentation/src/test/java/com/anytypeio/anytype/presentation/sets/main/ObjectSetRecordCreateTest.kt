@@ -51,6 +51,7 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        initDataViewSubscriptionContainer()
     }
 
     @Test
@@ -79,9 +80,10 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
-        stubSetActiveViewer()
-        stubCreateDataViewRecord()
         stubInterceptThreadStatus()
+        stubSearchWithSubscription()
+        stubSubscriptionEventChannel()
+        stubCreateDataViewRecord()
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -135,9 +137,10 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
-        stubSetActiveViewer()
         stubCreateDataViewRecord()
         stubInterceptThreadStatus()
+        stubSearchWithSubscription()
+        stubSubscriptionEventChannel()
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -210,9 +213,10 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
-        stubSetActiveViewer()
         stubCreateDataViewRecord()
         stubInterceptThreadStatus()
+        stubSearchWithSubscription()
+        stubSubscriptionEventChannel()
         stubGetTemplates(
             type = givenType,
             templates = givenTemplates
@@ -282,9 +286,10 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
-        stubSetActiveViewer()
         stubCreateDataViewRecord()
         stubInterceptThreadStatus()
+        stubSearchWithSubscription()
+        stubSubscriptionEventChannel()
         stubGetTemplates(
             type = givenType,
             templates = listOf(givenTemplate)
@@ -401,9 +406,10 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
-        stubSetActiveViewer()
         stubCreateDataViewRecord()
         stubInterceptThreadStatus()
+        stubSearchWithSubscription()
+        stubSubscriptionEventChannel()
         stubGetTemplates(
             type = source,
             templates = listOf(givenTemplate)

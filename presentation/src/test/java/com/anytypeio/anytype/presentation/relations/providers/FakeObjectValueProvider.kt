@@ -8,8 +8,8 @@ internal class FakeObjectValueProvider(
     var values: Map<Id, Map<String, Any?>> = emptyMap()
 ) : ObjectValueProvider {
 
-    override fun get(target: Id): Map<String, Any?> = values[target] ?: emptyMap()
+    override suspend fun get(target: Id): Map<String, Any?> = values[target] ?: emptyMap()
 
-    override fun subscribe(target: Id): Flow<Map<String, Any?>> =
+    override suspend fun subscribe(target: Id): Flow<Map<String, Any?>> =
         flow { emit(get(target)) }
 }

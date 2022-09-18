@@ -3,13 +3,13 @@ package com.anytypeio.anytype.presentation.relations.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
-import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -22,13 +22,16 @@ class AddOptionsRelationDVViewModel(
     relations: ObjectRelationProvider,
     optionsProvider: AddOptionsRelationProvider,
     private val addDataViewRelationOption: AddDataViewRelationOption,
-    private val addTagToDataViewRecord: AddTagToDataViewRecord,
-    private val addStatusToDataViewRecord: AddStatusToDataViewRecord,
     private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics,
+    private val setObjectDetail: UpdateDetail
 ) : BaseAddOptionsRelationViewModel(
     values = values,
     relations = relations,
-    optionsProvider = optionsProvider
+    optionsProvider = optionsProvider,
+    dispatcher = dispatcher,
+    analytics = analytics,
+    setObjectDetail = setObjectDetail
 ) {
 
     fun onCreateDataViewRelationOptionClicked(
@@ -55,22 +58,17 @@ class AddOptionsRelationDVViewModel(
                     if (option != null) {
                         when (relations.get(relation).format) {
                             Relation.Format.TAG -> {
-                                proceedWithAddingTagToDataViewRecord(
-                                    ctx = ctx,
-                                    dataview = dataview,
-                                    viewer = viewer,
-                                    relation = relation,
+                                proceedWithAddingTagToObject(
                                     target = target,
+                                    ctx = ctx,
+                                    relation = relation,
                                     tags = listOf(option)
                                 )
                             }
                             Relation.Format.STATUS -> {
-                                proceedWithAddingStatusToDataViewRecord(
-                                    ctx = ctx,
-                                    dataview = dataview,
-                                    viewer = viewer,
+                                proceedWithAddingStatusToObject(
+                                    ctx = target,
                                     relation = relation,
-                                    obj = target,
                                     status = option
                                 )
                             }
@@ -91,41 +89,17 @@ class AddOptionsRelationDVViewModel(
         obj: Id,
         status: RelationValueView.Option.Status
     ) {
-        proceedWithAddingStatusToDataViewRecord(ctx, dataview, viewer, relation, obj, status.id)
-    }
-
-    private fun proceedWithAddingStatusToDataViewRecord(
-        ctx: Id,
-        dataview: Id,
-        viewer: Id,
-        relation: Id,
-        obj: Id,
-        status: Id
-    ) {
-        viewModelScope.launch {
-            addStatusToDataViewRecord(
-                AddStatusToDataViewRecord.Params(
-                    ctx = ctx,
-                    dataview = dataview,
-                    viewer = viewer,
-                    relation = relation,
-                    obj = obj,
-                    status = status,
-                    record = values.get(target = obj)
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding tag") },
-                success = { isParentDismissed.value = true }
-            )
-        }
+        proceedWithAddingStatusToObject(
+            ctx = obj,
+            relation = relation,
+            status = status.id
+        )
     }
 
     fun onAddSelectedValuesToDataViewClicked(
         ctx: Id,
-        dataview: Id,
         target: Id,
-        relation: Id,
-        viewer: Id
+        relation: Id
     ) {
         val tags = choosingRelationOptions.value.mapNotNull { view ->
             if (view is RelationValueView.Option.Tag && view.isSelected)
@@ -133,51 +107,22 @@ class AddOptionsRelationDVViewModel(
             else
                 null
         }
-        proceedWithAddingTagToDataViewRecord(
-            target = target,
+        proceedWithAddingTagToObject(
             ctx = ctx,
-            dataview = dataview,
             relation = relation,
-            viewer = viewer,
-            tags = tags
+            tags = tags,
+            target = target
         )
-    }
-
-    private fun proceedWithAddingTagToDataViewRecord(
-        target: Id,
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        viewer: Id,
-        tags: List<Id>
-    ) {
-        viewModelScope.launch {
-            val record = values.get(target = target)
-            addTagToDataViewRecord(
-                AddTagToDataViewRecord.Params(
-                    ctx = ctx,
-                    tags = tags,
-                    record = record,
-                    dataview = dataview,
-                    relation = relation,
-                    viewer = viewer,
-                    target = target
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding tag") },
-                success = { isDismissed.value = true }
-            )
-        }
     }
 
     class Factory(
         private val values: ObjectValueProvider,
         private val relations: ObjectRelationProvider,
         private val addDataViewRelationOption: AddDataViewRelationOption,
-        private val addTagToDataViewRecord: AddTagToDataViewRecord,
-        private val addStatusToDataViewRecord: AddStatusToDataViewRecord,
         private val dispatcher: Dispatcher<Payload>,
-        private val optionsProvider: AddOptionsRelationProvider
+        private val optionsProvider: AddOptionsRelationProvider,
+        private val setObjectDetail: UpdateDetail,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -185,10 +130,10 @@ class AddOptionsRelationDVViewModel(
                 values = values,
                 relations = relations,
                 addDataViewRelationOption = addDataViewRelationOption,
-                addTagToDataViewRecord = addTagToDataViewRecord,
-                addStatusToDataViewRecord = addStatusToDataViewRecord,
                 dispatcher = dispatcher,
-                optionsProvider = optionsProvider
+                optionsProvider = optionsProvider,
+                setObjectDetail = setObjectDetail,
+                analytics = analytics
             ) as T
         }
     }

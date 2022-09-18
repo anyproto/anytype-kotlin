@@ -4,13 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,16 +21,17 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
     private val reducer: ObjectSetReducer,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
-    private val setActiveViewer: SetActiveViewer,
     private val addDataViewRelation: AddNewRelationToDataView,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val updateDataViewRecord: UpdateDataViewRecord,
+    private val setObjectDetails: UpdateDetail,
     private val createDataViewRecord: CreateDataViewRecord,
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
@@ -46,7 +46,11 @@ class ObjectSetViewModelFactory(
     private val analytics: Analytics,
     private val getTemplates: GetTemplates,
     private val createNewObject: CreateNewObject,
-    private val setDataViewSource: SetDataViewSource
+    private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
+    private val cancelSearchSubscription: CancelSearchSubscription,
+    private val setDataViewSource: SetDataViewSource,
+    private val database: ObjectSetDatabase,
+    private val paginator: ObjectSetPaginator
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -54,10 +58,9 @@ class ObjectSetViewModelFactory(
             reducer = reducer,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
-            setActiveViewer = setActiveViewer,
             addDataViewRelation = addDataViewRelation,
             updateDataViewViewer = updateDataViewViewer,
-            updateDataViewRecord = updateDataViewRecord,
+            setObjectDetails = setObjectDetails,
             createDataViewRecord = createDataViewRecord,
             setDocCoverImage = setDocCoverImage,
             downloadUnsplashImage = downloadUnsplashImage,
@@ -72,7 +75,11 @@ class ObjectSetViewModelFactory(
             analytics = analytics,
             getTemplates = getTemplates,
             createNewObject = createNewObject,
-            setDataViewSource = setDataViewSource
+            dataViewSubscriptionContainer = dataViewSubscriptionContainer,
+            cancelSearchSubscription = cancelSearchSubscription,
+            setDataViewSource = setDataViewSource,
+            database = database,
+            paginator = paginator
         ) as T
     }
 }

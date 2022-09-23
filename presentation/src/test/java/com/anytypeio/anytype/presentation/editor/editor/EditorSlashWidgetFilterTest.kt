@@ -1161,8 +1161,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.Actions.Copy,
             SlashItem.Actions.Paste,
             SlashItem.Actions.Move,
-            SlashItem.Actions.MoveTo,
-            SlashItem.Actions.LinkTo
+            SlashItem.Actions.MoveTo
         )
         assertEquals(expected = expectedItems, actual = command.actionsItems)
     }
@@ -1325,6 +1324,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val expectedItems = listOf(
             SlashItem.Subheader.ObjectType,
+            SlashItem.Actions.LinkTo,
             SlashItem.ObjectType(
                 url = type1.url,
                 name = type1.name,

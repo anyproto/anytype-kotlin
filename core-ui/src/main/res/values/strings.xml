@@ -340,7 +340,7 @@
     <string name="slash_widget_main_style">Style</string>
     <string name="slash_widget_main_media">Media</string>
     <string name="slash_widget_main_objects">Objects</string>
-    <string name="slash_widget_main_objects_subheader">Object types</string>
+    <string name="slash_widget_main_objects_subheader">Objects</string>
     <string name="slash_widget_main_relations">Relations</string>
     <string name="slash_widget_main_other">Other</string>
     <string name="slash_widget_main_actions">Actions</string>
@@ -398,6 +398,7 @@
     <string name="slash_widget_actions_copy">Copy</string>
     <string name="slash_widget_actions_paste">Paste</string>
     <string name="slash_widget_actions_link_to">Link to object</string>
+    <string name="slash_widget_actions_link_to_subtitle">Link to existing object</string>
     <string name="slash_widget_actions_move">Move</string>
     <string name="slash_widget_actions_moveto">Move to</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

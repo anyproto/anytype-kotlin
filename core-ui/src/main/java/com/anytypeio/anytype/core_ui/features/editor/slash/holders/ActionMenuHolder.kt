@@ -48,7 +48,7 @@ class ActionMenuHolder(val binding: ItemSlashWidgetStyleBinding) : RecyclerView.
             SlashItem.Actions.LinkTo -> {
                 tvTitle.setText(R.string.slash_widget_actions_link_to)
                 ivIcon.setImageResource(R.drawable.ic_slash_actions_link_to)
-                tvSubtitle.gone()
+                tvSubtitle.setText(R.string.slash_widget_actions_link_to_subtitle)
             }
         }
     }

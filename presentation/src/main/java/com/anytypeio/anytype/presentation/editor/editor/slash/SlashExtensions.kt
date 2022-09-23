@@ -112,8 +112,7 @@ object SlashExtensions {
         SlashItem.Actions.Copy,
         SlashItem.Actions.Paste,
         SlashItem.Actions.Move,
-        SlashItem.Actions.MoveTo,
-        SlashItem.Actions.LinkTo
+        SlashItem.Actions.MoveTo
         //, SlashItem.Actions.CleanStyle
     )
 
@@ -135,7 +134,10 @@ object SlashExtensions {
         }
 
     fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
-        listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toSlashItemView()
+        listOf(
+            SlashItem.Subheader.ObjectTypeWithBlack,
+            SlashItem.Actions.LinkTo,
+        ) + objectTypes.toSlashItemView()
 
     fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
         listOf(
@@ -204,7 +206,7 @@ object SlashExtensions {
         )
         val filteredObjects = filterObjectTypes(
             filter = filter,
-            items = objectTypes
+            items = listOf(SlashItem.Actions.LinkTo) + objectTypes
         )
         val filteredRelations = filterRelations(
             filter = filter,
@@ -272,16 +274,20 @@ object SlashExtensions {
 
     private fun filterObjectTypes(
         filter: String,
-        items: List<SlashItem.ObjectType>
+        items: List<SlashItem>
     ): List<SlashItem> {
         val filtered = items.filter { item ->
             searchBySubheadingOrName(
                 filter = filter,
                 subheading = SlashItem.Main.Objects.getSearchName(),
-                name = item.name
+                name = if (item is SlashItem.ObjectType) item.name
+                else (item as SlashItem.Actions).getSearchName()
             )
         }
-        return updateWithSubheader(items = filtered)
+        if (filtered.isNotEmpty()) {
+            return listOf(SlashItem.Subheader.ObjectType) + filtered
+        }
+        return filtered
     }
 
     private fun filterSlashItems(

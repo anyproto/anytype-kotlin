@@ -363,6 +363,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val expectedObjectItems = listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
+            SlashItem.Actions.LinkTo,
             SlashItem.ObjectType(
                 url = type1.url,
                 name = type1.name,
@@ -669,8 +670,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.Actions.Copy,
             SlashItem.Actions.Paste,
             SlashItem.Actions.Move,
-            SlashItem.Actions.MoveTo,
-            SlashItem.Actions.LinkTo
+            SlashItem.Actions.MoveTo
         )
 
         val expected = SlashWidgetState.UpdateItems(

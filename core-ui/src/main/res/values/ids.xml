@@ -2,4 +2,5 @@
 <resources>
     <item name="menuStyle" type="id"/>
     <item name="menuBookmark" type="id"/>
+    <item name="menuLink" type="id"/>
 </resources>

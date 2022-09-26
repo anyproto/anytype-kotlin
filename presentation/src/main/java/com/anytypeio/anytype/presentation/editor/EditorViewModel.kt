@@ -3379,7 +3379,8 @@ class EditorViewModel(
         }
     }
 
-    fun onUrlPasted(url: Url) {
+    fun onBookmarkPasted(url: Url) {
+        Timber.d("onBookmarkPasted $url")
         val focus = orchestrator.stores.focus.current()
         if (!focus.isEmpty) {
             viewModelScope.launch {

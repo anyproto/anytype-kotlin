@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.CallSuper
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.CheckedCheckboxColorSpan
@@ -30,10 +31,9 @@ import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcherState
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
+import com.anytypeio.anytype.core_utils.clipboard.parseUrlFromClipboard
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_utils.clipboard.parseUrlFromClipboard
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -403,20 +403,53 @@ interface TextBlockHolder : TextHolder {
     //region CONTEXT MENU
 
     private fun setupCustomInsertionActionMode() {
-        val bookmarkMenuItemTitle = content.resources.getString(R.string.bookmark)
         content.customInsertionActionModeCallback = object : ActionMode.Callback2() {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                val url = content.context.parseUrlFromClipboard()
-                if (url != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        menu.apply {
-                            add(0, android.R.id.textAssist, 0, bookmarkMenuItemTitle)
-                        }
-                    } else {
-                        menu.apply {
-                            add(0, R.id.menuStyle, 3, bookmarkMenuItemTitle)
+                if (getLink() != null) {
+                    menu.addLink()
+                    menu.add(0, R.id.menuBookmark, 3, R.string.bookmark)
+                    menu.pasteToText()
+                }
+                return true
+            }
+
+            override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (getLink() != null) {
+                        if (menu.findItem(android.R.id.textAssist) != null) {
+                            menu.removeItem(android.R.id.textAssist)
+                            return true
                         }
                     }
+                }
+                return false
+            }
+
+            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+                return when (item.itemId) {
+                    R.id.menuBookmark -> {
+                        content.clipboardInterceptor?.onBookmarkPasted(getLink().toString())
+                        mode.finish()
+                        true
+                    }
+                    R.id.menuLink -> {
+                        val link = getLink().toString()
+                        insertLinkContent(link)
+                        content.clipboardInterceptor?.onLinkPasted(link)
+                        mode.finish()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode) {}
+        }
+        content.customSelectionActionModeCallback = object : ActionMode.Callback2() {
+            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                if (getLink() != null) {
+                    menu.addLink()
+                    menu.pasteToText()
                 }
                 return true
             }
@@ -427,22 +460,8 @@ interface TextBlockHolder : TextHolder {
 
             override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
                 return when (item.itemId) {
-                    android.R.id.textAssist -> {
-                        when (item.title) {
-                            bookmarkMenuItemTitle -> {
-                                mode.finish()
-                                content.clipboardInterceptor?.onUrlPasted(
-                                    content.context.parseUrlFromClipboard().toString()
-                                )
-                                true
-                            }
-                            else -> false
-                        }
-                    }
-                    R.id.menuBookmark -> {
-                        content.clipboardInterceptor?.onUrlPasted(
-                            content.context.parseUrlFromClipboard().toString()
-                        )
+                    R.id.menuLink -> {
+                        content.clipboardInterceptor?.onLinkPasted(getLink().toString())
                         mode.finish()
                         true
                     }
@@ -457,6 +476,28 @@ interface TextBlockHolder : TextHolder {
     private fun getUnderlineHeight(): Float =
         content.resources.getDimensionPixelSize(R.dimen.block_text_markup_underline_height)
             .toFloat()
+
+    private fun Menu.addLink() {
+        add(
+            0,
+            R.id.menuLink,
+            1,
+            content.resources.getString(R.string.paste_link)
+        )
+    }
+
+    private fun Menu.pasteToText() = findItem(android.R.id.paste)?.setTitle(R.string.text)
+
+    private fun getLink() = content.context.parseUrlFromClipboard()
+
+    private fun insertLinkContent(paste: String) {
+
+        content.text?.insert(content.selectionStart, paste)
+        content.setSelection(
+            content.selectionStart - paste.length,
+            content.selectionStart
+        )
+    }
 
     //endregion
 }

@@ -105,7 +105,7 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
     )
 
     override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
-    override fun onUrlPasted(url: Url) {}
+    override fun onBookmarkPasted(url: Url) {}
     override fun onDrag(v: View?, event: DragEvent?) = false
 
     companion object {

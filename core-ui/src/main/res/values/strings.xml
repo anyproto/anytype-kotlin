@@ -524,6 +524,8 @@
     <string name="unknown_error">Unknown error</string>
 
     <string name="bookmark">Bookmark</string>
+    <string name="paste_text">Text</string>
+    <string name="paste_link">Link</string>
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="limit_object_types">Limit object types</string>

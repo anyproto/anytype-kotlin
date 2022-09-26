@@ -5,7 +5,8 @@ import com.anytypeio.anytype.core_models.Url
 interface ClipboardInterceptor {
 
     fun onClipboardAction(action: Action)
-    fun onUrlPasted(url: Url)
+    fun onBookmarkPasted(url: Url)
+    fun onLinkPasted(url: Url) {}
 
     sealed class Action {
         data class Copy(val selection: IntRange) : Action()

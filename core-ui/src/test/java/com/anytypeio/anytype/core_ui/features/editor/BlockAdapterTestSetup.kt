@@ -14,7 +14,7 @@ open class BlockAdapterTestSetup {
 
     private val clipboardInterceptor: ClipboardInterceptor = object: ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
-        override fun onUrlPasted(url: Url) {}
+        override fun onBookmarkPasted(url: Url) {}
     }
 
     val context: Context = ApplicationProvider.getApplicationContext()

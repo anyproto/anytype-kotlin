@@ -37,7 +37,7 @@ class HighlightingBlockTest {
 
     private val clipboardInterceptor: ClipboardInterceptor = object : ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) = Unit
-        override fun onUrlPasted(url: Url) {}
+        override fun onBookmarkPasted(url: Url) {}
     }
 
     @Test

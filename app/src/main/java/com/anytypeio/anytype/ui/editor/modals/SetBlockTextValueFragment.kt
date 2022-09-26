@@ -169,7 +169,7 @@ class SetBlockTextValueFragment :
         }
     }
 
-    override fun onUrlPasted(url: Url) {}
+    override fun onBookmarkPasted(url: Url) {}
     override fun onDrag(v: View?, event: DragEvent?) = false
 
     private val ctx: String get() = argString(CTX_KEY)

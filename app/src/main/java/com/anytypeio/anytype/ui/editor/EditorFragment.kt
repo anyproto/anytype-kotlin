@@ -1862,8 +1862,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    override fun onUrlPasted(url: Url) {
-        vm.onUrlPasted(url)
+    override fun onBookmarkPasted(url: Url) {
+        vm.onBookmarkPasted(url)
+    }
+
+    override fun onLinkPasted(url: Url) {
+        vm.proceedToAddUriToTextAsLink(url)
     }
 
     private fun hideKeyboard() {

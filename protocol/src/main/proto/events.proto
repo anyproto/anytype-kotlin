@@ -68,6 +68,7 @@ message Event {
             Block.Dataview.RelationDelete blockDataviewRelationDelete = 24;
             Block.Dataview.RelationSet blockDataviewRelationSet = 23;
             Block.Dataview.GroupOrderUpdate blockDataViewGroupOrderUpdate = 38;
+            Block.Dataview.ObjectOrderUpdate blockDataViewObjectOrderUpdate = 39;
 
 
             User.Block.Join userBlockJoin = 31;
@@ -739,6 +740,27 @@ message Event {
             message GroupOrderUpdate {
                 string id = 1; // dataview block's id
                 anytype.model.Block.Content.Dataview.GroupOrder groupOrder = 2;
+            }
+
+            message ObjectOrderUpdate {
+                string id = 1; // dataview block's id
+                string viewId = 2;
+                string groupId = 3;
+                repeated SliceChange sliceChanges = 4;
+            }
+
+            message SliceChange {
+                SliceOperation op = 1;
+                repeated string ids = 2;
+                string afterId = 3;
+            }
+
+            enum SliceOperation {
+                SliceOperationNone = 0; // not used
+                SliceOperationAdd = 1;
+                SliceOperationMove = 2;
+                SliceOperationRemove = 3;
+                SliceOperationReplace = 4;
             }
         }
     }

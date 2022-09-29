@@ -1,5 +1,27 @@
 # Change log for Android @Anytype app.
 
+## Version 0.11.0
+
+### New features & enhancements 🚀
+* Editor | Enhanced link markup menu by allowing to add url from clipboard. (#2581)
+* Editor | Allow creating sets from objects in draft state and setting type for newly created set (#2580)
+* Editor | Loading state for bookmark block (#2559)
+* Editor | Improved mechanism for opening files with default apps from your device (#2568)
+
+### Fixes & tech 🚒
+* Editor & Set | Fix navigation crashes (#2593)
+* Editor | Fixed inconsistent state of link markups when switching between read and edit modes (#2588)
+* Editor | Allow navigating to the @-mentioned bookmark object (#2573)
+* Editor | Clicking on empty space above the title block should not trigger multi-select mode (#2585)
+* Editor | Incorrect bookmark block image (#2569)
+* Editor & Sets | Text changes occurring in the title block might not be saved correctly due to data races (#2567)
+
+### Design & UX 🔳
+* Set | Group button removed (#2595)
+* Editor | Show default size for simple tables in the slash menu (#2591)
+* Editor | Redesigned error state for bookmark block (#2562)
+* Dashboard | New icon for bookmark object (#2558)
+
 ## Version 0.10.0
 
 ### New features & enhancements 🚀

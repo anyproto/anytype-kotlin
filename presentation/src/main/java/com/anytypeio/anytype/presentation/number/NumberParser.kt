@@ -17,7 +17,11 @@ object NumberParser {
         return if (doubleValue != null) {
             val decimal = BigDecimal.valueOf(doubleValue)
             if (decimal.isWhole) {
-                decimal.longValueExact().toString()
+                try {
+                    decimal.longValueExact().toString()
+                } catch (e: ArithmeticException) {
+                    decimal.toPlainString()
+                }
             } else {
                 decimal.toPlainString()
             }
@@ -29,7 +33,7 @@ object NumberParser {
     private val BigDecimal.isWhole: Boolean
         get() {
             // fast-path
-            if(scale() <= 0) return true
+            if (scale() <= 0) return true
             val digitsAfterDot = this - this.setScale(0, RoundingMode.DOWN)
             // [BigDecimal.equals] check `scale` and other properties
             return digitsAfterDot.compareTo(BigDecimal.ZERO) == 0

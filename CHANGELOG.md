@@ -15,6 +15,7 @@
 * Editor | Clicking on empty space above the title block should not trigger multi-select mode (#2585)
 * Editor | Incorrect bookmark block image (#2569)
 * Editor & Sets | Text changes occurring in the title block might not be saved correctly due to data races (#2567)
+* Sets | Application crash when entering big number (#2621)
 
 ### Design & UX 🔳
 * Set | Group button removed (#2595)

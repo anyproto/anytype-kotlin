@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -29,7 +28,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
         TableCellHolder(binding.root) {
 
         val root: View = binding.root
-        val textContent: TextInputWidget = binding.textContent
+        val textContent: AppCompatTextView = binding.textContent
         val selection: View = binding.selection
 
         private val defTextColor: Int = itemView.resources.getColor(R.color.text_primary, null)
@@ -54,7 +53,6 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setBackground(settings = cell.settings)
                 }
                 is BlockView.Table.Cell.Text -> {
-
                     setBorders(cell.settings)
                     setBlockText(
                         text = cell.block.text,
@@ -116,7 +114,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             color: ThemeColor
         ) {
             when (markup.marks.isEmpty()) {
-                true -> textContent.setText(text)
+                true -> textContent.text = text
                 false -> setBlockSpannableText(markup, resolveTextBlockThemedColor(color))
             }
         }

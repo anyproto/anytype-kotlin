@@ -25,14 +25,10 @@ import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import java.util.Arrays;
-
-import timber.log.Timber;
 
 /**
  * A {@link RecyclerView.LayoutManager} implementations that lays out items in a grid.
@@ -40,7 +36,7 @@ import timber.log.Timber;
  * By default, each item occupies 1 span. You can change it by providing a custom
  * {@link SpanSizeLookup} instance via {@link #setSpanSizeLookup(SpanSizeLookup)}.
  */
-public class GridLayoutManager2 extends LinearLayoutManager {
+public class CustomGridLayoutManager extends LinearLayoutManager {
 
     private static final boolean DEBUG = false;
     private static final String TAG = "GridLayoutManager";
@@ -78,8 +74,8 @@ public class GridLayoutManager2 extends LinearLayoutManager {
      * <p>
      * {@link androidx.recyclerview.R.attr#spanCount}
      */
-    public GridLayoutManager2(Context context, AttributeSet attrs, int defStyleAttr,
-                              int defStyleRes) {
+    public CustomGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
+                                   int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         Properties properties = getProperties(context, attrs, defStyleAttr, defStyleRes);
         setSpanCount(properties.spanCount);
@@ -91,7 +87,7 @@ public class GridLayoutManager2 extends LinearLayoutManager {
      * @param context   Current context, will be used to access resources.
      * @param spanCount The number of columns in the grid
      */
-    public GridLayoutManager2(Context context, int spanCount) {
+    public CustomGridLayoutManager(Context context, int spanCount) {
         super(context);
         setSpanCount(spanCount);
     }
@@ -103,8 +99,8 @@ public class GridLayoutManager2 extends LinearLayoutManager {
      *                      #VERTICAL}.
      * @param reverseLayout When set to true, layouts from end to start.
      */
-    public GridLayoutManager2(Context context, int spanCount,
-                              @RecyclerView.Orientation int orientation, boolean reverseLayout) {
+    public CustomGridLayoutManager(Context context, int spanCount,
+                                   @RecyclerView.Orientation int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
         setSpanCount(spanCount);
     }
@@ -884,7 +880,7 @@ public class GridLayoutManager2 extends LinearLayoutManager {
      * <p>
      * Default implementation sets each item to occupy exactly 1 span.
      *
-     * @see GridLayoutManager2#setSpanSizeLookup(SpanSizeLookup)
+     * @see CustomGridLayoutManager#setSpanSizeLookup(SpanSizeLookup)
      */
     public abstract static class SpanSizeLookup {
 

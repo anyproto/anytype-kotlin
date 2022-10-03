@@ -119,7 +119,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -145,7 +145,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -180,7 +180,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -218,7 +218,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -244,11 +244,7 @@ class BlockAdapterTest {
                     changes = listOf(TEXT_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -275,7 +271,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -301,11 +297,7 @@ class BlockAdapterTest {
                     changes = listOf(BACKGROUND_COLOR_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
@@ -334,7 +326,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -360,11 +352,7 @@ class BlockAdapterTest {
                     changes = listOf(TEXT_COLOR_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         val expected = context.resources.getColor(R.color.palette_dark_lime)
@@ -392,7 +380,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -428,11 +416,7 @@ class BlockAdapterTest {
                     changes = listOf(CURSOR_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -465,7 +449,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -518,7 +502,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(
+        val adapter = givenAdapter(
             views = views,
             onTextChanged = { id, editable ->
                 events.add(Pair(id, editable.toString()))
@@ -561,7 +545,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(
+        val adapter = givenAdapter(
             views = views,
             onTextChanged = { id, editable ->
                 events.add(Pair(id, editable.toString()))
@@ -587,11 +571,7 @@ class BlockAdapterTest {
                 )
             ),
             item = updated,
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -611,7 +591,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -638,7 +618,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -677,7 +657,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -726,7 +706,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(
+        val adapter = givenAdapter(
             views = views,
             onFocusChanged = { id, hasFocus ->
                 events.add(Pair(id, hasFocus))
@@ -775,7 +755,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(
+        val adapter = givenAdapter(
             views = views,
             onTextChanged = { id, editable ->
                 events.add(Pair(id, editable.toString()))
@@ -819,7 +799,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
@@ -853,7 +833,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_ONE)
 
@@ -886,7 +866,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_TWO)
 
@@ -921,7 +901,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_THREE)
 
@@ -951,7 +931,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_CHECKBOX)
 
@@ -984,7 +964,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_TOGGLE)
 
@@ -1013,7 +993,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE_PLACEHOLDER)
 
@@ -1046,7 +1026,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE_ERROR)
 
@@ -1075,7 +1055,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE_UPLOAD)
 
@@ -1102,7 +1082,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
 
@@ -1129,7 +1109,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO_PLACEHOLDER)
 
@@ -1161,7 +1141,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO_UPLOAD)
 
@@ -1194,7 +1174,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO_ERROR)
 
@@ -1226,7 +1206,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_OBJECT_LINK_DEFAULT)
 
@@ -1252,7 +1232,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_BOOKMARK_PLACEHOLDER)
 
@@ -1262,7 +1242,8 @@ class BlockAdapterTest {
 
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).paddingLeft
-            val expected = view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.default_document_item_padding_start)
+            val expected =
+                view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.default_document_item_padding_start)
             assertEquals(expected, actual)
         } else {
             val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).paddingLeft
@@ -1291,7 +1272,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE)
 
@@ -1320,7 +1301,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_PLACEHOLDER)
 
@@ -1353,7 +1334,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_ERROR)
 
@@ -1384,7 +1365,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_UPLOAD)
 
@@ -1394,7 +1375,8 @@ class BlockAdapterTest {
 
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             val actual = holder.itemView.marginLeft
-            val expected = holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            val expected =
+                holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
             assertEquals(expected, actual)
         }
     }
@@ -1416,7 +1398,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1467,7 +1449,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1606,7 +1588,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1652,7 +1634,7 @@ class BlockAdapterTest {
 
         val views = listOf(firstParagraph, secondParagraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1686,7 +1668,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1730,7 +1712,7 @@ class BlockAdapterTest {
 
         val views = listOf(paragraph)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1763,11 +1745,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -1795,7 +1773,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1836,7 +1814,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1879,7 +1857,7 @@ class BlockAdapterTest {
 
         val views = listOf(title)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -1951,7 +1929,7 @@ class BlockAdapterTest {
 
         val views: List<BlockView> = listOf(h1, h2, h3)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2064,7 +2042,7 @@ class BlockAdapterTest {
             h3Notselected
         )
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2135,7 +2113,7 @@ class BlockAdapterTest {
 
         val views: List<BlockView> = listOf(h1, h2, h3)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2226,7 +2204,7 @@ class BlockAdapterTest {
 
         val views: List<BlockView> = listOf(h1, h2, h3)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2265,11 +2243,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2301,11 +2275,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2337,11 +2307,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2369,7 +2335,7 @@ class BlockAdapterTest {
 
         val views = listOf(highlight)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2411,7 +2377,7 @@ class BlockAdapterTest {
 
         val views = listOf(highlight)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2437,11 +2403,7 @@ class BlockAdapterTest {
                     changes = listOf(TEXT_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2463,7 +2425,7 @@ class BlockAdapterTest {
 
         val views = listOf(highlight)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2505,7 +2467,7 @@ class BlockAdapterTest {
 
         val views = listOf(highlight)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2536,11 +2498,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2568,7 +2526,7 @@ class BlockAdapterTest {
 
         val views = listOf(bullet)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2607,7 +2565,7 @@ class BlockAdapterTest {
 
         val views = listOf(bullet)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2650,7 +2608,7 @@ class BlockAdapterTest {
 
         val views = listOf(bullet)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2681,11 +2639,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2713,7 +2667,7 @@ class BlockAdapterTest {
 
         val views = listOf(checkbox)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2752,7 +2706,7 @@ class BlockAdapterTest {
 
         val views = listOf(checkbox)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2795,7 +2749,7 @@ class BlockAdapterTest {
 
         val views = listOf(checkbox)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2826,11 +2780,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -2859,7 +2809,7 @@ class BlockAdapterTest {
 
         val views = listOf(numbered)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2899,7 +2849,7 @@ class BlockAdapterTest {
 
         val views = listOf(numbered)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2943,7 +2893,7 @@ class BlockAdapterTest {
 
         val views = listOf(numbered)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -2974,11 +2924,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -3008,7 +2954,7 @@ class BlockAdapterTest {
 
         val views = listOf(toggle)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -3049,7 +2995,7 @@ class BlockAdapterTest {
 
         val views = listOf(toggle)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -3094,7 +3040,7 @@ class BlockAdapterTest {
 
         val views = listOf(toggle)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -3125,11 +3071,7 @@ class BlockAdapterTest {
                     changes = listOf(READ_WRITE_MODE_CHANGED)
                 )
             ),
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
             clicked = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -3173,7 +3115,7 @@ class BlockAdapterTest {
             )
         )
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -3214,7 +3156,7 @@ class BlockAdapterTest {
 
         val views = listOf(file)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -3257,7 +3199,7 @@ class BlockAdapterTest {
 
         val views = listOf(file)
 
-        val adapter = buildAdapter(views)
+        val adapter = givenAdapter(views)
 
         val recycler = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
@@ -3296,7 +3238,7 @@ class BlockAdapterTest {
 
         val lifecycle = TestLifecycle()
 
-        val adapter = buildAdapter(listOf(givenVideo()), lifecycle = lifecycle)
+        val adapter = givenAdapter(listOf(givenVideo()), lifecycle = lifecycle)
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
 
@@ -3318,7 +3260,7 @@ class BlockAdapterTest {
 
         val recycler = givenRecycler()
 
-        val adapter = buildAdapter(listOf(givenVideo()))
+        val adapter = givenAdapter(listOf(givenVideo()))
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
 
@@ -3345,7 +3287,7 @@ class BlockAdapterTest {
 
         val recycler = givenRecycler()
 
-        val adapter = buildAdapter(listOf(givenVideo()))
+        val adapter = givenAdapter(listOf(givenVideo()))
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
 
@@ -3372,7 +3314,7 @@ class BlockAdapterTest {
 
         val recycler = givenRecycler()
 
-        val adapter = buildAdapter(listOf(givenVideo()))
+        val adapter = givenAdapter(listOf(givenVideo()))
 
         val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
 
@@ -3403,7 +3345,7 @@ class BlockAdapterTest {
         val runs = mutableListOf<PerformanceTestsResults>()
 
         givenPerformancePackageList().forEach { pack ->
-            val adapter = buildAdapter(listOf(pack.block))
+            val adapter = givenAdapter(listOf(pack.block))
             val holder = adapter.onCreateViewHolder(recycler, pack.holderId)
 
             check(holder.javaClass.canonicalName == pack.className)
@@ -3440,7 +3382,12 @@ class BlockAdapterTest {
             givenPicture(),
             Picture::class.qualifiedName!!
         ),
-        PerformancePackage(Types.HOLDER_TITLE, "Title", givenTitle(), Document::class.qualifiedName!!)
+        PerformancePackage(
+            Types.HOLDER_TITLE,
+            "Title",
+            givenTitle(),
+            Document::class.qualifiedName!!
+        )
     )
 
     private fun givenRecycler() = RecyclerView(context).apply {
@@ -3476,12 +3423,13 @@ class BlockAdapterTest {
         decorations = emptyList()
     )
 
-    private fun buildAdapter(
+    private fun givenAdapter(
         views: List<BlockView>,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit = { _, _, _ -> },
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
         onTitleBlockTextChanged: (Id, String) -> Unit = { _, _ -> },
         onTextChanged: (String, Editable) -> Unit = { _, _ -> },
+        onToggleClicked: (String) -> Unit = {},
         lifecycle: Lifecycle = TestLifecycle()
     ): BlockAdapter {
         return BlockAdapter(
@@ -3498,7 +3446,7 @@ class BlockAdapterTest {
             onTextInputClicked = {},
             onPageIconClicked = {},
             onTogglePlaceholderClicked = {},
-            onToggleClicked = {},
+            onToggleClicked = onToggleClicked,
             onTextBlockTextChanged = {},
             onTitleBlockTextChanged = onTitleBlockTextChanged,
             onTitleTextInputClicked = {},

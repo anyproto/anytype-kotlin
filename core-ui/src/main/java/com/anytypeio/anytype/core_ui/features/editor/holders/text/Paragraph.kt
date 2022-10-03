@@ -25,7 +25,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 class Paragraph(
     val binding: ItemBlockTextBinding,
     clicked: (ListenerType) -> Unit,
-) : Text(binding.root, clicked), SupportNesting, DecoratableViewHolder {
+) : Text<BlockView.Text.Paragraph>(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
     override val root: View = binding.root
     override val content: TextInputWidget = binding.textContent
@@ -62,33 +62,6 @@ class Paragraph(
                 bottomMargin = dimen(R.dimen.default_document_item_margin_bottom)
             }
         }
-    }
-
-    fun bind(
-        item: BlockView.Text.Paragraph,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit,
-        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
-        onEmptyBlockBackspaceClicked: (String) -> Unit,
-        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onBackPressedCallback: () -> Boolean
-    ) = super.bind(
-        item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
-        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-        onSplitLineEnterClicked = onSplitLineEnterClicked,
-        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onBackPressedCallback = onBackPressedCallback
-    ).also {
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize

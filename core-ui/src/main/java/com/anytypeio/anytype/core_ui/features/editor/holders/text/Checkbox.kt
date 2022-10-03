@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
-import android.text.Editable
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -15,20 +14,18 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.marks
+import com.anytypeio.anytype.core_ui.features.editor.performInEditMode
+import com.anytypeio.anytype.core_ui.features.editor.provide
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Checkbox(
     val binding: ItemBlockCheckboxBinding,
-    clicked: (ListenerType) -> Unit,
-) : Text(binding.root, clicked), SupportNesting, DecoratableViewHolder {
-
-    var mode = BlockView.Mode.EDIT
+    clicked: (ListenerType) -> Unit
+) : Text<BlockView.Text.Checkbox>(binding.root, clicked), SupportNesting,
+    DecoratableViewHolder {
 
     val checkbox: ImageView = binding.checkboxIcon
     private val container = binding.graphicPlusTextContainer
@@ -74,42 +71,18 @@ class Checkbox(
         }
     }
 
-    fun bind(
+    override fun bind(
         item: BlockView.Text.Checkbox,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit,
-        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
-        onEmptyBlockBackspaceClicked: (String) -> Unit,
-        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onBackPressedCallback: () -> Boolean
-    ) = super.bind(
-        item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
-        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-        onSplitLineEnterClicked = onSplitLineEnterClicked,
-        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onBackPressedCallback = onBackPressedCallback
-    ).also {
+    ) = super.bind(item = item).also {
         checkbox.isActivated = item.isChecked
-        setCheckboxClickListener(item, onCheckboxClicked)
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
-    private fun setCheckboxClickListener(
-        item: BlockView.Text.Checkbox,
+    fun setCheckboxClickListener(
         onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit
     ) {
         checkbox.setOnClickListener {
-            if (mode == BlockView.Mode.EDIT) {
+            val item = provide<BlockView.Text.Checkbox>() ?: return@setOnClickListener
+            item.performInEditMode {
                 item.isChecked = !item.isChecked
                 checkbox.isActivated = !checkbox.isActivated
                 applyCheckedCheckboxColorSpan(item.isChecked)
@@ -128,16 +101,6 @@ class Checkbox(
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             checkbox.updatePadding(left = item.indent * dimen(R.dimen.indent))
         }
-    }
-
-    override fun enableEditMode() {
-        super.enableEditMode()
-        mode = BlockView.Mode.EDIT
-    }
-
-    override fun enableReadMode() {
-        super.enableReadMode()
-        mode = BlockView.Mode.READ
     }
 
     override fun select(item: BlockView.Selectable) {

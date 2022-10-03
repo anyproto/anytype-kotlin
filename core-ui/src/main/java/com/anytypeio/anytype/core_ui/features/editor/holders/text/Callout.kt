@@ -30,7 +30,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 class Callout(
     val binding: ItemBlockCalloutBinding,
     clicked: (ListenerType) -> Unit,
-) : Text(
+) : Text <BlockView.Text.Callout>(
     view = binding.root,
     clicked = clicked
 ), BlockViewHolder.IndentableHolder, SupportNesting, DecoratableViewHolder {
@@ -63,45 +63,21 @@ class Callout(
         }
     }
 
-    fun bind(
-        item: BlockView.Text.Callout,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit,
-        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
-        onEmptyBlockBackspaceClicked: (String) -> Unit,
-        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onBackPressedCallback: () -> Boolean
+    override fun bind(
+        item: BlockView.Text.Callout
     ) = super.bind(
-        item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
-        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-        onSplitLineEnterClicked = onSplitLineEnterClicked,
-        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onBackPressedCallback = onBackPressedCallback
+        item = item
     ).also {
         icon.setIcon(item.icon)
         icon.setOnClickListener {
             clicked(ListenerType.Callout.Icon(item.id))
         }
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     override fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
-        onTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit
     ) {
         val callout = requireNotNull(item as? BlockView.Text.Callout) {
             "Failed to processChangePayload. $item must be Callout"
@@ -114,11 +90,7 @@ class Callout(
         super.processChangePayload(
             payloads,
             item,
-            onTextChanged,
-            onSelectionChanged,
             clicked,
-            onMentionEvent,
-            onSlashEvent
         )
     }
 

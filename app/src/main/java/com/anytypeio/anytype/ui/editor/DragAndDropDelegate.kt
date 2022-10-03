@@ -139,7 +139,7 @@ class DragAndDropDelegate {
                 )
 
                 val shadow = when (vh) {
-                    is Text -> TextInputDragShadow(vh.content.id, vh.itemView, event)
+                    is Text<*> -> TextInputDragShadow(vh.content.id, vh.itemView, event)
                     is Code -> TextInputDragShadow(vh.content.id, vh.itemView, event)
                     else -> DefaultEditorDragShadow(vh.itemView, event)
                 }

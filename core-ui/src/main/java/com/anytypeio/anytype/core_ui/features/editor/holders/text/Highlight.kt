@@ -27,7 +27,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 class Highlight(
     val binding: ItemBlockHighlightBinding,
     clicked: (ListenerType) -> Unit,
-) : Text(binding.root, clicked), BlockViewHolder.IndentableHolder, SupportNesting, DecoratableViewHolder {
+) : Text<BlockView.Text.Highlight>(binding.root, clicked), BlockViewHolder.IndentableHolder, SupportNesting, DecoratableViewHolder {
 
     override val content: TextInputWidget = binding.highlightContent
     override val root: View = itemView
@@ -73,34 +73,6 @@ class Highlight(
                 right = dimen(R.dimen.default_document_content_padding_end)
             )
         }
-    }
-
-    fun bind(
-        item: BlockView.Text.Highlight,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit,
-        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
-        onEmptyBlockBackspaceClicked: (String) -> Unit,
-        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onBackPressedCallback: () -> Boolean
-    ) = super.bind(
-        item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
-        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-        onSplitLineEnterClicked = onSplitLineEnterClicked,
-        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onBackPressedCallback = onBackPressedCallback
-    ).also {
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     override fun select(item: BlockView.Selectable) {

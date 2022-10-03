@@ -16,7 +16,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 class HeaderThree(
     val binding: ItemBlockHeaderThreeBinding,
     clicked: (ListenerType) -> Unit,
-) : Header(binding.root, clicked) {
+) : Header<BlockView.Text.Header.Three>(binding.root, clicked) {
 
     override val header: TextInputWidget = binding.headerThree
     override val content: TextInputWidget get() = header

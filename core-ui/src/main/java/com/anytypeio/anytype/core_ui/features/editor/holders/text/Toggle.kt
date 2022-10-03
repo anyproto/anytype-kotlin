@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
-import android.text.Editable
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
@@ -16,7 +15,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.marks
+import com.anytypeio.anytype.core_ui.features.editor.provide
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -27,7 +26,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 class Toggle(
     val binding: ItemBlockToggleBinding,
     clicked: (ListenerType) -> Unit,
-) : Text(binding.root, clicked), SupportNesting, DecoratableViewHolder {
+) : Text<BlockView.Text.Toggle>(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
     private var mode = BlockView.Mode.EDIT
 
@@ -77,41 +76,29 @@ class Toggle(
         }
     }
 
-    fun bind(
-        item: BlockView.Text.Toggle,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onToggleClicked: (String) -> Unit,
-        onTogglePlaceholderClicked: (String) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit,
-        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
-        onEmptyBlockBackspaceClicked: (String) -> Unit,
-        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onBackPressedCallback: () -> Boolean
-    ) = super.bind(
-        item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
-        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-        onSplitLineEnterClicked = onSplitLineEnterClicked,
-        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onBackPressedCallback = onBackPressedCallback
-    ).also {
+    override fun bind(
+        item: BlockView.Text.Toggle
+    ) = super.bind(item = item).also {
         toggle.rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
         if (item.mode == BlockView.Mode.READ) {
             placeholder.isVisible = false
         } else {
             placeholder.isVisible = item.isEmpty && item.toggled
         }
-        placeholder.setOnClickListener { onTogglePlaceholderClicked(item.id) }
-        toggle.setOnClickListener { onToggleClicked(item.id) }
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
+    }
+
+    fun setupToggle(
+        onToggleClicked: (String) -> Unit,
+        onTogglePlaceholderClicked: (String) -> Unit
+    ) {
+        placeholder.setOnClickListener {
+            val id = provide<BlockView.Text.Toggle>()?.id ?: return@setOnClickListener
+            onTogglePlaceholderClicked(id)
+        }
+        toggle.setOnClickListener {
+            val id = provide<BlockView.Text.Toggle>()?.id ?: return@setOnClickListener
+            onToggleClicked(id)
+        }
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize
@@ -143,21 +130,13 @@ class Toggle(
     override fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
-        onTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit
+        clicked: (ListenerType) -> Unit
     ) {
         check(item is BlockView.Text.Toggle) { "Expected a toggle block, but was: $item" }
         super.processChangePayload(
             payloads,
             item,
-            onTextChanged,
-            onSelectionChanged,
             clicked,
-            onMentionEvent,
-            onSlashEvent
         )
         payloads.forEach { payload ->
             if (payload.isToggleStateChanged) {

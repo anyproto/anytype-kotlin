@@ -106,10 +106,10 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
+import com.anytypeio.anytype.core_ui.features.editor.holders.upload.BookmarkUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
-import com.anytypeio.anytype.core_ui.features.editor.holders.upload.BookmarkUpload
 import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
@@ -173,7 +173,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import timber.log.Timber
 import java.util.*
 
@@ -215,7 +214,9 @@ class BlockAdapter(
     private val onDragListener: View.OnDragListener,
     private val lifecycle: Lifecycle,
     private val dragAndDropSelector: DragAndDropSelector,
-) : RecyclerView.Adapter<BlockViewHolder>(), DragAndDropSelector by dragAndDropSelector {
+) : RecyclerView.Adapter<BlockViewHolder>(),
+    ItemProviderAdapter<BlockView>,
+    DragAndDropSelector by dragAndDropSelector {
 
     private var blocks: List<BlockView> = initialBlock
     val views: List<BlockView> get() = blocks
@@ -417,8 +418,11 @@ class BlockAdapter(
                 Checkbox(
                     binding = ItemBlockCheckboxBinding.inflate(
                         inflater, parent, false
-                    ), clicked = onClickListener
-                )
+                    ),
+                    clicked = onClickListener
+                ).apply {
+                    setCheckboxClickListener(onCheckboxClicked)
+                }
             }
             HOLDER_BULLET -> {
                 Bulleted(
@@ -438,8 +442,11 @@ class BlockAdapter(
                 Toggle(
                     binding = ItemBlockToggleBinding.inflate(
                         inflater, parent, false
-                    ), clicked = onClickListener
-                )
+                    ),
+                    clicked = onClickListener
+                ).apply {
+                    setupToggle(onToggleClicked, onTogglePlaceholderClicked)
+                }
             }
             HOLDER_DESCRIPTION -> {
                 Description(
@@ -590,7 +597,7 @@ class BlockAdapter(
             }
             HOLDER_BOOKMARK_UPLOAD -> {
                 BookmarkUpload(
-                   ItemBlockBookmarkUploadingBinding.inflate(inflater, parent, false)
+                    ItemBlockBookmarkUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE -> {
@@ -710,7 +717,7 @@ class BlockAdapter(
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
 
-        if (holder is Text) {
+        if (holder is Text<*>) {
             holder.content.setOnDragListener(onDragListener)
             holder.content.editorTouchProcessor.onLongClick = {
                 val pos = holder.bindingAdapterPosition
@@ -747,6 +754,23 @@ class BlockAdapter(
                     onSelectionChanged(view.id, selection)
                 }
             }
+            holder.setupViewHolder(
+                onTextChanged = { editable ->
+                    holder.withBlock<BlockView.Text> { item ->
+                        item.apply {
+                            text = editable.toString()
+                            marks = editable.marks()
+                        }
+                        onTextBlockTextChanged(item)
+                    }
+                },
+                onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                onSplitLineEnterClicked = onSplitLineEnterClicked,
+                onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
+                onMentionEvent = onMentionEvent,
+                onSlashEvent = onSlashEvent,
+                onBackPressedCallback = onBackPressedCallback,
+            )
         } else {
             if (holder !is SupportCustomTouchProcessor) {
                 when (holder) {
@@ -823,33 +847,21 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
+                            clicked = onClickListener
                         )
                     }
                     is Bulleted -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
+                            clicked = onClickListener
                         )
                     }
                     is Checkbox -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
+                            clicked = onClickListener
                         )
                     }
                     is Title.Document -> {
@@ -874,77 +886,49 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
                         )
                     }
                     is HeaderOne -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
+                            clicked = onClickListener
                         )
                     }
                     is HeaderTwo -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
                         )
                     }
                     is HeaderThree -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
                             clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
                         )
                     }
                     is Toggle -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
+                            clicked = onClickListener
                         )
                     }
                     is Highlight -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
+                            clicked = onClickListener
                         )
                     }
                     is Callout -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position],
-                            onTextChanged = onTextBlockTextChanged,
-                            onSelectionChanged = onSelectionChanged,
-                            clicked = onClickListener,
-                            onMentionEvent = onMentionEvent,
-                            onSlashEvent = onSlashEvent
+                            clicked = onClickListener
                         )
                     }
                     is File -> {
@@ -1140,130 +1124,16 @@ class BlockAdapter(
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {
         if (isInDragAndDropMode) trySetDesiredAppearanceForDraggedItem(holder, position)
         when (holder) {
-            is Paragraph -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Text.Paragraph,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is HeaderOne -> {
-                holder.bind(
-                    block = blocks[position] as BlockView.Text.Header.One,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is HeaderTwo -> {
-                holder.bind(
-                    block = blocks[position] as BlockView.Text.Header.Two,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is HeaderThree -> {
-                holder.bind(
-                    block = blocks[position] as BlockView.Text.Header.Three,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is Checkbox -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Text.Checkbox,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onCheckboxClicked = onCheckboxClicked,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is Bulleted -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Text.Bulleted,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is Numbered -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Text.Numbered,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is Toggle -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Text.Toggle,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onTogglePlaceholderClicked = onTogglePlaceholderClicked,
-                    onToggleClicked = onToggleClicked,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is Highlight -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Text.Highlight,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    clicked = onClickListener,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
-            is Callout -> {
-                holder.bind(
-                    item = blocks[position] as BlockView.Text.Callout,
-                    onTextBlockTextChanged = onTextBlockTextChanged,
-                    onMentionEvent = onMentionEvent,
-                    onSlashEvent = onSlashEvent,
-                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-                    onSplitLineEnterClicked = onSplitLineEnterClicked,
-                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onBackPressedCallback = onBackPressedCallback
-                )
-            }
+            is Paragraph -> holder.bind(blocks[position] as BlockView.Text.Paragraph)
+            is HeaderOne -> holder.bind(blocks[position] as BlockView.Text.Header.One)
+            is HeaderTwo -> holder.bind(blocks[position] as BlockView.Text.Header.Two)
+            is HeaderThree -> holder.bind(blocks[position] as BlockView.Text.Header.Three)
+            is Checkbox -> holder.bind(blocks[position] as BlockView.Text.Checkbox )
+            is Bulleted -> holder.bind(blocks[position] as BlockView.Text.Bulleted)
+            is Numbered -> holder.bind(blocks[position] as BlockView.Text.Numbered)
+            is Toggle -> holder.bind(item = blocks[position] as BlockView.Text.Toggle)
+            is Highlight -> holder.bind(blocks[position] as BlockView.Text.Highlight)
+            is Callout -> holder.bind(blocks[position] as BlockView.Text.Callout)
             is Title.Document -> {
                 holder.apply {
                     bind(
@@ -1542,7 +1412,7 @@ class BlockAdapter(
             }
         }
 
-        if (holder is Text) {
+        if (holder is Text<*>) {
 
             val block = blocks[position]
 
@@ -1591,5 +1461,9 @@ class BlockAdapter(
             check(block is BlockView.Decoratable)
             holder.onDecorationsChanged(decorations = block.decorations)
         }
+    }
+
+    override fun provide(pos: Int): BlockView {
+        return blocks[pos]
     }
 }

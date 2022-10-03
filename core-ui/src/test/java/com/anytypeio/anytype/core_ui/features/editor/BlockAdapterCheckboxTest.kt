@@ -130,49 +130,6 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
     }
 
     @Test
-    fun `should not have checkboxhighlight span when turn ckeckbox from true to false`() {
-
-        val checkbox = BlockView.Text.Checkbox(
-            id = MockDataFactory.randomUuid(),
-            text = MockDataFactory.randomString(),
-            isFocused = true,
-            isChecked = true
-        )
-
-        val views = listOf(checkbox)
-
-        val adapter = buildAdapter(views = views)
-
-        val recycler = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-        }
-
-        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
-
-        adapter.onBindViewHolder(holder, 0)
-
-        // TESTING
-
-        check(holder is Checkbox)
-
-        val spans = holder.content.text!!.getSpans<CheckedCheckboxColorSpan>(0)
-
-        assertEquals(
-            expected = 1,
-            actual = spans.size
-        )
-
-        holder.checkbox.performClick()
-
-        val spansAfter = holder.content.text!!.getSpans<CheckedCheckboxColorSpan>(0)
-
-        assertEquals(
-            expected = 0,
-            actual = spansAfter.size
-        )
-    }
-
-    @Test
     fun `should have checkboxhighlight when payload text changed and is checked`() {
 
         val text = "First"
@@ -209,10 +166,6 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             payloads = listOf(BlockViewDiffUtil.Payload(changes = listOf(BlockViewDiffUtil.TEXT_CHANGED))),
             item = checkbox.copy(text = "$text Second"),
             clicked = {},
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -266,10 +219,6 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
                 )
             ),
             clicked = {},
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -323,10 +272,6 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
                 )
             ),
             clicked = {},
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -372,10 +317,6 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             payloads = listOf(BlockViewDiffUtil.Payload(changes = listOf(BlockViewDiffUtil.TEXT_CHANGED))),
             item = checkbox.copy(text = "$text Second"),
             clicked = {},
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(
@@ -420,10 +361,6 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             payloads = listOf(BlockViewDiffUtil.Payload(changes = listOf(BlockViewDiffUtil.TEXT_CHANGED))),
             item = checkbox.copy(text = "$text Second"),
             clicked = {},
-            onSelectionChanged = { _, _ -> },
-            onTextChanged = {},
-            onMentionEvent = {},
-            onSlashEvent = {}
         )
 
         assertEquals(

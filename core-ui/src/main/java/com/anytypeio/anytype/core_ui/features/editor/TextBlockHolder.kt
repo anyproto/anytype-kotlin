@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.features.editor
 
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.text.Editable
 import android.text.Spannable
 import android.view.ActionMode
 import android.view.Menu
@@ -26,7 +25,6 @@ import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewH
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
-import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcherState
@@ -219,41 +217,29 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
-    fun setupTextWatcher(
-        item: BlockView,
-        onMentionEvent: ((MentionEvent) -> Unit),
-        onSlashEvent: (SlashEvent) -> Unit,
-        onTextChanged: (String, Editable) -> Unit,
-    ) {
-        content.addTextChangedListener(
-            DefaultTextWatcher { text ->
-                onTextChanged(item.id, text)
-            }
-        )
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
-    }
-
     fun setupMentionWatcher(
-        onMentionEvent: ((MentionEvent) -> Unit)
+        onMentionEvent: ((MentionEvent) -> Unit),
+        itemProvider: () -> BlockView.Text?
     ) {
         content.addTextChangedListener(
             MentionTextWatcher { state ->
-                when (state) {
-                    is MentionTextWatcher.MentionTextWatcherState.Start -> {
-                        onMentionEvent.invoke(
-                            MentionEvent.MentionSuggestStart(
-                                cursorCoordinate = content.cursorYBottomCoordinate(),
-                                mentionStart = state.start
+                itemProvider().performInEditMode { item ->
+                    when (state) {
+                        is MentionTextWatcher.MentionTextWatcherState.Start -> {
+                            onMentionEvent.invoke(
+                                MentionEvent.MentionSuggestStart(
+                                    cursorCoordinate = content.cursorYBottomCoordinate(),
+                                    mentionStart = state.start
+                                )
                             )
-                        )
-                    }
-                    MentionTextWatcher.MentionTextWatcherState.Stop -> {
-                        onMentionEvent.invoke(MentionEvent.MentionSuggestStop)
-                    }
+                        }
+                        MentionTextWatcher.MentionTextWatcherState.Stop -> {
+                            onMentionEvent.invoke(MentionEvent.MentionSuggestStop)
+                        }
 
-                    is MentionTextWatcher.MentionTextWatcherState.Text -> {
-                        onMentionEvent.invoke(MentionEvent.MentionSuggestText(state.text))
+                        is MentionTextWatcher.MentionTextWatcherState.Text -> {
+                            onMentionEvent.invoke(MentionEvent.MentionSuggestText(state.text))
+                        }
                     }
                 }
             }
@@ -262,24 +248,26 @@ interface TextBlockHolder : TextHolder {
 
     fun setupSlashWatcher(
         onSlashEvent: (SlashEvent) -> Unit,
-        viewType: Int
+        itemProvider: () -> BlockView.Text?
     ) {
         content.addTextChangedListener(
             SlashTextWatcher { state ->
-                when (state) {
-                    is SlashTextWatcherState.Start -> onSlashEvent(
-                        SlashEvent.Start(
-                            slashStart = state.start,
-                            cursorCoordinate = content.cursorYBottomCoordinate()
+                itemProvider().performInEditMode { item ->
+                    when (state) {
+                        is SlashTextWatcherState.Start -> onSlashEvent(
+                            SlashEvent.Start(
+                                slashStart = state.start,
+                                cursorCoordinate = content.cursorYBottomCoordinate()
+                            )
                         )
-                    )
-                    SlashTextWatcherState.Stop -> onSlashEvent(SlashEvent.Stop)
-                    is SlashTextWatcherState.Filter -> onSlashEvent(
-                        SlashEvent.Filter(
-                            filter = state.text,
-                            viewType = viewType
+                        SlashTextWatcherState.Stop -> onSlashEvent(SlashEvent.Stop)
+                        is SlashTextWatcherState.Filter -> onSlashEvent(
+                            SlashEvent.Filter(
+                                filter = state.text,
+                                viewType = item.getViewType()
+                            )
                         )
-                    )
+                    }
                 }
             }
         )
@@ -289,11 +277,7 @@ interface TextBlockHolder : TextHolder {
     fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
-        onTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit
     ) = payloads.forEach { payload ->
 
         check(item is BlockView.Text)
@@ -347,19 +331,6 @@ interface TextBlockHolder : TextHolder {
         if (payload.readWriteModeChanged()) {
             content.pauseTextWatchers {
                 if (item.mode == BlockView.Mode.EDIT) {
-                    content.clearTextWatchers()
-                    setupTextWatcher(
-                        item = item,
-                        onTextChanged = { _, editable ->
-                            item.apply {
-                                text = editable.toString()
-                                marks = editable.marks()
-                            }
-                            onTextChanged(item)
-                        },
-                        onMentionEvent = onMentionEvent,
-                        onSlashEvent = onSlashEvent
-                    )
                     //content.selectionWatcher = { onSelectionChanged(item.id, it) }
                     content.pauseTextWatchers {
                         enableEditMode()
@@ -390,10 +361,6 @@ interface TextBlockHolder : TextHolder {
         } catch (e: Throwable) {
             Timber.e(e, "Error while setting cursor from $item")
         }
-    }
-
-    fun clearTextWatchers() {
-        content.clearTextWatchers()
     }
 
     fun resolveTextBlockThemedColor(color: ThemeColor): Int {
@@ -500,4 +467,12 @@ interface TextBlockHolder : TextHolder {
     }
 
     //endregion
+}
+
+fun BlockView.Text?.performInEditMode(block: (BlockView.Text) -> Unit) {
+    this?.let { item ->
+        if (item.mode == BlockView.Mode.EDIT) {
+            block(item)
+        }
+    }
 }

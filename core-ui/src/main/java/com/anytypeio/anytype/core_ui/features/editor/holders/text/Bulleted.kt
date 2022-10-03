@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
-import android.text.Editable
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
@@ -17,18 +16,15 @@ import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Bulleted(
     val binding: ItemBlockBulletedBinding,
     clicked: (ListenerType) -> Unit,
-) : Text(binding.root, clicked), SupportNesting, DecoratableViewHolder {
+) : Text<BlockView.Text.Bulleted>(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
     val indent: View = binding.bulletIndent
     val bullet = binding.bullet
@@ -73,33 +69,6 @@ class Bulleted(
                 right = dimen(R.dimen.default_document_content_padding_end),
             )
         }
-    }
-
-    fun bind(
-        item: BlockView.Text.Bulleted,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit,
-        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
-        onEmptyBlockBackspaceClicked: (String) -> Unit,
-        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onBackPressedCallback: () -> Boolean
-    ) = super.bind(
-        item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
-        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-        onSplitLineEnterClicked = onSplitLineEnterClicked,
-        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onBackPressedCallback = onBackPressedCallback
-    ).also {
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize

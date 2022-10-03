@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
-import android.text.Editable
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -19,7 +18,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.addDot
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -31,7 +29,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 class Numbered(
     val binding: ItemBlockNumberedBinding,
     clicked: (ListenerType) -> Unit,
-) : Text(binding.root, clicked), SupportNesting, DecoratableViewHolder {
+) : Text<BlockView.Text.Numbered>(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
     private val container = binding.graphicPlusTextContainer
     val number = binding.number
@@ -77,32 +75,10 @@ class Numbered(
         }
     }
 
-    fun bind(
-        item: BlockView.Text.Numbered,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit,
-        onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
-        onEmptyBlockBackspaceClicked: (String) -> Unit,
-        onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onBackPressedCallback: () -> Boolean
-    ) = super.bind(
-        item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
-        onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
-        onSplitLineEnterClicked = onSplitLineEnterClicked,
-        onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onBackPressedCallback = onBackPressedCallback
-    ).also {
+    override fun bind(
+        item: BlockView.Text.Numbered
+    ) = super.bind(item = item).also {
         setNumber(item)
-        setupMentionWatcher(onMentionEvent)
-        setupSlashWatcher(onSlashEvent, item.getViewType())
     }
 
     private fun setNumber(item: BlockView.Text.Numbered) {
@@ -122,20 +98,12 @@ class Numbered(
     override fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,
-        onTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit,
-        onMentionEvent: (MentionEvent) -> Unit,
-        onSlashEvent: (SlashEvent) -> Unit
+        clicked: (ListenerType) -> Unit
     ) {
         super.processChangePayload(
             payloads,
             item,
-            onTextChanged,
-            onSelectionChanged,
-            clicked,
-            onMentionEvent,
-            onSlashEvent
+            clicked
         )
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))

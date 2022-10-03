@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.EditText
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_utils.BuildConfig
+import com.anytypeio.anytype.core_utils.ext.showKeyboard
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 
 abstract class BaseBottomSheetTextInputFragment<T : ViewBinding>(
@@ -17,6 +18,7 @@ abstract class BaseBottomSheetTextInputFragment<T : ViewBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupWindowInsetAnimation()
+        textInput.showKeyboard()
     }
 
     private fun setupWindowInsetAnimation() {

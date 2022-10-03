@@ -12,7 +12,6 @@ import android.util.AttributeSet
 import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.anytypeio.anytype.core_ui.R
@@ -26,8 +25,8 @@ import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
-import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.multilineIme
+import com.anytypeio.anytype.core_utils.ext.showKeyboard
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
 
@@ -270,20 +269,7 @@ class TextInputWidget : AppCompatEditText {
     }
 
     fun setFocus() {
-        // Scheduling a runnable that shows the keyboard in the next UI loop.
-        post {
-            this.apply {
-                if (!hasFocus()) {
-                    if (requestFocus()) {
-                        context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
-                    } else {
-                        Timber.d("Couldn't gain focus")
-                    }
-                } else {
-                    Timber.d("Already had focus")
-                }
-            }
-        }
+        showKeyboard()
     }
 
     fun enableEnterKeyDetector(

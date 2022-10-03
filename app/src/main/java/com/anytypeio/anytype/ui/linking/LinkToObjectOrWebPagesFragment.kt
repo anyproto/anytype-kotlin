@@ -93,6 +93,7 @@ class LinkToObjectOrWebPagesFragment() :
             layoutManager = LinearLayoutManager(requireContext())
             adapter = objectLinksAdapter
         }
+        filterInputField.showKeyboard()
     }
 
     override fun onStart() {

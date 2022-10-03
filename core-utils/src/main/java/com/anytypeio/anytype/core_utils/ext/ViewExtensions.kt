@@ -6,11 +6,13 @@ import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import timber.log.Timber
 
 fun View.invisible() {
     this.visibility = View.INVISIBLE
@@ -113,3 +115,19 @@ val Activity.statusBarHeight: Int
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
         return rectangle.top
     }
+
+fun EditText.showKeyboard() {
+    post {
+        this.apply {
+            if (!hasFocus()) {
+                if (requestFocus()) {
+                    context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
+                } else {
+                    Timber.d("Couldn't gain focus")
+                }
+            } else {
+                Timber.d("Already had focus")
+            }
+        }
+    }
+}

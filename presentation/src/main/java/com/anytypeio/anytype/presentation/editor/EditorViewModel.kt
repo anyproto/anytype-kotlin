@@ -1555,6 +1555,7 @@ class EditorViewModel(
                         return
                     }
                 }
+                else -> {}
             }
         }
 
@@ -1900,6 +1901,7 @@ class EditorViewModel(
                     cursor = view.text?.length ?: 0
                     break
                 }
+                else -> {}
             }
         }
 
@@ -2045,6 +2047,7 @@ class EditorViewModel(
                 val pos = update.indexOf(target)
                 searchResultScrollPosition.value = pos
             }
+            else -> {}
         }
     }
 
@@ -3864,6 +3867,7 @@ class EditorViewModel(
             is ListenerType.TableTextCellMenu -> {
                 onShowSimpleTableWidgetClicked(id = clicked.cellId)
             }
+            else -> {}
         }
     }
 

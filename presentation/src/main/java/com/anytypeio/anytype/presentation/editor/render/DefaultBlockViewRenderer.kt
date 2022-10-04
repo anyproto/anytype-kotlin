@@ -774,6 +774,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         )
                     )
                 }
+                else -> {}
             }
         }
 

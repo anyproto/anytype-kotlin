@@ -93,6 +93,7 @@ fun Map<String, List<Block>>.asRender(anchor: String): List<Block> {
             is Content.Layout -> {
                 result.addAll(asRender(child.id))
             }
+            else -> {}
         }
     }
     return result

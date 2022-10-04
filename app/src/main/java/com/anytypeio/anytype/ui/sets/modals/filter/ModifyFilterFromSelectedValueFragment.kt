@@ -147,6 +147,7 @@ open class ModifyFilterFromSelectedValueFragment :
                     ctx = ctx,
                 )
             }
+            else -> {}
         }
     }
 

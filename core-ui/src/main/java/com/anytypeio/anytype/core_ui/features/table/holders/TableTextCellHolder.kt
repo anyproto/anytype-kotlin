@@ -63,6 +63,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
                     setBackground(cell.block.background, cell.settings)
                     setAlignment(cell.block.alignment)
                 }
+                else -> {}
             }
         }
 

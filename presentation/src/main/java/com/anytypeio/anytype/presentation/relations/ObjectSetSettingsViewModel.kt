@@ -92,6 +92,7 @@ class ObjectSetSettingsViewModel(
                         result.add(ViewerRelationListView.Section.Settings)
                         result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
                     }
+                    else -> {}
                 }
                 val relations = objectSet
                     .simpleRelations(session.currentViewerId.value)

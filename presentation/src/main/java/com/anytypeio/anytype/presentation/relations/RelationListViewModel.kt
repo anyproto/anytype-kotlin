@@ -260,6 +260,7 @@ class RelationListViewModel(
                         )
                     )
                 }
+                else -> {}
             }
         }
     }

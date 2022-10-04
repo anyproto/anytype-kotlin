@@ -123,6 +123,7 @@ class ObjectSearchSubscriptionContainer(
                                     subscriptions = event.subscriptions
                                 )
                             }
+                            else -> {}
                         }
                     }
                     result

@@ -142,6 +142,7 @@ class Callout(
                 is BlockView.Decoration.Style.Callout.Full -> {
                     binding.calloutCardContainer.setBackgroundResource(R.drawable.rect_callout_full)
                 }
+                else -> {}
             }
             binding.calloutCardContainer.setBlockBackgroundTintColor(
                 color = last.background,

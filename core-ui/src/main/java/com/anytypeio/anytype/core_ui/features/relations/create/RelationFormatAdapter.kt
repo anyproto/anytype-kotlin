@@ -80,6 +80,7 @@ class RelationFormatAdapter(
                 OBJECT -> {
                     name.setText(R.string.relation_format_object)
                 }
+                else -> {}
             }
 
             // Setting temporarily random color

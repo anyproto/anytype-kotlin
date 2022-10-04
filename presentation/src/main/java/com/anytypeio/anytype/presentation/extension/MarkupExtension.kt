@@ -128,6 +128,7 @@ fun Block.style(selection: IntRange): MarkupStyleDescriptor {
                         if (overlap.inside()) markupHighlightColor = mark.param
                     }
                 }
+                else -> {}
             }
         }
     }

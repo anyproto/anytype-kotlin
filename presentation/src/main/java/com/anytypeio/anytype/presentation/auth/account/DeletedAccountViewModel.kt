@@ -79,6 +79,7 @@ class DeletedAccountViewModel(
                             is AccountStatus.PendingDeletion -> {
                                 // TODO
                             }
+                            else -> {}
                         }
                         sendEvent(
                             analytics = analytics,

@@ -280,6 +280,7 @@ class ObjectSetViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
+                    else -> {}
                 }
             }
         }

@@ -337,6 +337,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                             marginEnd = marginAfterIcon
                                         }
                                     }
+                                    else -> {}
                                 }
 
                                 val noIcon = obj.icon == ObjectIcon.None || obj.icon is ObjectIcon.Basic.Avatar

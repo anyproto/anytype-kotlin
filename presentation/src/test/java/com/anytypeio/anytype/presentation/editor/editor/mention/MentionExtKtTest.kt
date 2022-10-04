@@ -328,6 +328,7 @@ class MentionExtTest {
                 ObjectType.Layout.NOTE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.SPACE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.DATABASE -> equalsMentionNoIcon(mark, layout)
+                else -> {}
             }
         }
         equalsMentionBase(mark, null)

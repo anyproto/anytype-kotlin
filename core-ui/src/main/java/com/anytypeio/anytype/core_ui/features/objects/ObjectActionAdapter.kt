@@ -71,6 +71,7 @@ class ObjectActionAdapter(
                 ObjectAction.MOVE_TO -> {
 
                 }
+                else -> {}
             }
         }
     }

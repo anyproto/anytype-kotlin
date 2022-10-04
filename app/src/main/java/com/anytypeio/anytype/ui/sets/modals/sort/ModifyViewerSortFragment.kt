@@ -59,6 +59,7 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
                             ivAscSelected.invisible()
                             ivDescSelected.visible()
                         }
+                        else -> {}
                     }
                 }
             }

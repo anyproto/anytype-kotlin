@@ -8,13 +8,13 @@ import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.widgets.ListViewRelationObjectValueView
 import com.anytypeio.anytype.core_ui.widgets.ListViewRelationTagValueView
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -62,7 +62,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                 }
                 is DefaultObjectRelationValueView.Date -> {
                     val value = relation.timeInMillis?.formatTimestamp(
-                        isMillis = true,
+                        isMillis = false,
                         format = relation.dateFormat
                     )
                     if (value != null) {

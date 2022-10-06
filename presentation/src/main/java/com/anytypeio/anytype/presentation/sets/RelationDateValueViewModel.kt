@@ -113,7 +113,7 @@ class RelationDateValueViewModel(
             val isYesterday = exactDay.isSameDay(yesterday)
             var exactDayFormat: String? = null
             if (!isToday && !isTomorrow && !isYesterday) {
-                exactDayFormat = timeInSeconds.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+                exactDayFormat = exactDay.timeInMillis.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
             }
             _views.value = views.value.copy(
                 isToday = isToday,

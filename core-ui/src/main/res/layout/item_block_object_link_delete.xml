@@ -23,34 +23,17 @@
             android:orientation="vertical"
             app:layout_constraintGuide_begin="0dp" />
 
-        <FrameLayout
-            android:id="@+id/pageIconContainer"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/pageGuideline"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_non_existent_object" />
-
-        </FrameLayout>
-
         <TextView
             android:id="@+id/linkDeleteTitle"
             style="@style/BlockObjectLinkDeleteContentStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:text="@string/non_existent_object"
+            android:text="@string/deleted_object"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/pageIconContainer"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Non-existent object" />
+            app:layout_constraintStart_toEndOf="@id/pageGuideline"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

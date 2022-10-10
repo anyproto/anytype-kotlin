@@ -18,12 +18,7 @@ class ObjectAppearanceChooseIconViewModel(
     storage, setLinkAppearance, dispatcher
 ) {
     override fun getItems(menu: BlockView.Appearance.Menu): List<Icon> {
-        val iconState = menu.icon
-        return listOf(
-            Icon.None(isSelected = iconState == BlockView.Appearance.MenuItem.Icon.NONE),
-            Icon.Small(isSelected = iconState == BlockView.Appearance.MenuItem.Icon.SMALL),
-            Icon.Medium(isSelected = iconState == BlockView.Appearance.MenuItem.Icon.MEDIUM)
-        )
+        return menu.iconMenus
     }
 
     override fun updateAppearance(

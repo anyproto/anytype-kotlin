@@ -1,16 +1,15 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
-import android.text.SpannableStringBuilder
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
-import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -19,17 +18,11 @@ import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.removeSpans
-import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 class LinkToObjectArchive(
     val binding: ItemBlockObjectLinkArchiveBinding
@@ -40,13 +33,9 @@ class LinkToObjectArchive(
     SupportCustomTouchProcessor,
     SupportNesting {
 
+    private val root = binding.root
     private val untitled = itemView.resources.getString(R.string.untitled)
-    private val archived = itemView.resources.getString(R.string.archived)
-    private val icon = binding.pageIcon
-    private val emoji = binding.linkEmoji
-    private val image = binding.linkImage
     private val title = binding.pageTitle
-    private val guideline = binding.pageGuideline
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -69,69 +58,23 @@ class LinkToObjectArchive(
         itemView.isSelected = item.isSelected
 
         val text = if (item.text.isNullOrEmpty()) {
-            SpannableStringBuilder("$untitled $archived").apply {
-                setSpan(
-                    Span.Keyboard(VALUE_ROUNDED),
-                    untitled.length + 1,
-                    untitled.length + 1 + archived.length,
-                    Markup.DEFAULT_SPANNABLE_FLAG
-                )
-            }
+            untitled
         } else {
-            SpannableStringBuilder("${item.text} $archived").apply {
-                setSpan(
-                    Span.Keyboard(VALUE_ROUNDED),
-                    item.text!!.length + 1,
-                    item.text!!.length + 1 + archived.length,
-                    Markup.DEFAULT_SPANNABLE_FLAG
-                )
-            }
+            item.text
         }
 
         title.setText(text, TextView.BufferType.EDITABLE)
 
         applySearchHighlight(item)
 
-        when {
-            item.emoji != null -> {
-                image.setImageDrawable(null)
-                try {
-                    Glide
-                        .with(emoji)
-                        .load(Emojifier.uri(item.emoji!!))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(emoji)
-                } catch (e: Exception) {
-                    icon.setImageResource(R.drawable.ic_block_page_without_emoji)
-                }
-            }
-            item.image != null -> {
-                image.visible()
-                Glide
-                    .with(image)
-                    .load(item.image)
-                    .centerInside()
-                    .circleCrop()
-                    .into(image)
-            }
-            item.isEmpty -> {
-                icon.setImageResource(R.drawable.ic_block_empty_page)
-                image.setImageDrawable(null)
-            }
-            else -> {
-                icon.setImageResource(R.drawable.ic_block_page_without_emoji)
-                image.setImageDrawable(null)
-            }
-        }
-
         itemView.setOnClickListener { clicked(ListenerType.LinkToObjectArchived(item.id)) }
     }
 
     override fun indentize(item: BlockView.Indentable) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            guideline.setGuidelineBegin(
-                item.indent * dimen(R.dimen.indent)
-            )
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                marginStart = item.indent * dimen(R.dimen.indent)
+            }
         }
     }
 
@@ -183,11 +126,18 @@ class LinkToObjectArchive(
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
             decoratableContainer.decorate(decorations) { rect ->
                 binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.default_indent) + rect.left
+                    marginStart = dimen(R.dimen.dp_8) + rect.left
                     marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                    // TODO handle top and bottom offsets
+                    bottomMargin = if (rect.bottom > 0) {
+                        rect.bottom
+                    } else {
+                        dimen(R.dimen.dp_2)
+                    }
                 }
+                binding.content.updatePadding(
+                    left = dimen(R.dimen.default_document_content_padding_start),
+                    right = dimen(R.dimen.default_document_item_padding_end)
+                )
             }
         }
     }

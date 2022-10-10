@@ -61,6 +61,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseIconViewModel
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 
 /**
@@ -244,6 +246,7 @@ sealed class BlockView : ViewType {
         data class Menu(
             val preview: MenuItem.PreviewLayout,
             val icon: MenuItem.Icon?,
+            val iconMenus: List<ObjectAppearanceChooseSettingsView.Icon>,
             val cover: MenuItem.Cover?,
             val description: MenuItem.Description?,
             val objectType: MenuItem.ObjectType,
@@ -1056,6 +1059,7 @@ sealed class BlockView : ViewType {
             abstract val description: String?
             abstract val icon: ObjectIcon
             abstract val background: ThemeColor
+            abstract val objectTypeName: String?
 
             data class Text(
                 override val id: String,
@@ -1066,7 +1070,8 @@ sealed class BlockView : ViewType {
                 override val description: String? = null,
                 override val icon: ObjectIcon,
                 override val background: ThemeColor = ThemeColor.DEFAULT,
-                override val decorations: List<Decoration> = emptyList()
+                override val decorations: List<Decoration> = emptyList(),
+                override val objectTypeName: String? = null
             ) : Default(), Searchable {
                 override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
             }
@@ -1081,7 +1086,7 @@ sealed class BlockView : ViewType {
                 override val icon: ObjectIcon,
                 override val background: ThemeColor,
                 override val decorations: List<Decoration> = emptyList(),
-                val objectTypeName: String?,
+                override val objectTypeName: String? = null,
                 val coverColor: CoverColor? = null,
                 val coverImage: Url? = null,
                 val coverGradient: String? = null,

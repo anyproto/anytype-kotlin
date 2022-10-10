@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
@@ -24,6 +25,7 @@ class LinkToObjectDelete(
     DecoratableViewHolder,
     SupportCustomTouchProcessor {
 
+    private val root = binding.root
     private val guideline = binding.pageGuideline
 
     override val decoratableContainer: EditorDecorationContainer
@@ -49,7 +51,9 @@ class LinkToObjectDelete(
 
     override fun indentize(item: BlockView.Indentable) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                marginStart = item.indent * dimen(R.dimen.indent)
+            }
         }
     }
 
@@ -66,11 +70,18 @@ class LinkToObjectDelete(
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
             decoratableContainer.decorate(decorations) { rect ->
                 binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.default_indent) + rect.left
+                    marginStart = dimen(R.dimen.dp_8) + rect.left
                     marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                    // TODO handle top and bottom offsets
+                    bottomMargin = if (rect.bottom > 0) {
+                        rect.bottom
+                    } else {
+                        dimen(R.dimen.dp_2)
+                    }
                 }
+                binding.content.updatePadding(
+                    left = dimen(R.dimen.default_document_content_padding_start),
+                    right = dimen(R.dimen.default_document_item_padding_end)
+                )
             }
         }
     }

@@ -2,11 +2,10 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.style.UnderlineSpan
+import android.text.style.LeadingMarginSpan
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
@@ -18,7 +17,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
-import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -36,8 +34,7 @@ class LinkToObject(
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
     DecoratableViewHolder,
-    SupportCustomTouchProcessor,
-    SupportNesting {
+    SupportCustomTouchProcessor {
 
     private val root = binding.root
     private val container = binding.container
@@ -45,6 +42,8 @@ class LinkToObject(
     private val objectIcon = binding.objectIconWidget
     private val objectIconContainer = binding.iconObjectContainer
     private val title = binding.text
+    private val description = binding.tvDescription
+    private val objectType = binding.tvObjectType
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -54,20 +53,7 @@ class LinkToObject(
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                bottomMargin = dimen(R.dimen.default_graphic_text_root_margin_bottom)
-                topMargin = dimen(R.dimen.default_graphic_text_root_margin_top)
-            }
-            container.updatePadding(
-                left = dimen(R.dimen.default_graphic_text_container_padding_start),
-                right = dimen(R.dimen.default_graphic_text_container_padding_end)
-            )
-        }
+        applyDefaultOffsets()
     }
 
     fun bind(
@@ -76,9 +62,13 @@ class LinkToObject(
     ) {
         indentize(item)
 
-        container.isSelected = item.isSelected
+        applySelectedState(item)
 
         applyText(item)
+
+        applyDescription(item)
+
+        applyObjectType(item)
 
         applySearchHighlight(item)
 
@@ -87,6 +77,10 @@ class LinkToObject(
         applyBackground(item.background)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
+    }
+
+    private fun applySelectedState(item: BlockView.LinkToObject.Default.Text) {
+        container.isSelected = item.isSelected
     }
 
     private fun applyText(item: BlockView.LinkToObject.Default.Text) {
@@ -98,16 +92,46 @@ class LinkToObject(
             }
             name.isEmpty() -> {
                 val sb = SpannableString(untitled)
-                sb.setSpan(UnderlineSpan(), 0, sb.length, 0)
+                if (item.icon !is ObjectIcon.None) {
+                    val firstLineMargin =
+                        itemView.resources.getDimensionPixelOffset(R.dimen.default_graphic_text_text_first_line_margin_start)
+                    sb.setSpan(
+                        LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
+                    )
+                }
                 title.visible()
-                title.setText(sb, TextView.BufferType.EDITABLE)
+                title.text = sb
             }
             else -> {
                 val sb = SpannableString(name)
-                sb.setSpan(UnderlineSpan(), 0, sb.length, 0)
+                if (item.icon !is ObjectIcon.None) {
+                    val firstLineMargin =
+                        itemView.resources.getDimensionPixelOffset(R.dimen.default_graphic_text_text_first_line_margin_start)
+                    sb.setSpan(
+                        LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
+                    )
+                }
                 title.visible()
-                title.setText(sb, TextView.BufferType.EDITABLE)
+                title.text = sb
             }
+        }
+    }
+
+    private fun applyDescription(item: BlockView.LinkToObject.Default.Text) {
+        if (item.description.isNullOrBlank()) {
+            description.gone()
+        } else {
+            description.visible()
+            description.text = item.description
+        }
+    }
+
+    private fun applyObjectType(item: BlockView.LinkToObject.Default.Text) {
+        if (item.objectTypeName.isNullOrBlank()) {
+            objectType.gone()
+        } else {
+            objectType.visible()
+            objectType.text = item.objectTypeName
         }
     }
 
@@ -115,10 +139,12 @@ class LinkToObject(
         when (item.icon) {
             ObjectIcon.None -> {
                 objectIconContainer.gone()
+                applyText(item)
             }
             else -> {
                 objectIconContainer.visible()
                 objectIcon.setIcon(item.icon)
+                applyText(item)
             }
         }
     }
@@ -166,18 +192,27 @@ class LinkToObject(
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
         check(item is BlockView.LinkToObject.Default.Text) { "Expected a link to object block, but was: $item" }
         payloads.forEach { payload ->
-            if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
-                container.isSelected = item.isSelected
+            if (payload.isSelectionChanged) {
+                applySelectedState(item)
             }
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
             }
-            if (payload.isObjectTitleChanged)
+            if (payload.isObjectTitleChanged) {
                 applyText(item)
-            if (payload.isObjectIconChanged)
+            }
+            if (payload.isObjectIconChanged) {
                 applyImageOrEmoji(item)
-            if (payload.isBackgroundColorChanged)
+            }
+            if (payload.isBackgroundColorChanged) {
                 applyBackground(item.background)
+            }
+            if (payload.isObjectDescriptionChanged) {
+                applyDescription(item)
+            }
+            if (payload.isObjectTypeChanged) {
+                applyObjectType(item)
+            }
         }
     }
 
@@ -191,11 +226,25 @@ class LinkToObject(
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
             decoratableContainer.decorate(decorations) { rect ->
                 binding.container.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.default_indent) + rect.left
+                    marginStart = dimen(R.dimen.dp_8) + rect.left
                     marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                    // TODO handle top and bottom offsets
+                    bottomMargin = if (rect.bottom > 0) {
+                        rect.bottom
+                    } else {
+                        dimen(R.dimen.dp_2)
+                    }
                 }
+            }
+        }
+    }
+
+    private fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            container.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.default_document_item_padding_start)
+                marginEnd = dimen(R.dimen.default_document_item_padding_end)
+                topMargin = dimen(R.dimen.default_graphic_text_root_margin_top)
+                bottomMargin = dimen(R.dimen.default_graphic_text_root_margin_bottom)
             }
         }
     }

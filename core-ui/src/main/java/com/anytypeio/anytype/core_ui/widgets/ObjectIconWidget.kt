@@ -257,7 +257,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     fun setCheckbox(isChecked: Boolean?) {
         with(binding) {
             ivCheckbox.visible()
-            ivCheckbox.isSelected = isChecked ?: false
+            ivCheckbox.isEnabled = isChecked ?: false
             initialContainer.invisible()
             emojiContainer.invisible()
             ivBookmark.gone()

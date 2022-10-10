@@ -309,7 +309,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             ),
             BlockView.LinkToObject.Default.Text(
                 id = link.id,
-                icon = ObjectIcon.Basic.Avatar(""),
+                icon = ObjectIcon.None,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
                         BlockView.Decoration(

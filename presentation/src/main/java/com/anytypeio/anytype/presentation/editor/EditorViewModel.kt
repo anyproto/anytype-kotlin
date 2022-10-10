@@ -3552,13 +3552,18 @@ class EditorViewModel(
             }
             is ListenerType.LinkToObjectArchived -> {
                 when (mode) {
-                    EditorMode.Edit -> onPageClicked(clicked.target)
-                    EditorMode.Locked -> onPageClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
             }
             is ListenerType.LinkToObjectDeleted -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.LinkToObjectLoading -> {
                 when (mode) {
                     EditorMode.Edit -> Unit
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)

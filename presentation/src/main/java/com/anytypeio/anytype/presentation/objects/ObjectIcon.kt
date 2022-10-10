@@ -74,5 +74,56 @@ sealed class ObjectIcon {
                 null -> None
             }
         }
+
+        fun getEditorLinkToObjectIcon(
+            obj: ObjectWrapper.Basic,
+            layout: ObjectType.Layout?,
+            builder: UrlBuilder
+        ): ObjectIcon {
+            val img = obj.iconImage
+            val emoji = obj.iconEmoji
+            return when (layout) {
+                ObjectType.Layout.BASIC -> when {
+                    !img.isNullOrBlank() -> Basic.Image(hash = builder.thumbnail(img))
+                    !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
+                    else -> None
+                }
+                ObjectType.Layout.OBJECT_TYPE -> when {
+                    !img.isNullOrBlank() -> Basic.Image(hash = builder.thumbnail(img))
+                    !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
+                    else -> Basic.Avatar(obj.name.orEmpty())
+                }
+                ObjectType.Layout.PROFILE -> if (!img.isNullOrBlank()) {
+                    Profile.Image(hash = builder.thumbnail(img))
+                } else {
+                    Profile.Avatar(name = obj.name.orEmpty())
+                }
+                ObjectType.Layout.SET -> if (!img.isNullOrBlank()) {
+                    Basic.Image(hash = builder.thumbnail(img))
+                } else if (!emoji.isNullOrBlank()) {
+                    Basic.Emoji(unicode = emoji)
+                } else {
+                    None
+                }
+                ObjectType.Layout.IMAGE -> if (!img.isNullOrBlank()) {
+                    Basic.Image(hash = builder.thumbnail(img))
+                } else {
+                    None
+                }
+                ObjectType.Layout.TODO -> Task(isChecked = obj.done ?: false)
+                ObjectType.Layout.NOTE -> Basic.Avatar(obj.snippet.orEmpty())
+                ObjectType.Layout.FILE -> Basic.Avatar(obj.name.orEmpty())
+                ObjectType.Layout.BOOKMARK -> when {
+                    !img.isNullOrBlank() -> Bookmark(image = builder.thumbnail(img))
+                    !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
+                    else -> None
+                }
+                ObjectType.Layout.RELATION -> None
+                ObjectType.Layout.DASHBOARD -> None
+                ObjectType.Layout.SPACE -> None
+                ObjectType.Layout.DATABASE -> None
+                null -> None
+            }
+        }
     }
 }

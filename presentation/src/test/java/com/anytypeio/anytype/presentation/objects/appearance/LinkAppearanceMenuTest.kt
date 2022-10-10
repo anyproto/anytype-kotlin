@@ -5,6 +5,8 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseIconViewModel
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -29,8 +31,12 @@ class LinkAppearanceMenuTest {
             preview = MenuItem.PreviewLayout.TEXT,
             icon = MenuItem.Icon.SMALL,
             cover = null,
-            description = null,
+            description = MenuItem.Description.NONE,
             objectType = MenuItem.ObjectType.WITHOUT,
+            iconMenus = listOf(
+                ObjectAppearanceChooseSettingsView.Icon.None(false),
+                ObjectAppearanceChooseSettingsView.Icon.Small(true)
+            )
         )
         assertEquals(expected, actual)
     }
@@ -47,8 +53,9 @@ class LinkAppearanceMenuTest {
             preview = MenuItem.PreviewLayout.TEXT,
             icon = null,
             cover = null,
-            description = null,
+            description = MenuItem.Description.NONE,
             objectType = MenuItem.ObjectType.WITHOUT,
+            iconMenus = listOf()
         )
         assertEquals(expected, actual)
     }
@@ -69,6 +76,7 @@ class LinkAppearanceMenuTest {
             cover = null,
             description = null,
             objectType = MenuItem.ObjectType.WITHOUT,
+            iconMenus = listOf()
         )
         assertEquals(expected, actual)
     }
@@ -90,6 +98,11 @@ class LinkAppearanceMenuTest {
             cover = null,
             description = MenuItem.Description.ADDED,
             objectType = MenuItem.ObjectType.WITHOUT,
+            iconMenus = listOf(
+                ObjectAppearanceChooseSettingsView.Icon.None(false),
+                ObjectAppearanceChooseSettingsView.Icon.Small(true),
+                ObjectAppearanceChooseSettingsView.Icon.Medium(false)
+            )
         )
         assertEquals(expected, actual)
     }

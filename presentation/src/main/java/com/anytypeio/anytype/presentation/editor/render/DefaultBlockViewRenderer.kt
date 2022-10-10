@@ -1203,7 +1203,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
         details: Block.Details
-    ): BlockView = when(content.state) {
+    ): BlockView = when (content.state) {
         Content.Bookmark.State.EMPTY -> {
             BlockView.MediaPlaceholder.Bookmark(
                 id = block.id,
@@ -1651,7 +1651,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val inEditorAppearance = factory.createInEditorLinkAppearance()
         val isCard = inEditorAppearance.isCard
         val icon = if (inEditorAppearance.showIcon) {
-            ObjectIcon.from(
+            ObjectIcon.getEditorLinkToObjectIcon(
                 obj = obj,
                 layout = obj.layout,
                 builder = urlBuilder
@@ -1661,25 +1661,26 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
         val name = obj.getProperObjectName()
 
+        val description = when (inEditorAppearance.description) {
+            InEditor.Description.NONE -> null
+            InEditor.Description.RELATION -> obj.description
+            InEditor.Description.SNIPPET -> obj.snippet
+        }
+        val objectTypeName = if (inEditorAppearance.showType) {
+            val typeUrl = obj.type.firstOrNull()
+            objectTypes.find { it.url == typeUrl }?.name
+        } else {
+            null
+        }
+
         return if (isCard) {
-            val description = when (inEditorAppearance.description) {
-                InEditor.Description.NONE -> null
-                InEditor.Description.RELATION -> obj.description
-                InEditor.Description.SNIPPET -> obj.snippet
-            }
-            val type = if (inEditorAppearance.showType) {
-                val typeUrl = obj.type.firstOrNull()
-                objectTypes.find { it.url == typeUrl }?.name
-            } else {
-                null
-            }
 
             var coverColor: CoverColor? = null
             var coverImage: Url? = null
             var coverGradient: String? = null
 
             if (inEditorAppearance.showCover) {
-                when (val type = obj.coverType) {
+                when (obj.coverType) {
                     CoverType.UPLOADED_IMAGE -> {
                         coverImage = obj.coverId?.let { id ->
                             urlBuilder.image(id)
@@ -1699,7 +1700,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     CoverType.GRADIENT -> {
                         coverGradient = obj.coverId
                     }
-                    else -> Timber.d("Missing cover type: $type")
+                    else -> Timber.d("Missing cover type: ${obj.coverType?.name}")
                 }
             }
 
@@ -1719,7 +1720,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 coverGradient = coverGradient,
                 background = block.parseThemeBackgroundColor(),
                 isPreviousBlockMedia = isPreviousBlockMedia,
-                objectTypeName = type,
+                objectTypeName = objectTypeName,
                 decorations = buildNestedDecorationData(
                     block = block,
                     parentScheme = parentSchema,
@@ -1748,7 +1749,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                         style = DecorationData.Style.None,
                         background = block.parseThemeBackgroundColor()
                     )
-                ).toBlockViewDecoration(block)
+                ).toBlockViewDecoration(block),
+                description = description,
+                objectTypeName = objectTypeName
             )
         }
     }
@@ -1763,15 +1766,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     ): BlockView.LinkToObject.Archived = BlockView.LinkToObject.Archived(
         id = block.id,
         isEmpty = true,
-        emoji = obj.iconEmoji?.let { name ->
-            name.ifEmpty { null }
-        },
-        image = obj.iconImage?.let { name ->
-            if (name.isNotEmpty())
-                urlBuilder.image(name)
-            else
-                null
-        },
+        emoji = null,
+        image = null,
         text = obj.getProperObjectName(),
         indent = indent,
         isSelected = checkIfSelected(

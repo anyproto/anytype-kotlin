@@ -482,6 +482,7 @@
     <string name="name_type_page_icon">📄</string>
     <string name="name_type_page_subtitle">Proto type to start with</string>
     <string name="non_existent_object">Non-existent object</string>
+    <string name="deleted_object">Deleted object</string>
     <string name="open_set">Open set</string>
     <string name="deleted">Deleted</string>
     <string name="paste_link_or_search">Paste link or search objects</string>

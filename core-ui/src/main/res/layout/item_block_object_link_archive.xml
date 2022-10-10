@@ -24,43 +24,30 @@
             android:orientation="vertical"
             app:layout_constraintGuide_begin="0dp" />
 
-        <FrameLayout
-            android:id="@+id/pageIconContainer"
+        <ImageView
+            android:id="@+id/ivIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/pageGuideline"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_non_existent_object">
 
-            <ImageView
-                android:id="@+id/pageIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/content_description_page_icon" />
-
-            <ImageView
-                android:id="@+id/linkImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <ImageView
-                android:id="@+id/linkEmoji"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center" />
-
-        </FrameLayout>
+        </ImageView>
 
         <com.anytypeio.anytype.core_ui.widgets.text.TextHighlightWidget
             android:id="@+id/pageTitle"
             style="@style/BlockPageArchivedContentStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:background="@null"
+            android:ellipsize="end"
+            android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/pageIconContainer"
+            app:layout_constraintStart_toEndOf="@+id/ivIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Partnership terms Partnership terms Partnership terms Partnership terms" />
 

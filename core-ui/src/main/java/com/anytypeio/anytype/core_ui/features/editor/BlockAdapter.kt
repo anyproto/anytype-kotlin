@@ -573,11 +573,7 @@ class BlockAdapter(
             }
             HOLDER_OBJECT_LINK_LOADING -> {
                 LinkToObjectLoading(
-                    binding = ItemBlockObjectLinkLoadingBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                    )
+                    ItemBlockObjectLinkLoadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_BOOKMARK -> {
@@ -1027,6 +1023,12 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
+                    is LinkToObjectLoading -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
                     is Bookmark -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1271,6 +1273,12 @@ class BlockAdapter(
             is LinkToObjectDelete -> {
                 holder.bind(
                     item = blocks[position] as BlockView.LinkToObject.Deleted,
+                    clicked = onClickListener
+                )
+            }
+            is LinkToObjectLoading -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.LinkToObject.Loading,
                     clicked = onClickListener
                 )
             }

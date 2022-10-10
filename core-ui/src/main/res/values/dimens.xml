@@ -224,6 +224,7 @@
     <dimen name="default_graphic_text_text_padding_bottom">4dp</dimen>
     <dimen name="default_graphic_text_graphic_margin_top">5dp</dimen>
     <dimen name="default_graphic_text_graphic_width">24dp</dimen>
+    <dimen name="default_graphic_text_text_first_line_margin_start">28dp</dimen>
 
     <!-- Editor, block: media placeholder -->
     <dimen name="default_media_placeholder_root_margin_top">10dp</dimen>

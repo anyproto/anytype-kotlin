@@ -85,7 +85,7 @@ class LinkToObjectCard(
 
         applyImageOrEmoji(item)
 
-        applyType(item)
+        applyObjectType(item)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
@@ -198,6 +198,8 @@ class LinkToObjectCard(
                 applyCover(item)
             if (payload.isBackgroundColorChanged)
                 applyBackground(item.background)
+            if (payload.isObjectTypeChanged)
+                applyObjectType(item)
         }
     }
 
@@ -274,8 +276,8 @@ class LinkToObjectCard(
         }
     }
 
-    private fun applyType(item: BlockView.LinkToObject.Default.Card) {
-        if (item.objectTypeName != null) {
+    private fun applyObjectType(item: BlockView.LinkToObject.Default.Card) {
+        if (!item.objectTypeName.isNullOrBlank()) {
             type.text = item.objectTypeName
             type.visible()
         } else {

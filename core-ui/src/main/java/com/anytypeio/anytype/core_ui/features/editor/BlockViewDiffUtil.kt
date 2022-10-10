@@ -153,6 +153,8 @@ class BlockViewDiffUtil(
                 changes.add(OBJECT_DESCRIPTION_CHANGED)
             if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)
+            if (newBlock.objectTypeName != oldBlock.objectTypeName)
+                changes.add(OBJECT_TYPE_CHANGED)
         }
 
         if (newBlock is BlockView.LinkToObject.Default.Card && oldBlock is BlockView.LinkToObject.Default.Card) {
@@ -271,6 +273,7 @@ class BlockViewDiffUtil(
         val isObjectIconChanged: Boolean get() = changes.contains(OBJECT_ICON_CHANGED)
         val isObjectDescriptionChanged: Boolean get() = changes.contains(OBJECT_DESCRIPTION_CHANGED)
         val isObjectCoverChanged: Boolean get() = changes.contains(OBJECT_COVER_CHANGED)
+        val isObjectTypeChanged: Boolean get() = changes.contains(OBJECT_TYPE_CHANGED)
 
         val isLatexChanged: Boolean get() = changes.contains(LATEX_CHANGED)
 
@@ -317,10 +320,11 @@ class BlockViewDiffUtil(
         const val RELATION_NAME_CHANGED = 22
         const val RELATION_VALUE_CHANGED = 23
 
-        const val OBJECT_TITLE_CHANGED = 19
-        const val OBJECT_ICON_CHANGED = 20
-        const val OBJECT_COVER_CHANGED = 24
-        const val OBJECT_DESCRIPTION_CHANGED = 25
+        const val OBJECT_TITLE_CHANGED = 319
+        const val OBJECT_ICON_CHANGED = 320
+        const val OBJECT_COVER_CHANGED = 321
+        const val OBJECT_DESCRIPTION_CHANGED = 322
+        const val OBJECT_TYPE_CHANGED = 323
 
         const val DECORATION_CHANGED = 27
         const val CALLOUT_ICON_CHANGED = 28

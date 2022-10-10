@@ -325,6 +325,9 @@ fun List<BlockView>.enterSAM(
         is BlockView.LinkToObject.Deleted -> view.copy(
             isSelected = isSelected
         )
+        is BlockView.LinkToObject.Loading -> view.copy(
+            isSelected = isSelected
+        )
         is BlockView.DividerDots -> view.copy(
             isSelected = isSelected
         )
@@ -881,6 +884,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.LinkToObject.Default.Card -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Archived -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Deleted -> copy(isSelected = newSelection)
+    is BlockView.LinkToObject.Loading -> copy(isSelected = newSelection)
     is BlockView.MediaPlaceholder.Bookmark -> copy(isSelected = newSelection)
     is BlockView.Media.Bookmark -> copy(isSelected = newSelection)
     is BlockView.Error.Bookmark -> copy(isSelected = newSelection)

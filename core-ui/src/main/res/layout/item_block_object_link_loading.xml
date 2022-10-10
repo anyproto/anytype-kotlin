@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/DefaultDocumentContainerStyle"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/dp_8"
+    android:paddingEnd="8dp"
+    tools:context="com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectLoading">
 
     <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
         android:paddingStart="@dimen/default_document_content_padding_start"
-        android:paddingEnd="@dimen/default_document_content_padding_end">
+        android:paddingEnd="@dimen/default_document_content_padding_end"
+        tools:background="@drawable/item_block_multi_select_selected">
 
         <ProgressBar
             android:id="@+id/progress"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="center_vertical"
-            android:theme="@style/GreyProgressBar" />
+            android:theme="@style/SyncingObjectStyle" />
 
         <TextView
             android:id="@+id/syncing"
@@ -24,6 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/syncing"
-            android:textColor="#ACA996" />
+            android:textColor="@color/text_tertiary" />
     </LinearLayout>
 </FrameLayout>

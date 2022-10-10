@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
 
 internal class LinkAppearanceFactory(
     private val content: Block.Content.Link,
@@ -15,7 +16,7 @@ internal class LinkAppearanceFactory(
 
     private val isTodoLayout = layout == ObjectType.Layout.TODO
     private val isNoteLayout = layout == ObjectType.Layout.NOTE
-    private val withDescription = content.cardStyle != CardStyle.TEXT && !isNoteLayout
+    private val withDescription = !isNoteLayout
 
     //todo Cover menu option is off. No proper design yet.
     private val canHaveCover: Boolean =
@@ -31,7 +32,7 @@ internal class LinkAppearanceFactory(
         }
         val description = when {
             !withDescription -> InEditor.Description.NONE
-            else -> when(content.description) {
+            else -> when (content.description) {
                 Block.Content.Link.Description.NONE -> InEditor.Description.NONE
                 Block.Content.Link.Description.ADDED -> InEditor.Description.RELATION
                 Block.Content.Link.Description.CONTENT -> InEditor.Description.SNIPPET
@@ -61,6 +62,24 @@ internal class LinkAppearanceFactory(
                 IconSize.MEDIUM -> MenuItem.Icon.MEDIUM
             }
         } else null
+        val iconMenus = if (hasIconMenuItem) {
+            when (preview) {
+                MenuItem.PreviewLayout.CARD -> {
+                    listOf(
+                        ObjectAppearanceChooseSettingsView.Icon.None(isSelected = content.iconSize == IconSize.NONE),
+                        ObjectAppearanceChooseSettingsView.Icon.Small(isSelected = content.iconSize == IconSize.SMALL),
+                        ObjectAppearanceChooseSettingsView.Icon.Medium(isSelected = content.iconSize == IconSize.MEDIUM)
+                    )
+                }
+                MenuItem.PreviewLayout.TEXT -> {
+                    listOf(
+                        ObjectAppearanceChooseSettingsView.Icon.None(isSelected = content.iconSize == IconSize.NONE),
+                        ObjectAppearanceChooseSettingsView.Icon.Small(isSelected = content.iconSize == IconSize.SMALL)
+                    )
+                }
+                MenuItem.PreviewLayout.INLINE -> emptyList()
+            }
+        } else emptyList()
         val cover = if (canHaveCover) {
             when (withCover) {
                 true -> MenuItem.Cover.WITH
@@ -84,7 +103,8 @@ internal class LinkAppearanceFactory(
             icon = icon,
             cover = cover,
             description = description,
-            objectType,
+            objectType = objectType,
+            iconMenus = iconMenus
         )
     }
 }

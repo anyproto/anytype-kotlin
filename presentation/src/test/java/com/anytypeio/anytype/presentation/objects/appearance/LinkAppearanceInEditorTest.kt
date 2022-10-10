@@ -142,7 +142,7 @@ class LinkAppearanceInEditorTest {
     }
 
     @Test
-    fun `when card style text - no description`() {
+    fun `when card style text - relatoin description`() {
         val factory = LinkAppearanceFactory(
             content = defaultLinkAppearance.copy(
                 cardStyle = Link.CardStyle.TEXT,
@@ -156,13 +156,37 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            description = Description.NONE,
+            description = Description.RELATION,
             showCover = false,
             showType = false,
         )
 
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun `when card style text - snippet description`() {
+        val factory = LinkAppearanceFactory(
+            content = defaultLinkAppearance.copy(
+                cardStyle = Link.CardStyle.TEXT,
+                description = Link.Description.CONTENT
+            ),
+            layout = ObjectType.Layout.BASIC
+        )
+
+        val actual = factory.createInEditorLinkAppearance()
+
+        val expected = BlockView.Appearance.InEditor(
+            isCard = false,
+            showIcon = false,
+            description = Description.SNIPPET,
+            showCover = false,
+            showType = false,
+        )
+
+        assertEquals(expected, actual)
+    }
+
     @Test
     fun `when card style card - there is description`() {
         val factory = LinkAppearanceFactory(

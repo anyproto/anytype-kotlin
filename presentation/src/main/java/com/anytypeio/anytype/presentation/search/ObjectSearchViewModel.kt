@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.toView
 import kotlinx.coroutines.Job
@@ -120,9 +121,10 @@ open class ObjectSearchViewModel(
         userInput.value = searchText
     }
 
-    open fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
+    open fun onObjectClicked(view: DefaultObjectView) {
+        val target = view.id
         sendSearchResultEvent(target)
-        when (layout) {
+        when (view.layout) {
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,
@@ -136,7 +138,7 @@ open class ObjectSearchViewModel(
                 navigate(EventWrapper(AppNavigation.Command.LaunchObjectSet(target = target)))
             }
             else -> {
-                Timber.e("Unexpected layout: $layout")
+                Timber.e("Unexpected layout: ${view.layout}")
             }
         }
     }

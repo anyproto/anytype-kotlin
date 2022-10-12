@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.showMessageSnackBar
 import com.anytypeio.anytype.presentation.keychain.KeychainPhraseViewModel
 import com.anytypeio.anytype.presentation.keychain.KeychainPhraseViewModelFactory
 import com.anytypeio.anytype.presentation.keychain.KeychainViewState
@@ -46,6 +47,7 @@ abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T
     }
 
     protected abstract val keychain: TextView
+    protected abstract val anchor: View
     protected abstract val btnCopy: TextView
 
     @Inject
@@ -118,7 +120,9 @@ abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T
                 keychainPhrase
             )
             clipboard.setPrimaryClip(clip)
-            toast("Recovery phrase copied to clipboard.")
+            dialog?.window
+                ?.decorView
+                ?.showMessageSnackBar(getString(R.string.recovery_phrase_copied), anchor)
         } catch (e: Exception) {
             toast("Could not copy your recovery phrase. Please try again later, or copy it manually.")
         }

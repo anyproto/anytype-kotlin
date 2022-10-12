@@ -293,4 +293,7 @@ Do the computation of an expensive paragraph of text on a background thread:
         <item quantity="one">%d object selected</item>
         <item quantity="other">%d objects selected</item>
     </plurals>
+
+    <string name="snack_link_to">linked to</string>
+    <string name="recovery_phrase_copied">Recovery phrase copied</string>
 </resources>

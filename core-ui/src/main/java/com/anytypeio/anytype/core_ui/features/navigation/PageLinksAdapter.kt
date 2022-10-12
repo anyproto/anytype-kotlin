@@ -74,7 +74,7 @@ class PageLinksAdapter(
 }
 
 class DefaultObjectViewAdapter(
-    private val onClick: (Id, ObjectType.Layout?) -> Unit
+    private val onClick: (DefaultObjectView) -> Unit
 ) : ListAdapter<DefaultObjectView, DefaultObjectViewAdapter.ObjectViewHolder>(Differ) {
 
     override fun onCreateViewHolder(
@@ -86,7 +86,7 @@ class DefaultObjectViewAdapter(
         itemView.setOnClickListener {
             val pos = bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
-                onClick(getItem(pos).id, getItem(pos).layout)
+                onClick(getItem(pos))
             }
         }
     }

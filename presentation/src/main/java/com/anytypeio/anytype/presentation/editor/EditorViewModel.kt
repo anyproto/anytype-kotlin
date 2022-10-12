@@ -185,6 +185,7 @@ import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toView
@@ -4043,7 +4044,7 @@ class EditorViewModel(
         )
     }
 
-    private fun proceedWithOpeningPage(target: Id) {
+    fun proceedWithOpeningPage(target: Id) {
         viewModelScope.launch {
             closePage(CloseBlock.Params(context)).process(
                 failure = {
@@ -4057,7 +4058,7 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningSet(target: Id, isPopUpToDashboard: Boolean = false) {
+    fun proceedWithOpeningSet(target: Id, isPopUpToDashboard: Boolean = false) {
         viewModelScope.launch {
             closePage(CloseBlock.Params(context)).process(
                 failure = {
@@ -4977,7 +4978,13 @@ class EditorViewModel(
         )
     }
 
-    fun proceedWithMoveToAction(target: Id, blocks: List<Id>) {
+    fun proceedWithMoveToAction(
+        target: Id,
+        text: String,
+        icon: ObjectIcon,
+        blocks: List<Id>,
+        isSet: Boolean
+    ) {
         if (BuildConfig.DEBUG) {
             Timber.d("onMoveToTargetClicked, target:[$target], blocks:[$blocks]")
         }
@@ -4993,7 +5000,10 @@ class EditorViewModel(
                     target = "",
                     targetContext = target,
                     blocks = blocks,
-                    position = Position.BOTTOM
+                    position = Position.BOTTOM,
+                    onSuccess = {
+                        dispatch(Command.OpenObjectSnackbar(id = target, text, icon, isSet))
+                    }
                 )
             )
         }
@@ -5053,7 +5063,14 @@ class EditorViewModel(
         dispatch(Command.OpenLinkToScreen(target = block, position = position))
     }
 
-    fun proceedWithLinkToAction(link: Id, target: Id, isBookmark: Boolean) {
+    fun proceedWithLinkToAction(
+        link: Id,
+        target: Id,
+        isBookmark: Boolean,
+        text: String,
+        icon: ObjectIcon,
+        isSet: Boolean
+    ) {
         val targetBlock = blocks.firstOrNull { it.id == target }
         if (targetBlock != null) {
             val targetContent = targetBlock.content
@@ -5071,7 +5088,10 @@ class EditorViewModel(
                         prototype = if (isBookmark)
                             Prototype.Bookmark.Existing(target = link)
                         else
-                            Prototype.Link(target = link)
+                            Prototype.Link(target = link),
+                        onSuccess = {
+                            dispatch(Command.OpenObjectSnackbar(id = link, text, icon, isSet))
+                        }
                     )
                 )
             }

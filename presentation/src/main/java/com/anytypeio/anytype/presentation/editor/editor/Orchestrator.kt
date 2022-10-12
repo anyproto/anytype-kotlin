@@ -111,6 +111,7 @@ class Orchestrator(
                             val middlewareTime = System.currentTimeMillis()
                             stores.focus.update(Focus.id(id = id))
                             proxies.payloads.send(payload)
+                            intent.onSuccess?.invoke()
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = intent.prototype,
                                 startTime = startTime,
@@ -408,6 +409,7 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = {
+                            intent.onSuccess?.invoke()
                             proxies.payloads.send(it)
                             analytics.sendAnalyticsReorderBlockEvent(intent.blocks.size)
                         }

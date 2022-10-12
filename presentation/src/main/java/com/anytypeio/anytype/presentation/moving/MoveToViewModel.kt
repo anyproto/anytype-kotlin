@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -127,11 +128,11 @@ class MoveToViewModel(
         )
     }
 
-    fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
+    fun onObjectClicked(view: DefaultObjectView) {
         viewModelScope.launch {
-            commands.emit(Command.Move(target = target))
+            commands.emit(Command.Move(view = view))
         }
-        sendSearchResultEvent(target)
+        sendSearchResultEvent(view.id)
     }
 
     fun onDialogCancelled() {
@@ -153,7 +154,7 @@ class MoveToViewModel(
 
     sealed class Command {
         object Exit : Command()
-        data class Move(val target: Id) : Command()
+        data class Move(val view: DefaultObjectView) : Command()
     }
 
     companion object {

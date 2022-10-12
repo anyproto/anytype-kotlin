@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class Command {
 
@@ -31,6 +32,13 @@ sealed class Command {
         val id: String,
         val mime: String,
         val uri: String
+    ) : Command()
+
+    data class OpenObjectSnackbar(
+        val id: Id,
+        val text: String,
+        val icon: ObjectIcon,
+        val isSet: Boolean,
     ) : Command()
 
     object PopBackStack : Command()

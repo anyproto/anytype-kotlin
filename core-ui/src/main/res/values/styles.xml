@@ -1041,6 +1041,12 @@
         <item name="android:lineSpacingMultiplier">1.1</item>
     </style>
 
+    <style name="SnackbarTextStyle">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
     <!-- Editor, object link as text block, {root {guideline , iconObjectContainer, text, tvObjectType, tvDescription}}-->
     <style name="ObjectLinkBlockTextStyle">
         <item name="android:background">@null</item>

@@ -35,6 +35,7 @@ class DashboardMnemonicReminderDialog :
     }
 
     override val keychain: TextView by lazy { binding.keychain }
+    override val anchor: View by lazy { binding.anchor }
     override val btnCopy: TextView by lazy { binding.btnCopy }
 
     companion object {

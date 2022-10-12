@@ -34,6 +34,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -182,7 +183,10 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
                     onLinkTo(
                         link = command.link,
                         target = target,
-                        isBookmark = command.isBookmark
+                        text = command.text,
+                        icon = command.icon,
+                        isBookmark = command.isBookmark,
+                        isSet = command.isSet
                     )
                 }
                 dismiss()
@@ -266,6 +270,13 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
 }
 
 interface OnLinkToAction {
-    fun onLinkTo(link: Id, target: Id, isBookmark: Boolean)
+    fun onLinkTo(
+        link: Id,
+        target: Id,
+        isBookmark: Boolean,
+        text: String,
+        icon: ObjectIcon,
+        isSet: Boolean
+    )
     fun onLinkToClose(block: Id, position: Int?)
 }

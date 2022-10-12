@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.moving.MoveToView
 import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -179,8 +181,11 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
                 }
                 withParent<OnMoveToAction> {
                     onMoveTo(
-                        target = command.target,
-                        blocks = blocks
+                        target = command.view.id,
+                        text = command.view.name,
+                        icon = command.view.icon,
+                        blocks = blocks,
+                        isSet = command.view.layout == ObjectType.Layout.SET
                     )
                 }
                 hideSoftInput()
@@ -275,6 +280,6 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 }
 
 interface OnMoveToAction {
-    fun onMoveTo(target: Id, blocks: List<Id>)
+    fun onMoveTo(target: Id, blocks: List<Id>, text: String, icon: ObjectIcon, isSet: Boolean)
     fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?)
 }

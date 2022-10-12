@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import kotlinx.parcelize.Parcelize
@@ -28,7 +29,8 @@ sealed class Intent {
             val target: Id,
             val targetContext: Id,
             val blocks: List<Id>,
-            val position: Position
+            val position: Position,
+            val onSuccess: (() -> Unit)? = null
         ) : Document()
 
         class TurnIntoDocument(
@@ -60,7 +62,8 @@ sealed class Intent {
             val context: Id,
             val target: Id,
             val position: Position,
-            val prototype: Block.Prototype
+            val prototype: Block.Prototype,
+            val onSuccess: (() -> Unit)? = null
         ) : CRUD()
 
         class Duplicate(

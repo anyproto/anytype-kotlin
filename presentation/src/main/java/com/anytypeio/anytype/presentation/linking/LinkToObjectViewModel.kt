@@ -8,6 +8,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -36,13 +38,16 @@ class LinkToObjectViewModel(
         keys = ObjectSearchConstants.defaultKeys
     )
 
-    override fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
-        sendSearchResultEvent(target)
+    override fun onObjectClicked(view: DefaultObjectView) {
+        sendSearchResultEvent(view.id)
         viewModelScope.launch {
             commands.emit(
                 Command.Link(
-                    link = target,
-                    isBookmark = layout == ObjectType.Layout.BOOKMARK
+                    link = view.id,
+                    text = view.name,
+                    icon = view.icon,
+                    isBookmark = view.layout == ObjectType.Layout.BOOKMARK,
+                    isSet = view.layout == ObjectType.Layout.SET
                 )
             )
         }
@@ -64,6 +69,12 @@ class LinkToObjectViewModel(
 
     sealed class Command {
         object Exit : Command()
-        data class Link(val link: Id, val isBookmark: Boolean) : Command()
+        data class Link(
+            val link: Id,
+            val isBookmark: Boolean,
+            val text: String,
+            val icon: ObjectIcon,
+            val isSet: Boolean
+        ) : Command()
     }
 }

@@ -49,6 +49,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
@@ -83,13 +84,16 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.hide
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.screen
 import com.anytypeio.anytype.core_utils.ext.show
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.extractMarks
@@ -99,9 +103,6 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.Snack
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_utils.ext.safeNavigate
-import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar.Main
@@ -679,14 +680,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.undoRedoToolbar.undo.clicks()
             .throttleFirst()
             .onEach {
-            vm.onActionUndoClicked()
-        }.launchIn(lifecycleScope)
+                vm.onActionUndoClicked()
+            }.launchIn(lifecycleScope)
 
         binding.undoRedoToolbar.redo.clicks()
             .throttleFirst()
             .onEach {
-            vm.onActionRedoClicked()
-        }.launchIn(lifecycleScope)
+                vm.onActionRedoClicked()
+            }.launchIn(lifecycleScope)
 
         lifecycleScope.subscribe(binding.styleToolbarMain.styles) {
             vm.onUpdateTextBlockStyle(it)
@@ -1087,6 +1088,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             restoreBlock = command.restoreBlock
                         )
                         fr.show(childFragmentManager, null)
+                    }
+                }
+                is Command.OpenObjectSnackbar -> {
+                    val from = (blockAdapter.views
+                        .firstOrNull { it is BlockView.TextSupport } as? BlockView.TextSupport)
+                        ?.text
+                    binding.root.showActionableSnackBar(from, command.text, command.icon) {
+                        if (command.isSet) {
+                            vm.proceedWithOpeningSet(command.id)
+                        } else {
+                            vm.proceedWithOpeningPage(command.id)
+                        }
                     }
                 }
                 is Command.OpenLinkToScreen -> {
@@ -1982,10 +1995,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         )
     }
 
-    override fun onMoveTo(target: Id, blocks: List<Id>) {
+    override fun onMoveTo(
+        target: Id,
+        blocks: List<Id>,
+        text: String,
+        icon: ObjectIcon,
+        isSet: Boolean
+    ) {
         vm.proceedWithMoveToAction(
             target = target,
-            blocks = blocks
+            text = text,
+            icon = icon,
+            blocks = blocks,
+            isSet = isSet
         )
     }
 
@@ -1997,11 +2019,21 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         )
     }
 
-    override fun onLinkTo(link: Id, target: Id, isBookmark: Boolean) {
+    override fun onLinkTo(
+        link: Id,
+        target: Id,
+        isBookmark: Boolean,
+        text: String,
+        icon: ObjectIcon,
+        isSet: Boolean
+    ) {
         vm.proceedWithLinkToAction(
             link = link,
             target = target,
-            isBookmark = isBookmark
+            text = text,
+            icon = icon,
+            isBookmark = isBookmark,
+            isSet = isSet
         )
     }
 

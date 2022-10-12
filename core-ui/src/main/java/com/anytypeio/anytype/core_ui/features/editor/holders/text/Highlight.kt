@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
-import android.text.Editable
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
@@ -15,14 +14,11 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Highlight(
     val binding: ItemBlockHighlightBinding,
@@ -94,10 +90,8 @@ class Highlight(
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
             decoratableContainer.decorate(decorations) { rect ->
-                indent.updateLayoutParams {
-                    width = dimen(R.dimen.default_indent) + rect.left
-                }
                 binding.highlightBlockContentContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.default_indent) + rect.left
                     marginEnd = dimen(R.dimen.dp_8) + rect.right
                     bottomMargin = rect.bottom
                 }

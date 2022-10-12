@@ -7,7 +7,7 @@
     <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
         android:id="@+id/decorationContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/highlightBlockContentContainer"
@@ -28,9 +28,9 @@
 
         <FrameLayout
             android:id="@+id/highlightGlyphContainer"
-            android:layout_marginTop="@dimen/default_highlight_content_margin_top"
             android:layout_width="24dp"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/default_highlight_content_margin_top">
 
             <View
                 android:id="@+id/divider"

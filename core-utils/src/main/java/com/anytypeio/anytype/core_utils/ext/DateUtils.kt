@@ -68,9 +68,9 @@ fun Long.formatTimestamp(isMillis: Boolean, format: String? = null): String {
     }
 }
 
-fun Long.timeInSecondsFormat(pattern: String): String {
+fun Long.formatTimeInMillis(pattern: String): String {
     val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
-    return simpleDateFormat.format(this * 1000)
+    return simpleDateFormat.format(this)
 }
 
 const val NO_DATE = "No date"

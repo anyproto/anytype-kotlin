@@ -6,12 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.getTodayTimeUnit
 import com.anytypeio.anytype.core_utils.ext.getTomorrowTimeUnit
 import com.anytypeio.anytype.core_utils.ext.getYesterdayTimeUnit
 import com.anytypeio.anytype.core_utils.ext.isSameDay
-import com.anytypeio.anytype.core_utils.ext.timeInSecondsFormat
-import com.anytypeio.anytype.core_utils.ext.toTimeSecondsLong
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -42,8 +41,7 @@ class RelationDateValueViewModel(
                 values.subscribe(objectId)
             ) { relation, value ->
                 setName(relation.name)
-                val timeInMillis = DateParser.parse(value[relationId])
-                setDate(timeInSeconds = timeInMillis?.toTimeSecondsLong())
+                setDate(timeInSeconds = DateParser.parse(value[relationId]))
             }
             pipeline.collect()
         }
@@ -113,7 +111,7 @@ class RelationDateValueViewModel(
             val isYesterday = exactDay.isSameDay(yesterday)
             var exactDayFormat: String? = null
             if (!isToday && !isTomorrow && !isYesterday) {
-                exactDayFormat = exactDay.timeInMillis.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+                exactDayFormat = exactDay.timeInMillis.formatTimeInMillis(DEFAULT_DATE_FORMAT)
             }
             _views.value = views.value.copy(
                 isToday = isToday,

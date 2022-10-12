@@ -15,7 +15,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
-import com.anytypeio.anytype.core_utils.ext.timeInSecondsFormat
+import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -23,7 +23,6 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRela
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -413,7 +412,7 @@ class ObjectRelationDateValueTest {
             )
         )
 
-        val exactDateFormat = valueDate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+        val exactDateFormat = valueDate.formatTimeInMillis(DEFAULT_DATE_FORMAT)
         onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
@@ -486,7 +485,7 @@ class ObjectRelationDateValueTest {
             )
         )
 
-        val exactDateFormat = valueDate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+        val exactDateFormat = valueDate.formatTimeInMillis(DEFAULT_DATE_FORMAT)
         onView(withId(R.id.ivNoDateCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
@@ -500,7 +499,7 @@ class ObjectRelationDateValueTest {
             it.onPickDate(valueUpdate)
         }
 
-        val updatedDateFormat = valueUpdate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+        val updatedDateFormat = valueUpdate.formatTimeInMillis(DEFAULT_DATE_FORMAT)
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
@@ -572,7 +571,7 @@ class ObjectRelationDateValueTest {
             )
         )
 
-        val exactDateFormat = valueDate.timeInSecondsFormat(DEFAULT_DATE_FORMAT)
+        val exactDateFormat = valueDate.formatTimeInMillis(DEFAULT_DATE_FORMAT)
         onView(withId(R.id.ivYesterdayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTodayCheck)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ivTomorrowCheck)).check(matches(not(isDisplayed())))

@@ -644,7 +644,10 @@ class DefaultBlockViewRenderer @Inject constructor(
                         block = block,
                         parentScheme = parentScheme,
                         currentDecoration = DecorationData(
-                            style = DecorationData.Style.Card,
+                            style = if ((content.type == Content.File.Type.FILE || content.type == Content.File.Type.PDF) && content.state == Content.File.State.DONE)
+                                DecorationData.Style.None
+                            else
+                                DecorationData.Style.Card,
                             background = block.parseThemeBackgroundColor()
                         )
                     )

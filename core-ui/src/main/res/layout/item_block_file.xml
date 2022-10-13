@@ -3,17 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    style="@style/DefaultGraphicTextBlockRootStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@color/anytype_background_green"
     tools:context="com.anytypeio.anytype.core_ui.features.editor.holders.media.File">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
-        style="@style/DefaultGraphicTextBlockContainerStyle"
+        android:paddingStart="@dimen/default_document_content_padding_start"
+        android:paddingEnd="@dimen/default_document_content_padding_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector"
         tools:background="@drawable/item_block_multi_select_selected">
 
         <androidx.constraintlayout.widget.Guideline

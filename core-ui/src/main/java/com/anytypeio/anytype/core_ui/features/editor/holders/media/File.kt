@@ -6,7 +6,10 @@ import android.text.format.Formatter
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -14,13 +17,16 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import timber.log.Timber
 
-class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
+class File(val binding: ItemBlockFileBinding) : Media(binding.root), DecoratableViewHolder {
 
     override val container = binding.root
     override val root: View = itemView
@@ -29,8 +35,12 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
     private val name = binding.text
     private val guideline = binding.guideline
 
+    override val decoratableContainer: EditorDecorationContainer
+        get() = binding.decorationContainer
+
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
     }
 
     fun bind(item: BlockView.Media.File, clicked: (ListenerType) -> Unit) {
@@ -104,7 +114,9 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        }
     }
 
     override fun select(isSelected: Boolean) {
@@ -118,9 +130,39 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
             }
-            if (payload.isBackgroundColorChanged) {
+            if (payload.isBackgroundColorChanged && !BuildConfig.NESTED_DECORATION_ENABLED) {
                 applyBackground(item.background)
             }
         }
     }
+
+    private fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            container.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.default_document_item_padding_start)
+                marginEnd = dimen(R.dimen.default_document_item_padding_end)
+                topMargin = dimen(R.dimen.default_graphic_text_root_margin_top)
+                bottomMargin = dimen(R.dimen.default_graphic_text_root_margin_bottom)
+            }
+        }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        Timber.w("Trying to apply decorations $decorations")
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(decorations) { rect ->
+                binding.container.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.dp_8) + rect.left
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
+                    bottomMargin = if (rect.bottom > 0) {
+                        rect.bottom
+                    } else {
+                        dimen(R.dimen.dp_2)
+                    }
+                }
+            }
+        }
+    }
+
+
 }

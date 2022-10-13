@@ -2,8 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
 import android.text.SpannableString
+import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +15,6 @@ import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -19,65 +22,62 @@ import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
-import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconCoverBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconCoverBinding
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
 
-class LinkToObjectCard(
-    private val binding: ItemBlockObjectLinkCardBinding
-) : BlockViewHolder(binding.root),
+abstract class LinkToObjectCard(
+    view: View
+) : BlockViewHolder(view),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
     DecoratableCardViewHolder,
     SupportCustomTouchProcessor,
     SupportNesting {
 
-    private val root = binding.root
-    private val container = binding.containerWithBackground
-    private val cover = binding.cover
-    private val untitled = itemView.resources.getString(R.string.untitled)
-    private val objectIcon = binding.cardIcon
-    private val title = binding.cardName
-    private val description = binding.cardDescription
-    private val selected = binding.selected
-    private val type = binding.cardType
+    protected abstract val rootView: View
+    abstract val containerView: ConstraintLayout
 
-    override val decoratableContainer = binding.decorationContainer
-    override val decoratableCard = binding.card
+    private val untitled = itemView.resources.getString(R.string.untitled)
+    abstract val objectIconView: ObjectIconWidget
+    abstract val titleView: TextView
+    abstract val descriptionView: TextView
+    abstract val selectedView: View
+    abstract val objectTypeView: TextView
+    abstract override val decoratableContainer: EditorDecorationContainer
+    abstract override val decoratableCard: CardView
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 
-    init {
-        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
-    }
-
-    fun bind(
+    protected fun bind(
         item: BlockView.LinkToObject.Default.Card,
         clicked: (ListenerType) -> Unit
     ) {
         indentize(item)
 
-        selected.isSelected = item.isSelected
+        selected(item)
 
         applyRootMargins(item)
 
         applyName(item)
 
         applyDescription(item)
-
-        applyCover(item)
 
         applyBackground(item.background)
 
@@ -90,56 +90,52 @@ class LinkToObjectCard(
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
 
+    private fun selected(item: BlockView.LinkToObject.Default.Card) {
+        selectedView.isSelected = item.isSelected
+    }
+
     private fun applyName(item: BlockView.LinkToObject.Default.Card) {
         val name = item.text
         when {
-            name == null -> title.gone()
+            name == null -> titleView.gone()
             name.isBlank() -> {
-                title.visible()
+                titleView.visible()
                 val sb = SpannableString(untitled)
-                title.setText(sb, TextView.BufferType.SPANNABLE)
+                titleView.setText(sb, TextView.BufferType.SPANNABLE)
             }
             else -> {
-                title.visible()
+                titleView.visible()
                 val sb = SpannableString(name)
-                title.setText(sb, TextView.BufferType.SPANNABLE)
+                titleView.setText(sb, TextView.BufferType.SPANNABLE)
             }
         }
     }
 
     private fun applyDescription(item: BlockView.LinkToObject.Default.Card) {
         if (item.description.isNullOrBlank()) {
-            description.gone()
+            descriptionView.gone()
         } else {
-            description.visible()
-            description.text = item.description
+            descriptionView.visible()
+            descriptionView.text = item.description
         }
     }
 
     private fun applyImageOrEmoji(item: BlockView.LinkToObject.Default.Card) {
         when (item.icon) {
             ObjectIcon.None -> {
-                objectIcon.gone()
+                objectIconView.gone()
             }
             else -> {
-                objectIcon.visible()
-                objectIcon.setIcon(item.icon)
+                objectIconView.visible()
+                objectIconView.setIcon(item.icon)
             }
         }
-    }
-
-    private fun applyCover(item: BlockView.LinkToObject.Default.Card) {
-        setCover(
-            coverColor = item.coverColor,
-            coverGradient = item.coverGradient,
-            coverImage = item.coverImage
-        )
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {
         item.searchFields.find { it.key == BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY }
             ?.let { field ->
-                applySearchHighlight(field, title)
+                applySearchHighlight(field, titleView)
             } ?: clearSearchHighlights()
     }
 
@@ -156,7 +152,7 @@ class LinkToObjectCard(
             )
         }
         if (field.isTargeted) {
-           content.setSpan(
+            content.setSpan(
                 SearchTargetHighlightSpan(),
                 field.target.first,
                 field.target.last,
@@ -166,72 +162,73 @@ class LinkToObjectCard(
     }
 
     private fun clearSearchHighlights() {
-        title.editableText?.removeSpans<SearchHighlightSpan>()
-        title.editableText?.removeSpans<SearchTargetHighlightSpan>()
+        titleView.editableText?.removeSpans<SearchHighlightSpan>()
+        titleView.editableText?.removeSpans<SearchTargetHighlightSpan>()
     }
 
     override fun indentize(item: BlockView.Indentable) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
+            rootView.updateLayoutParams<RecyclerView.LayoutParams> {
                 marginStart = item.indent * dimen(R.dimen.indent)
             }
         }
     }
 
-    fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
-        check(item is BlockView.LinkToObject.Default.Card) { "Expected a link to object block card, but was: $item" }
-        payloads.forEach { payload ->
-            if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
-                selected.isSelected = item.isSelected
-                applyImageOrEmoji(item)
-            }
-            if (payload.isSearchHighlightChanged) {
-                applySearchHighlight(item)
-            }
-            if (payload.isObjectTitleChanged)
-                applyName(item)
-            if (payload.isObjectIconChanged)
-                applyImageOrEmoji(item)
-            if (payload.isObjectDescriptionChanged)
-                applyDescription(item)
-            if (payload.isObjectCoverChanged)
-                applyCover(item)
-            if (payload.isBackgroundColorChanged)
-                applyBackground(item.background)
-            if (payload.isObjectTypeChanged)
-                applyObjectType(item)
+    protected fun processChangeBasePayloads(
+        payload: BlockViewDiffUtil.Payload,
+        item: BlockView.LinkToObject.Default.Card
+    ) {
+        if (payload.isSelectionChanged) {
+            selected(item)
+        }
+        if (payload.isSearchHighlightChanged) {
+            applySearchHighlight(item)
+        }
+        if (payload.isObjectTitleChanged) {
+            applyName(item)
+        }
+        if (payload.isObjectIconChanged) {
+            applyImageOrEmoji(item)
+        }
+        if (payload.isObjectDescriptionChanged) {
+            applyDescription(item)
+        }
+        if (payload.isBackgroundColorChanged) {
+            applyBackground(item.background)
+        }
+        if (payload.isObjectTypeChanged) {
+            applyObjectType(item)
         }
     }
 
-    private fun setCover(
-        coverColor: CoverColor?,
-        coverImage: String?,
-        coverGradient: String?
+    protected fun applyCover(
+        coverView: ImageView,
+        cover: BlockView.LinkToObject.Default.Card.Cover?
     ) {
-        when {
-            coverColor != null -> {
-                cover.apply {
+        when (cover) {
+            is BlockView.LinkToObject.Default.Card.Cover.Color -> {
+                coverView.apply {
                     visible()
                     setImageDrawable(null)
-                    setBackgroundColor(coverColor.color)
+                    setBackgroundColor(cover.color.color)
                 }
             }
-            coverImage != null -> {
-                cover.apply {
+            is BlockView.LinkToObject.Default.Card.Cover.Image -> {
+                coverView.apply {
                     visible()
                     setBackgroundColor(0)
                     Glide
                         .with(itemView)
-                        .load(coverImage)
+                        .load(cover.url)
                         .centerCrop()
                         .into(this)
                 }
             }
-            coverGradient != null -> {
-                cover.apply {
+            is BlockView.LinkToObject.Default.Card.Cover.Gradient -> {
+                coverView.apply {
                     setImageDrawable(null)
                     setBackgroundColor(0)
-                    when (coverGradient) {
+                    when (cover.gradient) {
                         CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow)
                         CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red)
                         CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue)
@@ -245,30 +242,29 @@ class LinkToObjectCard(
                 }
             }
             else -> {
-                cover.apply {
+                coverView.apply {
                     setImageDrawable(null)
                     setBackgroundColor(0)
-                    gone()
                 }
             }
         }
     }
 
     private fun applyBackground(background: ThemeColor) {
-        container.setBlockBackgroundColor(background)
+        containerView.setBlockBackgroundColor(background)
     }
 
     private fun applyRootMargins(item: BlockView.LinkToObject.Default.Card) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             if (item.isPreviousBlockMedia) {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
+                rootView.updateLayoutParams<RecyclerView.LayoutParams> {
                     apply { topMargin = 0 }
                 }
             } else {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
+                rootView.updateLayoutParams<RecyclerView.LayoutParams> {
                     apply {
                         topMargin =
-                            root.resources.getDimension(R.dimen.default_link_card_root_margin_top)
+                            rootView.resources.getDimension(R.dimen.default_link_card_root_margin_top)
                                 .toInt()
                     }
                 }
@@ -278,23 +274,23 @@ class LinkToObjectCard(
 
     private fun applyObjectType(item: BlockView.LinkToObject.Default.Card) {
         if (!item.objectTypeName.isNullOrBlank()) {
-            type.text = item.objectTypeName
-            type.visible()
+            objectTypeView.text = item.objectTypeName
+            objectTypeView.visible()
         } else {
-            type.gone()
+            objectTypeView.gone()
         }
     }
 
-    private fun applyDefaultOffsets() {
+    protected fun applyDefaultOffsets() {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updatePadding(
+            rootView.updatePadding(
                 left = dimen(R.dimen.default_document_item_padding_start),
                 right = dimen(R.dimen.default_document_item_padding_end)
             )
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
+            rootView.updateLayoutParams<RecyclerView.LayoutParams> {
                 bottomMargin = dimen(R.dimen.dp_10)
             }
-            binding.card.updateLayoutParams<FrameLayout.LayoutParams> {
+            decoratableCard.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.dp_12)
                 marginEnd = dimen(R.dimen.dp_12)
             }
@@ -304,10 +300,160 @@ class LinkToObjectCard(
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.card,
+            selectedView.applySelectorOffset<FrameLayout.LayoutParams>(
+                content = decoratableCard,
                 res = itemView.resources
             )
+        }
+    }
+}
+
+class LinkToObjectCardSmallIcon(binding: ItemBlockObjectLinkCardSmallIconBinding) :
+    LinkToObjectCard(binding.root) {
+
+    override val rootView = binding.root
+    override val containerView = binding.containerWithBackground
+    override val objectIconView = binding.cardIcon
+    override val titleView = binding.cardName
+    override val descriptionView = binding.cardDescription
+    override val objectTypeView = binding.cardType
+    override val decoratableContainer = binding.decorationContainer
+    override val selectedView = binding.selected
+    override val decoratableCard = binding.card
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
+    }
+
+    fun bind(
+        item: BlockView.LinkToObject.Default.Card.SmallIcon,
+        clicked: (ListenerType) -> Unit
+    ) {
+        super.bind(item = item, clicked = clicked)
+    }
+
+    fun processChangePayloads(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView.LinkToObject.Default.Card.SmallIcon
+    ) {
+        payloads.forEach { payload ->
+            processChangeBasePayloads(payload, item)
+        }
+    }
+}
+
+class LinkToObjectCardMediumIcon(binding: ItemBlockObjectLinkCardMediumIconBinding) :
+    LinkToObjectCard(binding.root) {
+
+    override val rootView = binding.root
+    override val containerView = binding.containerWithBackground
+    override val objectIconView = binding.cardIcon
+    override val titleView = binding.cardName
+    override val descriptionView = binding.cardDescription
+    override val objectTypeView = binding.cardType
+    override val decoratableContainer = binding.decorationContainer
+    override val selectedView = binding.selected
+    override val decoratableCard = binding.card
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
+    }
+
+    fun bind(
+        item: BlockView.LinkToObject.Default.Card.MediumIcon,
+        clicked: (ListenerType) -> Unit
+    ) {
+        super.bind(item = item, clicked = clicked)
+    }
+
+    fun processChangePayloads(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView.LinkToObject.Default.Card.MediumIcon
+    ) {
+        payloads.forEach { payload ->
+            processChangeBasePayloads(payload, item)
+        }
+    }
+}
+
+class LinkToObjectCardSmallIconCover(binding: ItemBlockObjectLinkCardSmallIconCoverBinding) :
+    LinkToObjectCard(binding.root) {
+
+    override val rootView = binding.root
+    override val containerView = binding.containerWithBackground
+    override val objectIconView = binding.cardIcon
+    override val titleView = binding.cardName
+    override val descriptionView = binding.cardDescription
+    override val objectTypeView = binding.cardType
+    override val decoratableContainer = binding.decorationContainer
+    override val decoratableCard = binding.card
+    override val selectedView = binding.selected
+    private val coverView = binding.coverImage
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
+    }
+
+    fun bind(
+        item: BlockView.LinkToObject.Default.Card.SmallIconCover,
+        clicked: (ListenerType) -> Unit
+    ) {
+        super.bind(item = item, clicked = clicked)
+        applyCover(coverView = coverView, cover = item.cover)
+    }
+
+    fun processChangePayloads(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView.LinkToObject.Default.Card.SmallIconCover
+    ) {
+        payloads.forEach { payload ->
+            if (payload.isObjectCoverChanged) {
+                applyCover(coverView = coverView, cover = item.cover)
+            }
+            processChangeBasePayloads(payload, item)
+        }
+    }
+}
+
+class LinkToObjectCardMediumIconCover(binding: ItemBlockObjectLinkCardMediumIconCoverBinding) :
+    LinkToObjectCard(binding.root) {
+
+    override val rootView = binding.root
+    override val containerView = binding.containerWithBackground
+    override val objectIconView = binding.cardIcon
+    override val titleView = binding.cardName
+    override val descriptionView = binding.cardDescription
+    override val objectTypeView = binding.cardType
+    override val decoratableContainer = binding.decorationContainer
+    override val decoratableCard = binding.card
+    override val selectedView = binding.selected
+    private val coverView = binding.coverImage
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
+    }
+
+    fun bind(
+        item: BlockView.LinkToObject.Default.Card.MediumIconCover,
+        clicked: (ListenerType) -> Unit
+    ) {
+        super.bind(item = item, clicked = clicked)
+        applyCover(coverView = coverView, cover = item.cover)
+    }
+
+    fun processChangePayloads(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView.LinkToObject.Default.Card.MediumIconCover
+    ) {
+        payloads.forEach { payload ->
+            if (payload.isObjectCoverChanged) {
+                applyCover(coverView = coverView, cover = item.cover)
+            }
+            processChangeBasePayloads(payload, item)
         }
     }
 }

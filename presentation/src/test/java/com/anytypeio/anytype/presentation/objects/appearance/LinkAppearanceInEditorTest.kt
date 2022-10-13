@@ -32,6 +32,7 @@ class LinkAppearanceInEditorTest {
             description = Description.NONE,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
         assertEquals(expected, actual)
     }
@@ -50,6 +51,7 @@ class LinkAppearanceInEditorTest {
             description = Description.NONE,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
 
         assertEquals(expected, actual)
@@ -72,6 +74,7 @@ class LinkAppearanceInEditorTest {
             description = Description.NONE,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
 
         assertEquals(expected, actual)
@@ -92,6 +95,7 @@ class LinkAppearanceInEditorTest {
             description = Description.NONE,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
 
         assertEquals(expected, actual)
@@ -114,6 +118,7 @@ class LinkAppearanceInEditorTest {
             description = Description.NONE,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.SMALL
         )
 
         assertEquals(expected, actual)
@@ -136,6 +141,7 @@ class LinkAppearanceInEditorTest {
             description = Description.NONE,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
 
         assertEquals(expected, actual)
@@ -159,6 +165,7 @@ class LinkAppearanceInEditorTest {
             description = Description.RELATION,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
 
         assertEquals(expected, actual)
@@ -182,6 +189,7 @@ class LinkAppearanceInEditorTest {
             description = Description.SNIPPET,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
 
         assertEquals(expected, actual)
@@ -205,6 +213,7 @@ class LinkAppearanceInEditorTest {
             description = Description.RELATION,
             showCover = false,
             showType = false,
+            icon = BlockView.Appearance.InEditor.Icon.NONE
         )
 
         assertEquals(expected, actual)

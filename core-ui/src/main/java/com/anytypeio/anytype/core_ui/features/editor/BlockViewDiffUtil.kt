@@ -157,10 +157,17 @@ class BlockViewDiffUtil(
                 changes.add(OBJECT_TYPE_CHANGED)
         }
 
-        if (newBlock is BlockView.LinkToObject.Default.Card && oldBlock is BlockView.LinkToObject.Default.Card) {
-            if (newBlock.coverImage != oldBlock.coverImage || newBlock.coverGradient != oldBlock.coverGradient ||
-                newBlock.coverColor != oldBlock.coverColor
-            )
+        if (newBlock is BlockView.LinkToObject.Default.Card.SmallIconCover
+            && oldBlock is BlockView.LinkToObject.Default.Card.SmallIconCover) {
+            if (newBlock.cover != oldBlock.cover)
+                changes.add(OBJECT_COVER_CHANGED)
+            if (newBlock.background != oldBlock.background)
+                changes.add(BACKGROUND_COLOR_CHANGED)
+        }
+
+        if (newBlock is BlockView.LinkToObject.Default.Card.MediumIconCover
+            && oldBlock is BlockView.LinkToObject.Default.Card.MediumIconCover) {
+            if (newBlock.cover != oldBlock.cover)
                 changes.add(OBJECT_COVER_CHANGED)
             if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)

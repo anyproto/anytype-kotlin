@@ -31,7 +31,10 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON_COVER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_SMALL_ICON
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_SMALL_ICON_COVER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
@@ -61,7 +64,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseIconViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 
@@ -235,11 +237,18 @@ sealed class BlockView : ViewType {
             val description: Description,
             val showCover: Boolean,
             val showType: Boolean,
+            val icon: Icon
         ) {
             sealed interface Description {
                 object NONE : Description
                 object SNIPPET : Description
                 object RELATION : Description
+            }
+
+            sealed interface Icon {
+                object NONE : Icon
+                object SMALL : Icon
+                object MEDIUM : Icon
             }
         }
 
@@ -1053,7 +1062,7 @@ sealed class BlockView : ViewType {
          * @property isDeleted this property determines whether this linked object is deleted or not.
          * Whenever isDeleted is true, we don't care about isArchived flags
          */
-        sealed class Default : LinkToObject() {
+        sealed class Default : LinkToObject(), Searchable {
 
             abstract val text: String?
             abstract val description: String?
@@ -1072,27 +1081,85 @@ sealed class BlockView : ViewType {
                 override val background: ThemeColor = ThemeColor.DEFAULT,
                 override val decorations: List<Decoration> = emptyList(),
                 override val objectTypeName: String? = null
-            ) : Default(), Searchable {
+            ) : Default() {
                 override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
             }
 
-            data class Card(
-                override val id: String,
-                override val indent: Int = 0,
-                override val isSelected: Boolean = false,
-                override val searchFields: List<Searchable.Field> = emptyList(),
-                override val text: String? = null,
-                override val description: String? = null,
-                override val icon: ObjectIcon,
-                override val background: ThemeColor,
-                override val decorations: List<Decoration> = emptyList(),
-                override val objectTypeName: String? = null,
-                val coverColor: CoverColor? = null,
-                val coverImage: Url? = null,
-                val coverGradient: String? = null,
-                val isPreviousBlockMedia: Boolean,
-            ) : Default(), Searchable {
-                override fun getViewType() = HOLDER_OBJECT_LINK_CARD
+            sealed class Card: Default() {
+
+                abstract val isPreviousBlockMedia: Boolean
+
+                data class SmallIcon(
+                    override val id: String,
+                    override val indent: Int = 0,
+                    override val isSelected: Boolean = false,
+                    override val searchFields: List<Searchable.Field> = emptyList(),
+                    override val text: String? = null,
+                    override val description: String? = null,
+                    override val icon: ObjectIcon,
+                    override val background: ThemeColor,
+                    override val decorations: List<Decoration> = emptyList(),
+                    override val objectTypeName: String? = null,
+                    override val isPreviousBlockMedia: Boolean
+                ) : Card() {
+                    override fun getViewType() = HOLDER_OBJECT_LINK_CARD_SMALL_ICON
+                }
+
+                data class MediumIcon(
+                    override val id: String,
+                    override val indent: Int = 0,
+                    override val isSelected: Boolean = false,
+                    override val searchFields: List<Searchable.Field> = emptyList(),
+                    override val text: String? = null,
+                    override val description: String? = null,
+                    override val icon: ObjectIcon,
+                    override val background: ThemeColor,
+                    override val decorations: List<Decoration> = emptyList(),
+                    override val objectTypeName: String? = null,
+                    override val isPreviousBlockMedia: Boolean
+                ) : Card() {
+                    override fun getViewType() = HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON
+                }
+
+                data class SmallIconCover(
+                    override val id: String,
+                    override val indent: Int = 0,
+                    override val isSelected: Boolean = false,
+                    override val searchFields: List<Searchable.Field> = emptyList(),
+                    override val text: String? = null,
+                    override val description: String? = null,
+                    override val icon: ObjectIcon,
+                    override val background: ThemeColor,
+                    override val decorations: List<Decoration> = emptyList(),
+                    override val objectTypeName: String? = null,
+                    override val isPreviousBlockMedia: Boolean,
+                    val cover : Cover?
+                ) : Card() {
+                    override fun getViewType() = HOLDER_OBJECT_LINK_CARD_SMALL_ICON_COVER
+                }
+
+                data class MediumIconCover(
+                    override val id: String,
+                    override val indent: Int = 0,
+                    override val isSelected: Boolean = false,
+                    override val searchFields: List<Searchable.Field> = emptyList(),
+                    override val text: String? = null,
+                    override val description: String? = null,
+                    override val icon: ObjectIcon,
+                    override val background: ThemeColor,
+                    override val decorations: List<Decoration> = emptyList(),
+                    override val objectTypeName: String? = null,
+                    override val isPreviousBlockMedia: Boolean,
+                    val cover : Cover?
+                ) : Card() {
+                    override fun getViewType() = HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON_COVER
+                }
+
+                sealed class Cover {
+                    data class Color(val color: CoverColor) : Cover()
+                    data class Image(val url: Url) : Cover()
+                    data class Gradient(val gradient: String) : Cover()
+                }
             }
         }
 

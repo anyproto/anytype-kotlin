@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCardSmallIconCover">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        style="@style/DefaultLinkCardBlockCardStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerWithBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/coverImage"
+                android:layout_width="0dp"
+                android:layout_height="136dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineHorizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="@dimen/dp_16" />
+
+            <TextView
+                android:id="@+id/cardName"
+                style="@style/ObjectLinkBlockCardTitleStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:includeFontPadding="false"
+                app:layout_constraintBottom_toTopOf="@+id/cardDescription"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardIcon"
+                app:layout_constraintTop_toBottomOf="@id/coverImage"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_goneMarginStart="@dimen/dp_16"
+                tools:text="What is Aesthetic intelligence?"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/cardDescription"
+                style="@style/ObjectLinkBlockCardDescriptionStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/cardType"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardName"
+                tools:text="One thing I love about science fiction is the way it can reflect what is on people’s minds. Growing up in the sixties, I read a ton of sci-fi, and most of the novels involved either robots or space travel and life on other planets..."
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/cardType"
+                style="@style/ObjectLinkBlockCardObjectTypeStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toTopOf="@id/guidelineHorizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardDescription"
+                tools:ignore="TextContrastCheck"
+                tools:text="Page"
+                tools:visibility="visible" />
+
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/cardIcon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                app:checkboxSize="18dp"
+                app:emojiSize="18dp"
+                app:imageSize="18dp"
+                app:initialTextSize="11sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/coverImage"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
+
+</FrameLayout>

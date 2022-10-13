@@ -28,7 +28,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     companion object {
-        val DEFAULT_SIZE = 24
+        const val DEFAULT_SIZE = 24
     }
 
     val binding = WidgetObjectIconBinding.inflate(
@@ -36,6 +36,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     )
 
     private var imageCornerRadius: Float = 0F
+    private var isImageWithCorners: Boolean = false
 
     init {
         setupAttributeValues(attrs)
@@ -63,6 +64,10 @@ class ObjectIconWidget @JvmOverloads constructor(
             attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRounded8Background, false)
         val hasInitialRounded8Background =
             attrs.getBoolean(R.styleable.ObjectIconWidget_hasInitialRounded8Background, false)
+        val hasEmojiRounded10Background =
+            attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRounded10Background, false)
+        val hasInitialRoundedCornerBackground =
+            attrs.getBoolean(R.styleable.ObjectIconWidget_hasInitialRoundedCornerBackground, false)
 
         ivEmoji.updateLayoutParams<LayoutParams> {
             this.height = emojiSize
@@ -91,12 +96,22 @@ class ObjectIconWidget @JvmOverloads constructor(
             emojiContainer.setBackgroundResource(R.drawable.rectangle_object_icon_emoji_background_8)
         }
 
-        if (!hasEmojiCircleBackground && !hasEmojiRounded12Background && !hasEmojiRounded8Background) {
+        if (!hasEmojiCircleBackground && !hasEmojiRounded12Background && !hasEmojiRounded8Background
+            && !hasEmojiRounded10Background
+        ) {
             emojiContainer.background = null
         }
 
         if (hasInitialRounded8Background) {
             initialContainer.setBackgroundResource(R.drawable.rectangle_avatar_initial_background_8)
+        }
+
+        if (hasEmojiRounded10Background) {
+            emojiContainer.setBackgroundResource(R.drawable.bg_rect_10_radius)
+        }
+
+        if (hasInitialRoundedCornerBackground) {
+            initialContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
         }
 
         val initialTextSize =
@@ -109,6 +124,9 @@ class ObjectIconWidget @JvmOverloads constructor(
         imageCornerRadius =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_imageCornerRadius, 2)
                 .toFloat()
+
+        isImageWithCorners =
+            attrs.getBoolean(R.styleable.ObjectIconWidget_isImageWithCorners, false)
         attrs.recycle()
     }
 
@@ -153,7 +171,9 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivBookmark.gone()
             initialContainer.visible()
-            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
+            if (initialContainer.background == null) {
+                initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
+            }
             initial.setTextColor(context.color(R.color.text_white))
             initial.setHintTextColor(context.color(R.color.text_tertiary))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
@@ -169,7 +189,9 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivBookmark.gone()
             initialContainer.visible()
-            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
+            if (initialContainer.background == null) {
+                initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
+            }
             initial.setTextColor(textColor)
             initial.setHintTextColor(textColor)
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
@@ -210,6 +232,11 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivBookmark.gone()
                 ivImage.setCircularShape()
+                if (isImageWithCorners) {
+                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
+                    ivImage.strokeColor =
+                        this.root.context.getColorStateList(R.color.background_primary)
+                }
             }
             Glide
                 .with(this)
@@ -231,6 +258,11 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivImage.visible()
                 ivImage.setCorneredShape(imageCornerRadius)
+                if (isImageWithCorners) {
+                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
+                    ivImage.strokeColor =
+                        this.root.context.getColorStateList(R.color.background_primary)
+                }
             }
             Glide
                 .with(this)

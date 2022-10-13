@@ -95,7 +95,7 @@ class LinkAppearanceMenuTest {
         val expected = BlockView.Appearance.Menu(
             preview = MenuItem.PreviewLayout.CARD,
             icon = MenuItem.Icon.SMALL,
-            cover = null,
+            cover = MenuItem.Cover.WITHOUT,
             description = MenuItem.Description.ADDED,
             objectType = MenuItem.ObjectType.WITHOUT,
             iconMenus = listOf(

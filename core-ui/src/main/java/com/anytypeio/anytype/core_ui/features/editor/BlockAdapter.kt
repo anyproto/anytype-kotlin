@@ -38,7 +38,10 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBindin
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconCoverBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconCoverBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
@@ -82,7 +85,10 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.other.DividerLine
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Latex
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObject
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectArchive
-import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCard
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCardMediumIcon
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCardMediumIconCover
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCardSmallIcon
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCardSmallIconCover
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectDelete
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectLoading
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.TableOfContents
@@ -145,7 +151,10 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON_COVER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_SMALL_ICON
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_SMALL_ICON_COVER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
@@ -552,9 +561,36 @@ class BlockAdapter(
                     ItemBlockObjectLinkBinding.inflate(inflater, parent, false)
                 )
             }
-            HOLDER_OBJECT_LINK_CARD -> {
-                LinkToObjectCard(
-                    binding = ItemBlockObjectLinkCardBinding.inflate(
+            HOLDER_OBJECT_LINK_CARD_SMALL_ICON -> {
+                LinkToObjectCardSmallIcon(
+                    binding = ItemBlockObjectLinkCardSmallIconBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON -> {
+                LinkToObjectCardMediumIcon(
+                    binding = ItemBlockObjectLinkCardMediumIconBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_OBJECT_LINK_CARD_SMALL_ICON_COVER -> {
+                LinkToObjectCardSmallIconCover(
+                    binding = ItemBlockObjectLinkCardSmallIconCoverBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON_COVER -> {
+                LinkToObjectCardMediumIconCover(
+                    binding = ItemBlockObjectLinkCardMediumIconCoverBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
@@ -1005,10 +1041,28 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is LinkToObjectCard -> {
-                        holder.processChangePayload(
+                    is LinkToObjectCardSmallIcon -> {
+                        holder.processChangePayloads(
                             payloads = payloads.typeOf(),
-                            item = blocks[position]
+                            item = blocks[position] as BlockView.LinkToObject.Default.Card.SmallIcon
+                        )
+                    }
+                    is LinkToObjectCardMediumIcon -> {
+                        holder.processChangePayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.LinkToObject.Default.Card.MediumIcon
+                        )
+                    }
+                    is LinkToObjectCardSmallIconCover -> {
+                        holder.processChangePayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.LinkToObject.Default.Card.SmallIconCover
+                        )
+                    }
+                    is LinkToObjectCardMediumIconCover -> {
+                        holder.processChangePayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.LinkToObject.Default.Card.MediumIconCover
                         )
                     }
                     is LinkToObjectArchive -> {
@@ -1130,7 +1184,7 @@ class BlockAdapter(
             is HeaderOne -> holder.bind(blocks[position] as BlockView.Text.Header.One)
             is HeaderTwo -> holder.bind(blocks[position] as BlockView.Text.Header.Two)
             is HeaderThree -> holder.bind(blocks[position] as BlockView.Text.Header.Three)
-            is Checkbox -> holder.bind(blocks[position] as BlockView.Text.Checkbox )
+            is Checkbox -> holder.bind(blocks[position] as BlockView.Text.Checkbox)
             is Bulleted -> holder.bind(blocks[position] as BlockView.Text.Bulleted)
             is Numbered -> holder.bind(blocks[position] as BlockView.Text.Numbered)
             is Toggle -> holder.bind(item = blocks[position] as BlockView.Text.Toggle)
@@ -1258,9 +1312,27 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is LinkToObjectCard -> {
+            is LinkToObjectCardSmallIcon -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.LinkToObject.Default.Card,
+                    item = blocks[position] as BlockView.LinkToObject.Default.Card.SmallIcon,
+                    clicked = onClickListener
+                )
+            }
+            is LinkToObjectCardMediumIcon -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.LinkToObject.Default.Card.MediumIcon,
+                    clicked = onClickListener
+                )
+            }
+            is LinkToObjectCardSmallIconCover -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.LinkToObject.Default.Card.SmallIconCover,
+                    clicked = onClickListener
+                )
+            }
+            is LinkToObjectCardMediumIconCover -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.LinkToObject.Default.Card.MediumIconCover,
                     clicked = onClickListener
                 )
             }

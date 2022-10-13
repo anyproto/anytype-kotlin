@@ -34,10 +34,18 @@ class ObjectAppearanceChoosePreviewLayoutViewModel(
         oldContent: Block.Content.Link
     ): Block.Content.Link {
         return when (item) {
-            is ObjectAppearanceChooseSettingsView.PreviewLayout.Text ->
+            is ObjectAppearanceChooseSettingsView.PreviewLayout.Text -> {
+                val oldIconSize = oldContent.iconSize
+                val newIconSize = if (oldIconSize == Block.Content.Link.IconSize.MEDIUM) {
+                    Block.Content.Link.IconSize.SMALL
+                } else {
+                    oldIconSize
+                }
                 oldContent.copy(
-                    cardStyle = Block.Content.Link.CardStyle.TEXT
+                    cardStyle = Block.Content.Link.CardStyle.TEXT,
+                    iconSize = newIconSize
                 )
+            }
             is ObjectAppearanceChooseSettingsView.PreviewLayout.Card ->
                 oldContent.copy(
                     cardStyle = Block.Content.Link.CardStyle.CARD

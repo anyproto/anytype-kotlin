@@ -7,12 +7,15 @@
         <attr name="emojiSize" format="dimension" />
         <attr name="imageSize" format="dimension" />
         <attr name="checkboxSize" format="dimension" />
+        <attr name="hasEmojiRounded10Background" format="boolean" />
         <attr name="hasEmojiCircleBackground" format="boolean" />
         <attr name="hasEmojiRounded12Background" format="boolean" />
         <attr name="hasEmojiRounded8Background" format="boolean" />
         <attr name="hasInitialRounded8Background" format="boolean" />
         <attr name="initialTextSize" format="dimension" />
         <attr name="imageCornerRadius" format="dimension" />
+        <attr name="isImageWithCorners" format="boolean" />
+        <attr name="hasInitialRoundedCornerBackground" format="boolean" />
     </declare-styleable>
     <declare-styleable name="ObjectIconTextWidget">
         <attr name="nameTextSize" format="dimension" />

@@ -11,7 +11,7 @@ class SetLinkAppearance(
     private val repository: BlockRepository,
 ) : BaseUseCase<Payload, SetLinkAppearance.Params>() {
 
-    class Params(
+    data class Params(
         val contextId: String,
         val blockId: String,
         val content: Block.Content.Link

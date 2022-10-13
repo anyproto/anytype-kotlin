@@ -2768,16 +2768,13 @@ class DefaultBlockViewRendererTest {
                 image = null,
                 mode = BlockView.Mode.EDIT
             ),
-            BlockView.LinkToObject.Default.Card(
+            BlockView.LinkToObject.Default.Card.SmallIcon(
                 id = a.id,
                 icon = ObjectIcon.None,
                 text = name,
                 description = "",
                 indent = 0,
                 isSelected = false,
-                coverColor = null,
-                coverImage = null,
-                coverGradient = null,
                 background = a.parseThemeBackgroundColor(),
                 isPreviousBlockMedia = false,
                 objectTypeName = null,

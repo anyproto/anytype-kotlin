@@ -856,6 +856,7 @@
         <item name="hasEmojiRounded8Background">false</item>
         <item name="hasEmojiRounded12Background">false</item>
         <item name="hasInitialRounded8Background">false</item>
+        <item name="hasEmojiRounded10Background">false</item>
     </style>
 
     <style name="ShapeAppearance.MaterialComponents.Circle">
@@ -931,13 +932,12 @@
     </style>
 
     <!-- card -->
-    <style name="DefaultLinkCardBlockCardStyle">
-        <item name="android:minHeight">96dp</item>
-        <item name="cardCornerRadius">16dp</item>
+    <style name="DefaultLinkCardBlockCardStyle" parent="CardView">
+        <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">0dp</item>
         <item name="rippleColor">@android:color/transparent</item>
-        <item name="strokeColor">@color/shape_primary</item>
-        <item name="strokeWidth">0.5dp</item>
+        <item name="strokeColor">@color/shape_tertiary</item>
+        <item name="strokeWidth">1dp</item>
     </style>
 
     <!-- Editor, Table of Contents block -->
@@ -1053,7 +1053,6 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
-        <item name="lineHeight">22sp</item>
     </style>
 
     <style name="ObjectLinkBlockRelationsStyle">
@@ -1063,5 +1062,28 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <!-- Editor, object link as card block-->
+    <style name="ObjectLinkBlockCardTitleStyle">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
 
+    <style name="ObjectLinkBlockCardDescriptionStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="ObjectLinkBlockCardObjectTypeStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
 </resources>

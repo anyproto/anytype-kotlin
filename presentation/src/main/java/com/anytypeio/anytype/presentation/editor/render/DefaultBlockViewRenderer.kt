@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
@@ -1653,7 +1654,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val factory = LinkAppearanceFactory(content, obj.layout)
         val inEditorAppearance = factory.createInEditorLinkAppearance()
         val isCard = inEditorAppearance.isCard
-        val icon = if (inEditorAppearance.showIcon) {
+        val objectIcon = if (inEditorAppearance.showIcon) {
             ObjectIcon.getEditorLinkToObjectIcon(
                 obj = obj,
                 layout = obj.layout,
@@ -1662,6 +1663,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         } else {
             ObjectIcon.None
         }
+
         val name = obj.getProperObjectName()
 
         val description = when (inEditorAppearance.description) {
@@ -1669,6 +1671,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             InEditor.Description.RELATION -> obj.description
             InEditor.Description.SNIPPET -> obj.snippet
         }
+
         val objectTypeName = if (inEditorAppearance.showType) {
             val typeUrl = obj.type.firstOrNull()
             objectTypes.find { it.url == typeUrl }?.name
@@ -1676,86 +1679,182 @@ class DefaultBlockViewRenderer @Inject constructor(
             null
         }
 
+        val isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
+
+        val background = block.parseThemeBackgroundColor()
+
         return if (isCard) {
-
-            var coverColor: CoverColor? = null
-            var coverImage: Url? = null
-            var coverGradient: String? = null
-
-            if (inEditorAppearance.showCover) {
-                when (obj.coverType) {
-                    CoverType.UPLOADED_IMAGE -> {
-                        coverImage = obj.coverId?.let { id ->
-                            urlBuilder.image(id)
-                        }
-                    }
-                    CoverType.BUNDLED_IMAGE -> {
-                        val hash = obj.coverId?.let { id ->
-                            coverImageHashProvider.provide(id)
-                        }
-                        if (hash != null) coverImage = urlBuilder.image(hash)
-                    }
-                    CoverType.COLOR -> {
-                        coverColor = obj.coverId?.let { id ->
-                            CoverColor.values().find { it.code == id }
-                        }
-                    }
-                    CoverType.GRADIENT -> {
-                        coverGradient = obj.coverId
-                    }
-                    else -> Timber.d("Missing cover type: ${obj.coverType?.name}")
-                }
-            }
-
-            BlockView.LinkToObject.Default.Card(
+            val decorations = buildNestedDecorationData(
+                block = block,
+                parentScheme = parentSchema,
+                currentDecoration = DecorationData(
+                    style = DecorationData.Style.Card,
+                    background = block.parseThemeBackgroundColor()
+                )
+            ).toBlockViewDecoration(block)
+            linkToObjectCard(
                 id = block.id,
-                icon = icon,
-                text = name,
-                description = description,
+                name = name,
+                objectIcon = objectIcon,
                 indent = indent,
-                isSelected = checkIfSelected(
-                    mode = mode,
-                    block = block,
-                    selection = selection
-                ),
-                coverColor = coverColor,
-                coverImage = coverImage,
-                coverGradient = coverGradient,
-                background = block.parseThemeBackgroundColor(),
+                obj = obj,
+                isSelected = isSelected,
                 isPreviousBlockMedia = isPreviousBlockMedia,
-                objectTypeName = objectTypeName,
-                decorations = buildNestedDecorationData(
-                    block = block,
-                    parentScheme = parentSchema,
-                    currentDecoration = DecorationData(
-                        style = DecorationData.Style.Card,
-                        background = block.parseThemeBackgroundColor()
-                    )
-                ).toBlockViewDecoration(block)
+                description = description,
+                inEditorAppearance = inEditorAppearance,
+                background = background,
+                decorations = decorations,
+                objectTypeName = objectTypeName
             )
         } else {
+            val decorations = buildNestedDecorationData(
+                block = block,
+                parentScheme = parentSchema,
+                currentDecoration = DecorationData(
+                    style = DecorationData.Style.None,
+                    background = block.parseThemeBackgroundColor()
+                )
+            ).toBlockViewDecoration(block)
             BlockView.LinkToObject.Default.Text(
                 id = block.id,
-                icon = icon,
+                icon = objectIcon,
                 text = name,
                 indent = indent,
-                isSelected = checkIfSelected(
-                    mode = mode,
-                    block = block,
-                    selection = selection
-                ),
-                background = block.parseThemeBackgroundColor(),
-                decorations = buildNestedDecorationData(
-                    block = block,
-                    parentScheme = parentSchema,
-                    currentDecoration = DecorationData(
-                        style = DecorationData.Style.None,
-                        background = block.parseThemeBackgroundColor()
-                    )
-                ).toBlockViewDecoration(block),
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations,
                 description = description,
                 objectTypeName = objectTypeName
             )
+        }
+    }
+
+    private fun linkToObjectCardCover(
+        obj: ObjectWrapper.Basic,
+        urlBuilder: UrlBuilder
+    ): BlockView.LinkToObject.Default.Card.Cover? {
+        return when (obj.coverType) {
+            CoverType.UPLOADED_IMAGE -> {
+                val url = obj.coverId?.let { id -> urlBuilder.image(id) }
+                if (url != null) {
+                    BlockView.LinkToObject.Default.Card.Cover.Image(url = url)
+                } else {
+                    null
+                }
+            }
+            CoverType.BUNDLED_IMAGE -> {
+                val hash = obj.coverId?.let { id ->
+                    coverImageHashProvider.provide(id)
+                }
+                if (hash != null) {
+                    BlockView.LinkToObject.Default.Card.Cover.Image(url = urlBuilder.image(hash))
+                } else {
+                    null
+                }
+            }
+            CoverType.COLOR -> {
+                val coverColor = obj.coverId?.let { id ->
+                    CoverColor.values().find { it.code == id }
+                }
+                if (coverColor != null) {
+                    BlockView.LinkToObject.Default.Card.Cover.Color(color = coverColor)
+                } else {
+                    null
+                }
+            }
+            CoverType.GRADIENT -> {
+                val coverGradient = obj.coverId
+                if (coverGradient != null) {
+                    BlockView.LinkToObject.Default.Card.Cover.Gradient(
+                        gradient = coverGradient
+                    )
+                } else {
+                    null
+                }
+            }
+            else -> null
+        }
+    }
+
+    private fun linkToObjectCard(
+        id: Id,
+        name: String?,
+        objectIcon: ObjectIcon,
+        indent: Int,
+        obj: ObjectWrapper.Basic,
+        isSelected: Boolean,
+        isPreviousBlockMedia: Boolean,
+        description: String?,
+        inEditorAppearance: InEditor,
+        background: ThemeColor,
+        decorations: List<BlockView.Decoration>,
+        objectTypeName: String?
+    ): BlockView.LinkToObject.Default.Card {
+        val isWithCover = inEditorAppearance.showCover
+        val iconSize = inEditorAppearance.icon
+        return if (isWithCover) {
+            val cover = linkToObjectCardCover(obj, urlBuilder)
+            if (obj.layout != ObjectType.Layout.TODO && iconSize == InEditor.Icon.MEDIUM) {
+                BlockView.LinkToObject.Default.Card.MediumIconCover(
+                    id = id,
+                    text = name,
+                    icon = objectIcon,
+                    indent = indent,
+                    isSelected = isSelected,
+                    description = description,
+                    background = background,
+                    decorations = decorations,
+                    objectTypeName = objectTypeName,
+                    isPreviousBlockMedia = isPreviousBlockMedia,
+                    cover = cover
+                )
+            } else {
+                BlockView.LinkToObject.Default.Card.SmallIconCover(
+                    id = id,
+                    text = name,
+                    icon = objectIcon,
+                    indent = indent,
+                    isSelected = isSelected,
+                    description = description,
+                    background = background,
+                    decorations = decorations,
+                    objectTypeName = objectTypeName,
+                    isPreviousBlockMedia = isPreviousBlockMedia,
+                    cover = cover
+                )
+            }
+        } else {
+            if (iconSize == InEditor.Icon.MEDIUM) {
+                BlockView.LinkToObject.Default.Card.MediumIcon(
+                    id = id,
+                    text = name,
+                    icon = objectIcon,
+                    indent = indent,
+                    isSelected = isSelected,
+                    description = description,
+                    background = background,
+                    decorations = decorations,
+                    objectTypeName = objectTypeName,
+                    isPreviousBlockMedia = isPreviousBlockMedia
+                )
+            } else {
+                BlockView.LinkToObject.Default.Card.SmallIcon(
+                    id = id,
+                    text = name,
+                    icon = objectIcon,
+                    indent = indent,
+                    isSelected = isSelected,
+                    description = description,
+                    background = background,
+                    decorations = decorations,
+                    objectTypeName = objectTypeName,
+                    isPreviousBlockMedia = isPreviousBlockMedia
+                )
+            }
         }
     }
 

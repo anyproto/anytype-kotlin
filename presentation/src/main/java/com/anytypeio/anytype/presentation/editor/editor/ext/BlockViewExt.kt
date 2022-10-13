@@ -316,7 +316,16 @@ fun List<BlockView>.enterSAM(
         is BlockView.LinkToObject.Default.Text -> view.copy(
             isSelected = isSelected
         )
-        is BlockView.LinkToObject.Default.Card -> view.copy(
+        is BlockView.LinkToObject.Default.Card.SmallIcon -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.LinkToObject.Default.Card.MediumIcon -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.LinkToObject.Default.Card.SmallIconCover -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.LinkToObject.Default.Card.MediumIconCover -> view.copy(
             isSelected = isSelected
         )
         is BlockView.LinkToObject.Archived -> view.copy(
@@ -541,7 +550,10 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.Media.Bookmark -> view.copy(searchFields = emptyList())
         is BlockView.Media.File -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Default.Text -> view.copy(searchFields = emptyList())
-        is BlockView.LinkToObject.Default.Card -> view.copy(searchFields = emptyList())
+        is BlockView.LinkToObject.Default.Card.SmallIcon -> view.copy(searchFields = emptyList())
+        is BlockView.LinkToObject.Default.Card.MediumIcon -> view.copy(searchFields = emptyList())
+        is BlockView.LinkToObject.Default.Card.SmallIconCover -> view.copy(searchFields = emptyList())
+        is BlockView.LinkToObject.Default.Card.MediumIconCover -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Archived -> view.copy(searchFields = emptyList())
         else -> view.also { check(view !is BlockView.Searchable) }
     }
@@ -615,7 +627,19 @@ fun List<BlockView>.highlight(
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
-        is BlockView.LinkToObject.Default.Card -> {
+        is BlockView.LinkToObject.Default.Card.SmallIcon -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.LinkToObject.Default.Card.MediumIcon -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.LinkToObject.Default.Card.SmallIconCover -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.LinkToObject.Default.Card.MediumIconCover -> {
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
@@ -646,7 +670,10 @@ fun BlockView.setHighlight(
     is BlockView.Media.Bookmark -> copy(searchFields = highlights)
     is BlockView.Media.File -> copy(searchFields = highlights)
     is BlockView.LinkToObject.Default.Text -> copy(searchFields = highlights)
-    is BlockView.LinkToObject.Default.Card -> copy(searchFields = highlights)
+    is BlockView.LinkToObject.Default.Card.SmallIcon -> copy(searchFields = highlights)
+    is BlockView.LinkToObject.Default.Card.MediumIcon -> copy(searchFields = highlights)
+    is BlockView.LinkToObject.Default.Card.SmallIconCover -> copy(searchFields = highlights)
+    is BlockView.LinkToObject.Default.Card.MediumIconCover -> copy(searchFields = highlights)
     is BlockView.LinkToObject.Archived -> copy(searchFields = highlights)
     else -> this.also { check(this !is BlockView.Searchable) }
 }
@@ -881,7 +908,10 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.MediaPlaceholder.Video -> copy(isSelected = newSelection)
     is BlockView.Error.Video -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Default.Text -> copy(isSelected = newSelection)
-    is BlockView.LinkToObject.Default.Card -> copy(isSelected = newSelection)
+    is BlockView.LinkToObject.Default.Card.SmallIcon -> copy(isSelected = newSelection)
+    is BlockView.LinkToObject.Default.Card.MediumIcon -> copy(isSelected = newSelection)
+    is BlockView.LinkToObject.Default.Card.SmallIconCover -> copy(isSelected = newSelection)
+    is BlockView.LinkToObject.Default.Card.MediumIconCover -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Archived -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Deleted -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Loading -> copy(isSelected = newSelection)

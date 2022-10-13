@@ -18,9 +18,8 @@ internal class LinkAppearanceFactory(
     private val isNoteLayout = layout == ObjectType.Layout.NOTE
     private val withDescription = !isNoteLayout
 
-    //todo Cover menu option is off. No proper design yet.
     private val canHaveCover: Boolean =
-        false && !isNoteLayout && content.cardStyle != CardStyle.TEXT
+        !isNoteLayout && content.cardStyle != CardStyle.TEXT
 
     private val withCover = canHaveCover && (content.hasCover)
 
@@ -37,14 +36,19 @@ internal class LinkAppearanceFactory(
                 Block.Content.Link.Description.ADDED -> InEditor.Description.RELATION
                 Block.Content.Link.Description.CONTENT -> InEditor.Description.SNIPPET
             }
-
+        }
+        val icon = when (content.iconSize) {
+            IconSize.NONE -> InEditor.Icon.NONE
+            IconSize.SMALL -> InEditor.Icon.SMALL
+            IconSize.MEDIUM -> InEditor.Icon.MEDIUM
         }
         return InEditor(
             showIcon = withIcon,
             isCard = content.cardStyle == CardStyle.CARD,
             description = description,
             showCover = withCover,
-            showType = content.hasType
+            showType = content.hasType,
+            icon = icon
         )
     }
 

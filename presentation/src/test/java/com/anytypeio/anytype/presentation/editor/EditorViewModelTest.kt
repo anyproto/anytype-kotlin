@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
+
 import android.net.Uri
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -141,8 +142,8 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.verifyZeroInteractions
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
@@ -381,7 +382,7 @@ open class EditorViewModelTest {
     @Test
     fun `should not start observing events when view model is initialized`() {
         givenViewModel()
-        verifyZeroInteractions(interceptEvents)
+        verifyNoInteractions(interceptEvents)
     }
 
     @Test
@@ -472,7 +473,7 @@ open class EditorViewModelTest {
 
         vm.onStart(root)
 
-        verifyZeroInteractions(closePage)
+        verifyNoInteractions(closePage)
 
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
@@ -492,7 +493,7 @@ open class EditorViewModelTest {
 
         val testObserver = vm.navigation.test()
 
-        verifyZeroInteractions(closePage)
+        verifyNoInteractions(closePage)
 
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
@@ -519,7 +520,7 @@ open class EditorViewModelTest {
 
         val testObserver = vm.navigation.test()
 
-        verifyZeroInteractions(closePage)
+        verifyNoInteractions(closePage)
 
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
@@ -3052,7 +3053,7 @@ open class EditorViewModelTest {
         vm.onTextBlockTextChanged(blockView)
 
         runBlockingTest {
-            verifyZeroInteractions(updateText)
+            verifyNoInteractions(updateText)
 
             verify(replaceBlock, times(1)).invoke(
                 params = ReplaceBlock.Params(
@@ -3066,7 +3067,7 @@ open class EditorViewModelTest {
 
             coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-            verifyZeroInteractions(updateText)
+            verifyNoInteractions(updateText)
             verifyNoMoreInteractions(replaceBlock)
         }
     }

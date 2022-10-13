@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -24,7 +23,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 
 class EditorListBlockTest : EditorPresentationTestSetup() {
 
@@ -426,7 +425,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             )
         }
 
-        verifyZeroInteractions(createBlock)
+       verifyNoInteractions(createBlock)
 
         // expected state after on-enter-pressed event
 
@@ -560,7 +559,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             )
         }
 
-        verifyZeroInteractions(createBlock)
+       verifyNoInteractions(createBlock)
 
         // expected state after on-enter-pressed event
 
@@ -715,7 +714,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             )
         }
 
-        verifyZeroInteractions(createBlock)
+       verifyNoInteractions(createBlock)
 
         // expected state after on-enter-pressed event
 
@@ -850,7 +849,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             )
         }
 
-        verifyZeroInteractions(createBlock)
+       verifyNoInteractions(createBlock)
 
         // expected state after on-enter-pressed event
 

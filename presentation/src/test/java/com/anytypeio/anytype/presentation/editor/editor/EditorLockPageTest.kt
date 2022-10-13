@@ -629,7 +629,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     listOf(
                         BlockView.Decoration(
                             background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.Card
+                            style = BlockView.Decoration.Style.None
                         )
                     )
                 } else {

@@ -25,7 +25,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertEquals
 
 
@@ -651,7 +651,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                 )
             }
 
-            verifyZeroInteractions(move)
+            verifyNoInteractions(move)
 
             assertEquals(
                 expected = 1,
@@ -747,7 +747,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                 )
             }
 
-            verifyZeroInteractions(move)
+            verifyNoInteractions(move)
 
             assertEquals(
                 expected = 1,

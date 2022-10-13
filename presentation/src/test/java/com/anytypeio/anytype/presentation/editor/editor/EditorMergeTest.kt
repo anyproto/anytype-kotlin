@@ -19,7 +19,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 
 class EditorMergeTest : EditorPresentationTestSetup() {
 
@@ -362,6 +362,6 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(mergeBlocks)
+        verifyNoInteractions(mergeBlocks)
     }
 }

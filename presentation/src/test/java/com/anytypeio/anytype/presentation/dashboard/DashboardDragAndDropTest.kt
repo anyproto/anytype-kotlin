@@ -23,7 +23,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 
 class DashboardDragAndDropTest : DashboardTestSetup() {
 
@@ -119,7 +119,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
             views = views.toMutableList().shift(from, to)
         )
 
-        verifyZeroInteractions(move)
+        verifyNoInteractions(move)
         vm.state.test().assertValue(expected)
     }
 

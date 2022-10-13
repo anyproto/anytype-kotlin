@@ -22,7 +22,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertEquals
 
 class ObjectSetRecordViewModelTest {
@@ -104,7 +104,7 @@ class ObjectSetRecordViewModelTest {
             input = MockDataFactory.randomString()
         )
 
-        verifyZeroInteractions(setObjectDetails)
+        verifyNoInteractions(setObjectDetails)
     }
 
     @Test
@@ -245,7 +245,7 @@ class ObjectSetRecordViewModelTest {
             )
         }
 
-        verifyZeroInteractions(setObjectDetails)
+        verifyNoInteractions(setObjectDetails)
     }
 
     fun buildViewModel(

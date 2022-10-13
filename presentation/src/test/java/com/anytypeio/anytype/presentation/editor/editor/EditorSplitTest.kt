@@ -2,7 +2,11 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
@@ -19,7 +23,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertEquals
 
 class EditorSplitTest : EditorPresentationTestSetup() {
@@ -231,9 +235,9 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(updateText)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
     }
     //endregion
 
@@ -632,10 +636,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -746,10 +750,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -797,10 +801,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -907,10 +911,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -973,10 +977,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -1037,10 +1041,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -1151,10 +1155,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -1216,10 +1220,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length
@@ -1328,10 +1332,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyZeroInteractions(createBlock)
-        verifyZeroInteractions(splitBlock)
-        verifyZeroInteractions(mergeBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(createBlock)
+        verifyNoInteractions(splitBlock)
+        verifyNoInteractions(mergeBlocks)
+        verifyNoInteractions(updateText)
 
         val selection = orchestrator.stores.textSelection.current()
         val descLength = description.content.asText().text.length

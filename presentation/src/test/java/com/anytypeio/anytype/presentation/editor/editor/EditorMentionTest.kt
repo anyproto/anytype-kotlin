@@ -23,15 +23,21 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
-import net.lachlanmckee.timberjunit.TimberTestRule
 import kotlinx.coroutines.runBlocking
+import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
 
@@ -894,7 +900,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        verifyZeroInteractions(interceptEvents)
+        verifyNoInteractions(interceptEvents)
 
         vm.onStart(root)
 
@@ -1041,7 +1047,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        verifyZeroInteractions(interceptEvents)
+        verifyNoInteractions(interceptEvents)
 
         vm.onStart(root)
 

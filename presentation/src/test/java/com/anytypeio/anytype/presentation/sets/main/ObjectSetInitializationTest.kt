@@ -13,7 +13,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 
 class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
 
@@ -82,6 +82,6 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
         vm.onStart(ctx = ctx)
         vm.onCreateNewRecord()
 
-        verifyZeroInteractions(createDataViewRecord)
+       verifyNoInteractions(createDataViewRecord)
     }
 }

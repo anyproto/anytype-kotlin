@@ -30,7 +30,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.verifyZeroInteractions
 import kotlin.test.assertEquals
 
 class EditorTitleTest : EditorPresentationTestSetup() {

@@ -11,7 +11,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 
 class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
 
@@ -60,7 +60,7 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        verifyZeroInteractions(interceptEvents)
+        verifyNoInteractions(interceptEvents)
 
         vm.onStart(root)
 

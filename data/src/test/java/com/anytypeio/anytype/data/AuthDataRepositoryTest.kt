@@ -23,8 +23,8 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.verifyZeroInteractions
 
 class AuthDataRepositoryTest {
 
@@ -74,7 +74,7 @@ class AuthDataRepositoryTest {
             path = path
         )
 
-        verifyZeroInteractions(authCache)
+        verifyNoInteractions(authCache)
 
         verify(authRemote, times(1)).startAccount(
             id = id,
@@ -109,7 +109,7 @@ class AuthDataRepositoryTest {
             invitationCode = "code"
         )
 
-        verifyZeroInteractions(authCache)
+        verifyNoInteractions(authCache)
 
         verify(authRemote, times(1)).createAccount(
             name = name,
@@ -129,7 +129,7 @@ class AuthDataRepositoryTest {
 
         repo.startLoadingAccounts()
 
-        verifyZeroInteractions(authCache)
+        verifyNoInteractions(authCache)
         verify(authRemote, times(1)).recoverAccount()
         verifyNoMoreInteractions(authRemote)
     }
@@ -147,7 +147,7 @@ class AuthDataRepositoryTest {
 
         verify(authCache, times(1)).saveAccount(any())
         verifyNoMoreInteractions(authCache)
-        verifyZeroInteractions(authRemote)
+        verifyNoInteractions(authRemote)
     }
 
     @Test
@@ -165,7 +165,7 @@ class AuthDataRepositoryTest {
 
         repo.createWallet(path)
 
-        verifyZeroInteractions(authCache)
+        verifyNoInteractions(authCache)
         verify(authRemote, times(1)).createWallet(path)
         verifyNoMoreInteractions(authRemote)
     }
@@ -185,7 +185,7 @@ class AuthDataRepositoryTest {
 
         repo.getCurrentAccount()
 
-        verifyZeroInteractions(authRemote)
+        verifyNoInteractions(authRemote)
         verify(authCache, times(1)).getCurrentAccount()
         verifyNoMoreInteractions(authCache)
     }
@@ -201,7 +201,7 @@ class AuthDataRepositoryTest {
 
         repo.saveMnemonic(mnemonic)
 
-        verifyZeroInteractions(authRemote)
+        verifyNoInteractions(authRemote)
         verify(authCache, times(1)).saveMnemonic(mnemonic)
         verifyNoMoreInteractions(authCache)
     }
@@ -217,7 +217,7 @@ class AuthDataRepositoryTest {
 
         repo.getMnemonic()
 
-        verifyZeroInteractions(authRemote)
+        verifyNoInteractions(authRemote)
         verify(authCache, times(1)).getMnemonic()
         verifyNoMoreInteractions(authCache)
     }
@@ -249,7 +249,7 @@ class AuthDataRepositoryTest {
                 repo.logout(false)
             } catch (e: Exception) {
                 verify(authRemote, times(1)).logout(false)
-                verifyZeroInteractions(authCache)
+                verifyNoInteractions(authCache)
             }
         }
     }
@@ -271,7 +271,7 @@ class AuthDataRepositoryTest {
 
         repo.getAccounts()
 
-        verifyZeroInteractions(authRemote)
+        verifyNoInteractions(authRemote)
         verify(authCache, times(1)).getAccounts()
         verifyNoMoreInteractions(authCache)
     }

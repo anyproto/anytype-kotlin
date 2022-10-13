@@ -16,7 +16,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
+
 
 class EditorFocusTest : EditorPresentationTestSetup() {
 
@@ -279,7 +280,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             }
         }
 
-        verifyZeroInteractions(createBlock)
+        verifyNoInteractions(createBlock)
     }
 
     @Test

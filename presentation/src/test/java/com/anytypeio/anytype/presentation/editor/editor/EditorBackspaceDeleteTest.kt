@@ -38,7 +38,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertEquals
 
 class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
@@ -693,8 +693,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = checkbox.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(unlinkBlocks)
+        verifyNoInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -738,8 +738,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = bulleted.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(unlinkBlocks)
+        verifyNoInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -783,8 +783,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = numbered.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(unlinkBlocks)
+        verifyNoInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -828,8 +828,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = toggle.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(unlinkBlocks)
+        verifyNoInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -873,8 +873,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = quote.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
-        verifyZeroInteractions(updateText)
+        verifyNoInteractions(unlinkBlocks)
+        verifyNoInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -933,7 +933,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = checkbox.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
+        verifyNoInteractions(unlinkBlocks)
 
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
@@ -1016,7 +1016,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = bulleted.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
+        verifyNoInteractions(unlinkBlocks)
 
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
@@ -1099,7 +1099,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = quote.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
+        verifyNoInteractions(unlinkBlocks)
 
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
@@ -1182,7 +1182,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = toggle.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
+        verifyNoInteractions(unlinkBlocks)
 
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
@@ -1266,7 +1266,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             onEmptyBlockBackspaceClicked(id = numbered.id)
         }
 
-        verifyZeroInteractions(unlinkBlocks)
+        verifyNoInteractions(unlinkBlocks)
 
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(

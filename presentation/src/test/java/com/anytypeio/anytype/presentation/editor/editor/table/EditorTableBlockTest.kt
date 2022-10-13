@@ -21,7 +21,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertEquals
 
 class EditorTableBlockTest : EditorPresentationTestSetup() {
@@ -146,7 +146,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         runBlocking {
             assertEquals(1, selectedState.size)
             assertEquals(cell1Id, selectedState.first())
-            verifyZeroInteractions(fillTableRow)
+            verifyNoInteractions(fillTableRow)
         }
     }
 }

@@ -19,7 +19,6 @@ import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
@@ -28,6 +27,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -54,7 +54,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertContains
 
 class HomeDashboardViewModelTest {
@@ -195,7 +195,7 @@ class HomeDashboardViewModelTest {
         vm = givenViewModel()
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
-        verifyZeroInteractions(openDashboard)
+        verifyNoInteractions(openDashboard)
     }
 
     @Test
@@ -234,7 +234,7 @@ class HomeDashboardViewModelTest {
         vm = givenViewModel()
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
-        verifyZeroInteractions(openDashboard)
+        verifyNoInteractions(openDashboard)
     }
 
     @Test

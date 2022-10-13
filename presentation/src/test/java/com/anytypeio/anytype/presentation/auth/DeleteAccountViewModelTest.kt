@@ -18,7 +18,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 import java.time.Duration
 import kotlin.test.assertEquals
 
@@ -232,7 +232,7 @@ class DeleteAccountViewModelTest {
             actual = vm.date.value
         )
 
-        verifyZeroInteractions(repo)
+        verifyNoInteractions(repo)
     }
 
     @Test
@@ -276,7 +276,7 @@ class DeleteAccountViewModelTest {
             actual = vm.date.value
         )
 
-        verifyZeroInteractions(repo)
+        verifyNoInteractions(repo)
     }
 
     @Test
@@ -320,6 +320,6 @@ class DeleteAccountViewModelTest {
             actual = vm.date.value
         )
 
-        verifyZeroInteractions(repo)
+        verifyNoInteractions(repo)
     }
 }

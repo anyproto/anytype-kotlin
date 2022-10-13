@@ -20,7 +20,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
+import org.mockito.kotlin.verifyNoInteractions
 
 class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
@@ -59,7 +59,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
     fun `should ignore outside click if document isn't started yet`() {
         val vm = buildViewModel()
         vm.onOutsideClicked()
-        verifyZeroInteractions(createBlock)
+        verifyNoInteractions(createBlock)
     }
 
     @Test
@@ -260,7 +260,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onOutsideClicked()
 
-        verifyZeroInteractions(createBlock)
+        verifyNoInteractions(createBlock)
 
         // Checking that the last text block is focused and has empty text
 
@@ -302,7 +302,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onOutsideClicked()
 
-        verifyZeroInteractions(createBlock)
+        verifyNoInteractions(createBlock)
     }
 
     @Test

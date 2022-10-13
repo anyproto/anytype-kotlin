@@ -197,6 +197,19 @@ object DateParser {
         }
         return result
     }
+
+    fun parseInMillis(value: Any?) : Long? {
+        val result: Long? = when (value) {
+            is String -> value.toLongOrNull()
+            is Double -> value.toLong()
+            is Long -> value
+            else -> null
+        }
+        return if (result!= null)
+            result * 1000
+        else
+            null
+    }
 }
 
 /**

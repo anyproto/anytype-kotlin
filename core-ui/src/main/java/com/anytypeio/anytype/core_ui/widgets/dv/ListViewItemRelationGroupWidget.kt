@@ -62,7 +62,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                 }
                 is DefaultObjectRelationValueView.Date -> {
                     val value = relation.timeInMillis?.formatTimestamp(
-                        isMillis = false,
+                        isMillis = true,
                         format = relation.dateFormat
                     )
                     if (value != null) {

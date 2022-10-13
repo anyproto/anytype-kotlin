@@ -101,7 +101,7 @@ fun ObjectWrapper.Basic.values(
                 val value = DefaultObjectRelationValueView.Date(
                     objectId = id,
                     relationKey = relation.key,
-                    timeInMillis = DateParser.parse(time),
+                    timeInMillis = DateParser.parseInMillis(time),
                     dateFormat = format
                 )
                 values.add(value)

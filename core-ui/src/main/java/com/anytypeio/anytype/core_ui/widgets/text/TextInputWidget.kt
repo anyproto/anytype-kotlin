@@ -149,11 +149,6 @@ class TextInputWidget : AppCompatEditText {
         super.removeTextChangedListener(watcher)
     }
 
-    fun clearTextWatchers() {
-        watchers.forEach { super.removeTextChangedListener(it) }
-        watchers.clear()
-    }
-
     fun dismissMentionWatchers() {
         watchers.filterIsInstance(MentionTextWatcher::class.java).forEach { it.onDismiss() }
     }

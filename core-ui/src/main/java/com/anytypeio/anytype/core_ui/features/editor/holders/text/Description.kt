@@ -99,7 +99,6 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
     fun enableReadMode() {
         binding.tvBlockDescription.enableReadMode()
         binding.tvBlockDescription.selectionWatcher = null
-        binding.tvBlockDescription.clearTextWatchers()
     }
 
     fun enableEditMode() {

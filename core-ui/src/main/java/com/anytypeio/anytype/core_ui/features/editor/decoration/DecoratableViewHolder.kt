@@ -14,7 +14,6 @@ import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.model.Indent
 
 interface DecoratableViewHolder {
     val decoratableContainer: EditorDecorationContainer
@@ -24,16 +23,16 @@ interface DecoratableViewHolder {
     }
 }
 
-interface DecoratableCardViewHolder: DecoratableViewHolder {
+interface DecoratableCardViewHolder : DecoratableViewHolder {
     val decoratableCard: View
+
     @CallSuper
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
             decoratableContainer.decorate(decorations) { rect ->
                 decoratableCard.applyCardDecorations<FrameLayout.LayoutParams>(
                     rect = rect,
-                    res = decoratableCard.resources,
-                    indent = decorations.lastIndex
+                    res = decoratableCard.resources
                 )
             }
         }
@@ -41,15 +40,14 @@ interface DecoratableCardViewHolder: DecoratableViewHolder {
 }
 
 /**
- * Applying decorations for card blocks (media blocks, placeholders, etc.)
+ * Applying decorations for card blocks (media blocks, placeholders, link-to-objects, bookmarks, etc.)
  */
 inline fun <reified LP : ViewGroup.MarginLayoutParams> View.applyCardDecorations(
     rect: Rect,
-    res: Resources,
-    indent: Indent
+    res: Resources
 ) = updateLayoutParams<LP> {
     val defaultIndentOffset = res.getDimension(R.dimen.default_indent).toInt()
-    marginStart = if (indent == 0) defaultIndentOffset + rect.left else rect.left
+    marginStart = defaultIndentOffset + rect.left
     marginEnd = defaultIndentOffset + rect.right
     topMargin = res.getDimension(R.dimen.card_block_extra_space_top).toInt()
     bottomMargin = res.getDimension(R.dimen.card_block_extra_space_bottom).toInt() + rect.bottom

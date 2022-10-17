@@ -19,8 +19,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertEquals
 
@@ -38,7 +37,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should amend second empty cell click`() {
+    fun `should not amend second empty cell click`() {
 
         val columns = StubTableColumns(size = 3)
         val rows = StubTableRows(size = 2)
@@ -85,15 +84,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
-
-        val selectedState = vm.currentSelection()
-
-        assertEquals(1, selectedState.size)
-        assertEquals(cell1Id, selectedState.first())
+        coroutineTestRule.advanceTime(50L)
 
         runBlocking {
-            verify(fillTableRow, times(1)).invoke(
+            val inOrder = inOrder(fillTableRow)
+            inOrder.verify(fillTableRow).invoke(
                 params = FillTableRow.Params(ctx = root, targetIds = listOf(rows[0].id))
+            )
+            inOrder.verify(fillTableRow).invoke(
+                params = FillTableRow.Params(ctx = root, targetIds = listOf(rows[1].id))
             )
         }
     }

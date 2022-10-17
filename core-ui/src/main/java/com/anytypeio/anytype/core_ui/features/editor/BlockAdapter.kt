@@ -744,7 +744,12 @@ class BlockAdapter(
             )
             HOLDER_TABLE -> TableBlockHolder(
                 ItemBlockTableBinding.inflate(inflater, parent, false),
-                clickListener = onClickListener
+                clickListener = onClickListener,
+                onTextBlockTextChanged = onTextBlockTextChanged,
+                onMentionEvent = onMentionEvent,
+                onSlashEvent = onSlashEvent,
+                onSelectionChanged = onSelectionChanged,
+                onFocusChanged = onFocusChanged
             )
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }

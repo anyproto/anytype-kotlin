@@ -1150,3 +1150,17 @@ fun List<BlockView>.removeBordersFromCells(): List<BlockView> = map { view ->
         view
     }
 }
+
+fun List<BlockView>.findTableCellView(id: Id): BlockView.Table.Cell? {
+    forEach { blockView ->
+        if (blockView is BlockView.Table) {
+            val cells = blockView.cells
+            val cell = cells.find {
+                it is BlockView.Table.Cell.Empty && it.getId() == id
+                        || it is BlockView.Table.Cell.Text && it.getId() == id
+            }
+            if (cell != null) return cell
+        }
+    }
+    return null
+}

@@ -107,6 +107,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
 import com.anytypeio.anytype.presentation.editor.editor.ext.applyBordersToSelectedCells
+import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
 import com.anytypeio.anytype.presentation.editor.editor.ext.removeBordersFromCells
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -2448,19 +2449,27 @@ class EditorViewModel(
     fun onBlockToolbarBlockActionsClicked() {
         Timber.d("onBlockToolbarBlockActionsClicked, ")
         val target = orchestrator.stores.focus.current().id
-        val view = views.find { it.id == target } ?: return
-        when (view) {
-            is BlockView.Title -> {
-                sendToast(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
+        val view = views.find { it.id == target }
+        if (view == null) {
+            val cell = views.findTableCellView(target)
+            if (cell != null && cell is BlockView.Table.Cell.Text) {
+                onShowSimpleTableWidgetClicked(target)
+                viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
             }
-            is BlockView.Description -> {
-                sendToast(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
+        } else {
+            when (view) {
+                is BlockView.Title -> {
+                    sendToast(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
+                }
+                is BlockView.Description -> {
+                    sendToast(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
+                }
+                else -> {
+                    proceedWithEnteringActionMode(target = target, scrollTarget = false)
+                }
             }
-            else -> {
-                proceedWithEnteringActionMode(target = target, scrollTarget = false)
-            }
+            viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
         }
-        viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
     }
 
     fun onEnterScrollAndMoveClicked() {
@@ -2775,6 +2784,10 @@ class EditorViewModel(
 
     private fun fillTableBlockRow(cellId: Id, targetIds: List<Id>, tableId: Id) {
         viewModelScope.launch {
+            if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
+                val focus = Editor.Focus(id = cellId, cursor = null)
+                orchestrator.stores.focus.update(focus)
+            }
             orchestrator.proxies.intents.send(
                 Intent.Table.FillTableRow(
                     ctx = context,
@@ -2782,13 +2795,15 @@ class EditorViewModel(
                 )
             )
         }
-        dispatch(
-            Command.OpenSetBlockTextValueScreen(
-                ctx = context,
-                block = cellId,
-                table = tableId
+        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
+            dispatch(
+                Command.OpenSetBlockTextValueScreen(
+                    ctx = context,
+                    block = cellId,
+                    table = tableId
+                )
             )
-        )
+        }
     }
 
     fun onAddDividerBlockClicked(style: Content.Divider.Style) {
@@ -3827,10 +3842,31 @@ class EditorViewModel(
             }
             is ListenerType.TableEmptyCell -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
-                        if (currentSelection().isNotEmpty()) {
-                            Timber.e("Some other blocks are selected, amend table cell click")
-                            return
+                    EditorMode.Locked -> {
+                        if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
+                            Timber.d("Clicked on table cell in Locked Mode")
+                        } else {
+                            if (currentSelection().isNotEmpty()) {
+                                Timber.e("Some other blocks are selected, amend table cell click")
+                                return
+                            }
+                            proceedWithSelectingCell(
+                                cellId = clicked.cellId,
+                                tableId = clicked.tableId
+                            )
+                            onTableRowEmptyCellClicked(
+                                cellId = clicked.cellId,
+                                rowId = clicked.rowId,
+                                tableId = clicked.tableId
+                            )
+                        }
+                    }
+                    EditorMode.Edit -> {
+                        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
+                            if (currentSelection().isNotEmpty()) {
+                                Timber.e("Some other blocks are selected, amend table cell click")
+                                return
+                            }
                         }
                         proceedWithSelectingCell(
                             cellId = clicked.cellId,
@@ -3848,7 +3884,7 @@ class EditorViewModel(
             }
             is ListenerType.TableTextCell -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit -> {
                         if (currentSelection().isNotEmpty()) {
                             Timber.e("Some other blocks are selected, amend table cell click")
                             return
@@ -3857,13 +3893,34 @@ class EditorViewModel(
                             cellId = clicked.cellId,
                             tableId = clicked.tableId
                         )
-                        dispatch(
-                            Command.OpenSetBlockTextValueScreen(
-                                ctx = context,
-                                block = clicked.cellId,
-                                table = clicked.tableId
+                        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
+                            dispatch(
+                                Command.OpenSetBlockTextValueScreen(
+                                    ctx = context,
+                                    block = clicked.cellId,
+                                    table = clicked.tableId
+                                )
                             )
-                        )
+                        }
+                    }
+                    EditorMode.Locked -> {
+                        if (currentSelection().isNotEmpty()) {
+                            Timber.e("Some other blocks are selected, amend table cell click")
+                            return
+                        }
+                        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
+                            proceedWithSelectingCell(
+                                cellId = clicked.cellId,
+                                tableId = clicked.tableId
+                            )
+                            dispatch(
+                                Command.OpenSetBlockTextValueScreen(
+                                    ctx = context,
+                                    block = clicked.cellId,
+                                    table = clicked.tableId
+                                )
+                            )
+                        }
                     }
                     EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.tableId)
                     else -> Unit

@@ -161,12 +161,6 @@ class TableBlockTest {
                 onItemView(0, R.id.recyclerTable).checkHasChildViewCount(4)
 
                 onItemView(0, R.id.recyclerTable).checkHasChildViewWithText(
-                    0,
-                    "",
-                    R.id.textContent
-                ).checkIsDisplayed()
-
-                onItemView(0, R.id.recyclerTable).checkHasChildViewWithText(
                     1,
                     row1Block1.content.asText().text,
                     R.id.textContent
@@ -196,13 +190,6 @@ class TableBlockTest {
                 onItemView(0, R.id.recyclerTable).checkIsDisplayed()
 
                 onItemView(0, R.id.recyclerTable).checkHasChildViewCount(4)
-
-
-                onItemView(0, R.id.recyclerTable).checkHasChildViewWithText(
-                    0,
-                    "",
-                    R.id.textContent
-                ).checkIsDisplayed()
 
                 onItemView(0, R.id.recyclerTable).checkHasChildViewWithText(
                     1,

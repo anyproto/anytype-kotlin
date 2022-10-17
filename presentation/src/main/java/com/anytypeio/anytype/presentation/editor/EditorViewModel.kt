@@ -5089,9 +5089,7 @@ class EditorViewModel(
                             Prototype.Bookmark.Existing(target = link)
                         else
                             Prototype.Link(target = link),
-                        onSuccess = {
-                            dispatch(Command.OpenObjectSnackbar(id = link, text, icon, isSet))
-                        }
+                        onSuccess = {}
                     )
                 )
             }

@@ -5660,7 +5660,7 @@ class EditorViewModel(
             val fullText = filter.removePrefix(MENTION_PREFIX)
             val params = SearchObjects.Params(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
-                filters = ObjectSearchConstants.filterLinkTo,
+                filters = ObjectSearchConstants.getFilterLinkTo(context),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
                 keys = ObjectSearchConstants.defaultKeys

@@ -53,7 +53,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region LINK TO
-    val filterLinkTo = listOf(
+    fun getFilterLinkTo(ignore: Id?) = listOf(
         DVFilter(
             relationKey = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
@@ -76,6 +76,11 @@ object ObjectSearchConstants {
                 VIDEO_URL,
                 AUDIO_URL
             )
+        ),
+        DVFilter(
+            relationKey = Relations.ID,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ignore
         )
     )
 

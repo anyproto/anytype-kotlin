@@ -56,6 +56,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
 
     private val target get() = arg<Id>(ARG_TARGET)
     private val position get() = argOrNull<Int>(ARG_POSITION)
+    private val ignore get() = arg<Id>(ARG_IGNORE)
 
     private val moveToAdapter by lazy {
         DefaultObjectViewAdapter(
@@ -101,7 +102,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
             jobs += subscribe(vm.commands) { execute(it) }
         }
         super.onStart()
-        vm.onStart(EventsDictionary.Routes.searchMenu)
+        vm.onStart(EventsDictionary.Routes.searchMenu, ignore)
         expand()
     }
 
@@ -259,11 +260,17 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
     companion object {
         const val ARG_TARGET = "arg.link_to.target"
         const val ARG_POSITION = "arg.link_to.position"
+        const val ARG_IGNORE = "arg.link_to.ignore"
 
-        fun new(target: Id, position: Int?) = LinkToObjectFragment().apply {
+        fun new(
+            target: Id,
+            position: Int?,
+            ignore: Id
+        ) = LinkToObjectFragment().apply {
             arguments = bundleOf(
                 ARG_TARGET to target,
-                ARG_POSITION to position
+                ARG_POSITION to position,
+                ARG_IGNORE to ignore
             )
         }
     }
@@ -278,5 +285,6 @@ interface OnLinkToAction {
         icon: ObjectIcon,
         isSet: Boolean
     )
+
     fun onLinkToClose(block: Id, position: Int?)
 }

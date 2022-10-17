@@ -1108,7 +1108,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = LinkToObjectFragment.new(
                             target = command.target,
-                            position = command.position
+                            position = command.position,
+                            ignore = vm.context
                         )
                         fr.show(childFragmentManager, null)
                     }

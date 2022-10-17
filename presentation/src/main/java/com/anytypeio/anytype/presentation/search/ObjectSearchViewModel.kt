@@ -10,8 +10,8 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -72,10 +72,10 @@ open class ObjectSearchViewModel(
         }
     }
 
-    fun onStart(route: String) {
+    fun onStart(route: String, ignore: Id? = null) {
         eventRoute = route
         getObjectTypes()
-        startProcessingSearchQuery()
+        startProcessingSearchQuery(ignore)
     }
 
     fun onStop() {
@@ -92,11 +92,11 @@ open class ObjectSearchViewModel(
         }
     }
 
-    private fun startProcessingSearchQuery() {
+    private fun startProcessingSearchQuery(ignore: Id?) {
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 sendSearchQueryEvent(query)
-                val params = getSearchObjectsParams().copy(fulltext = query)
+                val params = getSearchObjectsParams(ignore).copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects -> setObjects(objects) },
                     failure = { Timber.e(it, "Error while searching for objects") }
@@ -157,7 +157,7 @@ open class ObjectSearchViewModel(
         }
     }
 
-    open fun getSearchObjectsParams() = SearchObjects.Params(
+    open fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filterSearchObjects,
         sorts = ObjectSearchConstants.sortsSearchObjects,

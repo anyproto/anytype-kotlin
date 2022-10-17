@@ -6,8 +6,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -30,9 +30,9 @@ class LinkToObjectViewModel(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    override fun getSearchObjectsParams() = SearchObjects.Params(
+    override fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterLinkTo,
+        filters = ObjectSearchConstants.getFilterLinkTo(ignore),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = EMPTY_QUERY,
         keys = ObjectSearchConstants.defaultKeys

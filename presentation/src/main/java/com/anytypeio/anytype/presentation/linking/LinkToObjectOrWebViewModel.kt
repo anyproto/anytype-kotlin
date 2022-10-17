@@ -212,7 +212,7 @@ class LinkToObjectOrWebViewModel(
 
     fun getSearchObjectsParams() = SearchObjects.Params(
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterLinkTo,
+        filters = ObjectSearchConstants.getFilterLinkTo(ignore = null),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY
     )

@@ -1,11 +1,17 @@
 package com.anytypeio.anytype.core_ui
 
+import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlights
+import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
+import java.util.regex.Pattern
 import kotlin.test.assertEquals
 
 class BlockViewSearchTextTest {
@@ -1072,6 +1078,381 @@ class BlockViewSearchTextTest {
         )
 
         val actual = views.nextSearchTarget()
+
+        assertEquals(expected = expected, actual = actual)
+    }
+
+
+    @Test
+    fun `should update search fields ranges in table cells`() {
+
+        val rowId1 = "rowId1"
+        val rowId2 = "rowId2"
+        val columnId1 = "columnId1"
+        val columnId2 = "columnId2"
+        val columnId3 = "columnId3"
+
+        val query = "bc"
+
+        val row1Block1 = StubParagraph(id = "$rowId1-$columnId1", text = "ab1")
+        val row1Block2 = StubParagraph(id = "$rowId1-$columnId2", text = "ab2")
+        val row1Block3 = StubParagraph(id = "$rowId1-$columnId3", text = "ac3")
+        val row2Block1 = StubParagraph(id = "$rowId2-$columnId1", text = "bc1")
+        val row2Block2 = StubParagraph(id = "$rowId2-$columnId2", text = "bb2")
+        val row2Block3 = StubParagraph(id = "$rowId2-$columnId3", text = "bc3")
+
+        val cells = listOf(
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block1.id,
+                    text = row1Block1.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block2.id,
+                    text = row1Block2.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block3.id,
+                    text = row1Block3.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId3
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block1.id,
+                    text = row2Block1.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block2.id,
+                    text = row2Block2.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block3.id,
+                    text = row2Block3.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId3
+
+            )
+        )
+
+        val columns = listOf(
+            BlockView.Table.Column(id = columnId1, background = ThemeColor.DEFAULT),
+            BlockView.Table.Column(id = columnId2, background = ThemeColor.DEFAULT),
+            BlockView.Table.Column(id = columnId3, background = ThemeColor.DEFAULT)
+        )
+
+        val tableId = MockDataFactory.randomUuid()
+
+        val views = listOf<BlockView>(
+            BlockView.Table(
+                id = tableId,
+                cells = cells,
+                columns = columns,
+                rowCount = 2,
+                isSelected = false
+            )
+        )
+
+        val expectedCells = listOf(
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block1.id,
+                    text = row1Block1.content.asText().text,
+                    searchFields = listOf(
+                        BlockView.Searchable.Field(
+                            key = BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY,
+                            highlights = emptyList(),
+                            target = IntRange.EMPTY
+                        )
+                    )
+                ),
+                rowId = rowId1,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block2.id,
+                    text = row1Block2.content.asText().text,
+                    searchFields = listOf(
+                        BlockView.Searchable.Field(
+                            key = BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY,
+                            highlights = emptyList(),
+                            target = IntRange.EMPTY
+                        )
+                    )
+                ),
+                rowId = rowId1,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block3.id,
+                    text = row1Block3.content.asText().text,
+                    searchFields = listOf(
+                        BlockView.Searchable.Field(
+                            key = BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY,
+                            highlights = emptyList(),
+                            target = IntRange.EMPTY
+                        )
+                    )
+                ),
+                rowId = rowId1,
+                columnId = columnId3
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block1.id,
+                    text = row2Block1.content.asText().text,
+                    searchFields = listOf(
+                        BlockView.Searchable.Field(
+                            key = BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY,
+                            highlights = listOf(IntRange(0, 2)),
+                            target = IntRange.EMPTY
+                        )
+                    )
+                ),
+                rowId = rowId2,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block2.id,
+                    text = row2Block2.content.asText().text,
+                    searchFields = listOf(
+                        BlockView.Searchable.Field(
+                            key = BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY,
+                            highlights = emptyList(),
+                            target = IntRange.EMPTY
+                        )
+                    )
+                ),
+                rowId = rowId2,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block3.id,
+                    text = row2Block3.content.asText().text,
+                    searchFields = listOf(
+                        BlockView.Searchable.Field(
+                            key = BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY,
+                            highlights = listOf(IntRange(0, 2)),
+                            target = IntRange.EMPTY
+                        )
+                    )
+                ),
+                rowId = rowId2,
+                columnId = columnId3
+            )
+        )
+
+        val flags = Pattern.MULTILINE or Pattern.CASE_INSENSITIVE
+        val escaped = Pattern.quote(query)
+        val pattern = Pattern.compile(escaped, flags)
+
+        val actual = views.highlight { pairs ->
+            pairs.map { (key, txt) ->
+                BlockView.Searchable.Field(
+                    key = key,
+                    highlights = txt.search(pattern)
+                )
+            }
+        }
+
+        val expected = listOf(
+            BlockView.Table(
+                id = tableId,
+                cells = expectedCells,
+                columns = columns,
+                rowCount = 2,
+                isSelected = false
+            )
+        )
+
+        assertEquals(expected = expected, actual = actual)
+    }
+
+    @Test
+    fun `should clear search fields ranges in table cells`() {
+
+        val rowId1 = "rowId1"
+        val rowId2 = "rowId2"
+        val columnId1 = "columnId1"
+        val columnId2 = "columnId2"
+        val columnId3 = "columnId3"
+
+        val query = "bc"
+
+        val row1Block1 = StubParagraph(id = "$rowId1-$columnId1", text = "ab1")
+        val row1Block2 = StubParagraph(id = "$rowId1-$columnId2", text = "ab2")
+        val row1Block3 = StubParagraph(id = "$rowId1-$columnId3", text = "ac3")
+        val row2Block1 = StubParagraph(id = "$rowId2-$columnId1", text = "bc1")
+        val row2Block2 = StubParagraph(id = "$rowId2-$columnId2", text = "bb2")
+        val row2Block3 = StubParagraph(id = "$rowId2-$columnId3", text = "bc3")
+
+        val cells = listOf(
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block1.id,
+                    text = row1Block1.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block2.id,
+                    text = row1Block2.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block3.id,
+                    text = row1Block3.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId3
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block1.id,
+                    text = row2Block1.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block2.id,
+                    text = row2Block2.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block3.id,
+                    text = row2Block3.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId3
+
+            )
+        )
+
+        val columns = listOf(
+            BlockView.Table.Column(id = columnId1, background = ThemeColor.DEFAULT),
+            BlockView.Table.Column(id = columnId2, background = ThemeColor.DEFAULT),
+            BlockView.Table.Column(id = columnId3, background = ThemeColor.DEFAULT)
+        )
+
+        val tableId = MockDataFactory.randomUuid()
+
+        val views = listOf<BlockView>(
+            BlockView.Table(
+                id = tableId,
+                cells = cells,
+                columns = columns,
+                rowCount = 2,
+                isSelected = false
+            )
+        )
+
+        val expectedCells = listOf(
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block1.id,
+                    text = row1Block1.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block2.id,
+                    text = row1Block2.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row1Block3.id,
+                    text = row1Block3.content.asText().text
+                ),
+                rowId = rowId1,
+                columnId = columnId3
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block1.id,
+                    text = row2Block1.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId1
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block2.id,
+                    text = row2Block2.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId2
+            ),
+            BlockView.Table.Cell.Text(
+                block = BlockView.Text.Paragraph(
+                    id = row2Block3.id,
+                    text = row2Block3.content.asText().text
+                ),
+                rowId = rowId2,
+                columnId = columnId3
+            )
+        )
+
+        val flags = Pattern.MULTILINE or Pattern.CASE_INSENSITIVE
+        val escaped = Pattern.quote(query)
+        val pattern = Pattern.compile(escaped, flags)
+
+        val highlighted = views.highlight { pairs ->
+            pairs.map { (key, txt) ->
+                BlockView.Searchable.Field(
+                    key = key,
+                    highlights = txt.search(pattern)
+                )
+            }
+        }
+
+        val actual = highlighted.clearSearchHighlights()
+
+        val expected = listOf(
+            BlockView.Table(
+                id = tableId,
+                cells = expectedCells,
+                columns = columns,
+                rowCount = 2,
+                isSelected = false
+            )
+        )
 
         assertEquals(expected = expected, actual = actual)
     }

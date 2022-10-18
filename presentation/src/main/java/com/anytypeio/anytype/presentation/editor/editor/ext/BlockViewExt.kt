@@ -555,6 +555,23 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.LinkToObject.Default.Card.SmallIconCover -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Default.Card.MediumIconCover -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Archived -> view.copy(searchFields = emptyList())
+        is BlockView.Table -> {
+            val cells = view.cells
+            val updatedCells = cells.map { cell ->
+                when (cell) {
+                    is BlockView.Table.Cell.Empty -> cell
+                    BlockView.Table.Cell.Space -> cell
+                    is BlockView.Table.Cell.Text -> {
+                        cell.copy(
+                            block = cell.block.copy(
+                                searchFields = emptyList()
+                            )
+                        )
+                    }
+                }
+            }
+            view.copy(cells = updatedCells)
+        }
         else -> view.also { check(view !is BlockView.Searchable) }
     }
 }
@@ -646,6 +663,25 @@ fun List<BlockView>.highlight(
         is BlockView.LinkToObject.Archived -> {
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.Table -> {
+            val cells = view.cells
+            val updatedCells = cells.map { cell ->
+                when (cell) {
+                    is BlockView.Table.Cell.Empty -> cell
+                    BlockView.Table.Cell.Space -> cell
+                    is BlockView.Table.Cell.Text -> {
+                        val block = cell.block
+                        val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to block.text)
+                        cell.copy(
+                            block = block.copy(
+                                searchFields = highlighter(fields)
+                            )
+                        )
+                    }
+                }
+            }
+            view.copy(cells = updatedCells)
         }
         else -> view.also { check(view !is BlockView.Searchable) }
     }

@@ -51,6 +51,7 @@ open class LinkToObjectOrWebViewModelTest {
     lateinit var gateway: Gateway
 
     var store: Editor.Storage = Editor.Storage()
+    var ctx = ""
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -74,13 +75,14 @@ open class LinkToObjectOrWebViewModelTest {
         runBlocking { store.document.update(listOf(block)) }
 
         val vm = givenViewModel()
-        stubSearchObjects(params = vm.getSearchObjectsParams())
+        stubSearchObjects(params = vm.getSearchObjectsParams(ctx))
 
         vm.onStart(
             blockId = target,
             rangeStart = 0,
             rangeEnd = 10,
-            clipboardUrl = null
+            clipboardUrl = null,
+            ignore = ctx
         )
 
         assertEquals(
@@ -103,13 +105,14 @@ open class LinkToObjectOrWebViewModelTest {
 
         val vm = givenViewModel()
 
-        stubSearchObjects(params = vm.getSearchObjectsParams())
+        stubSearchObjects(params = vm.getSearchObjectsParams(ctx))
 
         vm.onStart(
             blockId = target,
             rangeStart = start,
             rangeEnd = end,
-            clipboardUrl = null
+            clipboardUrl = null,
+            ignore = ctx
         )
 
         val result = vm.viewState.value
@@ -138,7 +141,8 @@ open class LinkToObjectOrWebViewModelTest {
             blockId = target,
             rangeStart = start,
             rangeEnd = end,
-            clipboardUrl = null
+            clipboardUrl = null,
+            ignore = ctx
         )
 
         val result = vm.viewState.value
@@ -169,13 +173,14 @@ open class LinkToObjectOrWebViewModelTest {
 
         val vm = givenViewModel()
 
-        stubSearchObjects(params = vm.getSearchObjectsParams())
+        stubSearchObjects(params = vm.getSearchObjectsParams(ctx))
 
         vm.onStart(
             blockId = target,
             rangeStart = 0,
             rangeEnd = 6,
-            clipboardUrl = null
+            clipboardUrl = null,
+            ignore = ctx
         )
 
         val result = vm.markupLinkParam.value
@@ -204,13 +209,14 @@ open class LinkToObjectOrWebViewModelTest {
 
         val vm = givenViewModel()
 
-        stubSearchObjects(params = vm.getSearchObjectsParams())
+        stubSearchObjects(params = vm.getSearchObjectsParams(ctx))
 
         vm.onStart(
             blockId = target,
             rangeStart = 0,
             rangeEnd = 6,
-            clipboardUrl = null
+            clipboardUrl = null,
+            ignore = ctx
         )
 
         val result = vm.markupObjectParam.value
@@ -243,13 +249,14 @@ open class LinkToObjectOrWebViewModelTest {
 
         val vm = givenViewModel()
 
-        stubSearchObjects(params = vm.getSearchObjectsParams())
+        stubSearchObjects(params = vm.getSearchObjectsParams(ctx))
 
         vm.onStart(
             blockId = target,
             rangeStart = 4,
             rangeEnd = 6,
-            clipboardUrl = null
+            clipboardUrl = null,
+            ignore = ctx
         )
 
         assertNull(vm.markupObjectParam.value)

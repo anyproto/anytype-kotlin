@@ -53,10 +53,10 @@ class LinkToObjectOrWebViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(blockId: Id, rangeStart: Int, rangeEnd: Int, clipboardUrl: String?) {
+    fun onStart(blockId: Id, rangeStart: Int, rangeEnd: Int, clipboardUrl: String?, ignore: Id) {
         this.clipboardUrl = clipboardUrl
         setupBlockInRangeMarkupParam(blockId, rangeStart, rangeEnd)
-        startObservingViewState()
+        startObservingViewState(ignore)
     }
 
     fun onStop() {
@@ -66,11 +66,11 @@ class LinkToObjectOrWebViewModel(
         jobs.clear()
     }
 
-    private fun startObservingViewState() {
+    private fun startObservingViewState(ignore: Id) {
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 sendSearchQueryEvent(query.length)
-                val params = getSearchObjectsParams().copy(fulltext = query)
+                val params = getSearchObjectsParams(ignore).copy(fulltext = query)
                 searchObjects(params).process(
                     success = { searchResponse ->
                         val result = proceedWithSearchObjectsResponse(searchResponse)
@@ -115,7 +115,9 @@ class LinkToObjectOrWebViewModel(
             }
             else -> {
                 val filteredSearchResponse =
-                    searchResponse.filter { SupportedLayouts.layouts.contains(it.layout) }
+                    searchResponse
+                        .filter { SupportedLayouts.layouts.contains(it.layout) }
+
                 val objectViews = filteredSearchResponse.toLinkToView(
                     urlBuilder = urlBuilder,
                     objectTypes = objectTypes
@@ -210,9 +212,9 @@ class LinkToObjectOrWebViewModel(
         )
     }
 
-    fun getSearchObjectsParams() = SearchObjects.Params(
+    fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
-        filters = ObjectSearchConstants.getFilterLinkTo(ignore = null),
+        filters = ObjectSearchConstants.getFilterLinkTo(ignore = ignore),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY
     )

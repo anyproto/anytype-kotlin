@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class LinkToObjectOrWebPagesFragment() :
+class LinkToObjectOrWebPagesFragment :
     BaseBottomSheetFragment<FragmentLinkToObjectOrWebBinding>() {
 
     private val vm by viewModels<LinkToObjectOrWebViewModel> { factory }
@@ -44,7 +44,7 @@ class LinkToObjectOrWebPagesFragment() :
     private val clearSearchText: View get() = binding.searchView.root.findViewById(R.id.clearSearchText)
     private val filterInputField: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
 
-    private val ctx get() = arg<String>(CTX_KEY)
+    private val ctx get() = arg<Id>(CTX_KEY)
     private val blockId get() = arg<String>(BLOCK_KEY)
     private val rangeStart get() = arg<Int>(RANGE_START_KEY)
     private val rangeEnd get() = arg<Int>(RANGE_END_KEY)
@@ -114,7 +114,8 @@ class LinkToObjectOrWebPagesFragment() :
             blockId = blockId,
             rangeStart = rangeStart,
             rangeEnd = rangeEnd,
-            clipboardUrl = context?.parseUrlFromClipboard()
+            clipboardUrl = context?.parseUrlFromClipboard(),
+            ignore = ctx
         )
         expand()
     }

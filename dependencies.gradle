@@ -67,7 +67,7 @@ ext {
     // Logging, Analytics & Crash reporting
 
     timber_version = '5.0.1'
-    crashlytics_version = '18.3.0'
+    crashlytics_version = '18.3.1'
 
     // Protobuf
 

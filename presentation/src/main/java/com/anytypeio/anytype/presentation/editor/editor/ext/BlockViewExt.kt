@@ -1395,3 +1395,20 @@ fun List<BlockView>.findBlockTableByCellId(cellId: Id): BlockView.Table? {
     }
     return null
 }
+
+/**
+ * Find position of highlighted targeted text block or table block in case when cell is targeting
+ */
+fun List<BlockView>.findSearchResultPosition(): Int {
+    val target = findHighlightedTarget() ?: return -1
+    forEachIndexed { index, blockView ->
+        if (blockView is BlockView.Table) {
+            val textCells = blockView.getTextCells()
+            val cellIndex = textCells.indexOfFirst { it.id == target.id }
+            if (cellIndex != -1) return index
+        } else {
+            if (blockView.id == target.id) return index
+        }
+    }
+    return -1
+}

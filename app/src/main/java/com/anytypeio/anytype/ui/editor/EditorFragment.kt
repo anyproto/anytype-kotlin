@@ -803,7 +803,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.commands.observe(viewLifecycleOwner) { execute(it) }
         vm.searchResultScrollPosition
             .filter { it != EditorViewModel.NO_SEARCH_RESULT_POSITION }
-            .onEach { binding.recycler.smoothScrollToPosition(it) }
+            .onEach {
+                (binding.recycler.layoutManager as? LinearLayoutManager)
+                    ?.scrollToPositionWithOffset(it, dimen(R.dimen.default_toolbar_height))
+            }
             .launchIn(lifecycleScope)
 
         vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)

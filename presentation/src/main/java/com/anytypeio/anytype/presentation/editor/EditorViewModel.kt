@@ -108,6 +108,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditM
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
 import com.anytypeio.anytype.presentation.editor.editor.ext.applyBordersToSelectedCells
 import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
+import com.anytypeio.anytype.presentation.editor.editor.ext.findSearchResultPosition
 import com.anytypeio.anytype.presentation.editor.editor.ext.removeBordersFromCells
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -2015,21 +2016,13 @@ class EditorViewModel(
                 val update = views.nextSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target = update.find { view ->
-                    view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
-                }
-                val pos = update.indexOf(target)
-                searchResultScrollPosition.value = pos
+                searchResultScrollPosition.value = update.findSearchResultPosition()
             }
             is SearchInDocEvent.Previous -> {
                 val update = views.previousSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target = update.find { view ->
-                    view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
-                }
-                val pos = update.indexOf(target)
-                searchResultScrollPosition.value = pos
+                searchResultScrollPosition.value = update.findSearchResultPosition()
             }
             is SearchInDocEvent.Cancel -> {
                 mode = EditorMode.Edit
@@ -2043,11 +2036,7 @@ class EditorViewModel(
                 val update = views.nextSearchTarget()
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
-                val target = update.find { view ->
-                    view is BlockView.Searchable && view.searchFields.any { it.isTargeted }
-                }
-                val pos = update.indexOf(target)
-                searchResultScrollPosition.value = pos
+                searchResultScrollPosition.value = update.findSearchResultPosition()
             }
             else -> {}
         }

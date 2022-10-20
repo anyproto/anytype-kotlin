@@ -12,8 +12,10 @@ import com.anytypeio.anytype.core_models.StubCallout
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubSmartBlock
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.const.DetailsKeys
 import com.anytypeio.anytype.domain.config.Gateway
@@ -27,8 +29,6 @@ import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -4540,7 +4540,10 @@ class DefaultBlockViewRendererTest {
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
                         BlockView.Decoration(
-                            background = quote.parseThemeBackgroundColor()
+                            background = quote.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                hasChildren = true
+                            )
                         )
                     )
                 } else {
@@ -4644,7 +4647,10 @@ class DefaultBlockViewRendererTest {
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
                         BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor()
+                            background = quote1.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                hasChildren = true
+                            )
                         )
                     )
                 } else {
@@ -4666,7 +4672,10 @@ class DefaultBlockViewRendererTest {
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
                         BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor()
+                            background = quote2.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                hasChildren = false
+                            )
                         )
                     )
                 } else {
@@ -4761,7 +4770,10 @@ class DefaultBlockViewRendererTest {
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
                         BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor()
+                            background = quote1.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                hasChildren = true
+                            )
                         )
                     )
                 } else {
@@ -4783,7 +4795,10 @@ class DefaultBlockViewRendererTest {
                             style = BlockView.Decoration.Style.Highlight.Middle
                         ),
                         BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor()
+                            background = quote2.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                hasChildren = true
+                            )
                         )
                     )
                 } else {
@@ -4917,7 +4932,10 @@ class DefaultBlockViewRendererTest {
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(
                         BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor()
+                            background = quote1.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                true
+                            )
                         )
                     )
                 } else {
@@ -4939,7 +4957,10 @@ class DefaultBlockViewRendererTest {
                             style = BlockView.Decoration.Style.Highlight.Middle
                         ),
                         BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor()
+                            background = quote2.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                true
+                            )
                         )
                     )
                 } else {
@@ -5120,7 +5141,10 @@ class DefaultBlockViewRendererTest {
                             background = paragraph.parseThemeBackgroundColor()
                         ),
                         BlockView.Decoration(
-                            background = quote.parseThemeBackgroundColor()
+                            background = quote.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Highlight.Itself(
+                                hasChildren = true
+                            )
                         )
                     )
                 } else {

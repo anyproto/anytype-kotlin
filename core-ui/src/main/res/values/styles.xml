@@ -200,6 +200,8 @@
         <item name="android:layout_marginStart">@dimen/default_graphic_container_right_offset</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
     </style>
 
     <style name="BlockCalloutContentStyle" parent="DefaultEditorTextStyle">

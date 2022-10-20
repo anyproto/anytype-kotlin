@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -94,6 +95,25 @@ class Highlight(
                     marginStart = dimen(R.dimen.default_indent) + rect.left
                     marginEnd = dimen(R.dimen.dp_8) + rect.right
                     bottomMargin = rect.bottom
+                }
+            }
+            if (decorations.isNotEmpty()) {
+                when (val style = decorations.last().style) {
+                    is BlockView.Decoration.Style.Highlight.End -> {
+                        binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                            bottomMargin = dimen(R.dimen.dp_6)
+                        }
+                    }
+                    is BlockView.Decoration.Style.Highlight.Itself -> {
+                        binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                            bottomMargin = if (style.hasChildren) 0 else dimen(R.dimen.dp_6)
+                        }
+                    }
+                    else -> {
+                        binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                            bottomMargin = 0
+                        }
+                    }
                 }
             }
         }

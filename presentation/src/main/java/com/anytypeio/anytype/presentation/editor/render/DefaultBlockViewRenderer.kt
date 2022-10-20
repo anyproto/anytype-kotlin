@@ -1058,7 +1058,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             listOf(
                 BlockView.Decoration(
                     background = block.parseThemeBackgroundColor(),
-                    style = BlockView.Decoration.Style.None
+                    style = BlockView.Decoration.Style.Highlight.Itself(
+                        hasChildren = block.children.isNotEmpty()
+                    )
                 )
             )
         } else {

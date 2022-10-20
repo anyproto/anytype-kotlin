@@ -30,7 +30,8 @@
             android:id="@+id/highlightGlyphContainer"
             android:layout_width="24dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/default_highlight_content_margin_top">
+            android:layout_marginTop="@dimen/default_highlight_content_margin_top"
+            android:layout_marginBottom="6dp">
 
             <View
                 android:id="@+id/divider"

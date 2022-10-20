@@ -170,6 +170,11 @@ sealed class BlockView : ViewType {
 
             object None : Style()
             sealed class Highlight : Style() {
+                /**
+                 * [Itself] represents style of highlight block itself at a given indent level,
+                 * as opposed to highlight block style inherited from parent blocks.
+                 */
+                data class Itself(val hasChildren: Boolean = false) : Highlight()
                 object Start : Highlight()
                 object Middle : Highlight()
                 object End : Highlight()

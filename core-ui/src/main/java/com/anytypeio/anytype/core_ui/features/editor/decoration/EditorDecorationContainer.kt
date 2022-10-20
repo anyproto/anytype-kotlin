@@ -4,9 +4,9 @@ import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.veryLight
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Decoration
 
 class EditorDecorationContainer @JvmOverloads constructor(
@@ -124,7 +124,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
 
             // Drawing highlight line inside box
 
-            if (decor.style is Decoration.Style.Highlight) {
+            if (decor.style is Decoration.Style.Highlight && decor.style !is Decoration.Style.Highlight.Itself) {
                 if (decor.style is Decoration.Style.Highlight.End) {
                     rect.bottom += highlightBottomOffset
                 }

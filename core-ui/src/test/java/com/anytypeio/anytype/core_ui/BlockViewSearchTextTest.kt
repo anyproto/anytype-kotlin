@@ -1456,4 +1456,441 @@ class BlockViewSearchTextTest {
 
         assertEquals(expected = expected, actual = actual)
     }
+
+    @Test
+    fun `when no highlighted text is targeted in simple table expect to target row2 column1 cell`() {
+
+        //SETUP
+        val pattern = StubPattern(query = "bc")
+
+        val simpleTableBlock = StubTwoRowsThreeColumnsSimpleTable(
+            textR1C1 = "ab1",
+            textR1C2 = "ab2",
+            textR1C3 = "ac3",
+            textR2C1 = "bc1",
+            textR2C2 = "bb2",
+            textR2C3 = "bc3"
+        )
+
+        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
+        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
+        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
+        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
+        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
+        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+
+        val blocks = listOf<BlockView>(simpleTableBlock)
+
+        //TESTING
+        val actualHighlighted = blocks.highlight { pairs ->
+            pairs.map { (key, txt) ->
+                BlockView.Searchable.Field(
+                    key = key,
+                    highlights = txt.search(pattern)
+                )
+            }
+        }
+
+        val actualFirstHighlightedIsTargeted = actualHighlighted.nextSearchTarget()
+
+        //EXPECTING
+        val expectedTargetedCell = cellR2C1.copy(
+            block = cellR2C1.block.copy(
+                searchFields = listOf(
+                    StubBlockViewSearchFiled(
+                        highlights = listOf(IntRange(0, 2)),
+                        target = IntRange(0, 2)
+                    )
+                )
+            )
+        )
+
+        val expectedHighlightedCell = cellR2C3.copy(
+            block = cellR2C3.block.copy(
+                searchFields = listOf(
+                    StubBlockViewSearchFiled(
+                        highlights = listOf(
+                            IntRange(0, 2)
+                        )
+                    )
+                )
+            )
+        )
+
+        val expectedCells = listOf(
+            cellR1C1.copy(
+                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C2.copy(
+                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C3.copy(
+                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            expectedTargetedCell,
+            cellR2C2.copy(
+                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            expectedHighlightedCell
+        )
+
+        val expectedFirstHighlightedIsTargeted = listOf(
+            simpleTableBlock.copy(cells = expectedCells)
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedFirstHighlightedIsTargeted,
+            actual = actualFirstHighlightedIsTargeted
+        )
+    }
+
+    @Test
+    fun `when first highlighted text is targeted in simple table expect to target next one`() {
+
+        //SETUP
+        val pattern = StubPattern(query = "bc")
+
+        val simpleTableBlock = StubTwoRowsThreeColumnsSimpleTable(
+            textR1C1 = "ab1",
+            textR1C2 = "ab2",
+            textR1C3 = "ac3",
+            textR2C1 = "bc1",
+            textR2C2 = "bb2",
+            textR2C3 = "bc3"
+        )
+
+        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
+        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
+        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
+        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
+        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
+        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+
+        val blocks = listOf<BlockView>(simpleTableBlock)
+
+        //TESTING
+        val actualHighlighted = blocks.highlight { pairs ->
+            pairs.map { (key, txt) ->
+                BlockView.Searchable.Field(
+                    key = key,
+                    highlights = txt.search(pattern)
+                )
+            }
+        }
+
+        val actualFirstHighlightedIsTargeted = actualHighlighted.nextSearchTarget()
+
+        val actualSecondHighlightedIsTargeted = actualFirstHighlightedIsTargeted.nextSearchTarget()
+
+        //EXPECTING
+        val expectedCells = listOf(
+            cellR1C1.copy(
+                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C2.copy(
+                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C3.copy(
+                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C1.copy(
+                block = cellR2C1.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2))
+                        )
+                    )
+                )
+            ),
+            cellR2C2.copy(
+                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C3.copy(
+                block = cellR2C3.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2)),
+                            target = IntRange(0, 2)
+                        )
+                    )
+                )
+            )
+        )
+
+        val expectedSecondHighlightedIsTargeted = listOf(
+            simpleTableBlock.copy(
+                cells = expectedCells
+            )
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSecondHighlightedIsTargeted,
+            actual = actualSecondHighlightedIsTargeted
+        )
+    }
+
+    @Test
+    fun `when second highlighted text is targeted in simple table expect to target second one`() {
+
+        //SETUP
+        val pattern = StubPattern(query = "bc")
+
+        val simpleTableBlock = StubTwoRowsThreeColumnsSimpleTable(
+            textR1C1 = "ab1",
+            textR1C2 = "ab2",
+            textR1C3 = "ac3",
+            textR2C1 = "bc1",
+            textR2C2 = "bb2",
+            textR2C3 = "bc3"
+        )
+
+        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
+        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
+        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
+        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
+        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
+        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+
+        val blocks = listOf<BlockView>(simpleTableBlock)
+
+        //TESTING
+        val actualHighlighted = blocks.highlight { pairs ->
+            pairs.map { (key, txt) ->
+                BlockView.Searchable.Field(
+                    key = key,
+                    highlights = txt.search(pattern)
+                )
+            }
+        }
+
+        val actualFirstHighlightedIsTargeted = actualHighlighted.nextSearchTarget()
+        val actualSecondHighlightedIsTargeted = actualFirstHighlightedIsTargeted.nextSearchTarget()
+        val actualSecondHighlightedIsTargeted2 =
+            actualSecondHighlightedIsTargeted.nextSearchTarget()
+
+        //EXPECTING
+        val expectedCells = listOf(
+            cellR1C1.copy(
+                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C2.copy(
+                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C3.copy(
+                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C1.copy(
+                block = cellR2C1.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2))
+                        )
+                    )
+                )
+            ),
+            cellR2C2.copy(
+                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C3.copy(
+                block = cellR2C3.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2)),
+                            target = IntRange(0, 2)
+                        )
+                    )
+                )
+            )
+        )
+
+        val expectedSecondHighlightedIsTargeted = listOf(
+            simpleTableBlock.copy(
+                cells = expectedCells
+            )
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSecondHighlightedIsTargeted,
+            actual = actualSecondHighlightedIsTargeted2
+        )
+    }
+
+    @Test
+    fun `when second highlighted text is targeted in simple table expect to target first one`() {
+
+        //SETUP
+        val pattern = StubPattern(query = "bc")
+
+        val simpleTableBlock = StubTwoRowsThreeColumnsSimpleTable(
+            textR1C1 = "ab1",
+            textR1C2 = "ab2",
+            textR1C3 = "ac3",
+            textR2C1 = "bc1",
+            textR2C2 = "bb2",
+            textR2C3 = "bc3"
+        )
+
+        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
+        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
+        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
+        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
+        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
+        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+
+        val blocks = listOf<BlockView>(simpleTableBlock)
+
+        //TESTING
+        val actualHighlighted = blocks.highlight { pairs ->
+            pairs.map { (key, txt) ->
+                BlockView.Searchable.Field(
+                    key = key,
+                    highlights = txt.search(pattern)
+                )
+            }
+        }
+
+        val actualFirstHighlightedIsTargeted = actualHighlighted.nextSearchTarget()
+        val actualSecondHighlightedIsTargeted = actualFirstHighlightedIsTargeted.nextSearchTarget()
+        val actualFirstHighlightedIsTargeted2 =
+            actualSecondHighlightedIsTargeted.previousSearchTarget()
+
+        //EXPECTING
+        val expectedCells = listOf(
+            cellR1C1.copy(
+                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C2.copy(
+                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C3.copy(
+                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C1.copy(
+                block = cellR2C1.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2)),
+                            target = IntRange(0, 2)
+                        )
+                    )
+                )
+            ),
+            cellR2C2.copy(
+                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C3.copy(
+                block = cellR2C3.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2))
+                        )
+                    )
+                )
+            )
+        )
+
+        val expectedSecondHighlightedIsTargeted = listOf(
+            simpleTableBlock.copy(
+                cells = expectedCells
+            )
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSecondHighlightedIsTargeted,
+            actual = actualFirstHighlightedIsTargeted2
+        )
+    }
+
+    @Test
+    fun `when first highlighted text is targeted in simple table expect to still target first one`() {
+
+        //SETUP
+        val pattern = StubPattern(query = "bc")
+
+        val simpleTableBlock = StubTwoRowsThreeColumnsSimpleTable(
+            textR1C1 = "ab1",
+            textR1C2 = "ab2",
+            textR1C3 = "ac3",
+            textR2C1 = "bc1",
+            textR2C2 = "bb2",
+            textR2C3 = "bc3"
+        )
+
+        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
+        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
+        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
+        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
+        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
+        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+
+        val blocks = listOf<BlockView>(simpleTableBlock)
+
+        //TESTING
+        val actualHighlighted = blocks.highlight { pairs ->
+            pairs.map { (key, txt) ->
+                BlockView.Searchable.Field(
+                    key = key,
+                    highlights = txt.search(pattern)
+                )
+            }
+        }
+
+        val actualFirstHighlightedIsTargeted = actualHighlighted.nextSearchTarget()
+        val actualSecondHighlightedIsTargeted = actualFirstHighlightedIsTargeted.nextSearchTarget()
+        val actualFirstHighlightedIsTargeted2 =
+            actualSecondHighlightedIsTargeted.previousSearchTarget()
+        val actualFirstHighlightedIsTargeted3 =
+            actualFirstHighlightedIsTargeted2.previousSearchTarget()
+
+        //EXPECTING
+        val expectedCells = listOf(
+            cellR1C1.copy(
+                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C2.copy(
+                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR1C3.copy(
+                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C1.copy(
+                block = cellR2C1.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2)),
+                            target = IntRange(0, 2)
+                        )
+                    )
+                )
+            ),
+            cellR2C2.copy(
+                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+            ),
+            cellR2C3.copy(
+                block = cellR2C3.block.copy(
+                    searchFields = listOf(
+                        StubBlockViewSearchFiled(
+                            highlights = listOf(IntRange(0, 2))
+                        )
+                    )
+                )
+            )
+        )
+
+        val expectedSecondHighlightedIsTargeted = listOf(
+            simpleTableBlock.copy(
+                cells = expectedCells
+            )
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSecondHighlightedIsTargeted,
+            actual = actualFirstHighlightedIsTargeted3
+        )
+    }
 }

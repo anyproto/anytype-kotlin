@@ -1326,43 +1326,20 @@ sealed class BlockView : ViewType {
 
         data class Column(val id: String, val background: ThemeColor)
 
-        sealed interface Cell {
-
-            data class Text(
-                val rowId: Id,
-                val columnId: Id,
-                val settings: CellSettings = CellSettings.empty(),
-                val block: BlockView.Text.Paragraph
-            ) : Cell {
-                fun getId() = "$rowId-$columnId"
-            }
-
-            data class Empty(
-                val rowId: Id,
-                val columnId: Id,
-                val settings: CellSettings = CellSettings.empty(),
-            ) : Cell {
-                fun getId() = "$rowId-$columnId"
-            }
-        }
-
-        data class CellSettings(
-            val width: Int = 0,
+        data class Cell(
+            val rowId: Id,
+            val rowIndex: RowIndex,
+            val columnId: Id,
+            val columnIndex: ColumnIndex,
             val isHeader: Boolean = false,
-            val top: Boolean = false,
-            val left: Boolean = false,
-            val right: Boolean = false,
-            val bottom: Boolean = false
+            val block: Text.Paragraph?
         ) {
-            fun applyAllBorders() = this.copy(left = true, top = true, right = true, bottom = true)
-            fun removeAllBorders() =
-                this.copy(left = false, top = false, right = false, bottom = false)
-
-            fun isAllBordersApply() = left && top && right && bottom
-
-            companion object {
-                fun empty() = CellSettings()
-            }
+            fun getId() = "$rowId-$columnId"
         }
+
+        @JvmInline
+        value class RowIndex(val value: Int)
+        @JvmInline
+        value class ColumnIndex(val value: Int)
     }
 }

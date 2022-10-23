@@ -1102,54 +1102,65 @@ class BlockViewSearchTextTest {
         val row2Block3 = StubParagraph(id = "$rowId2-$columnId3", text = "bc3")
 
         val cells = listOf(
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block1.id,
                     text = row1Block1.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block2.id,
                     text = row1Block2.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block3.id,
                     text = row1Block3.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId3
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block1.id,
                     text = row2Block1.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block2.id,
                     text = row2Block2.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block3.id,
                     text = row2Block3.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId3
-
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             )
         )
 
@@ -1172,7 +1183,7 @@ class BlockViewSearchTextTest {
         )
 
         val expectedCells = listOf(
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block1.id,
                     text = row1Block1.content.asText().text,
@@ -1185,9 +1196,11 @@ class BlockViewSearchTextTest {
                     )
                 ),
                 rowId = rowId1,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block2.id,
                     text = row1Block2.content.asText().text,
@@ -1200,9 +1213,11 @@ class BlockViewSearchTextTest {
                     )
                 ),
                 rowId = rowId1,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block3.id,
                     text = row1Block3.content.asText().text,
@@ -1215,9 +1230,11 @@ class BlockViewSearchTextTest {
                     )
                 ),
                 rowId = rowId1,
-                columnId = columnId3
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block1.id,
                     text = row2Block1.content.asText().text,
@@ -1230,9 +1247,11 @@ class BlockViewSearchTextTest {
                     )
                 ),
                 rowId = rowId2,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block2.id,
                     text = row2Block2.content.asText().text,
@@ -1245,9 +1264,11 @@ class BlockViewSearchTextTest {
                     )
                 ),
                 rowId = rowId2,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block3.id,
                     text = row2Block3.content.asText().text,
@@ -1260,7 +1281,9 @@ class BlockViewSearchTextTest {
                     )
                 ),
                 rowId = rowId2,
-                columnId = columnId3
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             )
         )
 
@@ -1309,54 +1332,65 @@ class BlockViewSearchTextTest {
         val row2Block3 = StubParagraph(id = "$rowId2-$columnId3", text = "bc3")
 
         val cells = listOf(
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block1.id,
                     text = row1Block1.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block2.id,
                     text = row1Block2.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block3.id,
                     text = row1Block3.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId3
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block1.id,
                     text = row2Block1.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block2.id,
                     text = row2Block2.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block3.id,
                     text = row2Block3.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId3
-
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             )
         )
 
@@ -1379,53 +1413,65 @@ class BlockViewSearchTextTest {
         )
 
         val expectedCells = listOf(
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block1.id,
                     text = row1Block1.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block2.id,
                     text = row1Block2.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(1),
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block3.id,
                     text = row1Block3.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId3
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(2),
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block1.id,
                     text = row2Block1.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(0)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block2.id,
                     text = row2Block2.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row2Block3.id,
                     text = row2Block3.content.asText().text
                 ),
                 rowId = rowId2,
-                columnId = columnId3
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(1),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             )
         )
 
@@ -1472,12 +1518,12 @@ class BlockViewSearchTextTest {
             textR2C3 = "bc3"
         )
 
-        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
-        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
-        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
-        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
-        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
-        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+        val cellR1C1 = simpleTableBlock.cells[0]
+        val cellR1C2 = simpleTableBlock.cells[1]
+        val cellR1C3 = simpleTableBlock.cells[2]
+        val cellR2C1 = simpleTableBlock.cells[3]
+        val cellR2C2 = simpleTableBlock.cells[4]
+        val cellR2C3 = simpleTableBlock.cells[5]
 
         val blocks = listOf<BlockView>(simpleTableBlock)
 
@@ -1495,7 +1541,7 @@ class BlockViewSearchTextTest {
 
         //EXPECTING
         val expectedTargetedCell = cellR2C1.copy(
-            block = cellR2C1.block.copy(
+            block = cellR2C1.block?.copy(
                 searchFields = listOf(
                     StubBlockViewSearchFiled(
                         highlights = listOf(IntRange(0, 2)),
@@ -1506,7 +1552,7 @@ class BlockViewSearchTextTest {
         )
 
         val expectedHighlightedCell = cellR2C3.copy(
-            block = cellR2C3.block.copy(
+            block = cellR2C3.block?.copy(
                 searchFields = listOf(
                     StubBlockViewSearchFiled(
                         highlights = listOf(
@@ -1519,17 +1565,17 @@ class BlockViewSearchTextTest {
 
         val expectedCells = listOf(
             cellR1C1.copy(
-                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C1.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C2.copy(
-                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C3.copy(
-                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C3.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             expectedTargetedCell,
             cellR2C2.copy(
-                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR2C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             expectedHighlightedCell
         )
@@ -1560,12 +1606,12 @@ class BlockViewSearchTextTest {
             textR2C3 = "bc3"
         )
 
-        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
-        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
-        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
-        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
-        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
-        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+        val cellR1C1 = simpleTableBlock.cells[0]
+        val cellR1C2 = simpleTableBlock.cells[1]
+        val cellR1C3 = simpleTableBlock.cells[2]
+        val cellR2C1 = simpleTableBlock.cells[3]
+        val cellR2C2 = simpleTableBlock.cells[4]
+        val cellR2C3 = simpleTableBlock.cells[5]
 
         val blocks = listOf<BlockView>(simpleTableBlock)
 
@@ -1586,16 +1632,16 @@ class BlockViewSearchTextTest {
         //EXPECTING
         val expectedCells = listOf(
             cellR1C1.copy(
-                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C1.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C2.copy(
-                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C3.copy(
-                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C3.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C1.copy(
-                block = cellR2C1.block.copy(
+                block = cellR2C1.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2))
@@ -1604,10 +1650,10 @@ class BlockViewSearchTextTest {
                 )
             ),
             cellR2C2.copy(
-                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR2C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C3.copy(
-                block = cellR2C3.block.copy(
+                block = cellR2C3.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2)),
@@ -1646,12 +1692,12 @@ class BlockViewSearchTextTest {
             textR2C3 = "bc3"
         )
 
-        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
-        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
-        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
-        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
-        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
-        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+        val cellR1C1 = simpleTableBlock.cells[0]
+        val cellR1C2 = simpleTableBlock.cells[1]
+        val cellR1C3 = simpleTableBlock.cells[2]
+        val cellR2C1 = simpleTableBlock.cells[3]
+        val cellR2C2 = simpleTableBlock.cells[4]
+        val cellR2C3 = simpleTableBlock.cells[5]
 
         val blocks = listOf<BlockView>(simpleTableBlock)
 
@@ -1673,16 +1719,16 @@ class BlockViewSearchTextTest {
         //EXPECTING
         val expectedCells = listOf(
             cellR1C1.copy(
-                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C1.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C2.copy(
-                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C3.copy(
-                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C3.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C1.copy(
-                block = cellR2C1.block.copy(
+                block = cellR2C1.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2))
@@ -1691,10 +1737,10 @@ class BlockViewSearchTextTest {
                 )
             ),
             cellR2C2.copy(
-                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR2C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C3.copy(
-                block = cellR2C3.block.copy(
+                block = cellR2C3.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2)),
@@ -1733,12 +1779,12 @@ class BlockViewSearchTextTest {
             textR2C3 = "bc3"
         )
 
-        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
-        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
-        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
-        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
-        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
-        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+        val cellR1C1 = simpleTableBlock.cells[0]
+        val cellR1C2 = simpleTableBlock.cells[1]
+        val cellR1C3 = simpleTableBlock.cells[2]
+        val cellR2C1 = simpleTableBlock.cells[3]
+        val cellR2C2 = simpleTableBlock.cells[4]
+        val cellR2C3 = simpleTableBlock.cells[5]
 
         val blocks = listOf<BlockView>(simpleTableBlock)
 
@@ -1760,16 +1806,16 @@ class BlockViewSearchTextTest {
         //EXPECTING
         val expectedCells = listOf(
             cellR1C1.copy(
-                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C1.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C2.copy(
-                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C3.copy(
-                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C3.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C1.copy(
-                block = cellR2C1.block.copy(
+                block = cellR2C1.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2)),
@@ -1779,10 +1825,10 @@ class BlockViewSearchTextTest {
                 )
             ),
             cellR2C2.copy(
-                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR2C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C3.copy(
-                block = cellR2C3.block.copy(
+                block = cellR2C3.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2))
@@ -1820,12 +1866,12 @@ class BlockViewSearchTextTest {
             textR2C3 = "bc3"
         )
 
-        val cellR1C1 = simpleTableBlock.cells[0] as BlockView.Table.Cell.Text
-        val cellR1C2 = simpleTableBlock.cells[1] as BlockView.Table.Cell.Text
-        val cellR1C3 = simpleTableBlock.cells[2] as BlockView.Table.Cell.Text
-        val cellR2C1 = simpleTableBlock.cells[3] as BlockView.Table.Cell.Text
-        val cellR2C2 = simpleTableBlock.cells[4] as BlockView.Table.Cell.Text
-        val cellR2C3 = simpleTableBlock.cells[5] as BlockView.Table.Cell.Text
+        val cellR1C1 = simpleTableBlock.cells[0]
+        val cellR1C2 = simpleTableBlock.cells[1]
+        val cellR1C3 = simpleTableBlock.cells[2]
+        val cellR2C1 = simpleTableBlock.cells[3]
+        val cellR2C2 = simpleTableBlock.cells[4]
+        val cellR2C3 = simpleTableBlock.cells[5]
 
         val blocks = listOf<BlockView>(simpleTableBlock)
 
@@ -1849,16 +1895,16 @@ class BlockViewSearchTextTest {
         //EXPECTING
         val expectedCells = listOf(
             cellR1C1.copy(
-                block = cellR1C1.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C1.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C2.copy(
-                block = cellR1C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR1C3.copy(
-                block = cellR1C3.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR1C3.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C1.copy(
-                block = cellR2C1.block.copy(
+                block = cellR2C1.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2)),
@@ -1868,10 +1914,10 @@ class BlockViewSearchTextTest {
                 )
             ),
             cellR2C2.copy(
-                block = cellR2C2.block.copy(searchFields = listOf(StubBlockViewSearchFiled()))
+                block = cellR2C2.block?.copy(searchFields = listOf(StubBlockViewSearchFiled()))
             ),
             cellR2C3.copy(
-                block = cellR2C3.block.copy(
+                block = cellR2C3.block?.copy(
                     searchFields = listOf(
                         StubBlockViewSearchFiled(
                             highlights = listOf(IntRange(0, 2))

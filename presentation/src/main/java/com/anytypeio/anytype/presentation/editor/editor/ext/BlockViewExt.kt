@@ -555,22 +555,7 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.LinkToObject.Default.Card.SmallIconCover -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Default.Card.MediumIconCover -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Archived -> view.copy(searchFields = emptyList())
-        is BlockView.Table -> {
-            val cells = view.cells
-            val updatedCells = cells.map { cell ->
-                when (cell) {
-                    is BlockView.Table.Cell.Empty -> cell
-                    is BlockView.Table.Cell.Text -> {
-                        cell.copy(
-                            block = cell.block.copy(
-                                searchFields = emptyList()
-                            )
-                        )
-                    }
-                }
-            }
-            view.copy(cells = updatedCells)
-        }
+        is BlockView.Table -> view.copy(cells = view.cells.map { cell -> cell.clearHighlight() })
         else -> view.also { check(view !is BlockView.Searchable) }
     }
 }
@@ -665,23 +650,30 @@ fun List<BlockView>.highlight(
         }
         is BlockView.Table -> {
             val cells = view.cells
-            val updatedCells = cells.map { cell ->
-                when (cell) {
-                    is BlockView.Table.Cell.Empty -> cell
-                    is BlockView.Table.Cell.Text -> {
-                        val block = cell.block
-                        val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to block.text)
-                        cell.copy(
-                            block = block.copy(
-                                searchFields = highlighter(fields)
-                            )
-                        )
-                    }
-                }
-            }
-            view.copy(cells = updatedCells)
+            view.copy(cells = cells.map { cell -> cell.addHighlight(highlighter) })
         }
         else -> view.also { check(view !is BlockView.Searchable) }
+    }
+}
+
+fun BlockView.Table.Cell.addHighlight(
+    highlighter: (List<Pair<String, String>>) -> List<BlockView.Searchable.Field>
+): BlockView.Table.Cell {
+    val paragraph = block
+    return if (paragraph != null) {
+        val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to paragraph.text)
+        this.copy(block = paragraph.copy(searchFields = highlighter(fields)))
+    } else {
+        this
+    }
+}
+
+fun BlockView.Table.Cell.clearHighlight(): BlockView.Table.Cell {
+    val paragraph = block
+    return if (paragraph != null) {
+        this.copy(block = paragraph.copy(searchFields = emptyList()))
+    } else {
+        this
     }
 }
 
@@ -802,29 +794,28 @@ fun List<BlockView>.nextSearchTarget(): List<BlockView> {
                         if (view is BlockView.Table) {
                             val cells = view.cells
                             val updatedCells = cells.map { cell ->
-                                when (cell) {
-                                    is BlockView.Table.Cell.Empty -> cell
-                                    is BlockView.Table.Cell.Text -> {
-                                        val block = cell.block
-                                        val updatedBlock = when (block.id) {
-                                            nextCandidate.id -> block.copy(
-                                                searchFields = nextCandidate.searchFields.mapIndexed { index, field ->
-                                                    if (index == nextFieldCandidateIndex) {
-                                                        field.copy(target = field.highlights.first())
-                                                    } else {
-                                                        field
-                                                    }
+                                val block = cell.block
+                                if (block == null) {
+                                    cell
+                                } else {
+                                    val updatedBlock = when (block.id) {
+                                        nextCandidate.id -> block.copy(
+                                            searchFields = nextCandidate.searchFields.mapIndexed { index, field ->
+                                                if (index == nextFieldCandidateIndex) {
+                                                    field.copy(target = field.highlights.first())
+                                                } else {
+                                                    field
                                                 }
-                                            )
-                                            currentTargetView.id -> block.copy(
-                                                searchFields = currentTargetView.searchFields.map { field ->
-                                                    field.copy(target = IntRange.EMPTY)
-                                                }
-                                            )
-                                            else -> block
-                                        }
-                                        cell.copy(block = updatedBlock)
+                                            }
+                                        )
+                                        currentTargetView.id -> block.copy(
+                                            searchFields = currentTargetView.searchFields.map { field ->
+                                                field.copy(target = IntRange.EMPTY)
+                                            }
+                                        )
+                                        else -> block
                                     }
+                                    cell.copy(block = updatedBlock)
                                 }
                             }
                             view.copy(cells = updatedCells)
@@ -907,29 +898,28 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                         if (view is BlockView.Table) {
                             val cells = view.cells
                             val updatedCells = cells.map { cell ->
-                                when (cell) {
-                                    is BlockView.Table.Cell.Empty -> cell
-                                    is BlockView.Table.Cell.Text -> {
-                                        val block = cell.block
-                                        val updatedBlock = when (block.id) {
-                                            previousCandidate.id -> block.copy(
-                                                searchFields = previousCandidate.searchFields.mapIndexed { index, field ->
-                                                    if (index == previousCandidate.searchFields.size.dec()) {
-                                                        field.copy(target = field.highlights.last())
-                                                    } else {
-                                                        field
-                                                    }
+                                val block = cell.block
+                                if (block == null) {
+                                    cell
+                                } else {
+                                    val updatedBlock = when (block.id) {
+                                        previousCandidate.id -> block.copy(
+                                            searchFields = previousCandidate.searchFields.mapIndexed { index, field ->
+                                                if (index == previousCandidate.searchFields.size.dec()) {
+                                                    field.copy(target = field.highlights.last())
+                                                } else {
+                                                    field
                                                 }
-                                            )
-                                            currentTargetView.id -> block.copy(
-                                                searchFields = currentTargetView.searchFields.map { field ->
-                                                    field.copy(target = IntRange.EMPTY)
-                                                }
-                                            )
-                                            else -> block
-                                        }
-                                        cell.copy(block = updatedBlock)
+                                            }
+                                        )
+                                        currentTargetView.id -> block.copy(
+                                            searchFields = currentTargetView.searchFields.map { field ->
+                                                field.copy(target = IntRange.EMPTY)
+                                            }
+                                        )
+                                        else -> block
                                     }
+                                    cell.copy(block = updatedBlock)
                                 }
                             }
 
@@ -1170,65 +1160,11 @@ fun BlockView.Text.isStyleClearable(): Boolean {
     return this.isListBlock || this is BlockView.Text.Highlight
 }
 
-fun List<BlockView>.applyBordersToSelectedCells(
-    tableId: Id,
-    selection: Set<Id>
-): List<BlockView> = map { view ->
-    if (view.id == tableId && view is BlockView.Table) {
-        val updatedCells = view.cells.map { cell ->
-            when (cell) {
-                is BlockView.Table.Cell.Empty -> {
-                    if (selection.contains(cell.getId())) {
-                        val settings = cell.settings.applyAllBorders()
-                        cell.copy(settings = settings)
-                    } else {
-                        cell
-                    }
-                }
-                is BlockView.Table.Cell.Text -> {
-                    if (selection.contains(cell.getId())) {
-                        val settings = cell.settings.applyAllBorders()
-                        cell.copy(settings = settings)
-                    } else {
-                        cell
-                    }
-                }
-            }
-        }
-        view.copy(cells = updatedCells)
-    } else {
-        view
-    }
-}
-
-fun List<BlockView>.removeBordersFromCells(): List<BlockView> = map { view ->
-    if (view is BlockView.Table) {
-        val updatedCells = view.cells.map { cell ->
-            when (cell) {
-                is BlockView.Table.Cell.Empty -> {
-                    val settings = cell.settings.removeAllBorders()
-                    cell.copy(settings = settings)
-                }
-                is BlockView.Table.Cell.Text -> {
-                    val settings = cell.settings.removeAllBorders()
-                    cell.copy(settings = settings)
-                }
-            }
-        }
-        view.copy(cells = updatedCells)
-    } else {
-        view
-    }
-}
-
 fun List<BlockView>.findTableCellView(id: Id): BlockView.Table.Cell? {
     forEach { blockView ->
         if (blockView is BlockView.Table) {
             val cells = blockView.cells
-            val cell = cells.find {
-                it is BlockView.Table.Cell.Empty && it.getId() == id
-                        || it is BlockView.Table.Cell.Text && it.getId() == id
-            }
+            val cell = cells.find { it.getId() == id }
             if (cell != null) return cell
         }
     }
@@ -1284,12 +1220,7 @@ fun List<BlockView>.findLastHighlighted(): BlockView? {
 }
 
 fun BlockView.Table.getTextCells(): List<BlockView.Text.Paragraph> {
-    return cells.mapNotNull { cell ->
-        when (cell) {
-            is BlockView.Table.Cell.Empty -> null
-            is BlockView.Table.Cell.Text -> cell.block
-        }
-    }
+    return cells.mapNotNull { cell -> cell.block }
 }
 
 fun List<BlockView>.highlightBlockById(
@@ -1297,22 +1228,13 @@ fun List<BlockView>.highlightBlockById(
     highlights: List<BlockView.Searchable.Field>
 ): List<BlockView> = map { view ->
     if (view is BlockView.Table) {
-        val updatedCells = view.cells.map { cell ->
-            when (cell) {
-                is BlockView.Table.Cell.Empty -> cell
-                is BlockView.Table.Cell.Text -> {
-                    if (cell.getId() == id) {
-                        val block = cell.block
-                        cell.copy(
-                            block = block.copy(searchFields = highlights)
-                        )
-                    } else {
-                        cell
-                    }
-                }
+        view.copy(cells = view.cells.map { cell ->
+            if (cell.getId() == id) {
+                cell.addHighlight { highlights }
+            } else {
+                cell
             }
-        }
-        view.copy(cells = updatedCells)
+        })
     } else {
         if (view.id == id) {
             view.setHighlight(highlights)
@@ -1331,8 +1253,7 @@ fun List<BlockView>.subListFromIdToEnd(id: Id): List<BlockView> {
         return if (blockTable != null) {
             val list = mutableListOf<BlockView>()
             val cells = blockTable.cells
-            val indexOfTarget =
-                cells.indexOfFirst { cell -> cell is BlockView.Table.Cell.Text && cell.block.id == id }
+            val indexOfTarget = cells.indexOfFirst { it.block?.id == id }
             val subListOfCells = if (indexOfTarget != -1 && indexOfTarget.inc() <= cells.size) {
                 cells.subList(indexOfTarget.inc(), cells.size)
             } else {
@@ -1357,8 +1278,7 @@ fun List<BlockView>.subListFrom0ToId(id: Id): List<BlockView> {
         return if (blockTable != null) {
             val list = mutableListOf<BlockView>()
             val cells = blockTable.cells
-            val indexOfTarget =
-                cells.indexOfFirst { cell -> cell is BlockView.Table.Cell.Text && cell.block.id == id }
+            val indexOfTarget = cells.indexOfFirst { it.block?.id == id }
             val subListOfCells = if (indexOfTarget != -1 && indexOfTarget <= cells.size) {
                 cells.subList(0, indexOfTarget)
             } else {
@@ -1378,8 +1298,7 @@ fun List<BlockView>.findBlockTableByCellId(cellId: Id): BlockView.Table? {
     this.forEach { blockView ->
         if (blockView is BlockView.Table) {
             val cells = blockView.cells
-            val index =
-                cells.indexOfFirst { it is BlockView.Table.Cell.Text && it.block.id == cellId }
+            val index = cells.indexOfFirst { it.block?.id == cellId }
             if (index != -1) {
                 return blockView
             }

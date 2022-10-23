@@ -106,10 +106,8 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.toReadMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
-import com.anytypeio.anytype.presentation.editor.editor.ext.applyBordersToSelectedCells
 import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
 import com.anytypeio.anytype.presentation.editor.editor.ext.findSearchResultPosition
-import com.anytypeio.anytype.presentation.editor.editor.ext.removeBordersFromCells
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.markup
@@ -2441,7 +2439,7 @@ class EditorViewModel(
         val view = views.find { it.id == target }
         if (view == null) {
             val cell = views.findTableCellView(target)
-            if (cell != null && cell is BlockView.Table.Cell.Text) {
+            if (cell != null) {
                 onShowSimpleTableWidgetClicked(target)
                 viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
             }
@@ -6122,25 +6120,14 @@ class EditorViewModel(
         clearSelections()
         select(listOf(cellId))
 
-        val updated = views.applyBordersToSelectedCells(
-            tableId = tableId,
-            selection = currentSelection()
-        )
-
         viewModelScope.launch {
             orchestrator.stores.focus.update(Editor.Focus.empty())
-            orchestrator.stores.views.update(updated)
             renderCommand.send(Unit)
         }
     }
 
     fun onSetBlockTextValueScreenDismiss() {
         clearSelections()
-        val updated = views.removeBordersFromCells()
-        viewModelScope.launch {
-            orchestrator.stores.views.update(updated)
-            renderCommand.send(Unit)
-        }
     }
     //endregion
 }

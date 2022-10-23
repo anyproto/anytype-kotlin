@@ -49,21 +49,22 @@ class TableBlockAdapter(
     }
 
     private fun onCellClicked(item: BlockView.Table.Cell) {
-        when (item) {
-            is BlockView.Table.Cell.Empty -> clickListener(
+        val block = item.block
+        if (block == null) {
+            clickListener(
                 ListenerType.TableEmptyCell(
                     cellId = item.getId(),
                     rowId = item.rowId,
                     tableId = tableBlockId
                 )
             )
-            is BlockView.Table.Cell.Text ->
-                clickListener(
-                    ListenerType.TableTextCell(
-                        tableId = tableBlockId,
-                        cellId = item.block.id
-                    )
+        } else {
+            clickListener(
+                ListenerType.TableTextCell(
+                    tableId = tableBlockId,
+                    cellId = block.id
                 )
+            )
         }
     }
 

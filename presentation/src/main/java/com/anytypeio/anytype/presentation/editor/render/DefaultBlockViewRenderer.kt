@@ -2023,77 +2023,47 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>
     ): List<BlockView.Table.Cell> {
         val cells = mutableListOf<BlockView.Table.Cell>()
-        columns.map { column ->
-            rows.forEach { row ->
+        columns.mapIndexed { columnIndex, column ->
+            rows.forEachIndexed { rowIndex, row ->
                 val isHeader = (row.content as? Content.TableRow)?.isHeader ?: false
                 val cellId = "${row.id}-${column.id}"
                 val rowsChildren = blocks.getValue(row.id)
                 val block = rowsChildren.firstOrNull { it.id == cellId }
-                if (block != null) {
+                val paragraph = if (block != null) {
                     val content = block.content
                     check(content is Content.Text)
                     { Timber.e("Table row block content should be Text") }
                     if (content.style == Content.Text.Style.P) {
-                        cells.add(
-                            BlockView.Table.Cell.Text(
-                                rowId = row.id,
-                                columnId = column.id,
-                                settings = buildCellSettings(
-                                    cellId = cellId,
-                                    selection = selection,
-                                    isHeader = isHeader
-                                ),
-                                block = paragraph(
-                                    mode = mode,
-                                    block = block,
-                                    content = content,
-                                    focus = focus,
-                                    indent = indent,
-                                    details = details,
-                                    selection = selection,
-                                    schema = emptyList()
-                                )
-                            )
+                        paragraph(
+                            mode = mode,
+                            block = block,
+                            content = content,
+                            focus = focus,
+                            indent = indent,
+                            details = details,
+                            selection = selection,
+                            schema = emptyList()
                         )
                     } else {
                         Timber.w("Block should be paragraph")
+                        null
                     }
                 } else {
-                    cells.add(
-                        BlockView.Table.Cell.Empty(
-                            rowId = row.id,
-                            columnId = column.id,
-                            settings = buildCellSettings(
-                                cellId = cellId,
-                                selection = selection,
-                                isHeader = isHeader
-                            )
-                        )
-                    )
+                   null
                 }
+                cells.add(
+                    BlockView.Table.Cell(
+                        rowId = row.id,
+                        rowIndex = BlockView.Table.RowIndex(rowIndex),
+                        columnId = column.id,
+                        columnIndex = BlockView.Table.ColumnIndex(columnIndex),
+                        isHeader = isHeader,
+                        block = paragraph
+                    )
+                )
             }
         }
         return cells
-    }
-
-    private fun buildCellSettings(
-        cellId: Id,
-        selection: Set<Id>,
-        isHeader: Boolean
-    ): BlockView.Table.CellSettings {
-        return if (selection.contains(cellId)) {
-            BlockView.Table.CellSettings(
-                left = true,
-                top = true,
-                right = true,
-                bottom = true,
-                isHeader = isHeader
-            )
-        } else {
-            BlockView.Table.CellSettings(
-                isHeader = isHeader
-            )
-        }
     }
 
     private fun tableColumn(block: Block): BlockView.Table.Column {

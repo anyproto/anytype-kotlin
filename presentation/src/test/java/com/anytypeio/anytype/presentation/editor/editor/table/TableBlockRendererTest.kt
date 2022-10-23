@@ -194,10 +194,12 @@ class TableBlockRendererTest {
                     text = cell.content.asText().text
                 )
                 cells.add(
-                    BlockView.Table.Cell.Text(
+                    BlockView.Table.Cell(
                         block = p,
                         rowId = row.id,
-                        columnId = column.id
+                        columnId = column.id,
+                        rowIndex = BlockView.Table.RowIndex(rowIndex),
+                        columnIndex = BlockView.Table.ColumnIndex(columnIndex)
                     )
                 )
             }
@@ -344,9 +346,12 @@ class TableBlockRendererTest {
         columns.forEachIndexed { columnIndex, column ->
             rows.forEachIndexed { rowIndex, row ->
                 cells.add(
-                    BlockView.Table.Cell.Empty(
+                    BlockView.Table.Cell(
                         rowId = row.id,
-                        columnId = column.id
+                        columnId = column.id,
+                        rowIndex = BlockView.Table.RowIndex(rowIndex),
+                        columnIndex = BlockView.Table.ColumnIndex(columnIndex),
+                        block = null
                     )
                 )
             }
@@ -509,73 +514,104 @@ class TableBlockRendererTest {
 
         val cells =
             listOf(
-                BlockView.Table.Cell.Empty(
+                BlockView.Table.Cell(
                     rowId = rowId1,
-                    columnId = columnId1
+                    columnId = columnId1,
+                    rowIndex = BlockView.Table.RowIndex(0),
+                    columnIndex = BlockView.Table.ColumnIndex(0),
+                    block = null
                 ),
-                BlockView.Table.Cell.Text(
+                BlockView.Table.Cell(
                     rowId = rowId2,
                     columnId = columnId1,
                     block = BlockView.Text.Paragraph(
                         id = row2Block1.id,
                         text = row2Block1.content.asText().text
-                    )
+                    ),
+                    rowIndex = BlockView.Table.RowIndex(1),
+                    columnIndex = BlockView.Table.ColumnIndex(0)
                 ),
-                BlockView.Table.Cell.Empty(
+                BlockView.Table.Cell(
                     rowId = rowId3,
-                    columnId = columnId1
+                    columnId = columnId1,
+                    rowIndex = BlockView.Table.RowIndex(2),
+                    columnIndex = BlockView.Table.ColumnIndex(0),
+                    block = null
                 ), //column1
-                BlockView.Table.Cell.Text(
+                BlockView.Table.Cell(
                     rowId = rowId1,
                     columnId = columnId2,
                     block = BlockView.Text.Paragraph(
                         id = row1Block1.id,
                         text = row1Block1.content.asText().text
-                    )
+                    ),
+                    rowIndex = BlockView.Table.RowIndex(0),
+                    columnIndex = BlockView.Table.ColumnIndex(1)
                 ),
-                BlockView.Table.Cell.Text(
+                BlockView.Table.Cell(
                     rowId = rowId2,
                     columnId = columnId2,
                     block = BlockView.Text.Paragraph(
                         id = row2Block2.id,
                         text = row2Block2.content.asText().text
-                    )
+                    ),
+                    rowIndex = BlockView.Table.RowIndex(1),
+                    columnIndex = BlockView.Table.ColumnIndex(1)
                 ),
-                BlockView.Table.Cell.Empty(
+                BlockView.Table.Cell(
                     rowId = rowId3,
-                    columnId = columnId2
+                    columnId = columnId2,
+                    rowIndex = BlockView.Table.RowIndex(2),
+                    columnIndex = BlockView.Table.ColumnIndex(1),
+                    block = null
                 ),//column2
-                BlockView.Table.Cell.Empty(
+                BlockView.Table.Cell(
                     rowId = rowId1,
-                    columnId = columnId3
+                    columnId = columnId3,
+                    rowIndex = BlockView.Table.RowIndex(0),
+                    columnIndex = BlockView.Table.ColumnIndex(2),
+                    block = null
                 ),
-                BlockView.Table.Cell.Empty(
+                BlockView.Table.Cell(
                     rowId = rowId2,
-                    columnId = columnId3
+                    columnId = columnId3,
+                    rowIndex = BlockView.Table.RowIndex(1),
+                    columnIndex = BlockView.Table.ColumnIndex(2),
+                    block = null
                 ),
-                BlockView.Table.Cell.Empty(
+                BlockView.Table.Cell(
                     rowId = rowId3,
-                    columnId = columnId3
+                    columnId = columnId3,
+                    rowIndex = BlockView.Table.RowIndex(2),
+                    columnIndex = BlockView.Table.ColumnIndex(2),
+                    block = null
                 ),//column3
-                BlockView.Table.Cell.Text(
+                BlockView.Table.Cell(
                     rowId = rowId1,
                     columnId = columnId4,
                     block = BlockView.Text.Paragraph(
                         id = row1Block2.id,
                         text = row1Block2.content.asText().text
-                    )
+                    ),
+                    rowIndex = BlockView.Table.RowIndex(0),
+                    columnIndex = BlockView.Table.ColumnIndex(3)
                 ),
-                BlockView.Table.Cell.Text(
+                BlockView.Table.Cell(
                     rowId = rowId2,
                     columnId = columnId4,
                     block = BlockView.Text.Paragraph(
                         id = row2Block3.id,
                         text = row2Block3.content.asText().text
-                    )
+                    ),
+                    rowIndex = BlockView.Table.RowIndex(1),
+                    columnIndex = BlockView.Table.ColumnIndex(3)
                 ),
-                BlockView.Table.Cell.Empty(
+                BlockView.Table.Cell(
                     rowId = rowId3,
-                    columnId = columnId4
+                    columnId = columnId4,
+                    rowIndex = BlockView.Table.RowIndex(2),
+                    columnIndex = BlockView.Table.ColumnIndex(3),
+                    block = null
                 ),
             )
 

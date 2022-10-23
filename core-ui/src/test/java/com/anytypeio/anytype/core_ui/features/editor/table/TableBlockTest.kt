@@ -62,69 +62,76 @@ class TableBlockTest {
         val row1Block2 = StubParagraph(id = "$rowId1-$columnId3", text = oldText)
 
         val cells = listOf(
-            BlockView.Table.Cell.Empty(
+            BlockView.Table.Cell(
                 rowId = rowId1,
-                columnId = columnId1
+                columnId = columnId1,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(0),
+                block = null
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block1.id,
                     text = row1Block1.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(1),
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block2.id,
                     text = row1Block2.content.asText().text
                 ),
                 rowId = rowId1,
-                columnId = columnId3
-
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(2),
             ),
-            BlockView.Table.Cell.Empty(
+            BlockView.Table.Cell(
                 rowId = rowId1,
-                columnId = columnId4
+                columnId = columnId4,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(3),
+                block = null
             )
         )
 
         val cellsNew = listOf(
-            BlockView.Table.Cell.Empty(
+            BlockView.Table.Cell(
                 rowId = rowId1,
                 columnId = columnId1,
-                settings = BlockView.Table.CellSettings(
-                    width = 140
-                )
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(0),
+                block = null
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block1.id,
                     text = row1Block1.content.asText().text
                 ),
-                settings = BlockView.Table.CellSettings(
-                    width = 140
-                ),
                 rowId = rowId1,
-                columnId = columnId2
+                columnId = columnId2,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(1)
             ),
-            BlockView.Table.Cell.Text(
+            BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
                     id = row1Block2.id,
                     text = newText
                 ),
-                settings = BlockView.Table.CellSettings(
-                    width = 140
-                ),
                 rowId = rowId1,
-                columnId = columnId3
+                columnId = columnId3,
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(2)
             ),
-            BlockView.Table.Cell.Empty(
+            BlockView.Table.Cell(
                 rowId = rowId1,
                 columnId = columnId4,
-                settings = BlockView.Table.CellSettings(
-                    width = 140
-                )
+                rowIndex = BlockView.Table.RowIndex(0),
+                columnIndex = BlockView.Table.ColumnIndex(3),
+                block = null
             )
         )
 

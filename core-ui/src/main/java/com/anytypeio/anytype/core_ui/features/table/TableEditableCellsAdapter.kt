@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
+import timber.log.Timber
 
 class TableEditableCellsAdapter(
     private var items: List<BlockView.Table.Cell>,
@@ -34,7 +35,7 @@ class TableEditableCellsAdapter(
     }
 
     override fun provide(pos: Int): BlockView.Text.Paragraph? {
-        return (items[pos] as? BlockView.Table.Cell.Text)?.block
+        return items.getOrNull(pos)?.block
     }
 
     fun updateWithDiffUtil(items: List<BlockView.Table.Cell>) {
@@ -58,15 +59,12 @@ class TableEditableCellsAdapter(
                     content.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val item = items[pos]
-                            if (item is BlockView.Table.Cell.Text) {
-                                clicked(
-                                    ListenerType.TableTextCell(
-                                        tableId = tableBlockId,
-                                        cellId = item.block.id
-                                    )
+                            clicked(
+                                ListenerType.TableTextCell(
+                                    tableId = tableBlockId,
+                                    cellId = items[pos].getId()
                                 )
-                            }
+                            )
                         }
                     }
                     content.setOnLongClickListener { _ ->
@@ -79,20 +77,20 @@ class TableEditableCellsAdapter(
                     content.selectionWatcher = { selection ->
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val item = items[pos]
-                            if (item is BlockView.Table.Cell.Text) {
-                                item.block.cursor = selection.last
-                                onSelectionChanged(item.block.id, selection)
+                            val block = items[pos].block
+                            if (block != null) {
+                                block.cursor = selection.last
+                                onSelectionChanged(block.id, selection)
                             }
                         }
                     }
                     content.setOnFocusChangeListener { _, hasFocus ->
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val item = items[pos]
-                            if (item is BlockView.Table.Cell.Text) {
+                            val block = items[pos].block
+                            if (block != null) {
                                 cellSelection(hasFocus)
-                                onFocusChanged(item.block.id, hasFocus)
+                                onFocusChanged(block.id, hasFocus)
                             }
                         }
                     }
@@ -126,15 +124,13 @@ class TableEditableCellsAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = items[bindingAdapterPosition]
-                            if (item is BlockView.Table.Cell.Empty) {
-                                clicked(
-                                    ListenerType.TableEmptyCell(
-                                        cellId = item.getId(),
-                                        rowId = item.rowId,
-                                        tableId = tableBlockId
-                                    )
+                            clicked(
+                                ListenerType.TableEmptyCell(
+                                    cellId = item.getId(),
+                                    rowId = item.rowId,
+                                    tableId = tableBlockId
                                 )
-                            }
+                            )
                         }
                     }
                 }
@@ -145,9 +141,12 @@ class TableEditableCellsAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is EditableCellHolder) {
-            holder.bind(
-                item = (items[position] as BlockView.Table.Cell.Text).block
-            )
+            val block = items[position].block
+            if (block != null) {
+                holder.bind(item = block)
+            } else {
+                Timber.w("onBindViewHolder Cell, block is null")
+            }
         }
     }
 
@@ -161,9 +160,12 @@ class TableEditableCellsAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    override fun getItemViewType(position: Int): Int = when (items[position]) {
-        is BlockView.Table.Cell.Empty -> TYPE_EMPTY
-        is BlockView.Table.Cell.Text -> TYPE_CELL
+    override fun getItemViewType(position: Int): Int {
+        return if (items[position].block == null) {
+            TYPE_EMPTY
+        } else {
+            TYPE_CELL
+        }
     }
 
     companion object {
@@ -185,17 +187,11 @@ class TableEditableCellsAdapter(
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val newItem = new[newItemPosition]
             val oldItem = old[oldItemPosition]
-            if (newItem is BlockView.Table.Cell.Empty && oldItem is BlockView.Table.Cell.Empty) {
-                return newItem.rowId == oldItem.rowId && newItem.columnId == oldItem.columnId
-            }
-            if (newItem is BlockView.Table.Cell.Text && oldItem is BlockView.Table.Cell.Text) {
-                return newItem.rowId == oldItem.rowId && newItem.columnId == oldItem.columnId
-            }
-            return false
+            return newItem.rowId == oldItem.rowId && newItem.columnId == oldItem.columnId
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return old[oldItemPosition] == new[newItemPosition]
+            return old[oldItemPosition].block == new[newItemPosition].block
         }
     }
 }

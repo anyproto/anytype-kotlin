@@ -71,7 +71,7 @@ class SetBlockTextValueViewModel(
         val newViews = storage.views.current().map { view ->
             if (view.id == tableId && view is BlockView.Table) {
                 val newCells = view.cells.map { cell ->
-                    if (cell is BlockView.Table.Cell.Text && cell.block.id == textBlock.id) {
+                    if (cell.block?.id == textBlock.id) {
                         cell.copy(
                             block = cell.block.copy(
                                 text = textBlock.text,
@@ -190,17 +190,7 @@ class SetBlockTextValueViewModel(
     ): BlockView.Text.Paragraph? {
         val table = views.firstOrNull { it.id == tableId }
         return if (table != null && table is BlockView.Table) {
-            val block = table.cells.firstOrNull { cell ->
-                when (cell) {
-                    is BlockView.Table.Cell.Empty -> cell.getId() == cellId
-                    is BlockView.Table.Cell.Text -> cell.getId() == cellId
-                }
-            }
-            if (block is BlockView.Table.Cell.Text) {
-                block.block
-            } else {
-                null
-            }
+            table.cells.firstOrNull { it.getId() == cellId }?.block
         } else {
             null
         }

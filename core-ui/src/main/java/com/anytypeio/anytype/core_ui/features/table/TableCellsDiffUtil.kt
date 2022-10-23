@@ -9,32 +9,14 @@ object TableCellsDiffUtil : DiffUtil.ItemCallback<BlockView.Table.Cell>() {
         oldItem: BlockView.Table.Cell,
         newItem: BlockView.Table.Cell
     ): Boolean {
-        if (oldItem is BlockView.Table.Cell.Empty && newItem is BlockView.Table.Cell.Empty) {
-            return oldItem.rowId == newItem.rowId && oldItem.columnId == newItem.columnId
-        }
-        if (oldItem is BlockView.Table.Cell.Empty && newItem is BlockView.Table.Cell.Text) {
-            return oldItem.rowId == newItem.rowId && oldItem.columnId == newItem.columnId
-        }
-        if (oldItem is BlockView.Table.Cell.Text && newItem is BlockView.Table.Cell.Text) {
-            return oldItem.rowId == newItem.rowId && oldItem.columnId == newItem.columnId
-        }
-        return false
+        return oldItem.getId() == newItem.getId()
     }
 
     override fun areContentsTheSame(
         oldItem: BlockView.Table.Cell,
         newItem: BlockView.Table.Cell
     ): Boolean {
-        if (oldItem is BlockView.Table.Cell.Empty && newItem is BlockView.Table.Cell.Empty) {
-            return oldItem.settings == newItem.settings
-        }
-        if (oldItem is BlockView.Table.Cell.Empty && newItem is BlockView.Table.Cell.Text) {
-            return false
-        }
-        if (oldItem is BlockView.Table.Cell.Text && newItem is BlockView.Table.Cell.Text) {
-            return oldItem.block == newItem.block && oldItem.settings == newItem.settings
-        }
-        return false
+        return oldItem.block == newItem.block
     }
 
     override fun getChangePayload(
@@ -42,55 +24,24 @@ object TableCellsDiffUtil : DiffUtil.ItemCallback<BlockView.Table.Cell>() {
         newItem: BlockView.Table.Cell
     ): Any? {
         val changes = mutableListOf<Int>()
-        var oldSettings: BlockView.Table.CellSettings? = null
-        var newSettings: BlockView.Table.CellSettings? = null
 
-        if (oldItem is BlockView.Table.Cell.Empty && newItem is BlockView.Table.Cell.Empty) {
-            oldSettings = oldItem.settings
-            newSettings = newItem.settings
+        val oldBlock = oldItem.block
+        val newBlock = newItem.block
+
+        if (newBlock?.text != oldBlock?.text) {
+            changes.add(TEXT_CHANGED)
         }
-
-        if (oldItem is BlockView.Table.Cell.Empty && newItem is BlockView.Table.Cell.Text) {
-            oldSettings = oldItem.settings
-            newSettings = newItem.settings
+        if (newBlock?.color != oldBlock?.color) {
+            changes.add(TEXT_COLOR_CHANGED)
         }
-
-        if (oldItem is BlockView.Table.Cell.Text && newItem is BlockView.Table.Cell.Text) {
-            val oldBlock = oldItem.block
-            val newBlock = newItem.block
-            oldSettings = oldItem.settings
-            newSettings = newItem.settings
-            if (newBlock.text != oldBlock.text) {
-                changes.add(TEXT_CHANGED)
-            }
-            if (newBlock.color != oldBlock.color) {
-                changes.add(TEXT_COLOR_CHANGED)
-            }
-            if (newBlock.background != oldBlock.background) {
-                changes.add(BACKGROUND_COLOR_CHANGED)
-            }
-            if (newBlock.marks != oldBlock.marks) {
-                changes.add(MARKUP_CHANGED)
-            }
-            if (newBlock.alignment != oldBlock.alignment) {
-                changes.add(ALIGN_CHANGED)
-            }
+        if (newBlock?.background != oldBlock?.background) {
+            changes.add(BACKGROUND_COLOR_CHANGED)
         }
-
-        if (oldSettings != null && newSettings != null) {
-            if (oldSettings.width != newSettings.width) {
-                changes.add(SETTING_WIDTH_CHANGED)
-            }
-            if (oldSettings.left != newSettings.left
-                || oldSettings.top != newSettings.top
-                || oldSettings.right != newSettings.right
-                || oldSettings.bottom != newSettings.bottom
-            ) {
-                changes.add(SETTING_BORDER_CHANGED)
-            }
-            if (oldSettings.isHeader != newSettings.isHeader) {
-                changes.add(BACKGROUND_COLOR_CHANGED)
-            }
+        if (newBlock?.marks != oldBlock?.marks) {
+            changes.add(MARKUP_CHANGED)
+        }
+        if (newBlock?.alignment != oldBlock?.alignment) {
+            changes.add(ALIGN_CHANGED)
         }
 
         return if (changes.isEmpty()) {

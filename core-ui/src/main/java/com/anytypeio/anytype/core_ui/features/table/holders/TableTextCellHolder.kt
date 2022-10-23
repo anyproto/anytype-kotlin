@@ -13,8 +13,6 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableRowItemBinding
 import com.anytypeio.anytype.core_ui.extensions.resolveThemedTextColor
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.table.TableCellsDiffUtil
-import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -45,24 +43,17 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
             cell: BlockView.Table.Cell
         ) {
-            when (cell) {
-                is BlockView.Table.Cell.Empty -> {
-                    setBorders(cell.settings)
-                    textContent.text = null
-                    setBackground(settings = cell.settings)
-                }
-                is BlockView.Table.Cell.Text -> {
-                    setBorders(cell.settings)
-                    setBlockText(
-                        text = cell.block.text,
-                        markup = cell.block,
-                        color = cell.block.color
-                    )
-                    setTextColor(cell.block.color)
-                    setBackground(cell.block.background, cell.settings)
-                    setAlignment(cell.block.alignment)
-                }
-                else -> {}
+            val textBlock = cell.block
+            if (textBlock == null) {
+                textContent.text = null
+            } else {
+                setBlockText(
+                    text = textBlock.text,
+                    markup = textBlock,
+                    color = textBlock.color
+                )
+                setTextColor(textBlock.color)
+                setAlignment(textBlock.alignment)
             }
         }
 
@@ -70,21 +61,15 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             payloads: TableCellsDiffUtil.Payload,
             cell: BlockView.Table.Cell
         ) {
-            if (payloads.isBordersChanged) {
-                when (cell) {
-                    is BlockView.Table.Cell.Empty -> setBorders(cell.settings)
-                    is BlockView.Table.Cell.Text -> setBorders(cell.settings)
-                }
-            }
-            if (cell is BlockView.Table.Cell.Text) {
-                processChangePayload(payloads, cell.block, cell.settings)
+            val textBlock = cell.block
+            if (textBlock != null) {
+                processChangePayload(payloads, textBlock)
             }
         }
 
         fun processChangePayload(
             payloads: TableCellsDiffUtil.Payload,
-            block: BlockView.Text.Paragraph,
-            settings: BlockView.Table.CellSettings
+            block: BlockView.Text.Paragraph
         ) {
             if (payloads.isTextChanged) {
                 setBlockText(
@@ -95,9 +80,6 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
             if (payloads.isTextColorChanged) {
                 setTextColor(block.color)
-            }
-            if (payloads.isBackgroundChanged) {
-                setBackground(block.background, settings)
             }
             if (payloads.isMarkupChanged) {
                 setBlockSpannableText(block, resolveTextBlockThemedColor(block.color))
@@ -174,14 +156,6 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
             textContent.setTextColor(resolveTextBlockThemedColor(color))
         }
 
-
-        private fun setBackground(
-            background: ThemeColor = ThemeColor.DEFAULT,
-            settings: BlockView.Table.CellSettings
-        ) {
-            setTableCellBackgroundColor(background, root, settings.isHeader)
-        }
-
         /**
          * @param [bg] color code, @see [ThemeColor]
          */
@@ -212,14 +186,6 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private fun resolveTextBlockThemedColor(color: ThemeColor): Int {
             return itemView.context.resolveThemedTextColor(color, defTextColor)
-        }
-
-        private fun setBorders(settings: BlockView.Table.CellSettings) {
-            if (settings.isAllBordersApply()) {
-                selection.visible()
-            } else {
-                selection.invisible()
-            }
         }
     }
 

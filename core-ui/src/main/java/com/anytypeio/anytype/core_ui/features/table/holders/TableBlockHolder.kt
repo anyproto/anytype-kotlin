@@ -68,24 +68,14 @@ class TableBlockHolder(
             if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
                 (lm as CustomGridLayoutManager).spanSizeLookup =
                     object : CustomGridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(position: Int): Int {
-                            return when (recycler.adapter?.getItemViewType(position)) {
-                                TableEditableCellsAdapter.TYPE_CELL, TableEditableCellsAdapter.TYPE_EMPTY -> 1
-                                else -> lm.spanCount
-                            }
-                        }
+                        override fun getSpanSize(position: Int): Int = 1
                     }
                 adapter = tableEditableCellsAdapter
                 setHasFixedSize(true)
             } else {
                 (lm as GridLayoutManager).spanSizeLookup =
                     object : GridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(position: Int): Int {
-                            return when (recycler.adapter?.getItemViewType(position)) {
-                                TableBlockAdapter.TYPE_CELL -> 1
-                                else -> lm.spanCount
-                            }
-                        }
+                        override fun getSpanSize(position: Int): Int = 1
                     }
                 adapter = tableAdapter
             }

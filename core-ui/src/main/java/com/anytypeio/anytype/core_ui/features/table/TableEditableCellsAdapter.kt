@@ -7,11 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableRowItemEditableBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableRowItemEmptyBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableSpaceBinding
 import com.anytypeio.anytype.core_ui.features.editor.ItemProviderAdapter
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.features.editor.withBlock
-import com.anytypeio.anytype.core_ui.features.table.holders.TableCellHolder
 import com.anytypeio.anytype.core_ui.features.table.holders.EditableCellHolder
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -141,14 +139,6 @@ class TableEditableCellsAdapter(
                     }
                 }
             }
-            TYPE_SPACE -> {
-                val binding = ItemBlockTableSpaceBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-                return TableCellHolder.TableSpaceHolder(binding)
-            }
             else -> throw UnsupportedOperationException("wrong viewtype:$viewType")
         }
     }
@@ -174,13 +164,11 @@ class TableEditableCellsAdapter(
     override fun getItemViewType(position: Int): Int = when (items[position]) {
         is BlockView.Table.Cell.Empty -> TYPE_EMPTY
         is BlockView.Table.Cell.Text -> TYPE_CELL
-        BlockView.Table.Cell.Space -> TYPE_SPACE
     }
 
     companion object {
         const val TYPE_CELL = 1
-        const val TYPE_SPACE = 2
-        const val TYPE_EMPTY = 3
+        const val TYPE_EMPTY = 2
     }
 
     class EmptyHolder(binding: ItemBlockTableRowItemEmptyBinding) :
@@ -197,9 +185,6 @@ class TableEditableCellsAdapter(
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val newItem = new[newItemPosition]
             val oldItem = old[oldItemPosition]
-            if (newItem is BlockView.Table.Cell.Space && oldItem is BlockView.Table.Cell.Space) {
-                return true
-            }
             if (newItem is BlockView.Table.Cell.Empty && oldItem is BlockView.Table.Cell.Empty) {
                 return newItem.rowId == oldItem.rowId && newItem.columnId == oldItem.columnId
             }

@@ -2073,7 +2073,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                 }
             }
         }
-        cells.add(BlockView.Table.Cell.Space)
         return cells
     }
 

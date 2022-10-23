@@ -10,13 +10,16 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/container"
         style="@style/DefaultTableBlockContainerStyle"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerTable"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingEnd="24dp"/>
     </androidx.core.widget.NestedScrollView>
 
     <View

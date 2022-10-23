@@ -29,7 +29,7 @@ class TableHorizontalItemDivider(
             var right = rect.right + child.translationX.roundToInt()
             var left = right - drawable.intrinsicWidth
 
-            if (position < itemCount - 1) {
+            if (position < itemCount) {
                 drawable.setBounds(left, top, right, bottom)
                 drawable.draw(canvas)
             }

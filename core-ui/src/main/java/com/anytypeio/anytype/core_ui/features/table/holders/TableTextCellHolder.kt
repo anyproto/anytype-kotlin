@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.toSpannable
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableRowItemBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableSpaceBinding
 import com.anytypeio.anytype.core_ui.extensions.resolveThemedTextColor
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.table.TableCellsDiffUtil
@@ -75,7 +74,6 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
                 when (cell) {
                     is BlockView.Table.Cell.Empty -> setBorders(cell.settings)
                     is BlockView.Table.Cell.Text -> setBorders(cell.settings)
-                    BlockView.Table.Cell.Space -> {}
                 }
             }
             if (cell is BlockView.Table.Cell.Text) {
@@ -228,6 +226,4 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
     fun getUnderlineHeight(): Float =
         itemView.resources.getDimensionPixelSize(R.dimen.block_text_markup_underline_height)
             .toFloat()
-
-    class TableSpaceHolder(binding: ItemBlockTableSpaceBinding) : TableCellHolder(binding.root)
 }

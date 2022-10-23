@@ -560,7 +560,6 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
             val updatedCells = cells.map { cell ->
                 when (cell) {
                     is BlockView.Table.Cell.Empty -> cell
-                    BlockView.Table.Cell.Space -> cell
                     is BlockView.Table.Cell.Text -> {
                         cell.copy(
                             block = cell.block.copy(
@@ -669,7 +668,6 @@ fun List<BlockView>.highlight(
             val updatedCells = cells.map { cell ->
                 when (cell) {
                     is BlockView.Table.Cell.Empty -> cell
-                    BlockView.Table.Cell.Space -> cell
                     is BlockView.Table.Cell.Text -> {
                         val block = cell.block
                         val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to block.text)
@@ -806,7 +804,6 @@ fun List<BlockView>.nextSearchTarget(): List<BlockView> {
                             val updatedCells = cells.map { cell ->
                                 when (cell) {
                                     is BlockView.Table.Cell.Empty -> cell
-                                    BlockView.Table.Cell.Space -> cell
                                     is BlockView.Table.Cell.Text -> {
                                         val block = cell.block
                                         val updatedBlock = when (block.id) {
@@ -912,7 +909,6 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                             val updatedCells = cells.map { cell ->
                                 when (cell) {
                                     is BlockView.Table.Cell.Empty -> cell
-                                    BlockView.Table.Cell.Space -> cell
                                     is BlockView.Table.Cell.Text -> {
                                         val block = cell.block
                                         val updatedBlock = when (block.id) {
@@ -1197,7 +1193,6 @@ fun List<BlockView>.applyBordersToSelectedCells(
                         cell
                     }
                 }
-                BlockView.Table.Cell.Space -> cell
             }
         }
         view.copy(cells = updatedCells)
@@ -1218,7 +1213,6 @@ fun List<BlockView>.removeBordersFromCells(): List<BlockView> = map { view ->
                     val settings = cell.settings.removeAllBorders()
                     cell.copy(settings = settings)
                 }
-                BlockView.Table.Cell.Space -> cell
             }
         }
         view.copy(cells = updatedCells)
@@ -1293,7 +1287,6 @@ fun BlockView.Table.getTextCells(): List<BlockView.Text.Paragraph> {
     return cells.mapNotNull { cell ->
         when (cell) {
             is BlockView.Table.Cell.Empty -> null
-            BlockView.Table.Cell.Space -> null
             is BlockView.Table.Cell.Text -> cell.block
         }
     }
@@ -1306,7 +1299,6 @@ fun List<BlockView>.highlightBlockById(
     if (view is BlockView.Table) {
         val updatedCells = view.cells.map { cell ->
             when (cell) {
-                BlockView.Table.Cell.Space -> cell
                 is BlockView.Table.Cell.Empty -> cell
                 is BlockView.Table.Cell.Text -> {
                     if (cell.getId() == id) {

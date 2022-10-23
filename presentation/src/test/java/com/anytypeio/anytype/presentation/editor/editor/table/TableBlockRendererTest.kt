@@ -202,7 +202,6 @@ class TableBlockRendererTest {
                 )
             }
         }
-        cells.add(BlockView.Table.Cell.Space)
 
         val columnViews = mutableListOf<BlockView.Table.Column>()
 
@@ -352,7 +351,6 @@ class TableBlockRendererTest {
                 )
             }
         }
-        cells.add(BlockView.Table.Cell.Space)
 
         val columnViews = mutableListOf<BlockView.Table.Column>()
 
@@ -579,7 +577,6 @@ class TableBlockRendererTest {
                     rowId = rowId3,
                     columnId = columnId4
                 ),
-                BlockView.Table.Cell.Space
             )
 
         val columnViews = mutableListOf<BlockView.Table.Column>()

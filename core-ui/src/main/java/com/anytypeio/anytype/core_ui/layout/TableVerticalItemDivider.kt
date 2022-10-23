@@ -30,12 +30,12 @@ class TableVerticalItemDivider(
             parent.getDecoratedBoundsWithMargins(child, rect)
             var bottom = rect.bottom + child.translationY.roundToInt()
             var top = bottom - drawable.intrinsicHeight
-            if (position < itemCount - 1) {
+            if (position < itemCount) {
                 drawable.setBounds(rect.left, top, rect.right, bottom)
                 drawable.draw(canvas)
             }
 
-            if (position.rem(spanCount) == 0 && position < itemCount - 1) {
+            if (position.rem(spanCount) == 0 && position < itemCount) {
                 bottom = child.top
                 top = bottom - drawable.intrinsicHeight
                 drawable.setBounds(rect.left, top, rect.right, bottom)
@@ -55,7 +55,7 @@ class TableVerticalItemDivider(
         val itemCount = parent.adapter?.itemCount ?: 0
         val position = parent.getChildLayoutPosition(view)
         outRect.bottom = drawable.intrinsicHeight
-        if (position.rem(spanCount) == 0 && position < itemCount - 1) {
+        if (position.rem(spanCount) == 0 && position < itemCount) {
             outRect.top = drawable.intrinsicHeight
         }
     }

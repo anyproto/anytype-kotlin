@@ -1344,8 +1344,6 @@ sealed class BlockView : ViewType {
             ) : Cell {
                 fun getId() = "$rowId-$columnId"
             }
-
-            object Space : Cell
         }
 
         data class CellSettings(

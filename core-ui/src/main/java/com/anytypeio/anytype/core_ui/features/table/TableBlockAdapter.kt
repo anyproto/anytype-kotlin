@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableRowItemBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableSpaceBinding
 import com.anytypeio.anytype.core_ui.features.table.holders.TableCellHolder
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -24,41 +23,28 @@ class TableBlockAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TableCellHolder {
-        when (viewType) {
-            TYPE_CELL -> {
-                val binding = ItemBlockTableRowItemBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-                return TableCellHolder.TableTextCellHolder(
-                    context = parent.context,
-                    binding = binding
-                ).apply {
-                    textContent.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(getItem(pos))
-                        }
-                    }
-                    textContent.setOnLongClickListener { _ ->
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            clickListener(ListenerType.LongClick(tableBlockId))
-                        }
-                        true
-                    }
+        val binding = ItemBlockTableRowItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return TableCellHolder.TableTextCellHolder(
+            context = parent.context,
+            binding = binding
+        ).apply {
+            textContent.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onCellClicked(getItem(pos))
                 }
             }
-            TYPE_SPACE -> {
-                val binding = ItemBlockTableSpaceBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-                return TableCellHolder.TableSpaceHolder(binding)
+            textContent.setOnLongClickListener { _ ->
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    clickListener(ListenerType.LongClick(tableBlockId))
+                }
+                true
             }
-            else -> throw UnsupportedOperationException("wrong viewtype:$viewType")
         }
     }
 
@@ -78,7 +64,6 @@ class TableBlockAdapter(
                         cellId = item.block.id
                     )
                 )
-            BlockView.Table.Cell.Space -> {}
         }
     }
 
@@ -103,16 +88,5 @@ class TableBlockAdapter(
                 )
             }
         }
-    }
-
-    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
-        is BlockView.Table.Cell.Empty -> TYPE_CELL
-        is BlockView.Table.Cell.Text -> TYPE_CELL
-        BlockView.Table.Cell.Space -> TYPE_SPACE
-    }
-
-    companion object {
-        const val TYPE_CELL = 1
-        const val TYPE_SPACE = 2
     }
 }

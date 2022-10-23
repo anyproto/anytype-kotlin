@@ -194,7 +194,6 @@ class SetBlockTextValueViewModel(
                 when (cell) {
                     is BlockView.Table.Cell.Empty -> cell.getId() == cellId
                     is BlockView.Table.Cell.Text -> cell.getId() == cellId
-                    BlockView.Table.Cell.Space -> false
                 }
             }
             if (block is BlockView.Table.Cell.Text) {

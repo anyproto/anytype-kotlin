@@ -14,7 +14,9 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -27,17 +29,22 @@ class ObjectMenuViewModel(
     setObjectIsArchived: SetObjectIsArchived,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
+    addBackLinkToObject: AddBackLinkToObject,
+    delegator: Delegator<Action>,
+    urlBuilder: UrlBuilder,
     dispatcher: Dispatcher<Payload>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
     private val duplicateObject: DuplicateObject,
     private val storage: Editor.Storage,
     private val analytics: Analytics,
-    private val updateFields: UpdateFields,
-    private val delegator: Delegator<Action>
+    private val updateFields: UpdateFields
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
+    addBackLinkToObject = addBackLinkToObject,
+    delegator = delegator,
+    urlBuilder = urlBuilder,
     dispatcher = dispatcher,
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider
@@ -67,6 +74,7 @@ class ObjectMenuViewModel(
         if (!isProfile) {
             add(ObjectAction.DUPLICATE)
         }
+        add(ObjectAction.LINK_TO)
 
         val root = storage.document.get().find { it.id == ctx }
         if (root != null) {
@@ -159,6 +167,9 @@ class ObjectMenuViewModel(
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
                 proceedWithRemovingFromFavorites(ctx)
+            }
+            ObjectAction.LINK_TO -> {
+                proceedWithLinkTo()
             }
             ObjectAction.UNLOCK -> {
                 proceedWithUpdatingLockStatus(ctx, false)
@@ -260,6 +271,8 @@ class ObjectMenuViewModel(
         private val duplicateObject: DuplicateObject,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
+        private val addBackLinkToObject: AddBackLinkToObject,
+        private val urlBuilder: UrlBuilder,
         private val storage: Editor.Storage,
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<Payload>,
@@ -273,6 +286,8 @@ class ObjectMenuViewModel(
                 duplicateObject = duplicateObject,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
+                addBackLinkToObject = addBackLinkToObject,
+                urlBuilder = urlBuilder,
                 storage = storage,
                 analytics = analytics,
                 dispatcher = dispatcher,

@@ -28,41 +28,37 @@ import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.domain.page.CreateNewObject
-import com.anytypeio.anytype.domain.search.CancelSearchSubscription
-import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
-import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScheduler
-import kotlinx.coroutines.test.TestDispatcher
-import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
@@ -247,7 +243,7 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubCloseBlock() {
         closeBlock.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(Unit)
         }
     }
 

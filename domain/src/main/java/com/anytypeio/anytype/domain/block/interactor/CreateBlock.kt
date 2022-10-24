@@ -1,14 +1,14 @@
 package com.anytypeio.anytype.domain.block.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.interactor.CreateBlock.Params
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.ResultInteractor
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock.Params
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for creating a block.
@@ -16,9 +16,9 @@ import com.anytypeio.anytype.core_models.Payload
  */
 open class CreateBlock(
     private val repo: BlockRepository
-) : BaseUseCase<Pair<Id, Payload>, Params>() {
+) : ResultInteractor<Params, Pair<Id, Payload>>() {
 
-    override suspend fun run(params: Params) = try {
+    override suspend fun doWork(params: Params): Pair<Id, Payload> =
         repo.create(
             command = Command.Create(
                 context = params.context,
@@ -26,12 +26,7 @@ open class CreateBlock(
                 prototype = params.prototype,
                 position = params.position
             )
-        ).let {
-            Either.Right(it)
-        }
-    } catch (t: Throwable) {
-        Either.Left(t)
-    }
+        )
 
     /**
      * Params for creating a block

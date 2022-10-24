@@ -182,8 +182,8 @@ class ArchiveViewModel(
         }
 
         viewModelScope.launch {
-            openPage(OpenPage.Params(id)).proceed(
-                success = { result ->
+            openPage.execute(id).fold(
+                onSuccess = { result ->
                     when (result) {
                         is Result.Success -> {
                             orchestrator.proxies.payloads.send(result.data)
@@ -194,7 +194,7 @@ class ArchiveViewModel(
                         }
                     }
                 },
-                failure = { Timber.e(it, "Error while opening page with id: $id") }
+                onFailure = { Timber.e(it, "Error while opening page with id: $id") }
             )
         }
     }
@@ -258,12 +258,11 @@ class ArchiveViewModel(
     }
 
     private fun proceedWithExitingToDesktop() {
-        closePage(viewModelScope, CloseBlock.Params(context)) { result ->
-            result.either(
-                fnR = {
-                    navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
-                },
-                fnL = { Timber.e(it, "Error while closing document: $context") }
+        viewModelScope.launch {
+            closePage.execute(context).fold(onSuccess = {
+                navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
+            },
+                onFailure = { Timber.e(it, "Error while closing document: $context") }
             )
         }
     }

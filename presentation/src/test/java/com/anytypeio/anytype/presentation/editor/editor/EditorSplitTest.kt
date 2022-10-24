@@ -277,7 +277,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         verifyBlocking(createBlock, times(1)) {
-            invoke(
+            execute(
                 params = eq(
                     CreateBlock.Params(
                         context = root,
@@ -450,7 +450,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         verifyBlocking(createBlock, times(1)) {
-            invoke(
+            execute(
                 params = eq(
                     CreateBlock.Params(
                         context = root,

@@ -280,6 +280,7 @@ class ObjectSetViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
+                    is Action.OpenObject -> proceedWithOpeningObject(action.id)
                     else -> {}
                 }
             }
@@ -419,9 +420,9 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithClosingAndExit() {
-        closeBlock(CloseBlock.Params(context)).process(
-            success = { dispatch(AppNavigation.Command.Exit) },
-            failure = {
+        closeBlock.execute(context).fold(
+            onSuccess = { dispatch(AppNavigation.Command.Exit) },
+            onFailure = {
                 Timber.e(it, "Error while closing object set: $context").also {
                     dispatch(AppNavigation.Command.Exit)
                 }
@@ -1033,13 +1034,13 @@ class ObjectSetViewModel(
 
     //region NAVIGATION
 
-    private fun proceedWithOpeningPage(target: Id) {
+    private fun proceedWithOpeningObject(target: Id) {
         jobs += viewModelScope.launch {
-            closeBlock(CloseBlock.Params(context)).process(
-                success = {
+            closeBlock.execute(context).fold(
+                onSuccess = {
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, "Error while closing object set: $context")
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
                 }
@@ -1055,14 +1056,14 @@ class ObjectSetViewModel(
             ObjectType.Layout.NOTE,
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.FILE,
-            ObjectType.Layout.BOOKMARK -> proceedWithOpeningPage(target)
+            ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(target)
             ObjectType.Layout.SET -> {
                 viewModelScope.launch {
-                    closeBlock(CloseBlock.Params(context)).process(
-                        success = {
+                    closeBlock.execute(context).fold(
+                        onSuccess = {
                             navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
                         },
-                        failure = {
+                        onFailure = {
                             Timber.e(it, "Error while closing object set: $context")
                             navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
                         }
@@ -1090,9 +1091,9 @@ class ObjectSetViewModel(
 
     fun onHomeButtonClicked() {
         viewModelScope.launch {
-            closeBlock(CloseBlock.Params(context)).process(
-                success = { dispatch(AppNavigation.Command.ExitToDesktop) },
-                failure = {
+            closeBlock.execute(context).fold(
+                onSuccess = { dispatch(AppNavigation.Command.ExitToDesktop) },
+                onFailure = {
                     Timber.e(it, "Error while closing object set: $context").also {
                         dispatch(AppNavigation.Command.ExitToDesktop)
                     }
@@ -1116,7 +1117,7 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             createNewObject.execute(Unit).fold(
                 onSuccess = { id ->
-                    proceedWithOpeningPage(id)
+                    proceedWithOpeningObject(id)
                 },
                 onFailure = { e -> Timber.e(e, "Error while creating a new page") }
             )
@@ -1125,9 +1126,9 @@ class ObjectSetViewModel(
 
     fun onSearchButtonClicked() {
         viewModelScope.launch {
-            closeBlock(CloseBlock.Params(context)).process(
-                success = { dispatch(AppNavigation.Command.OpenPageSearch) },
-                failure = { Timber.e(it, "Error while closing object set: $context") }
+            closeBlock.execute(context).fold(
+                onSuccess = { dispatch(AppNavigation.Command.OpenPageSearch) },
+                onFailure = { Timber.e(it, "Error while closing object set: $context") }
             )
         }
     }

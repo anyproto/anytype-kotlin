@@ -17,6 +17,7 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
@@ -28,6 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
@@ -112,7 +114,7 @@ class MentionUpdateTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
                 Result.Success(
                     Payload(
                         context = root,

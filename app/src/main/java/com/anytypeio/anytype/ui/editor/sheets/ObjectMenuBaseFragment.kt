@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -16,24 +17,30 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
+import com.anytypeio.anytype.ui.moving.MoveToFragment
+import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMenuBinding>() {
+abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
+    OnMoveToAction {
 
-    protected val ctx get() = arg<String>(CTX_KEY)
+    protected val ctx get() = arg<Id>(CTX_KEY)
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
     private val isArchived get() = arg<Boolean>(IS_ARCHIVED_KEY)
     private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
     private val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
+    private val fromName get() = arg<String?>(FROM_NAME)
 
     abstract val vm: ObjectMenuViewModelBase
 
@@ -171,8 +178,44 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
             ObjectMenuViewModelBase.Command.OpenSetRelations -> {
                 toast(COMING_SOON_MSG)
             }
+            ObjectMenuViewModelBase.Command.OpenLinkToChooser -> {
+                val fr = MoveToFragment.new(
+                    ctx = ctx,
+                    blocks = emptyList(),
+                    restorePosition = null,
+                    restoreBlock = null,
+                    title = getString(R.string.link_to)
+                )
+                fr.show(childFragmentManager, null)
+            }
+            is ObjectMenuViewModelBase.Command.OpenSnackbar -> {
+                binding.root.postDelayed({
+                    dialog?.window
+                        ?.decorView
+                        ?.showActionableSnackBar(
+                            command.currentObjectName,
+                            command.targetObjectName,
+                            command.icon,
+                            binding.anchor
+                        ) {
+                            vm.proceedWithOpeningPage(command.id)
+                        }
+                }, 300L)
+            }
         }
     }
+
+    override fun onMoveTo(
+        target: Id,
+        blocks: List<Id>,
+        text: String,
+        icon: ObjectIcon,
+        isSet: Boolean
+    ) {
+        vm.onLinkedMyselfTo(myself = ctx, addTo = target, fromName)
+    }
+
+    override fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?) {}
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -187,6 +230,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
         const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
         const val IS_FAVORITE_KEY = "arg.doc-menu-bottom-sheet.is-favorite"
         const val IS_LOCKED_KEY = "arg.doc-menu-bottom-sheet.is-locked"
+        const val FROM_NAME = "arg.doc-menu-bottom-sheet.from-name"
         const val COMING_SOON_MSG = "Coming soon..."
     }
 

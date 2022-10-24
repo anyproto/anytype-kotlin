@@ -11,5 +11,6 @@ enum class ObjectAction {
     UNDO_REDO,
     DUPLICATE,
     LOCK,
-    UNLOCK
+    UNLOCK,
+    LINK_TO,
 }

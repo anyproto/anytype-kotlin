@@ -22,6 +22,7 @@ import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColo
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -32,6 +33,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -872,28 +874,29 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         val params = InterceptEvents.Params(context = root)
 
         openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Result.Success(
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.ShowObject(
+            onBlocking { execute(any()) } doAnswer
+                    ValueClassAnswer(
+                        Result.Success(
+                            Payload(
                                 context = root,
-                                root = root,
-                                details = Block.Details(),
-                                relations = emptyList(),
-                                blocks = document,
-                                objectRestrictions = emptyList()
-                            ),
-                            Event.Command.Details.Amend(
-                                context = root,
-                                target = mentionTarget,
-                                details = mapOf(Block.Fields.NAME_KEY to "Foob")
+                                events = listOf(
+                                    Event.Command.ShowObject(
+                                        context = root,
+                                        root = root,
+                                        details = Block.Details(),
+                                        relations = emptyList(),
+                                        blocks = document,
+                                        objectRestrictions = emptyList()
+                                    ),
+                                    Event.Command.Details.Amend(
+                                        context = root,
+                                        target = mentionTarget,
+                                        details = mapOf(Block.Fields.NAME_KEY to "Foob")
+                                    )
+                                )
                             )
                         )
                     )
-                )
-            )
         }
         stubInterceptEvents()
         stubGetObjectTypes()
@@ -1019,28 +1022,29 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         val params = InterceptEvents.Params(context = root)
 
         openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Result.Success(
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.ShowObject(
+            onBlocking { execute(any()) } doAnswer
+                    ValueClassAnswer(
+                        Result.Success(
+                            Payload(
                                 context = root,
-                                root = root,
-                                details = Block.Details(),
-                                relations = emptyList(),
-                                blocks = document,
-                                objectRestrictions = emptyList()
-                            ),
-                            Event.Command.Details.Amend(
-                                context = root,
-                                target = mentionTarget,
-                                details = mapOf(Block.Fields.NAME_KEY to "")
+                                events = listOf(
+                                    Event.Command.ShowObject(
+                                        context = root,
+                                        root = root,
+                                        details = Block.Details(),
+                                        relations = emptyList(),
+                                        blocks = document,
+                                        objectRestrictions = emptyList()
+                                    ),
+                                    Event.Command.Details.Amend(
+                                        context = root,
+                                        target = mentionTarget,
+                                        details = mapOf(Block.Fields.NAME_KEY to "")
+                                    )
+                                )
                             )
                         )
                     )
-                )
-            )
         }
         stubInterceptEvents()
         stubGetObjectTypes()

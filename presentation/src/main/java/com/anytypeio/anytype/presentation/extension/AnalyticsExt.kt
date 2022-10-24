@@ -363,6 +363,15 @@ fun CoroutineScope.sendAnalyticsRemoveFromFavoritesEvent(
     )
 }
 
+fun CoroutineScope.sendAnalyticsObjectLinkToEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.objectLinkTo
+    )
+}
+
 fun CoroutineScope.sendAnalyticsMoveToBinEvent(
     analytics: Analytics
 ) {

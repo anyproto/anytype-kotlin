@@ -98,12 +98,14 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -436,7 +438,7 @@ open class EditorTestSetup {
         relations: List<Relation> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
                 Result.Success(
                     Payload(
                         context = root,
@@ -460,7 +462,7 @@ open class EditorTestSetup {
         events: List<Event.Command>
     ) {
         createBlock.stub {
-            onBlocking { invoke(params) } doReturn Either.Right(
+            onBlocking { execute(params) } doAnswer ValueClassAnswer(
                 Pair(
                     MockDataFactory.randomUuid(),
                     Payload(context = root, events = events)

@@ -11,9 +11,15 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.google.android.material.snackbar.Snackbar
 
 
-fun View.showActionableSnackBar(from: String?, to: String?, icon: ObjectIcon, click: () -> Unit) {
+fun View.showActionableSnackBar(
+    from: String?,
+    to: String?,
+    icon: ObjectIcon,
+    anchor: View? = null,
+    click: () -> Unit
+) {
 
-    val snackbar: Snackbar = Snackbar.make(this, "", Snackbar.LENGTH_SHORT)
+    val snackbar: Snackbar = Snackbar.make(this, "", Snackbar.LENGTH_LONG)
 
     snackbar.view.setBackgroundColor(Color.TRANSPARENT)
     val snackbarLayout: Snackbar.SnackbarLayout = snackbar.view as Snackbar.SnackbarLayout
@@ -48,13 +54,14 @@ fun View.showActionableSnackBar(from: String?, to: String?, icon: ObjectIcon, cl
     }
 
     snackbarLayout.addView(newView, 0)
+    snackbar.anchorView = anchor
 
     snackbar.show()
 }
 
 fun View.showMessageSnackBar(text: String, anchor: View? = null) {
 
-    val snackbar: Snackbar = Snackbar.make(this, "", Snackbar.LENGTH_SHORT)
+    val snackbar: Snackbar = Snackbar.make(this, "", Snackbar.LENGTH_LONG)
 
     snackbar.view.setBackgroundColor(Color.TRANSPARENT)
     val snackbarLayout: Snackbar.SnackbarLayout = snackbar.view as Snackbar.SnackbarLayout

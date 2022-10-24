@@ -389,23 +389,24 @@ open class EditorPresentationTestSetup {
         objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Result.Success(
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.ShowObject(
+            onBlocking { execute(any()) } doAnswer
+                    ValueClassAnswer(
+                        Result.Success(
+                            Payload(
                                 context = root,
-                                root = root,
-                                details = details,
-                                relations = relations,
-                                blocks = document,
-                                objectRestrictions = objectRestrictions
+                                events = listOf(
+                                    Event.Command.ShowObject(
+                                        context = root,
+                                        root = root,
+                                        details = details,
+                                        relations = relations,
+                                        blocks = document,
+                                        objectRestrictions = objectRestrictions
+                                    )
+                                )
                             )
                         )
                     )
-                )
-            )
         }
     }
 
@@ -489,14 +490,16 @@ open class EditorPresentationTestSetup {
 
     fun stubCreateBlock(root: String) {
         createBlock.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Pair(
-                    MockDataFactory.randomString(), Payload(
-                        context = root,
-                        events = listOf()
+            onBlocking { execute(any()) } doAnswer
+                    ValueClassAnswer(
+                        Pair(
+                            MockDataFactory.randomString(), Payload(
+                                context = root,
+                                events = listOf()
+                            )
+                        )
                     )
-                )
-            )
+
         }
     }
 
@@ -560,7 +563,7 @@ open class EditorPresentationTestSetup {
 
     fun stubClosePage() {
         closePage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(Unit)
         }
     }
 

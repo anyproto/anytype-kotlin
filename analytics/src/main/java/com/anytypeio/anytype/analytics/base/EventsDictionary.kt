@@ -59,6 +59,7 @@ object EventsDictionary {
     const val objectRemoveCover = "RemoveCover"
     const val objectAddToFavorites = "AddToFavorites"
     const val objectRemoveFromFavorites = "RemoveFromFavorites"
+    const val objectLinkTo = "LinkObjectTo"
     const val objectMoveToBin = "MoveToBin"
     const val objectRelationFeature = "FeatureRelation"
     const val objectRelationUnfeature = "UnfeatureRelation"

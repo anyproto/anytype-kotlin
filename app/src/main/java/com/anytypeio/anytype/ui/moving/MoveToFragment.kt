@@ -49,6 +49,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
     private val ctx get() = arg<Id>(ARG_CTX)
     private val restorePosition get() = argOrNull<Int>(ARG_RESTORE_POSITION)
     private val restoreBlock get() = argOrNull<Id>(ARG_RESTORE_BLOCK)
+    private val title get() = argOrNull<String>(ARG_TITLE)
 
     private val moveToAdapter by lazy {
         DefaultObjectViewAdapter(
@@ -196,7 +197,11 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 
     private fun initialize() {
         with(binding.tvScreenTitle) {
-            text = getString(R.string.move_to)
+            if (title != null) {
+                text = title
+            } else {
+                text = getString(R.string.move_to)
+            }
             visible()
         }
         binding.recyclerView.invisible()
@@ -261,19 +266,22 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
         const val ARG_CTX = "arg.move_to.ctx"
         const val ARG_RESTORE_POSITION = "arg.move_to.position"
         const val ARG_RESTORE_BLOCK = "arg.move_to.restore_block"
+        const val ARG_TITLE = "arg.move_to.title"
         const val EMPTY_FILTER_TEXT = ""
 
         fun new(
             ctx: Id,
             blocks: List<Id>,
             restorePosition: Int?,
-            restoreBlock: Id?
+            restoreBlock: Id?,
+            title: String? = null
         ) = MoveToFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_BLOCKS to blocks,
                 ARG_RESTORE_POSITION to restorePosition,
-                ARG_RESTORE_BLOCK to restoreBlock
+                ARG_RESTORE_BLOCK to restoreBlock,
+                ARG_TITLE to title
             )
         }
     }

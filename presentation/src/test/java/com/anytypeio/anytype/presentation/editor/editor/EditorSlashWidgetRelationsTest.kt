@@ -124,7 +124,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             prototype = Block.Prototype.Relation(key = r2.key)
         )
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test

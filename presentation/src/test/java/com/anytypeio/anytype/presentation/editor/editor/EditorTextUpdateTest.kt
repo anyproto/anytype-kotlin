@@ -117,9 +117,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
                     target = block.id
                 )
             )
-            inOrder.verify(closePage, times(1)).invoke(
-                CloseBlock.Params(id = root)
-            )
+            inOrder.verify(closePage, times(1)).execute(root)
         }
 
         // RELEASING PENDING COROUTINES
@@ -194,7 +192,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
         vm.onHomeButtonClicked()
 
         verifyBlocking(closePage, times(1)) {
-            invoke(CloseBlock.Params(id = root))
+            execute(root)
         }
 
         verifyNoMoreInteractions(updateText)
@@ -264,8 +262,8 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
                     target = block.id
                 )
             )
-            inOrder.verify(closePage, times(1)).invoke(
-                CloseBlock.Params(id = root)
+            inOrder.verify(closePage, times(1)).execute(
+               root
             )
         }
 
@@ -341,7 +339,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
         vm.onSystemBackPressed(false)
 
         verifyBlocking(closePage, times(1)) {
-            invoke(CloseBlock.Params(id = root))
+            execute(root)
         }
 
         verifyNoMoreInteractions(updateText)

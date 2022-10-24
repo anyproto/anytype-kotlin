@@ -6,12 +6,19 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectLinkToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +31,9 @@ abstract class ObjectMenuViewModelBase(
     private val setObjectIsArchived: SetObjectIsArchived,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
+    private val addBackLinkToObject: AddBackLinkToObject,
+    protected val delegator: Delegator<Action>,
+    private val urlBuilder: UrlBuilder,
     protected val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
@@ -149,6 +159,36 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
+    fun onLinkedMyselfTo(myself: Id, addTo: Id, fromName: String?) {
+        jobs += viewModelScope.launch {
+            addBackLinkToObject.execute(
+                AddBackLinkToObject.Params(objectToLink = myself, objectToPlaceLink = addTo)
+            ).fold(
+                onSuccess = { obj ->
+                    sendAnalyticsObjectLinkToEvent(analytics)
+                    commands.emit(Command.OpenSnackbar(
+                        id = addTo,
+                        currentObjectName = fromName,
+                        targetObjectName = obj.getProperName(),
+                        icon = ObjectIcon.from(obj, obj.layout, urlBuilder)))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while adding link from object to object")
+                }
+            )
+        }
+    }
+
+    protected fun proceedWithLinkTo() {
+        jobs += viewModelScope.launch { commands.emit(Command.OpenLinkToChooser) }
+    }
+
+    fun proceedWithOpeningPage(id: Id) {
+        viewModelScope.launch {
+            delegator.delegate(Action.OpenObject(id))
+        }
+    }
+
     sealed class Command {
         object OpenObjectIcons : Command()
         object OpenSetIcons : Command()
@@ -158,6 +198,13 @@ abstract class ObjectMenuViewModelBase(
         object OpenSetLayout : Command()
         object OpenObjectRelations : Command()
         object OpenSetRelations : Command()
+        object OpenLinkToChooser : Command()
+        class OpenSnackbar(
+            val id: Id,
+            val currentObjectName: String?,
+            val targetObjectName: String?,
+            val icon: ObjectIcon
+        ) : Command()
     }
 
     companion object {
@@ -173,4 +220,3 @@ abstract class ObjectMenuViewModelBase(
         const val SOMETHING_WENT_WRONG_MSG = "Something went wrong. Please, try again later."
     }
 }
-

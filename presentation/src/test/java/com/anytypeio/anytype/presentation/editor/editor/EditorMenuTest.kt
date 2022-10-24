@@ -100,7 +100,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
             value.peekContent() == Command.OpenDocumentMenu(
                 isArchived = false,
                 isFavorite = false,
-                isLocked = false
+                isLocked = false,
+                fromName = ""
             )
         }
     }
@@ -133,7 +134,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
             value.peekContent() == Command.OpenDocumentMenu(
                 isArchived = false,
                 isFavorite = false,
-                isLocked = false
+                isLocked = false,
+                fromName = ""
             )
         }
     }

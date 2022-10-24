@@ -9,7 +9,11 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -20,6 +24,9 @@ class ObjectSetMenuViewModel(
     setObjectIsArchived: SetObjectIsArchived,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
+    addBackLinkToObject: AddBackLinkToObject,
+    delegator: Delegator<Action>,
+    urlBuilder: UrlBuilder,
     dispatcher: Dispatcher<Payload>,
     state: StateFlow<ObjectSet>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
@@ -28,6 +35,9 @@ class ObjectSetMenuViewModel(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
+    addBackLinkToObject = addBackLinkToObject,
+    delegator = delegator,
+    urlBuilder = urlBuilder,
     dispatcher = dispatcher,
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider,
@@ -40,6 +50,9 @@ class ObjectSetMenuViewModel(
         private val setObjectIsArchived: SetObjectIsArchived,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
+        private val addBackLinkToObject: AddBackLinkToObject,
+        private val delegator: Delegator<Action>,
+        private val urlBuilder: UrlBuilder,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val state: StateFlow<ObjectSet>,
@@ -50,6 +63,9 @@ class ObjectSetMenuViewModel(
                 setObjectIsArchived = setObjectIsArchived,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
+                addBackLinkToObject = addBackLinkToObject,
+                delegator = delegator,
+                urlBuilder = urlBuilder,
                 analytics = analytics,
                 state = state,
                 dispatcher = dispatcher,
@@ -114,6 +130,7 @@ class ObjectSetMenuViewModel(
         } else {
             add(ObjectAction.ADD_TO_FAVOURITE)
         }
+        add(ObjectAction.LINK_TO)
     }
 
     override fun onActionClicked(ctx: Id, action: ObjectAction) {
@@ -129,6 +146,9 @@ class ObjectSetMenuViewModel(
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
                 proceedWithRemovingFromFavorites(ctx)
+            }
+            ObjectAction.LINK_TO -> {
+                proceedWithLinkTo()
             }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,

@@ -25,12 +25,14 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.anytypeio.anytype.test_utils.utils.TestUtils
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -364,8 +366,8 @@ class ListBlockTesting : EditorTestSetup() {
     ) {
         createBlock.stub {
             onBlocking {
-                invoke(params)
-            } doReturn Either.Right(
+                execute(params)
+            } doAnswer ValueClassAnswer(
                 Pair(new.id, Payload(context = root, events = events))
             )
         }

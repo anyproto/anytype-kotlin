@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
@@ -35,7 +36,6 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.FillTableRow
-import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeTextBlockStyleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCopyBlockEvent
@@ -98,16 +98,15 @@ class Orchestrator(
             when (intent) {
                 is Intent.CRUD.Create -> {
                     val startTime = System.currentTimeMillis()
-                    createBlock(
+                    createBlock.execute(
                         params = CreateBlock.Params(
                             context = intent.context,
                             target = intent.target,
                             prototype = intent.prototype,
                             position = intent.position
                         )
-                    ).proceed(
-                        failure = defaultOnError,
-                        success = { (id, payload) ->
+                    ).suspendFold(
+                        onSuccess = { (id, payload) ->
                             val middlewareTime = System.currentTimeMillis()
                             stores.focus.update(Focus.id(id = id))
                             proxies.payloads.send(payload)
@@ -117,7 +116,8 @@ class Orchestrator(
                                 startTime = startTime,
                                 middlewareTime = middlewareTime
                             )
-                        }
+                        },
+                        onFailure = defaultOnError
                     )
                 }
                 is Intent.CRUD.Replace -> {
@@ -443,7 +443,7 @@ class Orchestrator(
                             hash = intent.hash,
                             name = intent.name
                         )
-                    ).fold(
+                    ).suspendFold(
                         onSuccess = { uri ->
                             intent.onDownloaded(uri)
                             analytics.sendAnalyticsDownloadMediaEvent(intent.type)

@@ -21,5 +21,6 @@ sealed class Action {
     data class SetUnsplashImage(val img: Id) : Action()
     object SearchOnPage: Action()
     object UndoRedo : Action()
+    data class OpenObject(val id: Id) : Action()
     data class Duplicate(val id: Id) : Action()
 }

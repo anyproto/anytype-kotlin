@@ -89,7 +89,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         vm.onOutsideClicked()
 
         verifyBlocking(createBlock, times(1)) {
-            invoke(
+            execute(
                 params = eq(
                     CreateBlock.Params(
                         context = root,
@@ -142,7 +142,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         vm.onOutsideClicked()
 
         verifyBlocking(createBlock, times(1)) {
-            invoke(
+            execute(
                 params = eq(
                     CreateBlock.Params(
                         context = root,
@@ -184,7 +184,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         vm.onOutsideClicked()
 
         verifyBlocking(createBlock, times(1)) {
-            invoke(
+            execute(
                 params = eq(
                     CreateBlock.Params(
                         target = "",
@@ -335,7 +335,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         vm.onOutsideClicked()
 
         verifyBlocking(createBlock, times(1)) {
-            invoke(
+            execute(
                 params = eq(
                     CreateBlock.Params(
                         target = "",

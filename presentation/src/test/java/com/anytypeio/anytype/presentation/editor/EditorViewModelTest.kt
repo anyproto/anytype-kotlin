@@ -136,6 +136,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -387,7 +388,7 @@ open class EditorViewModelTest {
 
     @Test
     fun `should start opening page when requested`() {
-        val param = OpenPage.Params(id = root)
+        val param = root
 
         stubInterceptEvents()
         givenViewModel()
@@ -395,7 +396,7 @@ open class EditorViewModelTest {
 
         vm.onStart(root)
 
-        runBlockingTest { verify(openPage, times(1)).invoke(param) }
+        runBlockingTest { verify(openPage, times(1)).execute(param) }
     }
 
     @Test
@@ -478,17 +479,14 @@ open class EditorViewModelTest {
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
         runBlockingTest {
-            verify(closePage, times(1)).invoke(any())
+            verify(closePage, times(1)).execute(any())
         }
     }
 
     @Test
     fun `should emit an approprtiate navigation command when the page is closed`() {
-
-        val response = Either.Right(Unit)
-
         stubInterceptEvents()
-        stubClosePage(response)
+        stubClosePage()
         givenViewModel()
 
         val testObserver = vm.navigation.test()
@@ -509,10 +507,8 @@ open class EditorViewModelTest {
 
         val error = Exception("Error while closing this page")
 
-        val response = Either.Left(error)
-
         stubOpenPage(root)
-        stubClosePage(response)
+        stubClosePage(error)
         stubInterceptEvents()
         givenViewModel()
 
@@ -755,7 +751,7 @@ open class EditorViewModelTest {
         vm.onAddTextBlockClicked(style = Block.Content.Text.Style.P)
 
         runBlockingTest {
-            verify(createBlock, times(1)).invoke(any())
+            verify(createBlock, times(1)).execute(any())
         }
     }
 
@@ -2146,7 +2142,7 @@ open class EditorViewModelTest {
         )
 
         runBlockingTest {
-            verify(createBlock, times(1)).invoke(
+            verify(createBlock, times(1)).execute(
                 params = eq(
                     CreateBlock.Params(
                         context = root,
@@ -2337,7 +2333,7 @@ open class EditorViewModelTest {
         )
 
         runBlockingTest {
-            verify(createBlock, times(1)).invoke(
+            verify(createBlock, times(1)).execute(
                 params = eq(
                     CreateBlock.Params(
                         context = root,
@@ -2403,11 +2399,7 @@ open class EditorViewModelTest {
 
         runBlockingTest {
 
-            verify(createBlock, never()).invoke(
-                scope = any(),
-                params = any(),
-                onResult = any()
-            )
+            verify(createBlock, never()).execute(params = any())
 
             verify(updateTextStyle, times(1)).invoke(
                 params = eq(
@@ -2919,12 +2911,8 @@ open class EditorViewModelTest {
         vm.proceedWithExitingBack()
 
         runBlockingTest {
-            verify(closePage, times(1)).invoke(
-                params = eq(
-                    CloseBlock.Params(
-                        id = root
-                    )
-                )
+            verify(closePage, times(1)).execute(
+                params = eq(root)
             )
         }
     }
@@ -3753,7 +3741,7 @@ open class EditorViewModelTest {
         objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
                 Result.Success(
                     Payload(
                         context = root,
@@ -3774,10 +3762,17 @@ open class EditorViewModelTest {
     }
 
     private fun stubClosePage(
-        response: Either<Throwable, Unit> = Either.Right(Unit)
+        exception: Exception? = null
     ) {
+
         closePage.stub {
-            onBlocking { invoke(any()) } doReturn response
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(Unit)
+        }
+
+        exception?.let {
+            closePage.stub {
+                onBlocking { execute(any()) } doAnswer { invocationOnMock -> throw exception }
+            }
         }
     }
 
@@ -3800,7 +3795,7 @@ open class EditorViewModelTest {
         events: List<Event> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
                 Result.Success(
                     Payload(
                         context = context,
@@ -3860,7 +3855,7 @@ open class EditorViewModelTest {
 
     private fun stubCreateBlock(root: String) {
         createBlock.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
                 Pair(
                     MockDataFactory.randomString(), Payload(
                         context = root,

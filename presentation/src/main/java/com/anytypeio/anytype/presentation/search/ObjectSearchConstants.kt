@@ -2,12 +2,10 @@ package com.anytypeio.anytype.presentation.search
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ObjectType.Companion.AUDIO_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.BOOKMARK_TYPE
 import com.anytypeio.anytype.core_models.ObjectType.Companion.DASHBOARD_TYPE
 import com.anytypeio.anytype.core_models.ObjectType.Companion.FILE_URL
 import com.anytypeio.anytype.core_models.ObjectType.Companion.IMAGE_URL
 import com.anytypeio.anytype.core_models.ObjectType.Companion.OBJECT_TYPE_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.PROFILE_URL
 import com.anytypeio.anytype.core_models.ObjectType.Companion.RELATION_URL
 import com.anytypeio.anytype.core_models.ObjectType.Companion.TEMPLATE_URL
 import com.anytypeio.anytype.core_models.ObjectType.Companion.VIDEO_URL

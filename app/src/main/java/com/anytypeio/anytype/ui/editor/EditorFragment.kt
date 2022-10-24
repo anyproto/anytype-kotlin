@@ -955,7 +955,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         isArchived = command.isArchived,
                         isFavorite = command.isFavorite,
                         isLocked = command.isLocked,
-                        isProfile = false
+                        isProfile = false,
+                        fromName = getFrom()
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -1094,14 +1095,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenObjectSnackbar -> {
-                    val from = (blockAdapter.views
-                        .firstOrNull { it is BlockView.TextSupport } as? BlockView.TextSupport)
-                        ?.text
-                    binding.root.showActionableSnackBar(from, command.text, command.icon) {
+                    binding.root.showActionableSnackBar(getFrom(), command.text, command.icon) {
                         if (command.isSet) {
                             vm.proceedWithOpeningSet(command.id)
                         } else {
-                            vm.proceedWithOpeningPage(command.id)
+                            vm.proceedWithOpeningObject(command.id)
                         }
                     }
                 }
@@ -1182,6 +1180,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
     }
+
+    private fun getFrom() = (blockAdapter.views
+        .firstOrNull { it is BlockView.TextSupport } as? BlockView.TextSupport)
+        ?.text
 
     private fun openFileByDefaultApp(uri: Uri) {
         try {

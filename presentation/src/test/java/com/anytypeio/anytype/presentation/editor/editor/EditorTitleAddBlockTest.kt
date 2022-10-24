@@ -10,10 +10,12 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -93,7 +95,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddTextBlockClicked(style)
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test
@@ -148,7 +150,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddTextBlockClicked(style)
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test
@@ -287,7 +289,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddFileBlockClicked(type = type)
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test
@@ -346,7 +348,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddFileBlockClicked(type = type)
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test
@@ -387,7 +389,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddBookmarkBlockClicked()
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test
@@ -439,7 +441,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddBookmarkBlockClicked()
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test
@@ -480,7 +482,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddDividerBlockClicked(style = Block.Content.Divider.Style.LINE)
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     @Test
@@ -532,22 +534,23 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddDividerBlockClicked(style = Block.Content.Divider.Style.LINE)
         }
 
-        verifyBlocking(createBlock, times(1)) { invoke(params) }
+        verifyBlocking(createBlock, times(1)) { execute(params) }
     }
 
     private fun stubCreateBlock(
         params: CreateBlock.Params
     ) {
         createBlock.stub {
-            onBlocking { invoke(params) } doReturn Either.Right(
-                Pair(
-                    MockDataFactory.randomUuid(),
-                    Payload(
-                        context = root,
-                        events = emptyList()
+            onBlocking { execute(params) } doAnswer
+                    ValueClassAnswer(
+                        Pair(
+                            MockDataFactory.randomUuid(),
+                            Payload(
+                                context = root,
+                                events = emptyList()
+                            )
+                        )
                     )
-                )
-            )
         }
     }
 

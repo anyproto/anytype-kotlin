@@ -51,7 +51,6 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
 
         assertTrue(stateBackPressed?.styleTextToolbar?.isVisible == false)
 
-        val params = CloseBlock.Params(id = root)
-        verifyBlocking(closePage, times(1)) { invoke(params) }
+        verifyBlocking(closePage, times(1)) { execute(root) }
     }
 }

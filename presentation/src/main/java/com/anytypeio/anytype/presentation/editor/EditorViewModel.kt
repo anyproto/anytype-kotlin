@@ -158,6 +158,7 @@ import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
@@ -368,9 +369,10 @@ class EditorViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
-                    is Action.Duplicate -> proceedWithOpeningPage(action.id)
+                    is Action.Duplicate -> proceedWithOpeningObject(action.id)
                     Action.SearchOnPage -> onEnterSearchModeClicked()
                     Action.UndoRedo -> onUndoRedoActionClicked()
+                    is Action.OpenObject -> proceedWithOpeningObject(action.id)
                 }
             }
         }
@@ -879,8 +881,8 @@ class EditorViewModel(
         }
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            openPage(OpenPage.Params(id)).proceed(
-                success = { result ->
+            openPage.execute(id).fold(
+                onSuccess = { result ->
                     when (result) {
                         is Result.Success -> {
                             val middleTime = System.currentTimeMillis()
@@ -918,7 +920,7 @@ class EditorViewModel(
                         }
                     }
                 },
-                failure = {
+                onFailure = {
                     session.value = Session.ERROR
                     Timber.e(it, "Error while opening page with id: $id")
                 }
@@ -1039,11 +1041,9 @@ class EditorViewModel(
             Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit))
             Session.OPEN -> {
                 viewModelScope.launch {
-                    closePage(
-                        CloseBlock.Params(context)
-                    ).proceed(
-                        success = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
-                        failure = { Timber.e(it, "Error while closing document: $context") }
+                    closePage.execute(context).fold(
+                        onSuccess = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
+                        onFailure = { Timber.e(it, "Error while closing document: $context") }
                     )
                 }
             }
@@ -1056,9 +1056,9 @@ class EditorViewModel(
 
     private fun exitDashboard() {
         viewModelScope.launch {
-            closePage(CloseBlock.Params(context)).proceed(
-                success = { navigateToDesktop() },
-                failure = { Timber.e(it, "Error while closing this page: $context") }
+            closePage.execute(context).fold(
+                onSuccess = { navigateToDesktop() },
+                onFailure = { Timber.e(it, "Error while closing this page: $context") }
             )
         }
     }
@@ -1347,7 +1347,9 @@ class EditorViewModel(
                         command = Command.OpenDocumentMenu(
                             isArchived = details[context]?.isArchived ?: false,
                             isFavorite = details[context]?.isFavorite ?: false,
-                            isLocked = mode == EditorMode.Locked
+                            isLocked = mode == EditorMode.Locked,
+                            fromName = ObjectWrapper.Basic(details[context]?.map ?: emptyMap())
+                                .getProperObjectName() ?: ""
                         )
                     )
                 }
@@ -1358,7 +1360,9 @@ class EditorViewModel(
                         command = Command.OpenDocumentMenu(
                             isArchived = details[context]?.isArchived ?: false,
                             isFavorite = details[context]?.isFavorite ?: false,
-                            isLocked = mode == EditorMode.Locked
+                            isLocked = mode == EditorMode.Locked,
+                            fromName = ObjectWrapper.Basic(details[context]?.map ?: emptyMap())
+                                .getProperObjectName() ?: ""
                         )
                     )
                 }
@@ -2937,7 +2941,7 @@ class EditorViewModel(
             ObjectType.Layout.TODO,
             ObjectType.Layout.FILE,
             ObjectType.Layout.BOOKMARK -> {
-                proceedWithOpeningPage(target = target)
+                proceedWithOpeningObject(target = target)
             }
             ObjectType.Layout.SET -> {
                 proceedWithOpeningSet(target = target)
@@ -2995,7 +2999,7 @@ class EditorViewModel(
                         middleTime = middleTime,
                         context = analyticsContext
                     )
-                    proceedWithOpeningPage(result.target)
+                    proceedWithOpeningObject(result.target)
                 }
             )
         }
@@ -3015,7 +3019,7 @@ class EditorViewModel(
         jobs += viewModelScope.launch {
             createNewObject.execute(Unit).fold(
                 onSuccess = { id ->
-                    proceedWithOpeningPage(id)
+                    proceedWithOpeningObject(id)
                 },
                 onFailure = { e -> Timber.e(e, "Error while creating a new page") }
             )
@@ -3057,7 +3061,7 @@ class EditorViewModel(
                 failure = { Timber.e(it, "Error while creating new page with params: $params") },
                 success = { result ->
                     orchestrator.proxies.payloads.send(result.payload)
-                    proceedWithOpeningPage(result.target)
+                    proceedWithOpeningObject(result.target)
                 }
             )
         }
@@ -4088,14 +4092,14 @@ class EditorViewModel(
         )
     }
 
-    fun proceedWithOpeningPage(target: Id) {
+    fun proceedWithOpeningObject(target: Id) {
         viewModelScope.launch {
-            closePage(CloseBlock.Params(context)).process(
-                failure = {
+            closePage.execute(context).fold(
+                onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
                 },
-                success = {
+                onSuccess = {
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
                 }
             )
@@ -4104,8 +4108,8 @@ class EditorViewModel(
 
     fun proceedWithOpeningSet(target: Id, isPopUpToDashboard: Boolean = false) {
         viewModelScope.launch {
-            closePage(CloseBlock.Params(context)).process(
-                failure = {
+            closePage.execute(context).fold(
+                onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(
                         EventWrapper(
@@ -4116,7 +4120,7 @@ class EditorViewModel(
                         )
                     )
                 },
-                success = {
+                onSuccess = {
                     navigate(
                         EventWrapper(
                             AppNavigation.Command.OpenObjectSet(
@@ -5301,7 +5305,7 @@ class EditorViewModel(
             is Content.Bookmark -> {
                 val target = content.targetObjectId
                 if (target != null) {
-                    proceedWithOpeningPage(target)
+                    proceedWithOpeningObject(target)
                     viewModelScope.sendAnalyticsOpenAsObject(
                         analytics = analytics,
                         type = EventsDictionary.Type.bookmark

@@ -68,6 +68,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_unlock)
                     tvActionTitle.setText(R.string.unlock)
                 }
+                ObjectAction.LINK_TO -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_link_to)
+                    tvActionTitle.setText(R.string.link_to)
+                }
                 ObjectAction.MOVE_TO -> {
 
                 }

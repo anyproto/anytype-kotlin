@@ -58,3 +58,13 @@ abstract class ResultInteractor<in P, R> {
 
     protected abstract suspend fun doWork(params: P): R
 }
+
+suspend fun <R, T> Result<T>.suspendFold(
+    onSuccess: suspend (value: T) -> R,
+    onFailure: suspend (Throwable) -> R
+): R {
+    return when (val exception = exceptionOrNull()) {
+        null -> onSuccess(getOrNull() as T)
+        else -> onFailure(exception)
+    }
+}

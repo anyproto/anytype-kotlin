@@ -55,7 +55,8 @@ sealed class Command {
     data class OpenDocumentMenu(
         val isArchived: Boolean,
         val isFavorite: Boolean,
-        val isLocked: Boolean
+        val isLocked: Boolean,
+        val fromName: String
     ) : Command()
 
     data class OpenProfileMenu(

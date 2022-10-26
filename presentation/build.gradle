@@ -11,7 +11,7 @@ android {
         minSdkVersion config["min_sdk"]
         targetSdkVersion config["target_sdk"]
         testInstrumentationRunner config["test_runner"]
-        buildConfigField "boolean", "ENABLE_LINK_APPERANCE_MENU", "true"
+        buildConfigField "boolean", "ENABLE_LINK_APPERANCE_MENU", "false"
         buildConfigField "boolean", "NESTED_DECORATION_ENABLED", "true"
         buildConfigField "boolean", "USE_SIMPLE_TABLES_IN_EDITOR_EDDITING", "false"
     }

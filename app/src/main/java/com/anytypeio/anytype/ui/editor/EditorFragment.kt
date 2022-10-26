@@ -1187,13 +1187,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private fun openFileByDefaultApp(uri: Uri) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-                .apply {
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-            startActivity(
-                intent
-            )
+            val intent = Intent(Intent.ACTION_VIEW)
+                .setDataAndType(uri, requireContext().contentResolver.getType(uri))
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            startActivity(intent)
         } catch (e: Exception) {
             if (e is ActivityNotFoundException) {
                 toast("No application found to open the selected file")

@@ -1,5 +1,24 @@
 # Change log for Android @Anytype app.
 
+## Version 0.12.0
+
+### New features & enhancements 🚀
+
+* Editor | Introducing nested styling: children of callout or quote blocks are now able to inherit style from parent. Also, backgrounds are now nested: children inherit background color from its parent blocks (#2409)
+* Editor | Style your link-to-object block as a card or as a text link (#2630, #2643) [DISABLED IN THIS RELEASE]
+* Objects | Show pop-up notifications when creating links between two objects (2648)
+
+### Fixes & tech 🚒
+
+* Editor | The text typed to filter the slash menu options should be removed when an option is selected in numbered list items (#2620)
+* Editor | Do not allow to create a link-to-object referencing currently open object (#2661)
+* Sets | Date is displayed incorrectly in list view and in gallery view (#2639, #2657)
+
+### Design & UX 🔳
+
+* App | Setting cursor into search bar across different app menus (#2624)
+* Sets | Empty state for sets without selected source (#2688)
+
 ## Version 0.11.0
 
 ### New features & enhancements 🚀

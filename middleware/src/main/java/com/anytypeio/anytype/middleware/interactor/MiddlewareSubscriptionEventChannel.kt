@@ -68,7 +68,7 @@ class MiddlewareSubscriptionEventChannel(
                         if (subscriptions.any { it == event.subId || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" == event.subId }) {
                             SubscriptionEvent.Remove(
                                 target = event.id,
-                                subscription = payload.contextId
+                                subscription = event.subId
                             )
                         } else {
                             null
@@ -82,7 +82,7 @@ class MiddlewareSubscriptionEventChannel(
                             SubscriptionEvent.Add(
                                 target = event.id,
                                 afterId = event.afterId,
-                                subscription = payload.contextId
+                                subscription = event.subId
                             )
                         } else {
                             null

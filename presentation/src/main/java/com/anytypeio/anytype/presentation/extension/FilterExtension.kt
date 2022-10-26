@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import timber.log.Timber
 
 fun Viewer.Filter.Condition.hasValue(): Boolean = when (this) {
     is Viewer.Filter.Condition.Selected.Empty,
@@ -66,11 +67,17 @@ fun List<DVFilter>.toView(
     details: Map<Id, Block.Fields>,
     screenState: ViewerFilterViewModel.ScreenState,
     urlBuilder: UrlBuilder
-) = map { filter ->
-    filter.toView(
-        relation = relations.first { it.key == filter.relationKey },
-        details = details,
-        isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
-        urlBuilder = urlBuilder
-    )
+) = mapNotNull { filter ->
+    val relation = relations.find { it.key == filter.relationKey }
+    if (relation != null) {
+        filter.toView(
+            relation = relation,
+            details = details,
+            isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
+            urlBuilder = urlBuilder
+        )
+    } else {
+        Timber.w("Could not found relation: ${filter.relationKey} for filter: $filter")
+        null
+    }
 }

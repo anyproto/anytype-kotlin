@@ -11,12 +11,12 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.settings.EditorSettings
+import timber.log.Timber
 
 fun Block.Content.File.toPictureView(
     id: String,
@@ -690,6 +691,8 @@ suspend fun List<Id>.toGridRecordRows(
                 details = details
             )
             rows.add(row)
+        } else {
+            Timber.w("Could not found record with id: $id")
         }
     }
     return rows

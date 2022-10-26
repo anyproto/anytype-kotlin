@@ -159,7 +159,7 @@ class ObjectSetViewModel(
         }
 
         viewModelScope.launch {
-            reducer.state.filter { it.isInitialized }.collect { set ->
+            reducer.state.collect { set ->
                 Timber.d("FLOW:: Updating header and tabs")
                 featured.value = set.featuredRelations(
                     ctx = context,
@@ -173,11 +173,13 @@ class ObjectSetViewModel(
                         title = it
                     )
                 }
-                if (set.viewers.isEmpty()) {
-                    error.value = DATA_VIEW_HAS_NO_VIEW_MSG
-                    _viewerTabs.value = emptyList()
-                } else {
-                    _viewerTabs.value = set.tabs(session.currentViewerId.value)
+                if (set.isInitialized) {
+                    if (set.viewers.isEmpty()) {
+                        error.value = DATA_VIEW_HAS_NO_VIEW_MSG
+                        _viewerTabs.value = emptyList()
+                    } else {
+                        _viewerTabs.value = set.tabs(session.currentViewerId.value)
+                    }
                 }
             }
         }
@@ -516,8 +518,24 @@ class ObjectSetViewModel(
                 )
             }
         } else {
-            // TODO Use loading state to prevent user from editing title if set of objects is not ready.
-            Timber.e("Skipping dispatching title update, because set of objects was not ready.")
+            if (context.isNotEmpty()) {
+                viewModelScope.launch {
+                    setObjectDetails(
+                        UpdateDetail.Params(
+                            ctx = context,
+                            key = Relations.NAME,
+                            value = txt
+                        )
+                    ).process(
+                        success = { dispatcher.send(it) },
+                        failure = {
+                            Timber.e(it, "Error while updating object set name")
+                        }
+                    )
+                }
+            } else {
+                Timber.e("Skipping dispatching title update, because set of objects was not ready.")
+            }
         }
     }
 

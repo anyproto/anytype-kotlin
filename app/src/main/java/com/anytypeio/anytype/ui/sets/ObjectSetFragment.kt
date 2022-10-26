@@ -792,7 +792,14 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { bindHeader(it) }
         jobs += lifecycleScope.subscribe(vm.currentViewer) { setupViewer(it) }
-        jobs += lifecycleScope.subscribe(vm.error) { binding.tvError.text = it }
+        jobs += lifecycleScope.subscribe(vm.error) { err ->
+            if (err.isNullOrEmpty())
+                binding.tvError.gone()
+            else {
+                binding.tvError.text = err
+                binding.tvError.visible()
+            }
+        }
         jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
             binding.paginatorToolbar.set(count = count, index = index)
             if (count > 1) {

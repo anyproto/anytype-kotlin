@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
@@ -18,6 +17,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -25,14 +25,11 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.stub
@@ -139,7 +136,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = dv.content<DV>().sources,
-            keys = dv.content<DV>().relations.map { it.key },
+            keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relations.map { it.key },
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(
@@ -210,124 +207,125 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should emit navigation command for opening an object contained in given relation if this relation is read-only and object's layout is supported`() = runTest {
+    fun `should emit navigation command for opening an object contained in given relation if this relation is read-only and object's layout is supported`() =
+        runTest {
 
-        // SETUP
+            // SETUP
 
-        val supportedObjectLayouts = listOf(
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.IMAGE,
-            ObjectType.Layout.FILE
-        )
-
-        val linkedProjectTargetId = "Linked project ID"
-        val firstRecordId = "First record ID"
-
-        val record = mapOf(
-            Relations.ID to firstRecordId,
-            linkedProjectRelation.key to linkedProjectTargetId
-        )
-
-        val obj = ObjectWrapper.Basic(record)
-        val linkedObject = ObjectWrapper.Basic(
-            mapOf(
-                Relations.ID to linkedProjectTargetId,
-                Relations.NAME to MockDataFactory.randomString(),
-                Relations.LAYOUT to ObjectType.Layout.BASIC
+            val supportedObjectLayouts = listOf(
+                ObjectType.Layout.BASIC,
+                ObjectType.Layout.PROFILE,
+                ObjectType.Layout.TODO,
+                ObjectType.Layout.IMAGE,
+                ObjectType.Layout.FILE
             )
-        )
 
-        val details = Block.Details(
-            details = mapOf(
-                linkedProjectTargetId to Block.Fields(
-                    mapOf(
-                        Relations.ID to linkedProjectTargetId,
-                        Relations.LAYOUT to supportedObjectLayouts.random().code.toDouble()
-                    )
+            val linkedProjectTargetId = "Linked project ID"
+            val firstRecordId = "First record ID"
+
+            val record = mapOf(
+                Relations.ID to firstRecordId,
+                linkedProjectRelation.key to linkedProjectTargetId
+            )
+
+            val obj = ObjectWrapper.Basic(record)
+            val linkedObject = ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ID to linkedProjectTargetId,
+                    Relations.NAME to MockDataFactory.randomString(),
+                    Relations.LAYOUT to ObjectType.Layout.BASIC
                 )
             )
-        )
 
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubCloseBlock()
-        stubSubscriptionEventChannel()
-        stubSearchWithSubscription(
-            subscription = root,
-            filters = dv.content<DV>().viewers.first().filters,
-            sorts = dv.content<DV>().viewers.first().sorts,
-            afterId = null,
-            beforeId = null,
-            sources = dv.content<DV>().sources,
-            keys = dv.content<DV>().relations.map { it.key },
-            limit = ObjectSetConfig.DEFAULT_LIMIT,
-            offset = 0,
-            result = SearchResult(
-                results = listOf(obj),
-                dependencies = listOf(linkedObject),
-                counter = SearchResult.Counter(
-                    total = 1,
-                    prev = 0,
-                    next = 0
-                )
-            )
-        )
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title,
-                dv.copy(
-                    content = dv.content<DV>().copy(
-                        relations = listOf(
-                            linkedProjectRelation.copy(
-                                isReadOnly = true
-                            )
+            val details = Block.Details(
+                details = mapOf(
+                    linkedProjectTargetId to Block.Fields(
+                        mapOf(
+                            Relations.ID to linkedProjectTargetId,
+                            Relations.LAYOUT to supportedObjectLayouts.random().code.toDouble()
                         )
                     )
                 )
-            ),
-            dataViewRestrictions = emptyList(),
-            details = details
-        )
-
-        val vm = givenViewModel()
-
-        vm.onStart(root)
-
-        // TESTING
-
-        vm.currentViewer.test {
-            val stateBeforeLoaded = awaitItem()
-
-            assertIs<Viewer.GridView>(stateBeforeLoaded)
-
-            assertEquals(
-                expected = 0,
-                actual = stateBeforeLoaded.rows.size
             )
 
-            val stateAfterLoaded = awaitItem()
-
-            assertIs<Viewer.GridView>(stateAfterLoaded)
-
-            assertEquals(
-                expected = 1,
-                actual = stateAfterLoaded.rows.size
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubCloseBlock()
+            stubSubscriptionEventChannel()
+            stubSearchWithSubscription(
+                subscription = root,
+                filters = dv.content<DV>().viewers.first().filters,
+                sorts = dv.content<DV>().viewers.first().sorts,
+                afterId = null,
+                beforeId = null,
+                sources = dv.content<DV>().sources,
+                keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relations.map { it.key },
+                limit = ObjectSetConfig.DEFAULT_LIMIT,
+                offset = 0,
+                result = SearchResult(
+                    results = listOf(obj),
+                    dependencies = listOf(linkedObject),
+                    counter = SearchResult.Counter(
+                        total = 1,
+                        prev = 0,
+                        next = 0
+                    )
+                )
+            )
+            stubOpenObjectSet(
+                doc = listOf(
+                    header,
+                    title,
+                    dv.copy(
+                        content = dv.content<DV>().copy(
+                            relations = listOf(
+                                linkedProjectRelation.copy(
+                                    isReadOnly = true
+                                )
+                            )
+                        )
+                    )
+                ),
+                dataViewRestrictions = emptyList(),
+                details = details
             )
 
-            // Clicking on cell with linked projects.
-            val testObserver = vm.navigation.test()
+            val vm = givenViewModel()
 
-            vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
+            vm.onStart(root)
 
-            testObserver.assertValue { value ->
-                val content = value.peekContent()
-                content == AppNavigation.Command.OpenObject(linkedProjectTargetId)
+            // TESTING
+
+            vm.currentViewer.test {
+                val stateBeforeLoaded = awaitItem()
+
+                assertIs<Viewer.GridView>(stateBeforeLoaded)
+
+                assertEquals(
+                    expected = 0,
+                    actual = stateBeforeLoaded.rows.size
+                )
+
+                val stateAfterLoaded = awaitItem()
+
+                assertIs<Viewer.GridView>(stateAfterLoaded)
+
+                assertEquals(
+                    expected = 1,
+                    actual = stateAfterLoaded.rows.size
+                )
+
+                // Clicking on cell with linked projects.
+                val testObserver = vm.navigation.test()
+
+                vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
+
+                testObserver.assertValue { value ->
+                    val content = value.peekContent()
+                    content == AppNavigation.Command.OpenObject(linkedProjectTargetId)
+                }
             }
         }
-    }
 
     @Test
     fun `should close current object before navigating to some other object`() = runTest {
@@ -372,7 +370,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = dv.content<DV>().sources,
-            keys = dv.content<DV>().relations.map { it.key },
+            keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relations.map { it.key },
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(
@@ -441,231 +439,233 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should not emit any navigation command for opening an object contained in given relation if object's layout is not supported`() = runTest {
+    fun `should not emit any navigation command for opening an object contained in given relation if object's layout is not supported`() =
+        runTest {
 
-        // SETUP
+            // SETUP
 
-        val unsupportedLayouis = ObjectType.Layout.values().toList() - SupportedLayouts.layouts
+            val unsupportedLayouis = ObjectType.Layout.values().toList() - SupportedLayouts.layouts
 
-        val linkedProjectTargetId = "Linked project ID"
-        val firstRecordId = "First record ID"
+            val linkedProjectTargetId = "Linked project ID"
+            val firstRecordId = "First record ID"
 
-        val record = mapOf(
-            Relations.ID to firstRecordId,
-            linkedProjectRelation.key to linkedProjectTargetId
-        )
-        val obj = ObjectWrapper.Basic(record)
-        val linkedObject = ObjectWrapper.Basic(
-            mapOf(
-                Relations.ID to linkedProjectTargetId,
-                Relations.NAME to MockDataFactory.randomString(),
-                Relations.LAYOUT to ObjectType.Layout.BASIC
+            val record = mapOf(
+                Relations.ID to firstRecordId,
+                linkedProjectRelation.key to linkedProjectTargetId
             )
-        )
-
-        val details = Block.Details(
-            details = mapOf(
-                linkedProjectTargetId to Block.Fields(
-                    mapOf(
-                        Relations.ID to linkedProjectTargetId,
-                        Relations.LAYOUT to unsupportedLayouis.random().code.toDouble()
-                    )
+            val obj = ObjectWrapper.Basic(record)
+            val linkedObject = ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ID to linkedProjectTargetId,
+                    Relations.NAME to MockDataFactory.randomString(),
+                    Relations.LAYOUT to ObjectType.Layout.BASIC
                 )
             )
-        )
 
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubCloseBlock()
-        stubSubscriptionEventChannel()
-        stubSearchWithSubscription(
-            subscription = root,
-            filters = dv.content<DV>().viewers.first().filters,
-            sorts = dv.content<DV>().viewers.first().sorts,
-            afterId = null,
-            beforeId = null,
-            sources = dv.content<DV>().sources,
-            keys = dv.content<DV>().relations.map { it.key },
-            limit = ObjectSetConfig.DEFAULT_LIMIT,
-            offset = 0,
-            result = SearchResult(
-                results = listOf(obj),
-                dependencies = listOf(linkedObject),
-                counter = SearchResult.Counter(
-                    total = 1,
-                    prev = 0,
-                    next = 0
-                )
-            )
-        )
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title,
-                dv.copy(
-                    content = dv.content<DV>().copy(
-                        relations = listOf(
-                            linkedProjectRelation.copy(
-                                isReadOnly = true
-                            )
+            val details = Block.Details(
+                details = mapOf(
+                    linkedProjectTargetId to Block.Fields(
+                        mapOf(
+                            Relations.ID to linkedProjectTargetId,
+                            Relations.LAYOUT to unsupportedLayouis.random().code.toDouble()
                         )
                     )
                 )
-            ),
-            dataViewRestrictions = emptyList(),
-            details = details
-        )
-
-        val vm = givenViewModel()
-
-        vm.onStart(root)
-
-        // TESTING
-
-        vm.currentViewer.test {
-            val stateBeforeLoaded = awaitItem()
-
-            assertIs<Viewer.GridView>(stateBeforeLoaded)
-
-            assertEquals(
-                expected = 0,
-                actual = stateBeforeLoaded.rows.size
             )
 
-            assertIs<Viewer.GridView>(stateBeforeLoaded)
-
-            val stateAfterLoaded = awaitItem()
-
-            assertIs<Viewer.GridView>(stateAfterLoaded)
-
-            assertEquals(
-                expected = 1,
-                actual = stateAfterLoaded.rows.size
-            )
-
-            // Clicking on cell with linked projects.
-
-            val testObserver = vm.navigation.test()
-
-            vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
-
-            testObserver.assertNoValue()
-        }
-    }
-
-    @Test
-    fun `should emit navigation command opening an object set contained in given relation if this relation is read-only`() = runTest {
-
-        // SETUP
-
-        val linkedProjectTargetId = "Linked project ID"
-        val firstRecordId = "First record ID"
-
-        val record = mapOf(
-            Relations.ID to firstRecordId,
-            linkedProjectRelation.key to linkedProjectTargetId
-        )
-        val obj = ObjectWrapper.Basic(record)
-        val linkedObject = ObjectWrapper.Basic(
-            mapOf(
-                Relations.ID to linkedProjectTargetId,
-                Relations.NAME to MockDataFactory.randomString(),
-                Relations.LAYOUT to ObjectType.Layout.BASIC
-            )
-        )
-
-        val details = Block.Details(
-            details = mapOf(
-                linkedProjectTargetId to Block.Fields(
-                    mapOf(
-                        Relations.ID to linkedProjectTargetId,
-                        Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble()
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubCloseBlock()
+            stubSubscriptionEventChannel()
+            stubSearchWithSubscription(
+                subscription = root,
+                filters = dv.content<DV>().viewers.first().filters,
+                sorts = dv.content<DV>().viewers.first().sorts,
+                afterId = null,
+                beforeId = null,
+                sources = dv.content<DV>().sources,
+                keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relations.map { it.key },
+                limit = ObjectSetConfig.DEFAULT_LIMIT,
+                offset = 0,
+                result = SearchResult(
+                    results = listOf(obj),
+                    dependencies = listOf(linkedObject),
+                    counter = SearchResult.Counter(
+                        total = 1,
+                        prev = 0,
+                        next = 0
                     )
                 )
             )
-        )
-
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubCloseBlock()
-        stubSubscriptionEventChannel()
-        stubSearchWithSubscription(
-            subscription = root,
-            filters = dv.content<DV>().viewers.first().filters,
-            sorts = dv.content<DV>().viewers.first().sorts,
-            afterId = null,
-            beforeId = null,
-            sources = dv.content<DV>().sources,
-            keys = dv.content<DV>().relations.map { it.key },
-            limit = ObjectSetConfig.DEFAULT_LIMIT,
-            offset = 0,
-            result = SearchResult(
-                results = listOf(obj),
-                dependencies = listOf(linkedObject),
-                counter = SearchResult.Counter(
-                    total = 1,
-                    prev = 0,
-                    next = 0
-                )
-            )
-        )
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title,
-                dv.copy(
-                    content = dv.content<DV>().copy(
-                        relations = listOf(
-                            linkedProjectRelation.copy(
-                                isReadOnly = true
+            stubOpenObjectSet(
+                doc = listOf(
+                    header,
+                    title,
+                    dv.copy(
+                        content = dv.content<DV>().copy(
+                            relations = listOf(
+                                linkedProjectRelation.copy(
+                                    isReadOnly = true
+                                )
                             )
                         )
                     )
+                ),
+                dataViewRestrictions = emptyList(),
+                details = details
+            )
+
+            val vm = givenViewModel()
+
+            vm.onStart(root)
+
+            // TESTING
+
+            vm.currentViewer.test {
+                val stateBeforeLoaded = awaitItem()
+
+                assertIs<Viewer.GridView>(stateBeforeLoaded)
+
+                assertEquals(
+                    expected = 0,
+                    actual = stateBeforeLoaded.rows.size
                 )
-            ),
-            dataViewRestrictions = emptyList(),
-            details = details
-        )
 
-        val vm = givenViewModel()
+                assertIs<Viewer.GridView>(stateBeforeLoaded)
 
-        vm.onStart(root)
+                val stateAfterLoaded = awaitItem()
 
-        // TESTING
+                assertIs<Viewer.GridView>(stateAfterLoaded)
 
-        vm.currentViewer.test {
-            val stateBeforeLoaded = awaitItem()
+                assertEquals(
+                    expected = 1,
+                    actual = stateAfterLoaded.rows.size
+                )
 
-            assertIs<Viewer.GridView>(stateBeforeLoaded)
+                // Clicking on cell with linked projects.
 
-            assertEquals(
-                expected = 0,
-                actual = stateBeforeLoaded.rows.size
-            )
+                val testObserver = vm.navigation.test()
 
-            assertIs<Viewer.GridView>(stateBeforeLoaded)
+                vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
 
-            val stateAfterLoaded = awaitItem()
-
-            assertIs<Viewer.GridView>(stateAfterLoaded)
-
-            assertEquals(
-                expected = 1,
-                actual = stateAfterLoaded.rows.size
-            )
-
-            // Clicking on cell with linked projects.
-
-            val testObserver = vm.navigation.test()
-
-            vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
-
-            testObserver.assertValue { value ->
-                val content = value.peekContent()
-                content == AppNavigation.Command.OpenObjectSet(linkedProjectTargetId)
+                testObserver.assertNoValue()
             }
         }
-    }
+
+    @Test
+    fun `should emit navigation command opening an object set contained in given relation if this relation is read-only`() =
+        runTest {
+
+            // SETUP
+
+            val linkedProjectTargetId = "Linked project ID"
+            val firstRecordId = "First record ID"
+
+            val record = mapOf(
+                Relations.ID to firstRecordId,
+                linkedProjectRelation.key to linkedProjectTargetId
+            )
+            val obj = ObjectWrapper.Basic(record)
+            val linkedObject = ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ID to linkedProjectTargetId,
+                    Relations.NAME to MockDataFactory.randomString(),
+                    Relations.LAYOUT to ObjectType.Layout.BASIC
+                )
+            )
+
+            val details = Block.Details(
+                details = mapOf(
+                    linkedProjectTargetId to Block.Fields(
+                        mapOf(
+                            Relations.ID to linkedProjectTargetId,
+                            Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble()
+                        )
+                    )
+                )
+            )
+
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubCloseBlock()
+            stubSubscriptionEventChannel()
+            stubSearchWithSubscription(
+                subscription = root,
+                filters = dv.content<DV>().viewers.first().filters,
+                sorts = dv.content<DV>().viewers.first().sorts,
+                afterId = null,
+                beforeId = null,
+                sources = dv.content<DV>().sources,
+                keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relations.map { it.key },
+                limit = ObjectSetConfig.DEFAULT_LIMIT,
+                offset = 0,
+                result = SearchResult(
+                    results = listOf(obj),
+                    dependencies = listOf(linkedObject),
+                    counter = SearchResult.Counter(
+                        total = 1,
+                        prev = 0,
+                        next = 0
+                    )
+                )
+            )
+            stubOpenObjectSet(
+                doc = listOf(
+                    header,
+                    title,
+                    dv.copy(
+                        content = dv.content<DV>().copy(
+                            relations = listOf(
+                                linkedProjectRelation.copy(
+                                    isReadOnly = true
+                                )
+                            )
+                        )
+                    )
+                ),
+                dataViewRestrictions = emptyList(),
+                details = details
+            )
+
+            val vm = givenViewModel()
+
+            vm.onStart(root)
+
+            // TESTING
+
+            vm.currentViewer.test {
+                val stateBeforeLoaded = awaitItem()
+
+                assertIs<Viewer.GridView>(stateBeforeLoaded)
+
+                assertEquals(
+                    expected = 0,
+                    actual = stateBeforeLoaded.rows.size
+                )
+
+                assertIs<Viewer.GridView>(stateBeforeLoaded)
+
+                val stateAfterLoaded = awaitItem()
+
+                assertIs<Viewer.GridView>(stateAfterLoaded)
+
+                assertEquals(
+                    expected = 1,
+                    actual = stateAfterLoaded.rows.size
+                )
+
+                // Clicking on cell with linked projects.
+
+                val testObserver = vm.navigation.test()
+
+                vm.onGridCellClicked(stateAfterLoaded.rows.first().cells.last())
+
+                testObserver.assertValue { value ->
+                    val content = value.peekContent()
+                    content == AppNavigation.Command.OpenObjectSet(linkedProjectTargetId)
+                }
+            }
+        }
 
     @Test
     fun `should close editor and navigate to page screen - when page is created`() {

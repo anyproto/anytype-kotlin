@@ -59,6 +59,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMI
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.relations.tabs
 import com.anytypeio.anytype.presentation.relations.title
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
@@ -190,12 +191,14 @@ class ObjectSetViewModel(
                 val dv = s.dv
                 val view = dv.viewers.find { it.id == v } ?: dv.viewers.firstOrNull()
                 if (view != null) {
+                    val dataViewKeys = dv.relations.map { it.key }
+                    val defaultKeys = ObjectSearchConstants.defaultKeys
                     DataViewSubscriptionContainer.Params(
                         subscription = context,
                         sorts = view.sorts,
                         filters = view.filters,
                         sources = dv.sources,
-                        keys = dv.relations.map { it.key },
+                        keys = defaultKeys + dataViewKeys,
                         limit = DEFAULT_LIMIT,
                         offset = o
                     )
@@ -651,6 +654,7 @@ class ObjectSetViewModel(
     }
 
     fun onTaskCheckboxClicked(target: Id) {
+        Timber.d("onTaskCheckboxClicked: $target")
         viewModelScope.launch {
             val obj = database.store.get(target)
             if (obj != null) {

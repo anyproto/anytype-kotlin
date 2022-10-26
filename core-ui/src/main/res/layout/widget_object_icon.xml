@@ -44,6 +44,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:contentDescription="@string/content_desc_checkbox_icon"
+        android:clickable="true"
         android:src="@drawable/ic_data_view_grid_checkbox_selector"
         android:visibility="invisible" />
 
@@ -53,7 +54,6 @@
         android:layout_height="24dp"
         android:layout_gravity="center"
         android:contentDescription="@string/bookmark_icon"
-        android:src="@drawable/ic_data_view_grid_checkbox_selector"
         android:visibility="gone" />
 
 </merge>

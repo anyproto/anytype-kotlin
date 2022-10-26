@@ -2,32 +2,23 @@ package com.anytypeio.anytype.presentation.sets
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVSort
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.TypicalTwoRecordObjectSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -59,7 +50,7 @@ class ObjectSetExtensionTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = doc.dv.content<DV>().sources,
-            keys = doc.dv.content<DV>().relations.map { it.key },
+            keys = ObjectSearchConstants.defaultKeys + doc.dv.content<DV>().relations.map { it.key },
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.TypicalTwoRecordObjectSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -68,7 +69,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = doc.dv.content<DV>().sources,
-            keys = doc.dv.content<DV>().relations.map { it.key },
+            keys = ObjectSearchConstants.defaultKeys + doc.dv.content<DV>().relations.map { it.key },
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(

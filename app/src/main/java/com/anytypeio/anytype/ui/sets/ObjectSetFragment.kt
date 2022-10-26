@@ -36,10 +36,10 @@ import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
-import com.anytypeio.anytype.core_ui.reactive.afterTextChanges
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.touches
+import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -188,7 +188,6 @@ open class ObjectSetFragment :
 
         with(lifecycleScope) {
             subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewRecord() }
-            subscribe(title.afterTextChanges()) { vm.onTitleChanged(it.toString()) }
             subscribe(title.editorActionEvents(actionHandler)) {
                 title.apply {
                     hideKeyboard()
@@ -258,6 +257,11 @@ open class ObjectSetFragment :
         binding.listView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
+
+        title.addTextChangedListener(
+            DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
+        )
+
         setFragmentResultListener(ObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val source = bundle.getString(ObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
             if (source != null) {
@@ -428,7 +432,9 @@ open class ObjectSetFragment :
     }
 
     private fun bindHeader(title: BlockView.Title.Basic) {
-        this.title.setText(title.text)
+        this.title.pauseTextWatchers {
+            this.title.setText(title.text)
+        }
         binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
@@ -744,7 +750,7 @@ open class ObjectSetFragment :
         override fun onTransitionTrigger(view: MotionLayout?, id: Int, pos: Boolean, prog: Float) {}
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {
-                title.enableEditMode()
+                title.pauseTextWatchers { title.enableEditMode() }
                 topToolbarStatusText.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarTitle.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarThreeDotsButton.apply {
@@ -763,7 +769,7 @@ open class ObjectSetFragment :
                 }
             }
             if (id == R.id.end) {
-                title.enableReadMode()
+                title.pauseTextWatchers { title.enableReadMode() }
                 topToolbarStatusText.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarTitle.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
                 binding.topToolbar.root.findViewById<ImageView>(R.id.ivThreeDots).apply {

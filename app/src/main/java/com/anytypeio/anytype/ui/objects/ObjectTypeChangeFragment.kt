@@ -82,6 +82,7 @@ class ObjectTypeChangeFragment :
     }
 
     override fun onStart() {
+        expand()
         with(lifecycleScope) {
             jobs += subscribe(vm.results) { observeViews(it) }
             jobs += subscribe(binding.searchObjectTypeInput.textChanges()) {

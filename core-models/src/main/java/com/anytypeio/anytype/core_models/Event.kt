@@ -259,6 +259,13 @@ sealed class Event {
                 val key: String,
                 val relation: Relation
             ) : DataView()
+
+
+            data class SetSource(
+                override val context: Id,
+                val dv: Id,
+                val sources: List<Id>
+            ) : DataView()
         }
     }
 }

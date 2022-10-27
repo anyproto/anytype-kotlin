@@ -134,6 +134,23 @@ class ObjectSetReducer {
                     }
                 )
             }
+            is Command.DataView.SetSource -> {
+                state.copy(
+                    blocks = state.blocks.map { block ->
+                        if (block.id == event.dv) {
+                            val content = block.content
+                            check(content is DV)
+                            block.copy(
+                                content = content.copy(
+                                    sources = event.sources
+                                )
+                            )
+                        } else {
+                            block
+                        }
+                    }
+                )
+            }
             is Command.Details.Set -> {
                 state.copy(
                     details = state.details.toMutableMap().apply {

@@ -9,14 +9,14 @@ import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -274,12 +274,11 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                                 }
                             }
                         }
-//                        todo https://linear.app/anytype/issue/DROID-434/set-or-change-set-source
-//                        view.setOnClickListener {
-//                            click(
-//                                ListenerType.Relation.SetSource(sources = relation.sources)
-//                            )
-//                        }
+                        view.setOnClickListener {
+                            click(
+                                ListenerType.Relation.SetSource(sources = relation.sources)
+                            )
+                        }
                         addView(view)
                         ids.add(view.id)
                     }

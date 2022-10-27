@@ -192,6 +192,15 @@ fun anytype.Event.Message.toCoreModels(
             viewer = event.viewId
         )
     }
+    blockDataviewSourceSet != null -> {
+        val event = blockDataviewSourceSet
+        checkNotNull(event)
+        Event.Command.DataView.SetSource(
+            context = context,
+            dv = event.id,
+            sources = event.source
+        )
+    }
     blockSetRelation != null -> {
         val event = blockSetRelation
         checkNotNull(event)

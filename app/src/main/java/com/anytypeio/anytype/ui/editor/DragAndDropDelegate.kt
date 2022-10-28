@@ -542,6 +542,12 @@ class DragAndDropDelegate {
         val ratio = dropContainer.ratio
 
         if (vh != null) {
+
+            if (dndTargetPos == NO_POSITION) {
+                Timber.w("Dragged target view position is NO_POSITION")
+                return
+            }
+
             if (vh.bindingAdapterPosition != dndTargetPos) {
                 target.isSelected = false
                 if (vh is SupportNesting) {

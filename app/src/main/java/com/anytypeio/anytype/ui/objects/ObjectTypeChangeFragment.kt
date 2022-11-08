@@ -94,7 +94,8 @@ class ObjectTypeChangeFragment :
             smartBlockType = smartBlockType,
             excludedTypes = excludedTypes,
             isDraft = isDraft,
-            selectedSources = selectedSources
+            selectedSources = selectedSources,
+            isSetSource = isSetSource
         )
     }
 

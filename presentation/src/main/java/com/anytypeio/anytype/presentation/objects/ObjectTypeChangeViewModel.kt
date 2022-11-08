@@ -7,7 +7,14 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -33,13 +40,14 @@ class ObjectTypeChangeViewModel(
         smartBlockType: SmartBlockType,
         excludedTypes: List<Id> = emptyList(),
         isDraft: Boolean,
-        selectedSources: List<Id>
+        selectedSources: List<Id>,
+        isSetSource: Boolean
     ) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
                     smartBlockType = smartBlockType,
-                    isSetIncluded = isDraft
+                    isSetIncluded = if (isSetSource) true else isDraft
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while getting object types") },

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectSubcomponent
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubcomponent
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -455,4 +456,13 @@ object ObjectSetModule {
     fun provideAddFileToObjectUseCase(
         repo: BlockRepository
     ): AddFileToObject = AddFileToObject(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun duplicateObject(
+        repo: BlockRepository
+    ): DuplicateObject = DuplicateObject(
+        repo = repo
+    )
 }

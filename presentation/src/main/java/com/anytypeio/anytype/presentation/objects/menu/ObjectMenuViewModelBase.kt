@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -37,6 +38,7 @@ abstract class ObjectMenuViewModelBase(
     protected val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
+    private val duplicateObject: DuplicateObject
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -186,6 +188,21 @@ abstract class ObjectMenuViewModelBase(
     fun proceedWithOpeningPage(id: Id) {
         viewModelScope.launch {
             delegator.delegate(Action.OpenObject(id))
+        }
+    }
+
+    fun proceedWithDuplication(ctx: Id) {
+        viewModelScope.launch {
+            duplicateObject(ctx).process(
+                failure = {
+                    Timber.e(it, "Duplication error")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                },
+                success = {
+                    _toasts.emit("Your object is duplicated")
+                    delegator.delegate(Action.Duplicate(it))
+                }
+            )
         }
     }
 

@@ -34,7 +34,7 @@ class ObjectMenuViewModel(
     urlBuilder: UrlBuilder,
     dispatcher: Dispatcher<Payload>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
-    private val duplicateObject: DuplicateObject,
+    duplicateObject: DuplicateObject,
     private val storage: Editor.Storage,
     private val analytics: Analytics,
     private val updateFields: UpdateFields
@@ -43,6 +43,7 @@ class ObjectMenuViewModel(
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
     addBackLinkToObject = addBackLinkToObject,
+    duplicateObject = duplicateObject,
     delegator = delegator,
     urlBuilder = urlBuilder,
     dispatcher = dispatcher,
@@ -71,7 +72,7 @@ class ObjectMenuViewModel(
             }
         }
         add(ObjectAction.UNDO_REDO)
-        if (!isProfile) {
+        if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
             add(ObjectAction.DUPLICATE)
         }
         add(ObjectAction.LINK_TO)
@@ -193,21 +194,6 @@ class ObjectMenuViewModel(
             ObjectAction.USE_AS_TEMPLATE -> {
                 throw IllegalStateException("$action is unsupported")
             }
-        }
-    }
-
-    private fun proceedWithDuplication(ctx: Id) {
-        viewModelScope.launch {
-            duplicateObject(ctx).process(
-                failure = {
-                    Timber.e(it, "Duplication error")
-                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
-                },
-                success = {
-                    _toasts.emit("Your object is duplicated")
-                    delegator.delegate(Action.Duplicate(it))
-                }
-            )
         }
     }
 

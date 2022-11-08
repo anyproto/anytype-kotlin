@@ -286,6 +286,10 @@ class ObjectSetViewModel(
                         proceedWithSettingUnsplashImage(action)
                     }
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
+                    is Action.Duplicate -> proceedWithNavigation(
+                        target = action.id,
+                        layout = ObjectType.Layout.SET
+                    )
                     else -> {}
                 }
             }

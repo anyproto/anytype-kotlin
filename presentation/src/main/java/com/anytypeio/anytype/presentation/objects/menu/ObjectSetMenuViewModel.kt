@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -25,6 +26,7 @@ class ObjectSetMenuViewModel(
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     addBackLinkToObject: AddBackLinkToObject,
+    duplicateObject: DuplicateObject,
     delegator: Delegator<Action>,
     urlBuilder: UrlBuilder,
     dispatcher: Dispatcher<Payload>,
@@ -36,6 +38,7 @@ class ObjectSetMenuViewModel(
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
     addBackLinkToObject = addBackLinkToObject,
+    duplicateObject = duplicateObject,
     delegator = delegator,
     urlBuilder = urlBuilder,
     dispatcher = dispatcher,
@@ -51,6 +54,7 @@ class ObjectSetMenuViewModel(
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val addBackLinkToObject: AddBackLinkToObject,
+        private val duplicateObject: DuplicateObject,
         private val delegator: Delegator<Action>,
         private val urlBuilder: UrlBuilder,
         private val dispatcher: Dispatcher<Payload>,
@@ -64,6 +68,7 @@ class ObjectSetMenuViewModel(
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 addBackLinkToObject = addBackLinkToObject,
+                duplicateObject = duplicateObject,
                 delegator = delegator,
                 urlBuilder = urlBuilder,
                 analytics = analytics,
@@ -130,6 +135,9 @@ class ObjectSetMenuViewModel(
         } else {
             add(ObjectAction.ADD_TO_FAVOURITE)
         }
+        if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
+            add(ObjectAction.DUPLICATE)
+        }
         add(ObjectAction.LINK_TO)
     }
 
@@ -150,10 +158,12 @@ class ObjectSetMenuViewModel(
             ObjectAction.LINK_TO -> {
                 proceedWithLinkTo()
             }
+            ObjectAction.DUPLICATE -> {
+                proceedWithDuplication(ctx = ctx)
+            }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,
             ObjectAction.UNDO_REDO,
-            ObjectAction.DUPLICATE,
             ObjectAction.LOCK,
             ObjectAction.UNLOCK,
             ObjectAction.USE_AS_TEMPLATE -> throw IllegalStateException("$action is unsupported")

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Text.Style
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event
@@ -10,9 +11,11 @@ import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Reducer
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Companion.init
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getSupportedMarkupTypes
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.extension.style
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -212,6 +215,18 @@ sealed class ControlPanelMachine {
             data class Show(val data: List<ObjectTypeView>) : ObjectTypesWidgetEvent()
             object Hide : ObjectTypesWidgetEvent()
         }
+
+        sealed class SimpleTableWidget : Event() {
+            data class Show(
+                val tableId: Id,
+                val cells: List<BlockView.Table.Cell>,
+                val cellItems: List<SimpleTableWidgetItem> = emptyList(),
+                val rowItems: List<SimpleTableWidgetItem> = emptyList(),
+                val columnItems: List<SimpleTableWidgetItem> = emptyList()
+            ) : SimpleTableWidget()
+
+            data class Hide(val tableId: Id) : SimpleTableWidget()
+        }
     }
 
     /**
@@ -374,7 +389,8 @@ sealed class ControlPanelMachine {
                         ),
                         slashWidget = Toolbar.SlashWidget.reset(),
                         objectTypesToolbar = Toolbar.ObjectTypes.reset(),
-                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                        simpleTableWidget = Toolbar.SimpleTableWidget.reset()
                     )
                 } else {
                     state.copy(
@@ -434,7 +450,7 @@ sealed class ControlPanelMachine {
                     !state.mainToolbar.isVisible -> state.copy(
                         mainToolbar = state.mainToolbar.copy(
                             isVisible = true,
-                            targetBlockType = when(event.style) {
+                            targetBlockType = when (event.style) {
                                 Style.TITLE -> Toolbar.Main.TargetBlockType.Title
                                 else -> Toolbar.Main.TargetBlockType.Any
                             }
@@ -446,12 +462,13 @@ sealed class ControlPanelMachine {
                         navigationToolbar = Toolbar.Navigation(
                             isVisible = false
                         ),
-                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                        simpleTableWidget = Toolbar.SimpleTableWidget.reset()
                     )
                     else -> {
                         state.copy(
                             mainToolbar = state.mainToolbar.copy(
-                                targetBlockType = when(event.style) {
+                                targetBlockType = when (event.style) {
                                     Style.TITLE -> Toolbar.Main.TargetBlockType.Title
                                     else -> Toolbar.Main.TargetBlockType.Any
                                 }
@@ -462,7 +479,8 @@ sealed class ControlPanelMachine {
                             mentionToolbar = Toolbar.MentionToolbar.reset(),
                             slashWidget = Toolbar.SlashWidget.reset(),
                             objectTypesToolbar = Toolbar.ObjectTypes.reset(),
-                            styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                            styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                            simpleTableWidget = Toolbar.SimpleTableWidget.reset()
                         )
                     }
                 }
@@ -494,6 +512,9 @@ sealed class ControlPanelMachine {
                         data = listOf()
                     )
                 )
+            }
+            is Event.SimpleTableWidget -> {
+                handleSimpleTableEvent(event, state)
             }
         }
 
@@ -722,7 +743,8 @@ sealed class ControlPanelMachine {
                     isVisible = false
                 ),
                 slashWidget = Toolbar.SlashWidget.reset(),
-                mentionToolbar = Toolbar.MentionToolbar.reset()
+                mentionToolbar = Toolbar.MentionToolbar.reset(),
+                simpleTableWidget = Toolbar.SimpleTableWidget.reset()
             )
             is Event.MultiSelect.OnExit -> state.copy(
                 multiSelect = state.multiSelect.copy(
@@ -774,7 +796,8 @@ sealed class ControlPanelMachine {
                     styleTextToolbar = Toolbar.Styling.reset(),
                     mentionToolbar = Toolbar.MentionToolbar.reset(),
                     slashWidget = Toolbar.SlashWidget.reset(),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                    simpleTableWidget = Toolbar.SimpleTableWidget.reset()
                 )
             }
             Event.ReadMode.OnExit -> state.copy()
@@ -862,6 +885,55 @@ sealed class ControlPanelMachine {
                 )
             } else {
                 state.copy()
+            }
+        }
+
+        private fun handleSimpleTableEvent(
+            event: Event.SimpleTableWidget,
+            state: ControlPanelState
+        ): ControlPanelState = when (event) {
+            is Event.SimpleTableWidget.Show -> {
+                state.copy(
+                    simpleTableWidget = state.simpleTableWidget.copy(
+                        isVisible = true,
+                        tableId = event.tableId,
+                        cells = event.cells,
+                        cellItems = event.cellItems,
+                        rowItems = event.rowItems,
+                        columnItems = event.columnItems
+                    ),
+                    cellsSelectTopWidget = state.cellsSelectTopWidget.copy(
+                        isVisible = true,
+                        count = event.cells.size
+                    ),
+                    mainToolbar = Toolbar.Main.reset(),
+                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
+                    styleExtraToolbar = Toolbar.Styling.Extra.reset(),
+                    styleTextToolbar = Toolbar.Styling.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                    navigationToolbar = Toolbar.Navigation.reset(),
+                    slashWidget = Toolbar.SlashWidget.reset(),
+                    mentionToolbar = Toolbar.MentionToolbar.reset(),
+                    multiSelect = Toolbar.MultiSelect.reset()
+                )
+            }
+            is Event.SimpleTableWidget.Hide -> {
+                state.copy(
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = true
+                    ),
+                    multiSelect = Toolbar.MultiSelect.reset(),
+                    mainToolbar = Toolbar.Main.reset(),
+                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
+                    styleExtraToolbar = Toolbar.Styling.Extra.reset(),
+                    styleTextToolbar = Toolbar.Styling.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                    simpleTableWidget = state.simpleTableWidget.copy(
+                        isVisible = false,
+                        tableId = event.tableId
+                    ),
+                    cellsSelectTopWidget = Toolbar.CellSelection.reset()
+                )
             }
         }
 

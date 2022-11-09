@@ -109,7 +109,6 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetViewState
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
@@ -481,20 +480,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
             }
-            jobs += subscribe(vm.simpleTablesViewState) { state ->
-                val behavior = BottomSheetBehavior.from(binding.simpleTableWidget)
-                when (state) {
-                    is SimpleTableWidgetViewState.Active -> {
-                        binding.simpleTableWidget.onStateChanged(state = state.state)
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                        behavior.addBottomSheetCallback(onHideBottomSheetCallback)
-                    }
-                    SimpleTableWidgetViewState.Idle -> {
-                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
-                        behavior.state = BottomSheetBehavior.STATE_HIDDEN
-                    }
-                }
-            }
         }
         vm.onStart(id = extractDocumentId())
         super.onStart()
@@ -615,6 +600,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
+        binding.cellSelectionTopToolbar
+            .doneButton
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.onCellsSelectionDoneClick() }
+            .launchIn(lifecycleScope)
+
         binding.bottomToolbar
             .homeClicks()
             .onEach { vm.onHomeButtonClicked() }
@@ -675,6 +667,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     param = color.code
                 )
             }
+        }
+
+        binding.simpleTableWidget.setListener {
+            vm.onSimpleTableWidgetItemClicked(it)
         }
 
         binding.undoRedoToolbar.undo.clicks()
@@ -754,6 +750,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.styleToolbarBackground).state =
             BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.typeHasTemplateToolbar).state =
+            BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.simpleTableWidget).state =
             BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
@@ -1556,6 +1554,46 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             } else {
                 binding.objectTypesToolbar.gone()
                 binding.objectTypesToolbar.clear()
+            }
+        }
+
+        state.simpleTableWidget.apply {
+            val behavior = BottomSheetBehavior.from(binding.simpleTableWidget)
+            if (isVisible) {
+                binding.simpleTableWidget.onStateChanged(
+                    cellItems = state.simpleTableWidget.cellItems,
+                    rowItems = state.simpleTableWidget.rowItems,
+                    columnItems = state.simpleTableWidget.columnItems
+                )
+                if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
+                    keyboardDelayJobs += lifecycleScope.launch {
+                        if (binding.recycler.itemDecorationCount == 0) {
+                            binding.recycler.addItemDecoration(styleToolbarFooter)
+                        }
+                        proceedWithHidingSoftInput()
+                        delayKeyboardHide(insets)
+                        behavior.apply {
+                            setState(BottomSheetBehavior.STATE_EXPANDED)
+                            addBottomSheetCallback(onHideBottomSheetCallback)
+                        }
+                    }
+                }
+            } else {
+                if (behavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
+                    behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+        }
+
+        state.cellsSelectTopWidget.apply {
+            if (isVisible) {
+                binding.cellSelectionTopToolbar.showWithAnimation()
+                binding.cellSelectionTopToolbar.setCellSelectionText(count)
+            } else {
+                binding.cellSelectionTopToolbar.hideWithAnimation {
+                    if (hasBinding) binding.topToolbar.visible()
+                }
             }
         }
     }

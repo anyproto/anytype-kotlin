@@ -1756,6 +1756,21 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun clearBlockContent(
+        ctx: Id,
+        blockIds: List<Id>
+    ): Payload {
+        val request = Rpc.BlockText.ListClearContent.Request(
+            contextId = ctx,
+            blockIds = blockIds
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListClearContent(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     private fun logRequest(any: Any) {
         val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)

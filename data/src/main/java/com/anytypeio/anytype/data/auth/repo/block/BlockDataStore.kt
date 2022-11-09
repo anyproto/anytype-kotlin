@@ -258,4 +258,6 @@ interface BlockDataStore {
     suspend fun objectToSet(ctx: Id, source: List<String>): Id
 
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
+
+    suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload
 }

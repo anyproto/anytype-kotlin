@@ -23,9 +23,11 @@ class SimpleTableWidgetAdapter(
         val holder = VH(
             binding = ItemSimpleTableActionBinding.inflate(inflater, parent, false)
         ).apply {
-            val pos = bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION)
-                onClick(items[pos])
+            itemView.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION)
+                    onClick(items[pos])
+            }
         }
         return holder
     }

@@ -140,10 +140,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleBackgrou
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleColorBackgroundToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleOtherToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleTextToolbarState
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetEvent
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetState
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetViewState
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
@@ -153,6 +150,9 @@ import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetItems
+import com.anytypeio.anytype.presentation.editor.selection.toggleTableMode
+import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelection
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
@@ -248,7 +248,6 @@ class EditorViewModel(
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
     private val templateDelegate: EditorTemplateDelegate,
-    private val simpleTableDelegate: SimpleTableDelegate,
     private val createNewObject: CreateNewObject,
     private val objectToSet: ConvertObjectToSet
 ) : ViewStateViewModel<ViewState>(),
@@ -259,7 +258,6 @@ class EditorViewModel(
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
     EditorTemplateDelegate by templateDelegate,
-    SimpleTableDelegate by simpleTableDelegate,
     StateReducer<List<Block>, Event> by reducer {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
@@ -279,17 +277,6 @@ class EditorViewModel(
                 )
             }
             else -> SelectTemplateViewState.Idle
-        }
-    }
-
-    val simpleTablesViewState = simpleTableDelegateState.map { state ->
-        when (state) {
-            is SimpleTableWidgetState.UpdateItems -> {
-                SimpleTableWidgetViewState.Active(
-                    state = state
-                )
-            }
-            SimpleTableWidgetState.Idle -> SimpleTableWidgetViewState.Idle
         }
     }
 
@@ -2444,7 +2431,7 @@ class EditorViewModel(
         if (view == null) {
             val cell = views.findTableCellView(target)
             if (cell != null) {
-                onShowSimpleTableWidgetClicked(target)
+                proceedWithEnterTableMode(cell)
                 viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
             }
         } else {
@@ -3842,13 +3829,13 @@ class EditorViewModel(
                                 return
                             }
                             proceedWithSelectingCell(
-                                cellId = clicked.cellId,
-                                tableId = clicked.tableId
+                                cellId = clicked.cell.getId(),
+                                tableId = clicked.cell.tableId
                             )
                             onTableRowEmptyCellClicked(
-                                cellId = clicked.cellId,
-                                rowId = clicked.rowId,
-                                tableId = clicked.tableId
+                                cellId = clicked.cell.getId(),
+                                rowId = clicked.cell.rowId,
+                                tableId = clicked.cell.tableId
                             )
                         }
                     }
@@ -3860,16 +3847,28 @@ class EditorViewModel(
                             }
                         }
                         proceedWithSelectingCell(
-                            cellId = clicked.cellId,
-                            tableId = clicked.tableId
+                            cellId = clicked.cell.getId(),
+                            tableId = clicked.cell.tableId
                         )
                         onTableRowEmptyCellClicked(
-                            cellId = clicked.cellId,
-                            rowId = clicked.rowId,
-                            tableId = clicked.tableId
+                            cellId = clicked.cell.getId(),
+                            rowId = clicked.cell.rowId,
+                            tableId = clicked.cell.tableId
                         )
                     }
-                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.tableId)
+                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.cell.tableId)
+                    is EditorMode.Table -> {
+                        val modeTableId = (mode as EditorMode.Table).tableId
+                        val cellTableId = clicked.cell.tableId
+                        if (cellTableId == modeTableId) {
+                            proceedWithClickingOnCellInTableMode(
+                                cell = clicked.cell,
+                                tableId = cellTableId
+                            )
+                        } else {
+                            Timber.e("Cell is from the different table, amend click")
+                        }
+                    }
                     else -> Unit
                 }
             }
@@ -3881,15 +3880,15 @@ class EditorViewModel(
                             return
                         }
                         proceedWithSelectingCell(
-                            cellId = clicked.cellId,
-                            tableId = clicked.tableId
+                            cellId = clicked.cell.getId(),
+                            tableId = clicked.cell.tableId
                         )
                         if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
                             dispatch(
                                 Command.OpenSetBlockTextValueScreen(
                                     ctx = context,
-                                    block = clicked.cellId,
-                                    table = clicked.tableId
+                                    block = clicked.cell.getId(),
+                                    table = clicked.cell.tableId
                                 )
                             )
                         }
@@ -3901,25 +3900,33 @@ class EditorViewModel(
                         }
                         if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
                             proceedWithSelectingCell(
-                                cellId = clicked.cellId,
-                                tableId = clicked.tableId
+                                cellId = clicked.cell.getId(),
+                                tableId = clicked.cell.tableId
                             )
                             dispatch(
                                 Command.OpenSetBlockTextValueScreen(
                                     ctx = context,
-                                    block = clicked.cellId,
-                                    table = clicked.tableId
+                                    block = clicked.cell.getId(),
+                                    table = clicked.cell.tableId
                                 )
                             )
                         }
                     }
-                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.tableId)
+                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.cell.tableId)
+                    is EditorMode.Table -> {
+                        val modeTableId = (mode as EditorMode.Table).tableId
+                        val cellTableId = clicked.cell.tableId
+                        if (cellTableId == modeTableId) {
+                            proceedWithClickingOnCellInTableMode(
+                                cell = clicked.cell,
+                                tableId = cellTableId
+                            )
+                        } else {
+                            Timber.e("Cell is from the different table, amend click")
+                        }
+                    }
                     else -> Unit
                 }
-            }
-            is ListenerType.TableEmptyCellMenu -> {}
-            is ListenerType.TableTextCellMenu -> {
-                onShowSimpleTableWidgetClicked(id = clicked.cellId)
             }
             else -> {}
         }
@@ -6111,13 +6118,121 @@ class EditorViewModel(
     //endregion
 
     //region SIMPLE TABLES
-    private fun onShowSimpleTableWidgetClicked(id: Id) {
-        viewModelScope.launch {
-            onSimpleTableEvent(SimpleTableWidgetEvent.onStart(id = id))
+    fun onCellsSelectionDoneClick() {
+        proceedWithExitingTableMode()
+    }
+
+    fun onHideSimpleTableWidget() {
+        proceedWithExitingTableMode()
+    }
+
+    fun onSimpleTableWidgetItemClicked(item: SimpleTableWidgetItem) {
+        when (item) {
+            SimpleTableWidgetItem.Cell.ClearContents -> {
+                val selected = currentSelection()
+                viewModelScope.launch {
+                    orchestrator.proxies.intents.send(
+                        Intent.Text.ClearContent(
+                            context = context,
+                            targets = selected.toList()
+                        )
+                    )
+                }
+            }
+            else -> Unit
         }
     }
 
-    fun onHideSimpleTableWidget() {}
+    /**
+     * Enter EditorMode.Table
+     */
+    private fun proceedWithEnterTableMode(cell: BlockView.Table.Cell) {
+        viewModelScope.launch {
+            mode = EditorMode.Table(tableId = cell.tableId)
+            clearSelections()
+            toggleSelection(target = cell.getId())
+
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            orchestrator.stores.views.update(
+                views.toggleTableMode(
+                    cellsMode = BlockView.Mode.READ,
+                    selectedCellsIds = currentSelection().toList()
+                )
+            )
+            renderCommand.send(Unit)
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.SimpleTableWidget.Show(
+                    cellItems = listOf(cell).getSimpleTableWidgetItems(),
+                    rowItems = emptyList(),
+                    columnItems = emptyList(),
+                    cells = listOf(cell),
+                    tableId = cell.tableId
+                )
+            )
+        }
+    }
+
+    /**
+     * Exit EditorMode.Table
+     */
+    private fun proceedWithExitingTableMode() {
+        Timber.d("proceedWithExitingTableMode, mode:[$mode]")
+        if (currentSelection().isNotEmpty()) clearSelections()
+        val currentMode = mode
+        if (currentMode is EditorMode.Table) {
+            val tableId = currentMode.tableId
+            mode = EditorMode.Edit
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.SimpleTableWidget.Hide(
+                    tableId = tableId
+                )
+            )
+            viewModelScope.launch {
+                orchestrator.stores.views.update(
+                    views.toggleTableMode(
+                        cellsMode = BlockView.Mode.EDIT,
+                        selectedCellsIds = currentSelection().toList()
+                    )
+                )
+                renderCommand.send(Unit)
+            }
+        } else {
+            Timber.w("Can't exit Mode.Table, current mode is $mode")
+        }
+    }
+
+    private fun proceedWithClickingOnCellInTableMode(
+        tableId: Id,
+        cell: BlockView.Table.Cell
+    ) {
+        toggleSelection(target = cell.getId())
+        if (currentSelection().isEmpty()) {
+            proceedWithExitingTableMode()
+        } else {
+            val tableBlock = views.find { it.id == tableId } as BlockView.Table
+            val selectedCells = tableBlock.cells.mapNotNull {
+                if (currentSelection().contains(it.getId())) it else null
+            }
+            viewModelScope.launch {
+                orchestrator.stores.views.update(
+                    views.updateTableBlockSelection(
+                        tableId = tableBlock.id,
+                        selection = currentSelection().toList()
+                    )
+                )
+                renderCommand.send(Unit)
+            }
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.SimpleTableWidget.Show(
+                    cellItems = listOf(cell).getSimpleTableWidgetItems(),
+                    rowItems = emptyList(),
+                    columnItems = emptyList(),
+                    cells = selectedCells,
+                    tableId = cell.tableId
+                )
+            )
+        }
+    }
 
     private fun proceedWithSelectingCell(cellId: Id, tableId: Id) {
 

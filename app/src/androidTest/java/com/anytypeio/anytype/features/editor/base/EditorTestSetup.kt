@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -88,7 +89,6 @@ import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificati
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -190,6 +190,7 @@ open class EditorTestSetup {
     lateinit var turnIntoStyle: TurnIntoStyle
     lateinit var setObjectType: SetObjectType
     lateinit var objectToSet: ConvertObjectToSet
+    lateinit var clearBlockContent: ClearBlockContent
 
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
@@ -243,9 +244,6 @@ open class EditorTestSetup {
     @Mock
     lateinit var fillTableRow: FillTableRow
 
-    @Mock
-    lateinit var simpleTableDelegate: SimpleTableDelegate
-
     val root: String = "rootId123"
 
     private val urlBuilder by lazy {
@@ -289,6 +287,7 @@ open class EditorTestSetup {
         getSearchObjects = SearchObjects(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepository)
+        clearBlockContent = ClearBlockContent(repo)
         downloadFile = DownloadFile(
             downloader = mock(),
             context = Dispatchers.Main
@@ -388,7 +387,8 @@ open class EditorTestSetup {
                 setObjectType = setObjectType,
                 createBookmarkBlock = createBookmarkBlock,
                 createTable = createTable,
-                fillTableRow = fillTableRow
+                fillTableRow = fillTableRow,
+                clearBlockContent = clearBlockContent
             ),
             createNewDocument = createNewDocument,
             interceptThreadStatus = interceptThreadStatus,
@@ -409,7 +409,6 @@ open class EditorTestSetup {
             setDocImageIcon = setDocImageIcon,
             editorTemplateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            simpleTablesDelegate = simpleTableDelegate,
             objectToSet = objectToSet
         )
     }

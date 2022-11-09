@@ -4,15 +4,18 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubLayoutColumns
 import com.anytypeio.anytype.core_models.StubLayoutRows
+import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTable
 import com.anytypeio.anytype.core_models.StubTableCells
 import com.anytypeio.anytype.core_models.StubTableColumns
 import com.anytypeio.anytype.core_models.StubTableRows
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -41,7 +44,10 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         val columns = StubTableColumns(size = 3)
         val rows = StubTableRows(size = 2)
-        val cells = StubTableCells(columns = listOf(), rows = listOf())
+        val cells = StubTableCells(
+            columns = listOf(columns[0], columns[1], columns[2]),
+            rows = listOf(rows[0], rows[1])
+        )
         val columnLayout = StubLayoutColumns(children = columns.map { it.id })
         val rowLayout = StubLayoutRows(children = rows.map { it.id })
         val table = StubTable(children = listOf(columnLayout.id, rowLayout.id))
@@ -62,24 +68,33 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        val cell1Id = "${rows[0].id}-${columns[1].id}"
-        val cell2Id = "${rows[1].id}-${columns[0].id}"
-
         vm.onStart(root)
 
         vm.apply {
             onClickListener(
                 ListenerType.TableEmptyCell(
-                    cellId = cell1Id,
-                    rowId = rows[0].id,
-                    tableId = table.id
+                    cell = BlockView.Table.Cell(
+                        rowId = rows[0].id,
+                        columnId = columns[1].id,
+                        rowIndex = BlockView.Table.RowIndex(0),
+                        columnIndex = BlockView.Table.ColumnIndex(1),
+                        block = null,
+                        cellIndex = 0,
+                        tableId = table.id
+                    )
                 )
             )
             onClickListener(
                 ListenerType.TableEmptyCell(
-                    cellId = cell2Id,
-                    rowId = rows[1].id,
-                    tableId = table.id
+                    cell = BlockView.Table.Cell(
+                        rowId = rows[1].id,
+                        columnId = columns[0].id,
+                        rowIndex = BlockView.Table.RowIndex(1),
+                        columnIndex = BlockView.Table.ColumnIndex(0),
+                        block = null,
+                        cellIndex = 1,
+                        tableId = table.id
+                    )
                 )
             )
         }
@@ -98,7 +113,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should amend second text cell click`() {
+    fun `should not amend second text cell click`() {
 
         val columns = StubTableColumns(size = 3)
         val rows = StubTableRows(size = 2)
@@ -121,22 +136,39 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         stubOpenDocument(document)
         val vm = buildViewModel()
 
-        val cell1Id = "${rows[0].id}-${columns[1].id}"
-        val cell2Id = "${rows[1].id}-${columns[0].id}"
-
         vm.onStart(root)
 
         vm.apply {
             onClickListener(
                 ListenerType.TableTextCell(
-                    cellId = cell1Id,
-                    tableId = table.id
+                    cell = BlockView.Table.Cell(
+                        rowId = rows[0].id,
+                        columnId = columns[1].id,
+                        rowIndex = BlockView.Table.RowIndex(0),
+                        columnIndex = BlockView.Table.ColumnIndex(1),
+                        block = BlockView.Text.Paragraph(
+                            id = cells[0].id,
+                            text = cells[0].content.asText().text
+                        ),
+                        cellIndex = 0,
+                        tableId = table.id
+                    )
                 )
             )
             onClickListener(
                 ListenerType.TableTextCell(
-                    cellId = cell2Id,
-                    tableId = table.id
+                    cell = BlockView.Table.Cell(
+                        rowId = rows[1].id,
+                        columnId = columns[0].id,
+                        rowIndex = BlockView.Table.RowIndex(1),
+                        columnIndex = BlockView.Table.ColumnIndex(0),
+                        block = BlockView.Text.Paragraph(
+                            id = cells[1].id,
+                            text = cells[1].content.asText().text
+                        ),
+                        cellIndex = 1,
+                        tableId = table.id
+                    )
                 )
             )
         }
@@ -144,7 +176,6 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val selectedState = vm.currentSelection()
         runBlocking {
             assertEquals(1, selectedState.size)
-            assertEquals(cell1Id, selectedState.first())
             verifyNoInteractions(fillTableRow)
         }
     }

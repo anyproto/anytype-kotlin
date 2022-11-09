@@ -192,6 +192,7 @@ sealed class BlockView : ViewType {
                 object H2 : Header()
                 object H3 : Header()
             }
+
             object Code : Style()
             object Card : Style()
         }
@@ -739,7 +740,8 @@ sealed class BlockView : ViewType {
         override val indent: Int = 0,
         override val decorations: List<Decoration> = emptyList(),
         val lang: String? = null
-    ) : BlockView(), Permission, Selectable, Focusable, Cursor, Indentable, TextSupport, Decoratable {
+    ) : BlockView(), Permission, Selectable, Focusable, Cursor, Indentable, TextSupport,
+        Decoratable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 
@@ -1090,7 +1092,7 @@ sealed class BlockView : ViewType {
                 override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
             }
 
-            sealed class Card: Default() {
+            sealed class Card : Default() {
 
                 abstract val isPreviousBlockMedia: Boolean
 
@@ -1138,7 +1140,7 @@ sealed class BlockView : ViewType {
                     override val decorations: List<Decoration> = emptyList(),
                     override val objectTypeName: String? = null,
                     override val isPreviousBlockMedia: Boolean,
-                    val cover : Cover?
+                    val cover: Cover?
                 ) : Card() {
                     override fun getViewType() = HOLDER_OBJECT_LINK_CARD_SMALL_ICON_COVER
                 }
@@ -1155,7 +1157,7 @@ sealed class BlockView : ViewType {
                     override val decorations: List<Decoration> = emptyList(),
                     override val objectTypeName: String? = null,
                     override val isPreviousBlockMedia: Boolean,
-                    val cover : Cover?
+                    val cover: Cover?
                 ) : Card() {
                     override fun getViewType() = HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON_COVER
                 }
@@ -1239,7 +1241,7 @@ sealed class BlockView : ViewType {
     data class FeaturedRelation(
         override val id: String,
         val relations: List<DocumentRelationView>,
-        val allowChangingObjectType : Boolean = true
+        val allowChangingObjectType: Boolean = true
     ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }
@@ -1320,7 +1322,8 @@ sealed class BlockView : ViewType {
         val background: ThemeColor = ThemeColor.DEFAULT,
         val columns: List<Column>,
         val cells: List<Cell>,
-        val rowCount: Int
+        val rowCount: Int,
+        val selectedCellsIds: List<Id>
     ) : BlockView(), Selectable {
         override fun getViewType(): Int = HOLDER_TABLE
 
@@ -1332,13 +1335,27 @@ sealed class BlockView : ViewType {
             val columnId: Id,
             val columnIndex: ColumnIndex,
             val isHeader: Boolean = false,
-            val block: Text.Paragraph?
+            val block: Text.Paragraph?,
+            val tableId: Id,
+            val cellIndex: Int
         ) {
             fun getId() = "$rowId-$columnId"
         }
 
+        data class CellSelection(
+            val cellId: String,
+            val rowIndex: RowIndex,
+            val columnIndex: ColumnIndex,
+            var left: Boolean,
+            var top: Boolean,
+            var right: Boolean,
+            var bottom: Boolean,
+            var cellIndex: Int
+        )
+
         @JvmInline
         value class RowIndex(val value: Int)
+
         @JvmInline
         value class ColumnIndex(val value: Int)
     }

@@ -594,4 +594,8 @@ class BlockMiddleware(
     ): Payload {
         return middleware.blockDataViewSetSource(ctx, block, sources)
     }
+
+    override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload {
+        return middleware.clearBlockContent(ctx, blockIds)
+    }
 }

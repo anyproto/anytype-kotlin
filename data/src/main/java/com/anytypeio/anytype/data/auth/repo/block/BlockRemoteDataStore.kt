@@ -555,4 +555,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     ): Payload {
         return remote.blockDataViewSetSource(ctx, block, sources)
     }
+
+    override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload {
+        return remote.clearBlockContent(ctx, blockIds)
+    }
 }

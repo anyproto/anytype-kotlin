@@ -348,7 +348,9 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             rowId = rowId1,
             columnId = columnId1,
             rowIndex = BlockView.Table.RowIndex(0),
-            columnIndex = BlockView.Table.ColumnIndex(0)
+            columnIndex = BlockView.Table.ColumnIndex(0),
+            cellIndex = 0,
+            tableId = tableId
         ),
         BlockView.Table.Cell(
             block = BlockView.Text.Paragraph(
@@ -358,7 +360,9 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             rowId = rowId1,
             columnId = columnId2,
             rowIndex = BlockView.Table.RowIndex(0),
-            columnIndex = BlockView.Table.ColumnIndex(1)
+            columnIndex = BlockView.Table.ColumnIndex(1),
+            cellIndex = 2,
+            tableId = tableId
         ),
         BlockView.Table.Cell(
             block = BlockView.Text.Paragraph(
@@ -368,7 +372,9 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             rowId = rowId1,
             columnId = columnId3,
             rowIndex = BlockView.Table.RowIndex(0),
-            columnIndex = BlockView.Table.ColumnIndex(2)
+            columnIndex = BlockView.Table.ColumnIndex(2),
+            cellIndex = 4,
+            tableId = tableId
         ),
         BlockView.Table.Cell(
             block = BlockView.Text.Paragraph(
@@ -378,7 +384,9 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             rowId = rowId2,
             columnId = columnId1,
             rowIndex = BlockView.Table.RowIndex(1),
-            columnIndex = BlockView.Table.ColumnIndex(0)
+            columnIndex = BlockView.Table.ColumnIndex(0),
+            cellIndex = 1,
+            tableId = tableId
         ),
         BlockView.Table.Cell(
             block = BlockView.Text.Paragraph(
@@ -388,7 +396,9 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             rowId = rowId2,
             columnId = columnId2,
             rowIndex = BlockView.Table.RowIndex(1),
-            columnIndex = BlockView.Table.ColumnIndex(1)
+            columnIndex = BlockView.Table.ColumnIndex(1),
+            cellIndex = 3,
+            tableId = tableId
         ),
         BlockView.Table.Cell(
             block = BlockView.Text.Paragraph(
@@ -398,7 +408,9 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             rowId = rowId2,
             columnId = columnId3,
             rowIndex = BlockView.Table.RowIndex(1),
-            columnIndex = BlockView.Table.ColumnIndex(2)
+            columnIndex = BlockView.Table.ColumnIndex(2),
+            cellIndex = 5,
+            tableId = tableId
         )
     )
 
@@ -413,7 +425,8 @@ fun StubTwoRowsThreeColumnsSimpleTable(
         cells = cells,
         columns = columns,
         rowCount = 2,
-        isSelected = false
+        isSelected = false,
+        selectedCellsIds = emptyList()
     )
 }
 

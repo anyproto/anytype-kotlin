@@ -60,10 +60,7 @@ class TableEditableCellsAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             clicked(
-                                ListenerType.TableTextCell(
-                                    tableId = tableBlockId,
-                                    cellId = items[pos].getId()
-                                )
+                                ListenerType.TableTextCell(cell = items[pos])
                             )
                         }
                     }
@@ -123,13 +120,8 @@ class TableEditableCellsAdapter(
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val item = items[bindingAdapterPosition]
                             clicked(
-                                ListenerType.TableEmptyCell(
-                                    cellId = item.getId(),
-                                    rowId = item.rowId,
-                                    tableId = tableBlockId
-                                )
+                                ListenerType.TableEmptyCell(cell = items[pos])
                             )
                         }
                     }

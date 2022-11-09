@@ -236,6 +236,10 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockRelationSetKey(request: Rpc.BlockRelation.SetKey.Request): Rpc.BlockRelation.SetKey.Response
 
+    @Throws(Exception::class)
+    fun blockListClearContent(request: Rpc.BlockText.ListClearContent.Request)
+            : Rpc.BlockText.ListClearContent.Response
+
     //endregion
 
     //region NAVIGATION commands

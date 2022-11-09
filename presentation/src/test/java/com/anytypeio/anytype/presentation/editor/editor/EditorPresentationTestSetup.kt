@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -75,8 +76,6 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
-import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTableDelegate
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -265,8 +264,6 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var fillTableRow: FillTableRow
 
-    lateinit var simpleTableDelegate: SimpleTableDelegate
-
     lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -276,6 +273,7 @@ open class EditorPresentationTestSetup {
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var setDocImageIcon: SetDocumentImageIcon
     private lateinit var objectToSet: ConvertObjectToSet
+    private lateinit var clearBlockContent: ClearBlockContent
 
     open lateinit var orchestrator: Orchestrator
 
@@ -293,11 +291,11 @@ open class EditorPresentationTestSetup {
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
-        simpleTableDelegate = DefaultSimpleTableDelegate()
         editorTemplateDelegate = DefaultEditorTemplateDelegate(
             getTemplates = getTemplates,
             applyTemplate = applyTemplate
         )
+        clearBlockContent = ClearBlockContent(repo)
 
         orchestrator = Orchestrator(
             createBlock = createBlock,
@@ -339,7 +337,8 @@ open class EditorPresentationTestSetup {
             updateBlocksMark = updateBlocksMark,
             setObjectType = setObjectType,
             createTable = createTable,
-            fillTableRow = fillTableRow
+            fillTableRow = fillTableRow,
+            clearBlockContent = clearBlockContent
         )
 
         return EditorViewModel(
@@ -376,7 +375,6 @@ open class EditorPresentationTestSetup {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
-            simpleTableDelegate = simpleTableDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet
         )

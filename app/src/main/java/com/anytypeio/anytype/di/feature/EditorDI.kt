@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -93,8 +94,6 @@ import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
-import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTableDelegate
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -224,7 +223,6 @@ object EditorSessionModule {
         setDocImageIcon: SetDocumentImageIcon,
         editorTemplateDelegate: EditorTemplateDelegate,
         createNewObject: CreateNewObject,
-        simpleTableDelegate: SimpleTableDelegate,
         objectToSet: ConvertObjectToSet
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
@@ -257,7 +255,6 @@ object EditorSessionModule {
         setDocImageIcon = setDocImageIcon,
         editorTemplateDelegate = editorTemplateDelegate,
         createNewObject = createNewObject,
-        simpleTablesDelegate = simpleTableDelegate,
         objectToSet = objectToSet
     )
 
@@ -284,12 +281,6 @@ object EditorSessionModule {
         getTemplates = getTemplates,
         applyTemplate = applyTemplate
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSimpleTableDelegate(
-    ): SimpleTableDelegate = DefaultSimpleTableDelegate()
 
     @JvmStatic
     @Provides
@@ -366,7 +357,8 @@ object EditorSessionModule {
         setRelationKey: SetRelationKey,
         analytics: Analytics,
         updateBlocksMark: UpdateBlocksMark,
-        middlewareShareDownloader: MiddlewareShareDownloader
+        middlewareShareDownloader: MiddlewareShareDownloader,
+        clearBlockContent: ClearBlockContent
     ): Orchestrator = Orchestrator(
         stores = storage,
         createBlock = createBlock,
@@ -408,6 +400,7 @@ object EditorSessionModule {
         setObjectType = setObjectType,
         createTable = createTable,
         fillTableRow = fillTableRow,
+        clearBlockContent = clearBlockContent
     )
 }
 
@@ -999,6 +992,13 @@ object EditorUseCaseModule {
         context = context.applicationContext,
         uriFileProvider = fileProvider
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockListClearContent(
+        repo: BlockRepository
+    ): ClearBlockContent = ClearBlockContent(repo)
 
     @Module
     interface Bindings {

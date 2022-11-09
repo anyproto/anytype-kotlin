@@ -563,6 +563,8 @@
     <string name="send_email">Send email</string>
     <string name="call_phone_number">Call phone number</string>
     <string name="bookmark_icon">Bookmark icon</string>
+    <string name="one_selected_cell">1 cell selected</string>
+    <string name="number_selected_cells">%1$d cells selected</string>
 
     <string name="error_find_block">Could\'t find the selected block</string>
     <string name="error_block_selection">Block selection error</string>

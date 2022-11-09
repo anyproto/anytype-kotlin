@@ -244,6 +244,15 @@ class BlockViewDiffUtil(
             }
         }
 
+        if (newBlock is BlockView.Table && oldBlock is BlockView.Table) {
+            if (newBlock.cells != oldBlock.cells) {
+                changes.add(TABLE_CELLS_CHANGED)
+            }
+            if (newBlock.selectedCellsIds != oldBlock.selectedCellsIds) {
+                changes.add(TABLE_CELLS_SELECTION_CHANGED)
+            }
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -335,5 +344,8 @@ class BlockViewDiffUtil(
 
         const val DECORATION_CHANGED = 27
         const val CALLOUT_ICON_CHANGED = 28
+
+        const val TABLE_CELLS_SELECTION_CHANGED = 340
+        const val TABLE_CELLS_CHANGED = 341
     }
 }

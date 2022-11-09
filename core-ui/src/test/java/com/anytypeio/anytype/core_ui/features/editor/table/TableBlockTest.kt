@@ -60,6 +60,7 @@ class TableBlockTest {
         val row1Block1 =
             StubParagraph(id = "$rowId1-$columnId2", text = "a1")
         val row1Block2 = StubParagraph(id = "$rowId1-$columnId3", text = oldText)
+        val tableId = MockDataFactory.randomUuid()
 
         val cells = listOf(
             BlockView.Table.Cell(
@@ -67,7 +68,9 @@ class TableBlockTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                block = null
+                block = null,
+                cellIndex = 0,
+                tableId = tableId
             ),
             BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
@@ -78,6 +81,8 @@ class TableBlockTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(1),
+                cellIndex = 2,
+                tableId = tableId
             ),
             BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
@@ -88,13 +93,17 @@ class TableBlockTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
+                cellIndex = 4,
+                tableId = tableId
             ),
             BlockView.Table.Cell(
                 rowId = rowId1,
                 columnId = columnId4,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(3),
-                block = null
+                block = null,
+                cellIndex = 6,
+                tableId = tableId
             )
         )
 
@@ -104,7 +113,9 @@ class TableBlockTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                block = null
+                block = null,
+                cellIndex = 0,
+                tableId = tableId
             ),
             BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
@@ -114,7 +125,9 @@ class TableBlockTest {
                 rowId = rowId1,
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
-                columnIndex = BlockView.Table.ColumnIndex(1)
+                columnIndex = BlockView.Table.ColumnIndex(1),
+                cellIndex = 2,
+                tableId = tableId
             ),
             BlockView.Table.Cell(
                 block = BlockView.Text.Paragraph(
@@ -124,14 +137,18 @@ class TableBlockTest {
                 rowId = rowId1,
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
-                columnIndex = BlockView.Table.ColumnIndex(2)
+                columnIndex = BlockView.Table.ColumnIndex(2),
+                cellIndex = 4,
+                tableId = tableId
             ),
             BlockView.Table.Cell(
                 rowId = rowId1,
                 columnId = columnId4,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(3),
-                block = null
+                block = null,
+                cellIndex = 6,
+                tableId = tableId
             )
         )
 
@@ -148,14 +165,14 @@ class TableBlockTest {
             }
             val recycler = givenRecycler(it)
 
-            val tableId = MockDataFactory.randomUuid()
             val views = listOf<BlockView>(
                 BlockView.Table(
                     id = tableId,
                     cells = cells,
                     columns = columns,
                     rowCount = 1,
-                    isSelected = false
+                    isSelected = false,
+                    selectedCellsIds = emptyList()
                 )
             )
             val adapter = givenAdapter(views)
@@ -186,7 +203,8 @@ class TableBlockTest {
                     cells = cellsNew,
                     columns = columns,
                     rowCount = 1,
-                    isSelected = false
+                    isSelected = false,
+                    selectedCellsIds = emptyList()
                 )
             )
 

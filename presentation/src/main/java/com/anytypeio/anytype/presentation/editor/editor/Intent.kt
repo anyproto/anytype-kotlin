@@ -169,6 +169,11 @@ sealed class Intent {
             val targets: List<Id>,
             val mark: Block.Content.Text.Mark
         ) : Text()
+
+        class ClearContent(
+            val context: Id,
+            val targets: List<Id>
+        ): Text()
     }
 
     sealed class Media : Intent() {

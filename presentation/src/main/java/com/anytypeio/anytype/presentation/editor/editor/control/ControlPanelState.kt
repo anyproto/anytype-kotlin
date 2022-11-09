@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.presentation.editor.editor.control
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -26,7 +29,9 @@ data class ControlPanelState(
     val mentionToolbar: Toolbar.MentionToolbar = Toolbar.MentionToolbar.reset(),
     val slashWidget: Toolbar.SlashWidget = Toolbar.SlashWidget.reset(),
     val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar.reset(),
-    val objectTypesToolbar: Toolbar.ObjectTypes = Toolbar.ObjectTypes.reset()
+    val objectTypesToolbar: Toolbar.ObjectTypes = Toolbar.ObjectTypes.reset(),
+    val simpleTableWidget: Toolbar.SimpleTableWidget = Toolbar.SimpleTableWidget.reset(),
+    val cellsSelectTopWidget: Toolbar.CellSelection = Toolbar.CellSelection.reset()
 ) {
 
     sealed class Toolbar {
@@ -251,6 +256,38 @@ data class ControlPanelState(
                 )
             }
         }
+
+        data class SimpleTableWidget(
+            override val isVisible: Boolean,
+            val tableId: Id,
+            val cells: List<BlockView.Table.Cell>,
+            val cellItems: List<SimpleTableWidgetItem> = emptyList(),
+            val rowItems: List<SimpleTableWidgetItem> = emptyList(),
+            val columnItems: List<SimpleTableWidgetItem> = emptyList()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): SimpleTableWidget = SimpleTableWidget(
+                    isVisible = false,
+                    tableId = "",
+                    cells = emptyList(),
+                    cellItems = emptyList(),
+                    rowItems = emptyList(),
+                    columnItems = emptyList()
+                )
+            }
+        }
+
+        data class CellSelection(
+            override val isVisible: Boolean,
+            val count: Int
+        ) : Toolbar() {
+            companion object {
+                fun reset(): CellSelection = CellSelection(
+                    isVisible = false,
+                    count = 0
+                )
+            }
+        }
     }
 
     /**
@@ -300,7 +337,9 @@ data class ControlPanelState(
                 isVisible = false
             ),
             slashWidget = Toolbar.SlashWidget.reset(),
-            objectTypesToolbar = Toolbar.ObjectTypes.reset()
+            objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+            simpleTableWidget = Toolbar.SimpleTableWidget.reset(),
+            cellsSelectTopWidget = Toolbar.CellSelection.reset()
         )
     }
 }

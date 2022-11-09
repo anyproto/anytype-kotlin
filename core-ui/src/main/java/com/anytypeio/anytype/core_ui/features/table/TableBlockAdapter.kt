@@ -52,18 +52,11 @@ class TableBlockAdapter(
         val block = item.block
         if (block == null) {
             clickListener(
-                ListenerType.TableEmptyCell(
-                    cellId = item.getId(),
-                    rowId = item.rowId,
-                    tableId = tableBlockId
-                )
+                ListenerType.TableEmptyCell(cell = item)
             )
         } else {
             clickListener(
-                ListenerType.TableTextCell(
-                    tableId = tableBlockId,
-                    cellId = block.id
-                )
+                ListenerType.TableTextCell(cell = item)
             )
         }
     }

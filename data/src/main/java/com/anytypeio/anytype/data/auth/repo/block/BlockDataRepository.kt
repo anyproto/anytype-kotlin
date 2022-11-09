@@ -632,6 +632,10 @@ class BlockDataRepository(
         return remote.objectToSet(ctx, source)
     }
 
+    override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload {
+        return remote.clearBlockContent(ctx, blockIds)
+    }
+
     override suspend fun blockDataViewSetSource(
         ctx: Id,
         block: Id,

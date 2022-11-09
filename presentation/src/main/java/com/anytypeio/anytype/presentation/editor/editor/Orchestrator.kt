@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.block.UpdateDivider
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -88,7 +89,8 @@ class Orchestrator(
     val stores: Editor.Storage,
     val proxies: Editor.Proxer,
     val textInteractor: Interactor.TextInteractor,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val clearBlockContent: ClearBlockContent
 ) {
 
     private val defaultOnError: suspend (Throwable) -> Unit = { Timber.e(it) }
@@ -621,6 +623,17 @@ class Orchestrator(
                         params = FillTableRow.Params(
                             ctx = intent.ctx,
                             targetIds = intent.targetIds
+                        )
+                    ).process(
+                        failure = defaultOnError,
+                        success = { payload -> proxies.payloads.send(payload) }
+                    )
+                }
+                is Intent.Text.ClearContent -> {
+                    clearBlockContent(
+                        params = ClearBlockContent.Params(
+                            ctx = intent.context,
+                            blockIds = intent.targets
                         )
                     ).process(
                         failure = defaultOnError,

@@ -58,6 +58,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectTopToolbarWidget
+            android:id="@+id/cellSelectionTopToolbar"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@color/defaultCanvasColor"
+            android:translationY="-48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
             android:id="@+id/toolbar"
             android:layout_width="0dp"

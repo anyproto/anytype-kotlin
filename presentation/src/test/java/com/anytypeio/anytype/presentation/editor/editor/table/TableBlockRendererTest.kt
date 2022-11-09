@@ -43,7 +43,8 @@ class TableBlockRendererTest {
     class BlockViewRenderWrapper(
         private val blocks: Map<Id, List<Block>>,
         private val renderer: BlockViewRenderer,
-        private val restrictions: List<ObjectRestriction> = emptyList()
+        private val restrictions: List<ObjectRestriction> = emptyList(),
+        private val selections: Set<Id> = emptySet()
     ) : BlockViewRenderer by renderer {
         suspend fun render(
             root: Block,
@@ -59,7 +60,7 @@ class TableBlockRendererTest {
             details = details,
             relations = emptyList(),
             restrictions = restrictions,
-            selection = emptySet(),
+            selection = selections,
             objectTypes = listOf()
         )
     }
@@ -199,7 +200,9 @@ class TableBlockRendererTest {
                         rowId = row.id,
                         columnId = column.id,
                         rowIndex = BlockView.Table.RowIndex(rowIndex),
-                        columnIndex = BlockView.Table.ColumnIndex(columnIndex)
+                        columnIndex = BlockView.Table.ColumnIndex(columnIndex),
+                        cellIndex = columnIndex*rows.size + rowIndex,
+                        tableId = table.id
                     )
                 )
             }
@@ -243,7 +246,8 @@ class TableBlockRendererTest {
                 cells = cells,
                 columns = columnViews,
                 rowCount = rowsSize,
-                isSelected = false
+                isSelected = false,
+                selectedCellsIds = emptyList()
             )
         ) + blocksDown.mapIndexed { idx, block ->
             BlockView.Text.Numbered(
@@ -351,7 +355,9 @@ class TableBlockRendererTest {
                         columnId = column.id,
                         rowIndex = BlockView.Table.RowIndex(rowIndex),
                         columnIndex = BlockView.Table.ColumnIndex(columnIndex),
-                        block = null
+                        block = null,
+                        cellIndex = columnIndex*rows.size + rowIndex,
+                        tableId = table.id
                     )
                 )
             }
@@ -395,7 +401,8 @@ class TableBlockRendererTest {
                 cells = cells,
                 columns = columnViews,
                 rowCount = rowsSize,
-                isSelected = false
+                isSelected = false,
+                selectedCellsIds = emptyList()
             )
         ) + blocksDown.mapIndexed { idx, block ->
             BlockView.Text.Numbered(
@@ -499,7 +506,8 @@ class TableBlockRendererTest {
 
         wrapper = BlockViewRenderWrapper(
             blocks = map,
-            renderer = renderer
+            renderer = renderer,
+            selections = setOf("$rowId2-$columnId1")
         )
 
         val result = runBlocking {
@@ -519,7 +527,9 @@ class TableBlockRendererTest {
                     columnId = columnId1,
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(0),
-                    block = null
+                    block = null,
+                    cellIndex = 0,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId2,
@@ -529,14 +539,18 @@ class TableBlockRendererTest {
                         text = row2Block1.content.asText().text
                     ),
                     rowIndex = BlockView.Table.RowIndex(1),
-                    columnIndex = BlockView.Table.ColumnIndex(0)
+                    columnIndex = BlockView.Table.ColumnIndex(0),
+                    cellIndex = 1,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId3,
                     columnId = columnId1,
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(0),
-                    block = null
+                    block = null,
+                    cellIndex = 2,
+                    tableId = table.id
                 ), //column1
                 BlockView.Table.Cell(
                     rowId = rowId1,
@@ -546,7 +560,9 @@ class TableBlockRendererTest {
                         text = row1Block1.content.asText().text
                     ),
                     rowIndex = BlockView.Table.RowIndex(0),
-                    columnIndex = BlockView.Table.ColumnIndex(1)
+                    columnIndex = BlockView.Table.ColumnIndex(1),
+                    cellIndex = 3,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId2,
@@ -556,35 +572,45 @@ class TableBlockRendererTest {
                         text = row2Block2.content.asText().text
                     ),
                     rowIndex = BlockView.Table.RowIndex(1),
-                    columnIndex = BlockView.Table.ColumnIndex(1)
+                    columnIndex = BlockView.Table.ColumnIndex(1),
+                    cellIndex = 4,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId3,
                     columnId = columnId2,
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(1),
-                    block = null
+                    block = null,
+                    cellIndex = 5,
+                    tableId = table.id
                 ),//column2
                 BlockView.Table.Cell(
                     rowId = rowId1,
                     columnId = columnId3,
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(2),
-                    block = null
+                    block = null,
+                    cellIndex = 6,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId2,
                     columnId = columnId3,
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(2),
-                    block = null
+                    block = null,
+                    cellIndex = 7,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId3,
                     columnId = columnId3,
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(2),
-                    block = null
+                    block = null,
+                    cellIndex = 8,
+                    tableId = table.id
                 ),//column3
                 BlockView.Table.Cell(
                     rowId = rowId1,
@@ -594,7 +620,9 @@ class TableBlockRendererTest {
                         text = row1Block2.content.asText().text
                     ),
                     rowIndex = BlockView.Table.RowIndex(0),
-                    columnIndex = BlockView.Table.ColumnIndex(3)
+                    columnIndex = BlockView.Table.ColumnIndex(3),
+                    cellIndex = 9,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId2,
@@ -604,15 +632,19 @@ class TableBlockRendererTest {
                         text = row2Block3.content.asText().text
                     ),
                     rowIndex = BlockView.Table.RowIndex(1),
-                    columnIndex = BlockView.Table.ColumnIndex(3)
+                    columnIndex = BlockView.Table.ColumnIndex(3),
+                    cellIndex = 10,
+                    tableId = table.id
                 ),
                 BlockView.Table.Cell(
                     rowId = rowId3,
                     columnId = columnId4,
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(3),
-                    block = null
-                ),
+                    block = null,
+                    cellIndex = 11,
+                    tableId = table.id
+                )
             )
 
         val columnViews = mutableListOf<BlockView.Table.Column>()
@@ -653,7 +685,8 @@ class TableBlockRendererTest {
                 cells = cells,
                 columns = columnViews,
                 rowCount = rowsSize,
-                isSelected = false
+                isSelected = false,
+                selectedCellsIds = listOf("$rowId2-$columnId1")
             )
         ) + blocksDown.mapIndexed { idx, block ->
             BlockView.Text.Numbered(

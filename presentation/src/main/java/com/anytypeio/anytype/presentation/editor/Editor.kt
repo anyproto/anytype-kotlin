@@ -75,6 +75,11 @@ interface Editor {
              */
             data class Multi(val targets: Set<Id>) : Styling()
         }
+
+        /**
+         * Editor in simple table menu mode.
+         */
+        data class Table(val tableId: Id) : Mode()
     }
 
     class Storage {

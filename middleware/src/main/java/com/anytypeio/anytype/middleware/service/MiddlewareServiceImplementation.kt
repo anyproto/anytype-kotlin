@@ -438,6 +438,19 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun blockListClearContent(request: Rpc.BlockText.ListClearContent.Request): Rpc.BlockText.ListClearContent.Response {
+        val encoded = Service.blockTextListClearContent(
+            Rpc.BlockText.ListClearContent.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockText.ListClearContent.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockText.ListClearContent.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockSplit(request: Rpc.Block.Split.Request): Rpc.Block.Split.Response {
         val encoded = Service.blockSplit(Rpc.Block.Split.Request.ADAPTER.encode(request))
         val response = Rpc.Block.Split.Response.ADAPTER.decode(encoded)

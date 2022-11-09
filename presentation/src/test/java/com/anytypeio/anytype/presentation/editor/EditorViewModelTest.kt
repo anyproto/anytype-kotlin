@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -101,8 +102,6 @@ import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMa
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTableDelegate
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
@@ -327,8 +326,6 @@ open class EditorViewModelTest {
 
     private lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
-    private lateinit var simpleTableDelegate: SimpleTableDelegate
-
     @Mock
     lateinit var createNewObject: CreateNewObject
 
@@ -344,6 +341,7 @@ open class EditorViewModelTest {
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var setDocImageIcon: SetDocumentImageIcon
     private lateinit var objectToSet: ConvertObjectToSet
+    private lateinit var clearBlockContent: ClearBlockContent
 
     val root = MockDataFactory.randomUuid()
 
@@ -377,7 +375,6 @@ open class EditorViewModelTest {
             getTemplates = getTemplates,
             applyTemplate = applyTemplate
         )
-        simpleTableDelegate = DefaultSimpleTableDelegate()
     }
 
     @Test
@@ -3942,6 +3939,7 @@ open class EditorViewModelTest {
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
+        clearBlockContent = ClearBlockContent(repo)
 
         vm = EditorViewModel(
             openPage = openPage,
@@ -4000,7 +3998,8 @@ open class EditorViewModelTest {
                 updateBlocksMark = updateBlocksMark,
                 setObjectType = setObjectType,
                 createTable = createTable,
-                fillTableRow = fillTableRow
+                fillTableRow = fillTableRow,
+                clearBlockContent = clearBlockContent
             ),
             analytics = analytics,
             dispatcher = Dispatcher.Default(),
@@ -4018,7 +4017,6 @@ open class EditorViewModelTest {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
-            simpleTableDelegate = simpleTableDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet
         )

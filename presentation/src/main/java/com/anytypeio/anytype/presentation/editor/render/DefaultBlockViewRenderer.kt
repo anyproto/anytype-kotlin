@@ -1994,7 +1994,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     selection = selection,
                     rows = rows,
                     columns = columns,
-                    blocks = blocks
+                    blocks = blocks,
+                    tableId = block.id
                 )
             }
         }
@@ -2008,11 +2009,13 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            background = block.parseThemeBackgroundColor()
+            background = block.parseThemeBackgroundColor(),
+            selectedCellsIds = selection.toList()
         )
     }
 
     private fun tableCells(
+        tableId: Id,
         blocks: Map<String, List<Block>>,
         rows: List<Block>,
         columns: List<BlockView.Table.Column>,
@@ -2051,6 +2054,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 } else {
                    null
                 }
+                val cellIndex = columnIndex*rows.size + rowIndex
                 cells.add(
                     BlockView.Table.Cell(
                         rowId = row.id,
@@ -2058,7 +2062,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                         columnId = column.id,
                         columnIndex = BlockView.Table.ColumnIndex(columnIndex),
                         isHeader = isHeader,
-                        block = paragraph
+                        tableId = tableId,
+                        block = paragraph,
+                        cellIndex = cellIndex
                     )
                 )
             }

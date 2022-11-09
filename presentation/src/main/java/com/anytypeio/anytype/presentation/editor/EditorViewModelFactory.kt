@@ -33,7 +33,6 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
-import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -69,7 +68,6 @@ open class EditorViewModelFactory(
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
     private val editorTemplateDelegate: EditorTemplateDelegate,
-    private val simpleTablesDelegate: SimpleTableDelegate,
     private val createNewObject: CreateNewObject,
     private val objectToSet: ConvertObjectToSet
 ) : ViewModelProvider.Factory {
@@ -107,7 +105,6 @@ open class EditorViewModelFactory(
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            simpleTableDelegate = simpleTablesDelegate,
             objectToSet = objectToSet
         ) as T
     }

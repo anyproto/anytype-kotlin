@@ -259,4 +259,62 @@ interface BlockRemote {
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
     suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload
+
+    suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>) : Payload
+
+    suspend fun fillTableColumn(ctx: Id, blockIds: List<Id>): Payload
+
+    suspend fun createTableRow(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun setTableRowHeader(
+        ctx: Id,
+        targetId: Id,
+        isHeader: Boolean
+    ): Payload
+
+    suspend fun createTableColumn(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun deleteTableColumn(
+        ctx: Id,
+        targetId: Id
+    ): Payload
+
+    suspend fun deleteTableRow(
+        ctx: Id,
+        targetId: Id
+    ): Payload
+
+    suspend fun duplicateTableColumn(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun duplicateTableRow(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun sortTable(
+        ctx: Id,
+        columnId: String, type: Block.Content.DataView.Sort.Type
+    ): Payload
+
+    suspend fun expandTable(
+        ctx: Id,
+        targetId: Id,
+        columns: Int,
+        rows: Int
+    ): Payload
 }

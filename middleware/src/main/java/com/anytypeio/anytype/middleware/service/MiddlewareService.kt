@@ -240,6 +240,10 @@ interface MiddlewareService {
     fun blockListClearContent(request: Rpc.BlockText.ListClearContent.Request)
             : Rpc.BlockText.ListClearContent.Response
 
+    @Throws(Exception::class)
+    fun blockListClearStyle(request: Rpc.BlockText.ListClearStyle.Request)
+            : Rpc.BlockText.ListClearStyle.Response
+
     //endregion
 
     //region NAVIGATION commands
@@ -322,6 +326,36 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockTableRowListFill(request: Rpc.BlockTable.RowListFill.Request): Rpc.BlockTable.RowListFill.Response
+
+    @Throws(Exception::class)
+    fun blockTableColumnListFill(request: Rpc.BlockTable.ColumnListFill.Request): Rpc.BlockTable.ColumnListFill.Response
+
+    @Throws(Exception::class)
+    fun blockTableRowCreate(request: Rpc.BlockTable.RowCreate.Request): Rpc.BlockTable.RowCreate.Response
+
+    @Throws(Exception::class)
+    fun blockTableRowSetHeader(request: Rpc.BlockTable.RowSetHeader.Request): Rpc.BlockTable.RowSetHeader.Response
+
+    @Throws(Exception::class)
+    fun blockTableColumnCreate(request: Rpc.BlockTable.ColumnCreate.Request): Rpc.BlockTable.ColumnCreate.Response
+
+    @Throws(Exception::class)
+    fun blockTableColumnDelete(request: Rpc.BlockTable.ColumnDelete.Request): Rpc.BlockTable.ColumnDelete.Response
+
+    @Throws(Exception::class)
+    fun blockTableRowDelete(request: Rpc.BlockTable.RowDelete.Request): Rpc.BlockTable.RowDelete.Response
+
+    @Throws(Exception::class)
+    fun blockTableColumnDuplicate(request: Rpc.BlockTable.ColumnDuplicate.Request): Rpc.BlockTable.ColumnDuplicate.Response
+
+    @Throws(Exception::class)
+    fun blockTableRowDuplicate(request: Rpc.BlockTable.RowDuplicate.Request): Rpc.BlockTable.RowDuplicate.Response
+
+    @Throws(Exception::class)
+    fun blockTableSort(request: Rpc.BlockTable.Sort.Request): Rpc.BlockTable.Sort.Response
+
+    @Throws(Exception::class)
+    fun blockTableExpand(request: Rpc.BlockTable.Expand.Request): Rpc.BlockTable.Expand.Response
 
     //endregion
 

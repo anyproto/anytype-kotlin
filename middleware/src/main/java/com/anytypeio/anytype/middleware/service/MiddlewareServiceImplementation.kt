@@ -1128,4 +1128,147 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun blockListClearStyle(request: Rpc.BlockText.ListClearStyle.Request): Rpc.BlockText.ListClearStyle.Response {
+        val encoded = Service.blockTextListClearStyle(
+            Rpc.BlockText.ListClearStyle.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockText.ListClearStyle.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockText.ListClearStyle.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableColumnListFill(request: Rpc.BlockTable.ColumnListFill.Request): Rpc.BlockTable.ColumnListFill.Response {
+        val encoded = Service.blockTableColumnListFill(
+            Rpc.BlockTable.ColumnListFill.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.ColumnListFill.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.ColumnListFill.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableRowCreate(request: Rpc.BlockTable.RowCreate.Request): Rpc.BlockTable.RowCreate.Response {
+        val encoded = Service.blockTableRowCreate(
+            Rpc.BlockTable.RowCreate.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.RowCreate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.RowCreate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableRowSetHeader(request: Rpc.BlockTable.RowSetHeader.Request): Rpc.BlockTable.RowSetHeader.Response {
+        val encoded = Service.blockTableRowSetHeader(
+            Rpc.BlockTable.RowSetHeader.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.RowSetHeader.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.RowSetHeader.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableColumnCreate(request: Rpc.BlockTable.ColumnCreate.Request): Rpc.BlockTable.ColumnCreate.Response {
+        val encoded = Service.blockTableColumnCreate(
+            Rpc.BlockTable.ColumnCreate.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.ColumnCreate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.ColumnCreate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableColumnDelete(request: Rpc.BlockTable.ColumnDelete.Request): Rpc.BlockTable.ColumnDelete.Response {
+        val encoded = Service.blockTableColumnDelete(
+            Rpc.BlockTable.ColumnDelete.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.ColumnDelete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.ColumnDelete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableRowDelete(request: Rpc.BlockTable.RowDelete.Request): Rpc.BlockTable.RowDelete.Response {
+        val encoded = Service.blockTableRowDelete(
+            Rpc.BlockTable.RowDelete.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.RowDelete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.RowDelete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableColumnDuplicate(request: Rpc.BlockTable.ColumnDuplicate.Request): Rpc.BlockTable.ColumnDuplicate.Response {
+        val encoded = Service.blockTableColumnDuplicate(
+            Rpc.BlockTable.ColumnDuplicate.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.ColumnDuplicate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.ColumnDuplicate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableRowDuplicate(request: Rpc.BlockTable.RowDuplicate.Request): Rpc.BlockTable.RowDuplicate.Response {
+        val encoded = Service.blockTableRowDuplicate(
+            Rpc.BlockTable.RowDuplicate.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.RowDuplicate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.RowDuplicate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableSort(request: Rpc.BlockTable.Sort.Request): Rpc.BlockTable.Sort.Response {
+        val encoded = Service.blockTableSort(
+            Rpc.BlockTable.Sort.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.Sort.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.Sort.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableExpand(request: Rpc.BlockTable.Expand.Request): Rpc.BlockTable.Expand.Response {
+        val encoded = Service.blockTableExpand(
+            Rpc.BlockTable.Expand.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.Expand.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.Expand.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

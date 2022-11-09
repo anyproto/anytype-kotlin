@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.block
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
@@ -596,6 +597,127 @@ class BlockMiddleware(
     }
 
     override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload {
-        return middleware.clearBlockContent(ctx, blockIds)
+        return middleware.clearBlockContent(
+            ctx = ctx,
+            blockIds = blockIds
+        )
+    }
+
+    override suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>): Payload {
+        return middleware.clearBlockStyle(
+            ctx = ctx,
+            blockIds = blockIds
+        )
+    }
+
+    override suspend fun fillTableColumn(ctx: Id, blockIds: List<Id>): Payload {
+        return middleware.fillTableColumn(
+            ctx = ctx,
+            blockIds = blockIds
+        )
+    }
+
+    override suspend fun createTableRow(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload {
+        return middleware.createTableRow(
+            ctx = ctx,
+            targetId = targetId,
+            position = position.toMiddlewareModel()
+        )
+    }
+
+    override suspend fun setTableRowHeader(
+        ctx: Id,
+        targetId: Id,
+        isHeader: Boolean
+    ): Payload {
+        return middleware.setTableRowHeader(
+            ctx = ctx,
+            targetId = targetId,
+            isHeader = isHeader
+        )
+    }
+
+    override suspend fun createTableColumn(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload {
+        return middleware.createTableColumn(
+            ctx = ctx,
+            targetId = targetId,
+            position = position.toMiddlewareModel()
+        )
+    }
+
+    override suspend fun deleteTableColumn(ctx: Id, targetId: Id): Payload {
+        return middleware.deleteTableColumn(
+            ctx = ctx,
+            targetId = targetId
+        )
+    }
+
+    override suspend fun deleteTableRow(ctx: Id, targetId: Id): Payload {
+        return middleware.deleteTableRow(
+            ctx = ctx,
+            targetId = targetId
+        )
+    }
+
+    override suspend fun duplicateTableColumn(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload {
+        return middleware.duplicateTableColumn(
+            ctx = ctx,
+            targetId = targetId,
+            blockId = blockId,
+            position = position.toMiddlewareModel()
+        )
+    }
+
+    override suspend fun duplicateTableRow(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload {
+        return middleware.duplicateTableRow(
+            ctx = ctx,
+            targetId = targetId,
+            blockId = blockId,
+            position = position.toMiddlewareModel()
+        )
+    }
+
+    override suspend fun sortTable(
+        ctx: Id,
+        columnId: String,
+        type: Block.Content.DataView.Sort.Type
+    ): Payload {
+        return middleware.sortTable(
+            ctx = ctx,
+            columnId = columnId,
+            type = type.toMiddlewareModel()
+        )
+    }
+
+    override suspend fun expandTable(
+        ctx: Id,
+        targetId: Id,
+        columns: Int,
+        rows: Int
+    ): Payload {
+        return middleware.expandTable(
+            ctx = ctx,
+            targetId = targetId,
+            columns = columns,
+            rows = rows
+        )
     }
 }

@@ -1771,6 +1771,191 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun clearBlockStyle(
+        ctx: Id,
+        blockIds: List<Id>
+    ): Payload {
+        val request = Rpc.BlockText.ListClearStyle.Request(
+            contextId = ctx,
+            blockIds = blockIds
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListClearStyle(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun fillTableColumn(
+        ctx: Id,
+        blockIds: List<Id>
+    ): Payload {
+        val request = Rpc.BlockTable.ColumnListFill.Request(
+            contextId = ctx,
+            blockIds = blockIds
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableColumnListFill(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun createTableRow(
+        ctx: Id,
+        targetId: Id,
+        position: Block.Position
+    ): Payload {
+        val request = Rpc.BlockTable.RowCreate.Request(
+            contextId = ctx,
+            targetId = targetId,
+            position = position
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableRowCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun setTableRowHeader(
+        ctx: Id,
+        targetId: Id,
+        isHeader: Boolean
+    ): Payload {
+        val request = Rpc.BlockTable.RowSetHeader.Request(
+            contextId = ctx,
+            targetId = targetId,
+            isHeader = isHeader
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableRowSetHeader(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun createTableColumn(
+        ctx: Id,
+        targetId: Id,
+        position: Block.Position
+    ): Payload {
+        val request = Rpc.BlockTable.ColumnCreate.Request(
+            contextId = ctx,
+            targetId = targetId,
+            position = position
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableColumnCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun deleteTableColumn(
+        ctx: Id,
+        targetId: Id
+    ): Payload {
+        val request = Rpc.BlockTable.ColumnDelete.Request(
+            contextId = ctx,
+            targetId = targetId
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableColumnDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun deleteTableRow(
+        ctx: Id,
+        targetId: Id
+    ): Payload {
+        val request = Rpc.BlockTable.RowDelete.Request(
+            contextId = ctx,
+            targetId = targetId
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableRowDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun duplicateTableColumn(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Block.Position
+    ): Payload {
+        val request = Rpc.BlockTable.ColumnDuplicate.Request(
+            contextId = ctx,
+            targetId = targetId,
+            blockId = blockId,
+            position = position
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableColumnDuplicate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun duplicateTableRow(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Block.Position
+    ): Payload {
+        val request = Rpc.BlockTable.RowDuplicate.Request(
+            contextId = ctx,
+            targetId = targetId,
+            blockId = blockId,
+            position = position
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableRowDuplicate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun sortTable(
+        ctx: Id,
+        columnId: String,
+        type: Block.Content.Dataview.Sort.Type
+    ): Payload {
+        val request = Rpc.BlockTable.Sort.Request(
+            contextId = ctx,
+            columnId = columnId,
+            type = type
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableSort(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun expandTable(
+        ctx: Id,
+        targetId: Id,
+        columns: Int,
+        rows: Int
+    ): Payload {
+        val request = Rpc.BlockTable.Expand.Request(
+            contextId = ctx,
+            targetId = targetId,
+            columns = columns,
+            rows = rows
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableExpand(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     private fun logRequest(any: Any) {
         val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)

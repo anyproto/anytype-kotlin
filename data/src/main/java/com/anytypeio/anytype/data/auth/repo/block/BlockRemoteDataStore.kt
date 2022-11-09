@@ -559,4 +559,122 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload {
         return remote.clearBlockContent(ctx, blockIds)
     }
+
+    override suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>): Payload {
+        return remote.clearBlockStyle(
+            ctx = ctx,
+            blockIds = blockIds
+        )
+    }
+
+    override suspend fun fillTableColumn(ctx: Id, blockIds: List<Id>): Payload {
+        return remote.fillTableColumn(
+            ctx = ctx,
+            blockIds = blockIds
+        )
+    }
+
+    override suspend fun createTableRow(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload {
+        return remote.createTableRow(
+            ctx = ctx,
+            targetId = targetId,
+            position = position
+        )
+    }
+
+    override suspend fun setTableRowHeader(
+        ctx: Id,
+        targetId: Id,
+        isHeader: Boolean
+    ): Payload {
+        return remote.setTableRowHeader(
+            ctx = ctx,
+            targetId = targetId,
+            isHeader = isHeader
+        )
+    }
+
+    override suspend fun createTableColumn(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload {
+        return remote.createTableColumn(
+            ctx = ctx,
+            targetId = targetId,
+            position = position
+        )
+    }
+
+    override suspend fun deleteTableColumn(ctx: Id, targetId: Id): Payload {
+        return remote.deleteTableColumn(
+            ctx = ctx,
+            targetId = targetId
+        )
+    }
+
+    override suspend fun deleteTableRow(ctx: Id, targetId: Id): Payload {
+        return remote.deleteTableRow(
+            ctx = ctx,
+            targetId = targetId
+        )
+    }
+
+    override suspend fun duplicateTableColumn(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload {
+        return remote.duplicateTableColumn(
+            ctx = ctx,
+            targetId = targetId,
+            blockId = blockId,
+            position = position
+        )
+    }
+
+    override suspend fun duplicateTableRow(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload {
+        return remote.duplicateTableRow(
+            ctx = ctx,
+            targetId = targetId,
+            blockId = blockId,
+            position = position
+        )
+    }
+
+    override suspend fun sortTable(
+        ctx: Id,
+        columnId: String,
+        type: Block.Content.DataView.Sort.Type
+    ): Payload {
+        return remote.sortTable(
+            ctx = ctx,
+            columnId = columnId,
+            type = type
+        )
+    }
+
+    override suspend fun expandTable(
+        ctx: Id,
+        targetId: Id,
+        columns: Int,
+        rows: Int
+    ): Payload {
+        return remote.expandTable(
+            ctx = ctx,
+            targetId = targetId,
+            columns = columns,
+            rows = rows
+        )
+    }
 }

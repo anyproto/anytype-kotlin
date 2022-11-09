@@ -52,10 +52,11 @@ interface BlockDataStore {
         type: String?,
         template: Id?
     ): Id
+
     suspend fun openPage(id: String): Payload
     suspend fun openObjectSet(id: String): Payload
     suspend fun openProfile(id: String): Payload
-    suspend fun openObjectPreview(id: Id) : Payload
+    suspend fun openObjectPreview(id: Id): Payload
     suspend fun closePage(id: String)
     suspend fun closeDashboard(id: String)
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
@@ -67,7 +68,7 @@ interface BlockDataStore {
     suspend fun removeDocumentIcon(ctx: Id): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
-    suspend fun createBookmarkObject(url: Url) : Id
+    suspend fun createBookmarkObject(url: Url): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
     suspend fun redo(command: Command.Redo): Payload
@@ -198,14 +199,14 @@ interface BlockDataStore {
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
-    suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
+    suspend fun addRelationToObject(ctx: Id, relation: Id): Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload
     suspend fun addNewRelationToObject(
         ctx: Id,
         name: String,
         format: RelationFormat,
         limitObjectTypes: List<Id>
-    ) : Pair<Id, Payload>
+    ): Pair<Id, Payload>
 
     suspend fun debugSync(): String
     suspend fun debugLocalStore(path: String): String
@@ -231,13 +232,13 @@ interface BlockDataStore {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean) : Payload
+    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
+    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean): Payload
 
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
     suspend fun deleteObjects(targets: List<Id>)
 
-    suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload
+    suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload
 
     suspend fun clearFileCache()
 
@@ -259,5 +260,64 @@ interface BlockDataStore {
 
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
-    suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload
+    suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload
+
+    suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>): Payload
+
+    suspend fun fillTableColumn(ctx: Id, blockIds: List<Id>): Payload
+
+    suspend fun createTableRow(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun setTableRowHeader(
+        ctx: Id,
+        targetId: Id,
+        isHeader: Boolean
+    ): Payload
+
+    suspend fun createTableColumn(
+        ctx: Id,
+        targetId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun deleteTableColumn(
+        ctx: Id,
+        targetId: Id
+    ): Payload
+
+    suspend fun deleteTableRow(
+        ctx: Id,
+        targetId: Id
+    ): Payload
+
+    suspend fun duplicateTableColumn(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun duplicateTableRow(
+        ctx: Id,
+        targetId: Id,
+        blockId: Id,
+        position: Position
+    ): Payload
+
+    suspend fun sortTable(
+        ctx: Id,
+        columnId: Id,
+        type: Block.Content.DataView.Sort.Type
+    ): Payload
+
+    suspend fun expandTable(
+        ctx: Id,
+        targetId: Id,
+        columns: Int,
+        rows: Int
+    ): Payload
 }

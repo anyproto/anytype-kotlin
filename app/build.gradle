@@ -13,6 +13,12 @@ apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
 def useReleaseKeystore = rootProject.file("scripts/release/app-release.jks").exists()
 
+def localProperties = new Properties()
+localProperties.with {
+    def lp = "local.properties"
+    if (new File(lp).exists()) it.load(new FileInputStream(lp))
+}
+
 android {
     def config = rootProject.ext
 
@@ -27,6 +33,11 @@ android {
         versionName getBuildVersionName()
         testInstrumentationRunner config.test_runner
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
+        buildConfigField "boolean", "LOG_FROM_MW_LIBRARY", localProperties.getProperty("LOG_FROM_MW_LIBRARY", "false")
+        buildConfigField "boolean", "LOG_MW_INTERACTION", localProperties.getProperty("LOG_MW_INTERACTION", "false")
+        buildConfigField "boolean", "LOG_DASHBOARD_REDUCER", localProperties.getProperty("LOG_DASHBOARD_REDUCER", "false")
+        buildConfigField "boolean", "LOG_EDITOR_VIEWMODEL_EVENTS", localProperties.getProperty("LOG_EDITOR_VIEWMODEL_EVENTS", "false")
+        buildConfigField "boolean", "LOG_EDITOR_CONTROL_PANEL", localProperties.getProperty("LOG_EDITOR_CONTROL_PANEL", "false")
     }
 
     packagingOptions {
@@ -69,9 +80,9 @@ android {
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
             //signingConfig signingConfigs.debug
             firebaseAppDistribution {
-                artifactType="AAB"
-                groups="anytype-q&a, product-review, nightly"
-                serviceCredentialsFile="$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
+                artifactType = "AAB"
+                groups = "anytype-q&a, product-review, nightly"
+                serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
         }
     }

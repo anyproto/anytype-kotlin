@@ -17,6 +17,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -42,7 +43,7 @@ class MiddlewareTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        middleware = Middleware(service, factory)
+        middleware = Middleware(service, factory, mock())
     }
 
     @Test

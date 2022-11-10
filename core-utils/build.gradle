@@ -39,6 +39,7 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.dagger
+    implementation applicationDependencies.gson
 
     implementation applicationDependencies.timber
     implementation applicationDependencies.crashlytics

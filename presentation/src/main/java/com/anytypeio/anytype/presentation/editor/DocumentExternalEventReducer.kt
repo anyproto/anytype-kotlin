@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.ext.replace
+import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.presentation.common.StateReducer
 import timber.log.Timber
 
@@ -142,7 +143,9 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
             target = { block -> block.id == event.id }
         )
 
-        else -> state.also { Timber.d("Ignoring event: $event") }
+        else -> state.also {
+            Timber.d("Ignoring event: ${event::class.java.canonicalName}:\n${event.toPrettyString()}")
+        }
     }
 }
 

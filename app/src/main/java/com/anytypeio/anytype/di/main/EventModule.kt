@@ -14,11 +14,12 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.*
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [EventModule.Bindings::class])
 object EventModule {
 
     @JvmStatic
@@ -91,13 +92,6 @@ object EventModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideEventProxy(): EventProxy {
-        return EventHandler()
-    }
-
-    @JvmStatic
-    @Provides
-    @Singleton
     fun provideSubscriptionEventChannel(
         channel: SubscriptionDataChannel
     ): SubscriptionEventChannel = channel
@@ -115,4 +109,12 @@ object EventModule {
     fun provideSubscriptionEventRemoteChannel(
         proxy: EventProxy
     ): SubscriptionEventRemoteChannel = MiddlewareSubscriptionEventChannel(events = proxy)
+
+    @Module
+    interface Bindings {
+
+        @Binds
+        @Singleton
+        fun bindEventProxy(handler: EventHandler): EventProxy
+    }
 }

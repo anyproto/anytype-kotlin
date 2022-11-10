@@ -27,6 +27,7 @@ dependencies {
     implementation project(':core-models')
     implementation project(':protocol')
     implementation project(':data')
+    implementation project(':core-utils')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def anytypeDependencies = rootProject.ext.anytype
@@ -35,6 +36,9 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.timber
     implementation applicationDependencies.coroutinesAndroid
+    implementation applicationDependencies.gsonWire
+    implementation applicationDependencies.gson
+    implementation applicationDependencies.javaxInject
     implementation anytypeDependencies.middleware
 
     testImplementation project(":test:utils")

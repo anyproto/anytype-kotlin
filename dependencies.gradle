@@ -35,7 +35,8 @@ ext {
     javaxInject_version = '1'
     retrofit_version = '2.3.0'
     okhttp_logging_interceptor_version = '3.8.1'
-    gson_version = '2.8.6'
+    gson_version = '2.10'
+    gson_wire_version = '4.4.3'
     better_link_method_version = '2.2.0'
     table_view_version = '0.8.9.4'
     pickt_version = "2.0.2"
@@ -118,6 +119,7 @@ ext {
             javaxAnnotation:            "javax.annotation:jsr250-api:$javaxAnnotations_version",
             javaxInject:                "javax.inject:javax.inject:$javaxInject_version",
             gson:                       "com.google.code.gson:gson:$gson_version",
+            gsonWire:                   "com.squareup.wire:wire-gson-support:$gson_wire_version",
             retrofit:                   "com.squareup.retrofit2:converter-gson:$retrofit_version",
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
             timber:                     "com.jakewharton.timber:timber:$timber_version",
@@ -177,6 +179,7 @@ ext {
 
     protobuf = [
             protobufJava:       "com.google.protobuf:protobuf-java:$protobuf_java_version",
+            protobufJavaUtil:   "com.google.protobuf:protobuf-java-util:$protobuf_java_version",
             protoc:             "com.google.protobuf:protoc:$protoc_version",
             wireRuntime:        "com.squareup.wire:wire-runtime:$wire_version"
     ]

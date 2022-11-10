@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
@@ -41,6 +42,7 @@ import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Reducer
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveObjects
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRestoreFromBin
@@ -84,7 +86,8 @@ class HomeDashboardViewModel(
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
-    private val createNewObject: CreateNewObject
+    private val createNewObject: CreateNewObject,
+    featureToggles: FeatureToggles
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -93,7 +96,7 @@ class HomeDashboardViewModel(
 
     val toasts = MutableSharedFlow<String>()
 
-    private val machine = Interactor(scope = viewModelScope)
+    private val machine = Interactor(scope = viewModelScope, reducer = Reducer(featureToggles))
 
     private val movementChannel = Channel<Movement>()
     private val movementChanges = movementChannel.consumeAsFlow()

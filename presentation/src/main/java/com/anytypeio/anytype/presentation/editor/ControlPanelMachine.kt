@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Text.Style
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.TextBlock
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
@@ -42,10 +44,10 @@ sealed class ControlPanelMachine {
      * @property scope coroutine scope (state machine runs inside this scope)
      */
     class Interactor(
-        private val scope: CoroutineScope
+        private val scope: CoroutineScope,
+        private val reducer: Reducer
     ) : ControlPanelMachine() {
 
-        private val reducer: Reducer = Reducer()
         val channel: Channel<Event> = Channel()
         private val events: Flow<Event> = channel.consumeAsFlow()
 
@@ -232,7 +234,8 @@ sealed class ControlPanelMachine {
     /**
      * Concrete reducer implementation that holds all the logic related to control panels.
      */
-    class Reducer : StateReducer<ControlPanelState, Event> {
+    class Reducer(private val featureToggles: FeatureToggles) :
+        StateReducer<ControlPanelState, Event> {
 
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
             get() = { state, event ->
@@ -938,19 +941,21 @@ sealed class ControlPanelMachine {
         }
 
         private fun logState(text: String, state: ControlPanelState) {
-            Timber.i(
-                "REDUCER, $text STATE:${
-                    state
-                }"
-            )
+            if (featureToggles.isLogEditorControlPanelMachine) {
+                Timber.i(
+                    "REDUCER, $text STATE:${state.toPrettyString()}"
+                )
+            }
         }
 
         private fun logEvent(event: Event) {
-            Timber.i(
-                "REDUCER, EVENT:${
-                    event::class.qualifiedName?.substringAfter("Event.")
-                }"
-            )
+            if (featureToggles.isLogEditorControlPanelMachine) {
+                Timber.i(
+                    "REDUCER, EVENT:${
+                        event::class.qualifiedName?.substringAfter("Event.")
+                    }"
+                )
+            }
         }
     }
 }

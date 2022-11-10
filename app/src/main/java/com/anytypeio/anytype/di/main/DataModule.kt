@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.app.DefaultAppActionManager
+import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.data.auth.config.DefaultFeaturesConfigProvider
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore
@@ -40,18 +43,21 @@ import com.anytypeio.anytype.middleware.auth.AuthMiddleware
 import com.anytypeio.anytype.middleware.block.BlockMiddleware
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
+import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
+import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [DataModule.Bindings::class])
 object DataModule {
 
     @JvmStatic
@@ -219,18 +225,14 @@ object DataModule {
     @Singleton
     fun provideMiddleware(
         service: MiddlewareService,
-        factory: MiddlewareFactory
-    ): Middleware = Middleware(service, factory)
+        factory: MiddlewareFactory,
+        logger: MiddlewareProtobufLogger
+    ): Middleware = Middleware(service, factory, logger)
 
     @JvmStatic
     @Provides
     @Singleton
     fun provideMiddlewareFactory(): MiddlewareFactory = MiddlewareFactory()
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideMiddlewareService(): MiddlewareService = MiddlewareServiceImplementation()
 
     @JvmStatic
     @Provides
@@ -282,15 +284,17 @@ object DataModule {
     ): UnsplashRepository = UnsplashDataRepository(
         remote = remote
     )
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideUnsplashRemote(
-        service: MiddlewareService
-    ): UnsplashRemote = UnsplashMiddleware(
-        service = service
-    )
-
     //endregion
+
+    @Module
+    interface Bindings {
+
+        @Binds
+        @Singleton
+        fun bindUnsplashRemote(middleware: UnsplashMiddleware): UnsplashRemote
+
+        @Binds
+        @Singleton
+        fun bindMiddlewareService(middleware: MiddlewareServiceImplementation): MiddlewareService
+    }
 }

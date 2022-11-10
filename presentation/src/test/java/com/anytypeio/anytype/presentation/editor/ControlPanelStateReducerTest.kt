@@ -16,6 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
 
 
@@ -28,7 +29,7 @@ class ControlPanelStateReducerTest {
     lateinit var gateway: Gateway
     lateinit var urlBuilder: UrlBuilder
 
-    private val reducer = ControlPanelMachine.Reducer()
+    private val reducer = ControlPanelMachine.Reducer(mock())
 
     val paragraph = Block(
         id = MockDataFactory.randomUuid(),

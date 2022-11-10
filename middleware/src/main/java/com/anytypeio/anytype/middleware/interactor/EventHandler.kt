@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import service.Service.setEventHandlerMobile
 import timber.log.Timber
 import java.io.IOException
+import javax.inject.Inject
 
-class EventHandler(
-    private val scope: CoroutineScope = GlobalScope
+class EventHandler @Inject constructor(
+    private val logger: MiddlewareProtobufLogger
 ) : EventProxy {
 
+    private val scope: CoroutineScope = GlobalScope
     private val channel = MutableSharedFlow<Event>(0, 1)
 
     init {
@@ -38,10 +40,7 @@ class EventHandler(
     }
 
     private fun logEvent(event: Event) {
-        if (BuildConfig.DEBUG) {
-            val message = "[" + "\n" + event::class.java.name + ":" + "\n" + event.toString() + "\n" + "]"
-            Timber.d(message)
-        }
+        logger.logEvent(event)
     }
 
     override fun flow(): Flow<Event> = channel

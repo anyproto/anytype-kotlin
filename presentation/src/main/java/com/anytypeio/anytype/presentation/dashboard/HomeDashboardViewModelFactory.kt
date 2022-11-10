@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -36,7 +37,8 @@ class HomeDashboardViewModelFactory(
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
-    private val createNewObject: CreateNewObject
+    private val createNewObject: CreateNewObject,
+    private val featureToggles: FeatureToggles
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -58,7 +60,8 @@ class HomeDashboardViewModelFactory(
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            featureToggles = featureToggles
         ) as T
     }
 }

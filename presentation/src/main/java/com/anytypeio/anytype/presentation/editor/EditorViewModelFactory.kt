@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -69,7 +70,8 @@ open class EditorViewModelFactory(
     private val setDocImageIcon: SetDocumentImageIcon,
     private val editorTemplateDelegate: EditorTemplateDelegate,
     private val createNewObject: CreateNewObject,
-    private val objectToSet: ConvertObjectToSet
+    private val objectToSet: ConvertObjectToSet,
+    private val featureToggles: FeatureToggles
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -105,7 +107,8 @@ open class EditorViewModelFactory(
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            objectToSet = objectToSet
+            objectToSet = objectToSet,
+            featureToggles = featureToggles
         ) as T
     }
 }

@@ -51,6 +51,7 @@ import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -152,7 +153,8 @@ class HomeDashboardViewModelTest {
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            featureToggles = mock()
         )
     }
 

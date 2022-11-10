@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -76,7 +77,8 @@ object HomeDashboardModule {
         objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
         objectStore: ObjectStore,
-        createNewObject: CreateNewObject
+        createNewObject: CreateNewObject,
+        featureToggles: FeatureToggles
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -94,7 +96,8 @@ object HomeDashboardModule {
         objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
         objectStore = objectStore,
-        createNewObject = createNewObject
+        createNewObject = createNewObject,
+        featureToggles = featureToggles
     )
 
     @JvmStatic

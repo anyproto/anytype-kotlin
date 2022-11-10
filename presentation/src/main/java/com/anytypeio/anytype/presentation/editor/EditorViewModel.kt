@@ -88,6 +88,8 @@ import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.SideEffect
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
@@ -249,7 +251,8 @@ class EditorViewModel(
     private val setDocImageIcon: SetDocumentImageIcon,
     private val templateDelegate: EditorTemplateDelegate,
     private val createNewObject: CreateNewObject,
-    private val objectToSet: ConvertObjectToSet
+    private val objectToSet: ConvertObjectToSet,
+    private val featureToggles: FeatureToggles
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -295,7 +298,10 @@ class EditorViewModel(
 
     val footers = MutableStateFlow<EditorFooter>(EditorFooter.None)
 
-    private val controlPanelInteractor = Interactor(viewModelScope)
+    private val controlPanelInteractor = Interactor(
+        viewModelScope,
+        reducer = ControlPanelMachine.Reducer(featureToggles)
+    )
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
 
     /**
@@ -496,9 +502,9 @@ class EditorViewModel(
     }
 
     private suspend fun processEvents(events: List<Event>): List<Flag> {
-        if (BuildConfig.DEBUG) {
-            Timber.d("Blocks before handling events: $blocks")
-            Timber.d("Events: $events")
+        if (featureToggles.isLogEditorViewModelEvents) {
+            Timber.d("Blocks before handling events: ${blocks.toPrettyString()}")
+            Timber.d("Events: ${events.toPrettyString()}")
         }
         events.forEach { event ->
             when (event) {
@@ -522,8 +528,8 @@ class EditorViewModel(
             }
             orchestrator.stores.document.update(reduce(blocks, event))
         }
-        if (BuildConfig.DEBUG) {
-            Timber.d("Blocks after handling events: $blocks")
+        if (featureToggles.isLogEditorViewModelEvents) {
+            Timber.d("Blocks after handling events: ${blocks.toPrettyString()}")
         }
         return events.flags(context)
     }

@@ -3,12 +3,22 @@ package com.anytypeio.anytype.middleware.service
 import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import service.Service
+import javax.inject.Inject
 
-class MiddlewareServiceImplementation : MiddlewareService {
+class MiddlewareServiceImplementation @Inject constructor(
+    featureToggles: FeatureToggles
+) : MiddlewareService {
+
+    init {
+        if (!featureToggles.isLogFromMiddlewareLibrary) {
+            Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
+        }
+    }
 
     override fun accountCreate(request: Rpc.Account.Create.Request): Rpc.Account.Create.Response {
         val encoded = Service.accountCreate(Rpc.Account.Create.Request.ADAPTER.encode(request))
@@ -655,7 +665,8 @@ class MiddlewareServiceImplementation : MiddlewareService {
     }
 
     override fun objectCreateBookmark(request: Rpc.Object.CreateBookmark.Request): Rpc.Object.CreateBookmark.Response {
-        val encoded = Service.objectCreateBookmark(Rpc.Object.CreateBookmark.Request.ADAPTER.encode(request))
+        val encoded =
+            Service.objectCreateBookmark(Rpc.Object.CreateBookmark.Request.ADAPTER.encode(request))
         val response = Rpc.Object.CreateBookmark.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.CreateBookmark.Response.Error.Code.NULL) {
@@ -666,7 +677,8 @@ class MiddlewareServiceImplementation : MiddlewareService {
     }
 
     override fun objectBookmarkFetch(request: Rpc.Object.BookmarkFetch.Request): Rpc.Object.BookmarkFetch.Response {
-        val encoded = Service.objectBookmarkFetch(Rpc.Object.BookmarkFetch.Request.ADAPTER.encode(request))
+        val encoded =
+            Service.objectBookmarkFetch(Rpc.Object.BookmarkFetch.Request.ADAPTER.encode(request))
         val response = Rpc.Object.BookmarkFetch.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.BookmarkFetch.Response.Error.Code.NULL) {
@@ -1119,7 +1131,11 @@ class MiddlewareServiceImplementation : MiddlewareService {
 
     override fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response {
         val encoded =
-            Service.blockDataviewSetSource(Rpc.BlockDataview.SetSource.Request.ADAPTER.encode(request))
+            Service.blockDataviewSetSource(
+                Rpc.BlockDataview.SetSource.Request.ADAPTER.encode(
+                    request
+                )
+            )
         val response = Rpc.BlockDataview.SetSource.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.BlockDataview.SetSource.Response.Error.Code.NULL) {

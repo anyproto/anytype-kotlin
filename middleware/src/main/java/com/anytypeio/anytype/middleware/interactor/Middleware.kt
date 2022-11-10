@@ -39,11 +39,11 @@ import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
-import timber.log.Timber
 
 class Middleware(
     private val service: MiddlewareService,
-    private val factory: MiddlewareFactory
+    private val factory: MiddlewareFactory,
+    private val logger: MiddlewareProtobufLogger,
 ) {
 
     @Throws(Exception::class)
@@ -1957,12 +1957,10 @@ class Middleware(
     }
 
     private fun logRequest(any: Any) {
-        val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
-        Timber.d(message)
+        logger.logRequest(any)
     }
 
     private fun logResponse(any: Any) {
-        val message = "<=== " + any::class.java.canonicalName + ":" + "\n" + any.toString()
-        Timber.d(message)
+        logger.logResponse(any)
     }
 }

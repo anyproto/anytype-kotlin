@@ -137,6 +137,7 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -4018,7 +4019,8 @@ open class EditorViewModelTest {
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            objectToSet = objectToSet
+            objectToSet = objectToSet,
+            featureToggles = mock()
         )
     }
 

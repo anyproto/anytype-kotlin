@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
@@ -223,7 +224,8 @@ object EditorSessionModule {
         setDocImageIcon: SetDocumentImageIcon,
         editorTemplateDelegate: EditorTemplateDelegate,
         createNewObject: CreateNewObject,
-        objectToSet: ConvertObjectToSet
+        objectToSet: ConvertObjectToSet,
+        featureToggles: FeatureToggles
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -255,7 +257,8 @@ object EditorSessionModule {
         setDocImageIcon = setDocImageIcon,
         editorTemplateDelegate = editorTemplateDelegate,
         createNewObject = createNewObject,
-        objectToSet = objectToSet
+        objectToSet = objectToSet,
+        featureToggles = featureToggles
     )
 
     @JvmStatic

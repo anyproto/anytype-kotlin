@@ -79,7 +79,7 @@ interface Editor {
         /**
          * Editor in simple table menu mode.
          */
-        data class Table(val tableId: Id) : Mode()
+        data class Table(val tableId: Id, var targets: Set<Id>) : Mode()
     }
 
     class Storage {

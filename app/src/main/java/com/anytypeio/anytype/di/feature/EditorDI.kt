@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -361,7 +362,8 @@ object EditorSessionModule {
         analytics: Analytics,
         updateBlocksMark: UpdateBlocksMark,
         middlewareShareDownloader: MiddlewareShareDownloader,
-        clearBlockContent: ClearBlockContent
+        clearBlockContent: ClearBlockContent,
+        clearBlockStyle: ClearBlockStyle
     ): Orchestrator = Orchestrator(
         stores = storage,
         createBlock = createBlock,
@@ -403,7 +405,8 @@ object EditorSessionModule {
         setObjectType = setObjectType,
         createTable = createTable,
         fillTableRow = fillTableRow,
-        clearBlockContent = clearBlockContent
+        clearBlockContent = clearBlockContent,
+        clearBlockStyle = clearBlockStyle
     )
 }
 
@@ -1002,6 +1005,13 @@ object EditorUseCaseModule {
     fun provideBlockListClearContent(
         repo: BlockRepository
     ): ClearBlockContent = ClearBlockContent(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockListClearStyle(
+        repo: BlockRepository
+    ): ClearBlockStyle = ClearBlockStyle(repo)
 
     @Module
     interface Bindings {

@@ -1,73 +1,89 @@
 package com.anytypeio.anytype.core_ui.features.table
 
 import androidx.recyclerview.widget.DiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 
-object TableCellsDiffUtil : DiffUtil.ItemCallback<BlockView.Table.Cell>() {
+class TableCellsDiffUtil(
+    private val old: List<BlockView.Table.Cell>,
+    private val new: List<BlockView.Table.Cell>
+) : DiffUtil.Callback() {
 
-    override fun areItemsTheSame(
-        oldItem: BlockView.Table.Cell,
-        newItem: BlockView.Table.Cell
-    ): Boolean {
-        return oldItem.getId() == newItem.getId()
+    override fun getOldListSize() = old.size
+    override fun getNewListSize() = new.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val newItem = new[newItemPosition]
+        val oldItem = old[oldItemPosition]
+        return newItem.rowId == oldItem.rowId && newItem.columnId == oldItem.columnId
     }
 
-    override fun areContentsTheSame(
-        oldItem: BlockView.Table.Cell,
-        newItem: BlockView.Table.Cell
-    ): Boolean {
-        return oldItem.block == newItem.block
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return old[oldItemPosition].block == new[newItemPosition].block
     }
 
-    override fun getChangePayload(
-        oldItem: BlockView.Table.Cell,
-        newItem: BlockView.Table.Cell
-    ): Any? {
+    override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+
+        val oldBlock = old[oldItemPosition].block
+        val newBlock = new[newItemPosition].block
+
         val changes = mutableListOf<Int>()
 
-        val oldBlock = oldItem.block
-        val newBlock = newItem.block
-
-        if (newBlock?.text != oldBlock?.text) {
-            changes.add(TEXT_CHANGED)
-        }
-        if (newBlock?.color != oldBlock?.color) {
-            changes.add(TEXT_COLOR_CHANGED)
-        }
-        if (newBlock?.background != oldBlock?.background) {
-            changes.add(BACKGROUND_COLOR_CHANGED)
-        }
-        if (newBlock?.marks != oldBlock?.marks) {
-            changes.add(MARKUP_CHANGED)
-        }
-        if (newBlock?.alignment != oldBlock?.alignment) {
-            changes.add(ALIGN_CHANGED)
+        if (oldBlock == null && newBlock == null) {
+            return super.getChangePayload(oldItemPosition, newItemPosition)
         }
 
-        return if (changes.isEmpty()) {
-            super.getChangePayload(oldItem, newItem)
-        } else {
-            Payload(changes)
+        if (oldBlock == null && newBlock != null) {
+            changes.add(BlockViewDiffUtil.TEXT_CHANGED)
+            changes.add(BlockViewDiffUtil.TEXT_COLOR_CHANGED)
+            changes.add(BlockViewDiffUtil.BACKGROUND_COLOR_CHANGED)
+            changes.add(BlockViewDiffUtil.MARKUP_CHANGED)
+            changes.add(BlockViewDiffUtil.FOCUS_CHANGED)
+            changes.add(BlockViewDiffUtil.CURSOR_CHANGED)
+            changes.add(BlockViewDiffUtil.ALIGNMENT_CHANGED)
+            return BlockViewDiffUtil.Payload(changes)
         }
+
+        if (newBlock is BlockView.TextSupport && oldBlock is BlockView.TextSupport) {
+            if (newBlock.text != oldBlock.text)
+                changes.add(BlockViewDiffUtil.TEXT_CHANGED)
+            if (newBlock.color != oldBlock.color)
+                changes.add(BlockViewDiffUtil.TEXT_COLOR_CHANGED)
+            if (newBlock.background != oldBlock.background) {
+                changes.add(BlockViewDiffUtil.BACKGROUND_COLOR_CHANGED)
+            }
+        }
+
+        if (newBlock is Markup && oldBlock is Markup) {
+            if (newBlock.marks != oldBlock.marks)
+                changes.add(BlockViewDiffUtil.MARKUP_CHANGED)
+        }
+
+        if (newBlock is Focusable && oldBlock is Focusable) {
+            if (newBlock.isFocused != oldBlock.isFocused)
+                changes.add(BlockViewDiffUtil.FOCUS_CHANGED)
+        }
+
+        if (newBlock is BlockView.Cursor && oldBlock is BlockView.Cursor) {
+            if (newBlock.cursor != oldBlock.cursor)
+                changes.add(BlockViewDiffUtil.CURSOR_CHANGED)
+        }
+
+        if (newBlock is BlockView.Permission && oldBlock is BlockView.Permission) {
+            if (newBlock.mode != oldBlock.mode)
+                changes.add(BlockViewDiffUtil.READ_WRITE_MODE_CHANGED)
+        }
+
+        if (newBlock is BlockView.Alignable && oldBlock is BlockView.Alignable) {
+            if (newBlock.alignment != oldBlock.alignment)
+                changes.add(BlockViewDiffUtil.ALIGNMENT_CHANGED)
+        }
+
+        return if (changes.isNotEmpty())
+            BlockViewDiffUtil.Payload(changes)
+        else
+            super.getChangePayload(oldItemPosition, newItemPosition)
     }
-
-    data class Payload(
-        val changes: List<Int>
-    ) {
-        val isBordersChanged: Boolean = changes.contains(SETTING_BORDER_CHANGED)
-        val isWidthChanged: Boolean = changes.contains(SETTING_WIDTH_CHANGED)
-        val isTextChanged = changes.contains(TEXT_CHANGED)
-        val isBackgroundChanged = changes.contains(BACKGROUND_COLOR_CHANGED)
-        val isTextColorChanged = changes.contains(TEXT_COLOR_CHANGED)
-        val isMarkupChanged = changes.contains(MARKUP_CHANGED)
-        val isAlignChanged = changes.contains(ALIGN_CHANGED)
-    }
-
-    const val TEXT_CHANGED = 1
-    const val TEXT_COLOR_CHANGED = 2
-    const val BACKGROUND_COLOR_CHANGED = 3
-    const val MARKUP_CHANGED = 4
-    const val ALIGN_CHANGED = 5
-    const val SETTING_WIDTH_CHANGED = 6
-    const val SETTING_BORDER_CHANGED = 7
 }

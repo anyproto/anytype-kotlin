@@ -603,7 +603,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .doneButton
             .clicks()
             .throttleFirst()
-            .onEach { vm.onCellsSelectionDoneClick() }
+            .onEach { vm.onCellSelectionTopToolbarDoneButtonClick() }
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar

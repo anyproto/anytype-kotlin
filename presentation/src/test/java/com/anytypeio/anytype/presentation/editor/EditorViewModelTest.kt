@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -343,6 +344,7 @@ open class EditorViewModelTest {
     private lateinit var setDocImageIcon: SetDocumentImageIcon
     private lateinit var objectToSet: ConvertObjectToSet
     private lateinit var clearBlockContent: ClearBlockContent
+    private lateinit var clearBlockStyle: ClearBlockStyle
 
     val root = MockDataFactory.randomUuid()
 
@@ -3941,6 +3943,7 @@ open class EditorViewModelTest {
         setDocImageIcon = SetDocumentImageIcon(repo)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         clearBlockContent = ClearBlockContent(repo)
+        clearBlockStyle = ClearBlockStyle(repo)
 
         vm = EditorViewModel(
             openPage = openPage,
@@ -4000,7 +4003,8 @@ open class EditorViewModelTest {
                 setObjectType = setObjectType,
                 createTable = createTable,
                 fillTableRow = fillTableRow,
-                clearBlockContent = clearBlockContent
+                clearBlockContent = clearBlockContent,
+                clearBlockStyle = clearBlockStyle
             ),
             analytics = analytics,
             dispatcher = Dispatcher.Default(),

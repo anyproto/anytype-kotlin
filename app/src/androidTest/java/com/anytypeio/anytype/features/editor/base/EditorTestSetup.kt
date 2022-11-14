@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -191,6 +192,7 @@ open class EditorTestSetup {
     lateinit var setObjectType: SetObjectType
     lateinit var objectToSet: ConvertObjectToSet
     lateinit var clearBlockContent: ClearBlockContent
+    lateinit var clearBlockStyle: ClearBlockStyle
 
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
@@ -288,6 +290,7 @@ open class EditorTestSetup {
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepository)
         clearBlockContent = ClearBlockContent(repo)
+        clearBlockStyle = ClearBlockStyle(repo)
         downloadFile = DownloadFile(
             downloader = mock(),
             context = Dispatchers.Main
@@ -388,7 +391,8 @@ open class EditorTestSetup {
                 createBookmarkBlock = createBookmarkBlock,
                 createTable = createTable,
                 fillTableRow = fillTableRow,
-                clearBlockContent = clearBlockContent
+                clearBlockContent = clearBlockContent,
+                clearBlockStyle = clearBlockStyle
             ),
             createNewDocument = createNewDocument,
             interceptThreadStatus = interceptThreadStatus,

@@ -255,9 +255,6 @@ class BlockAdapter(
             is Video -> {
                 holder.recycle()
             }
-            is TableBlockHolder -> {
-                holder.recycle()
-            }
         }
     }
 
@@ -743,7 +740,7 @@ class BlockAdapter(
                 ItemBlockUnsupportedBinding.inflate(inflater, parent, false)
             )
             HOLDER_TABLE -> TableBlockHolder(
-                ItemBlockTableBinding.inflate(inflater, parent, false),
+                binding = ItemBlockTableBinding.inflate(inflater, parent, false),
                 clickListener = onClickListener,
                 onTextBlockTextChanged = onTextBlockTextChanged,
                 onMentionEvent = onMentionEvent,

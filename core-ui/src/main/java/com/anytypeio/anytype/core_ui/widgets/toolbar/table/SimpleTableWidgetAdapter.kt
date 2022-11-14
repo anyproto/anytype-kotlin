@@ -50,23 +50,23 @@ class SimpleTableWidgetAdapter(
                 SimpleTableWidgetItem.Row.ClearContents,
                 SimpleTableWidgetItem.Column.ClearContents -> {
                     title.setText(R.string.simple_tables_widget_item_clear_contents)
-                    icon.setImageResource(R.drawable.ic_slash_actions_clean_style)
+                    icon.setImageResource(R.drawable.ic_clear_32)
                 }
                 SimpleTableWidgetItem.Cell.ClearStyle -> {
                     title.setText(R.string.simple_tables_widget_item_clear_style)
-                    icon.setImageResource(R.drawable.ic_slash_actions_clean_style)
+                    icon.setImageResource(R.drawable.ic_reset_32)
                 }
                 SimpleTableWidgetItem.Cell.Color,
                 SimpleTableWidgetItem.Column.Color,
                 SimpleTableWidgetItem.Row.Color -> {
-                    title.setText(R.string.simple_tables_widget_item_clear_color)
-                    icon.setImageResource(R.drawable.ic_style_toolbar_color)
+                    title.setText(R.string.simple_tables_widget_item_color)
+                    icon.setImageResource(R.drawable.ic_color_32)
                 }
                 SimpleTableWidgetItem.Cell.Style,
                 SimpleTableWidgetItem.Row.Style,
                 SimpleTableWidgetItem.Column.Style -> {
-                    title.setText(R.string.simple_tables_widget_item_clear_style)
-                    icon.setImageResource(R.drawable.ic_block_toolbar_block_style)
+                    title.setText(R.string.simple_tables_widget_item_style)
+                    icon.setImageResource(R.drawable.ic_style_32)
                 }
                 SimpleTableWidgetItem.Column.Delete,
                 SimpleTableWidgetItem.Row.Delete -> {

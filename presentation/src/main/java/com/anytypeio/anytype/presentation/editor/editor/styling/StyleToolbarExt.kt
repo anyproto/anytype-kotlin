@@ -11,6 +11,7 @@ import timber.log.Timber
 fun Editor.Mode.getIds(): List<Id>? = when (this) {
     is Editor.Mode.Styling.Multi -> targets.toList()
     is Editor.Mode.Styling.Single -> listOf(target)
+    is  Editor.Mode.Table -> targets.toList()
     else -> {
         Timber.e("Couldn't get ids of selected blocks, wrong Editor Mode : $this")
         null

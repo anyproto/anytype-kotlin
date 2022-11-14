@@ -136,18 +136,46 @@ sealed class ControlPanelMachine {
                 val state: StyleToolbarState.Background
             ) : StylingToolbar()
 
-            data class OnUpdateColorBackgroundToolbar(
-                val state: StyleToolbarState.ColorBackground,
-                val navigateFromStylingTextToolbar: Boolean,
-            ) : StylingToolbar()
-
-            data class OnUpdateOtherToolbar(val state: StyleToolbarState.Other) : StylingToolbar()
-            object OnExtraClosed : StylingToolbar()
-            object OnColorBackgroundClosed : StylingToolbar()
             data class OnClose(val focused: Boolean) : StylingToolbar()
             object OnCloseMulti : StylingToolbar()
             object OnExit : StylingToolbar()
             object OnBackgroundClosed : StylingToolbar()
+        }
+
+        /**
+         * Texted Block color & background toolbar related events
+         */
+        sealed class ColorBackgroundToolbar : Event() {
+
+            data class Show(
+                val state: StyleToolbarState.ColorBackground,
+                val navigateFromStylingTextToolbar: Boolean,
+                val navigatedFromCellsMenu: Boolean
+            ) : ColorBackgroundToolbar()
+
+            data class Update(
+                val state: StyleToolbarState.ColorBackground
+            ) : ColorBackgroundToolbar()
+
+            data class Hide(val focused: Boolean) : ColorBackgroundToolbar()
+        }
+
+        /**
+         * Texted Block other toolbar related events
+         */
+        sealed class OtherToolbar : Event() {
+
+            data class Show(
+                val state: StyleToolbarState.Other,
+                val navigateFromStylingTextToolbar: Boolean,
+                val navigatedFromCellsMenu: Boolean
+            ) : OtherToolbar()
+
+            data class Update(
+                val state: StyleToolbarState.Other
+            ) : OtherToolbar()
+
+            object Hide : OtherToolbar()
         }
 
         /**
@@ -335,6 +363,12 @@ sealed class ControlPanelMachine {
             }
             is Event.StylingToolbar -> {
                 handleStylingToolbarEvent(event, state)
+            }
+            is Event.ColorBackgroundToolbar -> {
+                handleColorBackgroundToolbarEvents(event, state)
+            }
+            is Event.OtherToolbar -> {
+                handleOtherToolbarEvents(event, state)
             }
             is Event.MarkupToolbar.OnMarkupColorToggleClicked -> {
                 val isVisible = if (state.markupColorToolbar.isVisible) {
@@ -575,31 +609,6 @@ sealed class ControlPanelMachine {
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
-            is Event.StylingToolbar.OnUpdateOtherToolbar -> {
-                state.copy(
-                    styleTextToolbar = Toolbar.Styling.reset(),
-                    styleExtraToolbar = Toolbar.Styling.Extra(true, event.state),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
-                )
-            }
-            is Event.StylingToolbar.OnExtraClosed -> {
-                state.copy(
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = true
-                    ),
-                    styleExtraToolbar = Toolbar.Styling.Extra.reset(),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
-                )
-            }
-            is Event.StylingToolbar.OnColorBackgroundClosed -> {
-                state.copy(
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = state.styleColorBackgroundToolbar.navigatedFromStylingTextToolbar
-                    ),
-                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
-                )
-            }
             is Event.StylingToolbar.OnBackgroundClosed -> {
                 state.copy(
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
@@ -622,19 +631,127 @@ sealed class ControlPanelMachine {
                     )
                 )
             }
-            is Event.StylingToolbar.OnUpdateColorBackgroundToolbar -> {
-                state.copy(
-                    mainToolbar = Toolbar.Main.reset(),
-                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(
-                        isVisible = true,
-                        state = event.state,
-                        navigatedFromStylingTextToolbar = event.navigateFromStylingTextToolbar,
-                    ),
-                    navigationToolbar = Toolbar.Navigation.reset(),
-                    styleTextToolbar = Toolbar.Styling.reset(),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
-                    styleExtraToolbar = Toolbar.Styling.Extra.reset()
-                )
+        }
+
+        private fun handleColorBackgroundToolbarEvents(
+            event: Event.ColorBackgroundToolbar,
+            state: ControlPanelState
+        ): ControlPanelState {
+            return when (event) {
+                is Event.ColorBackgroundToolbar.Show -> {
+                    state.copy(
+                        styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(
+                            isVisible = true,
+                            state = event.state,
+                            navigatedFromStylingTextToolbar = event.navigateFromStylingTextToolbar,
+                            navigatedFromCellsMenu = event.navigatedFromCellsMenu
+                        ),
+                        simpleTableWidget = state.simpleTableWidget.copy(
+                            isVisible = false
+                        ),
+                        mainToolbar = Toolbar.Main.reset(),
+                        navigationToolbar = Toolbar.Navigation.reset(),
+                        styleTextToolbar = Toolbar.Styling.reset(),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                        styleExtraToolbar = Toolbar.Styling.Extra.reset()
+                    )
+                }
+                is Event.ColorBackgroundToolbar.Update -> {
+                    state.copy(
+                        mainToolbar = Toolbar.Main.reset(),
+                        styleColorBackgroundToolbar = state.styleColorBackgroundToolbar.copy(
+                            state = event.state
+                        ),
+                        simpleTableWidget = state.simpleTableWidget.copy(
+                            isVisible = false
+                        ),
+                        navigationToolbar = Toolbar.Navigation.reset(),
+                        styleTextToolbar = Toolbar.Styling.reset(),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                        styleExtraToolbar = Toolbar.Styling.Extra.reset()
+                    )
+                }
+                is Event.ColorBackgroundToolbar.Hide -> {
+                    var mainToolbar = Toolbar.Main.reset()
+                    var navigationToolbar = Toolbar.Navigation.reset()
+                    var styleTextToolbar = state.styleTextToolbar
+                    var simpleTableWidget = state.simpleTableWidget
+                    when {
+                        state.styleColorBackgroundToolbar.navigatedFromStylingTextToolbar -> {
+                            styleTextToolbar = styleTextToolbar.copy(
+                                isVisible = true
+                            )
+                        }
+                        state.styleColorBackgroundToolbar.navigatedFromCellsMenu -> {
+                            simpleTableWidget = simpleTableWidget.copy(
+                                isVisible = true
+                            )
+                        }
+                        !state.styleColorBackgroundToolbar.navigatedFromStylingTextToolbar &&
+                                !state.styleColorBackgroundToolbar.navigatedFromCellsMenu -> {
+                            if (event.focused) {
+                                mainToolbar = mainToolbar.copy(isVisible = true)
+                            } else {
+                                navigationToolbar = navigationToolbar.copy(isVisible = true)
+                            }
+                        }
+                    }
+                    state.copy(
+                        styleTextToolbar = styleTextToolbar,
+                        simpleTableWidget = simpleTableWidget,
+                        mainToolbar = mainToolbar,
+                        navigationToolbar = navigationToolbar,
+                        styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                    )
+                }
+            }
+        }
+
+        private fun handleOtherToolbarEvents(
+            event: Event.OtherToolbar,
+            state: ControlPanelState
+        ): ControlPanelState {
+            return when (event) {
+                is Event.OtherToolbar.Show -> {
+                    state.copy(
+                        styleTextToolbar = Toolbar.Styling.reset(),
+                        styleExtraToolbar = Toolbar.Styling.Extra(
+                            isVisible = true,
+                            state = event.state,
+                            navigatedFromStylingTextToolbar = event.navigateFromStylingTextToolbar,
+                            navigatedFromCellsMenu = event.navigatedFromCellsMenu
+                        ),
+                        simpleTableWidget = state.simpleTableWidget.copy(
+                            isVisible = false
+                        ),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                    )
+                }
+                is Event.OtherToolbar.Update -> {
+                    state.copy(
+                        styleTextToolbar = Toolbar.Styling.reset(),
+                        styleExtraToolbar = state.styleExtraToolbar.copy(
+                            state = event.state
+                        ),
+                        simpleTableWidget = state.simpleTableWidget.copy(
+                            isVisible = false
+                        ),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                    )
+                }
+                Event.OtherToolbar.Hide -> {
+                    state.copy(
+                        styleExtraToolbar = Toolbar.Styling.Extra.reset(),
+                        simpleTableWidget = state.simpleTableWidget.copy(
+                            isVisible = state.styleExtraToolbar.navigatedFromCellsMenu
+                        ),
+                        styleTextToolbar = state.styleTextToolbar.copy(
+                            isVisible = state.styleColorBackgroundToolbar.navigatedFromStylingTextToolbar
+                        ),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                    )
+                }
             }
         }
 

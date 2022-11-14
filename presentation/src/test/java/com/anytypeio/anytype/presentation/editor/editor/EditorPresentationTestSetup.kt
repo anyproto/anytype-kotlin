@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
+import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
@@ -275,6 +276,7 @@ open class EditorPresentationTestSetup {
     private lateinit var setDocImageIcon: SetDocumentImageIcon
     private lateinit var objectToSet: ConvertObjectToSet
     private lateinit var clearBlockContent: ClearBlockContent
+    private lateinit var clearBlockStyle: ClearBlockStyle
 
     open lateinit var orchestrator: Orchestrator
 
@@ -297,6 +299,7 @@ open class EditorPresentationTestSetup {
             applyTemplate = applyTemplate
         )
         clearBlockContent = ClearBlockContent(repo)
+        clearBlockStyle = ClearBlockStyle(repo)
 
         orchestrator = Orchestrator(
             createBlock = createBlock,
@@ -339,7 +342,8 @@ open class EditorPresentationTestSetup {
             setObjectType = setObjectType,
             createTable = createTable,
             fillTableRow = fillTableRow,
-            clearBlockContent = clearBlockContent
+            clearBlockContent = clearBlockContent,
+            clearBlockStyle = clearBlockStyle
         )
 
         return EditorViewModel(

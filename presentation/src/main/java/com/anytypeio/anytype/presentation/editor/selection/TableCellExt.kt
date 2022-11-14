@@ -370,9 +370,9 @@ fun List<BlockView>.updateTableBlockSelection(tableId: Id, selection: List<Id>):
 
 fun List<BlockView.Table.Cell>.getSimpleTableWidgetItems(): List<SimpleTableWidgetItem> {
     return listOf(
-        SimpleTableWidgetItem.Cell.ClearContents
-//        SimpleTableWidgetItem.Cell.Style,
-//        SimpleTableWidgetItem.Cell.Color,
-//        SimpleTableWidgetItem.Cell.ClearStyle
+        SimpleTableWidgetItem.Cell.ClearContents,
+        SimpleTableWidgetItem.Cell.Color,
+        SimpleTableWidgetItem.Cell.Style,
+        SimpleTableWidgetItem.Cell.ClearStyle
     )
 }

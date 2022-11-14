@@ -540,10 +540,10 @@
     <string name="item_relation_create_from_scratch_title">Type</string>
     <string name="btn_restore">Restore</string>
 
-    <string name="simple_tables_widget_item_clear_contents">Clear contents</string>
-    <string name="simple_tables_widget_item_clear_color">Color</string>
-    <string name="simple_tables_widget_item_clear_style">Style</string>
-    <string name="simple_tables_widget_item_clear_clear_style">Clear style</string>
+    <string name="simple_tables_widget_item_clear_contents">Clear</string>
+    <string name="simple_tables_widget_item_color">Color</string>
+    <string name="simple_tables_widget_item_style">Style</string>
+    <string name="simple_tables_widget_item_clear_style">Reset Style</string>
     <string name="simple_tables_widget_item_insert_left">Insert left</string>
     <string name="simple_tables_widget_item_insert_right">Insert right</string>
     <string name="simple_tables_widget_item_move_left">Move left</string>

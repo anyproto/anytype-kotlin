@@ -173,9 +173,10 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
+
         val selectedState = vm.currentSelection()
         runBlocking {
-            assertEquals(1, selectedState.size)
+            assertEquals(0, selectedState.size)
             verifyNoInteractions(fillTableRow)
         }
     }

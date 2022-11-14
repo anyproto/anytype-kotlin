@@ -174,6 +174,11 @@ sealed class Intent {
             val context: Id,
             val targets: List<Id>
         ): Text()
+
+        class ClearStyle(
+            val context: Id,
+            val targets: List<Id>
+        ) : Text()
     }
 
     sealed class Media : Intent() {

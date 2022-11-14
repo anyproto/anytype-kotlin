@@ -11,15 +11,11 @@ import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
-import com.anytypeio.anytype.core_ui.features.table.TableBlockAdapter
-import com.anytypeio.anytype.core_ui.features.table.TableCellsDiffUtil
 import com.anytypeio.anytype.core_ui.layout.TableHorizontalItemDivider
 import com.anytypeio.anytype.core_ui.layout.TableVerticalItemDivider
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.features.table.TableEditableCellsAdapter
 import com.anytypeio.anytype.core_ui.layout.TableCellSelectionDecoration
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -36,20 +32,16 @@ class TableBlockHolder(
     onFocusChanged: (Id, Boolean) -> Unit
 ) : BlockViewHolder(binding.root) {
 
-    val root: FrameLayout = binding.root
-    val recycler: RecyclerView = binding.recyclerTable
-    private val selected = binding.selected
+    private val root: FrameLayout = binding.root
+    private val recycler: RecyclerView = binding.recyclerTable
+    private val selectView = binding.selected
 
     private val cellsSelectionState = TableCellsSelectionState()
 
-    private val cellSelectionDecoration: TableCellSelectionDecoration = TableCellSelectionDecoration(
-        drawable = binding.root.context.drawable(R.drawable.cell_top_border)
-    )
-
-    private val tableAdapter = TableBlockAdapter(
-        differ = TableCellsDiffUtil,
-        clickListener = clickListener
-    )
+    private val cellSelectionDecoration: TableCellSelectionDecoration =
+        TableCellSelectionDecoration(
+            drawable = binding.root.context.drawable(R.drawable.cell_top_border)
+        )
 
     private val tableEditableCellsAdapter = TableEditableCellsAdapter(
         items = listOf(),
@@ -61,11 +53,12 @@ class TableBlockHolder(
         onFocusChanged = onFocusChanged
     )
 
-    private val lm = if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-        CustomGridLayoutManager(itemView.context, 1, GridLayoutManager.HORIZONTAL, false)
-    } else {
-        GridLayoutManager(itemView.context, 1, GridLayoutManager.HORIZONTAL, false)
-    }
+    private val lm =
+        CustomGridLayoutManager(itemView.context, 1, GridLayoutManager.HORIZONTAL, false).apply {
+            spanSizeLookup = object : CustomGridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int = 1
+            }
+        }
 
     init {
         val drawable = itemView.context.drawable(R.drawable.divider_dv_grid)
@@ -74,37 +67,19 @@ class TableBlockHolder(
 
         recycler.apply {
             layoutManager = lm
-            if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-                (lm as CustomGridLayoutManager).spanSizeLookup =
-                    object : CustomGridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(position: Int): Int = 1
-                    }
-                adapter = tableEditableCellsAdapter
-                setHasFixedSize(true)
-            } else {
-                (lm as GridLayoutManager).spanSizeLookup =
-                    object : GridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(position: Int): Int = 1
-                    }
-                adapter = tableAdapter
-            }
+            adapter = tableEditableCellsAdapter
+            setHasFixedSize(true)
             addItemDecoration(verticalDecorator)
             addItemDecoration(horizontalDecorator)
         }
     }
 
     fun bind(item: BlockView.Table) {
-        selected.isSelected = item.isSelected
-        if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-            (lm as CustomGridLayoutManager).spanCount = item.rowCount
-            tableEditableCellsAdapter.setTableBlockId(item.id)
-            tableEditableCellsAdapter.updateWithDiffUtil(item.cells)
-            updateCellsSelection(item)
-        } else {
-            (lm as GridLayoutManager).spanCount = item.rowCount
-            tableAdapter.setTableBlockId(item.id)
-            tableAdapter.submitList(item.cells)
-        }
+        applySelection(item)
+        applyBackground(item)
+        applyRowCount(item)
+        applyCells(item)
+        updateCellsSelection(item)
     }
 
     fun processChangePayload(
@@ -112,27 +87,28 @@ class TableBlockHolder(
         item: BlockView.Table
     ) {
         payloads.forEach { payload ->
-            if (payload.changes.contains(BlockViewDiffUtil.TABLE_CELLS_CHANGED)) {
-                bind(item)
-            }
-            if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
-                selected.isSelected = item.isSelected
-            }
-            if (payload.changes.contains(BlockViewDiffUtil.BACKGROUND_COLOR_CHANGED)) {
-                applyBackground(item.background)
-            }
-            if (payload.changes.contains(BlockViewDiffUtil.TABLE_CELLS_SELECTION_CHANGED)) {
-                updateCellsSelection(item)
-            }
+            if (payload.selectionChanged()) applySelection(item)
+            if (payload.backgroundColorChanged()) applyBackground(item)
+            if (payload.tableRowCountChanged()) applyRowCount(item)
+            if (payload.tableCellsChanged()) applyCells(item)
+            if (payload.tableCellsSelectionChanged()) updateCellsSelection(item)
         }
     }
 
-    private fun applyBackground(background: ThemeColor) {
-        root.setBlockBackgroundColor(background)
+    private fun applyBackground(item: BlockView.Table) {
+        root.setBlockBackgroundColor(item.background)
     }
 
-    fun recycle() {
-        tableAdapter.submitList(emptyList())
+    private fun applySelection(item: BlockView.Table) {
+        selectView.isSelected = item.isSelected
+    }
+
+    private fun applyCells(item: BlockView.Table) {
+        tableEditableCellsAdapter.updateWithDiffUtil(item.cells)
+    }
+
+    private fun applyRowCount(item: BlockView.Table) {
+        lm.spanCount = item.rowCount
     }
 
     private fun updateCellsSelection(item: BlockView.Table) {
@@ -146,7 +122,7 @@ class TableBlockHolder(
                 item.selectedCellsIds.contains(cell.getId())
             }
             cellsSelectionState.clear()
-            cellsSelectionState.set(cells = selectedCells)
+            cellsSelectionState.set(selectedCells)
             if (cellsSelectionState.current().isNotEmpty()) {
                 cellSelectionDecoration.setSelectionState(cellsSelectionState.current())
                 if (!recycler.containsItemDecoration(cellSelectionDecoration)) {

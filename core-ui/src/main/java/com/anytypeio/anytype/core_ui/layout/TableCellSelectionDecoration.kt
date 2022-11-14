@@ -19,7 +19,7 @@ class TableCellSelectionDecoration(
         selectionState.addAll(newState)
     }
 
-    override fun onDraw(
+    override fun onDrawOver(
         canvas: Canvas,
         parent: RecyclerView,
         state: RecyclerView.State

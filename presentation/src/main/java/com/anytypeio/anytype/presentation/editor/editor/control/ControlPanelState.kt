@@ -131,12 +131,16 @@ data class ControlPanelState(
 
             data class Extra(
                 override val isVisible: Boolean,
-                val state: StyleToolbarState.Other
+                val state: StyleToolbarState.Other,
+                val navigatedFromStylingTextToolbar: Boolean,
+                val navigatedFromCellsMenu: Boolean
             ) : Toolbar() {
                 companion object {
                     fun reset() = Extra(
                         isVisible = false,
-                        state = StyleToolbarState.Other.empty()
+                        state = StyleToolbarState.Other.empty(),
+                        navigatedFromStylingTextToolbar = false,
+                        navigatedFromCellsMenu = false
                     )
                 }
             }
@@ -145,12 +149,14 @@ data class ControlPanelState(
                 override val isVisible: Boolean,
                 val state: StyleToolbarState.ColorBackground,
                 val navigatedFromStylingTextToolbar: Boolean,
+                val navigatedFromCellsMenu: Boolean
             ) : Toolbar() {
                 companion object {
                     fun reset() = ColorBackground(
                         isVisible = false,
                         state = StyleToolbarState.ColorBackground.empty(),
                         navigatedFromStylingTextToolbar = false,
+                        navigatedFromCellsMenu = false
                     )
                 }
             }

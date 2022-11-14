@@ -736,10 +736,7 @@ class EditorViewModel(
             if (state.styleColorBackgroundToolbar.isVisible) {
                 val ids = mode.getIds()
                 if (ids.isNullOrEmpty()) return
-                onSendUpdateStyleColorBackgroundToolbarEvent(
-                    ids,
-                    state.styleColorBackgroundToolbar.navigatedFromStylingTextToolbar
-                )
+                onSendUpdateStyleColorBackgroundToolbarEvent(ids)
             }
             if (state.styleExtraToolbar.isVisible) {
                 val ids = mode.getIds()
@@ -768,16 +765,42 @@ class EditorViewModel(
         )
     }
 
-    private fun onSendUpdateStyleColorBackgroundToolbarEvent(
+    private fun onShowColorBackgroundToolbarEvent(
         ids: List<Id>,
-        navigateFromStylingTextToolbar: Boolean,
+        navigatedFromCellsMenu: Boolean,
+        navigateFromStylingTextToolbar: Boolean
     ) {
         val selected = blocks.filter { ids.contains(it.id) }
         val state = selected.getStyleColorBackgroundToolbarState()
         controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.StylingToolbar.OnUpdateColorBackgroundToolbar(
-                state,
-                navigateFromStylingTextToolbar
+            ControlPanelMachine.Event.ColorBackgroundToolbar.Show(
+                state = state,
+                navigatedFromCellsMenu = navigatedFromCellsMenu,
+                navigateFromStylingTextToolbar = navigateFromStylingTextToolbar
+            )
+        )
+    }
+
+    private fun onSendUpdateStyleColorBackgroundToolbarEvent(ids: List<Id>) {
+        val selected = blocks.filter { ids.contains(it.id) }
+        val state = selected.getStyleColorBackgroundToolbarState()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.ColorBackgroundToolbar.Update(state)
+        )
+    }
+
+    private fun onShowStyleOtherToolbarEvent(
+        ids: List<Id>,
+        navigatedFromCellsMenu: Boolean,
+        navigateFromStylingTextToolbar: Boolean
+    ) {
+        val selected = blocks.filter { ids.contains(it.id) }
+        val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OtherToolbar.Show(
+                state = state,
+                navigatedFromCellsMenu = navigatedFromCellsMenu,
+                navigateFromStylingTextToolbar = navigateFromStylingTextToolbar
             )
         )
     }
@@ -786,7 +809,7 @@ class EditorViewModel(
         val selected = blocks.filter { ids.contains(it.id) }
         val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
         controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.StylingToolbar.OnUpdateOtherToolbar(state)
+            ControlPanelMachine.Event.OtherToolbar.Update(state)
         )
     }
 
@@ -2289,8 +2312,9 @@ class EditorViewModel(
                         renderCommand.send(Unit)
                     }
                     when {
-                        target is BlockView.Title -> onSendUpdateStyleColorBackgroundToolbarEvent(
+                        target is BlockView.Title -> onShowColorBackgroundToolbarEvent(
                             ids = listOf(targetId),
+                            navigatedFromCellsMenu = false,
                             navigateFromStylingTextToolbar = false
                         )
                         content.style == Content.Text.Style.CODE_SNIPPET -> {
@@ -2414,14 +2438,15 @@ class EditorViewModel(
     fun onCloseBlockStyleExtraToolbarClicked() {
         Timber.d("onCloseBlockStyleExtraToolbarClicked, ")
         controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.StylingToolbar.OnExtraClosed
+            ControlPanelMachine.Event.OtherToolbar.Hide
         )
     }
 
     fun onCloseBlockStyleColorToolbarClicked() {
         Timber.d("onCloseBlockStyleColorToolbarClicked, ")
+        val focused = !orchestrator.stores.focus.current().isEmpty
         controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.StylingToolbar.OnColorBackgroundClosed
+            ControlPanelMachine.Event.ColorBackgroundToolbar.Hide(focused = focused)
         )
     }
 
@@ -2512,15 +2537,20 @@ class EditorViewModel(
         Timber.d("onBlockStyleToolbarOtherClicked, ")
         val ids = mode.getIds()
         if (ids.isNullOrEmpty()) return
-        onSendUpdateStyleOtherToolbarEvent(ids)
+        onShowStyleOtherToolbarEvent(
+            ids = ids,
+            navigatedFromCellsMenu = false,
+            navigateFromStylingTextToolbar = true
+        )
     }
 
     fun onBlockStyleToolbarColorClicked() {
         Timber.d("onBlockStyleToolbarColorClicked, ")
         val ids = mode.getIds()
         if (ids.isNullOrEmpty()) return
-        onSendUpdateStyleColorBackgroundToolbarEvent(
+        onShowColorBackgroundToolbarEvent(
             ids = ids,
+            navigatedFromCellsMenu = false,
             navigateFromStylingTextToolbar = true
         )
     }
@@ -2755,38 +2785,6 @@ class EditorViewModel(
                     )
                 )
             }
-        }
-    }
-
-    private fun onTableRowEmptyCellClicked(cellId: Id, rowId: Id, tableId: Id) {
-        fillTableBlockRow(
-            cellId = cellId,
-            targetIds = listOf(rowId),
-            tableId = tableId
-        )
-    }
-
-    private fun fillTableBlockRow(cellId: Id, targetIds: List<Id>, tableId: Id) {
-        viewModelScope.launch {
-            if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-                val focus = Editor.Focus(id = cellId, cursor = null)
-                orchestrator.stores.focus.update(focus)
-            }
-            orchestrator.proxies.intents.send(
-                Intent.Table.FillTableRow(
-                    ctx = context,
-                    targetIds = targetIds
-                )
-            )
-        }
-        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-            dispatch(
-                Command.OpenSetBlockTextValueScreen(
-                    ctx = context,
-                    block = cellId,
-                    table = tableId
-                )
-            )
         }
     }
 
@@ -3825,48 +3823,26 @@ class EditorViewModel(
                 dispatch(Command.OpenTextBlockIconPicker(clicked.blockId))
             }
             is ListenerType.TableEmptyCell -> {
-                when (mode) {
-                    EditorMode.Locked -> {
-                        if (BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-                            Timber.d("Clicked on table cell in Locked Mode")
-                        } else {
-                            if (currentSelection().isNotEmpty()) {
-                                Timber.e("Some other blocks are selected, amend table cell click")
-                                return
-                            }
-                            proceedWithSelectingCell(
-                                cellId = clicked.cell.getId(),
-                                tableId = clicked.cell.tableId
-                            )
-                            onTableRowEmptyCellClicked(
-                                cellId = clicked.cell.getId(),
-                                rowId = clicked.cell.rowId,
-                                tableId = clicked.cell.tableId
-                            )
-                        }
-                    }
+                when (val m = mode) {
                     EditorMode.Edit -> {
-                        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-                            if (currentSelection().isNotEmpty()) {
-                                Timber.e("Some other blocks are selected, amend table cell click")
-                                return
-                            }
-                        }
-                        proceedWithSelectingCell(
-                            cellId = clicked.cell.getId(),
-                            tableId = clicked.cell.tableId
-                        )
                         onTableRowEmptyCellClicked(
                             cellId = clicked.cell.getId(),
-                            rowId = clicked.cell.rowId,
-                            tableId = clicked.cell.tableId
+                            rowId = clicked.cell.rowId
                         )
                     }
-                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.cell.tableId)
+                    EditorMode.Select -> {
+                        onBlockMultiSelectClicked(
+                            target = clicked.cell.tableId
+                        )
+                    }
                     is EditorMode.Table -> {
-                        val modeTableId = (mode as EditorMode.Table).tableId
+                        val modeTableId = m.tableId
                         val cellTableId = clicked.cell.tableId
                         if (cellTableId == modeTableId) {
+                            onTableRowEmptyCellClicked(
+                                cellId = clicked.cell.getId(),
+                                rowId = clicked.cell.rowId
+                            )
                             proceedWithClickingOnCellInTableMode(
                                 cell = clicked.cell,
                                 tableId = cellTableId
@@ -3879,48 +3855,12 @@ class EditorViewModel(
                 }
             }
             is ListenerType.TableTextCell -> {
-                when (mode) {
-                    EditorMode.Edit -> {
-                        if (currentSelection().isNotEmpty()) {
-                            Timber.e("Some other blocks are selected, amend table cell click")
-                            return
-                        }
-                        proceedWithSelectingCell(
-                            cellId = clicked.cell.getId(),
-                            tableId = clicked.cell.tableId
-                        )
-                        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-                            dispatch(
-                                Command.OpenSetBlockTextValueScreen(
-                                    ctx = context,
-                                    block = clicked.cell.getId(),
-                                    table = clicked.cell.tableId
-                                )
-                            )
-                        }
+                when (val m = mode) {
+                    EditorMode.Select -> {
+                        onBlockMultiSelectClicked(target = clicked.cell.tableId)
                     }
-                    EditorMode.Locked -> {
-                        if (currentSelection().isNotEmpty()) {
-                            Timber.e("Some other blocks are selected, amend table cell click")
-                            return
-                        }
-                        if (!BuildConfig.USE_SIMPLE_TABLES_IN_EDITOR_EDDITING) {
-                            proceedWithSelectingCell(
-                                cellId = clicked.cell.getId(),
-                                tableId = clicked.cell.tableId
-                            )
-                            dispatch(
-                                Command.OpenSetBlockTextValueScreen(
-                                    ctx = context,
-                                    block = clicked.cell.getId(),
-                                    table = clicked.cell.tableId
-                                )
-                            )
-                        }
-                    }
-                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.cell.tableId)
                     is EditorMode.Table -> {
-                        val modeTableId = (mode as EditorMode.Table).tableId
+                        val modeTableId = m.tableId
                         val cellTableId = clicked.cell.tableId
                         if (cellTableId == modeTableId) {
                             proceedWithClickingOnCellInTableMode(
@@ -6124,26 +6064,57 @@ class EditorViewModel(
     //endregion
 
     //region SIMPLE TABLES
-    fun onCellsSelectionDoneClick() {
+
+    fun onCellSelectionTopToolbarDoneButtonClick() {
+        Timber.d("onCellSelectionTopToolbarDoneButtonClick, ")
         proceedWithExitingTableMode()
     }
 
     fun onHideSimpleTableWidget() {
+        Timber.d("onHideSimpleTableWidget, ")
         proceedWithExitingTableMode()
     }
 
     fun onSimpleTableWidgetItemClicked(item: SimpleTableWidgetItem) {
+        Timber.d("onSimpleTableWidgetItemClicked, item:[$item]")
         when (item) {
             SimpleTableWidgetItem.Cell.ClearContents -> {
-                val selected = currentSelection()
                 viewModelScope.launch {
                     orchestrator.proxies.intents.send(
                         Intent.Text.ClearContent(
                             context = context,
-                            targets = selected.toList()
+                            targets = currentSelection().toList()
                         )
                     )
                 }
+            }
+            SimpleTableWidgetItem.Cell.ClearStyle -> {
+                viewModelScope.launch {
+                    orchestrator.proxies.intents.send(
+                        Intent.Text.ClearStyle(
+                            context = context,
+                            targets = currentSelection().toList()
+                        )
+                    )
+                }
+            }
+            SimpleTableWidgetItem.Cell.Color -> {
+                onShowColorBackgroundToolbarEvent(
+                    ids = currentSelection().toList(),
+                    navigatedFromCellsMenu = true,
+                    navigateFromStylingTextToolbar = false
+                )
+            }
+            SimpleTableWidgetItem.Cell.Style -> {
+                val selected = blocks.filter { currentSelection().contains(it.id) }
+                val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OtherToolbar.Show(
+                        state = state,
+                        navigatedFromCellsMenu = true,
+                        navigateFromStylingTextToolbar = false
+                    )
+                )
             }
             else -> Unit
         }
@@ -6154,9 +6125,9 @@ class EditorViewModel(
      */
     private fun proceedWithEnterTableMode(cell: BlockView.Table.Cell) {
         viewModelScope.launch {
-            mode = EditorMode.Table(tableId = cell.tableId)
             clearSelections()
             toggleSelection(target = cell.getId())
+            mode = EditorMode.Table(tableId = cell.tableId, targets = currentSelection())
 
             orchestrator.stores.focus.update(Editor.Focus.empty())
             orchestrator.stores.views.update(
@@ -6212,6 +6183,7 @@ class EditorViewModel(
         cell: BlockView.Table.Cell
     ) {
         toggleSelection(target = cell.getId())
+        (mode as? EditorMode.Table)?.targets = currentSelection()
         if (currentSelection().isEmpty()) {
             proceedWithExitingTableMode()
         } else {
@@ -6240,14 +6212,31 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithSelectingCell(cellId: Id, tableId: Id) {
+    private fun onTableRowEmptyCellClicked(cellId: Id, rowId: Id) {
+        fillTableRow(
+            cellId = cellId,
+            targetIds = listOf(rowId)
+        )
+    }
 
-        clearSelections()
-        select(listOf(cellId))
-
+    private fun fillTableRow(cellId: Id, targetIds: List<Id>) {
         viewModelScope.launch {
-            orchestrator.stores.focus.update(Editor.Focus.empty())
-            renderCommand.send(Unit)
+            setFocusInCellWhenInEditMode(cellId = cellId)
+            orchestrator.proxies.intents.send(
+                Intent.Table.FillTableRow(
+                    ctx = context,
+                    targetIds = targetIds
+                )
+            )
+        }
+    }
+
+    private fun setFocusInCellWhenInEditMode(cellId: Id) {
+        if (mode == EditorMode.Edit) {
+            val focus = Editor.Focus(id = cellId, cursor = null)
+            viewModelScope.launch {
+                orchestrator.stores.focus.update(focus)
+            }
         }
     }
 
@@ -6258,5 +6247,4 @@ class EditorViewModel(
 }
 
 private const val NO_POSITION = -1
-private const val PREVIEW_POSITION = 2
 private const val OPEN_OBJECT_POSITION = 4

@@ -5067,11 +5067,9 @@ class EditorViewModel(
     fun proceedWithLinkToAction(
         link: Id,
         target: Id,
-        isBookmark: Boolean,
-        text: String,
-        icon: ObjectIcon,
-        isSet: Boolean
+        isBookmark: Boolean
     ) {
+        Timber.d("proceedWithLinkToAction, link:[$link], target:[$target], isBookmark:[$isBookmark]")
         val targetBlock = blocks.firstOrNull { it.id == target }
         if (targetBlock != null) {
             val targetContent = targetBlock.content

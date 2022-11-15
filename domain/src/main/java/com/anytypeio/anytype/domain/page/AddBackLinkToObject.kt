@@ -43,7 +43,7 @@ class AddBackLinkToObject(
                         context = params.objectToPlaceLink,
                         target = targetBlock,
                         position = Position.BOTTOM,
-                        prototype = Block.Prototype.Link(params.objectToLink)
+                        prototype = Block.Prototype.Link(target = params.objectToLink)
                     )
                 )
 

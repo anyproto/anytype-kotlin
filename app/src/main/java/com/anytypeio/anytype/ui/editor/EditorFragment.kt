@@ -2071,10 +2071,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedWithLinkToAction(
             link = link,
             target = target,
-            text = text,
-            icon = icon,
-            isBookmark = isBookmark,
-            isSet = isSet
+            isBookmark = isBookmark
         )
     }
 

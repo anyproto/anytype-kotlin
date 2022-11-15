@@ -5,6 +5,7 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.app.DefaultFeatureToggles
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DocumentInfo
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -201,6 +203,8 @@ open class EditorTestSetup {
 
     lateinit var downloadUnsplashImage: DownloadUnsplashImage
 
+    lateinit var featureToggles: FeatureToggles
+
     @Mock
     lateinit var updateDivider: UpdateDivider
 
@@ -333,6 +337,8 @@ open class EditorTestSetup {
             applyTemplate = applyTemplate
         )
 
+        featureToggles = DefaultFeatureToggles()
+
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
             closeObject = closePage,
@@ -413,7 +419,8 @@ open class EditorTestSetup {
             setDocImageIcon = setDocImageIcon,
             editorTemplateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            objectToSet = objectToSet
+            objectToSet = objectToSet,
+            featureToggles = featureToggles
         )
     }
 

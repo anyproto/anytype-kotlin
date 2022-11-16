@@ -20,7 +20,7 @@ interface ClipboardDataStore {
         /**
          * Stores copied [text] and optionally a [html] representation on the systen clipboard.
          */
-        suspend fun put(text: String, html: String?)
+        suspend fun put(text: String, html: String?, ignoreHtml: Boolean)
 
         /**
          * @return current clip on the clipboard.

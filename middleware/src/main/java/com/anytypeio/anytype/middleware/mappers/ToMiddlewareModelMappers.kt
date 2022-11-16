@@ -239,7 +239,13 @@ fun Block.Content.Text.Mark.toMiddlewareModel(): MBMark = when (type) {
             param_ = param.orEmpty()
         )
     }
-    else -> throw IllegalStateException("Unsupported mark type: ${type.name}")
+    Block.Content.Text.Mark.Type.EMOJI -> {
+        MBMark(
+            range = range.range(),
+            type = MBMarkType.Emoji,
+            param_ = param.orEmpty()
+        )
+    }
 }
 
 fun IntRange.range(): Range = Range(from = first, to = last)

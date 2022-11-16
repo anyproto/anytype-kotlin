@@ -13,10 +13,9 @@ class AnytypeClipboard(
     private val cm: ClipboardManager
 ) : ClipboardDataStore.System {
 
-    override suspend fun put(text: String, html: String?) {
-
+    override suspend fun put(text: String, html: String?, ignoreHtml: Boolean) {
         val uri = Uri.parse(ANYTYPE_CLIPBOARD_URI)
-        if (html != null)
+        if (!ignoreHtml && html != null)
             cm.setPrimaryClip(
                 ClipData.newHtmlText(ANYTYPE_CLIPBOARD_LABEL, text, html).apply {
                     addItem(ClipData.Item(uri))

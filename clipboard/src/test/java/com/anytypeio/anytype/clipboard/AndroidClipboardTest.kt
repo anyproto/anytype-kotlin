@@ -37,7 +37,8 @@ class AndroidClipboardTest {
         runBlocking {
             clipboard.put(
                 text = text,
-                html = null
+                html = null,
+                ignoreHtml = MockDataFactory.randomBoolean()
             )
         }
 
@@ -51,6 +52,33 @@ class AndroidClipboardTest {
     }
 
     @Test
+    fun `should put text, ignore html and put uri as second item`() {
+        val text = MockDataFactory.randomString()
+        val html = MockDataFactory.randomString()
+
+        runBlocking {
+            clipboard.put(
+                text = text,
+                html = html,
+                ignoreHtml = true
+            )
+        }
+
+        assertEquals(
+            expected = text,
+            actual = cm.primaryClip?.getItemAt(0)?.text
+        )
+
+        assertEquals(
+            expected = null,
+            actual = cm.primaryClip?.getItemAt(0)?.htmlText
+        )
+
+        assertNull(cm.primaryClip?.getItemAt(0)?.uri)
+        assertNotNull(cm.primaryClip?.getItemAt(1)?.uri)
+    }
+
+    @Test
     fun `should put text, html as first item and uri as second item`() {
         val text = MockDataFactory.randomString()
         val html = MockDataFactory.randomString()
@@ -58,7 +86,8 @@ class AndroidClipboardTest {
         runBlocking {
             clipboard.put(
                 text = text,
-                html = html
+                html = html,
+                ignoreHtml = false
             )
         }
 

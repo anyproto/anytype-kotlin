@@ -14,7 +14,8 @@ class ClipboardDataRepository(
         )
         factory.system.put(
             text = text,
-            html = html
+            html = html,
+            ignoreHtml = true
         )
     }
 

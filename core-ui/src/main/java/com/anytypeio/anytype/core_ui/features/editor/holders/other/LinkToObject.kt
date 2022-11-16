@@ -39,7 +39,7 @@ class LinkToObject(
     private val root = binding.root
     private val container = binding.container
     private val untitled = itemView.resources.getString(R.string.untitled)
-    private val objectIcon = binding.objectIconWidget
+    val objectIcon = binding.objectIconWidget
     private val objectIconContainer = binding.iconObjectContainer
     private val title = binding.text
     private val description = binding.tvDescription

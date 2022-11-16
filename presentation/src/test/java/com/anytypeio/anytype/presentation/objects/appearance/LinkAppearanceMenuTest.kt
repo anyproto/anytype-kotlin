@@ -61,7 +61,55 @@ class LinkAppearanceMenuTest {
     }
 
     @Test
-    fun `when is todo note - no icon and no description`() {
+    fun `when is todo layout and card style without cover - no icon`() {
+        val factory = LinkAppearanceFactory(
+            content = StubLinkContent(
+                iconSize = Link.IconSize.SMALL,
+                cardStyle = Link.CardStyle.CARD,
+                description = Link.Description.NONE,
+                relations = setOf(Link.Relation.NAME)
+            ),
+            layout = ObjectType.Layout.TODO
+        )
+
+        val actual = factory.createAppearanceMenuItems()
+        val expected = BlockView.Appearance.Menu(
+            preview = MenuItem.PreviewLayout.CARD,
+            icon = null,
+            cover = MenuItem.Cover.WITHOUT,
+            description = MenuItem.Description.NONE,
+            objectType = MenuItem.ObjectType.WITHOUT,
+            iconMenus = listOf()
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `when is todo layout and card style with cover - no icon`() {
+        val factory = LinkAppearanceFactory(
+            content = StubLinkContent(
+                iconSize = Link.IconSize.SMALL,
+                cardStyle = Link.CardStyle.CARD,
+                description = Link.Description.NONE,
+                relations = setOf(Link.Relation.NAME, Link.Relation.COVER)
+            ),
+            layout = ObjectType.Layout.TODO
+        )
+
+        val actual = factory.createAppearanceMenuItems()
+        val expected = BlockView.Appearance.Menu(
+            preview = MenuItem.PreviewLayout.CARD,
+            icon = null,
+            cover = MenuItem.Cover.WITH,
+            description = MenuItem.Description.NONE,
+            objectType = MenuItem.ObjectType.WITHOUT,
+            iconMenus = listOf()
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `when is note - no icon and no description`() {
         val factory = LinkAppearanceFactory(
             content = defaultLinkAppearance.copy(
                 description = Link.Description.ADDED

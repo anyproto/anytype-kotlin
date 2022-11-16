@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
@@ -2886,8 +2887,8 @@ class EditorViewModel(
         renderizePipeline.send(blocks)
     }
 
-    private fun onPageClicked(block: Id) {
-        val block = blocks.firstOrNull { it.id == block }
+    private fun onPageClicked(blockLinkId: Id) {
+        val block = blocks.firstOrNull { it.id == blockLinkId }
         when (val content = block?.content) {
             is Content.Link -> {
                 proceedWithOpeningObjectByLayout(target = content.target)
@@ -3542,8 +3543,8 @@ class EditorViewModel(
             }
             is ListenerType.LinkToObject -> {
                 when (mode) {
-                    EditorMode.Edit -> onPageClicked(clicked.target)
-                    EditorMode.Locked -> onPageClicked(clicked.target)
+                    EditorMode.Edit -> onPageClicked(blockLinkId = clicked.target)
+                    EditorMode.Locked -> onPageClicked(blockLinkId = clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3565,6 +3566,21 @@ class EditorViewModel(
                 when (mode) {
                     EditorMode.Edit -> Unit
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.LinkToObjectCheckboxUpdate -> {
+                when (mode) {
+                    EditorMode.Edit -> {
+                        val content = blocks.firstOrNull { it.id == clicked.target }?.content
+                        if (content is Content.Link) {
+                            proceedWithSetObjectDetails(
+                                ctx = content.target,
+                                key = Relations.DONE,
+                                value = !clicked.isChecked
+                            )
+                        }
+                    }
                     else -> Unit
                 }
             }
@@ -3711,29 +3727,11 @@ class EditorViewModel(
                             Relation.Format.CHECKBOX -> {
                                 val view = clicked.relation
                                 if (view is DocumentRelationView.Checkbox) {
-                                    viewModelScope.launch {
-                                        updateDetail(
-                                            UpdateDetail.Params(
-                                                ctx = context,
-                                                key = relationId,
-                                                value = !view.isChecked
-                                            )
-                                        ).process(
-                                            success = {
-                                                dispatcher.send(it)
-                                                sendAnalyticsRelationValueEvent(
-                                                    analytics = analytics,
-                                                    context = analyticsContext
-                                                )
-                                            },
-                                            failure = {
-                                                Timber.e(
-                                                    it,
-                                                    "Error while updating relation values"
-                                                )
-                                            }
-                                        )
-                                    }
+                                    proceedWithSetObjectDetails(
+                                        ctx = context,
+                                        key = relationId,
+                                        value = !view.isChecked
+                                    )
                                 }
                             }
                             Relation.Format.DATE -> {
@@ -3882,25 +3880,12 @@ class EditorViewModel(
         value: BlockView.Relation.Related,
         relation: Id
     ) {
-        viewModelScope.launch {
-            val view = value.view as DocumentRelationView.Checkbox
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = context,
-                    key = relation,
-                    value = !view.isChecked
-                )
-            ).process(
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(
-                        analytics = analytics,
-                        context = analyticsContext
-                    )
-                },
-                failure = { Timber.e(it, "Error while updating relation values") }
-            )
-        }
+        val view = value.view as DocumentRelationView.Checkbox
+        proceedWithSetObjectDetails(
+            ctx = context,
+            key = relation,
+            value = !view.isChecked
+        )
     }
 
     override fun onProceedWithFilePath(filePath: String?) {
@@ -4087,6 +4072,29 @@ class EditorViewModel(
         }
     }
 
+    private fun proceedWithSetObjectDetails(ctx: Id, key: String, value: Any?) {
+        viewModelScope.launch {
+            updateDetail(
+                UpdateDetail.Params(
+                    ctx = ctx,
+                    key = key,
+                    value = value
+                )
+            ).process(
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(
+                        analytics = analytics,
+                        context = analyticsContext
+                    )
+                },
+                failure = {
+                    Timber.e(it, "Error while set object details")
+                }
+            )
+        }
+    }
+
     private fun sendToast(msg: String) {
         jobs += viewModelScope.launch {
             _toasts.emit(msg)
@@ -4147,24 +4155,11 @@ class EditorViewModel(
         relationId: Id
     ) {
         Timber.d("onRelationTextValueChanged, ctx:[$ctx] value:[$value] relationId:[$relationId]")
-        viewModelScope.launch {
-            updateDetail(
-                UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relationId,
-                    value = value
-                )
-            ).process(
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(
-                        analytics = analytics,
-                        context = analyticsContext
-                    )
-                },
-                failure = { Timber.e(it, "Error while updating relation values") }
-            )
-        }
+        proceedWithSetObjectDetails(
+            ctx = ctx,
+            key = relationId,
+            value = value
+        )
     }
 
     fun onObjectTypeChanged(type: Id, isObjectDraft: Boolean) {

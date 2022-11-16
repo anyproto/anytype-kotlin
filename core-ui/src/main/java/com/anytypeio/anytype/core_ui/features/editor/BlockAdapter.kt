@@ -182,6 +182,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import timber.log.Timber
 import java.util.*
 
@@ -556,7 +557,18 @@ class BlockAdapter(
             HOLDER_OBJECT_LINK_DEFAULT -> {
                 LinkToObject(
                     ItemBlockObjectLinkBinding.inflate(inflater, parent, false)
-                )
+                ).apply {
+                    objectIcon.checkbox.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = views[pos] as BlockView.LinkToObject.Default.Text
+                            onLinkToObjectCheckedIconClicked(
+                                target = view.id,
+                                icon = view.icon
+                            )
+                        }
+                    }
+                }
             }
             HOLDER_OBJECT_LINK_CARD_SMALL_ICON -> {
                 LinkToObjectCardSmallIcon(
@@ -565,7 +577,18 @@ class BlockAdapter(
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    objectIconView.checkbox.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = views[pos] as BlockView.LinkToObject.Default.Card.SmallIcon
+                            onLinkToObjectCheckedIconClicked(
+                                target = view.id,
+                                icon = view.icon
+                            )
+                        }
+                    }
+                }
             }
             HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON -> {
                 LinkToObjectCardMediumIcon(
@@ -574,7 +597,18 @@ class BlockAdapter(
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    objectIconView.checkbox.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = views[pos] as BlockView.LinkToObject.Default.Card.MediumIcon
+                            onLinkToObjectCheckedIconClicked(
+                                target = view.id,
+                                icon = view.icon
+                            )
+                        }
+                    }
+                }
             }
             HOLDER_OBJECT_LINK_CARD_SMALL_ICON_COVER -> {
                 LinkToObjectCardSmallIconCover(
@@ -583,7 +617,19 @@ class BlockAdapter(
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    objectIconView.checkbox.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view =
+                                views[pos] as BlockView.LinkToObject.Default.Card.SmallIconCover
+                            onLinkToObjectCheckedIconClicked(
+                                target = view.id,
+                                icon = view.icon
+                            )
+                        }
+                    }
+                }
             }
             HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON_COVER -> {
                 LinkToObjectCardMediumIconCover(
@@ -592,7 +638,19 @@ class BlockAdapter(
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    objectIconView.checkbox.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view =
+                                views[pos] as BlockView.LinkToObject.Default.Card.MediumIconCover
+                            onLinkToObjectCheckedIconClicked(
+                                target = view.id,
+                                icon = view.icon
+                            )
+                        }
+                    }
+                }
             }
             HOLDER_OBJECT_LINK_ARCHIVE -> {
                 LinkToObjectArchive(
@@ -1547,5 +1605,16 @@ class BlockAdapter(
 
     override fun provide(pos: Int): BlockView {
         return blocks[pos]
+    }
+
+    private fun onLinkToObjectCheckedIconClicked(target: Id, icon: ObjectIcon) {
+        if (icon is ObjectIcon.Task) {
+            onClickListener(
+                ListenerType.LinkToObjectCheckboxUpdate(
+                    target = target,
+                    isChecked = icon.isChecked
+                )
+            )
+        }
     }
 }

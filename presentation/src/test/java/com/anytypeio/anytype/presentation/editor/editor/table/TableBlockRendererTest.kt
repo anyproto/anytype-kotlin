@@ -36,7 +36,6 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
-import kotlin.test.asserter
 
 class TableBlockRendererTest {
 
@@ -201,22 +200,20 @@ class TableBlockRendererTest {
                         columnId = column.id,
                         rowIndex = BlockView.Table.RowIndex(rowIndex),
                         columnIndex = BlockView.Table.ColumnIndex(columnIndex),
-                        cellIndex = columnIndex*rows.size + rowIndex,
                         tableId = table.id
                     )
                 )
             }
         }
 
-        val columnViews = mutableListOf<BlockView.Table.Column>()
-
+        val columnViews = mutableListOf<BlockView.Table.ColumnId>()
         columns.forEach { column ->
-            columnViews.add(
-                BlockView.Table.Column(
-                    id = column.id,
-                    background = ThemeColor.DEFAULT
-                )
-            )
+            columnViews.add(BlockView.Table.ColumnId(value = column.id))
+        }
+
+        val rowViews = mutableListOf<BlockView.Table.RowId>()
+        rows.forEach { row ->
+            rowViews.add(BlockView.Table.RowId(value = row.id))
         }
 
         val expected = listOf(
@@ -245,7 +242,7 @@ class TableBlockRendererTest {
                 id = table.id,
                 cells = cells,
                 columns = columnViews,
-                rowCount = rowsSize,
+                rows = rowViews,
                 isSelected = false,
                 selectedCellsIds = emptyList()
             )
@@ -356,22 +353,20 @@ class TableBlockRendererTest {
                         rowIndex = BlockView.Table.RowIndex(rowIndex),
                         columnIndex = BlockView.Table.ColumnIndex(columnIndex),
                         block = null,
-                        cellIndex = columnIndex*rows.size + rowIndex,
                         tableId = table.id
                     )
                 )
             }
         }
 
-        val columnViews = mutableListOf<BlockView.Table.Column>()
-
+        val columnViews = mutableListOf<BlockView.Table.ColumnId>()
         columns.forEach { column ->
-            columnViews.add(
-                BlockView.Table.Column(
-                    id = column.id,
-                    background = ThemeColor.DEFAULT
-                )
-            )
+            columnViews.add(BlockView.Table.ColumnId(value = column.id))
+        }
+
+        val rowViews = mutableListOf<BlockView.Table.RowId>()
+        rows.forEach { row ->
+            rowViews.add(BlockView.Table.RowId(value = row.id))
         }
 
         val expected = listOf(
@@ -400,7 +395,7 @@ class TableBlockRendererTest {
                 id = table.id,
                 cells = cells,
                 columns = columnViews,
-                rowCount = rowsSize,
+                rows = rowViews,
                 isSelected = false,
                 selectedCellsIds = emptyList()
             )
@@ -528,7 +523,6 @@ class TableBlockRendererTest {
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(0),
                     block = null,
-                    cellIndex = 0,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -540,7 +534,6 @@ class TableBlockRendererTest {
                     ),
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(0),
-                    cellIndex = 1,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -549,7 +542,6 @@ class TableBlockRendererTest {
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(0),
                     block = null,
-                    cellIndex = 2,
                     tableId = table.id
                 ), //column1
                 BlockView.Table.Cell(
@@ -561,7 +553,6 @@ class TableBlockRendererTest {
                     ),
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(1),
-                    cellIndex = 3,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -573,7 +564,6 @@ class TableBlockRendererTest {
                     ),
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(1),
-                    cellIndex = 4,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -582,7 +572,6 @@ class TableBlockRendererTest {
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(1),
                     block = null,
-                    cellIndex = 5,
                     tableId = table.id
                 ),//column2
                 BlockView.Table.Cell(
@@ -591,7 +580,6 @@ class TableBlockRendererTest {
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(2),
                     block = null,
-                    cellIndex = 6,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -600,7 +588,6 @@ class TableBlockRendererTest {
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(2),
                     block = null,
-                    cellIndex = 7,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -609,7 +596,6 @@ class TableBlockRendererTest {
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(2),
                     block = null,
-                    cellIndex = 8,
                     tableId = table.id
                 ),//column3
                 BlockView.Table.Cell(
@@ -621,7 +607,6 @@ class TableBlockRendererTest {
                     ),
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(3),
-                    cellIndex = 9,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -633,7 +618,6 @@ class TableBlockRendererTest {
                     ),
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(3),
-                    cellIndex = 10,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
@@ -642,20 +626,18 @@ class TableBlockRendererTest {
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(3),
                     block = null,
-                    cellIndex = 11,
                     tableId = table.id
                 )
             )
 
-        val columnViews = mutableListOf<BlockView.Table.Column>()
-
+        val columnViews = mutableListOf<BlockView.Table.ColumnId>()
         columns.forEach { column ->
-            columnViews.add(
-                BlockView.Table.Column(
-                    id = column.id,
-                    background = ThemeColor.DEFAULT
-                )
-            )
+            columnViews.add(BlockView.Table.ColumnId(value = column.id))
+        }
+
+        val rowViews = mutableListOf<BlockView.Table.RowId>()
+        rows.forEach { row ->
+            rowViews.add(BlockView.Table.RowId(value = row.id))
         }
 
         val expected = listOf(
@@ -684,7 +666,7 @@ class TableBlockRendererTest {
                 id = table.id,
                 cells = cells,
                 columns = columnViews,
-                rowCount = rowsSize,
+                rows = rowViews,
                 isSelected = false,
                 selectedCellsIds = listOf("$rowId2-$columnId1")
             )

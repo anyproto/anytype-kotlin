@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Table.CellSelection
+import com.anytypeio.anytype.presentation.editor.selection.CellSelection
 import com.anytypeio.anytype.presentation.editor.selection.TableCellsSelectionState
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
@@ -27,17 +27,17 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(1),
                     block = null,
-                    cellIndex = 22,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         val actual = cellsSelectionState.current()
 
         //EXPECTED
-        val expected = listOf(
-            CellSelection(
+        val expected = mapOf(
+            4 to CellSelection(
                 cellId = "row1-column1",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(1),
@@ -45,7 +45,6 @@ class TableCellsSelectionStateTest {
                 top = true,
                 right = true,
                 bottom = true,
-                cellIndex = 22
             )
         )
 
@@ -70,9 +69,9 @@ class TableCellsSelectionStateTest {
                     columnIndex = BlockView.Table.ColumnIndex(1),
                     block = null,
                     tableId = tableId,
-                    cellIndex = 11
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         //second click on cell row1, column1
@@ -84,16 +83,16 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(1),
                     block = null,
-                    cellIndex = 11,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         val actual = cellsSelectionState.current()
 
         //EXPECTED
-        val expected = emptyList<CellSelection>()
+        val expected = emptyMap<Int, CellSelection>()
 
         //ASSERT
         assertEquals(expected, actual)
@@ -115,10 +114,10 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(0),
                     block = null,
-                    cellIndex = 1,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
         //click on cell row1, column2
         cellsSelectionState.set(
@@ -129,10 +128,10 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(2),
                     block = null,
-                    cellIndex = 7,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         //click on cell row2, column0
@@ -144,10 +143,10 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(0),
                     block = null,
-                    cellIndex = 2,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         //click on cell row0, column2
@@ -159,10 +158,10 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(2),
                     block = null,
-                    cellIndex = 6,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         //click on cell row1, column1
@@ -174,27 +173,26 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(1),
                     block = null,
-                    cellIndex = 4,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         val actual = cellsSelectionState.current()
 
         //EXPECTED
-        val expected = listOf(
-            CellSelection(
+        val expected = mapOf(
+            1 to CellSelection(
                 cellId = "row1-column0",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(0),
                 left = true,
                 top = true,
                 right = false,
-                bottom = false,
-                cellIndex = 1
+                bottom = false
             ),
-            CellSelection(
+            7 to CellSelection(
                 cellId = "row1-column2",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(2),
@@ -202,9 +200,8 @@ class TableCellsSelectionStateTest {
                 top = false,
                 right = true,
                 bottom = true,
-                cellIndex = 7
             ),
-            CellSelection(
+            2 to CellSelection(
                 cellId = "row2-column0",
                 rowIndex = BlockView.Table.RowIndex(2),
                 columnIndex = BlockView.Table.ColumnIndex(0),
@@ -212,9 +209,8 @@ class TableCellsSelectionStateTest {
                 top = false,
                 right = true,
                 bottom = true,
-                cellIndex = 2
             ),
-            CellSelection(
+            6 to CellSelection(
                 cellId = "row0-column2",
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
@@ -222,9 +218,8 @@ class TableCellsSelectionStateTest {
                 top = true,
                 right = true,
                 bottom = false,
-                cellIndex = 6
             ),
-            CellSelection(
+            4 to CellSelection(
                 cellId = "row1-column1",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(1),
@@ -232,7 +227,6 @@ class TableCellsSelectionStateTest {
                 top = true,
                 right = false,
                 bottom = true,
-                cellIndex = 4
             )
         )
 
@@ -250,55 +244,51 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(1),
                     columnIndex = BlockView.Table.ColumnIndex(1),
                     block = null,
-                    cellIndex = 4,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         val actual2 = cellsSelectionState.current()
 
         //EXPECTED
-        val expected2 = listOf(
-            CellSelection(
+        val expected2 = mapOf(
+            1 to CellSelection(
                 cellId = "row1-column0",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(0),
                 left = true,
                 top = true,
                 right = true,
-                bottom = false,
-                cellIndex = 1
+                bottom = false
             ),
-            CellSelection(
+            7 to CellSelection(
                 cellId = "row1-column2",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(2),
                 left = true,
                 top = false,
                 right = true,
-                bottom = true,
-                cellIndex = 7
+                bottom = true
             ),
-            CellSelection(
+            2 to CellSelection(
                 cellId = "row2-column0",
                 rowIndex = BlockView.Table.RowIndex(2),
                 columnIndex = BlockView.Table.ColumnIndex(0),
                 left = true,
                 top = false,
                 right = true,
-                bottom = true,
-                cellIndex = 2
+                bottom = true
             ),
-            CellSelection(
+            6 to CellSelection(
                 cellId = "row0-column2",
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
                 left = true,
                 top = true,
                 right = true,
-                bottom = false,
-                cellIndex = 6
+                bottom = false
             )
         )
 
@@ -316,10 +306,10 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(0),
                     columnIndex = BlockView.Table.ColumnIndex(2),
                     block = null,
-                    cellIndex = 6,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
         //click on cell row0, column2
         cellsSelectionState.set(
@@ -330,35 +320,33 @@ class TableCellsSelectionStateTest {
                     rowIndex = BlockView.Table.RowIndex(2),
                     columnIndex = BlockView.Table.ColumnIndex(0),
                     block = null,
-                    cellIndex = 2,
                     tableId = tableId
                 )
-            )
+            ),
+            rowsSize = 3
         )
 
         val actual3 = cellsSelectionState.current()
 
         //EXPECTED
-        val expected3 = listOf(
-            CellSelection(
+        val expected3 = mapOf(
+            1 to CellSelection(
                 cellId = "row1-column0",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(0),
                 left = true,
                 top = true,
                 right = true,
-                bottom = true,
-                cellIndex = 1
+                bottom = true
             ),
-            CellSelection(
+            7 to CellSelection(
                 cellId = "row1-column2",
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(2),
                 left = true,
                 top = true,
                 right = true,
-                bottom = true,
-                cellIndex = 7
+                bottom = true
             )
         )
 

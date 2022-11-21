@@ -18,6 +18,7 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
@@ -597,13 +598,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .clicks()
             .throttleFirst()
             .onEach { vm.onExitMultiSelectModeClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.cellSelectionTopToolbar
-            .doneButton
-            .clicks()
-            .throttleFirst()
-            .onEach { vm.onCellSelectionTopToolbarDoneButtonClick() }
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
@@ -1351,18 +1345,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         state.multiSelect.apply {
             val behavior = BottomSheetBehavior.from(binding.blockActionToolbar)
             if (isVisible) {
-                binding.multiSelectTopToolbar.visible()
-                when {
-                    count > 1 -> {
-                        binding.multiSelectTopToolbar.selectText.text =
-                            getString(R.string.number_selected_blocks, count)
-                    }
-                    count == 1 -> {
-                        binding.multiSelectTopToolbar.selectText.setText(R.string.one_selected_block)
-                    }
-                    else -> {
-                        binding.multiSelectTopToolbar.selectText.text = null
-                    }
+
+                binding.multiSelectTopToolbar.apply {
+                    setBlockSelectionText(count)
+                    visible()
                 }
 
                 binding.bottomMenu.update(count)
@@ -1398,7 +1384,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                 }
-                hideSelectButton()
+                if (!state.simpleTableWidget.isVisible) hideSelectButton()
                 binding.recycler.removeItemDecoration(actionToolbarFooter)
             }
             if (isScrollAndMoveEnabled)
@@ -1560,6 +1546,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         state.simpleTableWidget.apply {
             val behavior = BottomSheetBehavior.from(binding.simpleTableWidget)
             if (isVisible) {
+                binding.multiSelectTopToolbar.apply {
+                    setTableSelectionText(
+                        count = state.simpleTableWidget.selectedCount,
+                        tab = state.simpleTableWidget.tab
+                    )
+                    visible()
+                }
                 binding.simpleTableWidget.onStateChanged(
                     cellItems = state.simpleTableWidget.cellItems,
                     rowItems = state.simpleTableWidget.rowItems,
@@ -1570,12 +1563,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         if (binding.recycler.itemDecorationCount == 0) {
                             binding.recycler.addItemDecoration(styleToolbarFooter)
                         }
-                        proceedWithHidingSoftInput()
-                        delayKeyboardHide(insets)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            hidingSoftInput()
+                        } else {
+                            proceedWithHidingSoftInput()
+                        }
                         behavior.apply {
                             setState(BottomSheetBehavior.STATE_EXPANDED)
                             addBottomSheetCallback(onHideBottomSheetCallback)
                         }
+                        showSelectButton()
                     }
                 }
             } else {
@@ -1583,17 +1580,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     behavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
-            }
-        }
-
-        state.cellsSelectTopWidget.apply {
-            if (isVisible) {
-                binding.cellSelectionTopToolbar.showWithAnimation()
-                binding.cellSelectionTopToolbar.setCellSelectionText(count)
-            } else {
-                binding.cellSelectionTopToolbar.hideWithAnimation {
-                    if (hasBinding) binding.topToolbar.visible()
-                }
+                if (!state.multiSelect.isVisible) hideSelectButton()
             }
         }
     }
@@ -1611,6 +1598,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             transRoot,
             transitionSet
         )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun hidingSoftInput() {
+        ViewCompat.getWindowInsetsController(requireView())?.hide(WindowInsetsCompat.Type.ime())
     }
 
     private fun proceedWithHidingSoftInput() {

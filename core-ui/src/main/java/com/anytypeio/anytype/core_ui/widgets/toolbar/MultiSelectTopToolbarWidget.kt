@@ -12,6 +12,7 @@ import androidx.core.animation.doOnEnd
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetMultiSelectTopToolbarBinding
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 class MultiSelectTopToolbarWidget @JvmOverloads constructor(
     context: Context,
@@ -25,17 +26,27 @@ class MultiSelectTopToolbarWidget @JvmOverloads constructor(
     val selectText get() : TextView = binding.tvToolbarTitle
     val doneButton get() : View = binding.btnDone
 
-    fun setCellSelectionText(count: Int) {
-        when {
-            count == 1 -> {
-                selectText.text = context.getString(R.string.one_selected_cell)
+    fun setTableSelectionText(count: Int, tab: BlockView.Table.Tab) = with(context) {
+        selectText.text = when {
+            count == 1 -> when (tab) {
+                BlockView.Table.Tab.CELL -> getString(R.string.one_selected_cell)
+                BlockView.Table.Tab.COLUMN -> getString(R.string.one_selected_column)
+                BlockView.Table.Tab.ROW -> getString(R.string.one_selected_row)
             }
-            count > 1 -> {
-                selectText.text = context.getString(R.string.number_selected_cells, count)
+            count > 1 -> when (tab) {
+                BlockView.Table.Tab.CELL -> getString(R.string.number_selected_cells, count)
+                BlockView.Table.Tab.COLUMN -> getString(R.string.number_selected_columns, count)
+                BlockView.Table.Tab.ROW -> getString(R.string.number_selected_rows, count)
             }
-            else -> {
-                selectText.text = null
-            }
+            else -> null
+        }
+    }
+
+    fun setBlockSelectionText(count: Int) = with(context) {
+        selectText.text = when {
+            count > 1 -> getString(R.string.number_selected_blocks, count)
+            count == 1 -> getString(R.string.one_selected_block)
+            else -> null
         }
     }
 

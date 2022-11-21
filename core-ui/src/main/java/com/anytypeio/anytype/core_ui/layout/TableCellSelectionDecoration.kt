@@ -12,11 +12,10 @@ class TableCellSelectionDecoration(
     private val drawable: Drawable
 ) : RecyclerView.ItemDecoration() {
 
-    private val selectionState: MutableList<BlockView.Table.CellSelection> = mutableListOf()
+    private var selectionState: Map<Int, BlockView.Table.CellSelection> = emptyMap()
 
-    fun setSelectionState(newState: List<BlockView.Table.CellSelection>) {
-        selectionState.clear()
-        selectionState.addAll(newState)
+    fun setSelectionState(newState: Map<Int, BlockView.Table.CellSelection>) {
+        selectionState = newState
     }
 
     override fun onDrawOver(
@@ -29,7 +28,7 @@ class TableCellSelectionDecoration(
         parent.children.forEach { view ->
             val position = parent.getChildAdapterPosition(view)
             if (position != RecyclerView.NO_POSITION) {
-                val cellSelection = selectionState.find { it.cellIndex == position }
+                val cellSelection = selectionState[position]
                 if (cellSelection != null) {
                     parent.getDecoratedBoundsWithMargins(view, rect)
                     if (cellSelection.left) {

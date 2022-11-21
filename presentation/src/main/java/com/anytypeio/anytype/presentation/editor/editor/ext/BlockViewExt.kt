@@ -649,8 +649,8 @@ fun List<BlockView>.highlight(
             view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Table -> {
-            val cells = view.cells
-            view.copy(cells = cells.map { cell -> cell.addHighlight(highlighter) })
+            val updatedCells = view.cells.map { it.addHighlight(highlighter) }
+            view.copy(cells = updatedCells)
         }
         else -> view.also { check(view !is BlockView.Searchable) }
     }

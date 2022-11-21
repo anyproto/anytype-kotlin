@@ -108,7 +108,7 @@ class TableBlockHolder(
     }
 
     private fun applyRowCount(item: BlockView.Table) {
-        lm.spanCount = item.rowCount
+        lm.spanCount = item.rows.size
     }
 
     private fun updateCellsSelection(item: BlockView.Table) {
@@ -122,7 +122,7 @@ class TableBlockHolder(
                 item.selectedCellsIds.contains(cell.getId())
             }
             cellsSelectionState.clear()
-            cellsSelectionState.set(selectedCells)
+            cellsSelectionState.set(cells = selectedCells, rowsSize = item.rows.size)
             if (cellsSelectionState.current().isNotEmpty()) {
                 cellSelectionDecoration.setSelectionState(cellsSelectionState.current())
                 if (!recycler.containsItemDecoration(cellSelectionDecoration)) {

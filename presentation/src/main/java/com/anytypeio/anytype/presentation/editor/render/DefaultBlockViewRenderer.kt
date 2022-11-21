@@ -1974,17 +1974,19 @@ class DefaultBlockViewRenderer @Inject constructor(
     ): BlockView.Table {
 
         var cells: List<BlockView.Table.Cell> = emptyList()
-        var columns: List<BlockView.Table.Column> = emptyList()
+        var columnsIds: List<BlockView.Table.ColumnId> = emptyList()
+        var rowsIds: List<BlockView.Table.RowId> = emptyList()
         var rowCount = 0
 
         blocks.getValue(block.id).forEach { container ->
             val containerContent = container.content
             if (containerContent !is Content.Layout) return@forEach
             if (containerContent.type == Content.Layout.Type.TABLE_COLUMN) {
-                columns = blocks.getValue(container.id).map { tableColumn(it) }
+                columnsIds = blocks.getValue(container.id).map { BlockView.Table.ColumnId(it.id) }
             }
             if (containerContent.type == Content.Layout.Type.TABLE_ROW) {
                 val rows = blocks.getValue(container.id)
+                rowsIds = rows.map { BlockView.Table.RowId(it.id) }
                 rowCount = rows.size
                 cells = tableCells(
                     mode = mode,
@@ -1993,7 +1995,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     details = details,
                     selection = selection,
                     rows = rows,
-                    columns = columns,
+                    columnIds = columnsIds,
                     blocks = blocks,
                     tableId = block.id
                 )
@@ -2001,9 +2003,9 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
         return BlockView.Table(
             id = block.id,
-            columns = columns,
+            columns = columnsIds,
+            rows = rowsIds,
             cells = cells,
-            rowCount = rowCount,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -2018,7 +2020,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         tableId: Id,
         blocks: Map<String, List<Block>>,
         rows: List<Block>,
-        columns: List<BlockView.Table.Column>,
+        columnIds: List<BlockView.Table.ColumnId>,
         mode: EditorMode,
         focus: Focus,
         indent: Int,
@@ -2026,10 +2028,10 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>
     ): List<BlockView.Table.Cell> {
         val cells = mutableListOf<BlockView.Table.Cell>()
-        columns.mapIndexed { columnIndex, column ->
+        columnIds.mapIndexed { columnIndex, columnId ->
             rows.forEachIndexed { rowIndex, row ->
                 val isHeader = (row.content as? Content.TableRow)?.isHeader ?: false
-                val cellId = "${row.id}-${column.id}"
+                val cellId = "${row.id}-${columnId.value}"
                 val rowsChildren = blocks.getValue(row.id)
                 val block = rowsChildren.firstOrNull { it.id == cellId }
                 val paragraph = if (block != null) {
@@ -2054,29 +2056,20 @@ class DefaultBlockViewRenderer @Inject constructor(
                 } else {
                    null
                 }
-                val cellIndex = columnIndex*rows.size + rowIndex
                 cells.add(
                     BlockView.Table.Cell(
                         rowId = row.id,
                         rowIndex = BlockView.Table.RowIndex(rowIndex),
-                        columnId = column.id,
+                        columnId = columnId.value,
                         columnIndex = BlockView.Table.ColumnIndex(columnIndex),
                         isHeader = isHeader,
                         tableId = tableId,
-                        block = paragraph,
-                        cellIndex = cellIndex
+                        block = paragraph
                     )
                 )
             }
         }
         return cells
-    }
-
-    private fun tableColumn(block: Block): BlockView.Table.Column {
-        return BlockView.Table.Column(
-            id = block.id,
-            background = block.parseThemeBackgroundColor()
-        )
     }
 
     private fun relation(

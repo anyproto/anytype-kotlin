@@ -115,6 +115,7 @@ class SimpleTableWidgetAdapter(
                     title.setText(R.string.simple_tables_widget_item_move_up)
                     icon.setImageResource(R.drawable.ic_move_row_up)
                 }
+                else -> Unit
             }
         }
     }

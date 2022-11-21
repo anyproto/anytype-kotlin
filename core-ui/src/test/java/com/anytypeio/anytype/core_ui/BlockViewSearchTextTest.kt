@@ -1113,7 +1113,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 0,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1125,7 +1124,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 2,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1137,7 +1135,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 4,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1149,7 +1146,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 1,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1161,7 +1157,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 3,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1173,15 +1168,19 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 5,
                 tableId = tableId
             )
         )
 
         val columns = listOf(
-            BlockView.Table.Column(id = columnId1, background = ThemeColor.DEFAULT),
-            BlockView.Table.Column(id = columnId2, background = ThemeColor.DEFAULT),
-            BlockView.Table.Column(id = columnId3, background = ThemeColor.DEFAULT)
+            BlockView.Table.ColumnId(value = columnId1),
+            BlockView.Table.ColumnId(value = columnId2),
+            BlockView.Table.ColumnId(value = columnId3),
+        )
+
+        val rows = listOf(
+            BlockView.Table.RowId(value = rowId1),
+            BlockView.Table.RowId(value = rowId2)
         )
 
         val views = listOf<BlockView>(
@@ -1189,7 +1188,7 @@ class BlockViewSearchTextTest {
                 id = tableId,
                 cells = cells,
                 columns = columns,
-                rowCount = 2,
+                rows = rows,
                 isSelected = false,
                 selectedCellsIds = emptyList()
             )
@@ -1212,7 +1211,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 0,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1231,7 +1229,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 2,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1250,7 +1247,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 4,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1269,7 +1265,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 1,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1288,7 +1283,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 3,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1307,7 +1301,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 5,
                 tableId = tableId
             )
         )
@@ -1330,7 +1323,7 @@ class BlockViewSearchTextTest {
                 id = tableId,
                 cells = expectedCells,
                 columns = columns,
-                rowCount = 2,
+                rows = rows,
                 isSelected = false,
                 selectedCellsIds = emptyList()
             )
@@ -1369,7 +1362,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 0,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1381,7 +1373,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 2,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1393,7 +1384,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 4,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1405,7 +1395,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 1,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1417,7 +1406,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 3,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1429,15 +1417,18 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 5,
                 tableId = tableId
             )
         )
 
         val columns = listOf(
-            BlockView.Table.Column(id = columnId1, background = ThemeColor.DEFAULT),
-            BlockView.Table.Column(id = columnId2, background = ThemeColor.DEFAULT),
-            BlockView.Table.Column(id = columnId3, background = ThemeColor.DEFAULT)
+            BlockView.Table.ColumnId(value = columnId1),
+            BlockView.Table.ColumnId(value = columnId2),
+            BlockView.Table.ColumnId(value = columnId3)
+        )
+        val rows = listOf(
+            BlockView.Table.RowId(value = rowId1),
+            BlockView.Table.RowId(value = rowId2)
         )
 
         val views = listOf<BlockView>(
@@ -1445,9 +1436,9 @@ class BlockViewSearchTextTest {
                 id = tableId,
                 cells = cells,
                 columns = columns,
-                rowCount = 2,
                 isSelected = false,
-                selectedCellsIds = emptyList()
+                selectedCellsIds = emptyList(),
+                rows = rows
             )
         )
 
@@ -1461,7 +1452,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 0,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1473,7 +1463,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 2,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1485,7 +1474,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 4,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1497,7 +1485,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId1,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(0),
-                cellIndex = 1,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1509,7 +1496,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 3,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -1521,7 +1507,6 @@ class BlockViewSearchTextTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(1),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 5,
                 tableId = tableId
             )
         )
@@ -1546,7 +1531,7 @@ class BlockViewSearchTextTest {
                 id = tableId,
                 cells = expectedCells,
                 columns = columns,
-                rowCount = 2,
+                rows = rows,
                 isSelected = false,
                 selectedCellsIds = emptyList()
             )

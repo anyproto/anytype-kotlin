@@ -69,7 +69,6 @@ class TableBlockTest {
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
                 block = null,
-                cellIndex = 0,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -81,7 +80,6 @@ class TableBlockTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 2,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -93,7 +91,6 @@ class TableBlockTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 4,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -102,7 +99,6 @@ class TableBlockTest {
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(3),
                 block = null,
-                cellIndex = 6,
                 tableId = tableId
             )
         )
@@ -114,7 +110,6 @@ class TableBlockTest {
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(0),
                 block = null,
-                cellIndex = 0,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -126,7 +121,6 @@ class TableBlockTest {
                 columnId = columnId2,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(1),
-                cellIndex = 2,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -138,7 +132,6 @@ class TableBlockTest {
                 columnId = columnId3,
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(2),
-                cellIndex = 4,
                 tableId = tableId
             ),
             BlockView.Table.Cell(
@@ -147,17 +140,18 @@ class TableBlockTest {
                 rowIndex = BlockView.Table.RowIndex(0),
                 columnIndex = BlockView.Table.ColumnIndex(3),
                 block = null,
-                cellIndex = 6,
                 tableId = tableId
             )
         )
 
         val columns = listOf(
-            BlockView.Table.Column(id = columnId1, background = ThemeColor.DEFAULT),
-            BlockView.Table.Column(id = columnId2, background = ThemeColor.DEFAULT),
-            BlockView.Table.Column(id = columnId3, background = ThemeColor.DEFAULT),
-            BlockView.Table.Column(id = columnId4, background = ThemeColor.DEFAULT)
+            BlockView.Table.ColumnId(value = columnId1),
+            BlockView.Table.ColumnId(value = columnId2),
+            BlockView.Table.ColumnId(value = columnId3),
+            BlockView.Table.ColumnId(value = columnId4)
         )
+
+        val rows = listOf(BlockView.Table.RowId(value = rowId1))
 
         scenario.onFragment {
             it.view?.updateLayoutParams {
@@ -170,7 +164,7 @@ class TableBlockTest {
                     id = tableId,
                     cells = cells,
                     columns = columns,
-                    rowCount = 1,
+                    rows = rows,
                     isSelected = false,
                     selectedCellsIds = emptyList()
                 )
@@ -202,7 +196,7 @@ class TableBlockTest {
                     id = tableId,
                     cells = cellsNew,
                     columns = columns,
-                    rowCount = 1,
+                    rows = rows,
                     isSelected = false,
                     selectedCellsIds = emptyList()
                 )

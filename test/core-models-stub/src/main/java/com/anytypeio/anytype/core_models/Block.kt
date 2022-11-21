@@ -296,8 +296,17 @@ fun StubTableColumn(
     backgroundColor = background
 )
 
-fun StubTableColumns(size: Int): List<Block> = (0 until size).map { StubTableColumn() }
-fun StubTableRows(size: Int): List<Block> = (0 until size).map { StubTableRow() }
+fun StubTableColumns(size: Int): List<Block> = (0 until size).map { index ->
+    StubTableColumn(
+        id = "c$index"
+    )
+}
+
+fun StubTableRows(size: Int): List<Block> = (0 until size).map { index ->
+    StubTableRow(
+        id = "r$index"
+    )
+}
 fun StubTableCells(columns: List<Block>, rows: List<Block>): List<Block> {
     val cells = mutableListOf<Block>()
     for (i in rows.indices) {

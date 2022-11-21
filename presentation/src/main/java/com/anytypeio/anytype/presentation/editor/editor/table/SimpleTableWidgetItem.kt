@@ -34,4 +34,10 @@ sealed class SimpleTableWidgetItem {
         object Color : Row()
         object Style : Row()
     }
+
+    sealed class Tab : SimpleTableWidgetItem() {
+        object Cell : Tab()
+        object Row : Tab()
+        object Column : Tab()
+    }
 }

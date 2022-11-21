@@ -1,11 +1,15 @@
 package com.anytypeio.anytype.core_ui
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.CALLOUT_ICON_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.DECORATION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.MARKUP_CHANGED
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TABLE_CELLS_CHANGED
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TABLE_CELLS_SELECTION_CHANGED
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TABLE_ROW_COUNT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -1630,6 +1634,147 @@ class BlockViewDiffUtilTest {
         assertEquals(
             actual = payload,
             expected = null
+        )
+    }
+
+    @Test
+    fun `when two table blocks are equal - should be no payloads`() {
+        //SETUP
+        val index = 0
+        val tableId = MockDataFactory.randomUuid()
+        val oldBlock = StubTwoRowsThreeColumnsSimpleTable(tableId = tableId)
+        val newBlock = oldBlock
+
+        //TESTING
+        val diff = BlockViewDiffUtil(old = listOf(oldBlock), new = listOf(newBlock))
+        val payload = diff.getChangePayload(index, index)
+
+        //ASSERT
+        assertEquals(
+            actual = payload,
+            expected = null
+        )
+    }
+
+    @Test
+    fun `when two table blocks have different texts in cell - should be table cells changed payload`() {
+        //SETUP
+        val tableId = MockDataFactory.randomUuid()
+        val oldBlock = StubTwoRowsThreeColumnsSimpleTable(tableId = tableId)
+        val oldCells = oldBlock.cells
+        val newCells = oldCells.mapIndexed { index, cell ->
+            if (index == 0) cell.copy(
+                block = cell.block?.copy(text = MockDataFactory.randomString())
+            ) else {
+                cell
+            }
+        }
+        val newBlock = oldBlock.copy(cells = newCells)
+
+        //TESTING
+        val diff = BlockViewDiffUtil(old = listOf(oldBlock), new = listOf(newBlock))
+        val payload = diff.getChangePayload(0, 0)
+
+        //EXPECTED
+        val expectedPayloads = Payload(listOf(TABLE_CELLS_CHANGED))
+
+        //ASSERT
+        assertEquals(
+            actual = payload,
+            expected = expectedPayloads
+        )
+    }
+
+    @Test
+    fun `when two table blocks have different tabs - should be table cells selection changed payload`() {
+        //SETUP
+        val tableId = MockDataFactory.randomUuid()
+        val oldBlock = StubTwoRowsThreeColumnsSimpleTable(
+            tableId = tableId,
+            tab = BlockView.Table.Tab.CELL
+        )
+        val newBlock = oldBlock.copy(
+            tab = BlockView.Table.Tab.ROW
+        )
+
+        //TESTING
+        val diff = BlockViewDiffUtil(old = listOf(oldBlock), new = listOf(newBlock))
+        val payload = diff.getChangePayload(0, 0)
+
+        //EXPECTED
+        val expectedPayloads = Payload(listOf(TABLE_CELLS_SELECTION_CHANGED))
+
+        //ASSERT
+        assertEquals(
+            actual = payload,
+            expected = expectedPayloads
+        )
+    }
+
+    @Test
+    fun `when table block have different cells selection state - should be table cells selection changed payload`() {
+        //SETUP
+        val tableId = MockDataFactory.randomUuid()
+        val rowId1 = MockDataFactory.randomUuid()
+        val columnId1 = MockDataFactory.randomUuid()
+        val columnId2 = MockDataFactory.randomUuid()
+
+        val oldBlock = StubTwoRowsThreeColumnsSimpleTable(
+            tableId = tableId,
+            rowId1 = rowId1,
+            columnId1 = columnId1,
+            columnId2 = columnId2,
+            tab = BlockView.Table.Tab.CELL,
+            selectedCellsIds = listOf("$rowId1-$columnId1")
+        )
+        val newBlock = oldBlock.copy(
+            tab = BlockView.Table.Tab.CELL,
+            selectedCellsIds = listOf("$rowId1-$columnId1", "$rowId1-$columnId2")
+        )
+
+        //TESTING
+        val diff = BlockViewDiffUtil(old = listOf(oldBlock), new = listOf(newBlock))
+        val payload = diff.getChangePayload(0, 0)
+
+        //EXPECTED
+        val expectedPayloads = Payload(listOf(TABLE_CELLS_SELECTION_CHANGED))
+
+        //ASSERT
+        assertEquals(
+            actual = payload,
+            expected = expectedPayloads
+        )
+    }
+
+    @Test
+    fun `when table block have different rows size - should be rows size and cells changed payloads`() {
+        //SETUP
+        val tableId = MockDataFactory.randomUuid()
+
+        val oldBlock = StubTableView(
+            tableId = tableId,
+            tab = BlockView.Table.Tab.CELL,
+            rowSize = 10,
+            columnSize = 10
+        )
+        val newBlock = StubTableView(
+            tableId = tableId,
+            tab = BlockView.Table.Tab.CELL,
+            rowSize = 11,
+            columnSize = 10
+        )
+
+        //TESTING
+        val diff = BlockViewDiffUtil(old = listOf(oldBlock), new = listOf(newBlock))
+        val payload = diff.getChangePayload(0, 0)
+
+        //EXPECTED
+        val expectedPayloads = Payload(listOf(TABLE_ROW_COUNT_CHANGED, TABLE_CELLS_CHANGED))
+
+        //ASSERT
+        assertEquals(
+            actual = payload,
+            expected = expectedPayloads
         )
     }
 }

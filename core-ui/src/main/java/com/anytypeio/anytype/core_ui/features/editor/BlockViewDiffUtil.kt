@@ -245,13 +245,16 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is BlockView.Table && oldBlock is BlockView.Table) {
-            if (newBlock.rowCount != oldBlock.rowCount) {
+            if (newBlock.rows.size != oldBlock.rows.size) {
                 changes.add(TABLE_ROW_COUNT_CHANGED)
             }
             if (newBlock.cells != oldBlock.cells) {
                 changes.add(TABLE_CELLS_CHANGED)
             }
             if (newBlock.selectedCellsIds != oldBlock.selectedCellsIds) {
+                changes.add(TABLE_CELLS_SELECTION_CHANGED)
+            }
+            if (newBlock.tab != oldBlock.tab) {
                 changes.add(TABLE_CELLS_SELECTION_CHANGED)
             }
         }

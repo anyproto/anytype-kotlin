@@ -4,24 +4,23 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 class TableCellsSelectionState {
 
-    private var memory = listOf<BlockView.Table.CellSelection>()
+    private var memory = mapOf<Int, CellSelection>()
 
-    fun set(cells: List<BlockView.Table.Cell>) {
+    fun set(cells: List<BlockView.Table.Cell>, rowsSize: Int) {
         cells.forEach { cell ->
-            val currentSelection = current()
             memory = updateTableCellsSelectionState(
                 cellId = cell.getId(),
                 rowIndex = cell.rowIndex,
                 columnIndex = cell.columnIndex,
-                selectionState = currentSelection,
-                cellIndex = cell.cellIndex
+                selectionState = current(),
+                rowsSize = rowsSize
             )
         }
     }
 
     fun clear() {
-        memory = emptyList()
+        memory = emptyMap()
     }
 
-    fun current(): List<BlockView.Table.CellSelection> = memory
+    fun current(): Map<Int, BlockView.Table.CellSelection> = memory
 }

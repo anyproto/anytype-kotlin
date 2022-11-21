@@ -78,8 +78,21 @@ interface Editor {
 
         /**
          * Editor in simple table menu mode.
+         * @property[tableId] - the id of the table block for which the menu is shown
+         * and it is possible to select items only from this table.
+         * Clicks on cells in other tabled blocks will be omitted.
+         * @property[initialTargets] - last selected cells for the Tab Cell,
+         * when changing Tabs will be used as selected state
+         * @property[targets] - all of these cells are currently selected,
+         * cell allocation is based on the given list
+         * @property[tab] - currently selected Tab
          */
-        data class Table(val tableId: Id, var targets: Set<Id>) : Mode()
+        data class Table(
+            val tableId: Id,
+            var initialTargets: Set<Id>,
+            val tab: BlockView.Table.Tab,
+            var targets: Set<Id>,
+        ) : Mode()
     }
 
     class Storage {

@@ -31,7 +31,6 @@ data class ControlPanelState(
     val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar.reset(),
     val objectTypesToolbar: Toolbar.ObjectTypes = Toolbar.ObjectTypes.reset(),
     val simpleTableWidget: Toolbar.SimpleTableWidget = Toolbar.SimpleTableWidget.reset(),
-    val cellsSelectTopWidget: Toolbar.CellSelection = Toolbar.CellSelection.reset()
 ) {
 
     sealed class Toolbar {
@@ -266,31 +265,21 @@ data class ControlPanelState(
         data class SimpleTableWidget(
             override val isVisible: Boolean,
             val tableId: Id,
-            val cells: List<BlockView.Table.Cell>,
             val cellItems: List<SimpleTableWidgetItem> = emptyList(),
             val rowItems: List<SimpleTableWidgetItem> = emptyList(),
-            val columnItems: List<SimpleTableWidgetItem> = emptyList()
+            val columnItems: List<SimpleTableWidgetItem> = emptyList(),
+            val selectedCount: Int,
+            val tab: BlockView.Table.Tab
         ) : Toolbar() {
             companion object {
                 fun reset(): SimpleTableWidget = SimpleTableWidget(
                     isVisible = false,
                     tableId = "",
-                    cells = emptyList(),
                     cellItems = emptyList(),
                     rowItems = emptyList(),
-                    columnItems = emptyList()
-                )
-            }
-        }
-
-        data class CellSelection(
-            override val isVisible: Boolean,
-            val count: Int
-        ) : Toolbar() {
-            companion object {
-                fun reset(): CellSelection = CellSelection(
-                    isVisible = false,
-                    count = 0
+                    columnItems = emptyList(),
+                    selectedCount = 0,
+                    tab = BlockView.Table.Tab.CELL
                 )
             }
         }
@@ -344,8 +333,7 @@ data class ControlPanelState(
             ),
             slashWidget = Toolbar.SlashWidget.reset(),
             objectTypesToolbar = Toolbar.ObjectTypes.reset(),
-            simpleTableWidget = Toolbar.SimpleTableWidget.reset(),
-            cellsSelectTopWidget = Toolbar.CellSelection.reset()
+            simpleTableWidget = Toolbar.SimpleTableWidget.reset()
         )
     }
 }

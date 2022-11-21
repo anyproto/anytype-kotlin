@@ -4,13 +4,15 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 
+typealias CellSelection = BlockView.Table.CellSelection
+
 fun updateTableCellsSelectionState(
     cellId: Id,
     rowIndex: BlockView.Table.RowIndex,
     columnIndex: BlockView.Table.ColumnIndex,
-    selectionState: List<BlockView.Table.CellSelection>,
-    cellIndex: Int
-): List<BlockView.Table.CellSelection> {
+    selectionState: Map<Int, BlockView.Table.CellSelection>,
+    rowsSize: Int
+): Map<Int, BlockView.Table.CellSelection> {
 
     val latestSelection = BlockView.Table.CellSelection(
         cellId = cellId,
@@ -20,44 +22,14 @@ fun updateTableCellsSelectionState(
         top = true,
         right = true,
         bottom = true,
-        cellIndex = cellIndex
     )
-
-    val latestSelectionIndex = selectionState.indexOfFirst { it.cellId == cellId }
-    return if (latestSelectionIndex != -1) {
-        //Latest selection is already in selection state - move on to deselecting a cell
-        val newState = selectionState.toMutableList()
-        newState.removeAt(latestSelectionIndex)
-        newState.restoreBordersVisibility(deselectedSelection = latestSelection)
-        newState
+    val resultMap = selectionState.toMutableMap()
+    val cellIndex = columnIndex.value * rowsSize + rowIndex.value
+    return if (selectionState.contains(cellIndex)) {
+        resultMap.remove(cellIndex)
+        resultMap.restoreBordersVisibility(deselectedSelection = latestSelection)
     } else {
-        //Latest selection is not in selection state - move on to adding new selection to state
-        selectionState.forEach { selection ->
-            if (isLeftBorderMatch(cell1 = selection, cell2 = latestSelection)) {
-                selection.left = false
-                latestSelection.right = false
-            }
-
-            if (isRightBorderMatch(cell1 = selection, cell2 = latestSelection)) {
-                selection.right = false
-                latestSelection.left = false
-            }
-
-            if (isTopBorderMatch(cell1 = selection, cell2 = latestSelection)) {
-                selection.top = false
-                latestSelection.bottom = false
-            }
-
-            if (isBottomBorderMatch(cell1 = selection, cell2 = latestSelection)) {
-                selection.bottom = false
-                latestSelection.top = false
-            }
-        }
-        val newState = mutableListOf<BlockView.Table.CellSelection>().apply {
-            addAll(selectionState)
-            add(latestSelection)
-        }
-        newState
+        resultMap.addCellSelection(newSelection = latestSelection, cellIndex = cellIndex)
     }
 }
 
@@ -65,22 +37,53 @@ fun updateTableCellsSelectionState(
  * In the case of deselecting the cell it is necessary
  * to restore the borders of the remaining selected cells
  */
-fun List<BlockView.Table.CellSelection>.restoreBordersVisibility(deselectedSelection: BlockView.Table.CellSelection): List<BlockView.Table.CellSelection> =
-    map { cellSelection ->
-        if (isLeftBorderMatch(cell1 = cellSelection, cell2 = deselectedSelection)) {
-            cellSelection.left = true
+
+fun Map<Int, CellSelection>.restoreBordersVisibility(deselectedSelection: CellSelection): Map<Int, CellSelection> {
+    return this.mapValues {
+        if (isLeftBorderMatch(cell1 = it.value, cell2 = deselectedSelection)) {
+            it.value.left = true
         }
-        if (isRightBorderMatch(cell1 = cellSelection, cell2 = deselectedSelection)) {
-            cellSelection.right = true
+        if (isRightBorderMatch(cell1 = it.value, cell2 = deselectedSelection)) {
+            it.value.right = true
         }
-        if (isTopBorderMatch(cell1 = cellSelection, cell2 = deselectedSelection)) {
-            cellSelection.top = true
+        if (isTopBorderMatch(cell1 = it.value, cell2 = deselectedSelection)) {
+            it.value.top = true
         }
-        if (isBottomBorderMatch(cell1 = cellSelection, cell2 = deselectedSelection)) {
-            cellSelection.bottom = true
+        if (isBottomBorderMatch(cell1 = it.value, cell2 = deselectedSelection)) {
+            it.value.bottom = true
         }
-        cellSelection
+        it.value
     }
+}
+
+fun MutableMap<Int, CellSelection>.addCellSelection(
+    newSelection: CellSelection,
+    cellIndex: Int
+): Map<Int, CellSelection> {
+    this.mapValues {
+        if (isLeftBorderMatch(cell1 = it.value, cell2 = newSelection)) {
+            it.value.left = false
+            newSelection.right = false
+        }
+
+        if (isRightBorderMatch(cell1 = it.value, cell2 = newSelection)) {
+            it.value.right = false
+            newSelection.left = false
+        }
+
+        if (isTopBorderMatch(cell1 = it.value, cell2 = newSelection)) {
+            it.value.top = false
+            newSelection.bottom = false
+        }
+
+        if (isBottomBorderMatch(cell1 = it.value, cell2 = newSelection)) {
+            it.value.bottom = false
+            newSelection.top = false
+        }
+    }
+    this[cellIndex] = newSelection
+    return this
+}
 
 /**
  *  Check that the left border of the first cell coincides with the right border of the second cell
@@ -368,7 +371,23 @@ fun List<BlockView>.updateTableBlockSelection(tableId: Id, selection: List<Id>):
         }
     }
 
-fun List<BlockView.Table.Cell>.getSimpleTableWidgetItems(): List<SimpleTableWidgetItem> {
+fun List<BlockView>.updateTableBlockTab(
+    tableId: Id,
+    selection: List<Id>,
+    tab: BlockView.Table.Tab
+): List<BlockView> =
+    map {
+        if (it.id == tableId && it is BlockView.Table) {
+            it.copy(
+                selectedCellsIds = selection,
+                tab = tab
+            )
+        } else {
+            it
+        }
+    }
+
+fun getSimpleTableWidgetItems(): List<SimpleTableWidgetItem> {
     return listOf(
         SimpleTableWidgetItem.Cell.ClearContents,
         SimpleTableWidgetItem.Cell.Color,
@@ -376,3 +395,66 @@ fun List<BlockView.Table.Cell>.getSimpleTableWidgetItems(): List<SimpleTableWidg
         SimpleTableWidgetItem.Cell.ClearStyle
     )
 }
+
+fun getSimpleTableWidgetColumn(): List<SimpleTableWidgetItem> {
+    return listOf(
+        SimpleTableWidgetItem.Column.InsertLeft,
+        SimpleTableWidgetItem.Column.InsertRight,
+        SimpleTableWidgetItem.Column.MoveLeft,
+        SimpleTableWidgetItem.Column.MoveRight,
+        SimpleTableWidgetItem.Column.ClearContents,
+        SimpleTableWidgetItem.Column.Color,
+        SimpleTableWidgetItem.Column.Style,
+    )
+}
+
+fun getSimpleTableWidgetRow(): List<SimpleTableWidgetItem> {
+    return listOf(
+        SimpleTableWidgetItem.Row.InsertAbove,
+        SimpleTableWidgetItem.Row.InsertBelow,
+        SimpleTableWidgetItem.Row.MoveDown,
+        SimpleTableWidgetItem.Row.MoveUp,
+        SimpleTableWidgetItem.Row.ClearContents,
+        SimpleTableWidgetItem.Row.Color,
+        SimpleTableWidgetItem.Row.Style,
+    )
+}
+
+fun BlockView.Table.getIdsInRow(index: BlockView.Table.RowIndex): List<Id> =
+    this.cells.filter { it.rowIndex == index }.map { it.getId() }
+
+fun BlockView.Table.getIdsInColumn(index: BlockView.Table.ColumnIndex): List<Id> =
+    this.cells.filter { it.columnIndex == index }.map { it.getId() }
+
+fun BlockView.Table.getAllSelectedColumns(selectedCellsIds: Set<Id>): SelectedColumns {
+    val selectedCells = cells.filter { selectedCellsIds.contains(it.getId()) }
+    val selectedColumns = mutableSetOf<Id>()
+    val selectedColumnsIndexes = mutableSetOf<Int>()
+    selectedCells.forEach { cell ->
+        selectedColumnsIndexes.add(cell.columnIndex.value)
+        val column = getIdsInColumn(cell.columnIndex)
+        selectedColumns.addAll(column)
+    }
+    return SelectedColumns(
+        columns = selectedColumns.toList(),
+        count = selectedColumnsIndexes.size
+    )
+}
+
+fun BlockView.Table.getAllSelectedRows(selectedCellsIds: Set<Id>): SelectedRows {
+    val selectedCells = cells.filter { selectedCellsIds.contains(it.getId()) }
+    val selectedRows = mutableSetOf<Id>()
+    val selectedRowsIndexes = mutableSetOf<Int>()
+    selectedCells.forEach { cell ->
+        selectedRowsIndexes.add(cell.rowIndex.value)
+        val row = getIdsInRow(cell.rowIndex)
+        selectedRows.addAll(row)
+    }
+    return SelectedRows(
+        rows = selectedRows.toList(),
+        count = selectedRowsIndexes.size
+    )
+}
+
+data class SelectedRows(val rows: List<Id>, val count: Int)
+data class SelectedColumns(val columns: List<Id>, val count: Int)

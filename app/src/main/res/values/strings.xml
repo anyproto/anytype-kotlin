@@ -237,8 +237,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>
 
-    <string name="one_selected_block">1 selected block</string>
-    <string name="number_selected_blocks">%1$d selected blocks</string>
     <string name="select_all">Select all</string>
     <string name="unselect_all">Unselect all (%1$d)</string>
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>

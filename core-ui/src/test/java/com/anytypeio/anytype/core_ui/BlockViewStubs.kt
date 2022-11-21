@@ -330,6 +330,8 @@ fun StubTwoRowsThreeColumnsSimpleTable(
     textR2C1: String = MockDataFactory.randomString(),
     textR2C2: String = MockDataFactory.randomString(),
     textR2C3: String = MockDataFactory.randomString(),
+    tab: BlockView.Table.Tab = BlockView.Table.Tab.CELL,
+    selectedCellsIds: List<Id> = emptyList()
 ): BlockView.Table {
 
     val row1Block1 = StubParagraph(id = "$rowId1-$columnId1", text = textR1C1)
@@ -349,7 +351,6 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             columnId = columnId1,
             rowIndex = BlockView.Table.RowIndex(0),
             columnIndex = BlockView.Table.ColumnIndex(0),
-            cellIndex = 0,
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -361,7 +362,6 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             columnId = columnId2,
             rowIndex = BlockView.Table.RowIndex(0),
             columnIndex = BlockView.Table.ColumnIndex(1),
-            cellIndex = 2,
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -373,7 +373,6 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             columnId = columnId3,
             rowIndex = BlockView.Table.RowIndex(0),
             columnIndex = BlockView.Table.ColumnIndex(2),
-            cellIndex = 4,
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -385,7 +384,6 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             columnId = columnId1,
             rowIndex = BlockView.Table.RowIndex(1),
             columnIndex = BlockView.Table.ColumnIndex(0),
-            cellIndex = 1,
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -397,7 +395,6 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             columnId = columnId2,
             rowIndex = BlockView.Table.RowIndex(1),
             columnIndex = BlockView.Table.ColumnIndex(1),
-            cellIndex = 3,
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -409,26 +406,92 @@ fun StubTwoRowsThreeColumnsSimpleTable(
             columnId = columnId3,
             rowIndex = BlockView.Table.RowIndex(1),
             columnIndex = BlockView.Table.ColumnIndex(2),
-            cellIndex = 5,
             tableId = tableId
         )
     )
 
     val columns = listOf(
-        BlockView.Table.Column(id = columnId1, background = ThemeColor.DEFAULT),
-        BlockView.Table.Column(id = columnId2, background = ThemeColor.DEFAULT),
-        BlockView.Table.Column(id = columnId3, background = ThemeColor.DEFAULT)
+        BlockView.Table.ColumnId(value = columnId1),
+        BlockView.Table.ColumnId(value = columnId2),
+        BlockView.Table.ColumnId(value = columnId3),
+    )
+
+    val rows = listOf(
+        BlockView.Table.RowId(value = rowId1),
+        BlockView.Table.RowId(value = rowId2)
     )
 
     return BlockView.Table(
         id = tableId,
         cells = cells,
         columns = columns,
-        rowCount = 2,
+        rows = rows,
         isSelected = false,
-        selectedCellsIds = emptyList()
+        selectedCellsIds = selectedCellsIds,
+        tab = tab
     )
 }
+
+fun StubTableView(
+    tableId: String = MockDataFactory.randomUuid(),
+    rowSize: Int,
+    columnSize: Int,
+    tab: BlockView.Table.Tab = BlockView.Table.Tab.CELL,
+    selectedCellsIds: List<Id> = emptyList()
+): BlockView.Table {
+
+    val columns = mutableListOf<BlockView.Table.ColumnId>()
+    val rows = mutableListOf<BlockView.Table.RowId>()
+    val cells = mutableListOf<BlockView.Table.Cell>()
+    for (i in 0 until rowSize) {
+        for (j in 0 until columnSize) {
+            val columnId = BlockView.Table.ColumnId(value = "columnId$j")
+            val rowId = BlockView.Table.RowId(value = "rowId$i")
+            val cell = StubCellView(
+                rowId = "rowId$i",
+                rowIndex = BlockView.Table.RowIndex(i),
+                columnId = "columnId$j",
+                columnIndex = BlockView.Table.ColumnIndex(j),
+                block = StubParagraphView(
+                    id = "rowId$i-columnId$j",
+                    text = MockDataFactory.randomString()
+                ),
+                tableId = tableId
+            )
+            rows.add(rowId)
+            columns.add(columnId)
+            cells.add(cell)
+        }
+    }
+
+    return BlockView.Table(
+        id = tableId,
+        cells = cells,
+        columns = columns,
+        rows = rows,
+        isSelected = false,
+        selectedCellsIds = selectedCellsIds,
+        tab = tab
+    )
+}
+
+fun StubCellView(
+    rowId: Id,
+    rowIndex: BlockView.Table.RowIndex,
+    columnId: Id,
+    columnIndex: BlockView.Table.ColumnIndex,
+    isHeader: Boolean = false,
+    block: BlockView.Text.Paragraph?,
+    tableId: Id
+) = BlockView.Table.Cell(
+    rowId = rowId,
+    rowIndex = rowIndex,
+    columnId = columnId,
+    columnIndex = columnIndex,
+    isHeader = isHeader,
+    block = block,
+    tableId = tableId
+)
 
 fun StubPattern(
     query: String

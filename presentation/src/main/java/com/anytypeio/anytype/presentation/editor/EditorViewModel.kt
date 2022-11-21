@@ -153,9 +153,16 @@ import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.selection.getAllSelectedColumns
+import com.anytypeio.anytype.presentation.editor.selection.getAllSelectedRows
+import com.anytypeio.anytype.presentation.editor.selection.getIdsInColumn
+import com.anytypeio.anytype.presentation.editor.selection.getIdsInRow
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetColumn
 import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetItems
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRow
 import com.anytypeio.anytype.presentation.editor.selection.toggleTableMode
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelection
+import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
@@ -3843,7 +3850,7 @@ class EditorViewModel(
                             )
                             proceedWithClickingOnCellInTableMode(
                                 cell = clicked.cell,
-                                tableId = cellTableId
+                                modeTable = m
                             )
                         } else {
                             Timber.e("Cell is from the different table, amend click")
@@ -3863,7 +3870,7 @@ class EditorViewModel(
                         if (cellTableId == modeTableId) {
                             proceedWithClickingOnCellInTableMode(
                                 cell = clicked.cell,
-                                tableId = cellTableId
+                                modeTable = m
                             )
                         } else {
                             Timber.e("Cell is from the different table, amend click")
@@ -5388,7 +5395,10 @@ class EditorViewModel(
     }
 
     fun onExitMultiSelectModeClicked() {
-        proceedWithExitingMultiSelectMode()
+        when (mode) {
+            is EditorMode.Table -> proceedWithExitingTableMode()
+            else -> proceedWithExitingMultiSelectMode()
+        }
     }
 
     private fun proceedWithExitingMultiSelectMode() {
@@ -6057,12 +6067,6 @@ class EditorViewModel(
     //endregion
 
     //region SIMPLE TABLES
-
-    fun onCellSelectionTopToolbarDoneButtonClick() {
-        Timber.d("onCellSelectionTopToolbarDoneButtonClick, ")
-        proceedWithExitingTableMode()
-    }
-
     fun onHideSimpleTableWidget() {
         Timber.d("onHideSimpleTableWidget, ")
         proceedWithExitingTableMode()
@@ -6109,6 +6113,36 @@ class EditorViewModel(
                     )
                 )
             }
+            SimpleTableWidgetItem.Tab.Cell -> {
+                val currentMode = mode
+                if (currentMode is EditorMode.Table) {
+                    proceedWithUpdateTabInTableMode(
+                        tableId = currentMode.tableId,
+                        tab = BlockView.Table.Tab.CELL,
+                        modeTable = currentMode
+                    )
+                }
+            }
+            SimpleTableWidgetItem.Tab.Row -> {
+                val currentMode = mode
+                if (currentMode is EditorMode.Table) {
+                    proceedWithUpdateTabInTableMode(
+                        tableId = currentMode.tableId,
+                        tab = BlockView.Table.Tab.ROW,
+                        modeTable = currentMode
+                    )
+                }
+            }
+            SimpleTableWidgetItem.Tab.Column -> {
+                val currentMode = mode
+                if (currentMode is EditorMode.Table) {
+                    proceedWithUpdateTabInTableMode(
+                        tableId = currentMode.tableId,
+                        tab = BlockView.Table.Tab.COLUMN,
+                        modeTable = currentMode
+                    )
+                }
+            }
             else -> Unit
         }
     }
@@ -6120,7 +6154,12 @@ class EditorViewModel(
         viewModelScope.launch {
             clearSelections()
             toggleSelection(target = cell.getId())
-            mode = EditorMode.Table(tableId = cell.tableId, targets = currentSelection())
+            mode = EditorMode.Table(
+                tableId = cell.tableId,
+                targets = currentSelection(),
+                initialTargets = currentSelection(),
+                tab = BlockView.Table.Tab.CELL
+            )
 
             orchestrator.stores.focus.update(Editor.Focus.empty())
             orchestrator.stores.views.update(
@@ -6131,12 +6170,10 @@ class EditorViewModel(
             )
             renderCommand.send(Unit)
             controlPanelInteractor.onEvent(
-                ControlPanelMachine.Event.SimpleTableWidget.Show(
-                    cellItems = listOf(cell).getSimpleTableWidgetItems(),
-                    rowItems = emptyList(),
-                    columnItems = emptyList(),
-                    cells = listOf(cell),
-                    tableId = cell.tableId
+                ControlPanelMachine.Event.SimpleTableWidget.ShowCellTab(
+                    cellItems = getSimpleTableWidgetItems(),
+                    tableId = cell.tableId,
+                    cellSize = currentSelection().size
                 )
             )
         }
@@ -6172,18 +6209,76 @@ class EditorViewModel(
     }
 
     private fun proceedWithClickingOnCellInTableMode(
-        tableId: Id,
-        cell: BlockView.Table.Cell
+        cell: BlockView.Table.Cell,
+        modeTable: EditorMode.Table
     ) {
-        toggleSelection(target = cell.getId())
-        (mode as? EditorMode.Table)?.targets = currentSelection()
+        val tableBlock = views.find { it.id == modeTable.tableId } as BlockView.Table
+        val event = when (modeTable.tab) {
+            BlockView.Table.Tab.CELL -> {
+                toggleSelection(target = cell.getId())
+                mode = modeTable.copy(
+                    initialTargets = currentSelection(),
+                    targets = currentSelection()
+                )
+
+                ControlPanelMachine.Event.SimpleTableWidget.ShowCellTab(
+                    cellItems = getSimpleTableWidgetItems(),
+                    tableId = cell.tableId,
+                    cellSize = currentSelection().size
+                )
+            }
+            BlockView.Table.Tab.COLUMN -> {
+                val columnCellIds = tableBlock.getIdsInColumn(index = cell.columnIndex)
+                if (isSelected(cell.getId())) {
+                    unselect(columnCellIds)
+                } else {
+                    select(columnCellIds)
+                }
+
+                val selectedColumns = mutableSetOf<Id>()
+                tableBlock.cells.forEach {
+                    if (currentSelection().contains(it.getId())) {
+                        selectedColumns.add(it.columnId)
+                    }
+                }
+
+                mode = modeTable.copy(
+                    targets = currentSelection()
+                )
+
+                ControlPanelMachine.Event.SimpleTableWidget.ShowColumnTab(
+                    columnItems = getSimpleTableWidgetColumn(),
+                    tableId = cell.tableId,
+                    columnsSize = selectedColumns.size
+                )
+            }
+            BlockView.Table.Tab.ROW -> {
+                val rowCellIds = tableBlock.getIdsInRow(index = cell.rowIndex)
+                if (isSelected(cell.getId())) {
+                    unselect(rowCellIds)
+                } else {
+                    select(rowCellIds)
+                }
+                val selectedRows = mutableSetOf<Id>()
+                tableBlock.cells.forEach {
+                    if (currentSelection().contains(it.getId())) {
+                        selectedRows.add(it.rowId)
+                    }
+                }
+                mode = modeTable.copy(
+                    targets = currentSelection()
+                )
+
+                ControlPanelMachine.Event.SimpleTableWidget.ShowRowTab(
+                    rowItems = getSimpleTableWidgetRow(),
+                    tableId = cell.tableId,
+                    rowsSize = selectedRows.size
+                )
+            }
+        }
         if (currentSelection().isEmpty()) {
             proceedWithExitingTableMode()
         } else {
-            val tableBlock = views.find { it.id == tableId } as BlockView.Table
-            val selectedCells = tableBlock.cells.mapNotNull {
-                if (currentSelection().contains(it.getId())) it else null
-            }
             viewModelScope.launch {
                 orchestrator.stores.views.update(
                     views.updateTableBlockSelection(
@@ -6192,16 +6287,85 @@ class EditorViewModel(
                     )
                 )
                 renderCommand.send(Unit)
+                controlPanelInteractor.onEvent(event)
             }
-            controlPanelInteractor.onEvent(
-                ControlPanelMachine.Event.SimpleTableWidget.Show(
-                    cellItems = listOf(cell).getSimpleTableWidgetItems(),
-                    rowItems = emptyList(),
-                    columnItems = emptyList(),
-                    cells = selectedCells,
-                    tableId = cell.tableId
+        }
+    }
+
+    private fun proceedWithUpdateTabInTableMode(
+        tableId: Id,
+        tab: BlockView.Table.Tab,
+        modeTable: EditorMode.Table
+    ) {
+        val tableBlock = views.find { it.id == tableId } as? BlockView.Table
+        if (tableBlock == null) {
+            Timber.e("Couldn't find table block by id:$tableId")
+            return
+        }
+        val event = when (tab) {
+            BlockView.Table.Tab.CELL -> {
+                clearSelections()
+                select(modeTable.initialTargets.toList())
+                mode = modeTable.copy(
+                    initialTargets = currentSelection(),
+                    targets = currentSelection(),
+                    tab = BlockView.Table.Tab.CELL
                 )
-            )
+                ControlPanelMachine.Event.SimpleTableWidget.ShowCellTab(
+                    cellItems = getSimpleTableWidgetItems(),
+                    tableId = tableId,
+                    cellSize = currentSelection().size
+                )
+            }
+            BlockView.Table.Tab.COLUMN -> {
+                clearSelections()
+                select(modeTable.initialTargets.toList())
+                val selectedColumns = tableBlock.getAllSelectedColumns(
+                    selectedCellsIds = currentSelection()
+                )
+                select(selectedColumns.columns)
+                mode = modeTable.copy(
+                    targets = currentSelection(),
+                    tab = BlockView.Table.Tab.COLUMN
+                )
+                ControlPanelMachine.Event.SimpleTableWidget.ShowColumnTab(
+                    columnItems = getSimpleTableWidgetColumn(),
+                    tableId = tableId,
+                    columnsSize = selectedColumns.count
+                )
+            }
+            BlockView.Table.Tab.ROW -> {
+                clearSelections()
+                select(modeTable.initialTargets.toList())
+                val selectedRows = tableBlock.getAllSelectedRows(
+                    selectedCellsIds = currentSelection()
+                )
+                select(selectedRows.rows)
+                mode = modeTable.copy(
+                    targets = currentSelection(),
+                    tab = BlockView.Table.Tab.ROW
+                )
+                ControlPanelMachine.Event.SimpleTableWidget.ShowRowTab(
+                    rowItems = getSimpleTableWidgetRow(),
+                    tableId = tableId,
+                    rowsSize = selectedRows.count
+                )
+            }
+        }
+        if (currentSelection().isEmpty()) {
+            proceedWithExitingTableMode()
+        } else {
+            viewModelScope.launch {
+                orchestrator.stores.views.update(
+                    views.updateTableBlockTab(
+                        tableId = tableId,
+                        selection = currentSelection().toList(),
+                        tab = tab
+                    )
+                )
+                renderCommand.send(Unit)
+                controlPanelInteractor.onEvent(event)
+            }
         }
     }
 

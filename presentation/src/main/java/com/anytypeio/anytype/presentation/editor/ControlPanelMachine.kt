@@ -247,12 +247,22 @@ sealed class ControlPanelMachine {
         }
 
         sealed class SimpleTableWidget : Event() {
-            data class Show(
+            data class ShowCellTab(
                 val tableId: Id,
-                val cells: List<BlockView.Table.Cell>,
                 val cellItems: List<SimpleTableWidgetItem> = emptyList(),
+                val cellSize: Int
+            ) : SimpleTableWidget()
+
+            data class ShowColumnTab(
+                val tableId: Id,
+                val columnItems: List<SimpleTableWidgetItem> = emptyList(),
+                val columnsSize: Int
+            ) : SimpleTableWidget()
+
+            data class ShowRowTab(
+                val tableId: Id,
                 val rowItems: List<SimpleTableWidgetItem> = emptyList(),
-                val columnItems: List<SimpleTableWidgetItem> = emptyList()
+                val rowsSize: Int
             ) : SimpleTableWidget()
 
             data class Hide(val tableId: Id) : SimpleTableWidget()
@@ -1012,47 +1022,44 @@ sealed class ControlPanelMachine {
             event: Event.SimpleTableWidget,
             state: ControlPanelState
         ): ControlPanelState = when (event) {
-            is Event.SimpleTableWidget.Show -> {
-                state.copy(
-                    simpleTableWidget = state.simpleTableWidget.copy(
-                        isVisible = true,
-                        tableId = event.tableId,
-                        cells = event.cells,
-                        cellItems = event.cellItems,
-                        rowItems = event.rowItems,
-                        columnItems = event.columnItems
-                    ),
-                    cellsSelectTopWidget = state.cellsSelectTopWidget.copy(
-                        isVisible = true,
-                        count = event.cells.size
-                    ),
-                    mainToolbar = Toolbar.Main.reset(),
-                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
-                    styleExtraToolbar = Toolbar.Styling.Extra.reset(),
-                    styleTextToolbar = Toolbar.Styling.reset(),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
-                    navigationToolbar = Toolbar.Navigation.reset(),
-                    slashWidget = Toolbar.SlashWidget.reset(),
-                    mentionToolbar = Toolbar.MentionToolbar.reset(),
-                    multiSelect = Toolbar.MultiSelect.reset()
-                )
-            }
             is Event.SimpleTableWidget.Hide -> {
-                state.copy(
+                init().copy(
                     navigationToolbar = state.navigationToolbar.copy(
                         isVisible = true
-                    ),
-                    multiSelect = Toolbar.MultiSelect.reset(),
-                    mainToolbar = Toolbar.Main.reset(),
-                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
-                    styleExtraToolbar = Toolbar.Styling.Extra.reset(),
-                    styleTextToolbar = Toolbar.Styling.reset(),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
-                    simpleTableWidget = state.simpleTableWidget.copy(
-                        isVisible = false,
-                        tableId = event.tableId
-                    ),
-                    cellsSelectTopWidget = Toolbar.CellSelection.reset()
+                    )
+                )
+            }
+            is Event.SimpleTableWidget.ShowCellTab -> {
+                init().copy(
+                    simpleTableWidget = Toolbar.SimpleTableWidget(
+                        isVisible = true,
+                        tableId = event.tableId,
+                        cellItems = event.cellItems,
+                        selectedCount = event.cellSize,
+                        tab = BlockView.Table.Tab.CELL
+                    )
+                )
+            }
+            is Event.SimpleTableWidget.ShowColumnTab -> {
+                init().copy(
+                    simpleTableWidget = Toolbar.SimpleTableWidget(
+                        isVisible = true,
+                        tableId = event.tableId,
+                        columnItems = event.columnItems,
+                        selectedCount = event.columnsSize,
+                        tab = BlockView.Table.Tab.COLUMN
+                    )
+                )
+            }
+            is Event.SimpleTableWidget.ShowRowTab -> {
+                init().copy(
+                    simpleTableWidget = Toolbar.SimpleTableWidget(
+                        isVisible = true,
+                        tableId = event.tableId,
+                        rowItems = event.rowItems,
+                        selectedCount = event.rowsSize,
+                        tab = BlockView.Table.Tab.ROW
+                    )
                 )
             }
         }
@@ -1070,7 +1077,7 @@ sealed class ControlPanelMachine {
                 Timber.i(
                     "REDUCER, EVENT:${
                         event::class.qualifiedName?.substringAfter("Event.")
-                    }"
+                    }:\n${event.toPrettyString()}"
                 )
             }
         }

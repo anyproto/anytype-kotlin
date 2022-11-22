@@ -34,7 +34,11 @@ import com.anytypeio.anytype.presentation.mapper.toVideoView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
+import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
+import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
+import com.anytypeio.anytype.presentation.relations.CoverWrapper
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
 import javax.inject.Inject
@@ -1455,32 +1459,8 @@ class DefaultBlockViewRenderer @Inject constructor(
 
         check(rootContent is Content.Smart)
 
-        var coverColor: CoverColor? = null
-        var coverImage: Url? = null
-        var coverGradient: String? = null
-
-        when (val type = rootDetails?.coverType?.toInt()) {
-            CoverType.UPLOADED_IMAGE.code -> {
-                coverImage = rootDetails.coverId?.let { id ->
-                    urlBuilder.image(id)
-                }
-            }
-            CoverType.BUNDLED_IMAGE.code -> {
-                val hash = rootDetails.coverId?.let { id ->
-                    coverImageHashProvider.provide(id)
-                }
-                if (hash != null) coverImage = urlBuilder.image(hash)
-            }
-            CoverType.COLOR.code -> {
-                coverColor = rootDetails.coverId?.let { id ->
-                    CoverColor.values().find { it.code == id }
-                }
-            }
-            CoverType.GRADIENT.code -> {
-                coverGradient = rootDetails.coverId
-            }
-            else -> Timber.d("Missing cover type: $type")
-        }
+        val coverContainer = BlockFieldsCoverWrapper(rootDetails)
+            .getCover(urlBuilder, coverImageHashProvider)
 
         val layoutCode = details.details[root.id]?.layout?.toInt()
 
@@ -1519,9 +1499,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     },
                     isFocused = block.id == focus.id,
                     cursor = cursor,
-                    coverColor = coverColor,
-                    coverImage = coverImage,
-                    coverGradient = coverGradient,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 )
@@ -1533,9 +1513,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     text = content.text,
                     isFocused = block.id == focus.id,
                     cursor = cursor,
-                    coverColor = coverColor,
-                    coverImage = coverImage,
-                    coverGradient = coverGradient,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
                     isChecked = content.isChecked == true,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
@@ -1554,9 +1534,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     },
                     isFocused = block.id == focus.id,
                     cursor = cursor,
-                    coverColor = coverColor,
-                    coverImage = coverImage,
-                    coverGradient = coverGradient,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 )
@@ -1577,9 +1557,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     },
                     isFocused = block.id == focus.id,
                     cursor = cursor,
-                    coverColor = coverColor,
-                    coverImage = coverImage,
-                    coverGradient = coverGradient,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 )
@@ -1739,47 +1719,19 @@ class DefaultBlockViewRenderer @Inject constructor(
         obj: ObjectWrapper.Basic,
         urlBuilder: UrlBuilder
     ): BlockView.LinkToObject.Default.Card.Cover? {
-        return when (obj.coverType) {
-            CoverType.UPLOADED_IMAGE -> {
-                val url = obj.coverId?.let { id -> urlBuilder.image(id) }
-                if (url != null) {
-                    BlockView.LinkToObject.Default.Card.Cover.Image(url = url)
-                } else {
-                    null
-                }
-            }
-            CoverType.BUNDLED_IMAGE -> {
-                val hash = obj.coverId?.let { id ->
-                    coverImageHashProvider.provide(id)
-                }
-                if (hash != null) {
-                    BlockView.LinkToObject.Default.Card.Cover.Image(url = urlBuilder.image(hash))
-                } else {
-                    null
-                }
-            }
-            CoverType.COLOR -> {
-                val coverColor = obj.coverId?.let { id ->
-                    CoverColor.values().find { it.code == id }
-                }
-                if (coverColor != null) {
-                    BlockView.LinkToObject.Default.Card.Cover.Color(color = coverColor)
-                } else {
-                    null
-                }
-            }
-            CoverType.GRADIENT -> {
-                val coverGradient = obj.coverId
-                if (coverGradient != null) {
-                    BlockView.LinkToObject.Default.Card.Cover.Gradient(
-                        gradient = coverGradient
-                    )
-                } else {
-                    null
-                }
-            }
-            else -> null
-        }
+        val coverContainer =
+            BasicObjectCoverWrapper(obj).getCover(urlBuilder, coverImageHashProvider)
+
+        if (coverContainer.coverImage != null)
+            return BlockView.LinkToObject.Default.Card.Cover.Image(coverContainer.coverImage)
+
+        if (coverContainer.coverGradient != null)
+            return BlockView.LinkToObject.Default.Card.Cover.Gradient(coverContainer.coverGradient)
+
+        if (coverContainer.coverColor != null)
+            return BlockView.LinkToObject.Default.Card.Cover.Color(coverContainer.coverColor)
+
+        return null
     }
 
     private fun linkToObjectCard(
@@ -2054,7 +2006,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         null
                     }
                 } else {
-                   null
+                    null
                 }
                 cells.add(
                     BlockView.Table.Cell(

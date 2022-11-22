@@ -47,6 +47,7 @@ import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
@@ -79,6 +80,9 @@ abstract class TestObjectSetSetup {
     private lateinit var setDataViewSource: SetDataViewSource
 
     lateinit var urlBuilder: UrlBuilder
+
+    @Mock
+    lateinit var coverImageHashProvider: CoverImageHashProvider
 
     @Mock
     lateinit var repo: BlockRepository
@@ -187,6 +191,7 @@ abstract class TestObjectSetSetup {
             setObjectDetails = setObjectDetails,
             updateText = updateText,
             urlBuilder = urlBuilder,
+            coverImageHashProvider = coverImageHashProvider,
             session = session,
             dispatcher = dispatcher,
             reducer = reducer,

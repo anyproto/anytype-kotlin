@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
@@ -41,6 +42,7 @@ class ObjectSetViewModelFactory(
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
     private val objectSetRecordCache: ObjectSetRecordCache,
+    private val coverImageHashProvider: CoverImageHashProvider,
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
     private val analytics: Analytics,
@@ -70,6 +72,7 @@ class ObjectSetViewModelFactory(
             dispatcher = dispatcher,
             delegator = delegator,
             objectSetRecordCache = objectSetRecordCache,
+            coverImageHashProvider = coverImageHashProvider,
             urlBuilder = urlBuilder,
             session = session,
             analytics = analytics,

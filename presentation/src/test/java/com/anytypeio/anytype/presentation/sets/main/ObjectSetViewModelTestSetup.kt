@@ -43,6 +43,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
@@ -121,6 +122,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var repo: BlockRepository
 
     @Mock
+    lateinit var coverImageHashProvider: CoverImageHashProvider
+
+    @Mock
     lateinit var subscriptionEventChannel: SubscriptionEventChannel
 
     val dispatcher = Dispatcher.Default<Payload>()
@@ -163,6 +167,7 @@ open class ObjectSetViewModelTestSetup {
         delegator = delegator,
         reducer = reducer,
         objectSetRecordCache = cache,
+        coverImageHashProvider = coverImageHashProvider,
         urlBuilder = urlBuilder,
         session = session,
         analytics = analytics,
@@ -259,7 +264,7 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubGetTemplates(
         type: String,
-        templates : List<Id> = emptyList()
+        templates: List<Id> = emptyList()
     ) {
         getTemplates.stub {
             onBlocking {

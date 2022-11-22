@@ -51,6 +51,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -65,7 +66,11 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -115,7 +120,9 @@ interface ObjectSetSubComponent {
     fun objectUnsplashComponent(): UnsplashSubComponent.Builder
 }
 
-@Module
+@Module(
+   includes = [ObjectSetModule.Bindings::class]
+)
 object ObjectSetModule {
 
     @JvmStatic
@@ -143,6 +150,7 @@ object ObjectSetModule {
         delegator: Delegator<Action>,
         objectSetRecordCache: ObjectSetRecordCache,
         urlBuilder: UrlBuilder,
+        coverImageHashProvider: CoverImageHashProvider,
         session: ObjectSetSession,
         analytics: Analytics,
         downloadUnsplashImage: DownloadUnsplashImage,
@@ -168,6 +176,7 @@ object ObjectSetModule {
         dispatcher = dispatcher,
         delegator = delegator,
         objectSetRecordCache = objectSetRecordCache,
+        coverImageHashProvider = coverImageHashProvider,
         urlBuilder = urlBuilder,
         session = session,
         analytics = analytics,
@@ -465,4 +474,14 @@ object ObjectSetModule {
     ): DuplicateObject = DuplicateObject(
         repo = repo
     )
+
+    @Module
+    interface Bindings {
+
+        @PerScreen
+        @Binds
+        fun bindCoverImageHashProvider(
+            defaultProvider: DefaultCoverImageHashProvider
+        ): CoverImageHashProvider
+    }
 }

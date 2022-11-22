@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.toCheckboxView
@@ -81,13 +82,14 @@ fun DV.tabs(activeViewerId: String? = null): List<ViewerTabView> {
 
 suspend fun DVViewer.render(
     builder: UrlBuilder,
+    coverImageHashProvider: CoverImageHashProvider,
     useFallbackView: Boolean = false,
     objects: List<Id>,
     details: Map<Id, Block.Fields>,
     dataViewRelations: List<Relation>,
     store: ObjectStore
 ): ObjectSetViewState {
-    return when(type) {
+    return when (type) {
         DVViewerType.GRID -> {
             buildGridView(
                 dataViewRelations = dataViewRelations,
@@ -105,6 +107,7 @@ suspend fun DVViewer.render(
                         objects = objects,
                         details = details,
                         relations = dataViewRelations,
+                        coverImageHashProvider = coverImageHashProvider,
                         urlBuilder = builder,
                         store = store
                     ),
@@ -196,33 +199,14 @@ private suspend fun DVViewer.buildGridView(
 fun title(
     title: Block,
     ctx: Id,
+    coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     details: Map<Id, Block.Fields>
 ): BlockView.Title.Basic {
 
     val objectDetails = details[ctx]
-
-    var coverColor: CoverColor? = null
-    var coverImage: Url? = null
-    var coverGradient: String? = null
-
-    when (val type = objectDetails?.coverType?.toInt()) {
-        CoverType.UPLOADED_IMAGE.code -> {
-            coverImage = objectDetails.coverId?.let { id ->
-                urlBuilder.image(id)
-            }
-        }
-        CoverType.COLOR.code -> {
-            coverColor = objectDetails.coverId?.let { id ->
-                CoverColor.values().find { it.code == id }
-            }
-        }
-        CoverType.GRADIENT.code -> {
-            coverGradient = objectDetails.coverId
-        }
-        else -> Timber.d("Missing cover type: $type")
-    }
-
+    val coverContainer = BlockFieldsCoverWrapper(objectDetails)
+        .getCover(urlBuilder, coverImageHashProvider)
 
     return BlockView.Title.Basic(
         id = title.id,
@@ -234,9 +218,9 @@ fun title(
             else
                 null
         },
-        coverImage = coverImage,
-        coverColor = coverColor,
-        coverGradient = coverGradient
+        coverImage = coverContainer.coverImage,
+        coverColor = coverContainer.coverColor,
+        coverGradient = coverContainer.coverGradient
     )
 }
 

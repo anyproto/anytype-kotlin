@@ -46,6 +46,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -103,6 +104,7 @@ class ObjectSetViewModel(
     private val delegator: Delegator<Action>,
     private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
+    private val coverImageHashProvider: CoverImageHashProvider,
     private val session: ObjectSetSession,
     private val analytics: Analytics,
     private val getTemplates: GetTemplates,
@@ -168,6 +170,7 @@ class ObjectSetViewModel(
                 _header.value = set.blocks.title()?.let {
                     title(
                         ctx = context,
+                        coverImageHashProvider = coverImageHashProvider,
                         urlBuilder = urlBuilder,
                         details = set.details,
                         title = it
@@ -227,6 +230,7 @@ class ObjectSetViewModel(
                 val dv = state.dv
                 Timber.d("FLOW:: Rendering")
                 (dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull())?.render(
+                    coverImageHashProvider = coverImageHashProvider,
                     builder = urlBuilder,
                     objects = db.objects,
                     dataViewRelations = dv.relations,

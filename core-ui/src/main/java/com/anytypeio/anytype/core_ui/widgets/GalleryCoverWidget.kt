@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.tint
-import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.bumptech.glide.Glide
@@ -23,11 +22,8 @@ class GalleryCoverWidget @JvmOverloads constructor(
         when (cover) {
             is CoverView.Color -> {
                 setImageDrawable(null)
-                val value = CoverColor.values().find { it.code == cover.color }
-                if (value != null) {
-                    setBackgroundResource(R.drawable.cover_solid_shape_rounded)
-                    tint(value.color)
-                }
+                setBackgroundResource(R.drawable.cover_solid_shape_rounded)
+                tint(cover.coverColor.color)
             }
             is CoverView.Gradient -> {
                 setImageDrawable(null)

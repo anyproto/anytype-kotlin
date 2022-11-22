@@ -9,5 +9,6 @@ enum class CoverType(val code: Int) {
     UPLOADED_IMAGE(1),
     COLOR(2),
     GRADIENT(3),
-    BUNDLED_IMAGE(4)
+    BUNDLED_IMAGE(4),
+    UNSPLASH_IMAGE(5)
 }

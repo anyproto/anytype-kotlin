@@ -75,9 +75,9 @@ class TableBlockHolder(
     }
 
     fun bind(item: BlockView.Table) {
+        applyRowCount(item)
         applySelection(item)
         applyBackground(item)
-        applyRowCount(item)
         applyCells(item)
         updateCellsSelection(item)
     }
@@ -89,7 +89,6 @@ class TableBlockHolder(
         payloads.forEach { payload ->
             if (payload.selectionChanged()) applySelection(item)
             if (payload.backgroundColorChanged()) applyBackground(item)
-            if (payload.tableRowCountChanged()) applyRowCount(item)
             if (payload.tableCellsChanged()) applyCells(item)
             if (payload.tableCellsSelectionChanged()) updateCellsSelection(item)
         }

@@ -17,9 +17,8 @@ import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSe
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetColumn
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetItems
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRow
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetCellItems
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRowItems
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
@@ -81,10 +80,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 ListenerType.TableEmptyCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[0].id,
-                        columnId = columns[1].id,
-                        rowIndex = BlockView.Table.RowIndex(0),
-                        columnIndex = BlockView.Table.ColumnIndex(1),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[0].id),
+                            index = BlockView.Table.RowIndex(0),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[1].id),
+                            index = BlockView.Table.ColumnIndex(1)
+                        ),
                         block = null,
                         tableId = table.id
                     )
@@ -93,10 +97,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 ListenerType.TableEmptyCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[1].id,
-                        columnId = columns[0].id,
-                        rowIndex = BlockView.Table.RowIndex(1),
-                        columnIndex = BlockView.Table.ColumnIndex(0),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[1].id),
+                            index = BlockView.Table.RowIndex(1),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[0].id),
+                            index = BlockView.Table.ColumnIndex(0)
+                        ),
                         block = null,
                         tableId = table.id
                     )
@@ -147,10 +156,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[0].id,
-                        columnId = columns[1].id,
-                        rowIndex = BlockView.Table.RowIndex(0),
-                        columnIndex = BlockView.Table.ColumnIndex(1),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[0].id),
+                            index = BlockView.Table.RowIndex(0),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[1].id),
+                            index = BlockView.Table.ColumnIndex(1)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[0].id,
                             text = cells[0].content.asText().text
@@ -162,10 +176,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[1].id,
-                        columnId = columns[0].id,
-                        rowIndex = BlockView.Table.RowIndex(1),
-                        columnIndex = BlockView.Table.ColumnIndex(0),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[1].id),
+                            index = BlockView.Table.RowIndex(1),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[0].id),
+                            index = BlockView.Table.ColumnIndex(0)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[1].id,
                             text = cells[1].content.asText().text
@@ -279,10 +298,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 clicked = ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[1].id,
-                        columnId = columns[1].id,
-                        rowIndex = BlockView.Table.RowIndex(1),
-                        columnIndex = BlockView.Table.ColumnIndex(1),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[1].id),
+                            index = BlockView.Table.RowIndex(1),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[1].id),
+                            index = BlockView.Table.ColumnIndex(1)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[4].id,
                             text = cells[4].content.asText().text
@@ -295,10 +319,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 clicked = ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[2].id,
-                        columnId = columns[2].id,
-                        rowIndex = BlockView.Table.RowIndex(2),
-                        columnIndex = BlockView.Table.ColumnIndex(2),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[2].id),
+                            index = BlockView.Table.RowIndex(2),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[2].id),
+                            index = BlockView.Table.ColumnIndex(2)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[8].id,
                             text = cells[8].content.asText().text
@@ -311,10 +340,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 clicked = ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[1].id,
-                        columnId = columns[1].id,
-                        rowIndex = BlockView.Table.RowIndex(1),
-                        columnIndex = BlockView.Table.ColumnIndex(1),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[1].id),
+                            index = BlockView.Table.RowIndex(1),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[1].id),
+                            index = BlockView.Table.ColumnIndex(1)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[4].id,
                             text = cells[4].content.asText().text
@@ -388,10 +422,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 clicked = ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[2].id,
-                        columnId = columns[2].id,
-                        rowIndex = BlockView.Table.RowIndex(2),
-                        columnIndex = BlockView.Table.ColumnIndex(2),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[2].id),
+                            index = BlockView.Table.RowIndex(2),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[2].id),
+                            index = BlockView.Table.ColumnIndex(2)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[8].id,
                             text = cells[8].content.asText().text
@@ -472,10 +511,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 clicked = ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[2].id,
-                        columnId = columns[2].id,
-                        rowIndex = BlockView.Table.RowIndex(2),
-                        columnIndex = BlockView.Table.ColumnIndex(2),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[2].id),
+                            index = BlockView.Table.RowIndex(2),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[2].id),
+                            index = BlockView.Table.ColumnIndex(2)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[8].id,
                             text = cells[8].content.asText().text
@@ -488,10 +532,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onClickListener(
                 clicked = ListenerType.TableTextCell(
                     cell = BlockView.Table.Cell(
-                        rowId = rows[2].id,
-                        columnId = columns[2].id,
-                        rowIndex = BlockView.Table.RowIndex(2),
-                        columnIndex = BlockView.Table.ColumnIndex(2),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(rows[2].id),
+                            index = BlockView.Table.RowIndex(2),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(columns[2].id),
+                            index = BlockView.Table.ColumnIndex(2)
+                        ),
                         block = BlockView.Text.Paragraph(
                             id = cells[8].id,
                             text = cells[8].content.asText().text
@@ -561,9 +610,9 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
                         cell = cells[13],
-                        rows = rows,
+                        row = rows[3],
                         rowIndex = 3,
-                        columns = columns,
+                        column = columns[1],
                         columnIndex = 1
                     )
                 )
@@ -573,9 +622,9 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
                         cell = cells[11],
-                        rows = rows,
+                        row = rows[2],
                         rowIndex = 2,
-                        columns = columns,
+                        column = columns[3],
                         columnIndex = 3
                     )
                 )
@@ -621,10 +670,23 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             cells[15].id
         )
 
+        var ids = listOf(
+            BlockView.Table.ColumnId(columns[0].id),
+            BlockView.Table.ColumnId(columns[1].id),
+            BlockView.Table.ColumnId(columns[3].id)
+        )
         val expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = getSimpleTableWidgetColumn(),
+            columnItems = listOf(
+                SimpleTableWidgetItem.Column.Delete(ids),
+                SimpleTableWidgetItem.Column.Copy(ids),
+                SimpleTableWidgetItem.Column.Duplicate(ids),
+                SimpleTableWidgetItem.Column.ClearContents(ids),
+                SimpleTableWidgetItem.Column.Color(ids),
+                SimpleTableWidgetItem.Column.Style(ids),
+                SimpleTableWidgetItem.Column.ResetStyle(ids)
+            ),
             selectedCount = 3,
             tab = BlockView.Table.Tab.COLUMN
         )
@@ -651,9 +713,9 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
                         cell = cells[15],
-                        rows = rows,
+                        row = rows[3],
                         rowIndex = 3,
-                        columns = columns,
+                        column = columns[3],
                         columnIndex = 3
                     )
                 )
@@ -663,9 +725,9 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
                         cell = cells[0],
-                        rows = rows,
+                        row = rows[0],
                         rowIndex = 0,
-                        columns = columns,
+                        column = columns[0],
                         columnIndex = 0
                     )
                 )
@@ -675,9 +737,9 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
                         cell = cells[2],
-                        rows = rows,
+                        row = rows[0],
                         rowIndex = 0,
-                        columns = columns,
+                        column = columns[2],
                         columnIndex = 2
                     )
                 )
@@ -711,10 +773,23 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             cells[14].id
         )
 
+        ids = listOf(
+            BlockView.Table.ColumnId(columns[1].id),
+            BlockView.Table.ColumnId(columns[2].id)
+        )
+
         val expectedSimpleTableWidget1 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = getSimpleTableWidgetColumn(),
+            columnItems = listOf(
+                SimpleTableWidgetItem.Column.Delete(ids),
+                SimpleTableWidgetItem.Column.Copy(ids),
+                SimpleTableWidgetItem.Column.Duplicate(ids),
+                SimpleTableWidgetItem.Column.ClearContents(ids),
+                SimpleTableWidgetItem.Column.Color(ids),
+                SimpleTableWidgetItem.Column.Style(ids),
+                SimpleTableWidgetItem.Column.ResetStyle(ids)
+            ),
             selectedCount = 2,
             tab = BlockView.Table.Tab.COLUMN
         )
@@ -775,10 +850,24 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             cells[10].id
         )
 
+        var idsRow = listOf(
+            BlockView.Table.RowId(rows[0].id),
+            BlockView.Table.RowId(rows[3].id),
+            BlockView.Table.RowId(rows[2].id)
+        )
+
         val expectedSimpleTableWidget2 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = getSimpleTableWidgetRow(),
+            rowItems = listOf(
+                SimpleTableWidgetItem.Row.Delete(idsRow),
+                SimpleTableWidgetItem.Row.Copy(idsRow),
+                SimpleTableWidgetItem.Row.Duplicate(idsRow),
+                SimpleTableWidgetItem.Row.ClearContents(idsRow),
+                SimpleTableWidgetItem.Row.Color(idsRow),
+                SimpleTableWidgetItem.Row.Style(idsRow),
+                SimpleTableWidgetItem.Row.ResetStyle(idsRow)
+            ),
             selectedCount = 3,
             tab = BlockView.Table.Tab.ROW
         )
@@ -805,9 +894,9 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
                         cell = cells[12],
-                        rows = rows,
+                        row = rows[3],
                         rowIndex = 3,
-                        columns = columns,
+                        column = columns[0],
                         columnIndex = 0
                     )
                 )
@@ -817,9 +906,9 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
                         cell = cells[10],
-                        rows = rows,
+                        row = rows[2],
                         rowIndex = 2,
-                        columns = columns,
+                        column = columns[2],
                         columnIndex = 2
                     )
                 )
@@ -844,10 +933,24 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             cells[2].id,
             cells[3].id
         )
+
+        idsRow = listOf(BlockView.Table.RowId(rows[0].id))
+
         val expectedSimpleTableWidget3 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = getSimpleTableWidgetRow(),
+            rowItems = listOf(
+                SimpleTableWidgetItem.Row.InsertAbove(BlockView.Table.RowId(rows[0].id)),
+                SimpleTableWidgetItem.Row.InsertBelow(BlockView.Table.RowId(rows[0].id)),
+                SimpleTableWidgetItem.Row.MoveDown(BlockView.Table.RowId(rows[0].id)),
+                SimpleTableWidgetItem.Row.Delete(idsRow),
+                SimpleTableWidgetItem.Row.Copy(idsRow),
+                SimpleTableWidgetItem.Row.Duplicate(idsRow),
+                SimpleTableWidgetItem.Row.ClearContents(idsRow),
+                SimpleTableWidgetItem.Row.Color(idsRow),
+                SimpleTableWidgetItem.Row.Style(idsRow),
+                SimpleTableWidgetItem.Row.ResetStyle(idsRow)
+            ),
             selectedCount = 1,
             tab = BlockView.Table.Tab.ROW
         )
@@ -892,7 +995,12 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val expectedSimpleTableWidget4 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            cellItems = getSimpleTableWidgetItems(),
+            cellItems = listOf(
+                SimpleTableWidgetItem.Cell.ClearContents,
+                SimpleTableWidgetItem.Cell.Color,
+                SimpleTableWidgetItem.Cell.Style,
+                SimpleTableWidgetItem.Cell.ResetStyle
+            ),
             selectedCount = 3,
             tab = BlockView.Table.Tab.CELL
         )
@@ -912,18 +1020,341 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         )
     }
 
+    /**
+     * Выделена 1 колонка, стоит на позиции 0
+     */
+    @Test
+    fun `when selected one column and column index is zero - should have proper menu items`() {
+        //SETUP
+        val columns = StubTableColumns(size = 3)
+        val rows = StubTableRows(size = 2)
+        val cells = StubTableCells(columns = columns, rows = rows)
+        val columnLayout = StubLayoutColumns(children = columns.map { it.id })
+        val rowLayout = StubLayoutRows(children = rows.map { it.id })
+        val table = StubTable(id = tableId, children = listOf(columnLayout.id, rowLayout.id))
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val page = StubSmartBlock(id = root, children = listOf(header.id, table.id))
+        val document =
+            listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+        stubInterceptEvents()
+        stubOpenDocument(document)
+
+        //TESTING Focus Cell[0] - Enter Table Mode - Click Tab COLUMN
+        val vm = buildViewModel()
+        vm.apply {
+            onStart(root)
+
+            onBlockFocusChanged(
+                id = cells[0].id,
+                hasFocus = true
+            )
+
+            onBlockToolbarBlockActionsClicked()
+
+            onBlockFocusChanged(
+                id = cells[0].id,
+                hasFocus = false
+            )
+
+            onSimpleTableWidgetItemClicked(
+                item = SimpleTableWidgetItem.Tab.Column
+            )
+        }
+
+        //EXPECTED
+        var expectedMode = Editor.Mode.Table(
+            tableId = table.id,
+            initialTargets = setOf(cells[0].id),
+            targets = setOf(
+                cells[0].id,
+                cells[3].id
+            ),
+            tab = BlockView.Table.Tab.COLUMN
+        )
+        var expectedSelectedState = listOf(
+            cells[0].id,
+            cells[3].id
+        )
+
+        var id = BlockView.Table.ColumnId(columns[0].id)
+        var ids = listOf(id)
+        var expectedItems = listOf(
+            SimpleTableWidgetItem.Column.InsertLeft(id),
+            SimpleTableWidgetItem.Column.InsertRight(id),
+            SimpleTableWidgetItem.Column.MoveRight(id),
+            SimpleTableWidgetItem.Column.Delete(ids),
+            SimpleTableWidgetItem.Column.Copy(ids),
+            SimpleTableWidgetItem.Column.Duplicate(ids),
+            SimpleTableWidgetItem.Column.ClearContents(ids),
+            SimpleTableWidgetItem.Column.Color(ids),
+            SimpleTableWidgetItem.Column.Style(ids),
+            SimpleTableWidgetItem.Column.ResetStyle(ids)
+        )
+        var expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
+            isVisible = true,
+            tableId = tableId,
+            columnItems = expectedItems,
+            selectedCount = 1,
+            tab = BlockView.Table.Tab.COLUMN
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSelectedState,
+            actual = vm.currentSelection().toList()
+        )
+        assertEquals(
+            expected = expectedMode,
+            actual = vm.mode as Editor.Mode.Table
+        )
+        assertEquals(
+            expected = expectedSimpleTableWidget,
+            actual = vm.controlPanelViewState.value?.simpleTableWidget
+        )
+
+        //TESTING Click Cell[1](select Column 1) - Click Cell[0](unselect Column 0)
+        vm.apply {
+            onClickListener(
+                clicked = ListenerType.TableTextCell(
+                    cell = mapToViewCell(
+                        cell = cells[1],
+                        row = rows[0],
+                        rowIndex = 0,
+                        column = columns[1],
+                        columnIndex = 1
+                    )
+                )
+            )
+
+            onClickListener(
+                clicked = ListenerType.TableTextCell(
+                    cell = mapToViewCell(
+                        cell = cells[0],
+                        row = rows[0],
+                        rowIndex = 0,
+                        column = columns[0],
+                        columnIndex = 0
+                    )
+                )
+            )
+        }
+
+        //EXPECTED
+        expectedMode = Editor.Mode.Table(
+            tableId = table.id,
+            initialTargets = setOf(cells[0].id),
+            targets = setOf(
+                cells[1].id,
+                cells[4].id
+            ),
+            tab = BlockView.Table.Tab.COLUMN
+        )
+        expectedSelectedState = listOf(
+            cells[1].id,
+            cells[4].id
+        )
+
+        id = BlockView.Table.ColumnId(columns[1].id)
+        ids = listOf(id)
+        expectedItems = listOf(
+            SimpleTableWidgetItem.Column.InsertLeft(id),
+            SimpleTableWidgetItem.Column.InsertRight(id),
+            SimpleTableWidgetItem.Column.MoveLeft(id),
+            SimpleTableWidgetItem.Column.MoveRight(id),
+            SimpleTableWidgetItem.Column.Delete(ids),
+            SimpleTableWidgetItem.Column.Copy(ids),
+            SimpleTableWidgetItem.Column.Duplicate(ids),
+            SimpleTableWidgetItem.Column.ClearContents(ids),
+            SimpleTableWidgetItem.Column.Color(ids),
+            SimpleTableWidgetItem.Column.Style(ids),
+            SimpleTableWidgetItem.Column.ResetStyle(ids)
+        )
+        expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
+            isVisible = true,
+            tableId = tableId,
+            columnItems = expectedItems,
+            selectedCount = 1,
+            tab = BlockView.Table.Tab.COLUMN
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSelectedState,
+            actual = vm.currentSelection().toList()
+        )
+        assertEquals(
+            expected = expectedMode,
+            actual = vm.mode as Editor.Mode.Table
+        )
+        assertEquals(
+            expected = expectedSimpleTableWidget,
+            actual = vm.controlPanelViewState.value?.simpleTableWidget
+        )
+
+        //TESTING Click Cell[2](select Column 2) - Click Cell[1](unselect Column 1)
+        vm.apply {
+            onClickListener(
+                clicked = ListenerType.TableTextCell(
+                    cell = mapToViewCell(
+                        cell = cells[2],
+                        row = rows[0],
+                        rowIndex = 0,
+                        column = columns[2],
+                        columnIndex = 2
+                    )
+                )
+            )
+
+            onClickListener(
+                clicked = ListenerType.TableTextCell(
+                    cell = mapToViewCell(
+                        cell = cells[1],
+                        row = rows[0],
+                        rowIndex = 0,
+                        column = columns[1],
+                        columnIndex = 1
+                    )
+                )
+            )
+        }
+
+        //EXPECTED
+        expectedMode = Editor.Mode.Table(
+            tableId = table.id,
+            initialTargets = setOf(cells[0].id),
+            targets = setOf(
+                cells[2].id,
+                cells[5].id
+            ),
+            tab = BlockView.Table.Tab.COLUMN
+        )
+        expectedSelectedState = listOf(
+            cells[2].id,
+            cells[5].id
+        )
+
+        id = BlockView.Table.ColumnId(columns[2].id)
+        ids = listOf(id)
+        expectedItems = listOf(
+            SimpleTableWidgetItem.Column.InsertLeft(id),
+            SimpleTableWidgetItem.Column.InsertRight(id),
+            SimpleTableWidgetItem.Column.MoveLeft(id),
+            SimpleTableWidgetItem.Column.Delete(ids),
+            SimpleTableWidgetItem.Column.Copy(ids),
+            SimpleTableWidgetItem.Column.Duplicate(ids),
+            SimpleTableWidgetItem.Column.ClearContents(ids),
+            SimpleTableWidgetItem.Column.Color(ids),
+            SimpleTableWidgetItem.Column.Style(ids),
+            SimpleTableWidgetItem.Column.ResetStyle(ids)
+        )
+        expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
+            isVisible = true,
+            tableId = tableId,
+            columnItems = expectedItems,
+            selectedCount = 1,
+            tab = BlockView.Table.Tab.COLUMN
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSelectedState,
+            actual = vm.currentSelection().toList()
+        )
+        assertEquals(
+            expected = expectedMode,
+            actual = vm.mode as Editor.Mode.Table
+        )
+        assertEquals(
+            expected = expectedSimpleTableWidget,
+            actual = vm.controlPanelViewState.value?.simpleTableWidget
+        )
+
+        //TESTING Click Cell[0](select Column 0)
+        vm.apply {
+            onClickListener(
+                clicked = ListenerType.TableTextCell(
+                    cell = mapToViewCell(
+                        cell = cells[0],
+                        row = rows[0],
+                        rowIndex = 0,
+                        column = columns[0],
+                        columnIndex = 0
+                    )
+                )
+            )
+        }
+
+        //EXPECTED
+        expectedMode = Editor.Mode.Table(
+            tableId = table.id,
+            initialTargets = setOf(cells[0].id),
+            targets = setOf(
+                cells[2].id,
+                cells[5].id,
+                cells[0].id,
+                cells[3].id
+            ),
+            tab = BlockView.Table.Tab.COLUMN
+        )
+        expectedSelectedState = listOf(
+            cells[0].id,
+            cells[3].id,
+            cells[2].id,
+            cells[5].id
+        )
+
+        ids =
+            listOf(BlockView.Table.ColumnId(columns[0].id), BlockView.Table.ColumnId(columns[2].id))
+        expectedItems = listOf(
+            SimpleTableWidgetItem.Column.Delete(ids),
+            SimpleTableWidgetItem.Column.Copy(ids),
+            SimpleTableWidgetItem.Column.Duplicate(ids),
+            SimpleTableWidgetItem.Column.ClearContents(ids),
+            SimpleTableWidgetItem.Column.Color(ids),
+            SimpleTableWidgetItem.Column.Style(ids),
+            SimpleTableWidgetItem.Column.ResetStyle(ids)
+        )
+        expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
+            isVisible = true,
+            tableId = tableId,
+            columnItems = expectedItems,
+            selectedCount = 2,
+            tab = BlockView.Table.Tab.COLUMN
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedSelectedState,
+            actual = vm.currentSelection().toList()
+        )
+        assertEquals(
+            expected = expectedMode,
+            actual = vm.mode as Editor.Mode.Table
+        )
+        assertEquals(
+            expected = expectedSimpleTableWidget,
+            actual = vm.controlPanelViewState.value?.simpleTableWidget
+        )
+    }
+
     private fun mapToViewCell(
         cell: Block,
-        rows: List<Block>,
+        row: Block,
         rowIndex: Int,
-        columns: List<Block>,
+        column: Block,
         columnIndex: Int
     ): BlockView.Table.Cell {
         return BlockView.Table.Cell(
-            rowId = rows[rowIndex].id,
-            columnId = columns[columnIndex].id,
-            rowIndex = BlockView.Table.RowIndex(rowIndex),
-            columnIndex = BlockView.Table.ColumnIndex(columnIndex),
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(row.id),
+                index = BlockView.Table.RowIndex(rowIndex),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(column.id),
+                index = BlockView.Table.ColumnIndex(columnIndex)
+            ),
             block = BlockView.Text.Paragraph(
                 id = cell.id,
                 text = cell.content.asText().text

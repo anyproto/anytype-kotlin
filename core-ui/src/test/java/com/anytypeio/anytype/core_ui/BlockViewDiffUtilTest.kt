@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui
 
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -9,7 +8,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.MARKUP_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TABLE_CELLS_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TABLE_CELLS_SELECTION_CHANGED
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TABLE_ROW_COUNT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -1747,7 +1745,7 @@ class BlockViewDiffUtilTest {
     }
 
     @Test
-    fun `when table block have different rows size - should be rows size and cells changed payloads`() {
+    fun `when table block have different row lists - should be nullable payload`() {
         //SETUP
         val tableId = MockDataFactory.randomUuid()
 
@@ -1769,7 +1767,39 @@ class BlockViewDiffUtilTest {
         val payload = diff.getChangePayload(0, 0)
 
         //EXPECTED
-        val expectedPayloads = Payload(listOf(TABLE_ROW_COUNT_CHANGED, TABLE_CELLS_CHANGED))
+        val expectedPayloads = null
+
+        //ASSERT
+        assertEquals(
+            actual = payload,
+            expected = expectedPayloads
+        )
+    }
+
+    @Test
+    fun `when table block have different column lists - should be nullable payload`() {
+        //SETUP
+        val tableId = MockDataFactory.randomUuid()
+
+        val oldBlock = StubTableView(
+            tableId = tableId,
+            tab = BlockView.Table.Tab.CELL,
+            rowSize = 10,
+            columnSize = 10
+        )
+        val newBlock = StubTableView(
+            tableId = tableId,
+            tab = BlockView.Table.Tab.CELL,
+            rowSize = 10,
+            columnSize = 11
+        )
+
+        //TESTING
+        val diff = BlockViewDiffUtil(old = listOf(oldBlock), new = listOf(newBlock))
+        val payload = diff.getChangePayload(0, 0)
+
+        //EXPECTED
+        val expectedPayloads = null
 
         //ASSERT
         assertEquals(

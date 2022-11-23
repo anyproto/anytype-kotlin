@@ -1320,8 +1320,8 @@ sealed class BlockView : ViewType {
         override val id: String,
         override val isSelected: Boolean,
         val background: ThemeColor = ThemeColor.DEFAULT,
-        val columns: List<ColumnId>,
-        val rows: List<RowId>,
+        val columns: List<Column>,
+        val rows: List<Row>,
         val cells: List<Cell>,
         val selectedCellsIds: List<Id>,
         val tab: Tab = Tab.CELL
@@ -1329,15 +1329,12 @@ sealed class BlockView : ViewType {
         override fun getViewType(): Int = HOLDER_TABLE
 
         data class Cell(
-            val rowId: Id,
-            val rowIndex: RowIndex,
-            val columnId: Id,
-            val columnIndex: ColumnIndex,
-            val isHeader: Boolean = false,
-            val block: Text.Paragraph?,
-            val tableId: Id
+            val tableId: Id,
+            val row: Row,
+            val column: Column,
+            val block: Text.Paragraph?
         ) {
-            fun getId() = "$rowId-$columnId"
+            fun getId() = "${row.id.value}-${column.id.value}"
         }
 
         data class CellSelection(
@@ -1355,10 +1352,14 @@ sealed class BlockView : ViewType {
         @JvmInline
         value class RowIndex(val value: Int)
 
+        data class Row(val id: RowId, val index: RowIndex, val isHeader: Boolean)
+
         @JvmInline
         value class ColumnId(val value: String)
         @JvmInline
         value class ColumnIndex(val value: Int)
+
+        data class Column(val id: ColumnId, val index: ColumnIndex)
 
         enum class Tab { CELL, COLUMN, ROW }
     }

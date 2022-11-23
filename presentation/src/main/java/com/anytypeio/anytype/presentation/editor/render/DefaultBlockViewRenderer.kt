@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.editor.render
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
-import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectType.Companion.BOOKMARK_TYPE
@@ -11,7 +10,6 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -20,7 +18,6 @@ import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -36,7 +33,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
-import com.anytypeio.anytype.presentation.relations.CoverWrapper
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.view
@@ -1926,20 +1922,28 @@ class DefaultBlockViewRenderer @Inject constructor(
     ): BlockView.Table {
 
         var cells: List<BlockView.Table.Cell> = emptyList()
-        var columnsIds: List<BlockView.Table.ColumnId> = emptyList()
-        var rowsIds: List<BlockView.Table.RowId> = emptyList()
-        var rowCount = 0
+        var rows: List<BlockView.Table.Row> = emptyList()
+        var columns: List<BlockView.Table.Column> = emptyList()
 
         blocks.getValue(block.id).forEach { container ->
             val containerContent = container.content
             if (containerContent !is Content.Layout) return@forEach
             if (containerContent.type == Content.Layout.Type.TABLE_COLUMN) {
-                columnsIds = blocks.getValue(container.id).map { BlockView.Table.ColumnId(it.id) }
+                columns = blocks.getValue(container.id).mapIndexed { index, column ->
+                    BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(column.id),
+                        index = BlockView.Table.ColumnIndex(index)
+                    )
+                }
             }
             if (containerContent.type == Content.Layout.Type.TABLE_ROW) {
-                val rows = blocks.getValue(container.id)
-                rowsIds = rows.map { BlockView.Table.RowId(it.id) }
-                rowCount = rows.size
+                rows = blocks.getValue(container.id).mapIndexed { index, row ->
+                    BlockView.Table.Row(
+                        id = BlockView.Table.RowId(row.id),
+                        index = BlockView.Table.RowIndex(index),
+                        isHeader = (row.content as? Content.TableRow)?.isHeader ?: false
+                    )
+                }
                 cells = tableCells(
                     mode = mode,
                     focus = focus,
@@ -1947,7 +1951,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     details = details,
                     selection = selection,
                     rows = rows,
-                    columnIds = columnsIds,
+                    columns = columns,
                     blocks = blocks,
                     tableId = block.id
                 )
@@ -1955,8 +1959,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
         return BlockView.Table(
             id = block.id,
-            columns = columnsIds,
-            rows = rowsIds,
+            columns = columns,
+            rows = rows,
             cells = cells,
             isSelected = checkIfSelected(
                 mode = mode,
@@ -1971,8 +1975,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private fun tableCells(
         tableId: Id,
         blocks: Map<String, List<Block>>,
-        rows: List<Block>,
-        columnIds: List<BlockView.Table.ColumnId>,
+        rows: List<BlockView.Table.Row>,
+        columns: List<BlockView.Table.Column>,
         mode: EditorMode,
         focus: Focus,
         indent: Int,
@@ -1980,16 +1984,18 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>
     ): List<BlockView.Table.Cell> {
         val cells = mutableListOf<BlockView.Table.Cell>()
-        columnIds.mapIndexed { columnIndex, columnId ->
-            rows.forEachIndexed { rowIndex, row ->
-                val isHeader = (row.content as? Content.TableRow)?.isHeader ?: false
-                val cellId = "${row.id}-${columnId.value}"
-                val rowsChildren = blocks.getValue(row.id)
-                val block = rowsChildren.firstOrNull { it.id == cellId }
-                val paragraph = if (block != null) {
-                    val content = block.content
-                    check(content is Content.Text)
-                    { Timber.e("Table row block content should be Text") }
+        columns.forEach { column ->
+            rows.forEach { row ->
+                val cell = BlockView.Table.Cell(
+                    tableId = tableId,
+                    row = row,
+                    column = column,
+                    block = null
+                )
+                val rowCellBlocks = blocks.getValue(row.id.value)
+                val block = rowCellBlocks.firstOrNull { it.id == cell.getId() }
+                val content = block?.content
+                val paragraph = if (block != null && content is Content.Text) {
                     if (content.style == Content.Text.Style.P) {
                         paragraph(
                             mode = mode,
@@ -2008,17 +2014,11 @@ class DefaultBlockViewRenderer @Inject constructor(
                 } else {
                     null
                 }
-                cells.add(
-                    BlockView.Table.Cell(
-                        rowId = row.id,
-                        rowIndex = BlockView.Table.RowIndex(rowIndex),
-                        columnId = columnId.value,
-                        columnIndex = BlockView.Table.ColumnIndex(columnIndex),
-                        isHeader = isHeader,
-                        tableId = tableId,
-                        block = paragraph
-                    )
-                )
+                if (paragraph != null) {
+                    cells.add(cell.copy(block = paragraph))
+                } else {
+                    cells.add(cell)
+                }
             }
         }
         return cells

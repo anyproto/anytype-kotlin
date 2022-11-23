@@ -143,6 +143,8 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleBackgrou
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleColorBackgroundToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleOtherToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleTextToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
+import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
@@ -157,9 +159,9 @@ import com.anytypeio.anytype.presentation.editor.selection.getAllSelectedColumns
 import com.anytypeio.anytype.presentation.editor.selection.getAllSelectedRows
 import com.anytypeio.anytype.presentation.editor.selection.getIdsInColumn
 import com.anytypeio.anytype.presentation.editor.selection.getIdsInRow
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetColumn
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetItems
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRow
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetColumnItems
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetCellItems
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRowItems
 import com.anytypeio.anytype.presentation.editor.selection.toggleTableMode
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelection
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
@@ -260,7 +262,8 @@ class EditorViewModel(
     private val templateDelegate: EditorTemplateDelegate,
     private val createNewObject: CreateNewObject,
     private val objectToSet: ConvertObjectToSet,
-    private val featureToggles: FeatureToggles
+    private val featureToggles: FeatureToggles,
+    private val tableDelegate: EditorTableDelegate
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -269,6 +272,7 @@ class EditorViewModel(
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
     EditorTemplateDelegate by templateDelegate,
+    EditorTableDelegate by tableDelegate,
     StateReducer<List<Block>, Event> by reducer {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
@@ -3832,7 +3836,7 @@ class EditorViewModel(
                     EditorMode.Edit -> {
                         onTableRowEmptyCellClicked(
                             cellId = clicked.cell.getId(),
-                            rowId = clicked.cell.rowId
+                            rowId = clicked.cell.row.id.value
                         )
                     }
                     EditorMode.Select -> {
@@ -3846,7 +3850,7 @@ class EditorViewModel(
                         if (cellTableId == modeTableId) {
                             onTableRowEmptyCellClicked(
                                 cellId = clicked.cell.getId(),
-                                rowId = clicked.cell.rowId
+                                rowId = clicked.cell.row.id.value
                             )
                             proceedWithClickingOnCellInTableMode(
                                 cell = clicked.cell,
@@ -6085,7 +6089,7 @@ class EditorViewModel(
                     )
                 }
             }
-            SimpleTableWidgetItem.Cell.ClearStyle -> {
+            SimpleTableWidgetItem.Cell.ResetStyle -> {
                 viewModelScope.launch {
                     orchestrator.proxies.intents.send(
                         Intent.Text.ClearStyle(
@@ -6143,6 +6147,17 @@ class EditorViewModel(
                     )
                 }
             }
+            is SimpleTableWidgetItem.Column.InsertLeft -> {
+                viewModelScope.launch {
+                    tableDelegate.onEditorTableEvent(
+                        EditorTableEvent.CreateColumn(
+                            ctx = context,
+                            target = item.column.value,
+                            position = Position.LEFT
+                        )
+                    )
+                }
+            }
             else -> Unit
         }
     }
@@ -6171,7 +6186,7 @@ class EditorViewModel(
             renderCommand.send(Unit)
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.SimpleTableWidget.ShowCellTab(
-                    cellItems = getSimpleTableWidgetItems(),
+                    cellItems = getSimpleTableWidgetCellItems(),
                     tableId = cell.tableId,
                     cellSize = currentSelection().size
                 )
@@ -6222,23 +6237,23 @@ class EditorViewModel(
                 )
 
                 ControlPanelMachine.Event.SimpleTableWidget.ShowCellTab(
-                    cellItems = getSimpleTableWidgetItems(),
+                    cellItems = getSimpleTableWidgetCellItems(),
                     tableId = cell.tableId,
                     cellSize = currentSelection().size
                 )
             }
             BlockView.Table.Tab.COLUMN -> {
-                val columnCellIds = tableBlock.getIdsInColumn(index = cell.columnIndex)
+                val columnCellIds = tableBlock.getIdsInColumn(index = cell.column.index)
                 if (isSelected(cell.getId())) {
                     unselect(columnCellIds)
                 } else {
                     select(columnCellIds)
                 }
 
-                val selectedColumns = mutableSetOf<Id>()
+                val selectedColumns = mutableSetOf<BlockView.Table.Column>()
                 tableBlock.cells.forEach {
                     if (currentSelection().contains(it.getId())) {
-                        selectedColumns.add(it.columnId)
+                        selectedColumns.add(it.column)
                     }
                 }
 
@@ -6247,22 +6262,25 @@ class EditorViewModel(
                 )
 
                 ControlPanelMachine.Event.SimpleTableWidget.ShowColumnTab(
-                    columnItems = getSimpleTableWidgetColumn(),
+                    columnItems = getSimpleTableWidgetColumnItems(
+                        selectedColumns = selectedColumns,
+                        columnsSize = tableBlock.columns.size
+                    ),
                     tableId = cell.tableId,
                     columnsSize = selectedColumns.size
                 )
             }
             BlockView.Table.Tab.ROW -> {
-                val rowCellIds = tableBlock.getIdsInRow(index = cell.rowIndex)
+                val rowCellIds = tableBlock.getIdsInRow(index = cell.row.index)
                 if (isSelected(cell.getId())) {
                     unselect(rowCellIds)
                 } else {
                     select(rowCellIds)
                 }
-                val selectedRows = mutableSetOf<Id>()
+                val selectedRows = mutableSetOf<BlockView.Table.Row>()
                 tableBlock.cells.forEach {
                     if (currentSelection().contains(it.getId())) {
-                        selectedRows.add(it.rowId)
+                        selectedRows.add(it.row)
                     }
                 }
                 mode = modeTable.copy(
@@ -6270,7 +6288,10 @@ class EditorViewModel(
                 )
 
                 ControlPanelMachine.Event.SimpleTableWidget.ShowRowTab(
-                    rowItems = getSimpleTableWidgetRow(),
+                    rowItems = getSimpleTableWidgetRowItems(
+                        selectedRows = selectedRows,
+                        rowsSize = tableBlock.rows.size
+                    ),
                     tableId = cell.tableId,
                     rowsSize = selectedRows.size
                 )
@@ -6312,7 +6333,7 @@ class EditorViewModel(
                     tab = BlockView.Table.Tab.CELL
                 )
                 ControlPanelMachine.Event.SimpleTableWidget.ShowCellTab(
-                    cellItems = getSimpleTableWidgetItems(),
+                    cellItems = getSimpleTableWidgetCellItems(),
                     tableId = tableId,
                     cellSize = currentSelection().size
                 )
@@ -6323,15 +6344,18 @@ class EditorViewModel(
                 val selectedColumns = tableBlock.getAllSelectedColumns(
                     selectedCellsIds = currentSelection()
                 )
-                select(selectedColumns.columns)
+                select(selectedColumns.cellsInColumns)
                 mode = modeTable.copy(
                     targets = currentSelection(),
                     tab = BlockView.Table.Tab.COLUMN
                 )
                 ControlPanelMachine.Event.SimpleTableWidget.ShowColumnTab(
-                    columnItems = getSimpleTableWidgetColumn(),
+                    columnItems = getSimpleTableWidgetColumnItems(
+                        selectedColumns = selectedColumns.selectedColumns,
+                        columnsSize = tableBlock.columns.size
+                    ),
                     tableId = tableId,
-                    columnsSize = selectedColumns.count
+                    columnsSize = selectedColumns.selectedColumns.size
                 )
             }
             BlockView.Table.Tab.ROW -> {
@@ -6340,15 +6364,18 @@ class EditorViewModel(
                 val selectedRows = tableBlock.getAllSelectedRows(
                     selectedCellsIds = currentSelection()
                 )
-                select(selectedRows.rows)
+                select(selectedRows.cellsInRows)
                 mode = modeTable.copy(
                     targets = currentSelection(),
                     tab = BlockView.Table.Tab.ROW
                 )
                 ControlPanelMachine.Event.SimpleTableWidget.ShowRowTab(
-                    rowItems = getSimpleTableWidgetRow(),
+                    rowItems = getSimpleTableWidgetRowItems(
+                        selectedRows = selectedRows.selectedRows,
+                        rowsSize = tableBlock.rows.size
+                    ),
                     tableId = tableId,
-                    rowsSize = selectedRows.count
+                    rowsSize = selectedRows.selectedRows.size
                 )
             }
         }

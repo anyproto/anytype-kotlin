@@ -17,7 +17,7 @@ class TableCellsDiffUtil(
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val newItem = new[newItemPosition]
         val oldItem = old[oldItemPosition]
-        return newItem.rowId == oldItem.rowId && newItem.columnId == oldItem.columnId
+        return newItem.getId() == oldItem.getId()
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

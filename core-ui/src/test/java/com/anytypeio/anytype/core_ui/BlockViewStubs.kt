@@ -347,10 +347,15 @@ fun StubTwoRowsThreeColumnsSimpleTable(
                 id = row1Block1.id,
                 text = row1Block1.content.asText().text
             ),
-            rowId = rowId1,
-            columnId = columnId1,
-            rowIndex = BlockView.Table.RowIndex(0),
-            columnIndex = BlockView.Table.ColumnIndex(0),
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(rowId1),
+                index = BlockView.Table.RowIndex(0),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(columnId1),
+                index = BlockView.Table.ColumnIndex(0)
+            ),
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -358,10 +363,15 @@ fun StubTwoRowsThreeColumnsSimpleTable(
                 id = row1Block2.id,
                 text = row1Block2.content.asText().text
             ),
-            rowId = rowId1,
-            columnId = columnId2,
-            rowIndex = BlockView.Table.RowIndex(0),
-            columnIndex = BlockView.Table.ColumnIndex(1),
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(rowId1),
+                index = BlockView.Table.RowIndex(0),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(columnId2),
+                index = BlockView.Table.ColumnIndex(1)
+            ),
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -369,10 +379,15 @@ fun StubTwoRowsThreeColumnsSimpleTable(
                 id = row1Block3.id,
                 text = row1Block3.content.asText().text
             ),
-            rowId = rowId1,
-            columnId = columnId3,
-            rowIndex = BlockView.Table.RowIndex(0),
-            columnIndex = BlockView.Table.ColumnIndex(2),
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(rowId1),
+                index = BlockView.Table.RowIndex(0),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(columnId3),
+                index = BlockView.Table.ColumnIndex(2)
+            ),
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -380,10 +395,15 @@ fun StubTwoRowsThreeColumnsSimpleTable(
                 id = row2Block1.id,
                 text = row2Block1.content.asText().text
             ),
-            rowId = rowId2,
-            columnId = columnId1,
-            rowIndex = BlockView.Table.RowIndex(1),
-            columnIndex = BlockView.Table.ColumnIndex(0),
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(rowId2),
+                index = BlockView.Table.RowIndex(1),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(columnId1),
+                index = BlockView.Table.ColumnIndex(0)
+            ),
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -391,10 +411,15 @@ fun StubTwoRowsThreeColumnsSimpleTable(
                 id = row2Block2.id,
                 text = row2Block2.content.asText().text
             ),
-            rowId = rowId2,
-            columnId = columnId2,
-            rowIndex = BlockView.Table.RowIndex(1),
-            columnIndex = BlockView.Table.ColumnIndex(1),
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(rowId2),
+                index = BlockView.Table.RowIndex(1),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(columnId2),
+                index = BlockView.Table.ColumnIndex(1)
+            ),
             tableId = tableId
         ),
         BlockView.Table.Cell(
@@ -402,23 +427,45 @@ fun StubTwoRowsThreeColumnsSimpleTable(
                 id = row2Block3.id,
                 text = row2Block3.content.asText().text
             ),
-            rowId = rowId2,
-            columnId = columnId3,
-            rowIndex = BlockView.Table.RowIndex(1),
-            columnIndex = BlockView.Table.ColumnIndex(2),
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(rowId2),
+                index = BlockView.Table.RowIndex(1),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(columnId3),
+                index = BlockView.Table.ColumnIndex(2)
+            ),
             tableId = tableId
         )
     )
 
     val columns = listOf(
-        BlockView.Table.ColumnId(value = columnId1),
-        BlockView.Table.ColumnId(value = columnId2),
-        BlockView.Table.ColumnId(value = columnId3),
+        BlockView.Table.Column(
+            id = BlockView.Table.ColumnId(columnId1),
+            index = BlockView.Table.ColumnIndex(0)
+        ),
+        BlockView.Table.Column(
+            id = BlockView.Table.ColumnId(columnId2),
+            index = BlockView.Table.ColumnIndex(1)
+        ),
+        BlockView.Table.Column(
+            id = BlockView.Table.ColumnId(columnId3),
+            index = BlockView.Table.ColumnIndex(2)
+        )
     )
 
     val rows = listOf(
-        BlockView.Table.RowId(value = rowId1),
-        BlockView.Table.RowId(value = rowId2)
+        BlockView.Table.Row(
+            id = BlockView.Table.RowId(rowId1),
+            index = BlockView.Table.RowIndex(0),
+            isHeader = false
+        ),
+        BlockView.Table.Row(
+            id = BlockView.Table.RowId(rowId2),
+            index = BlockView.Table.RowIndex(1),
+            isHeader = false
+        )
     )
 
     return BlockView.Table(
@@ -440,13 +487,20 @@ fun StubTableView(
     selectedCellsIds: List<Id> = emptyList()
 ): BlockView.Table {
 
-    val columns = mutableListOf<BlockView.Table.ColumnId>()
-    val rows = mutableListOf<BlockView.Table.RowId>()
+    val columns = mutableListOf<BlockView.Table.Column>()
+    val rows = mutableListOf<BlockView.Table.Row>()
     val cells = mutableListOf<BlockView.Table.Cell>()
     for (i in 0 until rowSize) {
         for (j in 0 until columnSize) {
-            val columnId = BlockView.Table.ColumnId(value = "columnId$j")
-            val rowId = BlockView.Table.RowId(value = "rowId$i")
+            val column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(value = "columnId$j"),
+                index = BlockView.Table.ColumnIndex(j)
+            )
+            val row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(value = "rowId$i"),
+                index = BlockView.Table.RowIndex(i),
+                isHeader = false
+            )
             val cell = StubCellView(
                 rowId = "rowId$i",
                 rowIndex = BlockView.Table.RowIndex(i),
@@ -458,8 +512,8 @@ fun StubTableView(
                 ),
                 tableId = tableId
             )
-            rows.add(rowId)
-            columns.add(columnId)
+            rows.add(row)
+            columns.add(column)
             cells.add(cell)
         }
     }
@@ -484,13 +538,17 @@ fun StubCellView(
     block: BlockView.Text.Paragraph?,
     tableId: Id
 ) = BlockView.Table.Cell(
-    rowId = rowId,
-    rowIndex = rowIndex,
-    columnId = columnId,
-    columnIndex = columnIndex,
-    isHeader = isHeader,
     block = block,
-    tableId = tableId
+    tableId = tableId,
+    row = BlockView.Table.Row(
+        id = BlockView.Table.RowId(rowId),
+        index = rowIndex,
+        isHeader = isHeader
+    ),
+    column = BlockView.Table.Column(
+        id = BlockView.Table.ColumnId(columnId),
+        index = columnIndex
+    )
 )
 
 fun StubPattern(

@@ -196,24 +196,40 @@ class TableBlockRendererTest {
                 cells.add(
                     BlockView.Table.Cell(
                         block = p,
-                        rowId = row.id,
-                        columnId = column.id,
-                        rowIndex = BlockView.Table.RowIndex(rowIndex),
-                        columnIndex = BlockView.Table.ColumnIndex(columnIndex),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(row.id),
+                            index = BlockView.Table.RowIndex(rowIndex),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(column.id),
+                            index = BlockView.Table.ColumnIndex(columnIndex)
+                        ),
                         tableId = table.id
                     )
                 )
             }
         }
 
-        val columnViews = mutableListOf<BlockView.Table.ColumnId>()
-        columns.forEach { column ->
-            columnViews.add(BlockView.Table.ColumnId(value = column.id))
+        val columnViews = mutableListOf<BlockView.Table.Column>()
+        columns.forEachIndexed { index, column ->
+            columnViews.add(
+                BlockView.Table.Column(
+                    id = BlockView.Table.ColumnId(column.id),
+                    index = BlockView.Table.ColumnIndex(index)
+                )
+            )
         }
 
-        val rowViews = mutableListOf<BlockView.Table.RowId>()
-        rows.forEach { row ->
-            rowViews.add(BlockView.Table.RowId(value = row.id))
+        val rowViews = mutableListOf<BlockView.Table.Row>()
+        rows.forEachIndexed { index, row ->
+            rowViews.add(
+                BlockView.Table.Row(
+                    id = BlockView.Table.RowId(value = row.id),
+                    index = BlockView.Table.RowIndex(value = index),
+                    isHeader = false
+                )
+            )
         }
 
         val expected = listOf(
@@ -348,10 +364,15 @@ class TableBlockRendererTest {
             rows.forEachIndexed { rowIndex, row ->
                 cells.add(
                     BlockView.Table.Cell(
-                        rowId = row.id,
-                        columnId = column.id,
-                        rowIndex = BlockView.Table.RowIndex(rowIndex),
-                        columnIndex = BlockView.Table.ColumnIndex(columnIndex),
+                        row = BlockView.Table.Row(
+                            id = BlockView.Table.RowId(row.id),
+                            index = BlockView.Table.RowIndex(rowIndex),
+                            isHeader = false
+                        ),
+                        column = BlockView.Table.Column(
+                            id = BlockView.Table.ColumnId(column.id),
+                            index = BlockView.Table.ColumnIndex(columnIndex)
+                        ),
                         block = null,
                         tableId = table.id
                     )
@@ -359,14 +380,25 @@ class TableBlockRendererTest {
             }
         }
 
-        val columnViews = mutableListOf<BlockView.Table.ColumnId>()
-        columns.forEach { column ->
-            columnViews.add(BlockView.Table.ColumnId(value = column.id))
+        val columnViews = mutableListOf<BlockView.Table.Column>()
+        columns.forEachIndexed { index, column ->
+            columnViews.add(
+                BlockView.Table.Column(
+                    id = BlockView.Table.ColumnId(column.id),
+                    index = BlockView.Table.ColumnIndex(index)
+                )
+            )
         }
 
-        val rowViews = mutableListOf<BlockView.Table.RowId>()
-        rows.forEach { row ->
-            rowViews.add(BlockView.Table.RowId(value = row.id))
+        val rowViews = mutableListOf<BlockView.Table.Row>()
+        rows.forEachIndexed { index, row ->
+            rowViews.add(
+                BlockView.Table.Row(
+                    id = BlockView.Table.RowId(value = row.id),
+                    index = BlockView.Table.RowIndex(value = index),
+                    isHeader = false
+                )
+            )
         }
 
         val expected = listOf(
@@ -518,126 +550,197 @@ class TableBlockRendererTest {
         val cells =
             listOf(
                 BlockView.Table.Cell(
-                    rowId = rowId1,
-                    columnId = columnId1,
-                    rowIndex = BlockView.Table.RowIndex(0),
-                    columnIndex = BlockView.Table.ColumnIndex(0),
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId1),
+                        index = BlockView.Table.RowIndex(0),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId1),
+                        index = BlockView.Table.ColumnIndex(0)
+                    ),
                     block = null,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId2,
-                    columnId = columnId1,
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId2),
+                        index = BlockView.Table.RowIndex(1),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId1),
+                        index = BlockView.Table.ColumnIndex(0)
+                    ),
                     block = BlockView.Text.Paragraph(
                         id = row2Block1.id,
                         text = row2Block1.content.asText().text
                     ),
-                    rowIndex = BlockView.Table.RowIndex(1),
-                    columnIndex = BlockView.Table.ColumnIndex(0),
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId3,
-                    columnId = columnId1,
-                    rowIndex = BlockView.Table.RowIndex(2),
-                    columnIndex = BlockView.Table.ColumnIndex(0),
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId3),
+                        index = BlockView.Table.RowIndex(2),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId1),
+                        index = BlockView.Table.ColumnIndex(0)
+                    ),
                     block = null,
                     tableId = table.id
                 ), //column1
                 BlockView.Table.Cell(
-                    rowId = rowId1,
-                    columnId = columnId2,
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId1),
+                        index = BlockView.Table.RowIndex(0),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId2),
+                        index = BlockView.Table.ColumnIndex(1)
+                    ),
                     block = BlockView.Text.Paragraph(
                         id = row1Block1.id,
                         text = row1Block1.content.asText().text
                     ),
-                    rowIndex = BlockView.Table.RowIndex(0),
-                    columnIndex = BlockView.Table.ColumnIndex(1),
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId2,
-                    columnId = columnId2,
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId2),
+                        index = BlockView.Table.RowIndex(1),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId2),
+                        index = BlockView.Table.ColumnIndex(1)
+                    ),
                     block = BlockView.Text.Paragraph(
                         id = row2Block2.id,
                         text = row2Block2.content.asText().text
                     ),
-                    rowIndex = BlockView.Table.RowIndex(1),
-                    columnIndex = BlockView.Table.ColumnIndex(1),
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId3,
-                    columnId = columnId2,
-                    rowIndex = BlockView.Table.RowIndex(2),
-                    columnIndex = BlockView.Table.ColumnIndex(1),
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId3),
+                        index = BlockView.Table.RowIndex(2),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId2),
+                        index = BlockView.Table.ColumnIndex(1)
+                    ),
                     block = null,
                     tableId = table.id
                 ),//column2
                 BlockView.Table.Cell(
-                    rowId = rowId1,
-                    columnId = columnId3,
-                    rowIndex = BlockView.Table.RowIndex(0),
-                    columnIndex = BlockView.Table.ColumnIndex(2),
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId1),
+                        index = BlockView.Table.RowIndex(0),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId3),
+                        index = BlockView.Table.ColumnIndex(2)
+                    ),
                     block = null,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId2,
-                    columnId = columnId3,
-                    rowIndex = BlockView.Table.RowIndex(1),
-                    columnIndex = BlockView.Table.ColumnIndex(2),
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId2),
+                        index = BlockView.Table.RowIndex(1),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId3),
+                        index = BlockView.Table.ColumnIndex(2)
+                    ),
                     block = null,
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId3,
-                    columnId = columnId3,
-                    rowIndex = BlockView.Table.RowIndex(2),
-                    columnIndex = BlockView.Table.ColumnIndex(2),
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId3),
+                        index = BlockView.Table.RowIndex(2),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId3),
+                        index = BlockView.Table.ColumnIndex(2)
+                    ),
                     block = null,
                     tableId = table.id
                 ),//column3
                 BlockView.Table.Cell(
-                    rowId = rowId1,
-                    columnId = columnId4,
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId1),
+                        index = BlockView.Table.RowIndex(0),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId4),
+                        index = BlockView.Table.ColumnIndex(3)
+                    ),
                     block = BlockView.Text.Paragraph(
                         id = row1Block2.id,
                         text = row1Block2.content.asText().text
                     ),
-                    rowIndex = BlockView.Table.RowIndex(0),
-                    columnIndex = BlockView.Table.ColumnIndex(3),
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId2,
-                    columnId = columnId4,
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId2),
+                        index = BlockView.Table.RowIndex(1),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId4),
+                        index = BlockView.Table.ColumnIndex(3)
+                    ),
                     block = BlockView.Text.Paragraph(
                         id = row2Block3.id,
                         text = row2Block3.content.asText().text
                     ),
-                    rowIndex = BlockView.Table.RowIndex(1),
-                    columnIndex = BlockView.Table.ColumnIndex(3),
                     tableId = table.id
                 ),
                 BlockView.Table.Cell(
-                    rowId = rowId3,
-                    columnId = columnId4,
-                    rowIndex = BlockView.Table.RowIndex(2),
-                    columnIndex = BlockView.Table.ColumnIndex(3),
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rowId3),
+                        index = BlockView.Table.RowIndex(2),
+                        isHeader = false
+                    ),
+                    column = BlockView.Table.Column(
+                        id = BlockView.Table.ColumnId(columnId4),
+                        index = BlockView.Table.ColumnIndex(3)
+                    ),
                     block = null,
                     tableId = table.id
                 )
             )
 
-        val columnViews = mutableListOf<BlockView.Table.ColumnId>()
-        columns.forEach { column ->
-            columnViews.add(BlockView.Table.ColumnId(value = column.id))
+        val columnViews = mutableListOf<BlockView.Table.Column>()
+        columns.forEachIndexed { index, column ->
+            columnViews.add(
+                BlockView.Table.Column(
+                    id = BlockView.Table.ColumnId(column.id),
+                    index = BlockView.Table.ColumnIndex(index)
+                )
+            )
         }
 
-        val rowViews = mutableListOf<BlockView.Table.RowId>()
-        rows.forEach { row ->
-            rowViews.add(BlockView.Table.RowId(value = row.id))
+        val rowViews = mutableListOf<BlockView.Table.Row>()
+        rows.forEachIndexed { index, row ->
+            rowViews.add(
+                BlockView.Table.Row(
+                    id = BlockView.Table.RowId(value = row.id),
+                    index = BlockView.Table.RowIndex(value = index),
+                    isHeader = false
+                )
+            )
         }
 
         val expected = listOf(

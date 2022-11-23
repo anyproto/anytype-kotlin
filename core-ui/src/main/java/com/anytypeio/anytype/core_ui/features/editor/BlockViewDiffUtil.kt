@@ -245,8 +245,8 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is BlockView.Table && oldBlock is BlockView.Table) {
-            if (newBlock.rows.size != oldBlock.rows.size) {
-                changes.add(TABLE_ROW_COUNT_CHANGED)
+            if (newBlock.columns != oldBlock.columns || newBlock.rows != oldBlock.rows) {
+                return super.getChangePayload(oldItemPosition, newItemPosition)
             }
             if (newBlock.cells != oldBlock.cells) {
                 changes.add(TABLE_CELLS_CHANGED)
@@ -319,7 +319,6 @@ class BlockViewDiffUtil(
 
         fun tableCellsSelectionChanged() = changes.contains(TABLE_CELLS_SELECTION_CHANGED)
         fun tableCellsChanged() = changes.contains(TABLE_CELLS_CHANGED)
-        fun tableRowCountChanged() = changes.contains(TABLE_ROW_COUNT_CHANGED)
     }
 
     companion object {
@@ -357,6 +356,5 @@ class BlockViewDiffUtil(
 
         const val TABLE_CELLS_SELECTION_CHANGED = 340
         const val TABLE_CELLS_CHANGED = 341
-        const val TABLE_ROW_COUNT_CHANGED = 342
     }
 }

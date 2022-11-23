@@ -1,38 +1,43 @@
 package com.anytypeio.anytype.presentation.editor.editor.table
 
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+
 sealed class SimpleTableWidgetItem {
 
     sealed class Cell : SimpleTableWidgetItem() {
         object ClearContents : Cell()
         object Color : Cell()
         object Style : Cell()
-        object ClearStyle : Cell()
+        object ResetStyle : Cell()
     }
 
     sealed class Column : SimpleTableWidgetItem() {
-        object InsertLeft : Column()
-        object InsertRight : Column()
-        object MoveLeft : Column()
-        object MoveRight : Column()
-        object Duplicate : Column()
-        object Delete : Column()
-        object ClearContents : Column()
-        object Sort : Column()
-        object Color : Column()
-        object Style : Column()
+        data class InsertLeft(val column: BlockView.Table.ColumnId) : Column()
+        data class InsertRight(val column: BlockView.Table.ColumnId) : Column()
+        data class MoveLeft(val column: BlockView.Table.ColumnId) : Column()
+        data class MoveRight(val column: BlockView.Table.ColumnId) : Column()
+        data class Duplicate(val columns: List<BlockView.Table.ColumnId>) : Column()
+        data class Delete(val columns: List<BlockView.Table.ColumnId>) : Column()
+        data class Copy(val columns: List<BlockView.Table.ColumnId>) : Column()
+        data class ClearContents(val columns: List<BlockView.Table.ColumnId>) : Column()
+        data class Sort(val column: BlockView.Table.ColumnId) : Column()
+        data class Color(val columns: List<BlockView.Table.ColumnId>) : Column()
+        data class Style(val columns: List<BlockView.Table.ColumnId>) : Column()
+        data class ResetStyle(val columns: List<BlockView.Table.ColumnId>) : Column()
     }
 
     sealed class Row : SimpleTableWidgetItem() {
-        object InsertAbove : Row()
-        object InsertBelow : Row()
-        object MoveUp : Row()
-        object MoveDown : Row()
-        object Duplicate : Row()
-        object Delete : Row()
-        object ClearContents : Row()
-        object Sort : Row()
-        object Color : Row()
-        object Style : Row()
+        data class InsertAbove(val row: BlockView.Table.RowId) : Row()
+        data class InsertBelow(val row: BlockView.Table.RowId) : Row()
+        data class MoveUp(val row: BlockView.Table.RowId) : Row()
+        data class MoveDown(val row: BlockView.Table.RowId) : Row()
+        data class Duplicate(val rows: List<BlockView.Table.RowId>) : Row()
+        data class Delete(val rows: List<BlockView.Table.RowId>) : Row()
+        data class Copy(val rows: List<BlockView.Table.RowId>) : Row()
+        data class ClearContents(val rows: List<BlockView.Table.RowId>) : Row()
+        data class Color(val rows: List<BlockView.Table.RowId>) : Row()
+        data class Style(val rows: List<BlockView.Table.RowId>) : Row()
+        data class ResetStyle(val rows: List<BlockView.Table.RowId>) : Row()
     }
 
     sealed class Tab : SimpleTableWidgetItem() {

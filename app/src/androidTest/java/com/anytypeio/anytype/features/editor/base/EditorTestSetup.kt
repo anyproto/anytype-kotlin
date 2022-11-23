@@ -92,6 +92,7 @@ import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificati
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -250,6 +251,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var fillTableRow: FillTableRow
 
+    @Mock
+    lateinit var tableDelegate: EditorTableDelegate
+
     val root: String = "rootId123"
 
     private val urlBuilder by lazy {
@@ -339,6 +343,7 @@ open class EditorTestSetup {
 
         featureToggles = DefaultFeatureToggles()
 
+
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
             closeObject = closePage,
@@ -420,7 +425,8 @@ open class EditorTestSetup {
             editorTemplateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet,
-            featureToggles = featureToggles
+            featureToggles = featureToggles,
+            tableDelegate = tableDelegate
         )
     }
 

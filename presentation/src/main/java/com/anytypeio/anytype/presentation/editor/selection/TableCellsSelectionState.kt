@@ -10,8 +10,8 @@ class TableCellsSelectionState {
         cells.forEach { cell ->
             memory = updateTableCellsSelectionState(
                 cellId = cell.getId(),
-                rowIndex = cell.rowIndex,
-                columnIndex = cell.columnIndex,
+                rowIndex = cell.row.index,
+                columnIndex = cell.column.index,
                 selectionState = current(),
                 rowsSize = rowsSize
             )

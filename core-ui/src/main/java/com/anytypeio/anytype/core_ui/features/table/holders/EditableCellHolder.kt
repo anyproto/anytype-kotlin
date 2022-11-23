@@ -47,7 +47,7 @@ class EditableCellHolder(
     fun bindEmptyCell() {
         if (root.background != null) root.background = null
         if (content.text != null) content.text = null
-        content.enableReadMode()
+        if (content.isTextSelectable) content.enableReadMode()
     }
 
     fun cellSelection(isSelected: Boolean) {

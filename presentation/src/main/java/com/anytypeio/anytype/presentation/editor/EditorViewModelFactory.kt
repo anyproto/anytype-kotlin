@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -71,7 +72,8 @@ open class EditorViewModelFactory(
     private val editorTemplateDelegate: EditorTemplateDelegate,
     private val createNewObject: CreateNewObject,
     private val objectToSet: ConvertObjectToSet,
-    private val featureToggles: FeatureToggles
+    private val featureToggles: FeatureToggles,
+    private val tableDelegate: EditorTableDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -108,7 +110,8 @@ open class EditorViewModelFactory(
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet,
-            featureToggles = featureToggles
+            featureToggles = featureToggles,
+            tableDelegate = tableDelegate
         ) as T
     }
 }

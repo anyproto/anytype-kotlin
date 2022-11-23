@@ -550,6 +550,8 @@
     <string name="simple_tables_widget_item_move_right">Move right</string>
     <string name="simple_tables_widget_item_insert_above">Insert above</string>
     <string name="simple_tables_widget_item_insert_below">Insert below</string>
+    <string name="simple_tables_widget_item_copy">Copy</string>
+    <string name="simple_tables_widget_item_sort">Sort</string>
     <string name="simple_tables_widget_item_move_up">Move up</string>
     <string name="simple_tables_widget_item_move_down">Move down</string>
     <string name="simple_tables_widget_tab_cell">Cell</string>

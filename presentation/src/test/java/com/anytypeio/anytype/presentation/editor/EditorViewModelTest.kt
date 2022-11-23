@@ -103,6 +103,7 @@ import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMa
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
@@ -333,6 +334,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var createTable: CreateTable
+
+    @Mock
+    lateinit var tableDelegate: EditorTableDelegate
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -4024,7 +4028,8 @@ open class EditorViewModelTest {
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet,
-            featureToggles = mock()
+            featureToggles = mock(),
+            tableDelegate = tableDelegate
         )
     }
 

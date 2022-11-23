@@ -77,6 +77,7 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -266,6 +267,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var fillTableRow: FillTableRow
 
+    @Mock
+    lateinit var tableDelegate: EditorTableDelegate
+
     lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -382,7 +386,8 @@ open class EditorPresentationTestSetup {
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet,
-            featureToggles = mock()
+            featureToggles = mock(),
+            tableDelegate = tableDelegate
         )
     }
 

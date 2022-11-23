@@ -3,6 +3,14 @@ package com.anytypeio.anytype.presentation.editor.selection
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Column.InsertRight
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Column.InsertLeft
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Column.MoveLeft
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Column.MoveRight
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Row.InsertAbove
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Row.InsertBelow
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Row.MoveDown
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Row.MoveUp
 
 typealias CellSelection = BlockView.Table.CellSelection
 
@@ -387,74 +395,130 @@ fun List<BlockView>.updateTableBlockTab(
         }
     }
 
-fun getSimpleTableWidgetItems(): List<SimpleTableWidgetItem> {
+fun getSimpleTableWidgetCellItems(): List<SimpleTableWidgetItem> {
     return listOf(
         SimpleTableWidgetItem.Cell.ClearContents,
         SimpleTableWidgetItem.Cell.Color,
         SimpleTableWidgetItem.Cell.Style,
-        SimpleTableWidgetItem.Cell.ClearStyle
+        SimpleTableWidgetItem.Cell.ResetStyle
     )
 }
 
-fun getSimpleTableWidgetColumn(): List<SimpleTableWidgetItem> {
-    return listOf(
-        SimpleTableWidgetItem.Column.InsertLeft,
-        SimpleTableWidgetItem.Column.InsertRight,
-        SimpleTableWidgetItem.Column.MoveLeft,
-        SimpleTableWidgetItem.Column.MoveRight,
-        SimpleTableWidgetItem.Column.ClearContents,
-        SimpleTableWidgetItem.Column.Color,
-        SimpleTableWidgetItem.Column.Style,
-    )
+fun getSimpleTableWidgetColumnItems(
+    selectedColumns: Set<BlockView.Table.Column>,
+    columnsSize: Int
+): List<SimpleTableWidgetItem> {
+    return mutableListOf<SimpleTableWidgetItem>().apply {
+        if (selectedColumns.size == 1) {
+            addAll(selectedColumns.first().getTableWidgetItemsByColumn(columnsSize))
+        }
+        if (selectedColumns.isNotEmpty()) {
+            val ids = selectedColumns.map { it.id }
+            addAll(
+                listOf(
+                    SimpleTableWidgetItem.Column.Delete(ids),
+                    SimpleTableWidgetItem.Column.Copy(ids),
+                    SimpleTableWidgetItem.Column.Duplicate(ids),
+                    SimpleTableWidgetItem.Column.ClearContents(ids),
+                    SimpleTableWidgetItem.Column.Color(ids),
+                    SimpleTableWidgetItem.Column.Style(ids),
+                    SimpleTableWidgetItem.Column.ResetStyle(ids)
+                )
+            )
+        }
+    }
 }
 
-fun getSimpleTableWidgetRow(): List<SimpleTableWidgetItem> {
-    return listOf(
-        SimpleTableWidgetItem.Row.InsertAbove,
-        SimpleTableWidgetItem.Row.InsertBelow,
-        SimpleTableWidgetItem.Row.MoveDown,
-        SimpleTableWidgetItem.Row.MoveUp,
-        SimpleTableWidgetItem.Row.ClearContents,
-        SimpleTableWidgetItem.Row.Color,
-        SimpleTableWidgetItem.Row.Style,
-    )
+fun getSimpleTableWidgetRowItems(
+    selectedRows: Set<BlockView.Table.Row>,
+    rowsSize: Int
+): List<SimpleTableWidgetItem> {
+    return mutableListOf<SimpleTableWidgetItem>().apply {
+        if (selectedRows.size == 1) {
+            addAll(selectedRows.first().getTableWidgetItemsByRow(rowsSize))
+        }
+        if (selectedRows.isNotEmpty()) {
+            val ids = selectedRows.map { it.id }
+            addAll(
+                listOf(
+                    SimpleTableWidgetItem.Row.Delete(ids),
+                    SimpleTableWidgetItem.Row.Copy(ids),
+                    SimpleTableWidgetItem.Row.Duplicate(ids),
+                    SimpleTableWidgetItem.Row.ClearContents(ids),
+                    SimpleTableWidgetItem.Row.Color(ids),
+                    SimpleTableWidgetItem.Row.Style(ids),
+                    SimpleTableWidgetItem.Row.ResetStyle(ids)
+                )
+            )
+        }
+    }
+}
+
+fun BlockView.Table.Column.getTableWidgetItemsByColumn(
+    columnsSize: Int
+): List<SimpleTableWidgetItem> = mutableListOf<SimpleTableWidgetItem>().apply {
+    add(InsertLeft(id))
+    add(InsertRight(id))
+    if (index.value > 0) add(MoveLeft(id))
+    if (index.value < columnsSize - 1) add(MoveRight(id))
+}
+
+fun BlockView.Table.Row.getTableWidgetItemsByRow(
+    rowSize: Int
+): List<SimpleTableWidgetItem> = mutableListOf<SimpleTableWidgetItem>().apply {
+    add(InsertAbove(id))
+    add(InsertBelow(id))
+    if (index.value > 0) add(MoveUp(id))
+    if (index.value < rowSize - 1) add(MoveDown(id))
 }
 
 fun BlockView.Table.getIdsInRow(index: BlockView.Table.RowIndex): List<Id> =
-    this.cells.filter { it.rowIndex == index }.map { it.getId() }
+    this.cells.mapNotNull {
+        if (it.row.index == index) {
+            it.getId()
+        } else {
+            null
+        }
+    }
 
 fun BlockView.Table.getIdsInColumn(index: BlockView.Table.ColumnIndex): List<Id> =
-    this.cells.filter { it.columnIndex == index }.map { it.getId() }
+    this.cells.mapNotNull {
+        if (it.column.index == index) {
+            it.getId()
+        } else {
+            null
+        }
+    }
 
 fun BlockView.Table.getAllSelectedColumns(selectedCellsIds: Set<Id>): SelectedColumns {
     val selectedCells = cells.filter { selectedCellsIds.contains(it.getId()) }
-    val selectedColumns = mutableSetOf<Id>()
-    val selectedColumnsIndexes = mutableSetOf<Int>()
+    val selectedColumnCells = mutableSetOf<Id>()
+    val selectedColumns = mutableSetOf<BlockView.Table.Column>()
     selectedCells.forEach { cell ->
-        selectedColumnsIndexes.add(cell.columnIndex.value)
-        val column = getIdsInColumn(cell.columnIndex)
-        selectedColumns.addAll(column)
+        selectedColumns.add(cell.column)
+        selectedColumnCells.addAll(getIdsInColumn(cell.column.index))
     }
     return SelectedColumns(
-        columns = selectedColumns.toList(),
-        count = selectedColumnsIndexes.size
+        cellsInColumns = selectedColumnCells.toList(),
+        selectedColumns = selectedColumns
     )
 }
 
 fun BlockView.Table.getAllSelectedRows(selectedCellsIds: Set<Id>): SelectedRows {
     val selectedCells = cells.filter { selectedCellsIds.contains(it.getId()) }
-    val selectedRows = mutableSetOf<Id>()
-    val selectedRowsIndexes = mutableSetOf<Int>()
+    val selectedRowCells = mutableSetOf<Id>()
+    val selectedRows = mutableSetOf<BlockView.Table.Row>()
     selectedCells.forEach { cell ->
-        selectedRowsIndexes.add(cell.rowIndex.value)
-        val row = getIdsInRow(cell.rowIndex)
-        selectedRows.addAll(row)
+        selectedRows.add(cell.row)
+        selectedRowCells.addAll(getIdsInRow(cell.row.index))
     }
     return SelectedRows(
-        rows = selectedRows.toList(),
-        count = selectedRowsIndexes.size
+        cellsInRows = selectedRowCells.toList(), selectedRows = selectedRows
     )
 }
 
-data class SelectedRows(val rows: List<Id>, val count: Int)
-data class SelectedColumns(val columns: List<Id>, val count: Int)
+data class SelectedRows(val cellsInRows: List<Id>, val selectedRows: Set<BlockView.Table.Row>)
+data class SelectedColumns(
+    val cellsInColumns: List<Id>,
+    val selectedColumns: Set<BlockView.Table.Column>
+)

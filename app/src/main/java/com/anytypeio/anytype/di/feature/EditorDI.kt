@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.domain.table.CreateTableColumn
 import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -96,6 +97,8 @@ import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.table.DefaultEditorTableDelegate
+import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -226,7 +229,8 @@ object EditorSessionModule {
         editorTemplateDelegate: EditorTemplateDelegate,
         createNewObject: CreateNewObject,
         objectToSet: ConvertObjectToSet,
-        featureToggles: FeatureToggles
+        featureToggles: FeatureToggles,
+        tableDelegate: EditorTableDelegate
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -259,7 +263,8 @@ object EditorSessionModule {
         editorTemplateDelegate = editorTemplateDelegate,
         createNewObject = createNewObject,
         objectToSet = objectToSet,
-        featureToggles = featureToggles
+        featureToggles = featureToggles,
+        tableDelegate = tableDelegate
     )
 
     @JvmStatic
@@ -284,6 +289,17 @@ object EditorSessionModule {
     ): EditorTemplateDelegate = DefaultEditorTemplateDelegate(
         getTemplates = getTemplates,
         applyTemplate = applyTemplate
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTableDelegate(
+        dispatcher: Dispatcher<Payload>,
+        createTableColumn: CreateTableColumn
+    ): EditorTableDelegate = DefaultEditorTableDelegate(
+        dispatcher = dispatcher,
+        createTableColumn = createTableColumn
     )
 
     @JvmStatic
@@ -1012,6 +1028,13 @@ object EditorUseCaseModule {
     fun provideBlockListClearStyle(
         repo: BlockRepository
     ): ClearBlockStyle = ClearBlockStyle(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableCreateColumn(
+        repo: BlockRepository
+    ): CreateTableColumn = CreateTableColumn(repo)
 
     @Module
     interface Bindings {

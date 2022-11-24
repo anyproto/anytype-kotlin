@@ -33,7 +33,8 @@ fun Rpc.Account.Create.Response.toAccountSetup() : AccountSetup {
         config = Config(
             home = info.homeObjectId,
             profile = info.profileObjectId,
-            gateway = info.gatewayUrl
+            gateway = info.gatewayUrl,
+            workspace = info.accountSpaceId
         ),
         status = status.core()
     )
@@ -65,7 +66,8 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
         config = Config(
             home = info.homeObjectId,
             profile = info.profileObjectId,
-            gateway = info.gatewayUrl
+            gateway = info.gatewayUrl,
+            workspace = info.accountSpaceId
         ),
         status = status.core()
     )

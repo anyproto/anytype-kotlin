@@ -43,6 +43,7 @@ import javax.inject.Singleton
         DataModule::class,
         EventModule::class,
         ConfigModule::class,
+        WorkspaceModule::class,
         DeviceModule::class,
         UtilModule::class,
         EmojiModule::class,

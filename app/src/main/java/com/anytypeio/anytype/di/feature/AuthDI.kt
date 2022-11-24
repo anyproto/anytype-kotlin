@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModelFactory
 import com.anytypeio.anytype.presentation.auth.account.SetupNewAccountViewModelFactory
@@ -271,12 +272,14 @@ object SetupSelectedAccountModule {
     fun provideSelectAccountUseCase(
         repository: AuthRepository,
         configStorage: ConfigStorage,
-        featuresConfigProvider: FeaturesConfigProvider
+        featuresConfigProvider: FeaturesConfigProvider,
+        workspaceManager: WorkspaceManager
     ): StartAccount {
         return StartAccount(
             repository = repository,
             configStorage = configStorage,
-            featuresConfigProvider = featuresConfigProvider
+            featuresConfigProvider = featuresConfigProvider,
+            workspaceManager = workspaceManager
         )
     }
 }

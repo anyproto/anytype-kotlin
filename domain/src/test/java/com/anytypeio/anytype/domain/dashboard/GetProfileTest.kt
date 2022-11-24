@@ -1,7 +1,12 @@
 package com.anytypeio.anytype.domain.dashboard
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.CoroutineTestRule
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -37,15 +42,11 @@ class GetProfileTest {
 
     private lateinit var usecase: GetProfile
 
-    val config = Config(
-        home = MockDataFactory.randomUuid(),
-        profile = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomUuid()
-    )
+    private val config = StubConfig()
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         usecase = GetProfile(
             repo = repo,
             channel = channel,

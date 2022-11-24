@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 /**
  * Use case for selecting user account.
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 class StartAccount(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
+    private val workspaceManager: WorkspaceManager,
     private val featuresConfigProvider: FeaturesConfigProvider
 ) : BaseUseCase<StartAccountResult, StartAccount.Params>() {
 
@@ -24,14 +26,15 @@ class StartAccount(
         with(repository) {
             saveAccount(setup.account)
             setCurrentAccount(setup.account.id)
-            featuresConfigProvider.set(
-                enableDataView = setup.features.enableDataView ?: false,
-                enableDebug = setup.features.enableDebug ?: false,
-                enableChannelSwitch = setup.features.enablePrereleaseChannel ?: false,
-                enableSpaces = setup.features.enableSpaces ?: false
-            )
-            configStorage.set(config = setup.config)
         }
+        featuresConfigProvider.set(
+            enableDataView = setup.features.enableDataView ?: false,
+            enableDebug = setup.features.enableDebug ?: false,
+            enableChannelSwitch = setup.features.enablePrereleaseChannel ?: false,
+            enableSpaces = setup.features.enableSpaces ?: false
+        )
+        configStorage.set(config = setup.config)
+        workspaceManager.setCurrentWorkspace(setup.config.workspace)
         StartAccountResult(setup.account.id, setup.status)
     }
 

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 
 class ObjectTypesSubscriptionManager(
     private val scope: CoroutineScope = GlobalScope,
-    private val subscription: ObjectTypesSubscriptionContainer
+    private val subscription: ObjectTypesSubscriptionContainer,
+    private val workspaceManager: WorkspaceManager
 ) {
 
     private var job: Job? = null
@@ -37,6 +39,11 @@ class ObjectTypesSubscriptionManager(
                         relationKey = Relations.IS_ARCHIVED,
                         condition = DVFilterCondition.EQUAL,
                         value = false
+                    ),
+                    DVFilter(
+                        relationKey = Relations.WORKSPACE_ID,
+                        condition = DVFilterCondition.EQUAL,
+                        value = workspaceManager.getCurrentWorkspace()
                     )
                 ),
                 limit = 0,

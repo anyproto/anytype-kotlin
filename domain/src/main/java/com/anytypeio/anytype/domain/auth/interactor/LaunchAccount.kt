@@ -3,9 +3,10 @@ package com.anytypeio.anytype.domain.auth.interactor
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
 
@@ -17,7 +18,8 @@ class LaunchAccount(
     private val pathProvider: PathProvider,
     private val context: CoroutineContext = Dispatchers.IO,
     private val configStorage: ConfigStorage,
-    private val featuresConfigProvider: FeaturesConfigProvider
+    private val featuresConfigProvider: FeaturesConfigProvider,
+    private val workspaceManager: WorkspaceManager
 ) : BaseUseCase<String, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = try {
@@ -33,6 +35,7 @@ class LaunchAccount(
                 enableSpaces = setup.features.enableSpaces ?: false
             )
             configStorage.set(config = setup.config)
+            workspaceManager.setCurrentWorkspace(setup.config.workspace)
             Either.Right(setup.account.id)
         }
     } catch (e: Throwable) {

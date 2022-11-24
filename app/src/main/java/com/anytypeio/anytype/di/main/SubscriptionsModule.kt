@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.Dispatchers
@@ -78,8 +79,10 @@ object SubscriptionsModule {
     @Provides
     @Singleton
     fun objectTypesSubscriptionManager(
-        subscription: ObjectTypesSubscriptionContainer
+        subscription: ObjectTypesSubscriptionContainer,
+        workspaceManager: WorkspaceManager
     ): ObjectTypesSubscriptionManager = ObjectTypesSubscriptionManager(
-        subscription = subscription
+        subscription = subscription,
+        workspaceManager = workspaceManager
     )
 }

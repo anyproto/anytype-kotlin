@@ -3,14 +3,15 @@ package com.anytypeio.anytype.domain.auth
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.FeaturesConfig
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
@@ -41,13 +42,12 @@ class StartAccountTest {
     @Mock
     lateinit var configStorage: ConfigStorage
 
+    @Mock
+    lateinit var workspaceManager: WorkspaceManager
+
     lateinit var startAccount: StartAccount
 
-    val config = Config(
-        home = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomUuid(),
-        profile = MockDataFactory.randomUuid()
-    )
+    private val config = StubConfig()
 
     @Before
     fun setup() {
@@ -55,7 +55,8 @@ class StartAccountTest {
         startAccount = StartAccount(
             repository = repo,
             configStorage = configStorage,
-            featuresConfigProvider = featuresConfigProvider
+            featuresConfigProvider = featuresConfigProvider,
+            workspaceManager = workspaceManager
         )
     }
 

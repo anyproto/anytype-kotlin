@@ -1,13 +1,18 @@
 package com.anytypeio.anytype.domain.dashboard
 
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
@@ -36,7 +41,7 @@ class OpenDashboardTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         usecase = OpenDashboard(
             repo = repo,
             auth = auth,
@@ -62,11 +67,7 @@ class OpenDashboardTest {
     @Test
     fun `should open a home dashboard if there are no params`() = runBlockingTest {
 
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomString(),
-            profile = MockDataFactory.randomUuid()
-        )
+        val config = StubConfig()
 
         configStorage.stub {
             onBlocking { get() } doReturn config

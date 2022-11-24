@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -112,11 +113,7 @@ open class DashboardTestSetup {
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
-    val config = Config(
-        home = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomUuid(),
-        profile = MockDataFactory.randomUuid()
-    )
+    val config = StubConfig()
 
     protected val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 

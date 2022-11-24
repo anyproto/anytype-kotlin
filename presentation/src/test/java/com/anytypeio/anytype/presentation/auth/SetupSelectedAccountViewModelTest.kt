@@ -5,8 +5,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.FeaturesConfig
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -56,9 +57,12 @@ class SetupSelectedAccountViewModelTest {
     lateinit var configStorage: ConfigStorage
 
     @Mock
+    lateinit var workspaceManager: WorkspaceManager
+
+    @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
-    lateinit var storeObjectTypes: StoreObjectTypes
+    private lateinit var storeObjectTypes: StoreObjectTypes
 
     private lateinit var startAccount: StartAccount
 
@@ -68,7 +72,8 @@ class SetupSelectedAccountViewModelTest {
         startAccount = StartAccount(
             repository = authRepo,
             featuresConfigProvider = featuresConfigProvider,
-            configStorage = configStorage
+            configStorage = configStorage,
+            workspaceManager = workspaceManager
         )
         storeObjectTypes = StoreObjectTypes(
             repo = blockRepo,
@@ -136,11 +141,7 @@ class SetupSelectedAccountViewModelTest {
                 ),
                 features = FeaturesConfig(),
                 status = AccountStatus.Active,
-                config = Config(
-                    home = MockDataFactory.randomUuid(),
-                    gateway = MockDataFactory.randomUuid(),
-                    profile = MockDataFactory.randomUuid()
-                )
+                config = StubConfig()
             )
         }
 

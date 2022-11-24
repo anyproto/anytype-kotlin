@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
 import dagger.Module
@@ -87,12 +88,14 @@ object SplashModule {
         authRepository: AuthRepository,
         pathProvider: PathProvider,
         featuresConfigProvider: FeaturesConfigProvider,
-        configStorage: ConfigStorage
+        configStorage: ConfigStorage,
+        workspaceManager: WorkspaceManager
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         featuresConfigProvider = featuresConfigProvider,
-        configStorage = configStorage
+        configStorage = configStorage,
+        workspaceManager = workspaceManager
     )
 
     @JvmStatic

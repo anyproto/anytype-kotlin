@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
@@ -120,11 +121,7 @@ class HomeDashboardViewModelTest {
 
     private lateinit var vm: HomeDashboardViewModel
 
-    private val config = Config(
-        home = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomUuid(),
-        profile = MockDataFactory.randomUuid()
-    )
+    private val config = StubConfig()
 
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -247,12 +244,6 @@ class HomeDashboardViewModelTest {
     fun `should emit loading state when home dashboard loading started`() {
 
         // SETUP
-
-        val config = Config(
-            home = MockDataFactory.randomUuid(),
-            gateway = MockDataFactory.randomUuid(),
-            profile = MockDataFactory.randomUuid()
-        )
 
         stubGetConfig(Either.Right(config))
         stubObserveEvents(params = InterceptEvents.Params(context = config.home))

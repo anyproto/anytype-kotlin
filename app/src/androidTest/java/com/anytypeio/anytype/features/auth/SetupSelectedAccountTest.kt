@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModelFactory
@@ -69,6 +70,9 @@ class SetupSelectedAccountTest {
     @Mock
     lateinit var configStorage: ConfigStorage
 
+    @Mock
+    lateinit var workspaceManager: WorkspaceManager
+
     lateinit var storeObjectTypes: StoreObjectTypes
 
     @Before
@@ -77,7 +81,8 @@ class SetupSelectedAccountTest {
         startAccount = StartAccount(
             repository = authRepository,
             featuresConfigProvider = featuresConfigProvider,
-            configStorage = configStorage
+            configStorage = configStorage,
+            workspaceManager = workspaceManager
         )
         storeObjectTypes = StoreObjectTypes(
             repo = blockRepository,

@@ -2,16 +2,16 @@ package com.anytypeio.anytype.presentation.objects
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 
 class ObjectTypeChangeViewModelFactory(
-    private val getCompatibleObjectTypes: GetCompatibleObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectTypeChangeViewModel(
-            getCompatibleObjectTypes = getCompatibleObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 }

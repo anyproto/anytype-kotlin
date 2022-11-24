@@ -2,34 +2,58 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
-fun StubObjectType(
-    url: Url = MockDataFactory.randomString(),
-    name: String = MockDataFactory.randomString(),
-    relations: List<Relation> = emptyList(),
-    layout: ObjectType.Layout = ObjectType.Layout.BASIC
-): ObjectType = ObjectType(
-    url = url,
-    name = name,
-    relations = relations,
-    emoji = MockDataFactory.randomString(),
-    layout = layout,
-    description = "",
-    isHidden = false,
-    smartBlockTypes = listOf(),
-    isArchived = false,
-    isReadOnly = false
-)
-
 fun StubObject(
     id: String = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
-    layout: Double = ObjectType.Layout.BASIC.code.toDouble()
+    layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
+    smartBlockTypes: List<Double> = emptyList(),
+    isDeleted: Boolean? = null,
+    isArchived: Boolean? = null,
+    description: String? = null,
+    iconEmoji: String? = null,
+    isReadOnly: Boolean? = null,
+    isHidden: Boolean? = null
 ): ObjectWrapper.Basic = ObjectWrapper.Basic(
     map = mapOf(
         Relations.ID to id,
         Relations.NAME to name,
         Relations.TYPE to objectType,
-        Relations.LAYOUT to layout
+        Relations.LAYOUT to layout,
+        Relations.SMARTBLOCKTYPES to smartBlockTypes,
+        Relations.IS_ARCHIVED to isArchived,
+        Relations.IS_DELETED to isDeleted,
+        Relations.DESCRIPTION to description,
+        Relations.ICON_EMOJI to iconEmoji,
+        Relations.IS_READ_ONLY to isReadOnly,
+        Relations.IS_HIDDEN to isHidden
+    )
+)
+
+fun StubObjectType(
+    id: String = MockDataFactory.randomUuid(),
+    name: String = MockDataFactory.randomString(),
+    objectType: String = MockDataFactory.randomString(),
+    layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
+    smartBlockTypes: List<Double> = emptyList(),
+    isDeleted: Boolean? = null,
+    isArchived: Boolean? = null,
+    description: String? = null,
+    iconEmoji: String? = null,
+    isReadOnly: Boolean? = null,
+    isHidden: Boolean? = null
+): ObjectWrapper.Type = ObjectWrapper.Type(
+    map = mapOf(
+        Relations.ID to id,
+        Relations.NAME to name,
+        Relations.TYPE to objectType,
+        Relations.LAYOUT to layout,
+        Relations.SMARTBLOCKTYPES to smartBlockTypes,
+        Relations.IS_ARCHIVED to isArchived,
+        Relations.IS_DELETED to isDeleted,
+        Relations.DESCRIPTION to description,
+        Relations.ICON_EMOJI to iconEmoji,
+        Relations.IS_READ_ONLY to isReadOnly,
+        Relations.IS_HIDDEN to isHidden
     )
 )

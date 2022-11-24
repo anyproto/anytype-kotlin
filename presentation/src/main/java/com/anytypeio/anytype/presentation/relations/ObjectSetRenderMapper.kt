@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ext.TOMORROW
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -38,7 +39,7 @@ import com.anytypeio.anytype.presentation.mapper.toDateView
 import com.anytypeio.anytype.presentation.mapper.toGridRecordRows
 import com.anytypeio.anytype.presentation.mapper.toNumberView
 import com.anytypeio.anytype.presentation.mapper.toSelectedView
-import com.anytypeio.anytype.presentation.mapper.toSimpleRelations
+import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
 import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
@@ -86,7 +87,7 @@ suspend fun DVViewer.render(
     useFallbackView: Boolean = false,
     objects: List<Id>,
     details: Map<Id, Block.Fields>,
-    dataViewRelations: List<Relation>,
+    dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore
 ): ObjectSetViewState {
     return when (type) {
@@ -159,7 +160,7 @@ suspend fun DVViewer.render(
 }
 
 private suspend fun DVViewer.buildGridView(
-    dataViewRelations: List<Relation>,
+    dataViewRelations: List<ObjectWrapper.Relation>,
     objects: List<Id>,
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
@@ -224,31 +225,39 @@ fun title(
     )
 }
 
-fun ObjectSet.simpleRelations(viewerId: Id?): ArrayList<SimpleRelationView> {
+suspend fun ObjectSet.simpleRelations(
+    viewerId: Id?,
+    storeOfRelations: StoreOfRelations
+): ArrayList<SimpleRelationView> {
     return if (isInitialized) {
         val block = blocks.first { it.content is DV }
         val dv = block.content as DV
         val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
-        viewer.viewerRelations.toSimpleRelations(dv.relations)
+        viewer.viewerRelations.toSimpleRelationView(
+            dv.relationsIndex.mapNotNull {
+                storeOfRelations.getByKey(it.key)
+            }
+        )
     } else {
         arrayListOf()
     }
 }
 
-fun DVViewer.toViewRelation(relation: Relation): SimpleRelationView {
+fun DVViewer.toViewRelation(relation: ObjectWrapper.Relation): SimpleRelationView {
     val viewerRelation = viewerRelations.firstOrNull { it.key == relation.key }
     if (viewerRelation == null) {
         Timber.e("ViewerRelations is not containing relation:$relation")
     }
     return SimpleRelationView(
         key = relation.key,
-        isHidden = relation.isHidden,
+        isHidden = relation.isHidden ?: false,
         isVisible = viewerRelation?.isVisible ?: false,
-        title = relation.name,
+        title = relation.name.orEmpty(),
         format = relation.format.toView()
     )
 }
 
+@Deprecated("To be deleted")
 fun Relation.toCreateFilterCheckboxView(isSelected: Boolean? = null): List<CreateFilterView.Checkbox> {
     return listOf(
         CreateFilterView.Checkbox(
@@ -262,9 +271,22 @@ fun Relation.toCreateFilterCheckboxView(isSelected: Boolean? = null): List<Creat
     )
 }
 
+fun ObjectWrapper.Relation.toCreateFilterCheckboxView(isSelected: Boolean? = null): List<CreateFilterView.Checkbox> {
+    return listOf(
+        CreateFilterView.Checkbox(
+            isChecked = true,
+            isSelected = isSelected == true
+        ),
+        CreateFilterView.Checkbox(
+            isChecked = false,
+            isSelected = isSelected != true
+        )
+    )
+}
+
+@Deprecated("To be deleted")
 fun Relation.toCreateFilterTagView(ids: List<*>? = null): List<CreateFilterView.Tag> =
     selections
-        .filter { it.scope == Relation.OptionScope.LOCAL }
         .map { option ->
             CreateFilterView.Tag(
                 id = option.id,
@@ -274,9 +296,28 @@ fun Relation.toCreateFilterTagView(ids: List<*>? = null): List<CreateFilterView.
             )
         }
 
+suspend fun ObjectWrapper.Relation.toCreateFilterTagView(
+    ids: List<*>? = null,
+    store: ObjectStore
+): List<CreateFilterView.Tag> =
+    relationOptionsDict
+        .mapNotNull { id ->
+            store.get(id)?.let {
+                ObjectWrapper.Option(it.map)
+            }
+        }
+        .map { option ->
+            CreateFilterView.Tag(
+                id = option.id,
+                name = option.title,
+                color = option.color,
+                isSelected = ids?.contains(option.id) ?: false
+            )
+        }
+
+@Deprecated("To be deleted")
 fun Relation.toCreateFilterStatusView(ids: List<*>? = null): List<CreateFilterView.Status> =
     selections
-        .filter { it.scope == Relation.OptionScope.LOCAL }
         .map { option ->
             CreateFilterView.Status(
                 id = option.id,
@@ -286,7 +327,44 @@ fun Relation.toCreateFilterStatusView(ids: List<*>? = null): List<CreateFilterVi
             )
         }
 
+suspend fun ObjectWrapper.Relation.toCreateFilterStatusView(
+    ids: List<*>? = null,
+    store: ObjectStore
+): List<CreateFilterView.Status> =
+    relationOptionsDict
+        .mapNotNull { id ->
+            store.get(id)?.let {
+                ObjectWrapper.Option(it.map)
+            }
+        }
+        .map { option ->
+            CreateFilterView.Status(
+                id = option.id,
+                name = option.title,
+                color = option.color,
+                isSelected = ids?.contains(option.id) ?: false
+            )
+        }
+
+@Deprecated("To be deleted")
 fun Relation.toCreateFilterDateView(
+    quickOption: DVFilterQuickOption?,
+    condition: DVFilterCondition,
+    value: Long
+) = quickOptionOrderMap.getOrDefault(condition, quickOptionDefaultOrder)
+    .map {
+        val isSelected = quickOption.isSelected(it, value)
+        CreateFilterView.Date(
+            id = key,
+            description = it.toName(),
+            type = it,
+            condition = condition,
+            value = if (isSelected) value else CreateFilterView.Date.NO_VALUE,
+            isSelected = isSelected
+        )
+    }
+
+fun ObjectWrapper.Relation.toCreateFilterDateView(
     quickOption: DVFilterQuickOption?,
     condition: DVFilterCondition,
     value: Long
@@ -385,8 +463,10 @@ private val quickOptionToNameMapping: Map<DVFilterQuickOption, String> by lazy {
 
 fun DVFilterQuickOption.toName() = quickOptionToNameMapping.getOrDefault(this, "Error")
 
-fun ObjectSet.columns(viewerId: Id): ArrayList<ColumnView> {
-
+fun ObjectSet.columns(
+    viewerId: Id
+): ArrayList<ColumnView> {
+    // TODO use relation stores here
     val block = blocks.first { it.content is DV }
 
     val dv = block.content as DV
@@ -394,7 +474,9 @@ fun ObjectSet.columns(viewerId: Id): ArrayList<ColumnView> {
     val viewer = dv.viewers.first { it.id == viewerId }
 
     val columns = viewer.viewerRelations.toViewerColumns(
-        dv.relations, listOf()
+//        relations = dv.relations,
+        relations = emptyList(),
+        filterBy = listOf()
     )
     return ArrayList(columns)
 }
@@ -426,6 +508,7 @@ fun ObjectSet.filterExpression(viewerId: Id?): List<DVFilter> {
     return viewer.filters
 }
 
+@Deprecated("To be deleted")
 fun Relation.toText(value: Any?): String? =
     if (value is String?) {
         value
@@ -433,6 +516,14 @@ fun Relation.toText(value: Any?): String? =
         throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
     }
 
+fun ObjectWrapper.Relation.toText(value: Any?): String? =
+    if (value is String?) {
+        value
+    } else {
+        throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
+    }
+
+@Deprecated("To be deleted")
 fun Relation.toUrl(value: Any?): String? =
     if (value is String?) {
         value
@@ -440,6 +531,14 @@ fun Relation.toUrl(value: Any?): String? =
         throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
     }
 
+fun ObjectWrapper.Relation.toUrl(value: Any?): String? =
+    if (value is String?) {
+        value
+    } else {
+        throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
+    }
+
+@Deprecated("To be deleted")
 fun Relation.toPhone(value: Any?): String? =
     if (value is String?) {
         value
@@ -447,6 +546,14 @@ fun Relation.toPhone(value: Any?): String? =
         throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
     }
 
+fun ObjectWrapper.Relation.toPhone(value: Any?): String? =
+    if (value is String?) {
+        value
+    } else {
+        throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
+    }
+
+@Deprecated("To be deleted")
 fun Relation.toEmail(value: Any?): String? =
     if (value is String?) {
         value
@@ -454,6 +561,14 @@ fun Relation.toEmail(value: Any?): String? =
         throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
     }
 
+fun ObjectWrapper.Relation.toEmail(value: Any?): String? =
+    if (value is String?) {
+        value
+    } else {
+        throw IllegalArgumentException("Text relation format $format value should be String, actual:$value")
+    }
+
+@Deprecated("To be deleted")
 fun Relation.toCheckbox(value: Any?): Boolean? =
     if (value is Boolean?) {
         value
@@ -461,6 +576,14 @@ fun Relation.toCheckbox(value: Any?): Boolean? =
         throw IllegalArgumentException("Relation format $format value should be Boolean, actual:$value")
     }
 
+fun ObjectWrapper.Relation.toCheckbox(value: Any?): Boolean? =
+    if (value is Boolean?) {
+        value
+    } else {
+        throw IllegalArgumentException("Relation format $format value should be Boolean, actual:$value")
+    }
+
+@Deprecated("To be deleted")
 fun Relation.toTags(value: Any?): List<TagView> = if (value is List<*>?) {
     val views = arrayListOf<TagView>()
     value?.filterIsInstance<Id>()?.forEach { id ->
@@ -482,6 +605,31 @@ fun Relation.toTags(value: Any?): List<TagView> = if (value is List<*>?) {
     throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
 }
 
+suspend fun ObjectWrapper.Relation.toTags(
+    value: Any?,
+    store: ObjectStore
+): List<TagView> = if (value is List<*>?) {
+    val views = arrayListOf<TagView>()
+    value?.filterIsInstance<Id>()?.forEach { id ->
+        val option = store.get(id)?.let { ObjectWrapper.Option(it.map) }
+        if (option != null) {
+            views.add(
+                TagView(
+                    id = option.id,
+                    tag = option.title,
+                    color = option.color
+                )
+            )
+        } else {
+            Timber.e("Failed to find corresponding tag option")
+        }
+    }
+    views.toList()
+} else {
+    throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
+}
+
+@Deprecated("To be deleted")
 fun Relation.toStatus(value: Any?): StatusView? =
     if (value is List<*>?) {
         var status: StatusView? = null
@@ -499,7 +647,48 @@ fun Relation.toStatus(value: Any?): StatusView? =
         throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
     }
 
+suspend fun ObjectWrapper.Relation.toStatus(
+    value: Any?,
+    store: ObjectStore
+): StatusView? =
+    if (value is List<*>?) {
+        var status: StatusView? = null
+        val filter = value?.filterIsInstance<String>()?.firstOrNull()
+        if (filter != null) {
+            val option = store.get(filter)?.let { ObjectWrapper.Option(it.map) }
+            if (option != null) {
+                status = StatusView(
+                    id = option.id,
+                    status = option.title,
+                    color = option.color
+                )
+            }
+        }
+        status
+    } else {
+        throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
+    }
+
+@Deprecated("To be deleted")
 fun Relation.toObjects(
+    value: Any?,
+    details: Map<Id, Block.Fields>,
+    urlBuilder: UrlBuilder
+) = if (value is List<*>?) {
+    val ids = value?.filterIsInstance<String>() ?: emptyList()
+    val list = arrayListOf<ObjectView>()
+    ids.forEach { id ->
+        val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
+        if (!wrapper.isEmpty()) {
+            list.add(wrapper.toObjectView(urlBuilder))
+        }
+    }
+    list
+} else {
+    throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
+}
+
+fun ObjectWrapper.Relation.toObjects(
     value: Any?,
     details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder
@@ -659,25 +848,55 @@ fun DVFilter.toView(
     else -> throw UnsupportedOperationException("Unsupported relation format:${relation.format}")
 }
 
+@Deprecated("To be deleted")
 fun Relation.toFilterValue(
     value: Any?,
     details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder
-): FilterValue =
-    when (this.format) {
-        Relation.Format.SHORT_TEXT -> FilterValue.TextShort(toText(value))
-        Relation.Format.LONG_TEXT -> FilterValue.Text(toText(value))
-        Relation.Format.NUMBER -> FilterValue.Number(NumberParser.parse(value))
-        Relation.Format.STATUS -> FilterValue.Status(toStatus(value))
-        Relation.Format.TAG -> FilterValue.Tag(toTags(value))
-        Relation.Format.DATE -> FilterValue.Date(DateParser.parse(value))
-        Relation.Format.URL -> FilterValue.Url(toText(value))
-        Relation.Format.EMAIL -> FilterValue.Email(toText(value))
-        Relation.Format.PHONE -> FilterValue.Phone(toText(value))
-        Relation.Format.OBJECT -> FilterValue.Object(toObjects(value, details, urlBuilder))
-        Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
-        else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
-    }
+): FilterValue = when (this.format) {
+    Relation.Format.SHORT_TEXT -> FilterValue.TextShort(toText(value))
+    Relation.Format.LONG_TEXT -> FilterValue.Text(toText(value))
+    Relation.Format.NUMBER -> FilterValue.Number(NumberParser.parse(value))
+    Relation.Format.STATUS -> FilterValue.Status(toStatus(value))
+    Relation.Format.TAG -> FilterValue.Tag(toTags(value))
+    Relation.Format.DATE -> FilterValue.Date(DateParser.parse(value))
+    Relation.Format.URL -> FilterValue.Url(toText(value))
+    Relation.Format.EMAIL -> FilterValue.Email(toText(value))
+    Relation.Format.PHONE -> FilterValue.Phone(toText(value))
+    Relation.Format.OBJECT -> FilterValue.Object(toObjects(value, details, urlBuilder))
+    Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
+    else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
+}
+
+suspend fun ObjectWrapper.Relation.toFilterValue(
+    value: Any?,
+    details: Map<Id, Block.Fields>,
+    urlBuilder: UrlBuilder,
+    store: ObjectStore
+): FilterValue = when (this.format) {
+    Relation.Format.SHORT_TEXT -> FilterValue.TextShort(toText(value))
+    Relation.Format.LONG_TEXT -> FilterValue.Text(toText(value))
+    Relation.Format.NUMBER -> FilterValue.Number(NumberParser.parse(value))
+    Relation.Format.STATUS -> FilterValue.Status(
+        toStatus(
+            value = value,
+            store = store
+        )
+    )
+    Relation.Format.TAG -> FilterValue.Tag(
+        toTags(
+            value = value,
+            store = store
+        )
+    )
+    Relation.Format.DATE -> FilterValue.Date(DateParser.parse(value))
+    Relation.Format.URL -> FilterValue.Url(toText(value))
+    Relation.Format.EMAIL -> FilterValue.Email(toText(value))
+    Relation.Format.PHONE -> FilterValue.Phone(toText(value))
+    Relation.Format.OBJECT -> FilterValue.Object(toObjects(value, details, urlBuilder))
+    Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
+    else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
+}
 
 fun List<ObjectType>.getTypePrettyName(type: String?): String? =
     firstOrNull { it.url == type }?.name

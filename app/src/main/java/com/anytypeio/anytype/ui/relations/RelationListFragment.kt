@@ -8,11 +8,11 @@ import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
@@ -98,55 +98,14 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
         }
         binding.btnEditOrDone.setOnClickListener { vm.onEditOrDoneClicked(isLocked) }
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        with(lifecycleScope) {
-            if (mode == MODE_ADD) {
-                binding.searchBar.root.visible()
-                val queries = searchRelationInput.textChanges()
-                    .onStart { emit(searchRelationInput.text.toString()) }
-                val views = vm.views.combine(queries) { views, query ->
-                    if (views.isEmpty()) {
-                        views
-                    } else {
-                        views.filter { model ->
-                            if (model is RelationListViewModel.Model.Item) {
-                                model.view.name.contains(query, true)
-                            } else {
-                                true
-                            }
-                        }
-                    }
-                }
-                subscribe(searchRelationInput.textChanges()) {
-                    if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
-                }
-                subscribe(views) { docRelationAdapter.update(it) }
-            } else {
-                binding.searchBar.root.gone()
-                subscribe(vm.views) { docRelationAdapter.update(it) }
-            }
-            subscribe(vm.commands) { command -> execute(command) }
-            subscribe(vm.toasts) { toast(it) }
-            subscribe(vm.isEditMode) { isEditMode ->
-                if (isEditMode) {
-                    binding.btnEditOrDone.setText(R.string.done)
-                    binding.btnPlus.invisible()
-                } else {
-                    binding.btnPlus.visible()
-                    binding.btnEditOrDone.setText(R.string.edit)
-                }
-            }
-        }
-    }
-
+    
     private fun execute(command: Command) {
         when (command) {
             is Command.EditTextRelationValue -> {
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,
-                    relationId = command.relation,
+                    relationId = command.relationId,
+                    relationKey = command.relationKey,
                     objectId = command.target,
                     isLocked = command.isLocked
                 )
@@ -155,22 +114,22 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
             is Command.EditDateRelationValue -> {
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
-                    relationId = command.relation,
+                    relationId = command.relationId,
+                    relationKey = command.relationKey,
                     objectId = command.target
                 )
                 fr.show(childFragmentManager, null)
             }
             is Command.EditRelationValue -> {
-                findNavController().navigate(
-                    R.id.objectRelationValueScreen,
-                    bundleOf(
-                        RelationValueBaseFragment.CTX_KEY to command.ctx,
-                        RelationValueBaseFragment.TARGET_KEY to command.target,
-                        RelationValueBaseFragment.RELATION_KEY to command.relation,
-                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
-                        RelationValueBaseFragment.IS_LOCKED_KEY to command.isLocked
-                    )
+                val fr = RelationValueFragment.new(
+                    ctx = ctx,
+                    target = command.target,
+                    relationId = command.relationId,
+                    relationKey = command.relationKey,
+                    targetObjectTypes = command.targetObjectTypes,
+                    isLocked = command.isLocked
                 )
+                fr.show(childFragmentManager, null)
             }
             is Command.SetRelationKey -> {
                 withParent<OnFragmentInteractionListener> {
@@ -185,6 +144,42 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
     }
 
     override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.commands) { command -> execute(command) }
+        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
+        jobs += lifecycleScope.subscribe(vm.isEditMode) { isEditMode ->
+            if (isEditMode) {
+                binding.btnEditOrDone.setText(R.string.done)
+                binding.btnPlus.invisible()
+            } else {
+                binding.btnPlus.visible()
+                binding.btnEditOrDone.setText(R.string.edit)
+            }
+        }
+        if (mode == MODE_ADD) {
+            binding.searchBar.root.visible()
+            val queries = searchRelationInput.textChanges()
+                .onStart { emit(searchRelationInput.text.toString()) }
+            val views = vm.views.combine(queries) { views, query ->
+                if (views.isEmpty()) {
+                    views
+                } else {
+                    views.filter { model ->
+                        if (model is RelationListViewModel.Model.Item) {
+                            model.view.name.contains(query, true)
+                        } else {
+                            true
+                        }
+                    }
+                }
+            }
+            jobs += lifecycleScope.subscribe(searchRelationInput.textChanges()) {
+                if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
+            }
+            jobs += lifecycleScope.subscribe(views) { docRelationAdapter.update(it) }
+        } else {
+            binding.searchBar.root.gone()
+            jobs += lifecycleScope.subscribe(vm.views) { docRelationAdapter.update(it) }
+        }
         super.onStart()
         if (mode == MODE_LIST) {
             vm.onStartListMode(ctx)
@@ -198,19 +193,19 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
         vm.onStop()
     }
 
-    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
+    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationKey: Key) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
-            value = text,
-            relationId = relationId
+            relationKey = relationKey,
+            value = text
         )
     }
 
-    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationId: Id) {
+    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationKey: Key) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
-            value = number,
-            relationId = relationId
+            relationKey = relationKey,
+            value = number
         )
     }
 
@@ -218,11 +213,11 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
         ctx: Id,
         timeInSeconds: Number?,
         objectId: Id,
-        relationId: Id
+        relationKey: Key
     ) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
-            relationId = relationId,
+            relationKey = relationKey,
             value = timeInSeconds
         )
     }

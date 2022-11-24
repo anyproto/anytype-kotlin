@@ -14,7 +14,7 @@ class ObjectTypeHolder(
     val binding: ItemObjectTypeItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: ObjectTypeView.Item) = with(binding) {
+    fun bind(item: ObjectTypeView) = with(binding) {
         if (item.isSelected) {
             icSelected.visible()
         } else {
@@ -39,7 +39,7 @@ class ObjectTypeHorizontalHolder(
     val binding: ItemObjectTypeHorizontalItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: ObjectTypeView.Item) = with(binding) {
+    fun bind(item: ObjectTypeView) = with(binding) {
         icon.setIcon(
             emoji = item.emoji,
             image = null,

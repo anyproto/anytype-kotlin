@@ -28,11 +28,12 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
         get() = binding.textInputField
     override val button: AppCompatImageButton
         get() = binding.icExpand
-    private val ctx: String get() = argString(CONTEXT_KEY)
 
     @Inject
     lateinit var factory: ObjectSetRecordViewModel.Factory
     override val vm: ObjectSetRecordViewModel by viewModels { factory }
+
+    private val target: String get() = argString(TARGET_KEY)
 
     override fun onStart(scope: CoroutineScope) {
         super.onStart(scope)
@@ -52,6 +53,20 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
         }
     }
 
+    override fun onButtonClicked() {
+        vm.onButtonClicked(
+            target = target,
+            input = textInputField.text.toString()
+        )
+    }
+
+    override fun onKeyboardActionDone() {
+        vm.onActionDone(
+            target = target,
+            input = textInputField.text.toString()
+        )
+    }
+
     override fun injectDependencies() {
         componentManager().objectSetRecordComponent.get(ctx).inject(this)
     }
@@ -66,8 +81,4 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
     ): FragmentSetObjectSetRecordNameBinding = FragmentSetObjectSetRecordNameBinding.inflate(
         inflater, container, false
     )
-
-    companion object {
-        const val CONTEXT_KEY = "arg.object-set-record.context"
-    }
 }

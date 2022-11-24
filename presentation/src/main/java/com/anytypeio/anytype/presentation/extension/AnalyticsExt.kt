@@ -212,6 +212,7 @@ fun Relation.Format.getPropName() = when (this) {
     Relation.Format.EMOJI -> "emoji"
     Relation.Format.OBJECT -> "object"
     Relation.Format.RELATIONS -> "relations"
+    Relation.Format.UNDEFINED -> "undefined"
 }
 
 /**

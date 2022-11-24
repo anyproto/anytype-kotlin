@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -13,7 +14,6 @@ import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.DateParser
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -27,7 +27,7 @@ import timber.log.Timber
 suspend fun List<ColumnView>.buildGridRow(
     showIcon: Boolean,
     obj: ObjectWrapper.Basic,
-    relations: List<Relation>,
+    relations: List<ObjectWrapper.Relation>,
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
     store: ObjectStore
@@ -47,7 +47,7 @@ suspend fun List<ColumnView>.buildGridRow(
             cells.add(
                 CellView.Description(
                     id = obj.id,
-                    key = column.key,
+                    relationKey = column.key,
                     text = ""
                 )
             )
@@ -59,7 +59,7 @@ suspend fun List<ColumnView>.buildGridRow(
                     ColumnView.Format.SHORT_TEXT, ColumnView.Format.LONG_TEXT -> {
                         CellView.Description(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             text = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
@@ -67,7 +67,7 @@ suspend fun List<ColumnView>.buildGridRow(
                         val value = obj.getValue<Any?>(column.key)
                         CellView.Number(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             number = NumberParser.parse(value)
                         )
                     }
@@ -75,47 +75,47 @@ suspend fun List<ColumnView>.buildGridRow(
                         val value = obj.getValue<Any?>(column.key)
                         CellView.Date(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             timeInSecs = DateParser.parse(value),
                             dateFormat = column.getDateRelationFormat()
                         )
                     }
                     ColumnView.Format.FILE -> {
                         val files = obj.map.buildFileViews(
-                            columnKey = column.key,
+                            relationKey = column.key,
                             details = details
                         )
                         CellView.File(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             files = files
                         )
                     }
                     ColumnView.Format.CHECKBOX -> {
                         CellView.Checkbox(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             isChecked = obj.getValue<Boolean>(column.key) ?: false
                         )
                     }
                     ColumnView.Format.URL -> {
                         CellView.Url(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             url = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
                     ColumnView.Format.EMAIL -> {
                         CellView.Email(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             email = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
                     ColumnView.Format.PHONE -> {
                         CellView.Phone(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             phone = obj.getValue<String>(column.key).orEmpty()
                         )
                     }
@@ -127,31 +127,54 @@ suspend fun List<ColumnView>.buildGridRow(
                         )
                         CellView.Object(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             objects = objects
                         )
                     }
                     ColumnView.Format.TAG -> {
-                        val relation = relations.firstOrNull { it.key == column.key }
+                        val values = obj.getValue<List<Id>>(column.key) ?: emptyList()
+                        val options = values.mapNotNull {
+                            val wrapper = store.get(it)
+                            if (wrapper != null && !wrapper.isEmpty()) {
+                                ObjectWrapper.Option(wrapper.map)
+                            } else {
+                                null
+                            }
+                        }
                         val tags = obj.map.buildTagViews(
-                            selOptions = relation?.selections,
-                            columnKey = column.key
+                            options = options,
+                            relationKey = column.key
                         )
                         CellView.Tag(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             tags = tags
                         )
                     }
                     ColumnView.Format.STATUS -> {
-                        val relation = relations.firstOrNull { it.key == column.key }
+                        val value : Id? = obj.getValue<Any>(column.key).let { value ->
+                            when(value) {
+                                is Id -> value
+                                is List<*> -> value.typeOf<Id>().firstOrNull()
+                                else -> null
+                            }
+                        }
+                        val options = buildList {
+                            if (value != null) {
+                                val wrapper = store.get(value)
+                                if (wrapper != null && !wrapper.isEmpty()) {
+                                    add(
+                                        ObjectWrapper.Option(wrapper.map)
+                                    )
+                                }                            }
+                        }
                         val status = obj.map.buildStatusViews(
-                            selOptions = relation?.selections,
-                            columnKey = column.key
+                            options = options,
+                            relationKey = column.key
                         )
                         CellView.Status(
                             id = obj.id,
-                            key = column.key,
+                            relationKey = column.key,
                             status = status
                         )
                     }
@@ -177,11 +200,11 @@ suspend fun List<ColumnView>.buildGridRow(
 }
 
 fun Struct.buildFileViews(
-    columnKey: Id,
+    relationKey: Id,
     details: Map<Id, Block.Fields>
 ): List<FileView> {
     val files = mutableListOf<FileView>()
-    val value = this.getOrDefault(columnKey, null)
+    val value = this.getOrDefault(relationKey, null)
     if (value is Id) {
         files.add(
             FileView(
@@ -206,13 +229,13 @@ fun Struct.buildFileViews(
     return files
 }
 
-fun Struct.buildObjectViews(
-    columnKey: Id,
+fun Struct.buildRelationValueObjectViews(
+    relationKey: Id,
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder
 ): List<ObjectView> {
     val objects = mutableListOf<ObjectView>()
-    val value = this.getOrDefault(columnKey, null)
+    val value = this.getOrDefault(relationKey, null)
     if (value is Id) {
         val wrapper = ObjectWrapper.Basic(details[value]?.map ?: emptyMap())
         if (!wrapper.isEmpty()) {
@@ -287,37 +310,50 @@ suspend fun Struct.buildObjectViews(
 }
 
 fun Struct.buildTagViews(
-    selOptions: List<Relation.Option>?,
-    columnKey: String
-): List<TagView> {
-    val views = arrayListOf<TagView>()
-    getColumnOptions(selOptions, this, columnKey).forEach {
-        views.add(
-            TagView(
-                id = it.id,
-                tag = it.text,
-                color = it.color
-            )
-        )
+    options: List<ObjectWrapper.Option>,
+    relationKey: Key
+): List<TagView> = buildList {
+    val tags: List<Id> = when (val value = get(relationKey)) {
+        is Id -> listOf(value)
+        is List<*> -> value.typeOf()
+        else -> emptyList()
     }
-    return views
+    tags.forEach { id ->
+        val option = options.find { it.id == id }
+        if (option != null) {
+            add(
+                TagView(
+                    id = option.id,
+                    tag = option.title,
+                    color = option.color
+                )
+            )
+        }
+    }
 }
 
 fun Struct.buildStatusViews(
-    selOptions: List<Relation.Option>?,
-    columnKey: String
-): List<StatusView> {
-    val views = arrayListOf<StatusView>()
-    getColumnOptions(selOptions, this, columnKey).forEach {
-        views.add(
-            StatusView(
-                id = it.id,
-                status = it.text,
-                color = it.color
-            )
-        )
+    options: List<ObjectWrapper.Option>,
+    relationKey: Key
+): List<StatusView> = buildList {
+    val status: Id? = when (val value = get(relationKey)) {
+        is Id -> value
+        is List<*> -> value.typeOf<Id>().firstOrNull()
+        else -> null
     }
-    return views
+    if (status != null) {
+        options.forEach { o ->
+            if (o.id == status) {
+                add(
+                    StatusView(
+                        id = o.id,
+                        status = o.title,
+                        color = o.color
+                    )
+                )
+            }
+        }
+    }
 }
 
 @Deprecated("Part of soon-to-be-deleted api")

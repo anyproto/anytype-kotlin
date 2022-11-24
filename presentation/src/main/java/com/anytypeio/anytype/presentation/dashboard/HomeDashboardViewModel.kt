@@ -17,6 +17,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.TEMPLATE
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
@@ -31,15 +32,16 @@ import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Reducer
@@ -86,6 +88,7 @@ class HomeDashboardViewModel(
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val createNewObject: CreateNewObject,
     featureToggles: FeatureToggles
 ) : ViewStateViewModel<State>(),
@@ -96,7 +99,15 @@ class HomeDashboardViewModel(
 
     val toasts = MutableSharedFlow<String>()
 
-    private val machine = Interactor(scope = viewModelScope, reducer = Reducer(featureToggles))
+    private val machine = Interactor(
+        scope = viewModelScope,
+        reducer = Reducer(
+            storeOfObjectTypes = storeOfObjectTypes,
+            featureToggles = featureToggles
+        ),
+        storeOfObjectTypes = storeOfObjectTypes,
+        featureToggles = featureToggles
+    )
 
     private val movementChannel = Channel<Movement>()
     private val movementChanges = movementChannel.consumeAsFlow()
@@ -388,7 +399,7 @@ class HomeDashboardViewModel(
                     else -> null
                 }
                 if (view is DashboardView.Document && SupportedLayouts.layouts.contains(view.layout)) {
-                    if (view.type != ObjectType.TEMPLATE_URL) {
+                    if (view.type != TEMPLATE) {
                         if (view.layout == ObjectType.Layout.SET) {
                             proceedWithOpeningObjectSet(target)
                         } else {

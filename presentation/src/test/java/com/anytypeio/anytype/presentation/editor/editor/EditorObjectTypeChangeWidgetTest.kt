@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -85,7 +86,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val objectDetails = Block.Fields(
             mapOf(
-                "type" to ObjectType.NOTE_URL,
+                "type" to ObjectTypeIds.NOTE,
                 "layout" to ObjectType.Layout.NOTE.code.toDouble()
             )
         )
@@ -94,8 +95,8 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
-        stubGetDefaultObjectType(type = ObjectType.NOTE_URL)
+        stubSearchObjects()
+        stubGetDefaultObjectType(type = ObjectTypeIds.NOTE)
         stubOpenDocument(
             document = doc,
             details = detailsList
@@ -154,7 +155,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val objectDetails = Block.Fields(
             mapOf(
-                "type" to ObjectType.NOTE_URL,
+                "type" to ObjectTypeIds.NOTE,
                 "layout" to ObjectType.Layout.NOTE.code.toDouble()
             )
         )
@@ -163,8 +164,8 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
-        stubGetDefaultObjectType(type = ObjectType.NOTE_URL)
+        stubSearchObjects()
+        stubGetDefaultObjectType(type = ObjectTypeIds.NOTE)
         stubOpenDocument(
             document = doc,
             details = detailsList
@@ -223,7 +224,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val objectDetails = Block.Fields(
             mapOf(
-                "type" to ObjectType.NOTE_URL,
+                "type" to ObjectTypeIds.NOTE,
                 "layout" to ObjectType.Layout.NOTE.code.toDouble()
             )
         )
@@ -232,8 +233,8 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
-        stubGetDefaultObjectType(type = ObjectType.PAGE_URL)
+        stubSearchObjects()
+        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
         stubOpenDocument(
             document = doc,
             details = detailsList

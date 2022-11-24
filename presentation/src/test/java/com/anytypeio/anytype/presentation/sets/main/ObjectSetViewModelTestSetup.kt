@@ -25,13 +25,14 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
-import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
-import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
@@ -46,7 +47,6 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
-import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -74,16 +74,13 @@ open class ObjectSetViewModelTestSetup {
     lateinit var closeBlock: CloseBlock
 
     @Mock
-    lateinit var addDataViewRelation: AddNewRelationToDataView
-
-    @Mock
     lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     @Mock
     lateinit var updateText: UpdateText
 
     @Mock
-    lateinit var createDataViewRecord: CreateDataViewRecord
+    lateinit var createDataViewObject: CreateDataViewObject
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
@@ -130,11 +127,11 @@ open class ObjectSetViewModelTestSetup {
     val dispatcher = Dispatcher.Default<Payload>()
     private val delegator = Delegator.Default<Action>()
     private val reducer = ObjectSetReducer()
-    private val cache = ObjectSetRecordCache()
     val session = ObjectSetSession()
     private val paginator = ObjectSetPaginator()
 
     private val store: ObjectStore = DefaultObjectStore()
+    protected val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val database = ObjectSetDatabase(store)
 
     private lateinit var container: DataViewSubscriptionContainer
@@ -157,16 +154,14 @@ open class ObjectSetViewModelTestSetup {
     fun givenViewModel(): ObjectSetViewModel = ObjectSetViewModel(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
-        addDataViewRelation = addDataViewRelation,
         updateDataViewViewer = updateDataViewViewer,
         updateText = updateText,
         interceptEvents = interceptEvents,
         interceptThreadStatus = interceptThreadStatus,
-        createDataViewRecord = createDataViewRecord,
+        createDataViewObject = createDataViewObject,
         dispatcher = dispatcher,
         delegator = delegator,
         reducer = reducer,
-        objectSetRecordCache = cache,
         coverImageHashProvider = coverImageHashProvider,
         urlBuilder = urlBuilder,
         session = session,
@@ -180,7 +175,8 @@ open class ObjectSetViewModelTestSetup {
         paginator = paginator,
         cancelSearchSubscription = cancelSearchSubscription,
         database = database,
-        dataViewSubscriptionContainer = container
+        dataViewSubscriptionContainer = container,
+        storeOfRelations = storeOfRelations
     )
 
     fun stubInterceptEvents(
@@ -253,12 +249,12 @@ open class ObjectSetViewModelTestSetup {
     }
 
     fun stubCreateDataViewRecord(
-        record: Map<String, Any?> = emptyMap()
+        target: Id
     ) {
-        createDataViewRecord.stub {
+        createDataViewObject.stub {
             onBlocking {
                 invoke(any())
-            } doReturn Either.Right(record)
+            } doReturn Either.Right(target)
         }
     }
 
@@ -291,7 +287,9 @@ open class ObjectSetViewModelTestSetup {
         keys: List<Key>,
         offset: Long,
         limit: Int,
-        result: SearchResult
+        result: SearchResult,
+        ignoreWorkspace: Boolean? = null,
+        noDepSubscription: Boolean? = null
     ) {
         repo.stub {
             onBlocking {
@@ -304,7 +302,9 @@ open class ObjectSetViewModelTestSetup {
                     source = sources,
                     keys = keys,
                     limit = limit,
-                    offset = offset
+                    offset = offset,
+                    ignoreWorkspace = ignoreWorkspace,
+                    noDepSubscription = noDepSubscription
                 )
             } doReturn result
         }
@@ -322,7 +322,9 @@ open class ObjectSetViewModelTestSetup {
                     source = any(),
                     keys = any(),
                     limit = any(),
-                    offset = any()
+                    offset = any(),
+                    noDepSubscription = any(),
+                    ignoreWorkspace = any()
                 )
             } doReturn SearchResult(
                 results = emptyList(),

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddSortEvent
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -23,8 +24,13 @@ class SelectSortRelationViewModel(
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val addDataViewViewerSort: AddDataViewViewerSort,
+    private val storeOfRelations: StoreOfRelations,
     private val analytics: Analytics
-) : SearchRelationViewModel(objectSetState, session) {
+) : SearchRelationViewModel(
+    objectSetState = objectSetState,
+    session = session,
+    storeOfRelations = storeOfRelations
+) {
 
     fun onRelationClicked(ctx: Id, relation: SimpleRelationView) {
         viewModelScope.launch {
@@ -59,6 +65,7 @@ class SelectSortRelationViewModel(
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val addDataViewViewerSort: AddDataViewViewerSort,
+        private val storeOfRelations: StoreOfRelations,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -68,6 +75,7 @@ class SelectSortRelationViewModel(
                 session = session,
                 dispatcher = dispatcher,
                 addDataViewViewerSort = addDataViewViewerSort,
+                storeOfRelations = storeOfRelations,
                 analytics = analytics
             ) as T
         }
@@ -77,9 +85,10 @@ class SelectSortRelationViewModel(
         const val USE_CASE_ERROR = "Couldn't add a sort. Please, try again."
     }
 
-    override fun filterRelationsFromAlreadyInUse(
+    override suspend fun filterRelationsFromAlreadyInUse(
         set: ObjectSet,
-        viewerId: String?
+        viewerId: String?,
+        storeOfRelations: StoreOfRelations
     ): List<SimpleRelationView> {
         val relationsInUse: List<String> = run {
             val block = set.blocks.first { it.content is DV }
@@ -87,6 +96,9 @@ class SelectSortRelationViewModel(
             val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
             viewer.sorts.map { it.relationKey }.toList()
         }
-        return set.simpleRelations(viewerId).filterNot { it.key in relationsInUse }
+        return set.simpleRelations(
+            viewerId = viewerId,
+            storeOfRelations = storeOfRelations
+        ).filterNot { it.key in relationsInUse }
     }
 }

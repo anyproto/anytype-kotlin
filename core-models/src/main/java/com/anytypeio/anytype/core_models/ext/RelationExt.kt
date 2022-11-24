@@ -2,29 +2,25 @@ package com.anytypeio.anytype.core_models.ext
 
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationLink
 
-fun List<Relation>.process(
-    event: Event.Command.ObjectRelations
-) : List<Relation> = when(event) {
-    is Event.Command.ObjectRelations.Amend -> amend(event.relations)
-    is Event.Command.ObjectRelations.Remove -> remove(event.keys)
-    is Event.Command.ObjectRelations.Set -> set(event.relations)
+fun List<RelationLink>.process(
+    event: Event.Command.ObjectRelationLinks
+): List<RelationLink> = when (event) {
+    is Event.Command.ObjectRelationLinks.Amend -> amend(event.relationLinks)
+    is Event.Command.ObjectRelationLinks.Remove -> remove(event.keys)
 }
 
-fun List<Relation>.set(relations: List<Relation>) : List<Relation> {
-    return relations
-}
-
-fun List<Relation>.amend(relations: List<Relation>) : List<Relation> {
+fun List<RelationLink>.amend(relationLinks: List<RelationLink>): List<RelationLink> {
     val map = this.associateBy { it.key }.toMutableMap()
-    relations.forEach { relation ->
+    relationLinks.forEach { relation ->
         map[relation.key] = relation
     }
     return map.values.toList()
 }
 
-fun List<Relation>.remove(keys: List<Id>) : List<Relation> {
+fun List<RelationLink>.remove(keys: List<Key>): List<RelationLink> {
     return filter { !keys.contains(it.key) }
 }
 

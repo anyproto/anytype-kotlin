@@ -44,11 +44,16 @@ message Change {
             BlockRemove blockRemove = 3;
             BlockMove blockMove = 4;
             BlockDuplicate blockDuplicate = 5;
+            RelationAdd relationAdd = 50;
+            RelationRemove relationRemove = 51;
             DetailsSet detailsSet = 100;
             DetailsUnset detailsUnset = 101;
-            RelationAdd relationAdd = 102;
-            RelationRemove relationRemove = 103;
-            RelationUpdate relationUpdate = 104;
+
+            // deprecated
+            _RelationAdd old_relationAdd = 102;
+            _RelationRemove old_relationRemove = 103;
+            _RelationUpdate old_relationUpdate = 104;
+
             ObjectTypeAdd objectTypeAdd = 105;
             ObjectTypeRemove objectTypeRemove = 106;
             StoreKeySet storeKeySet = 107;
@@ -93,10 +98,18 @@ message Change {
     }
 
     message RelationAdd {
+        repeated anytype.model.RelationLink relationLinks = 1;
+    }
+
+    message RelationRemove {
+        repeated string relationKey = 1;
+    }
+
+    message _RelationAdd {
         anytype.model.Relation relation = 2;
     }
 
-    message RelationUpdate {
+    message _RelationUpdate {
         message Dict {
             repeated anytype.model.Relation.Option dict = 2;
         }
@@ -116,7 +129,7 @@ message Change {
         }
     }
 
-    message RelationRemove {
+    message _RelationRemove {
         string key = 1;
     }
 

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.relations.add
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
@@ -16,31 +17,24 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
 
     override fun onStatusClicked(status: RelationValueView.Option.Status) {
         vm.onAddObjectSetStatusClicked(
-            ctx = ctx,
             obj = target,
-            dataview = dataview,
-            viewer = viewer,
-            relation = relation,
+            relationKey = relationKey,
             status = status
         )
     }
 
     override fun onCreateOptionClicked(name: String) {
         vm.onCreateDataViewRelationOptionClicked(
-            ctx = ctx,
-            relation = relation,
+            relationKey = relationKey,
             name = name,
-            dataview = dataview,
-            viewer = viewer,
             target = target
         )
     }
 
     override fun onAddButtonClicked() {
         vm.onAddSelectedValuesToDataViewClicked(
-            ctx = ctx,
             target = target,
-            relation = relation
+            relationKey = relationKey
         )
     }
 
@@ -56,14 +50,16 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
         fun new(
             ctx: Id,
             target: Id,
-            relation: Id,
+            relationId: Id,
+            relationKey: Key,
             dataview: Id,
             viewer: Id
         ) = AddOptionsRelationDVFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
-                RELATION_KEY to relation,
+                RELATION_ID to relationId,
+                RELATION_KEY to relationKey,
                 DATAVIEW_KEY to dataview,
                 VIEWER_KEY to viewer
             )

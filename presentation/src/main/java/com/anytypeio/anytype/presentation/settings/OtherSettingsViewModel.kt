@@ -9,7 +9,6 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
@@ -31,8 +30,9 @@ class OtherSettingsViewModel(
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
-    val isClearFileCacheInProgress = MutableStateFlow(false)
+    private val isClearFileCacheInProgress = MutableStateFlow(false)
     val defaultObjectTypeName = MutableStateFlow<String?>(null)
+    private val defaultObjectTypeId = MutableStateFlow<String?>(null)
 
     init {
         viewModelScope.launch {
@@ -41,6 +41,7 @@ class OtherSettingsViewModel(
                     Timber.e(e, "Error while getting user settings")
                 },
                 onSuccess = {
+                    defaultObjectTypeId.value = it.type
                     defaultObjectTypeName.value = it.name
                 }
             )
@@ -51,16 +52,9 @@ class OtherSettingsViewModel(
         viewModelScope.launch {
             commands.emit(
                 Command.NavigateToObjectTypesScreen(
-                    smartBlockType = DEFAULT_SETTINGS_SMART_BLOCK_TYPE,
-                    excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
+                    excludeTypes = listOf(defaultObjectTypeId.value.orEmpty())
                 )
             )
-        }
-    }
-
-    fun onClearCacheClicked() {
-        viewModelScope.launch {
-            commands.emit(Command.ShowClearCacheAlert)
         }
     }
 
@@ -121,8 +115,7 @@ class OtherSettingsViewModel(
     sealed class Command {
         data class Toast(val msg: String) : Command()
         data class NavigateToObjectTypesScreen(
-            val smartBlockType: SmartBlockType,
-            val excludedTypes: List<Id>
+            val excludeTypes: List<Id>
         ) : Command()
 
         object ShowClearCacheAlert : Command()

@@ -3,9 +3,9 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
@@ -36,14 +36,14 @@ object LinkToObjectOrWebModule {
     @Provides
     fun provideLinkToObjectViewModelFactory(
         urlBuilder: UrlBuilder,
-        objectTypesProvider: ObjectTypesProvider,
+        storeOfObjectTypes: StoreOfObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
         stores: Editor.Storage,
         urlValidator: UrlValidator
     ): LinkToObjectOrWebViewModelFactory = LinkToObjectOrWebViewModelFactory(
         urlBuilder = urlBuilder,
-        objectTypesProvider = objectTypesProvider,
+        storeOfObjectTypes = storeOfObjectTypes,
         searchObjects = searchObjects,
         analytics = analytics,
         stores = stores,

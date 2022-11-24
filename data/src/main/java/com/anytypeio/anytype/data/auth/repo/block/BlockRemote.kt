@@ -8,14 +8,17 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 
 interface BlockRemote {
@@ -87,13 +90,7 @@ interface BlockRemote {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
-    suspend fun getObjectTypes(): List<ObjectType>
-    suspend fun createObjectType(prototype: ObjectType.Prototype): ObjectType
-
     suspend fun createSet(
-        contextId: String,
-        targetId: String?,
-        position: Position?,
         objectType: String?
     ): Response.Set.Create
 
@@ -104,14 +101,6 @@ interface BlockRemote {
         offset: Int,
         limit: Int
     ): Payload
-
-    suspend fun addNewRelationToDataView(
-        context: Id,
-        target: Id,
-        name: String,
-        format: Relation.Format,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload>
 
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
     suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Id): Payload
@@ -133,16 +122,11 @@ interface BlockRemote {
         viewer: DVViewer
     ): Payload
 
-    suspend fun createDataViewRecord(
-        context: Id, target: Id, template: Id?, prefilled: Map<Id, Any>
-    ): Map<String, Any?>
-
-    suspend fun updateDataViewRecord(
-        context: Id,
-        target: Id,
-        record: Id,
-        values: Map<String, Any?>
-    )
+    suspend fun createDataViewObject(
+        type: Id,
+        template: Id?,
+        prefilled: Map<Id, Any>,
+    ): Id
 
     suspend fun addDataViewViewer(
         ctx: String,
@@ -156,22 +140,6 @@ interface BlockRemote {
         dataview: String,
         viewer: String
     ): Payload
-
-    suspend fun addDataViewRelationOption(
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        record: Id,
-        name: String,
-        color: String
-    ): Pair<Payload, Id?>
-
-    suspend fun addObjectRelationOption(
-        ctx: Id,
-        relation: Id,
-        name: Id,
-        color: String
-    ): Pair<Payload, Id?>
 
     suspend fun searchObjects(
         sorts: List<DVSort>,
@@ -192,6 +160,8 @@ interface BlockRemote {
         limit: Int,
         beforeId: Id?,
         afterId: Id?,
+        ignoreWorkspace: Boolean?,
+        noDepSubscription: Boolean?
     ): SearchResult
 
     suspend fun searchObjectsByIdWithSubscription(
@@ -203,14 +173,8 @@ interface BlockRemote {
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
-    suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
-    suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload
-    suspend fun addNewRelationToObject(
-        ctx: Id,
-        name: String,
-        format: RelationFormat,
-        limitObjectTypes: List<Id>
-    ) : Pair<Id, Payload>
+    suspend fun addRelationToObject(ctx: Id, relation: Key) : Payload
+    suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
     suspend fun debugSync(): String
     suspend fun debugLocalStore(path: String): String
@@ -257,6 +221,19 @@ interface BlockRemote {
     suspend fun objectToSet(ctx: Id, source: List<String>): Id
 
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
+
+    suspend fun createRelation(
+        name: String,
+        format: RelationFormat,
+        formatObjectTypes: List<Id>,
+        prefilled: Struct
+    ) : ObjectWrapper.Relation
+
+    suspend fun createRelationOption(
+        relation: Id,
+        name: String,
+        color: String
+    ) : ObjectWrapper.Option
 
     suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload
 

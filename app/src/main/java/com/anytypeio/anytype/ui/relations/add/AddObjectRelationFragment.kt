@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.relations.RelationObjectValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
@@ -43,6 +44,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
     private val relationId get() = argString(RELATION_ID)
+    private val relationKey get() = argString(RELATION_KEY)
     private val types get() = arg<List<String>>(TARGET_TYPES)
     private val flow get() = arg<Int>(FLOW_KEY)
 
@@ -116,7 +118,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         }
         super.onStart()
         setupAppearance()
-        vm.onStart(objectId = objectId, relationId = relationId, targetTypes = types)
+        vm.onStart(objectId = objectId, relationKey = relationKey, targetTypes = types)
     }
 
     override fun onStop() {
@@ -142,7 +144,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
             onObjectValueChanged(
                 ctx = ctx,
                 objectId = objectId,
-                relationId = relationId,
+                relationKey = relationKey,
                 ids = ids
             )
         }
@@ -187,6 +189,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
             ctx: Id,
             objectId: Id,
             relationId: Id,
+            relationKey: Key,
             types: List<Id>,
             flow: Int = FLOW_DEFAULT
         ) = AddObjectRelationFragment().apply {
@@ -194,6 +197,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,
                 RELATION_ID to relationId,
+                RELATION_KEY to relationKey,
                 TARGET_TYPES to types,
                 FLOW_KEY to flow
             )
@@ -201,6 +205,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
 
         const val CONTEXT_ID = "arg.relation.add.object.context"
         const val RELATION_ID = "arg.relation.add.object.relation.id"
+        const val RELATION_KEY = "arg.relation.add.object.relation.key"
         const val OBJECT_ID = "arg.relation.add.object.object.id"
         const val TARGET_TYPES = "arg.relation.add.object.target_types"
         const val FLOW_KEY = "arg.relation.add.object.flow"
@@ -212,7 +217,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         fun onObjectValueChanged(
             ctx: Id,
             objectId: Id,
-            relationId: Id,
+            relationKey: Key,
             ids: List<Id>
         )
     }

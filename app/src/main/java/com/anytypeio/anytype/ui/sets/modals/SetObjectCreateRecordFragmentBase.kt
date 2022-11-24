@@ -14,8 +14,7 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.presentation.sets.ObjectSetCreateRecordViewModelBase
-import com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment.Companion.CONTEXT_KEY
+import com.anytypeio.anytype.presentation.sets.SetDataViewObjectNameViewModelBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -23,11 +22,15 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
     BaseBottomSheetFragment<T>() {
 
     protected abstract val textInputType: Int
-    private val ctx: String get() = argString(CONTEXT_KEY)
     protected abstract val textInputField: EditText
     protected abstract val button: View
 
-    protected abstract val vm: ObjectSetCreateRecordViewModelBase
+    protected abstract val vm: SetDataViewObjectNameViewModelBase
+
+    abstract fun onButtonClicked()
+    abstract fun onKeyboardActionDone()
+
+    protected val ctx: String get() = argString(CONTEXT_KEY)
 
     private val handler: (Int) -> Boolean = { action ->
         action == EditorInfo.IME_ACTION_DONE
@@ -35,15 +38,8 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        textInputField.apply {
-            setRawInputType(textInputType)
-        }
-        button.setOnClickListener {
-            vm.onButtonClicked(
-                ctx = ctx,
-                input = textInputField.text.toString()
-            )
-        }
+        textInputField.apply { setRawInputType(textInputType) }
+        button.setOnClickListener { onButtonClicked() }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 onStart(this)
@@ -68,11 +64,16 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
         textInputField.editorActionEvents(handler).collect {
             textInputField.clearFocus()
             textInputField.hideKeyboard()
-            vm.onComplete(ctx, textInputField.text.toString())
+            onKeyboardActionDone()
         }
     }
 
     private suspend fun subscribeIsCompleted() {
         vm.isCompleted.collect { isCompleted -> if (isCompleted) dismiss() }
+    }
+
+    companion object {
+        const val CONTEXT_KEY = "arg.object-set-record.context"
+        const val TARGET_KEY = "arg.object-set-record.target"
     }
 }

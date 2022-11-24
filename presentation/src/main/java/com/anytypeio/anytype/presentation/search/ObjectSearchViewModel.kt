@@ -17,7 +17,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEve
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.objects.toView
+import com.anytypeio.anytype.presentation.objects.toViews
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,7 +49,7 @@ open class ObjectSearchViewModel(
             emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
-    protected val types = MutableSharedFlow<List<ObjectType>>(replay = 0)
+    protected val types = MutableSharedFlow<List<ObjectWrapper.Type>>(replay = 0)
     protected val objects = MutableSharedFlow<List<ObjectWrapper.Basic>>(replay = 0)
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
@@ -59,7 +59,7 @@ open class ObjectSearchViewModel(
     init {
         viewModelScope.launch {
             combine(objects, types) { listOfObjects, listOfTypes ->
-                listOfObjects.toView(
+                listOfObjects.toViews(
                     urlBuilder = urlBuilder,
                     objectTypes = listOfTypes
                 )
@@ -84,7 +84,11 @@ open class ObjectSearchViewModel(
 
     private fun getObjectTypes() {
         jobs += viewModelScope.launch {
-            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+            val params = GetObjectTypes.Params(
+                sorts = emptyList(),
+                filters = ObjectSearchConstants.filterObjectType,
+                keys = ObjectSearchConstants.defaultKeysObjectType
+            )
             getObjectTypes.invoke(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = { types.emit(it) }

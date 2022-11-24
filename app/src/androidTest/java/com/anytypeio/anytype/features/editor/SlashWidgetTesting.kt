@@ -14,9 +14,10 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MainMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MediaMenuHolder
@@ -478,29 +479,15 @@ class SlashWidgetTesting : EditorTestSetup() {
         val document = listOf(page, header, title, paragraph)
 
         val objectTypes = listOf(
-            ObjectType(
-                url = MockDataFactory.randomUuid(),
-                name = MockDataFactory.randomString(),
-                emoji = MockDataFactory.randomString(),
-                layout = ObjectType.Layout.BASIC,
-                relations = emptyList(),
-                description = MockDataFactory.randomString(),
-                isHidden = false,
-                smartBlockTypes = listOf(),
-                isArchived = false,
-                isReadOnly = false
+            ObjectWrapper.Type(
+                mapOf(
+                    Relations.ID to MockDataFactory.randomUuid()
+                )
             ),
-            ObjectType(
-                url = MockDataFactory.randomUuid(),
-                name = MockDataFactory.randomString(),
-                emoji = MockDataFactory.randomString(),
-                layout = ObjectType.Layout.BASIC,
-                relations = emptyList(),
-                description = MockDataFactory.randomString(),
-                isHidden = false,
-                smartBlockTypes = listOf(),
-                isArchived = false,
-                isReadOnly = false
+            ObjectWrapper.Type(
+                mapOf(
+                    Relations.ID to MockDataFactory.randomUuid()
+                )
             )
         )
 

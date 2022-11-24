@@ -8,9 +8,11 @@ message SmartBlockSnapshotBase {
     repeated Block blocks = 1;
     google.protobuf.Struct details = 2;
     google.protobuf.Struct fileKeys = 3;
+    // deprecated
     repeated Relation extraRelations = 4;
     repeated string objectTypes = 5;
     google.protobuf.Struct collections = 6;
+    repeated RelationLink relationLinks = 7;
 }
 
 enum SmartBlockType {
@@ -34,14 +36,13 @@ enum SmartBlockType {
     MarketplaceRelation = 0x111;
     MarketplaceTemplate = 0x112;
 
-    BundledRelation = 0x200;
-    IndexedRelation = 0x201;
+    BundledRelation = 0x200; // DEPRECATED
+    SubObject = 0x201;
     BundledObjectType = 0x202;
     AnytypeProfile = 0x203;
     Date = 0x204;
     WorkspaceOld = 0x205; // deprecated thread-based workspace
     Workspace = 0x206;
-
 }
 
 message Block {
@@ -306,11 +307,12 @@ message Block {
         message Dataview {
             repeated string source = 1;
             repeated View views = 2;
-            // index 3 is deprecated, was used for schemaURL in old-format sets
+            // deprecated
             repeated model.Relation relations = 4;
             string activeView = 3; // saved within a session
             repeated GroupOrder groupOrders = 12;
             repeated ObjectOrder objectOrders = 13;
+            repeated anytype.model.RelationLink relationLinks = 5;
 
             message View {
                 string id = 1;
@@ -383,6 +385,8 @@ message Block {
                 Condition condition = 3;
                 google.protobuf.Value value = 4;
                 QuickOption quickOption = 6;
+                RelationFormat format = 7;
+                bool includeTime = 8;
 
                 enum Operator {
                     And = 0;
@@ -553,6 +557,8 @@ message Account {
         string marketplaceRelationObjectId = 6; // marketplace relation id
         string marketplaceTemplateObjectId = 7; // marketplace template id
         string deviceId = 8;
+        string accountSpaceId = 9; // marketplace template id
+
         string gatewayUrl = 101; // gateway url for fetching static files
         string localStoragePath = 103; // path to local storage
         string timeZone = 104; // time zone from config
@@ -627,7 +633,7 @@ message ThreadCreateQueueEntry {
 message ObjectType {
     string url = 1; // leave empty in case you want to create the new one
     string name = 2; // name of objectType (can be localized for bundled types)
-    repeated Relation relations = 3; // cannot contain more than one Relation with the same RelationType
+    repeated RelationLink relationLinks = 3; // cannot contain more than one Relation with the same RelationType
     Layout layout = 4;
     string iconEmoji = 5; // emoji symbol
     string description = 6;
@@ -635,6 +641,7 @@ message ObjectType {
     bool readonly = 10;
     repeated SmartBlockType types = 8;
     bool isArchived = 9; // sets locally to hide object type from set and some other places
+    bool installedByDefault = 11;
 
     enum Layout {
         basic = 0;
@@ -649,6 +656,8 @@ message ObjectType {
         note = 9;
         space = 10;
         bookmark = 11;
+        relationOptionsList = 12;
+        relationOption = 13;
 
         database = 20; // to be released later
     }
@@ -667,6 +676,8 @@ message RelationWithValue {
 
 // Relation describe the human-interpreted relation type. It may be something like "Date of creation, format=date" or "Assignee, format=objectId, objectType=person"
 message Relation {
+    string id = 100;
+
     // Key under which the value is stored in the map. Must be unique for the object type.
     // It usually auto-generated bsonid, but also may be something human-readable in case of prebuilt types.
     string key = 1;
@@ -696,13 +707,8 @@ message Relation {
         string id = 1; // id generated automatically if omitted
         string text = 2;
         string color = 3; // stored
-        Scope scope = 4; // on-store contains only local-scope relations. All others injected on-the-fly
-
-        enum Scope {
-            local = 0; // stored within the object/aggregated from set
-            relation = 1; // aggregated from all relation of this relation's key
-            format = 2; // aggregated from all relations of this relation's format
-        }
+        // 4 is reserved for old relation format
+        string relationKey = 5; // stored
     }
 
     enum Scope {
@@ -739,6 +745,11 @@ enum RelationFormat {
     object = 100; // relation can has objectType to specify objectType
     relations = 101; // base64-encoded relation pb model
 
+}
+
+message RelationLink {
+    string key = 1;
+    RelationFormat format = 2;
 }
 
 message Relations {
@@ -783,8 +794,9 @@ message ObjectView {
         repeated RelationWithValue relations = 2;
     }
 
-    repeated ObjectType objectTypes = 5; // objectTypes contains ONLY to get layouts for the actual and all dependent objects. Relations are currently omitted // todo: switch to other pb model
-    repeated Relation relations = 7; // combined relations of object's type + extra relations. If object doesn't has some relation key in the details this means client should hide it and only suggest when adding existing one
+    repeated Relation relations = 7; // DEPRECATED, use relationLinks instead
+    repeated RelationLink relationLinks = 10;
+
     Restrictions restrictions = 8; // object restrictions
     HistorySize history = 9;
 

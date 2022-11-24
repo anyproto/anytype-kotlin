@@ -3,7 +3,23 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
-import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.ArchiveSubComponent
+import com.anytypeio.anytype.di.feature.AuthSubComponent
+import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
+import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
+import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
+import com.anytypeio.anytype.di.feature.EditorSubComponent
+import com.anytypeio.anytype.di.feature.HomeDashboardSubComponent
+import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
+import com.anytypeio.anytype.di.feature.LinkToObjectSubComponent
+import com.anytypeio.anytype.di.feature.MainEntrySubComponent
+import com.anytypeio.anytype.di.feature.MoveToSubComponent
+import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
+import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
+import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
+import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
+import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
+import com.anytypeio.anytype.di.feature.SplashSubComponent
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
@@ -32,7 +48,8 @@ import javax.inject.Singleton
         EmojiModule::class,
         ClipboardModule::class,
         AnalyticsModule::class,
-        LocalNetworkAddressModule::class
+        LocalNetworkAddressModule::class,
+        SubscriptionsModule::class
     ]
 )
 interface MainComponent : AppearanceDependencies {
@@ -48,8 +65,6 @@ interface MainComponent : AppearanceDependencies {
     fun moveToBuilder(): MoveToSubComponent.Builder
     fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
-    fun createSetComponentBuilder(): CreateSetSubComponent.Builder
-    fun createObjectTypeComponentBuilder(): CreateObjectTypeSubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
     fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder

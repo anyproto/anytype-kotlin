@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -15,7 +14,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 suspend fun DVViewer.buildListViews(
     objects: List<Id>,
-    relations: List<Relation>,
+    relations: List<ObjectWrapper.Relation>,
     details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
@@ -37,7 +36,8 @@ suspend fun DVViewer.buildListViews(
                         relations = relations,
                         urlBuilder = urlBuilder,
                         details = details,
-                        settings = viewerRelations
+                        settings = viewerRelations,
+                        storeOfObjects = store
                     ),
                     name = obj.getProperName(),
                     icon = ObjectIcon.from(
@@ -56,7 +56,8 @@ suspend fun DVViewer.buildListViews(
                         relations = relations,
                         urlBuilder = urlBuilder,
                         details = details,
-                        settings = viewerRelations
+                        settings = viewerRelations,
+                        storeOfObjects = store
                     ),
                     name = obj.getProperName(),
                     icon = ObjectIcon.from(
@@ -75,7 +76,8 @@ suspend fun DVViewer.buildListViews(
                         relations = relations,
                         urlBuilder = urlBuilder,
                         details = details,
-                        settings = viewerRelations
+                        settings = viewerRelations,
+                        storeOfObjects = store
                     ),
                     name = obj.getProperName(),
                     icon = ObjectIcon.from(

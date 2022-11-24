@@ -10,9 +10,9 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.rangeIntersection
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
@@ -23,14 +23,19 @@ import com.anytypeio.anytype.presentation.objects.toLinkToView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class LinkToObjectOrWebViewModel(
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
-    private val objectTypesProvider: ObjectTypesProvider,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator
@@ -43,7 +48,7 @@ class LinkToObjectOrWebViewModel(
         .debounce(SEARCH_INPUT_DEBOUNCE)
         .distinctUntilChanged()
 
-    private val objectTypes get() = objectTypesProvider.get().filter { !it.isArchived }
+//    private val objectTypes get() = storeOfObjectTypes.getAll()
 
     private val _markupLinkParam = MutableStateFlow<String?>(null)
     val markupLinkParam: StateFlow<String?> = _markupLinkParam
@@ -82,7 +87,7 @@ class LinkToObjectOrWebViewModel(
         }
     }
 
-    private fun proceedWithSearchObjectsResponse(searchResponse: List<ObjectWrapper.Basic>): List<LinkToItemView> {
+    private suspend fun proceedWithSearchObjectsResponse(searchResponse: List<ObjectWrapper.Basic>): List<LinkToItemView> {
         val linkUrl = _markupLinkParam.value
         val linkObject = _markupObjectParam.value
         val input = userInput.value
@@ -101,7 +106,10 @@ class LinkToObjectOrWebViewModel(
                 if (obj != null) {
                     listOf(
                         LinkToItemView.Subheading.LinkedTo,
-                        obj.toLinkToObjectView(urlBuilder, objectTypes),
+                        obj.toLinkToObjectView(
+                            urlBuilder = urlBuilder,
+                            objectTypes = storeOfObjectTypes.getAll()
+                        ),
                         LinkToItemView.Subheading.Actions,
                         LinkToItemView.RemoveLink
                     )
@@ -120,7 +128,7 @@ class LinkToObjectOrWebViewModel(
 
                 val objectViews = filteredSearchResponse.toLinkToView(
                     urlBuilder = urlBuilder,
-                    objectTypes = objectTypes
+                    objectTypes = storeOfObjectTypes.getAll()
                 )
                 val views = mutableListOf<LinkToItemView>()
                 if (clipboardUrl != null && userInput.value.isBlank()) {

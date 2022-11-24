@@ -5,11 +5,12 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
-import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
+import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationViewModel
+import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -42,17 +43,21 @@ object AddObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         dispatcher: Dispatcher<Payload>,
-        addDataViewRelationOption: AddDataViewRelationOption,
+        createRelationOption: CreateRelationOption,
         analytics: Analytics,
         setObjectDetail: UpdateDetail,
+        detailsProvider: ObjectDetailProvider,
+        getOptions: GetOptions
     ): AddOptionsRelationDVViewModel.Factory = AddOptionsRelationDVViewModel.Factory(
         relations = relations,
         values = values,
         dispatcher = dispatcher,
-        addDataViewRelationOption = addDataViewRelationOption,
+        createRelationOption = createRelationOption,
         optionsProvider = AddOptionsRelationProvider(),
         analytics = analytics,
-        setObjectDetail = setObjectDetail
+        setObjectDetail = setObjectDetail,
+        detailsProvider = detailsProvider,
+        getOptions = getOptions
     )
 
     @JvmStatic
@@ -62,23 +67,32 @@ object AddObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         dispatcher: Dispatcher<Payload>,
-        addObjectRelationOption: AddObjectRelationOption,
+        createRelationOption: CreateRelationOption,
         updateDetail: UpdateDetail,
-        analytics: Analytics
+        analytics: Analytics,
+        detailsProvider: ObjectDetailProvider,
+        getOptions: GetOptions
     ): AddOptionsRelationViewModel.Factory = AddOptionsRelationViewModel.Factory(
         relations = relations,
         values = values,
         dispatcher = dispatcher,
-        addObjectRelationOption = addObjectRelationOption,
+        createRelationOption = createRelationOption,
         updateDetail = updateDetail,
         analytics = analytics,
-        optionsProvider = AddOptionsRelationProvider()
+        optionsProvider = AddOptionsRelationProvider(),
+        detailProvider = detailsProvider,
+        getOptions = getOptions
     )
 
     @JvmStatic
     @Provides
     @PerDialog
-    fun provideAddObjectRelationOptionUseCase(
+    fun createRelationOption(
         repo: BlockRepository
-    ): AddObjectRelationOption = AddObjectRelationOption(repo = repo)
+    ): CreateRelationOption = CreateRelationOption(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun getOptions(repo: BlockRepository) = GetOptions(repo)
 }

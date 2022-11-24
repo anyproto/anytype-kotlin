@@ -8,6 +8,8 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import org.junit.After
 import org.junit.Before
@@ -46,7 +48,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(listOf(type1, type2, type3))
+        stubSearchObjects(listOf(type1, type2, type3))
         stubCreateObject(root, a.id)
         stubOpenDocument(doc)
 
@@ -67,11 +69,12 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
 
         vm.onSlashItemClicked(
             SlashItem.ObjectType(
-                url = type2.url,
-                name = type2.name,
-                emoji = type2.emoji,
-                layout = type2.layout,
-                description = type2.description
+                objectTypeView = ObjectTypeView(
+                    id = type2.id,
+                    name = type2.getProperName(),
+                    description = type2.description,
+                    emoji = type2.iconEmoji
+                )
             )
         )
 
@@ -79,8 +82,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             context = root,
             target = a.id,
             position = Position.BOTTOM,
-            type = type2.url,
-            layout = type2.layout
+            type = type2.id,
+            layout = null
         )
 
         verifyBlocking(createObject, times(1)) { invoke(params) }

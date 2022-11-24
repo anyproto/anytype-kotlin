@@ -7,7 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
@@ -20,14 +20,14 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RelationAddToObjectViewModel(
-    objectRelationList: ObjectRelationList,
     relationsProvider: ObjectRelationProvider,
     private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    val storeOfRelations: StoreOfRelations
 ) : RelationAddViewModelBase(
-    objectRelationList = objectRelationList,
     relationsProvider = relationsProvider,
+    storeOfRelations = storeOfRelations
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -37,12 +37,12 @@ class RelationAddToObjectViewModel(
             addRelationToObject(
                 AddRelationToObject.Params(
                     ctx = ctx,
-                    relation = relation.id
+                    relationKey = relation.key
                 )
             ).process(
                 success = {
                     dispatcher.send(it).also {
-                        commands.emit(Command.OnRelationAdd(relation = relation.id))
+                        commands.emit(Command.OnRelationAdd(relation = relation.key))
                         sendAnalyticsAddRelationEvent(
                             analytics = analytics,
                             type = screenType,
@@ -68,7 +68,7 @@ class RelationAddToObjectViewModel(
     }
 
     class Factory(
-        private val objectRelationList: ObjectRelationList,
+        private val storeOfRelations: StoreOfRelations,
         private val addRelationToObject: AddRelationToObject,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
@@ -79,7 +79,7 @@ class RelationAddToObjectViewModel(
             return RelationAddToObjectViewModel(
                 relationsProvider = relationsProvider,
                 addRelationToObject = addRelationToObject,
-                objectRelationList = objectRelationList,
+                storeOfRelations = storeOfRelations,
                 dispatcher = dispatcher,
                 analytics = analytics
             ) as T

@@ -9,14 +9,17 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
@@ -250,23 +253,9 @@ class BlockMiddleware(
         command: Command.SetFields
     ): Payload = middleware.blockListSetFields(command)
 
-    override suspend fun getObjectTypes(): List<ObjectType> {
-        return middleware.objectTypeList().map { it.toCoreModels() }
-    }
-
-    override suspend fun createObjectType(
-        prototype: ObjectType.Prototype
-    ): ObjectType = middleware.objectTypeCreate(prototype).toCoreModels()
-
     override suspend fun createSet(
-        contextId: String,
-        targetId: String?,
-        position: Position?,
         objectType: String?
     ): Response.Set.Create = middleware.objectCreateSet(
-        contextId = contextId,
-        targetId = targetId,
-        position = position,
         objectType = objectType
     )
 
@@ -282,20 +271,6 @@ class BlockMiddleware(
         viewId = view,
         offset = offset,
         limit = limit
-    )
-
-    override suspend fun addNewRelationToDataView(
-        context: String,
-        target: String,
-        name: String,
-        format: Relation.Format,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = middleware.blockDataViewRelationAdd(
-        context = context,
-        target = target,
-        format = format,
-        name = name,
-        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun addRelationToDataView(
@@ -338,28 +313,14 @@ class BlockMiddleware(
         viewer = viewer
     )
 
-    override suspend fun createDataViewRecord(
-        context: String,
-        target: String,
+    override suspend fun createDataViewObject(
+        type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>
-    ): Map<String, Any?> = middleware.blockDataViewRecordCreate(
-        context = context,
-        target = target,
+        prefilled: Map<Id, Any>,
+    ): Id = middleware.objectCreate(
         template = template,
-        prefilled = prefilled
-    )
-
-    override suspend fun updateDataViewRecord(
-        context: String,
-        target: String,
-        record: String,
-        values: Map<String, Any?>
-    ) = middleware.blockDataViewRecordUpdate(
-        context = context,
-        target = target,
-        record = record,
-        values = values
+        prefilled = prefilled,
+        type = type
     )
 
     override suspend fun addDataViewViewer(
@@ -382,34 +343,6 @@ class BlockMiddleware(
         ctx = ctx,
         dataview = dataview,
         viewer = viewer
-    )
-
-    override suspend fun addDataViewRelationOption(
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        record: Id,
-        name: String,
-        color: String
-    ): Pair<Payload, Id?> = middleware.blockDataViewRecordRelationOptionAdd(
-        ctx = ctx,
-        dataview = dataview,
-        relation = relation,
-        record = record,
-        name = name,
-        color = color
-    )
-
-    override suspend fun addObjectRelationOption(
-        ctx: Id,
-        relation: Id,
-        name: Id,
-        color: String
-    ): Pair<Payload, Id?> = middleware.objectRelationOptionAdd(
-        ctx = ctx,
-        relation = relation,
-        name = name,
-        color = color
     )
 
     override suspend fun searchObjects(
@@ -437,7 +370,9 @@ class BlockMiddleware(
         offset: Long,
         limit: Int,
         beforeId: Id?,
-        afterId: Id?
+        afterId: Id?,
+        ignoreWorkspace: Boolean?,
+        noDepSubscription: Boolean?
     ): SearchResult = middleware.objectSearchSubscribe(
         subscription = subscription,
         sorts = sorts,
@@ -447,7 +382,9 @@ class BlockMiddleware(
         offset = offset,
         limit = limit,
         afterId = afterId,
-        beforeId = beforeId
+        beforeId = beforeId,
+        ignoreWorkspace = ignoreWorkspace,
+        noDepSubscription = noDepSubscription
     )
 
     override suspend fun searchObjectsByIdWithSubscription(
@@ -469,20 +406,8 @@ class BlockMiddleware(
     ): List<Relation> = middleware.objectRelationListAvailable(ctx).map { it.toCoreModels() }
 
     override suspend fun addRelationToObject(
-        ctx: Id, relation: Id
+        ctx: Id, relation: Key
     ): Payload = middleware.objectRelationAdd(ctx, relation)
-
-    override suspend fun addNewRelationToObject(
-        ctx: Id,
-        name: String,
-        format: RelationFormat,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = middleware.objectRelationAdd(
-        ctx = ctx,
-        format = format,
-        name = name,
-        limitObjectTypes = limitObjectTypes
-    )
 
     override suspend fun deleteRelationFromObject(
         ctx: Id,
@@ -720,4 +645,26 @@ class BlockMiddleware(
             rows = rows
         )
     }
+
+    override suspend fun createRelation(
+        name: String,
+        format: RelationFormat,
+        formatObjectTypes: List<Id>,
+        prefilled: Struct
+    ): ObjectWrapper.Relation = middleware.objectCreateRelation(
+        name = name,
+        format = format,
+        formatObjectTypes = formatObjectTypes,
+        prefilled = prefilled
+    )
+
+    override suspend fun createRelationOption(
+        relation: Key,
+        name: String,
+        color: String
+    ): ObjectWrapper.Option = middleware.objectCreateRelationOption(
+        relation = relation,
+        name = name,
+        color = color
+    )
 }

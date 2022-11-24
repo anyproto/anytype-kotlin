@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ import timber.log.Timber
 
 class LogoutWarningViewModel(
     private val logout: Logout,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val relationsSubscriptionManager: RelationsSubscriptionManager
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -43,6 +45,7 @@ class LogoutWarningViewModel(
                                 )
                             )
                         )
+                        relationsSubscriptionManager.onStop()
                         isLoggingOut.value = false
                         commands.emit(Command.Logout)
                     }
@@ -67,11 +70,16 @@ class LogoutWarningViewModel(
 
     class Factory(
         private val logout: Logout,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val relationsSubscriptionManager: RelationsSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return LogoutWarningViewModel(logout = logout, analytics = analytics) as T
+            return LogoutWarningViewModel(
+                logout = logout,
+                analytics = analytics,
+                relationsSubscriptionManager = relationsSubscriptionManager
+            ) as T
         }
     }
 

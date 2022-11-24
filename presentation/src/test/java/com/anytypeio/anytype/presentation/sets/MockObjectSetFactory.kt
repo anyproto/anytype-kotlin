@@ -1,7 +1,10 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 object MockObjectSetFactory {
@@ -35,60 +38,40 @@ object MockObjectSetFactory {
     )
 
     val defaultRelations = listOf(
-        Relation(
+        StubRelationObject(
             key = defaultViewerRelations[0].key,
             name = "Name",
             format = Relation.Format.LONG_TEXT,
             isReadOnly = true,
-            isHidden = false,
-            isMulti = false,
-            source = Relation.Source.DETAILS,
-            selections = listOf(),
-            defaultValue = null
+            isHidden = false
         ),
-        Relation(
+        StubRelationObject(
             key = defaultViewerRelations[1].key,
             name = "Author Email",
             format = Relation.Format.EMAIL,
             isReadOnly = true,
-            isHidden = false,
-            isMulti = false,
-            source = Relation.Source.DETAILS,
-            selections = listOf(),
-            defaultValue = null
+            isHidden = false
         ),
-        Relation(
+        StubRelationObject(
             key = defaultViewerRelations[2].key,
             name = "Year",
             format = Relation.Format.NUMBER,
             isReadOnly = true,
-            isHidden = true,
-            isMulti = false,
-            source = Relation.Source.ACCOUNT,
-            selections = listOf(),
-            defaultValue = null
+            isHidden = true
         ),
-        Relation(
+       StubRelationObject(
             key = defaultViewerRelations[3].key,
             name = "Genre",
             format = Relation.Format.TAG,
             isReadOnly = true,
-            isHidden = false,
-            isMulti = false,
-            source = Relation.Source.DETAILS,
-            selections = listOf(),
-            defaultValue = null
+            isHidden = false
         ),
-        Relation(
+        StubRelationObject(
             key = defaultViewerRelations[4].key,
             name = "Already Read ",
             format = Relation.Format.CHECKBOX,
             isReadOnly = true,
-            isHidden = false,
-            isMulti = false,
-            source = Relation.Source.DETAILS,
-            selections = listOf(),
-            defaultValue = null
+            isHidden = false
         )
     )
 
@@ -96,7 +79,7 @@ object MockObjectSetFactory {
         viewerId: String? = null,
         dataViewId: String? = null,
         viewerRelations: List<Block.Content.DataView.Viewer.ViewerRelation>? = null,
-        relations: List<Relation>? = null,
+        relations: List<ObjectWrapper.Relation> = emptyList(),
         sorts: List<Block.Content.DataView.Sort>? = null,
         filters: List<Block.Content.DataView.Filter>? = null
     ): ObjectSet {
@@ -130,7 +113,13 @@ object MockObjectSetFactory {
             content = Block.Content.DataView(
                 sources = listOf("source://1"),
                 viewers = listOf(viewerGrid),
-                relations = relationsDefault
+                relations = emptyList(),
+                relationsIndex = relations.map {
+                    RelationLink(
+                        key = it.key,
+                        format = it.format
+                    )
+                }
             ),
             fields = Block.Fields.empty(),
             children = listOf()

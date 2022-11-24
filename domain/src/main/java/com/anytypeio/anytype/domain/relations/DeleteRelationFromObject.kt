@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.relations
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -21,10 +22,10 @@ class DeleteRelationFromObject(
 
     /**
      * @param ctx id of the object
-     * @param relation relation id or key
+     * @param relation relation key
      */
     class Params(
         val ctx: Id,
-        val relation: Id
+        val relation: Key
     )
 }

@@ -18,13 +18,14 @@ import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -69,13 +70,17 @@ class DisplayRelationNumberValueTest {
     private val root = MockDataFactory.randomUuid()
     private val state = MutableStateFlow(ObjectSet.init())
     private val store: ObjectStore = DefaultObjectStore()
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val db = ObjectSetDatabase(store = store)
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
-            relations = DataViewObjectRelationProvider(state),
+            relations = DataViewObjectRelationProvider(
+                objectSetState = state,
+                storeOfRelations = storeOfRelations
+            ),
             values = DataViewObjectValueProvider(db = db),
             reloadObject = reloadObject,
             analytics = analytics

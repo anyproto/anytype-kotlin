@@ -10,28 +10,27 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
-import com.anytypeio.anytype.middleware.mappers.MObjectType
 import com.anytypeio.anytype.middleware.mappers.MRelation
-import com.anytypeio.anytype.middleware.mappers.MRelationOption
+import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
@@ -213,97 +212,15 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun blockDataViewRecordCreate(
-        context: String,
-        target: String,
-        template: Id?,
-        prefilled: Map<Id, Any>
-    ): Map<String, Any?> {
-        val request = Rpc.BlockDataviewRecord.Create.Request(
-            contextId = context,
-            blockId = target,
-            templateId = template.orEmpty(),
-            record = prefilled
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRecordCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.record?.toMap() ?: emptyMap()
-    }
-
-    @Throws(Exception::class)
-    fun blockDataViewRecordRelationOptionAdd(
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        record: Id,
-        name: String,
-        color: String
-    ): Pair<Payload, Id?> {
-        val request = Rpc.BlockDataviewRecord.RelationOption.Add.Request(
-            contextId = ctx,
-            blockId = dataview,
-            relationKey = relation,
-            recordId = record,
-            option = MRelationOption(text = name, color = color)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRecordRelationOptionAdd(request)
-        val option = response.option?.id
-        if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.event.toPayload(), option)
-    }
-
-    @Throws(Exception::class)
-    fun blockDataViewRecordUpdate(
-        context: String,
-        target: String,
-        record: String,
-        values: Map<String, Any?>
-    ) {
-        val request = Rpc.BlockDataviewRecord.Update.Request(
-            contextId = context,
-            blockId = target,
-            recordId = record,
-            record = values
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRecordUpdate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
     fun blockDataViewRelationAdd(
-        context: String,
-        target: String,
-        name: String,
-        format: Relation.Format,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> {
-        val relation = MRelation(
-            name = name,
-            format = format.toMiddlewareModel(),
-            objectTypes = limitObjectTypes
-        )
-        val request = Rpc.BlockDataview.Relation.Add.Request(
-            contextId = context,
-            blockId = target,
-            relation = relation
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRelationAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.relationKey, response.event.toPayload())
-    }
-
-    @Throws(Exception::class)
-    fun blockDataViewRelationAdd(ctx: Id, dv: Id, relation: Id): Payload {
+        ctx: Id,
+        dv: Id,
+        relation: Id
+    ): Payload {
         val request = Rpc.BlockDataview.Relation.Add.Request(
             contextId = ctx,
             blockId = dv,
-            relation = MRelation(
-                key = relation
-            )
+            relationKeys = listOf(relation)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewRelationAdd(request)
@@ -316,7 +233,7 @@ class Middleware(
         val request = Rpc.BlockDataview.Relation.Delete.Request(
             contextId = ctx,
             blockId = dv,
-            relationKey = relation
+            relationKeys = listOf(relation)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewRelationDelete(request)
@@ -657,15 +574,16 @@ class Middleware(
     //todo Add Relation mapping
     @Throws(Exception::class)
     fun blockRelationAdd(command: Command.AddRelationToBlock): Payload {
-        val request = Rpc.BlockRelation.Add.Request(
-            contextId = command.contextId,
-            blockId = command.blockId,
-            relation = null
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockRelationAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
+        TODO("relations refactoring")
+//        val request = Rpc.BlockRelation.Add.Request(
+//            contextId = command.contextId,
+//            blockId = command.blockId,
+//            relation = null
+//        )
+//        if (BuildConfig.DEBUG) logRequest(request)
+//        val response = service.blockRelationAdd(request)
+//        if (BuildConfig.DEBUG) logResponse(response)
+//        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
@@ -937,24 +855,6 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun getConfig(): Config {
-        TODO()
-//        val request = Rpc.Config.Get.Request()
-//
-//        if (BuildConfig.DEBUG) logRequest(request)
-//
-//        val response = service.configGet(request)
-//
-//        if (BuildConfig.DEBUG) logResponse(response)
-//
-//        return Config(
-//            home = response.homeBlockId,
-//            profile = response.profileBlockId,
-//            gateway = response.gatewayUrl
-//        )
-    }
-
-    @Throws(Exception::class)
     fun navigationGetObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
         val request = Rpc.Navigation.GetObjectInfoWithLinks.Request(
             objectId = pageId
@@ -1003,32 +903,62 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectCreate(command: Command.CreateNewDocument): Id {
+    fun objectCreate(
+        type: Id,
+        template: Id?,
+        prefilled: Map<Id, Any>,
+        shouldSelectType: Boolean = false,
+        shouldEmptyDelete: Boolean = false
+    ) : Id {
         val details: Map<String, Any> = buildMap {
-            command.emoji?.let { put(Relations.ICON_EMOJI, it) }
-            command.name.let { put(Relations.NAME, it) }
-            command.type?.let { put(Relations.TYPE, it) }
+            put(Relations.TYPE, type)
+            putAll(prefilled)
         }
-        val flags = buildList<InternalFlag> {
-
+        val flags = buildList {
+            if (shouldSelectType) add(InternalFlag(InternalFlag.Value.editorSelectType))
+            if (shouldEmptyDelete) add(InternalFlag(InternalFlag.Value.editorDeleteEmpty))
         }
         val request = Rpc.Object.Create.Request(
             details = details.toMap(),
+            templateId = template.orEmpty(),
             internalFlags = flags
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.pageId
+        return response.objectId
+    }
+
+    @Throws(Exception::class)
+    fun objectCreate(command: Command.CreateNewDocument): Id {
+        TODO("relations refactoring")
+//        val details: Map<String, Any> = buildMap {
+//            command.emoji?.let { put(Relations.ICON_EMOJI, it) }
+//            command.name.let { put(Relations.NAME, it) }
+//            command.type?.let { put(Relations.TYPE, it) }
+//        }
+//        val flags = buildList<InternalFlag> {
+//
+//        }
+//        val request = Rpc.Object.Create.Request(
+//            details = details.toMap(),
+//            internalFlags = flags
+//        )
+//        if (BuildConfig.DEBUG) logRequest(request)
+//        val response = service.objectCreate(request)
+//        if (BuildConfig.DEBUG) logResponse(response)
+//        return response.pageId
     }
 
     @Throws(Exception::class)
     fun objectCreateBookmark(url: Url): Id {
-        val request = Rpc.Object.CreateBookmark.Request(url = url)
+        val request = Rpc.Object.CreateBookmark.Request(
+            details = mapOf(Relations.SOURCE to url)
+        )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateBookmark(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.pageId
+        return response.objectId
     }
 
     @Throws(Exception::class)
@@ -1043,13 +973,58 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun objectCreateRelation(
+        name: String,
+        format: RelationFormat,
+        formatObjectTypes: List<Id>,
+        prefilled: Struct
+    ) : ObjectWrapper.Relation {
+        val request = Rpc.Object.CreateRelation.Request(
+            details = buildMap {
+                put(Relations.NAME, name)
+                val f = format.toMiddlewareModel()
+                put(Relations.RELATION_FORMAT, f.value.toDouble())
+                if (f == MRelationFormat.object_) {
+                    put(Relations.RELATION_FORMAT_OBJECT_TYPES, formatObjectTypes)
+                }
+                if (prefilled.isNotEmpty()) {
+                    putAll(prefilled)
+                }
+            }
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectCreateRelation(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return ObjectWrapper.Relation(
+            response.details ?: throw IllegalStateException("Missing details")
+        )
+    }
+
+    @Throws(Exception::class)
+    fun objectCreateRelationOption(
+        relation: Key,
+        name: String,
+        color: String
+    ) : ObjectWrapper.Option {
+        val request = Rpc.Object.CreateRelationOption.Request(
+            details = buildMap {
+                put(Relations.RELATION_KEY, relation)
+                put(Relations.RELATION_OPTION_TEXT, name)
+                put(Relations.RELATION_OPTION_COLOR, color)
+            }
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectCreateRelationOption(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return ObjectWrapper.Option(
+            response.details ?: throw IllegalStateException("Missing details")
+        )
+    }
+
+    @Throws(Exception::class)
     fun objectCreateSet(
-        contextId: String,
-        targetId: String?,
-        position: Position?,
         objectType: String?
     ): Response.Set.Create {
-
         val source = if (objectType != null) {
             listOf(objectType)
         } else {
@@ -1067,7 +1042,7 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
 
         return Response.Set.Create(
-            targetId = response.id,
+            targetId = response.objectId,
             payload = response.event.toPayload(),
             blockId = null
         )
@@ -1156,36 +1131,10 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectRelationAdd(
-        ctx: Id,
-        format: RelationFormat,
-        name: String,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> {
+    fun objectRelationAdd(ctx: Id, relation: Key): Payload {
         val request = Rpc.ObjectRelation.Add.Request(
             contextId = ctx,
-            relation = MRelation(
-                format = format.toMiddlewareModel(),
-                name = name,
-                objectTypes = limitObjectTypes
-            )
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(
-            first = response.relation?.key.orEmpty(),
-            second = response.event.toPayload()
-        )
-    }
-
-    @Throws(Exception::class)
-    fun objectRelationAdd(ctx: Id, relation: Id): Payload {
-        val request = Rpc.ObjectRelation.Add.Request(
-            contextId = ctx,
-            relation = MRelation(
-                key = relation
-            )
+            relationKeys = listOf(relation)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectRelationAdd(request)
@@ -1209,10 +1158,10 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectRelationDelete(ctx: Id, relation: Id): Payload {
+    fun objectRelationDelete(ctx: Id, relation: Key): Payload {
         val request = Rpc.ObjectRelation.Delete.Request(
             contextId = ctx,
-            relationKey = relation
+            relationKeys = listOf(relation)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectRelationDelete(request)
@@ -1229,25 +1178,6 @@ class Middleware(
         val response = service.objectRelationListAvailable(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.relations
-    }
-
-    @Throws(Exception::class)
-    fun objectRelationOptionAdd(
-        ctx: Id,
-        relation: Id,
-        name: Id,
-        color: String
-    ): Pair<Payload, Id?> {
-        val request = Rpc.ObjectRelationOption.Add.Request(
-            contextId = ctx,
-            relationKey = relation,
-            option = MRelationOption(text = name, color = color)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationOptionAdd(request)
-        val option = response.option?.id
-        if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.event.toPayload(), option)
     }
 
     @Throws(Exception::class)
@@ -1341,6 +1271,8 @@ class Middleware(
         limit: Int,
         beforeId: Id?,
         afterId: Id?,
+        ignoreWorkspace: Boolean?,
+        noDepSubscription: Boolean?
     ): SearchResult {
         val request = Rpc.Object.SearchSubscribe.Request(
             subId = subscription,
@@ -1351,7 +1283,9 @@ class Middleware(
             limit = limit.toLong(),
             beforeId = beforeId.orEmpty(),
             afterId = afterId.orEmpty(),
-            source = source
+            source = source,
+            ignoreWorkspace = ignoreWorkspace?.toString() ?: "",
+            noDepSubscription = noDepSubscription ?: false
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSearchSubscribe(request)
@@ -1602,43 +1536,6 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
         return response.objectView?.toPayload()
             ?: throw IllegalStateException("Object view was null")
-    }
-
-    @Throws(Exception::class)
-    fun objectTypeCreate(prototype: ObjectType.Prototype): MObjectType {
-
-        val layout = prototype.layout.toMiddlewareModel()
-
-        val objectType = MObjectType(
-            name = prototype.name,
-            iconEmoji = prototype.emoji,
-            layout = layout
-        )
-
-        val request = Rpc.ObjectType.Create.Request(
-            objectType = objectType
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.objectTypeCreate(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        val result = response.objectType
-
-        checkNotNull(result) { "Empty result" }
-
-        return result
-    }
-
-    @Throws(Exception::class)
-    fun objectTypeList(): List<MObjectType> {
-        val request = Rpc.ObjectType.List.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectTypeList(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.objectTypes
     }
 
     @Throws(Exception::class)

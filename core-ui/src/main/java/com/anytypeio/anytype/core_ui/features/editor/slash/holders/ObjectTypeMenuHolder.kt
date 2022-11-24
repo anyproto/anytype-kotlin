@@ -11,17 +11,18 @@ class ObjectTypeMenuHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: SlashItem.ObjectType) = with(binding) {
+        val objectType = item.objectTypeView
         ivIcon.setIcon(
-            emoji = item.emoji,
+            emoji = objectType.emoji,
             image = null,
-            name = item.name
+            name = objectType.name
         )
-        tvTitle.text = item.name
-        if (item.description.isNullOrBlank()) {
+        tvTitle.text = objectType.name
+        if (objectType.description.isNullOrBlank()) {
             tvSubtitle.gone()
         } else {
             tvSubtitle.visible()
-            tvSubtitle.text = item.description
+            tvSubtitle.text = objectType.description
         }
     }
 }

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,6 +50,9 @@ class DeleteAccountViewModelTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
+
     lateinit var restoreAccount: RestoreAccount
     lateinit var logout: Logout
 
@@ -70,7 +74,8 @@ class DeleteAccountViewModelTest {
             restoreAccount = restoreAccount,
             logout = logout,
             dateHelper = helper,
-            analytics = analytics
+            analytics = analytics,
+            relationsSubscriptionManager = relationsSubscriptionManager
         )
     }
 

@@ -297,6 +297,7 @@
     <string name="relation_format_phone">Phone</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Object</string>
+    <string name="relation_format_relation">Relation</string>
     <string name="viewer_sorting_prefix">Then</string>
     <string name="enter_value">Enter value</string>
     <string name="ityem_relations">Relations</string>
@@ -576,5 +577,6 @@
 
     <string name="error_find_block">Could\'t find the selected block</string>
     <string name="error_block_selection">Block selection error</string>
+    <string name="undefined">Undefined</string>
 
 </resources>

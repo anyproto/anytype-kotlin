@@ -2,6 +2,8 @@ package com.anytypeio.anytype.presentation.sets
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory.defaultRelations
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SortingView
@@ -10,6 +12,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +27,8 @@ class ViewerSortByViewModelTest {
 
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
+
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
 
     @Before
     fun setup() {
@@ -42,7 +47,10 @@ class ViewerSortByViewModelTest {
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
 
         val stateSuccess = vm.viewState.value
 
@@ -54,7 +62,10 @@ class ViewerSortByViewModelTest {
 
 
     @Test
-    fun `should have set, add and apply in state`() {
+    fun `should have set, add and apply in state`() = runTest {
+
+
+        // SETUP
 
         val viewerId = MockDataFactory.randomUuid()
         val sorts = listOf(
@@ -66,11 +77,22 @@ class ViewerSortByViewModelTest {
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 viewerId = viewerId,
-                sorts = sorts
+                sorts = sorts,
+                relations = defaultRelations
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
+
+        storeOfRelations.merge(
+            defaultRelations
+        )
+
+        // TESTING
+
         vm.onViewCreated(viewerId)
 
         val stateSuccess = vm.viewState.value
@@ -79,7 +101,7 @@ class ViewerSortByViewModelTest {
             listOf(
                 SortingView.Set(
                     key = defaultRelations[0].key,
-                    title = defaultRelations[0].name,
+                    title = defaultRelations[0].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = false,
                     format = ColumnView.Format.LONG_TEXT
@@ -93,7 +115,9 @@ class ViewerSortByViewModelTest {
     }
 
     @Test
-    fun `should have proper ordering of sets`() {
+    fun `should have proper ordering of sets`() = runTest {
+
+        // SETUP
 
         val viewerId = MockDataFactory.randomUuid()
         val sorts = listOf(
@@ -114,11 +138,22 @@ class ViewerSortByViewModelTest {
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 viewerId = viewerId,
-                sorts = sorts
+                sorts = sorts,
+                relations = defaultRelations
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
+
+        storeOfRelations.merge(
+            defaultRelations
+        )
+
+        // TESTING
+
         vm.onViewCreated(viewerId)
 
         val stateSuccess = vm.viewState.value
@@ -127,21 +162,21 @@ class ViewerSortByViewModelTest {
             listOf(
                 SortingView.Set(
                     key = defaultRelations[2].key,
-                    title = defaultRelations[2].name,
+                    title = defaultRelations[2].name.orEmpty(),
                     type = Viewer.SortType.ASC,
                     isWithPrefix = false,
                     format = ColumnView.Format.NUMBER
                 ),
                 SortingView.Set(
                     key = defaultRelations[0].key,
-                    title = defaultRelations[0].name,
+                    title = defaultRelations[0].name.orEmpty().orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.LONG_TEXT
                 ),
                 SortingView.Set(
                     key = defaultRelations[1].key,
-                    title = defaultRelations[1].name,
+                    title = defaultRelations[1].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.EMAIL
@@ -155,7 +190,9 @@ class ViewerSortByViewModelTest {
     }
 
     @Test
-    fun `should remove set from state`() {
+    fun `should remove set from state`() = runTest {
+
+        // SETUP
 
         val viewerId = MockDataFactory.randomUuid()
         val sorts = listOf(
@@ -176,11 +213,20 @@ class ViewerSortByViewModelTest {
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 viewerId = viewerId,
-                sorts = sorts
+                sorts = sorts,
+                relations = defaultRelations
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
+
+        storeOfRelations.merge(defaultRelations)
+
+        // TESTING
+
         vm.onViewCreated(viewerId)
         vm.itemClicked(SortClick.Remove(defaultRelations[0].key))
 
@@ -190,14 +236,14 @@ class ViewerSortByViewModelTest {
             listOf(
                 SortingView.Set(
                     key = defaultRelations[2].key,
-                    title = defaultRelations[2].name,
+                    title = defaultRelations[2].name.orEmpty(),
                     type = Viewer.SortType.ASC,
                     isWithPrefix = false,
                     format = ColumnView.Format.NUMBER
                 ),
                 SortingView.Set(
                     key = defaultRelations[1].key,
-                    title = defaultRelations[1].name,
+                    title = defaultRelations[1].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.EMAIL
@@ -211,7 +257,9 @@ class ViewerSortByViewModelTest {
     }
 
     @Test
-    fun `should add one sort set to state`() {
+    fun `should add one sort set to state`() = runTest {
+
+        // SETUP
 
         val viewerId = MockDataFactory.randomUuid()
         val sorts = listOf(
@@ -228,11 +276,20 @@ class ViewerSortByViewModelTest {
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 viewerId = viewerId,
-                sorts = sorts
+                sorts = sorts,
+                relations = defaultRelations
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
+
+        storeOfRelations.merge(defaultRelations)
+
+        // TESTING
+
         vm.onViewCreated(viewerId)
         vm.itemClicked(SortClick.Add)
         vm.onAddSortKey(defaultRelations[0].key)
@@ -243,21 +300,21 @@ class ViewerSortByViewModelTest {
             listOf(
                 SortingView.Set(
                     key = defaultRelations[2].key,
-                    title = defaultRelations[2].name,
+                    title = defaultRelations[2].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = false,
                     format = ColumnView.Format.NUMBER
                 ),
                 SortingView.Set(
                     key = defaultRelations[1].key,
-                    title = defaultRelations[1].name,
+                    title = defaultRelations[1].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.EMAIL
                 ),
                 SortingView.Set(
                     key = defaultRelations[0].key,
-                    title = defaultRelations[0].name,
+                    title = defaultRelations[0].name.orEmpty().orEmpty(),
                     type = Viewer.SortType.ASC,
                     isWithPrefix = true,
                     format = ColumnView.Format.LONG_TEXT
@@ -271,7 +328,9 @@ class ViewerSortByViewModelTest {
     }
 
     @Test
-    fun `should add one sort set to state and remove add button`() {
+    fun `should add one sort set to state and remove add button`() = runTest {
+
+        // SETUP
 
         val viewerId = MockDataFactory.randomUuid()
         val sorts = listOf(
@@ -296,11 +355,20 @@ class ViewerSortByViewModelTest {
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 viewerId = viewerId,
-                sorts = sorts
+                sorts = sorts,
+                relations = defaultRelations
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
+
+        storeOfRelations.merge(defaultRelations)
+
+        // TESTING
+
         vm.onViewCreated(viewerId)
         vm.itemClicked(SortClick.Add)
         vm.onAddSortKey(defaultRelations[0].key)
@@ -311,35 +379,35 @@ class ViewerSortByViewModelTest {
             listOf(
                 SortingView.Set(
                     key = defaultRelations[2].key,
-                    title = defaultRelations[2].name,
+                    title = defaultRelations[2].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = false,
                     format = ColumnView.Format.NUMBER
                 ),
                 SortingView.Set(
                     key = defaultRelations[1].key,
-                    title = defaultRelations[1].name,
+                    title = defaultRelations[1].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.EMAIL
                 ),
                 SortingView.Set(
                     key = defaultRelations[3].key,
-                    title = defaultRelations[3].name,
+                    title = defaultRelations[3].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.TAG
                 ),
                 SortingView.Set(
                     key = defaultRelations[4].key,
-                    title = defaultRelations[4].name,
+                    title = defaultRelations[4].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.CHECKBOX
                 ),
                 SortingView.Set(
                     key = defaultRelations[0].key,
-                    title = defaultRelations[0].name,
+                    title = defaultRelations[0].name.orEmpty().orEmpty(),
                     type = Viewer.SortType.ASC,
                     isWithPrefix = true,
                     format = ColumnView.Format.LONG_TEXT
@@ -352,7 +420,9 @@ class ViewerSortByViewModelTest {
     }
 
     @Test
-    fun `should update type value`() {
+    fun `should update type value`() = runTest {
+
+        // SETUP
 
         val viewerId = MockDataFactory.randomUuid()
         val sorts = listOf(
@@ -369,11 +439,20 @@ class ViewerSortByViewModelTest {
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 viewerId = viewerId,
-                sorts = sorts
+                sorts = sorts,
+                relations = defaultRelations
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
+
+        storeOfRelations.merge(defaultRelations)
+
+        // TESTING
+
         vm.onViewCreated(viewerId)
         vm.onPickSortType(key = defaultRelations[2].key, type = Viewer.SortType.ASC)
         vm.onPickSortType(key = defaultRelations[1].key, type = Viewer.SortType.DESC)
@@ -384,14 +463,14 @@ class ViewerSortByViewModelTest {
             listOf(
                 SortingView.Set(
                     key = defaultRelations[2].key,
-                    title = defaultRelations[2].name,
+                    title = defaultRelations[2].name.orEmpty(),
                     type = Viewer.SortType.ASC,
                     isWithPrefix = false,
                     format = ColumnView.Format.NUMBER
                 ),
                 SortingView.Set(
                     key = defaultRelations[1].key,
-                    title = defaultRelations[1].name,
+                    title = defaultRelations[1].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = true,
                     format = ColumnView.Format.EMAIL
@@ -405,7 +484,9 @@ class ViewerSortByViewModelTest {
     }
 
     @Test
-    fun `should replace sort`() {
+    fun `should replace sort`() = runTest {
+
+        // SETUP
 
         val viewerId = MockDataFactory.randomUuid()
         val sorts = listOf(
@@ -422,11 +503,20 @@ class ViewerSortByViewModelTest {
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 viewerId = viewerId,
-                sorts = sorts
+                sorts = sorts,
+                relations = defaultRelations
             )
         )
 
-        val vm = ViewerSortByViewModel(state)
+        val vm = ViewerSortByViewModel(
+            state = state,
+            storeOfRelations = storeOfRelations
+        )
+
+        storeOfRelations.merge(defaultRelations)
+
+        // TESTING
+
         vm.onViewCreated(viewerId)
         vm.onReplaceSortKey(
             keySelected = defaultRelations[2].key,
@@ -439,14 +529,14 @@ class ViewerSortByViewModelTest {
             listOf(
                 SortingView.Set(
                     key = defaultRelations[4].key,
-                    title = defaultRelations[4].name,
+                    title = defaultRelations[4].name.orEmpty(),
                     type = Viewer.SortType.DESC,
                     isWithPrefix = false,
                     format = ColumnView.Format.CHECKBOX
                 ),
                 SortingView.Set(
                     key = defaultRelations[1].key,
-                    title = defaultRelations[1].name,
+                    title = defaultRelations[1].name.orEmpty(),
                     type = Viewer.SortType.ASC,
                     isWithPrefix = true,
                     format = ColumnView.Format.EMAIL

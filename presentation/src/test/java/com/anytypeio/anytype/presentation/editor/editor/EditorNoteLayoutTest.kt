@@ -3,8 +3,13 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
@@ -81,14 +86,14 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val objectTypeName = "objectTypeName"
         val objectTypeDescription = "objectTypeDesc"
 
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val relationObjectType = Relation(
-            key = Block.Fields.TYPE_KEY,
-            name = "Object Type",
-            format = Relation.Format.OBJECT,
-            source = Relation.Source.DERIVED
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
+
+        val objectType = StubObjectType(
+            id = objectTypeId,
+            name = "Object Type"
         )
 
 
@@ -100,14 +105,15 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                relationObjectType.key to objectTypeId,
-                Relations.FEATURED_RELATIONS to listOf(relationObjectType.key),
+                Relations.TYPE to objectType.id,
+                Relations.FEATURED_RELATIONS to listOf(Relations.TYPE),
                 Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
             )
         )
 
         val objectTypeFields = Block.Fields(
             mapOf(
+                Relations.ID to objectTypeId,
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
@@ -121,12 +127,14 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubGetDefaultObjectType()
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = listOf(r1, r2, r3, relationObjectType)
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
         )
 
         val vm = buildViewModel()
@@ -138,7 +146,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 id = featuredBlock.id,
                 relations = listOf(
                     DocumentRelationView.ObjectType(
-                        relationId = relationObjectType.key,
+                        relationId = objectType.id,
+                        relationKey = Relations.TYPE,
                         name = objectTypeName,
                         value = null,
                         isFeatured = true,
@@ -148,7 +157,10 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
             )
         )
 
-        vm.state.test().assertValue(ViewState.Success(expected))
+        assertEquals(
+            expected = ViewState.Success(expected),
+            actual = vm.state.value
+        )
 
         vm.footers.test {
             val result = awaitItem()
@@ -190,14 +202,14 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val objectTypeName = "objectTypeName"
         val objectTypeDescription = "objectTypeDesc"
 
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val relationObjectType = Relation(
-            key = Block.Fields.TYPE_KEY,
-            name = "Object Type",
-            format = Relation.Format.OBJECT,
-            source = Relation.Source.DERIVED
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
+
+        val relationObjectType = StubObjectType(
+            id = objectTypeId,
+            name = "Object Type"
         )
 
 
@@ -209,8 +221,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                relationObjectType.key to objectTypeId,
-                Relations.FEATURED_RELATIONS to listOf(relationObjectType.key),
+                Relations.TYPE to objectTypeId,
+                Relations.FEATURED_RELATIONS to listOf(Relations.TYPE),
                 Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
             )
         )
@@ -230,15 +242,18 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubGetDefaultObjectType()
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = listOf(r1, r2, r3, relationObjectType)
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
         )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
 
         vm.onStart(root)
 
@@ -247,7 +262,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 id = featuredBlock.id,
                 relations = listOf(
                     DocumentRelationView.ObjectType(
-                        relationId = relationObjectType.key,
+                        relationId = objectTypeId,
+                        relationKey = Relations.TYPE,
                         name = objectTypeName,
                         value = null,
                         isFeatured = true,

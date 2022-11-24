@@ -10,8 +10,6 @@ import com.anytypeio.anytype.di.feature.CreateAccountModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
-import com.anytypeio.anytype.di.feature.CreateObjectTypeModule
-import com.anytypeio.anytype.di.feature.CreateSetModule
 import com.anytypeio.anytype.di.feature.DataViewViewerActionModule
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.DocumentRelationModule
@@ -36,12 +34,13 @@ import com.anytypeio.anytype.di.feature.ObjectIconPickerModule
 import com.anytypeio.anytype.di.feature.ObjectLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModuleBase
-import com.anytypeio.anytype.di.feature.ObjectRelationValueModule
+import com.anytypeio.anytype.di.feature.ObjectObjectRelationValueModule
 import com.anytypeio.anytype.di.feature.ObjectSearchModule
 import com.anytypeio.anytype.di.feature.ObjectSetCreateBookmarkRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetIconPickerModule
 import com.anytypeio.anytype.di.feature.ObjectSetMenuModule
 import com.anytypeio.anytype.di.feature.ObjectSetModule
+import com.anytypeio.anytype.di.feature.ObjectSetObjectRelationValueModule
 import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
@@ -338,18 +337,6 @@ class ComponentManager(
             .build()
     }
 
-    val createSetComponent = Component {
-        main.createSetComponentBuilder()
-            .module(CreateSetModule)
-            .build()
-    }
-
-    val createObjectTypeComponent = Component {
-        main.createObjectTypeComponentBuilder()
-            .module(CreateObjectTypeModule)
-            .build()
-    }
-
     val objectSetComponent = ComponentMap {
         main.objectSetComponentBuilder()
             .module(ObjectSetModule)
@@ -456,7 +443,7 @@ class ComponentManager(
         objectSetComponent
             .get(ctx)
             .objectRelationValueComponent()
-            .module(ObjectRelationValueModule)
+            .module(ObjectSetObjectRelationValueModule)
             .build()
     }
 
@@ -472,7 +459,7 @@ class ComponentManager(
         editorComponent
             .get(ctx)
             .editDocRelationComponent()
-            .module(ObjectRelationValueModule)
+            .module(ObjectObjectRelationValueModule)
             .build()
     }
 

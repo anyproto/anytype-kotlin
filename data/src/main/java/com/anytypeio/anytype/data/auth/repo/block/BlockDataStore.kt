@@ -8,14 +8,17 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 
 
@@ -88,15 +91,7 @@ interface BlockDataStore {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
-    suspend fun getObjectTypes(): List<ObjectType>
-    suspend fun createObjectType(prototype: ObjectType.Prototype): ObjectType
-
-    suspend fun createSet(
-        contextId: String,
-        targetId: String?,
-        position: Position?,
-        objectType: String?
-    ): Response.Set.Create
+    suspend fun createSet(objectType: String?): Response.Set.Create
 
     suspend fun setActiveDataViewViewer(
         context: Id,
@@ -105,14 +100,6 @@ interface BlockDataStore {
         offset: Int,
         limit: Int
     ): Payload
-
-    suspend fun addNewRelationToDataView(
-        context: Id,
-        target: Id,
-        name: String,
-        format: Relation.Format,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload>
 
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
     suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Id): Payload
@@ -130,15 +117,10 @@ interface BlockDataStore {
     ): Payload
 
     suspend fun createDataViewRecord(
-        context: Id, target: Id, template: Id?, prefilled: Map<Id, Any>
-    ): Map<String, Any?>
-
-    suspend fun updateDataViewRecord(
-        context: Id,
-        target: Id,
-        record: Id,
-        values: Map<String, Any?>
-    )
+        type: Id,
+        template: Id?,
+        prefilled: Map<Id, Any>,
+    ): Id
 
     suspend fun addDataViewViewer(
         ctx: String,
@@ -153,22 +135,6 @@ interface BlockDataStore {
         viewer: Id
     ): Payload
 
-    suspend fun addDataViewRelationOption(
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        record: Id,
-        name: String,
-        color: String
-    ): Pair<Payload, Id?>
-
-    suspend fun addObjectRelationOption(
-        ctx: Id,
-        relation: Id,
-        name: String,
-        color: String
-    ): Pair<Payload, Id?>
-
     suspend fun searchObjects(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -182,12 +148,14 @@ interface BlockDataStore {
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
-        keys: List<String>,
+        keys: List<Key>,
         source: List<String>,
         offset: Long,
         limit: Int,
         beforeId: Id?,
         afterId: Id?,
+        ignoreWorkspace: Boolean?,
+        noDepSubscription: Boolean?
     ): SearchResult
 
     suspend fun searchObjectsByIdWithSubscription(
@@ -199,14 +167,8 @@ interface BlockDataStore {
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
-    suspend fun addRelationToObject(ctx: Id, relation: Id): Payload
-    suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload
-    suspend fun addNewRelationToObject(
-        ctx: Id,
-        name: String,
-        format: RelationFormat,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload>
+    suspend fun addRelationToObject(ctx: Id, relation: Key) : Payload
+    suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
     suspend fun debugSync(): String
     suspend fun debugLocalStore(path: String): String
@@ -320,4 +282,17 @@ interface BlockDataStore {
         columns: Int,
         rows: Int
     ): Payload
+
+    suspend fun createRelation(
+        name: String,
+        format: RelationFormat,
+        formatObjectTypes: List<Id>,
+        prefilled: Struct
+    ) : ObjectWrapper.Relation
+
+    suspend fun createRelationOption(
+        relation: Key,
+        name: String,
+        color: String
+    ) : ObjectWrapper.Option
 }

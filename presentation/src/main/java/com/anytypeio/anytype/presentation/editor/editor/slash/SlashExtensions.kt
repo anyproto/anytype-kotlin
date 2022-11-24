@@ -1,24 +1,20 @@
 package com.anytypeio.anytype.presentation.editor.editor.slash
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_utils.ext.parseMatchedInt
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_COLUMN_COUNT
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_MAX_COLUMN_COUNT
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_MAX_ROW_COUNT
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_ROW_COUNT
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem.Other.Table.Companion.DEFAULT_PATTERN
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
-fun List<ObjectType>.toSlashItemView(): List<SlashItem.ObjectType> = map { oType ->
+fun List<ObjectTypeView>.toSlashItemView(): List<SlashItem.ObjectType> = map { oType ->
     SlashItem.ObjectType(
-        url = oType.url,
-        name = oType.name,
-        emoji = oType.emoji,
-        layout = oType.layout,
-        description = oType.description
+        objectTypeView = oType
     )
 }
 
@@ -133,10 +129,10 @@ object SlashExtensions {
             )
         }
 
-    fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
+    fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectTypeView>): List<SlashItem> =
         listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
-            SlashItem.Actions.LinkTo,
+            SlashItem.Actions.LinkTo
         ) + objectTypes.toSlashItemView()
 
     fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
@@ -280,14 +276,11 @@ object SlashExtensions {
             searchBySubheadingOrName(
                 filter = filter,
                 subheading = SlashItem.Main.Objects.getSearchName(),
-                name = if (item is SlashItem.ObjectType) item.name
+                name = if (item is SlashItem.ObjectType) item.objectTypeView.name
                 else (item as SlashItem.Actions).getSearchName()
             )
         }
-        if (filtered.isNotEmpty()) {
-            return listOf(SlashItem.Subheader.ObjectType) + filtered
-        }
-        return filtered
+        return updateWithSubheader(items = filtered)
     }
 
     private fun filterSlashItems(

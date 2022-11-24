@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -36,13 +37,16 @@ interface Store<T> {
 
     fun cancel()
 
-    open class State<T>(initial : T) : Store<T> {
+    open class State<T>(initial: T) : Store<T> {
 
         private val state = MutableStateFlow(initial)
 
         override fun stream(): Flow<T> = state
         override fun current(): T = state.value
-        override suspend fun update(t: T) { state.value = t }
+        override suspend fun update(t: T) {
+            state.value = t
+        }
+
         override fun cancel() {}
     }
 
@@ -77,4 +81,5 @@ interface Store<T> {
     class ObjectTypes : State<List<ObjectType>>(emptyList())
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
+    class RelationLinks : State<List<RelationLink>>(emptyList())
 }

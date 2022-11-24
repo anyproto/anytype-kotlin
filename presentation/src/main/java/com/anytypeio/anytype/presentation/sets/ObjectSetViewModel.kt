@@ -9,18 +9,19 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.SyncStatus
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -30,12 +31,12 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
-import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
-import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
@@ -51,7 +52,6 @@ import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowSetEvent
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -91,10 +91,9 @@ class ObjectSetViewModel(
     private val reducer: ObjectSetReducer,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
-    private val addDataViewRelation: AddNewRelationToDataView,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val setObjectDetails: UpdateDetail,
-    private val createDataViewRecord: CreateDataViewRecord,
+    private val createDataViewObject: CreateDataViewObject,
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
@@ -102,7 +101,6 @@ class ObjectSetViewModel(
     private val interceptThreadStatus: InterceptThreadStatus,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
-    private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val session: ObjectSetSession,
@@ -112,7 +110,8 @@ class ObjectSetViewModel(
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val setDataViewSource: SetDataViewSource,
-    private val paginator: ObjectSetPaginator
+    private val paginator: ObjectSetPaginator,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -165,7 +164,8 @@ class ObjectSetViewModel(
                 Timber.d("FLOW:: Updating header and tabs")
                 featured.value = set.featuredRelations(
                     ctx = context,
-                    urlBuilder = urlBuilder
+                    urlBuilder = urlBuilder,
+                    relations = storeOfRelations.getAll()
                 )
                 _header.value = set.blocks.title()?.let {
                     title(
@@ -196,12 +196,21 @@ class ObjectSetViewModel(
                 val dv = s.dv
                 val view = dv.viewers.find { it.id == v } ?: dv.viewers.firstOrNull()
                 if (view != null) {
-                    val dataViewKeys = dv.relations.map { it.key }
+                    val dataViewKeys = dv.relationsIndex.map { it.key }
                     val defaultKeys = ObjectSearchConstants.defaultKeys
                     DataViewSubscriptionContainer.Params(
                         subscription = context,
                         sorts = view.sorts,
-                        filters = view.filters,
+                        filters = view.filters.map { f : DVFilter ->
+                            val r = storeOfRelations.getByKey(f.relationKey)
+                            if (r != null && r.relationFormat == RelationFormat.DATE) {
+                                f.copy(
+                                    relationFormat = r.relationFormat
+                                )
+                            } else {
+                                f
+                            }
+                        },
                         sources = dv.sources,
                         keys = defaultKeys + dataViewKeys,
                         limit = DEFAULT_LIMIT,
@@ -217,6 +226,7 @@ class ObjectSetViewModel(
                     emptyFlow()
                 }
             }.collect { index ->
+                Timber.d("New index: ${index.objects.map { it.takeLast(5) }.joinToString { it }}")
                 database.update(update = index)
             }
         }
@@ -229,11 +239,15 @@ class ObjectSetViewModel(
             ) { state, db, view ->
                 val dv = state.dv
                 Timber.d("FLOW:: Rendering")
+                val relations = dv.relationsIndex.mapNotNull { r: RelationLink ->
+                    storeOfRelations.getByKey(r.key)
+                }
+                Timber.d("Relation index before rendering: ${dv.relationsIndex}")
                 (dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull())?.render(
                     coverImageHashProvider = coverImageHashProvider,
                     builder = urlBuilder,
                     objects = db.objects,
-                    dataViewRelations = dv.relations,
+                    dataViewRelations = relations,
                     details = state.details,
                     store = dataViewSubscriptionContainer.store
                 )
@@ -387,12 +401,7 @@ class ObjectSetViewModel(
                 error.value = DATA_VIEW_NOT_FOUND_ERROR
             }
         } else {
-            dispatch(
-                ObjectSetCommand.Modal.OpenSelectSourceScreen(
-                    sources = emptyList(),
-                    smartBlockType = SmartBlockType.PAGE
-                )
-            )
+            dispatch(ObjectSetCommand.Modal.OpenEmptyDataViewSelectSourceScreen)
         }
     }
 
@@ -458,61 +467,6 @@ class ObjectSetViewModel(
         session.currentViewerId.value = viewer
     }
 
-    fun onRelationPrototypeCreated(
-        context: Id,
-        target: Id,
-        name: String,
-        format: Relation.Format
-    ) {
-        Timber.d("onRelationPrototypeCreated, context:[$context], target:[$target], name:[$name], format:[$format]")
-        viewModelScope.launch {
-            addDataViewRelation(
-                AddNewRelationToDataView.Params(
-                    ctx = context,
-                    target = target,
-                    name = name,
-                    format = format,
-                    limitObjectTypes = emptyList()
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding data view relation") },
-                success = { (key, payload) ->
-                    reducer.dispatch(payload.events).also {
-                        proceedWithAddingNewRelationToCurrentViewer(relation = key)
-                    }
-                }
-            )
-        }
-    }
-
-    private suspend fun proceedWithAddingNewRelationToCurrentViewer(relation: Id) {
-        val state = reducer.state.value
-        val block = state.dataview
-        val dv = block.content as DV
-        val viewer = dv.viewers.find {
-            it.id == session.currentViewerId.value
-        } ?: dv.viewers.first()
-        updateDataViewViewer(
-            UpdateDataViewViewer.Params(
-                context = context,
-                target = block.id,
-                viewer = viewer.copy(
-                    viewerRelations = viewer.viewerRelations + listOf(
-                        DVViewerRelation(
-                            key = relation,
-                            isVisible = true
-                        )
-                    )
-                )
-            )
-        ).process(
-            success = { payload ->
-                defaultPayloadConsumer(payload)
-            },
-            failure = { Timber.e(it, "Error while updating data view's viewer") }
-        )
-    }
-
     fun onTitleChanged(txt: String) {
         Timber.d("onTitleChanged, txt:[$txt]")
         val target = header.value?.id
@@ -551,7 +505,7 @@ class ObjectSetViewModel(
     fun onGridCellClicked(cell: CellView) {
         Timber.d("onGridCellClicked, cell:[$cell]")
 
-        if (cell.key == Relations.NAME) return
+        if (cell.relationKey == Relations.NAME) return
 
         val state = reducer.state.value
 
@@ -565,8 +519,8 @@ class ObjectSetViewModel(
         val viewer =
             dv.viewers.find { it.id == session.currentViewerId.value }?.id ?: dv.viewers.first().id
 
-        if (dv.isRelationReadOnly(relationKey = cell.key)) {
-            val relation = dv.relations.first { it.key == cell.key }
+        if (dv.isRelationReadOnly(relationKey = cell.relationKey)) {
+            val relation = dv.relations.first { it.key == cell.relationKey }
             if (relation.format == Relation.Format.OBJECT) {
                 // TODO terrible workaround, which must be removed in the future!
                 if (cell is CellView.Object && cell.objects.isNotEmpty()) {
@@ -585,12 +539,15 @@ class ObjectSetViewModel(
         }
 
         when (cell) {
-            is CellView.Description, is CellView.Number, is CellView.Email,
-            is CellView.Url, is CellView.Phone -> {
+            is CellView.Description,
+            is CellView.Number,
+            is CellView.Email,
+            is CellView.Url,
+            is CellView.Phone -> {
                 dispatch(
                     ObjectSetCommand.Modal.EditGridTextCell(
                         ctx = context,
-                        relationId = cell.key,
+                        relationKey = cell.relationKey,
                         recordId = cell.id
                     )
                 )
@@ -600,38 +557,47 @@ class ObjectSetViewModel(
                     ObjectSetCommand.Modal.EditGridDateCell(
                         ctx = context,
                         objectId = cell.id,
-                        relationId = cell.key
+                        relationKey = cell.relationKey
                     )
                 )
             }
-            is CellView.Tag, is CellView.Status, is CellView.Object, is CellView.File -> {
-                val targetObjectTypes = mutableListOf<String>()
-                if (cell is CellView.Object) {
-                    val relation =
-                        reducer.state.value.dataview.content<DV>().relations.find { relation ->
-                            relation.key == cell.key
-                        }
-                    if (relation != null) {
-                        targetObjectTypes.addAll(relation.objectTypes)
-                    }
-                }
+            is CellView.Tag, is CellView.Status, is CellView.File -> {
                 dispatch(
                     ObjectSetCommand.Modal.EditRelationCell(
                         ctx = context,
                         target = cell.id,
                         dataview = block.id,
-                        relation = cell.key,
+                        relationKey = cell.relationKey,
                         viewer = viewer,
-                        targetObjectTypes = targetObjectTypes
+                        targetObjectTypes = emptyList()
                     )
                 )
+            }
+            is CellView.Object -> {
+                viewModelScope.launch {
+                    val targetObjectTypes = mutableListOf<String>()
+                    val relation = storeOfRelations.getByKey(cell.relationKey)
+                    if (relation != null) {
+                        targetObjectTypes.addAll(relation.relationFormatObjectTypes)
+                    }
+                    dispatch(
+                        ObjectSetCommand.Modal.EditRelationCell(
+                            ctx = context,
+                            target = cell.id,
+                            dataview = block.id,
+                            relationKey = cell.relationKey,
+                            viewer = viewer,
+                            targetObjectTypes = targetObjectTypes
+                        )
+                    )
+                }
             }
             is CellView.Checkbox -> {
                 viewModelScope.launch {
                     setObjectDetails(
                         UpdateDetail.Params(
                             ctx = cell.id,
-                            key = cell.key,
+                            key = cell.relationKey,
                             value = !cell.isChecked
                         )
                     ).process(
@@ -730,7 +696,8 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val block = reducer.state.value.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+            val viewer =
+                dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             updateDataViewViewer(
                 UpdateDataViewViewer.Params(
                     context = context,
@@ -751,7 +718,8 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val block = reducer.state.value.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+            val viewer =
+                dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             updateDataViewViewer(
                 UpdateDataViewViewer.Params(
                     context = context,
@@ -767,7 +735,7 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onCreateNewRecord() {
+    fun onCreateNewDataViewObject() {
         Timber.d("onCreateNewRecord, ")
         val currentState = reducer.state.value
         if (currentState.isInitialized) {
@@ -778,42 +746,34 @@ class ObjectSetViewModel(
                     currentState.details[context]?.map ?: emptyMap()
                 )
                 val setOfTypeId = setObject.setOf.singleOrNull()
-                if (setOfTypeId == ObjectType.BOOKMARK_TYPE) {
-                    dispatch(ObjectSetCommand.Modal.CreateBookmark(context))
-                } else {
-                    val startTime = System.currentTimeMillis()
+                if (setOfTypeId == ObjectTypeIds.BOOKMARK) {
+                    dispatch(
+                        ObjectSetCommand.Modal.CreateBookmark(
+                            ctx = context
+                        )
+                    )
+                } else if (!setOfTypeId.isNullOrEmpty()) {
                     viewModelScope.launch {
-                        createDataViewRecord(
-                            CreateDataViewRecord.Params(
-                                context = context,
-                                target = currentState.dataview.id,
+                        createDataViewObject(
+                            CreateDataViewObject.Params(
                                 template = resolveTemplateForNewRecord(),
-                                prefilled = resolvePrefilledRecordData(currentState)
+                                prefilled = resolvePrefilledRecordData(currentState),
+                                type = setOfTypeId
                             )
                         ).process(
                             failure = { Timber.e(it, "Error while creating new record") },
                             success = { record ->
-                                val middleTime = System.currentTimeMillis()
-                                val wrapper = ObjectWrapper.Basic(record)
-                                // TODO fix or remove
-                                paginator.total.value = paginator.total.value.inc()
-//                                proceedWithRefreshingViewerAfterObjectCreation()
-                                sendAnalyticsObjectCreateEvent(
-                                    analytics = analytics,
-                                    objType = wrapper.type.firstOrNull(),
-                                    layout = wrapper.layout?.code?.toDouble(),
-                                    route = EventsDictionary.Routes.objCreateSet,
-                                    startTime = startTime,
-                                    middleTime = middleTime,
-                                    context = analyticsContext
+                                dispatch(
+                                    ObjectSetCommand.Modal.SetNameForCreatedObject(
+                                        ctx = context,
+                                        target = record
+                                    )
                                 )
-                                if (wrapper.layout != ObjectType.Layout.NOTE) {
-                                    objectSetRecordCache.map[context] = record
-                                    dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
-                                }
                             }
                         )
                     }
+                } else {
+                    toast("Unabled to define type for new object")
                 }
             }
         } else {
@@ -870,7 +830,8 @@ class ObjectSetViewModel(
         if (set.isInitialized) {
             val block = set.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+            val viewer =
+                dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             dispatch(
                 ObjectSetCommand.Modal.ViewerCustomizeScreen(
                     ctx = context,
@@ -905,7 +866,8 @@ class ObjectSetViewModel(
         if (set.isInitialized) {
             val block = set.dataview
             val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+            val viewer =
+                dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
             dispatch(
                 ObjectSetCommand.Modal.EditDataViewViewer(
                     ctx = context,
@@ -929,7 +891,7 @@ class ObjectSetViewModel(
                 )
             )
         } else {
-            toast("Still loading ...")
+            toast("Still loading...")
         }
     }
 
@@ -966,7 +928,8 @@ class ObjectSetViewModel(
                 val dv = block.content as DV
                 if (dv.viewers.isNotEmpty()) {
                     val viewer =
-                        dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+                        dv.viewers.find { it.id == session.currentViewerId.value }
+                            ?: dv.viewers.first()
                     dispatch(
                         ObjectSetCommand.Modal.OpenSettings(
                             ctx = context,
@@ -1168,12 +1131,14 @@ class ObjectSetViewModel(
         when (clicked) {
             is ListenerType.Relation.SetSource -> {
                 val sources = clicked.sources.map { it.id }
-                dispatch(
-                    ObjectSetCommand.Modal.OpenSelectSourceScreen(
-                        sources = sources,
-                        smartBlockType = SmartBlockType.PAGE
+                val command = if (sources.isEmpty()) {
+                    ObjectSetCommand.Modal.OpenEmptyDataViewSelectSourceScreen
+                } else {
+                    ObjectSetCommand.Modal.OpenDataViewSelectSourceScreen(
+                        selectedTypes = sources
                     )
-                )
+                }
+                dispatch(command)
             }
             else -> {}
         }

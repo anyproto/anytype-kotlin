@@ -5,14 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.presentation.relations.RelationValueView
+import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -23,33 +24,36 @@ class AddOptionsRelationViewModel(
     values: ObjectValueProvider,
     relations: ObjectRelationProvider,
     optionsProvider: AddOptionsRelationProvider,
-    private val addObjectRelationOption: AddObjectRelationOption,
+    getOptions: GetOptions,
+    private val createRelationOption: CreateRelationOption,
     private val updateDetail: UpdateDetail,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val detailProvider: ObjectDetailProvider
 ) : BaseAddOptionsRelationViewModel(
     values = values,
     relations = relations,
     optionsProvider = optionsProvider,
     analytics = analytics,
     dispatcher = dispatcher,
-    setObjectDetail = updateDetail
+    setObjectDetail = updateDetail,
+    detailsProvider = detailProvider,
+    getOptions = getOptions
 ) {
 
     fun onAddObjectStatusClicked(
         ctx: Id,
-        relation: Id,
+        relationKey: Key,
         status: RelationValueView.Option.Status
     ) = proceedWithAddingStatusToObject(
-        ctx = ctx,
-        relation = relation,
+        target = ctx,
+        relationKey = relationKey,
         status = status.id
     )
 
     fun onAddSelectedValuesToObjectClicked(
-        ctx: Id,
         obj: Id,
-        relation: Id
+        relationKey: Key,
     ) {
         val tags = choosingRelationOptions.value.mapNotNull { view ->
             if (view is RelationValueView.Option.Tag && view.isSelected)
@@ -59,49 +63,42 @@ class AddOptionsRelationViewModel(
         }
         proceedWithAddingTagToObject(
             target = obj,
-            ctx = ctx,
-            relation = relation,
+            relationKey = relationKey,
             tags = tags
         )
     }
 
     fun onCreateObjectRelationOptionClicked(
-        ctx: Id,
-        relation: Id,
+        relationKey: Key,
         name: String,
         obj: Id
     ) {
         viewModelScope.launch {
-            addObjectRelationOption(
-                AddObjectRelationOption.Params(
-                    ctx = ctx,
-                    relation = relation,
+            createRelationOption(
+                CreateRelationOption.Params(
+                    relation = relationKey,
                     name = name,
                     color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().code
                 )
             ).proceed(
-                success = { (payload, option) ->
-                    dispatcher.send(payload)
-                    if (option != null) {
-                        when (val format = relations.get(relation).format) {
-                            Relation.Format.TAG -> {
-                                proceedWithAddingTagToObject(
-                                    ctx = ctx,
-                                    relation = relation,
-                                    target = obj,
-                                    tags = listOf(option)
-                                )
-                            }
-                            Relation.Format.STATUS -> {
-                                proceedWithAddingStatusToObject(
-                                    ctx = ctx,
-                                    relation = relation,
-                                    status = option
-                                )
-                            }
-                            else -> {
-                                Timber.e("Trying to create an option for relation format: $format")
-                            }
+                success = { option ->
+                    when (val format = relations.get(relationKey).format) {
+                        RelationFormat.TAG -> {
+                            proceedWithAddingTagToObject(
+                                relationKey = relationKey,
+                                target = obj,
+                                tags = listOf(option.id)
+                            )
+                        }
+                        RelationFormat.STATUS -> {
+                            proceedWithAddingStatusToObject(
+                                target = obj,
+                                relationKey = relationKey,
+                                status = option.id
+                            )
+                        }
+                        else -> {
+                            Timber.e("Trying to create an option for relation format: $format")
                         }
                     }
                 },
@@ -113,22 +110,26 @@ class AddOptionsRelationViewModel(
     class Factory(
         private val values: ObjectValueProvider,
         private val relations: ObjectRelationProvider,
-        private val addObjectRelationOption: AddObjectRelationOption,
+        private val createRelationOption: CreateRelationOption,
         private val updateDetail: UpdateDetail,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val optionsProvider: AddOptionsRelationProvider,
+        private val detailProvider: ObjectDetailProvider,
+        private val getOptions: GetOptions
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AddOptionsRelationViewModel(
                 values = values,
                 relations = relations,
-                addObjectRelationOption = addObjectRelationOption,
+                createRelationOption = createRelationOption,
                 updateDetail = updateDetail,
                 dispatcher = dispatcher,
                 analytics = analytics,
-                optionsProvider = optionsProvider
+                optionsProvider = optionsProvider,
+                detailProvider = detailProvider,
+                getOptions = getOptions
             ) as T
         }
     }

@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor
 
 class LinkToObjectViewModelFactory(
@@ -30,7 +30,7 @@ class LinkToObjectViewModelFactory(
 
 class LinkToObjectOrWebViewModelFactory(
     private val urlBuilder: UrlBuilder,
-    private val objectTypesProvider: ObjectTypesProvider,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
     private val stores: Editor.Storage,
@@ -41,7 +41,7 @@ class LinkToObjectOrWebViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return LinkToObjectOrWebViewModel(
             urlBuilder = urlBuilder,
-            objectTypesProvider = objectTypesProvider,
+            storeOfObjectTypes = storeOfObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
             stores = stores,

@@ -3,40 +3,42 @@ package com.anytypeio.anytype.core_models.restrictions
 /**
  * restricts for some actions, if present then this action is forbidden
  */
-enum class ObjectRestriction {
+enum class ObjectRestriction(val code: Int) {
 
     /**
      * restricts delete
      */
-    DELETE,
+    DELETE(1),
 
     /**
      * restricts work with relations
      */
-    RELATIONS,
+    RELATIONS(2),
 
     /**
      * restricts work with details
      */
-    DETAILS,
+    DETAILS(4),
 
     /**
      * restricts work with blocks
      */
-    BLOCKS,
+    BLOCKS(3),
 
     /**
      * restricts changing type
      */
-    TYPE_CHANGE,
+    TYPE_CHANGE(5),
 
     /**
      * restricts changing layout
      */
-    LAYOUT_CHANGE,
+    LAYOUT_CHANGE(6),
 
-    TEMPLATE,
+    TEMPLATE(7),
 
-    DUPLICATE
+    DUPLICATE(8),
+
+    NONE(0)
 
 }

@@ -6,26 +6,38 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
 
 class FilterViewModelInputFieldValueModifyTest {
 
@@ -45,9 +57,6 @@ class FilterViewModelInputFieldValueModifyTest {
     lateinit var searchObjects: SearchObjects
 
     @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
     lateinit var analytics: Analytics
 
     private lateinit var viewModel: FilterViewModel
@@ -55,14 +64,13 @@ class FilterViewModelInputFieldValueModifyTest {
     private val root = MockDataFactory.randomUuid()
     private val dataViewId = MockDataFactory.randomString()
     private val session = ObjectSetSession()
+    private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     //LONG TEXT
-    private val relation1 = Relation(
+    private val relation1 = StubRelationObject(
         key = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
-        format = Relation.Format.LONG_TEXT,
-        source = Relation.Source.DETAILS,
-        defaultValue = null
+        format = Relation.Format.LONG_TEXT
     )
 
     private val viewerRelation1 = Block.Content.DataView.Viewer.ViewerRelation(
@@ -71,12 +79,10 @@ class FilterViewModelInputFieldValueModifyTest {
     )
 
     //NUMBER
-    private val relation2 = Relation(
+    private val relation2 = StubRelationObject(
         key = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
-        format = Relation.Format.NUMBER,
-        source = Relation.Source.DETAILS,
-        defaultValue = null
+        format = Relation.Format.NUMBER
     )
 
     private val viewerRelation2 = Block.Content.DataView.Viewer.ViewerRelation(
@@ -85,12 +91,10 @@ class FilterViewModelInputFieldValueModifyTest {
     )
 
     //SHORT TEXT
-    private val relation3 = Relation(
+    private val relation3 = StubRelationObject(
         key = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
-        format = Relation.Format.SHORT_TEXT,
-        source = Relation.Source.DETAILS,
-        defaultValue = null
+        format = Relation.Format.SHORT_TEXT
     )
 
     private val viewerRelation3 = Block.Content.DataView.Viewer.ViewerRelation(
@@ -99,12 +103,10 @@ class FilterViewModelInputFieldValueModifyTest {
     )
 
     //URL
-    private val relation4 = Relation(
+    private val relation4 = StubRelationObject(
         key = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
-        format = Relation.Format.URL,
-        source = Relation.Source.DETAILS,
-        defaultValue = null
+        format = Relation.Format.URL
     )
 
     private val viewerRelation4 = Block.Content.DataView.Viewer.ViewerRelation(
@@ -113,12 +115,10 @@ class FilterViewModelInputFieldValueModifyTest {
     )
 
     //EMAIL
-    private val relation5 = Relation(
+    private val relation5 = StubRelationObject(
         key = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
-        format = Relation.Format.EMAIL,
-        source = Relation.Source.DETAILS,
-        defaultValue = null
+        format = Relation.Format.EMAIL
     )
 
     private val viewerRelation5 = Block.Content.DataView.Viewer.ViewerRelation(
@@ -127,12 +127,10 @@ class FilterViewModelInputFieldValueModifyTest {
     )
 
     //PHONE
-    private val relation6 = Relation(
+    private val relation6 = StubRelationObject(
         key = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
-        format = Relation.Format.PHONE,
-        source = Relation.Source.DETAILS,
-        defaultValue = null
+        format = Relation.Format.PHONE
     )
 
     private val viewerRelation6 = Block.Content.DataView.Viewer.ViewerRelation(
@@ -140,10 +138,19 @@ class FilterViewModelInputFieldValueModifyTest {
         isVisible = true
     )
 
+    private val relations = listOf(
+        relation1,
+        relation2,
+        relation3,
+        relation4,
+        relation5,
+        relation6
+    )
+
     private val state = MutableStateFlow(
         MockObjectSetFactory.makeDefaultObjectSet(
             dataViewId = dataViewId,
-            relations = listOf(relation1, relation2, relation3),
+            relations = relations,
             viewerRelations = listOf(
                 viewerRelation1,
                 viewerRelation2,
@@ -164,6 +171,10 @@ class FilterViewModelInputFieldValueModifyTest {
     )
     private val dispatcher = Dispatcher.Default<Payload>()
 
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    private val objectStore: ObjectStore = DefaultObjectStore()
+    private val db = ObjectSetDatabase(store = objectStore)
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -175,14 +186,18 @@ class FilterViewModelInputFieldValueModifyTest {
             urlBuilder = urlBuilder,
             updateDataViewViewer = updateDataViewViewer,
             searchObjects = searchObjects,
-            objectTypesProvider = objectTypesProvider,
-            analytics = analytics
+            analytics = analytics,
+            storeOfObjectTypes = storeOfObjectTypes,
+            storeOfRelations = storeOfRelations,
+            objectSetDatabase = db
         )
     }
 
     //region LONG TEXT
     @Test
-    fun `should empty string value, long text 1`() {
+    fun `should empty string value, long text 1`() = runTest{
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
@@ -193,7 +208,9 @@ class FilterViewModelInputFieldValueModifyTest {
     }
 
     @Test
-    fun `should empty string value, long text 2`() {
+    fun `should empty string value, long text 2`() = runTest {
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Empty()
@@ -204,7 +221,9 @@ class FilterViewModelInputFieldValueModifyTest {
     }
 
     @Test
-    fun `should empty string value, long text 3`() {
+    fun `should empty string value, long text 3`() = runTest {
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
@@ -215,7 +234,9 @@ class FilterViewModelInputFieldValueModifyTest {
     }
 
     @Test
-    fun `should empty string value, long text 4`() {
+    fun `should empty string value, long text 4`() = runTest {
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEmpty()
@@ -226,7 +247,9 @@ class FilterViewModelInputFieldValueModifyTest {
     }
 
     @Test
-    fun `should not empty string value, long text 1`() {
+    fun `should not empty string value, long text 1`() = runTest {
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Equal()
@@ -237,7 +260,9 @@ class FilterViewModelInputFieldValueModifyTest {
     }
 
     @Test
-    fun `should not empty string value, long text 2`() {
+    fun `should not empty string value, long text 2`() = runTest {
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotEqual()
@@ -248,7 +273,9 @@ class FilterViewModelInputFieldValueModifyTest {
     }
 
     @Test
-    fun `should not empty string value, long text 3`() {
+    fun `should not empty string value, long text 3`() = runTest {
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.NotLike()
@@ -259,7 +286,9 @@ class FilterViewModelInputFieldValueModifyTest {
     }
 
     @Test
-    fun `should not empty string value, long text 4`() {
+    fun `should not empty string value, long text 4`() = runTest {
+
+        storeOfRelations.merge(relations)
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Like()
@@ -280,7 +309,7 @@ class FilterViewModelInputFieldValueModifyTest {
         stubUpdateDataView()
 
         viewModel.onStart(
-            relationId = relation1.key,
+            relationKey = relation1.key,
             filterIndex = filterIndex
         )
 
@@ -323,7 +352,7 @@ class FilterViewModelInputFieldValueModifyTest {
         stubUpdateDataView()
 
         viewModel.onStart(
-            relationId = relation1.key,
+            relationKey = relation1.key,
             filterIndex = filterIndex
         )
 

@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="18dp"
-        android:text="@string/change_type" />
+        tools:text="@string/change_type" />
 
     <LinearLayout
         android:id="@+id/searchBar"

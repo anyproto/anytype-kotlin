@@ -64,7 +64,7 @@ class ObjectSearchSubscriptionContainerTest {
                 mapOf(
                     Relations.ID to "obj1",
                     Relations.NAME to "Jonathan Littel",
-                    Relations.TYPE to ObjectType.PROFILE_URL,
+                    Relations.TYPE to ObjectTypeIds.PROFILE,
                     Relations.LAYOUT to ObjectType.Layout.PROFILE.code,
                     Relations.DESCRIPTION to null
                 )
@@ -76,7 +76,7 @@ class ObjectSearchSubscriptionContainerTest {
                 mapOf(
                     Relations.ID to "obj2",
                     Relations.NAME to "Writer",
-                    Relations.TYPE to ObjectType.PROFILE_URL,
+                    Relations.TYPE to ObjectTypeIds.PROFILE,
                     Relations.LAYOUT to ObjectType.Layout.PROFILE.code
                 )
             )
@@ -93,7 +93,9 @@ class ObjectSearchSubscriptionContainerTest {
                     keys = keys1,
                     afterId = null,
                     beforeId = null,
-                    source = emptyList()
+                    source = emptyList(),
+                    noDepSubscription = null,
+                    ignoreWorkspace = null
                 )
             } doReturn SearchResult(
                 results = initialResults1,

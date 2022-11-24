@@ -69,7 +69,6 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
             is Command.OpenPageNavigationScreen -> navigation.openPageNavigation(command.target)
             is Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(command.pageId)
             is Command.OpenPageSearch -> navigation.openPageSearch()
-            is Command.OpenCreateSetScreen -> navigation.openCreateSetScreen(command.ctx)
             is Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()
             is Command.DeletedAccountScreen -> navigation.deletedAccountScreen(command.deadline)
             is Command.OpenTemplates -> navigation.openTemplates(

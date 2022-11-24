@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
@@ -9,6 +10,60 @@ import kotlin.test.assertFails
 import kotlin.test.asserter
 
 class FilterConditionExtensionTest {
+
+    // GIVEN RELATIONS
+
+    private val relationText = StubRelationObject(
+        key = MockDataFactory.randomUuid(),
+        name = MockDataFactory.randomString(),
+        format = Relation.Format.LONG_TEXT,
+        isHidden = false,
+        isReadOnly = false
+    )
+
+    private val relationTextShort = StubRelationObject(
+        format = Relation.Format.SHORT_TEXT
+    )
+
+    private val relationTextLong = StubRelationObject(
+        format = Relation.Format.LONG_TEXT
+    )
+
+    private val relationUrl = StubRelationObject(
+        format = Relation.Format.URL
+    )
+
+    private val relationPhone = StubRelationObject(
+        format = Relation.Format.PHONE
+    )
+
+    private val relationEmail = StubRelationObject(
+        format = Relation.Format.EMAIL
+    )
+
+    private val relationNumber = StubRelationObject(
+        format = Relation.Format.NUMBER
+    )
+
+    private val relationDate = StubRelationObject(
+        format = Relation.Format.DATE
+    )
+
+    private val relationTag = StubRelationObject(
+        format = Relation.Format.TAG
+    )
+
+    private val relationStatus = StubRelationObject(
+        format = Relation.Format.STATUS
+    )
+
+    private val relationObject = StubRelationObject(
+        format = Relation.Format.OBJECT
+    )
+
+    private val relationCheckbox = StubRelationObject(
+        format = Relation.Format.CHECKBOX
+    )
 
     @Test
     fun `should be proper condition type`() {
@@ -68,48 +123,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `should return proper condition when initial condition is null`() {
-
-        val relationText = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationText.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationText.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationText.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationText.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationText.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationText.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationText.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationText.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationText.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationText.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedNumber = Viewer.Filter.Condition.Number.Equal()
@@ -176,47 +189,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test equal condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedNumber = Viewer.Filter.Condition.Number.Equal()
@@ -283,47 +255,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test not equal condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.NotEqual()
         val expectedNumber = Viewer.Filter.Condition.Number.NotEqual()
@@ -380,47 +311,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test greater condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedNumber = Viewer.Filter.Condition.Number.Greater()
         val expectedDate = Viewer.Filter.Condition.Date.Greater()
@@ -466,47 +356,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test less condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedNumber = Viewer.Filter.Condition.Number.Less()
         val expectedDate = Viewer.Filter.Condition.Date.Less()
@@ -552,47 +401,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test greater or equal condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedNumber = Viewer.Filter.Condition.Number.GreaterOrEqual()
         val expectedDate = Viewer.Filter.Condition.Date.GreaterOrEqual()
@@ -638,47 +446,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test less or equal condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedNumber = Viewer.Filter.Condition.Number.LessOrEqual()
         val expectedDate = Viewer.Filter.Condition.Date.LessOrEqual()
@@ -724,48 +491,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test like condition`() {
-
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.Like()
 
@@ -817,48 +542,6 @@ class FilterConditionExtensionTest {
     @Test
     fun `test not like condition`() {
 
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
-
         val expectedText = Viewer.Filter.Condition.Text.NotLike()
 
         asserter.assertEquals(
@@ -908,47 +591,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `relation - should have or should not have in condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedSelected = Viewer.Filter.Condition.Selected.In()
 
@@ -999,47 +641,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test not in condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedSelected = Viewer.Filter.Condition.Selected.NotIn()
 
@@ -1086,47 +687,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test all in condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedSelected = Viewer.Filter.Condition.Selected.AllIn()
 
@@ -1173,47 +733,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test not all in condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         assertFails {
             relationTextLong.toConditionView(condition = DVFilterCondition.NOT_ALL_IN)
@@ -1252,47 +771,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test empty condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.Empty()
         val expectedSelected = Viewer.Filter.Condition.Selected.Empty()
@@ -1359,47 +837,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `test not empty condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.NotEmpty()
         val expectedSelected = Viewer.Filter.Condition.Selected.NotEmpty()
@@ -1466,47 +903,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `should return default values for exact-in condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedSelected = Viewer.Filter.Condition.Selected.In()
@@ -1576,47 +972,6 @@ class FilterConditionExtensionTest {
 
     @Test
     fun `should return default values for not-exact-in condition`() {
-        val relationTextLong = Relation(
-            key = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            format = Relation.Format.LONG_TEXT,
-            source = Relation.Source.ACCOUNT,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = false,
-            selections = emptyList(),
-            defaultValue = MockDataFactory.randomString()
-        )
-        val relationTextShort = relationTextLong.copy(
-            format = Relation.Format.SHORT_TEXT
-        )
-        val relationUrl = relationTextLong.copy(
-            format = Relation.Format.URL
-        )
-        val relationPhone = relationTextLong.copy(
-            format = Relation.Format.PHONE
-        )
-        val relationEmail = relationTextLong.copy(
-            format = Relation.Format.EMAIL
-        )
-        val relationNumber = relationTextLong.copy(
-            format = Relation.Format.NUMBER
-        )
-        val relationDate = relationTextLong.copy(
-            format = Relation.Format.DATE
-        )
-        val relationTag = relationTextLong.copy(
-            format = Relation.Format.TAG
-        )
-        val relationStatus = relationTextLong.copy(
-            format = Relation.Format.STATUS
-        )
-        val relationObject = relationTextLong.copy(
-            format = Relation.Format.OBJECT
-        )
-        val relationCheckbox = relationTextLong.copy(
-            format = Relation.Format.CHECKBOX
-        )
 
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedSelected = Viewer.Filter.Condition.Selected.In()

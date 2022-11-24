@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,8 @@ class DeletedAccountViewModel(
     private val restoreAccount: RestoreAccount,
     private val logout: Logout,
     private val dateHelper: DateHelper,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val relationsSubscriptionManager: RelationsSubscriptionManager
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -114,6 +116,7 @@ class DeletedAccountViewModel(
                         }
                         is Interactor.Status.Success -> {
                             isLoggingOut.value = false
+                            relationsSubscriptionManager.onStop()
                             commands.emit(Command.Logout)
                         }
                     }
@@ -135,7 +138,8 @@ class DeletedAccountViewModel(
         private val restoreAccount: RestoreAccount,
         private val logout: Logout,
         private val helper: DateHelper,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val relationsSubscriptionManager: RelationsSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -143,7 +147,8 @@ class DeletedAccountViewModel(
                 restoreAccount = restoreAccount,
                 logout = logout,
                 dateHelper = helper,
-                analytics = analytics
+                analytics = analytics,
+                relationsSubscriptionManager = relationsSubscriptionManager
             ) as T
         }
     }

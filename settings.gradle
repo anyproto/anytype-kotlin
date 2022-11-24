@@ -17,7 +17,8 @@ include ':app',
         ':core-models',
         ':test:android-utils',
         ':test:utils',
-        ':test:core-models-stub'
+        ':test:core-models-stub',
+        ':libs'
 
 include ':ui-settings'
 
@@ -31,6 +32,7 @@ dependencyResolutionManagement {
     githubProperties.load(new FileInputStream(githubPropertiesFile))
 
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }

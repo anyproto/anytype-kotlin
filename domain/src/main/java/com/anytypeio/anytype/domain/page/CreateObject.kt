@@ -47,7 +47,7 @@ class CreateObject(
         val target: Id,
         val position: Position,
         val type: String,
-        val layout: ObjectType.Layout,
+        val layout: ObjectType.Layout?,
         val template: Id? = null
     )
 

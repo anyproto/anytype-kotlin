@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -32,10 +33,9 @@ class ObjectSetRenderMapperTest {
 
         val viewerRelations = listOf(viewerRel1, viewerRel2, viewerRel3)
 
-        val relation = Relation(
+        val relation = StubRelationObject(
             key = viewerRel2.key,
             name = MockDataFactory.randomString(),
-            source = Relation.Source.ACCOUNT,
             format = Relation.Format.NUMBER
         )
 
@@ -52,7 +52,7 @@ class ObjectSetRenderMapperTest {
 
         val expected = SimpleRelationView(
             key = relation.key,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             format = relation.format.toView(),
             isVisible = true,
             isHidden = false
@@ -81,10 +81,9 @@ class ObjectSetRenderMapperTest {
 
         val viewerRelations = listOf(viewerRel1, viewerRel2, viewerRel3)
 
-        val relation = Relation(
+        val relation = StubRelationObject(
             key = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
-            source = Relation.Source.ACCOUNT,
             format = Relation.Format.NUMBER
         )
 
@@ -101,7 +100,7 @@ class ObjectSetRenderMapperTest {
 
         val expected = SimpleRelationView(
             key = relation.key,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             format = relation.format.toView(),
             isVisible = false,
             isHidden = false

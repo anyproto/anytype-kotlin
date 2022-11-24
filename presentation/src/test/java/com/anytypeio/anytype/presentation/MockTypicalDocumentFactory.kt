@@ -1,6 +1,14 @@
 package com.anytypeio.anytype.presentation
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Document
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 object MockTypicalDocumentFactory {
@@ -56,27 +64,23 @@ object MockTypicalDocumentFactory {
         return listOf(page, header, title, a)
     }
 
-    fun relation(
+    fun relationObject(
         name: String,
         isHidden: Boolean = false
-    ) = Relation(
+    ) = StubRelationObject(
         key = MockDataFactory.randomString(),
         name = name,
         format = Relation.Format.SHORT_TEXT,
-        source = Relation.Source.values().random(),
         isHidden = isHidden
     )
 
-    fun objectType(name: String) = ObjectType(
-        url = MockDataFactory.randomUuid(),
+    fun objectType(name: String) = StubObject(
+        id = MockDataFactory.randomString(),
         name = name,
-        relations = emptyList(),
-        layout = ObjectType.Layout.values().random(),
-        emoji = MockDataFactory.randomString(),
+        objectType = OBJECT_TYPE,
+        smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
+        layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
         description = MockDataFactory.randomString(),
-        isHidden = MockDataFactory.randomBoolean(),
-        smartBlockTypes = listOf(SmartBlockType.PAGE),
-        isArchived = false,
-        isReadOnly = false
+        iconEmoji = MockDataFactory.randomString()
     )
 }

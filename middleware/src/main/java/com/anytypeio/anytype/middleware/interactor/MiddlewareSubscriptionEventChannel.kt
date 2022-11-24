@@ -19,10 +19,10 @@ class MiddlewareSubscriptionEventChannel(
             payload.messages.mapNotNull { e ->
                 when {
                     e.objectDetailsAmend != null -> {
-                        Timber.d("Subscription AMEND")
                         val event = e.objectDetailsAmend
                         checkNotNull(event)
                         if (subscriptions.any { it in event.subIds || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" in event.subIds }) {
+                            Timber.d("Subscription AMEND ${event.subIds}")
                             SubscriptionEvent.Amend(
                                 target = event.id,
                                 diff = event.details.associate { it.key to it.value_ },
@@ -33,10 +33,10 @@ class MiddlewareSubscriptionEventChannel(
                         }
                     }
                     e.objectDetailsUnset != null -> {
-                        Timber.d("Subscription UNSET")
                         val event = e.objectDetailsUnset
                         checkNotNull(event)
                         if (subscriptions.any { it in event.subIds || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" in event.subIds }) {
+                            Timber.d("Subscription UNSET ${event.subIds}")
                             SubscriptionEvent.Unset(
                                 target = event.id,
                                 keys = event.keys,
@@ -47,11 +47,11 @@ class MiddlewareSubscriptionEventChannel(
                         }
                     }
                     e.objectDetailsSet != null -> {
-                        Timber.d("Subscription SET")
                         val event = e.objectDetailsSet
                         checkNotNull(event)
                         val data = event.details
                         if (subscriptions.any { it in event.subIds || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" in event.subIds } && data != null) {
+                            Timber.d("Subscription SET ${event.subIds}")
                             SubscriptionEvent.Set(
                                 target = event.id,
                                 data = data,
@@ -62,10 +62,10 @@ class MiddlewareSubscriptionEventChannel(
                         }
                     }
                     e.subscriptionRemove != null -> {
-                        Timber.d("Subscription REMOVE")
                         val event = e.subscriptionRemove
                         checkNotNull(event)
                         if (subscriptions.any { it == event.subId || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" == event.subId }) {
+                            Timber.d("Subscription REMOVE ${event.subId}")
                             SubscriptionEvent.Remove(
                                 target = event.id,
                                 subscription = event.subId
@@ -75,10 +75,10 @@ class MiddlewareSubscriptionEventChannel(
                         }
                     }
                     e.subscriptionAdd != null -> {
-                        Timber.d("Subscription ADD")
                         val event = e.subscriptionAdd
                         checkNotNull(event)
                         if (subscriptions.any { it == event.subId || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" == event.subId }) {
+                            Timber.d("Subscription ADD: ${event.subId}")
                             SubscriptionEvent.Add(
                                 target = event.id,
                                 afterId = event.afterId,
@@ -89,11 +89,10 @@ class MiddlewareSubscriptionEventChannel(
                         }
                     }
                     e.subscriptionPosition != null -> {
-                        Timber.d("Subscription POSITION")
                         val event = e.subscriptionPosition
                         checkNotNull(event)
-                        // TODO should I handle here dependent subscriptions?
                         if (subscriptions.any { it == event.subId }) {
+                            Timber.d("Subscription POSITION: ${event.subId}")
                             SubscriptionEvent.Position(
                                 target = event.id,
                                 afterId = event.afterId
@@ -103,10 +102,10 @@ class MiddlewareSubscriptionEventChannel(
                         }
                     }
                     e.subscriptionCounters != null -> {
-                        Timber.d("Subscription COUNTERS")
                         val event = e.subscriptionCounters
                         checkNotNull(event)
                         if (subscriptions.any { it == event.subId }) {
+                            Timber.d("Subscription COUNTERS: ${event.subId}")
                             SubscriptionEvent.Counter(
                                 counter = event.parse()
                             )

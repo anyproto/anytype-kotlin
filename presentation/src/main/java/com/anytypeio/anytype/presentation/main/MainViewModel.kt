@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,7 +27,8 @@ class MainViewModel(
     private val restoreWallpaper: RestoreWallpaper,
     private val analytics: Analytics,
     private val interceptAccountStatus: InterceptAccountStatus,
-    private val logout: Logout
+    private val logout: Logout,
+    private val relationsSubscriptionManager: RelationsSubscriptionManager
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -72,6 +74,7 @@ class MainViewModel(
                         toasts.emit("Your account is deleted. Logging out...")
                     }
                     is Interactor.Status.Success -> {
+                        relationsSubscriptionManager.onStop()
                         commands.emit(Command.LogoutDueToAccountDeletion)
                     }
                 }

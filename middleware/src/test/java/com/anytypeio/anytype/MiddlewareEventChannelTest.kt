@@ -2,10 +2,12 @@ package com.anytypeio.anytype
 
 import anytype.model.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
-import com.anytypeio.anytype.middleware.mappers.MSmartBlockType
+import com.anytypeio.anytype.middleware.mappers.MRelationLink
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -82,7 +84,8 @@ class MiddlewareEventChannelTest {
             blockSetBackgroundColor = msg
         )
 
-        val event = anytype.Event(contextId = MockDataFactory.randomUuid(), messages = listOf(message))
+        val event =
+            anytype.Event(contextId = MockDataFactory.randomUuid(), messages = listOf(message))
 
         proxy.stub {
             on { flow() } doReturn flowOf(event)
@@ -292,6 +295,105 @@ class MiddlewareEventChannelTest {
                 context = context,
                 target = id,
                 details = details
+            )
+        )
+
+        runBlocking {
+            channel.observeEvents(context = context).collect { events ->
+                assertEquals(
+                    expected = expected,
+                    actual = events
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `should return amend relation links event`() {
+
+        val context = MockDataFactory.randomUuid()
+
+        val id = MockDataFactory.randomUuid()
+
+        val relationLink1 = MRelationLink(
+            key = MockDataFactory.randomUuid(),
+            format = anytype.model.RelationFormat.longtext
+        )
+
+        val relationLink2 = MRelationLink(
+            key = MockDataFactory.randomUuid(),
+            format = anytype.model.RelationFormat.longtext
+        )
+
+        val relationLink3 = MRelationLink(
+            key = MockDataFactory.randomUuid(),
+            format = anytype.model.RelationFormat.longtext
+        )
+
+        val msg = anytype.Event.Object.Relations.Amend(
+            id = id,
+            relationLinks = listOf(relationLink1, relationLink2, relationLink3)
+        )
+
+        val message = anytype.Event.Message(objectRelationsAmend = msg)
+
+        val event = anytype.Event(contextId = context, messages = listOf(message))
+
+        proxy.stub {
+            on { flow() } doReturn flowOf(event)
+        }
+
+        val expected = listOf(
+            Event.Command.ObjectRelationLinks.Amend(
+                context = context,
+                id = id,
+                relationLinks = listOf(
+                    RelationLink(key = relationLink1.key, format = RelationFormat.LONG_TEXT),
+                    RelationLink(key = relationLink2.key, format = RelationFormat.LONG_TEXT),
+                    RelationLink(key = relationLink3.key, format = RelationFormat.LONG_TEXT)
+                )
+            )
+        )
+
+        runBlocking {
+            channel.observeEvents(context = context).collect { events ->
+                assertEquals(
+                    expected = expected,
+                    actual = events
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `should return remove relation links event`() {
+
+        val context = MockDataFactory.randomUuid()
+
+        val id = MockDataFactory.randomUuid()
+
+        val id1 = MockDataFactory.randomUuid()
+        val id2 = MockDataFactory.randomUuid()
+        val id3 = MockDataFactory.randomUuid()
+
+        val msg = anytype.Event.Object.Relations.Remove(
+            id = id,
+            relationKeys = listOf(id1, id2, id3)
+        )
+
+        val message = anytype.Event.Message(objectRelationsRemove = msg)
+
+        val event = anytype.Event(contextId = context, messages = listOf(message))
+
+        proxy.stub {
+            on { flow() } doReturn flowOf(event)
+        }
+
+        val expected = listOf(
+            Event.Command.ObjectRelationLinks.Remove(
+                context = context,
+                id = id,
+                keys = listOf(id1, id2, id3)
             )
         )
 

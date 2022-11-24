@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.middleware.mappers
 
 import anytype.ResponseEvent
-import anytype.Rpc
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.ObjectLinksInfo
@@ -40,8 +39,7 @@ fun MObjectView.toPayload() : Payload {
                     }
                 ),
                 type = type,
-                objectTypes = objectTypes.map { it.toCoreModels() },
-                relations = relations.map { it.toCoreModels() },
+                relationLinks = relationLinks.map { it.toCoreModels() },
                 objectRestrictions = restrictions?.object_?.mapNotNull { it.toCoreModel() }.orEmpty(),
                 dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
             )
@@ -332,7 +330,8 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
     return Block.Content.DataView(
         sources = content.source,
         viewers = content.views.map { it.toCoreModels() },
-        relations = content.relations.map { it.toCoreModels() }
+        relations = content.relations.map { it.toCoreModels() },
+        relationsIndex = content.relationLinks.map { it.toCoreModels() }
     )
 }
 
@@ -565,7 +564,7 @@ fun MObjectType.toCoreModels(): ObjectType = ObjectType(
     emoji = iconEmoji,
     description = description,
     isHidden = hidden,
-    relations = relations.map { it.toCoreModels() },
+    relationLinks = relationLinks.map { it.toCoreModels() },
     layout = layout.toCoreModels(),
     smartBlockTypes = types.map { it.toCoreModel() },
     isArchived = isArchived,
@@ -586,6 +585,8 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.note -> ObjectType.Layout.NOTE
     MOTypeLayout.space -> ObjectType.Layout.SPACE
     MOTypeLayout.bookmark -> ObjectType.Layout.BOOKMARK
+    anytype.model.ObjectType.Layout.relationOptionsList -> TODO()
+    anytype.model.ObjectType.Layout.relationOption -> TODO()
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {
@@ -596,34 +597,32 @@ fun MRelationDataSource.source(): Relation.Source = when (this) {
 }
 
 fun MRelationFormat.format(): Relation.Format = when (this) {
-    MRelationFormat.shorttext -> Relation.Format.SHORT_TEXT
-    MRelationFormat.longtext -> Relation.Format.LONG_TEXT
-    MRelationFormat.number -> Relation.Format.NUMBER
-    MRelationFormat.date -> Relation.Format.DATE
-    MRelationFormat.file_ -> Relation.Format.FILE
-    MRelationFormat.checkbox -> Relation.Format.CHECKBOX
-    MRelationFormat.url -> Relation.Format.URL
-    MRelationFormat.email -> Relation.Format.EMAIL
-    MRelationFormat.phone -> Relation.Format.PHONE
-    MRelationFormat.emoji -> Relation.Format.EMOJI
-    MRelationFormat.object_ -> Relation.Format.OBJECT
-    MRelationFormat.status -> Relation.Format.STATUS
-    MRelationFormat.tag -> Relation.Format.TAG
-    MRelationFormat.relations -> Relation.Format.RELATIONS
+    MRelationFormat.shorttext -> RelationFormat.SHORT_TEXT
+    MRelationFormat.longtext -> RelationFormat.LONG_TEXT
+    MRelationFormat.number -> RelationFormat.NUMBER
+    MRelationFormat.date -> RelationFormat.DATE
+    MRelationFormat.file_ -> RelationFormat.FILE
+    MRelationFormat.checkbox -> RelationFormat.CHECKBOX
+    MRelationFormat.url -> RelationFormat.URL
+    MRelationFormat.email -> RelationFormat.EMAIL
+    MRelationFormat.phone -> RelationFormat.PHONE
+    MRelationFormat.emoji -> RelationFormat.EMOJI
+    MRelationFormat.object_ -> RelationFormat.OBJECT
+    MRelationFormat.status -> RelationFormat.STATUS
+    MRelationFormat.tag -> RelationFormat.TAG
+    MRelationFormat.relations -> RelationFormat.RELATIONS
 }
 
 fun MRelationOption.option(): Relation.Option = Relation.Option(
     id = id,
     text = text,
-    color = color,
-    scope = scope.scope()
+    color = color
 )
 
-fun MRelationOptionScope.scope(): Relation.OptionScope = when (this) {
-    MRelationOptionScope.local -> Relation.OptionScope.LOCAL
-    MRelationOptionScope.relation -> Relation.OptionScope.RELATION
-    MRelationOptionScope.format -> Relation.OptionScope.FORMAT
-}
+fun MRelationLink.toCoreModels() = RelationLink(
+    key = key,
+    format = format.format()
+)
 
 // ---------------------- NAVIGATION & SEARCH ------------------------
 fun ObjectInfoWithLinks.toCoreModel(): com.anytypeio.anytype.core_models.ObjectInfoWithLinks {
@@ -664,7 +663,7 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.MarketplaceRelation -> SmartBlockType.MARKETPLACE_RELATION
     MSmartBlockType.MarketplaceTemplate -> SmartBlockType.MARKETPLACE_TEMPLATE
     MSmartBlockType.BundledRelation -> SmartBlockType.BUNDLED_RELATION
-    MSmartBlockType.IndexedRelation -> SmartBlockType.INDEXED_RELATION
+    MSmartBlockType.SubObject -> SmartBlockType.SUB_OBJECT
     MSmartBlockType.BundledObjectType -> SmartBlockType.BUNDLED_OBJECT_TYPE
     MSmartBlockType.AnytypeProfile -> SmartBlockType.ANYTYPE_PROFILE
     MSmartBlockType.BundledTemplate -> SmartBlockType.BUNDLED_TEMPLATE
@@ -675,7 +674,7 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
 }
 
 // ---------------------- RESTRICTIONS ------------------------
-fun MObjectRestriction.toCoreModel(): ObjectRestriction? = when (this) {
+fun MObjectRestriction.toCoreModel(): ObjectRestriction = when (this) {
     MObjectRestriction.Delete -> ObjectRestriction.DELETE
     MObjectRestriction.Relations -> ObjectRestriction.RELATIONS
     MObjectRestriction.Details -> ObjectRestriction.DETAILS
@@ -683,7 +682,7 @@ fun MObjectRestriction.toCoreModel(): ObjectRestriction? = when (this) {
     MObjectRestriction.TypeChange -> ObjectRestriction.TYPE_CHANGE
     MObjectRestriction.LayoutChange -> ObjectRestriction.LAYOUT_CHANGE
     MObjectRestriction.Template -> ObjectRestriction.TEMPLATE
-    MObjectRestriction.None -> null
+    MObjectRestriction.None -> ObjectRestriction.NONE
     MObjectRestriction.Duplicate -> ObjectRestriction.DUPLICATE
 }
 

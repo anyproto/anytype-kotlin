@@ -29,7 +29,6 @@ import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STO
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -48,6 +47,7 @@ import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
@@ -132,10 +132,9 @@ import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
-import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
-import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_IS_DRAFT_KEY
-import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_REQUEST_KEY
-import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_URL_KEY
+import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
 import com.anytypeio.anytype.ui.relations.RelationAddResult
@@ -172,7 +171,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
     OnMoveToAction,
-    OnLinkToAction {
+    OnLinkToAction,
+    OnObjectSelectTypeAction {
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
@@ -413,15 +413,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pickerDelegate.initPicker(vm, ctx)
-        setFragmentResultListener(OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
-            val type = bundle.getString(OBJECT_TYPE_URL_KEY)
-            val isObjectDraft = bundle.getBoolean(OBJECT_IS_DRAFT_KEY, false)
-            if (type != null) {
-                onObjectTypePicked(type = type, isObjectDraft = isObjectDraft)
-            } else {
-                toast("Cannot change object type, when new one is unknown")
-            }
-        }
         setupOnBackPressedDispatcher()
         getEditorSettings()
     }
@@ -886,10 +877,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onSetRelationKeyClicked(blockId = blockId, key = key)
     }
 
-    private fun onObjectTypePicked(type: Id, isObjectDraft: Boolean) {
-        vm.onObjectTypeChanged(type = type, isObjectDraft = isObjectDraft)
-    }
-
     private fun execute(event: EventWrapper<Command>) {
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
@@ -1031,7 +1018,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = RelationValueFragment.new(
                         ctx = command.ctx,
                         target = command.target,
-                        relation = command.relation,
+                        relationId = command.relationId,
+                        relationKey = command.relationKey,
                         targetObjectTypes = command.targetObjectTypes,
                         isLocked = command.isLocked
                     )
@@ -1041,8 +1029,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideKeyboard()
                     val fr = RelationTextValueFragment.new(
                         ctx = command.ctx,
+                        relationId = command.relationId,
+                        relationKey = command.relationKey,
                         objectId = command.target,
-                        relationId = command.relation,
                         isLocked = command.isLocked
                     )
                     fr.show(childFragmentManager, null)
@@ -1052,25 +1041,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = RelationDateValueFragment.new(
                         ctx = command.ctx,
                         objectId = command.target,
-                        relationId = command.relation
+                        relationId = command.relationId,
+                        relationKey = command.relationKey
                     )
                     fr.show(childFragmentManager, null)
                 }
                 Command.AddSlashWidgetTriggerToFocusedBlock -> {
                     binding.recycler.addTextFromSelectedStart(text = "/")
                 }
-                is Command.OpenChangeObjectTypeScreen -> {
+                is Command.OpenDraftObjectSelectTypeScreen -> {
                     hideKeyboard()
-                    findNavController()
-                        .safeNavigate(
-                            R.id.pageScreen,
-                            R.id.objectTypeChangeScreen,
-                            bundleOf(
-                                ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType,
-                                ObjectTypeChangeFragment.ARG_EXCLUDED_TYPES to command.excludedTypes,
-                                ObjectTypeChangeFragment.OBJECT_IS_DRAFT_KEY to command.isDraft
-                            )
-                        )
+                    val fr = DraftObjectSelectTypeFragment.newInstance(
+                        excludeTypes = command.excludedTypes
+                    )
+                    fr.show(childFragmentManager, null)
+                }
+                is Command.OpenObjectSelectTypeScreen -> {
+                    hideKeyboard()
+                    val fr = ObjectSelectTypeFragment.newInstance(
+                        excludeTypes = command.excludedTypes
+                    )
+                    fr.show(childFragmentManager, null)
                 }
                 is Command.OpenMoveToScreen -> {
                     jobs += lifecycleScope.launch {
@@ -1999,19 +1990,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onLayoutClicked()
     }
 
-    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
+    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationKey: Key) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = text,
-            relationId = relationId
+            relationKey = relationKey
         )
     }
 
-    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationId: Id) {
+    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationKey: Key) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = number,
-            relationId = relationId
+            relationKey = relationKey
         )
     }
 
@@ -2019,11 +2010,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         ctx: Id,
         timeInSeconds: Number?,
         objectId: Id,
-        relationId: Id
+        relationKey: Key
     ) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
-            relationId = relationId,
+            relationKey = relationKey,
             value = timeInSeconds
         )
     }
@@ -2090,6 +2081,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
+    override fun onProceedWithUpdateType(id: Id) {
+        vm.onObjectTypeChanged(type = id, isObjectDraft = false)
+    }
+
+    override fun onProceedWithDraftUpdateType(id: Id) {
+        vm.onObjectTypeChanged(type = id, isObjectDraft = true)
+    }
+
     private fun observeNavBackStack() {
         findNavController().run {
             val navBackStackEntry = getBackStackEntry(R.id.pageScreen)
@@ -2115,7 +2114,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             if (resultRelationAdd != null) {
                 vm.proceedWithAddingRelationToTarget(
                     target = resultRelationAdd.target,
-                    relation = resultRelationAdd.relation
+                    relationKey = resultRelationAdd.relation
                 )
             }
         }
@@ -2125,7 +2124,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             if (resultRelationNew != null) {
                 vm.proceedWithAddingRelationToTarget(
                     target = resultRelationNew.target,
-                    relation = resultRelationNew.relation
+                    relationKey = resultRelationNew.relation
                 )
             }
         }

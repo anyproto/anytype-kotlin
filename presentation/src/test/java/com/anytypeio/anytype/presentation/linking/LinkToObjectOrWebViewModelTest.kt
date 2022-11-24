@@ -6,10 +6,11 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -42,9 +43,6 @@ open class LinkToObjectOrWebViewModelTest {
     lateinit var searchObjects: SearchObjects
 
     @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
     lateinit var urlValidator: UrlValidator
 
     @Mock
@@ -54,6 +52,7 @@ open class LinkToObjectOrWebViewModelTest {
     var ctx = ""
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
+    private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     @Before
     fun setup() {
@@ -278,10 +277,10 @@ open class LinkToObjectOrWebViewModelTest {
 
     private fun givenViewModel() = LinkToObjectOrWebViewModel(
         searchObjects = searchObjects,
-        objectTypesProvider = objectTypesProvider,
         analytics = analytics,
         stores = store,
         urlBuilder = builder,
-        urlValidator = urlValidator
+        urlValidator = urlValidator,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 }

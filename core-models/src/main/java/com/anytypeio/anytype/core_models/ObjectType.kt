@@ -9,17 +9,26 @@ package com.anytypeio.anytype.core_models
  * @property [layout] template's layout
  *
  */
-@Deprecated("Will be deprecated. Object type will be treated as object")
 data class ObjectType(
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val url: Url,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val name: String,
-    val relations: List<Relation>,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
+    val relationLinks: List<RelationLink>,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val layout: Layout,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val emoji: String,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val description: String,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val isHidden: Boolean,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val isArchived: Boolean,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val isReadOnly: Boolean,
+    @Deprecated("Will be deprecated. Object type will be treated as object")
     val smartBlockTypes: List<SmartBlockType>
 ) {
     enum class Layout(val code: Int) {
@@ -47,54 +56,4 @@ data class ObjectType(
         val layout: Layout,
         val emoji: String
     )
-
-    /**
-     * Keys for predefined, bundled object types.
-     */
-    companion object {
-        const val PAGE_URL = "_otpage"
-        const val OBJECT_TYPE_URL = "_otobjectType"
-        const val RELATION_URL = "_otrelation"
-        const val TEMPLATE_URL = "_ottemplate"
-        const val IMAGE_URL = "_otimage"
-        const val FILE_URL = "_otfile"
-        const val VIDEO_URL = "_otvideo"
-        const val AUDIO_URL = "_otaudio"
-        const val SET_URL = "_otset"
-        const val TASK_URL = "_ottask"
-        const val DATE_URL = "_otdate"
-        const val PROFILE_URL = "_otprofile" //contains User Profile page and Anytype Person page
-        const val NOTE_URL = "_otnote"
-        const val WORKSPACE_URL = "_otspace"
-        const val DASHBOARD_TYPE = "_otdashboard"
-        const val BOOKMARK_TYPE = "_otbookmark"
-
-        const val MAX_SNIPPET_SIZE = 30
-    }
-}
-
-class ObjectTypeComparator : Comparator<ObjectType> {
-
-    override fun compare(o1: ObjectType, o2: ObjectType): Int {
-        val o1Url = o1.url
-        val o2Url = o2.url
-        if (o1Url == o2Url) return 0
-
-        if (o1Url == ObjectType.PAGE_URL && o2Url != ObjectType.PAGE_URL) return -1
-        if (o1Url != ObjectType.PAGE_URL && o2Url == ObjectType.PAGE_URL) return 1
-
-        if (o1Url == ObjectType.NOTE_URL && o2Url != ObjectType.NOTE_URL) return -1
-        if (o1Url != ObjectType.NOTE_URL && o2Url == ObjectType.NOTE_URL) return 1
-
-        if (o1Url == ObjectType.SET_URL && o2Url != ObjectType.SET_URL) return -1
-        if (o1Url != ObjectType.SET_URL && o2Url == ObjectType.SET_URL) return 1
-
-        if (o1Url == ObjectType.TASK_URL && o2Url != ObjectType.TASK_URL) return -1
-        if (o1Url != ObjectType.TASK_URL && o2Url == ObjectType.TASK_URL) return 1
-
-        val o1Name = o1.name
-        val o2Name = o2.name
-
-        return o1Name.compareTo(o2Name)
-    }
 }

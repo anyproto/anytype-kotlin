@@ -9,15 +9,25 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
-import com.anytypeio.anytype.presentation.objects.toView
+import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -37,13 +47,13 @@ class MoveToViewModel(
         emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
     }
 
-    val types = MutableStateFlow(emptyList<ObjectType>())
+    val types = MutableStateFlow(emptyList<ObjectWrapper.Type>())
     val objects = MutableStateFlow(emptyList<ObjectWrapper.Basic>())
 
     init {
         viewModelScope.launch {
             combine(objects, types) { listOfObjects, listOfTypes ->
-                listOfObjects.toView(
+                listOfObjects.toViews(
                     urlBuilder = urlBuilder,
                     objectTypes = listOfTypes
                 )
@@ -102,7 +112,11 @@ class MoveToViewModel(
 
     private fun getObjectTypes(ctx: Id) {
         viewModelScope.launch {
-            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+            val params = GetObjectTypes.Params(
+                sorts = emptyList(),
+                filters = ObjectSearchConstants.filterObjectType,
+                keys = ObjectSearchConstants.defaultKeysObjectType
+            )
             getObjectTypes.invoke(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = {
@@ -117,7 +131,7 @@ class MoveToViewModel(
 
         val filteredTypes = types.value
             .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
-            .map { objectType -> objectType.url }
+            .map { objectType -> objectType.id }
 
         return SearchObjects.Params(
             limit = SEARCH_LIMIT,

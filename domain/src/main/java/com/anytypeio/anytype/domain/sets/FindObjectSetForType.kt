@@ -22,7 +22,7 @@ class FindObjectSetForType(
                 DVFilter(
                     relationKey = Relations.TYPE,
                     condition = DVFilterCondition.EQUAL,
-                    value = ObjectType.SET_URL
+                    value = ObjectTypeIds.SET
                 ),
                 DVFilter(
                     relationKey = Relations.SET_OF,

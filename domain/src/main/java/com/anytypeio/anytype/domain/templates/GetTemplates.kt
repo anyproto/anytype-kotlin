@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -37,7 +38,7 @@ class GetTemplates(
                         DVFilter(
                             relationKey = Relations.TYPE,
                             condition = DVFilterCondition.EQUAL,
-                            value = ObjectType.TEMPLATE_URL
+                            value = ObjectTypeIds.TEMPLATE
                         ),
                         DVFilter(
                             relationKey = Relations.TARGET_OBJECT_TYPE,

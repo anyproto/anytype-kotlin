@@ -62,7 +62,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val objectType = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Movie",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -125,14 +125,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = listOf(record1),
-            total = 1,
             objectTypes = listOf(objectType)
         )
 
@@ -166,7 +161,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val objectType = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Movie",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -229,14 +224,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = listOf(record1),
-            total = 1,
             objectTypes = listOf(objectType)
         )
 
@@ -270,7 +260,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val objectType = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Movie",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -333,14 +323,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = listOf(record1),
-            total = 1,
             objectTypes = listOf(objectType)
         )
 
@@ -374,7 +359,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val objectType = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Movie",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -437,14 +422,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = listOf(record1),
-            total = 1,
             objectTypes = listOf(objectType)
         )
 
@@ -478,7 +458,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val objectType = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Movie",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -541,14 +521,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = listOf(record1),
-            total = 1,
             objectTypes = listOf(objectType)
         )
 
@@ -582,7 +557,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val objectType = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Movie",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -645,14 +620,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = listOf(record1),
-            total = 1,
             objectTypes = listOf(objectType)
         )
 

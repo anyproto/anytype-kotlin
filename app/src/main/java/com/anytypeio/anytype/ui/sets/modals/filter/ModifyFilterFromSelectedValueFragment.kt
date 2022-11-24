@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.relationIcon
 import com.anytypeio.anytype.core_ui.features.sets.CreateFilterAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -169,9 +170,9 @@ open class ModifyFilterFromSelectedValueFragment :
         vm.onExactDayPicked(timeInSeconds)
     }
 
-    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {}
+    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationKey: Key) {}
 
-    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationId: Id) {
+    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationKey: Key) {
         helper.handleNumberValueChanged(this, number, vm)
     }
 

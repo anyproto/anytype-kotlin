@@ -1,11 +1,14 @@
 package com.anytypeio.anytype.presentation
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
@@ -31,6 +34,7 @@ class TypicalTwoRecordObjectSet {
         children = listOf(title.id)
     )
 
+    @Deprecated("To be deleted")
     val relations = listOf(
         Relation(
             key = MockDataFactory.randomString(),
@@ -53,6 +57,29 @@ class TypicalTwoRecordObjectSet {
             isMulti = false,
             isReadOnly = false,
             selections = emptyList()
+        )
+    )
+
+    val relationsObjects = listOf(
+        ObjectWrapper.Relation(
+            mapOf(
+                Relations.RELATION_KEY to relations[0].key,
+                Relations.ID to MockDataFactory.randomUuid(),
+                Relations.NAME to MockDataFactory.randomUuid(),
+                Relations.RELATION_FORMAT to RelationFormat.LONG_TEXT.code.toDouble(),
+                Relations.IS_HIDDEN to false,
+                Relations.IS_READ_ONLY to false
+            )
+        ),
+        ObjectWrapper.Relation(
+            mapOf(
+                Relations.RELATION_KEY to relations[1].key,
+                Relations.ID to MockDataFactory.randomUuid(),
+                Relations.NAME to MockDataFactory.randomUuid(),
+                Relations.RELATION_FORMAT to RelationFormat.LONG_TEXT.code.toDouble(),
+                Relations.IS_HIDDEN to false,
+                Relations.IS_READ_ONLY to false
+            )
         )
     )
 
@@ -120,6 +147,12 @@ class TypicalTwoRecordObjectSet {
         content = DV(
             sources = listOf(MockDataFactory.randomString()),
             relations = relations,
+            relationsIndex = relations.map {
+                RelationLink(
+                    key = it.key,
+                    format = it.format
+                )
+            },
             viewers = listOf(viewer1, viewer2)
         ),
         children = emptyList(),

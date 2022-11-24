@@ -88,7 +88,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubTurnIntoStyle()
         stubUpdateText()
-        stubGetObjectTypes()
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -134,7 +134,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         stubTurnIntoStyle()
         stubUpdateText()
         stubUpdateText()
-        stubGetObjectTypes()
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -222,7 +222,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubTurnIntoStyle()
         stubUpdateText()
-        stubGetObjectTypes()
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 

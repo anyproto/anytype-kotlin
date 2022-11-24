@@ -18,14 +18,18 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
+import com.anytypeio.anytype.core_models.StubRelationOptionObject
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
@@ -33,7 +37,6 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -53,6 +56,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -73,7 +81,6 @@ class DisplayRelationObjectValueTest {
     @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
-    private lateinit var addRelationOption: AddDataViewRelationOption
     private lateinit var updateDetail: UpdateDetail
     private lateinit var urlBuilder: UrlBuilder
     private lateinit var addFileToObject: AddFileToObject
@@ -87,31 +94,32 @@ class DisplayRelationObjectValueTest {
     private val root = MockDataFactory.randomUuid()
     private val state = MutableStateFlow(ObjectSet.init())
     private val store: ObjectStore = DefaultObjectStore()
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
     private val db = ObjectSetDatabase(store = store)
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        addRelationOption = AddDataViewRelationOption(repo)
         updateDetail = UpdateDetail(repo)
         addFileToObject = AddFileToObject(repo)
         urlBuilder = UrlBuilder(gateway)
         TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
-            relations = DataViewObjectRelationProvider(state),
+            relations = DataViewObjectRelationProvider(
+                objectSetState = state,
+                storeOfRelations = storeOfRelations
+            ),
             values = DataViewObjectValueProvider(db = db),
             details = object: ObjectDetailProvider {
                 override fun provide(): Map<Id, Block.Fields> = state.value.details
-            },
-            types = object : ObjectTypesProvider {
-                override fun set(objectTypes: List<ObjectType>) {}
-                override fun get(): List<ObjectType> = state.value.objectTypes
             },
             urlBuilder = urlBuilder,
             copyFileToCache = copyFileToCacheDirectory,
             analytics = analytics,
             addFileToObject = addFileToObject,
             setObjectDetails = updateDetail,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 
@@ -348,7 +356,7 @@ class DisplayRelationObjectValueTest {
         val objectType1 = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Director",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = "",
             layout = ObjectType.Layout.values().random(),
             description = "",
@@ -361,7 +369,7 @@ class DisplayRelationObjectValueTest {
         val objectType2 = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Actor",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = "",
             layout = ObjectType.Layout.values().random(),
             description = "",
@@ -473,7 +481,7 @@ class DisplayRelationObjectValueTest {
         val objectType1 = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Writer",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -486,7 +494,7 @@ class DisplayRelationObjectValueTest {
         val objectType2 = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Writer",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -600,7 +608,7 @@ class DisplayRelationObjectValueTest {
         val objectType1 = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Writer",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -613,7 +621,7 @@ class DisplayRelationObjectValueTest {
         val objectType2 = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Writer",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
@@ -714,4 +722,33 @@ class DisplayRelationObjectValueTest {
         )
     }
 
+    private fun verifyCreateRelationOptionCalled() {
+        verifyBlocking(repo, times(1)) {
+            createRelationOption(
+                relation = any(),
+                color = any(),
+                name = any()
+            )
+        }
+    }
+
+    private fun stubCreateRelationOption(
+        name: String = MockDataFactory.randomString(),
+        id: Id = MockDataFactory.randomUuid(),
+        color: String = ThemeColor.values().random().code
+    ) {
+        repo.stub {
+            onBlocking {
+                createRelationOption(
+                    relation = any(),
+                    color = any(),
+                    name = any()
+                )
+            } doReturn StubRelationOptionObject(
+                id = id,
+                color = color,
+                text = name
+            )
+        }
+    }
 }

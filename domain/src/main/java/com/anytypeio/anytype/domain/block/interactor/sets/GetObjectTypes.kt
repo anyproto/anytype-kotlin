@@ -1,29 +1,36 @@
 package com.anytypeio.anytype.domain.block.interactor.sets
 
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.CacheUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class GetObjectTypes(
     private val repo: BlockRepository
-) : CacheUseCase<List<ObjectType>, GetObjectTypes.Params>() {
+) : CacheUseCase<List<ObjectWrapper.Type>, GetObjectTypes.Params>() {
 
     override suspend fun run(
         params: Params
-    ): Either<Throwable, List<ObjectType>> = safe {
-        val objectTypes = repo.getObjectTypes()
-        if (params.filterArchivedObjects) {
-            objectTypes.filter { !it.isArchived }
-        } else {
-            objectTypes
+    ) = safe {
+        repo.searchObjects(
+            keys = params.keys,
+            filters = params.filters,
+            sorts = params.sorts,
+            limit = params.limit,
+            offset = params.offset,
+            fulltext = ""
+        ).map { struct ->
+            ObjectWrapper.Type(struct)
         }
     }
 
-    /**
-     * @param filterArchivedObjects if true, filter object types by not archived types
-     */
-    class Params(
-        val filterArchivedObjects: Boolean
+    data class Params(
+        val sorts: List<DVSort>,
+        val filters: List<DVFilter>,
+        val offset: Int = 0,
+        val limit: Int = 0,
+        val keys: List<Key>
     )
 }

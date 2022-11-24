@@ -589,6 +589,76 @@ message Rpc {
             }
         }
 
+        message Object {
+            message Add {
+                message Request {
+                    string objectId = 1;
+                }
+
+                message Response {
+                    Error error = 1;
+                    string objectId = 2;
+                    google.protobuf.Struct details = 3;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            // ...
+                        }
+                    }
+                }
+            }
+            message ListAdd {
+                message Request {
+                    repeated string objectIds = 1;
+                }
+
+                message Response {
+                    Error error = 1;
+                    repeated string objectIds = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            // ...
+                        }
+                    }
+                }
+            }
+            message ListRemove {
+                message Request {
+                    repeated string objectIds = 1;
+                }
+
+                message Response {
+                    Error error = 1;
+                    repeated string ids = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            // ...
+                        }
+                    }
+                }
+            }
+        }
+
         message SetIsHighlighted {
             message Request {
                 string objectId = 1;
@@ -667,6 +737,8 @@ message Rpc {
                 string contextId = 1; // id of the context blo1k
                 string objectId = 2;
                 string traceId = 3;
+
+                bool includeRelationsAsDependentObjects = 4; // some clients may set this option instead if having the single subscription to all relations
             }
 
             message Response {
@@ -718,6 +790,8 @@ message Rpc {
                 string contextId = 1; // deprecated
                 string objectId = 2;
                 string traceId = 3;
+
+                bool includeRelationsAsDependentObjects = 4; // some clients may set this option instead if having the single subscription to all relations
             }
 
             message Response {
@@ -749,8 +823,9 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                string pageId = 3;
+                string objectId = 3;
                 ResponseEvent event = 4;
+                google.protobuf.Struct details = 5;
 
                 message Error {
                     Code code = 1;
@@ -768,12 +843,13 @@ message Rpc {
 
         message CreateBookmark {
             message Request {
-                string url = 1;
+                google.protobuf.Struct details = 1;
             }
 
             message Response {
                 Error error = 1;
-                string pageId = 2;
+                string objectId = 2;
+                google.protobuf.Struct details = 3;
 
                 message Error {
                     Code code = 1;
@@ -783,6 +859,107 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message CreateRelation {
+            message Request {
+                google.protobuf.Struct details = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 2;
+                string key = 3;
+                google.protobuf.Struct details = 4;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message CreateRelationOption {
+            message Request {
+                google.protobuf.Struct details = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 2;
+                google.protobuf.Struct details = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message CreateSet {
+            message Request {
+                repeated string source = 1;
+                google.protobuf.Struct details = 2; // if omitted the name of page will be the same with object type
+                string templateId = 3; // optional template id for creating from template
+                repeated anytype.model.InternalFlag internalFlags = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 3;
+                ResponseEvent event = 4;
+                google.protobuf.Struct details = 5;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        UNKNOWN_OBJECT_TYPE_URL = 3;
+                    }
+                }
+            }
+        }
+
+        message CreateObjectType {
+            message Request {
+                google.protobuf.Struct details = 1;
+                repeated anytype.model.InternalFlag internalFlags = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                google.protobuf.Struct details = 2;
+                string objectId = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        UNKNOWN_OBJECT_TYPE_URL = 3;
                         // ...
                     }
                 }
@@ -831,33 +1008,6 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
-                    }
-                }
-            }
-        }
-
-        message CreateSet {
-            message Request {
-                repeated string source = 1;
-                google.protobuf.Struct details = 2; // if omitted the name of page will be the same with object type
-                string templateId = 3; // optional template id for creating from template
-                repeated anytype.model.InternalFlag internalFlags = 4;
-            }
-
-            message Response {
-                Error error = 1;
-                string id = 3;
-                ResponseEvent event = 4;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        UNKNOWN_OBJECT_TYPE_URL = 3;
                     }
                 }
             }
@@ -1599,38 +1749,92 @@ message Rpc {
                 GRAPH_JSON = 5;
             }
         }
+
+        message Import {
+            message Request {
+                oneof params {
+                    NotionParams notionParams = 1;
+                    BookmarksParams bookmarksParams = 2; //for internal use
+                }
+                repeated Snapshot snapshots = 3; // optional, for external developers usage
+                bool updateExistingObjects = 4;
+                Type type = 5;
+                Mode mode = 6;
+
+                message NotionParams {
+                    string path = 1;
+                }
+
+                message BookmarksParams {
+                    string url = 1;
+                }
+
+                enum Mode {
+                    ALL_OR_NOTHING = 0;
+                    IGNORE_ERRORS = 1;
+                };
+
+                message Snapshot {
+                    string id = 1; 
+                    anytype.model.SmartBlockSnapshotBase snapshot = 2;
+                };
+                enum Type {
+                    Notion = 0;
+                    External = 1; // external developers use it
+                };
+
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+                    
+                    enum Code {
+                        NULL = 0;
+                        INTERNAL_ERROR = 1;
+                        UNKNOWN_ERROR = 2;
+                        BAD_INPUT = 3;
+                    }
+                }
+            }
+        }
+        message ImportList {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+                repeated ImportResponse response = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+                    
+                    enum Code {
+                        NULL = 0;
+                        INTERNAL_ERROR = 1;
+                        UNKNOWN_ERROR = 2;
+                        BAD_INPUT = 3;
+                    }
+                }
+                
+            }
+            message ImportResponse {
+                Type type = 1; 
+                enum Type {
+                    Notion = 0;
+                };
+            }
+        }
     }
 
     message ObjectRelation {
         message Add {
             message Request {
                 string contextId = 1;
-                anytype.model.Relation relation = 2;
-            }
-
-            message Response {
-                Error error = 1;
-                ResponseEvent event = 2;
-                string relationKey = 3; // deprecated
-                anytype.model.Relation relation = 4;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                    }
-                }
-            }
-        }
-        message Update {
-            message Request {
-                string contextId = 1;
-                string relationKey = 2; // key of relation to update
-                anytype.model.Relation relation = 3;
+                repeated string relationKeys = 2;
             }
 
             message Response {
@@ -1649,10 +1853,11 @@ message Rpc {
                 }
             }
         }
+
         message Delete {
             message Request {
                 string contextId = 1;
-                string relationKey = 2;
+                repeated string relationKeys = 2;
             }
 
             message Response {
@@ -1740,131 +1945,12 @@ message Rpc {
         }
     }
 
-    message ObjectRelationOption {
-        message Add {
-            message Request {
-                string contextId = 1;
-                string relationKey = 2; // relation key to add the option
-                anytype.model.Relation.Option option = 3; // id of select options will be autogenerated
-            }
-
-            message Response {
-                Error error = 1;
-                ResponseEvent event = 2;
-                anytype.model.Relation.Option option = 3;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                    }
-                }
-            }
-        }
-        message Update {
-            message Request {
-                string contextId = 1;
-                string relationKey = 2; // relation key to add the option
-                anytype.model.Relation.Option option = 3; // id of select options will be autogenerated
-            }
-
-            message Response {
-                Error error = 1;
-                ResponseEvent event = 2;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                    }
-                }
-            }
-        }
-        message Delete {
-            message Request {
-                string contextId = 1;
-                string relationKey = 2; // relation key to add the option
-                string optionId = 3; // id of select options to remove
-                bool confirmRemoveAllValuesInRecords = 4; // confirm remove all values in records
-            }
-
-            message Response {
-                Error error = 1;
-                ResponseEvent event = 2;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        SOME_RECORDS_HAS_RELATION_VALUE_WITH_THIS_OPTION = 3; // need to confirm with confirmRemoveAllValuesInRecords=true
-                    }
-                }
-            }
-        }
-    }
-
     message ObjectType {
-        message List {
-            message Request {
-            }
-
-            message Response {
-                Error error = 1;
-                repeated anytype.model.ObjectType objectTypes = 2;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-        message Create {
-            message Request {
-                anytype.model.ObjectType objectType = 1;
-            }
-
-            message Response {
-                Error error = 1;
-                anytype.model.ObjectType objectType = 2;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        UNKNOWN_OBJECT_TYPE_URL = 3;
-                        // ...
-                    }
-                }
-            }
-        }
         message Relation {
             message Add {
                 message Request {
                     string objectTypeUrl = 1;
-                    repeated anytype.model.Relation relations = 2;
+                    repeated string relationKeys = 2;
                 }
 
                 message Response {
@@ -1889,7 +1975,7 @@ message Rpc {
             message Remove {
                 message Request {
                     string objectTypeUrl = 1;
-                    string relationKey = 2;
+                    repeated string relationKeys = 2;
                 }
 
                 message Response {
@@ -1910,30 +1996,7 @@ message Rpc {
                     }
                 }
             }
-            message Update {
-                message Request {
-                    string objectTypeUrl = 1;
-                    anytype.model.Relation relation = 2;
-                }
 
-                message Response {
-                    Error error = 1;
-
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
-
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                            UNKNOWN_OBJECT_TYPE_URL = 3;
-                            READONLY_OBJECT_TYPE = 4;
-                            // ...
-                        }
-                    }
-                }
-            }
             message List {
                 message Request {
                     string objectTypeUrl = 1;
@@ -1942,7 +2005,7 @@ message Rpc {
 
                 message Response {
                     Error error = 1;
-                    repeated anytype.model.Relation relations = 2;
+                    repeated anytype.model.RelationLink relations = 2;
 
                     message Error {
                         Code code = 1;
@@ -1955,6 +2018,53 @@ message Rpc {
                             UNKNOWN_OBJECT_TYPE_URL = 3;
                             // ...
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    message Relation {
+         message ListRemoveOption {
+            message Request {
+                repeated string optionIds = 1;
+                bool checkInObjects = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        OPTION_USED_BY_OBJECTS = 3;
+                    }
+                }
+            }
+        }
+
+        message Options {
+            message Request {
+                string relationKey = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                model.RelationOptions options = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
                     }
                 }
             }
@@ -1974,7 +2084,7 @@ message Rpc {
         // returns list of versions (changes)
         message GetVersions {
             message Request {
-                string pageId = 1;
+                string objectId = 1;
                 // when indicated, results will include versions before given id
                 string lastVersionId = 2;
                 // desired count of versions
@@ -2002,7 +2112,7 @@ message Rpc {
         // returns blockShow event for given version
         message ShowVersion {
             message Request {
-                string pageId = 1;
+                string objectId = 1;
                 string versionId = 2;
                 string traceId = 3;
             }
@@ -2029,7 +2139,7 @@ message Rpc {
 
         message SetVersion {
             message Request {
-                string pageId = 1;
+                string objectId = 1;
                 string versionId = 2;
             }
 
@@ -3936,7 +4046,7 @@ message Rpc {
                     }
                 }
             }
-       }
+        }
     }
 
     message BlockRelation {
@@ -3967,7 +4077,7 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 string blockId = 2;
-                anytype.model.Relation relation = 3;
+                string relationKey = 3;
             }
 
             message Response {
@@ -4199,33 +4309,7 @@ message Rpc {
                 message Request {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to add relation
-                    anytype.model.Relation relation = 3;
-                }
-
-                message Response {
-                    Error error = 1;
-                    ResponseEvent event = 2;
-                    string relationKey = 3; // deprecated
-                    anytype.model.Relation relation = 4;
-
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
-
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                        }
-                    }
-                }
-            }
-            message Update {
-                message Request {
-                    string contextId = 1;
-                    string blockId = 2; // id of dataview block to add relation
-                    string relationKey = 3; // key of relation to update
-                    anytype.model.Relation relation = 4;
+                    repeated string relationKeys = 3;
                 }
 
                 message Response {
@@ -4244,11 +4328,12 @@ message Rpc {
                     }
                 }
             }
+
             message Delete {
                 message Request {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to add relation
-                    string relationKey = 3;
+                    repeated string relationKeys = 3;
                 }
 
                 message Response {
@@ -4385,161 +4470,6 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
-                    }
-                }
-            }
-        }
-    }
-
-    message BlockDataviewRecord {
-        message Update {
-            message Request {
-                string contextId = 1;
-                string blockId = 2;
-                string recordId = 3;
-                google.protobuf.Struct record = 4;
-            }
-
-            message Response {
-                Error error = 1;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-        message Delete {
-            message Request {
-                string contextId = 1;
-                string blockId = 2;
-                string recordId = 3;
-            }
-
-            message Response {
-                Error error = 1;
-                ResponseEvent event = 2;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-        message Create {
-            message Request {
-                string contextId = 1;
-                string blockId = 2;
-                google.protobuf.Struct record = 3;
-                string templateId = 4;
-            }
-
-            message Response {
-                Error error = 1;
-                google.protobuf.Struct record = 2;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-        message RelationOption {
-            // Add may return existing option in case object specified with recordId already have the option with the same name or ID
-            message Add {
-                message Request {
-                    string contextId = 1;
-                    string blockId = 2; // id of dataview block to add relation
-                    string relationKey = 3; // relation key to add the option
-                    anytype.model.Relation.Option option = 4; // id of select options will be autogenerated
-                    string recordId = 5; // id of record which is used to add an option
-                }
-
-                message Response {
-                    Error error = 1;
-                    ResponseEvent event = 2;
-                    anytype.model.Relation.Option option = 3;
-
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
-
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                        }
-                    }
-                }
-            }
-            message Update {
-                message Request {
-                    string contextId = 1;
-                    string blockId = 2; // id of dataview block to add relation
-                    string relationKey = 3; // relation key to add the option
-                    anytype.model.Relation.Option option = 4; // id of select options will be autogenerated
-                    string recordId = 5; // id of record which is used to update an option
-                }
-
-                message Response {
-                    Error error = 1;
-                    ResponseEvent event = 2;
-
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
-
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                        }
-                    }
-                }
-            }
-            message Delete {
-                message Request {
-                    string contextId = 1;
-                    string blockId = 2; // id of dataview block to add relation
-                    string relationKey = 3; // relation key to add the option
-                    string optionId = 4; // id of select options to remove
-                    string recordId = 5; // id of record which is used to delete an option
-                }
-
-                message Response {
-                    Error error = 1;
-                    ResponseEvent event = 2;
-
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
-
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                        }
                     }
                 }
             }

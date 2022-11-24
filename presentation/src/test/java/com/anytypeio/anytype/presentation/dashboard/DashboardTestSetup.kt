@@ -19,16 +19,17 @@ import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -105,17 +106,19 @@ open class DashboardTestSetup {
     @Mock
     lateinit var createNewObject: CreateNewObject
 
-    lateinit var objectStore: ObjectStore
+    private lateinit var objectStore: ObjectStore
 
     lateinit var vm: HomeDashboardViewModel
 
-    val builder: UrlBuilder get() = UrlBuilder(gateway)
+    protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     val config = Config(
         home = MockDataFactory.randomUuid(),
         gateway = MockDataFactory.randomUuid(),
         profile = MockDataFactory.randomUuid()
     )
+
+    protected val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
     fun buildViewModel() : HomeDashboardViewModel {
         objectStore = DefaultObjectStore()
@@ -149,7 +152,8 @@ open class DashboardTestSetup {
                 )
             ),
             createNewObject = createNewObject,
-            featureToggles = mock()
+            featureToggles = mock(),
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 

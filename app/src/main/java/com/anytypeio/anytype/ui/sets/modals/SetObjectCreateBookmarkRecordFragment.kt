@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.viewModels
-import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.databinding.FragmentSetObjectCreateBookmarkRecordBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
@@ -15,14 +14,11 @@ import javax.inject.Inject
 class SetObjectCreateBookmarkRecordFragment :
     SetObjectCreateRecordFragmentBase<FragmentSetObjectCreateBookmarkRecordBinding>() {
 
-
     override val textInputType: Int = TYPE_TEXT_VARIATION_URI
     override val textInputField: EditText
         get() = binding.textInputField
     override val button: TextView
         get() = binding.button
-
-    private val ctx: String get() = arg(CTX_KEY)
 
     @Inject
     lateinit var factory: ObjectSetCreateBookmarkRecordViewModel.Factory
@@ -37,15 +33,18 @@ class SetObjectCreateBookmarkRecordFragment :
         componentManager().objectSetCreateBookmarkRecordComponent.release(ctx)
     }
 
+    override fun onButtonClicked() {
+        vm.onButtonClicked(input = textInputField.text.toString())
+    }
+
+    override fun onKeyboardActionDone() {
+        vm.onActionDone(input = textInputField.text.toString())
+    }
+
     override fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ): FragmentSetObjectCreateBookmarkRecordBinding =
-        FragmentSetObjectCreateBookmarkRecordBinding.inflate(
+    ): FragmentSetObjectCreateBookmarkRecordBinding = FragmentSetObjectCreateBookmarkRecordBinding.inflate(
             inflater, container, false
-        )
-
-    companion object {
-        const val CTX_KEY = "arg.object-set-record.context"
-    }
+    )
 }

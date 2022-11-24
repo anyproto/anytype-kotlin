@@ -12,14 +12,14 @@ import timber.log.Timber
 class ObjectSetCreateBookmarkRecordViewModel(
     private val createBookmarkObject: CreateBookmarkObject,
     private val urlValidator: UrlValidator
-) : ObjectSetCreateRecordViewModelBase() {
+) : SetDataViewObjectNameViewModelBase() {
 
-    override fun onComplete(ctx: Id, input: String) {
+    override fun onActionDone(input: String) {
         proceedWithCreatingBookmarkObject(input)
     }
 
-    override fun onButtonClicked(ctx: Id, input: String) {
-        proceedWithCreatingBookmarkObject(input)
+    override fun onButtonClicked(input: String) {
+        proceedWithCreatingBookmarkObject(input = input)
     }
 
     private fun proceedWithCreatingBookmarkObject(input: String) {
@@ -36,6 +36,14 @@ class ObjectSetCreateBookmarkRecordViewModel(
         } else {
             sendToast("Url is invalid.")
         }
+    }
+
+    override fun onButtonClicked(target: Id, input: String) {
+        // Do nothing.
+    }
+
+    override fun onActionDone(target: Id, input: String) {
+        // Do nothing
     }
 
     class Factory(

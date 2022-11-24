@@ -4,7 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.IMAGE
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Url
@@ -24,7 +25,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 suspend fun DVViewer.buildGalleryViews(
     objects: List<Id>,
-    relations: List<Relation>,
+    relations: List<ObjectWrapper.Relation>,
     details: Map<Id, Block.Fields>,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
@@ -46,6 +47,7 @@ suspend fun DVViewer.buildGalleryViews(
                     urlBuilder = urlBuilder,
                     details = details,
                     settings = viewerRelations,
+                    storeOfObjects = store
                 ),
                 bigIcon = cardSize != DVViewerCardSize.SMALL,
                 hideIcon = hideIcon,
@@ -81,7 +83,7 @@ suspend fun DVViewer.buildGalleryViews(
                     }
                     val previewId = ids.find { id ->
                         val preview = details[id]
-                        preview != null && preview.type.contains(ObjectType.IMAGE_URL)
+                        preview != null && preview.type.contains(IMAGE)
                     }
                     if (previewId != null) {
                         coverImage = urlBuilder.image(previewId)
@@ -109,6 +111,7 @@ suspend fun DVViewer.buildGalleryViews(
                         urlBuilder = urlBuilder,
                         details = details,
                         settings = viewerRelations,
+                        storeOfObjects = store
                     ),
                     hideIcon = hideIcon,
                     name = obj.getProperName(),
@@ -129,6 +132,7 @@ suspend fun DVViewer.buildGalleryViews(
                         urlBuilder = urlBuilder,
                         details = details,
                         settings = viewerRelations,
+                        storeOfObjects = store
                     ),
                     bigIcon = cardSize != DVViewerCardSize.SMALL,
                     hideIcon = hideIcon,

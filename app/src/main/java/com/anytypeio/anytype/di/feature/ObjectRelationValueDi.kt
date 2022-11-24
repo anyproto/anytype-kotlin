@@ -4,11 +4,9 @@ import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -24,12 +22,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [ObjectRelationValueModule::class, ObjectSetObjectRelationValueModule::class])
+@Subcomponent(modules = [ObjectSetObjectRelationValueModule::class])
 @PerModal
 interface ObjectSetObjectRelationValueSubComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: ObjectRelationValueModule): Builder
+        fun module(module: ObjectSetObjectRelationValueModule): Builder
         fun build(): ObjectSetObjectRelationValueSubComponent
     }
 
@@ -40,12 +38,12 @@ interface ObjectSetObjectRelationValueSubComponent {
     fun addRelationFileValueAddComponent() : AddFileRelationSubComponent.Builder
 }
 
-@Subcomponent(modules = [ObjectRelationValueModule::class, ObjectObjectRelationValueModule::class])
+@Subcomponent(modules = [ObjectObjectRelationValueModule::class])
 @PerModal
 interface ObjectObjectRelationValueSubComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: ObjectRelationValueModule): Builder
+        fun module(module: ObjectObjectRelationValueModule): Builder
         fun build(): ObjectObjectRelationValueSubComponent
     }
 
@@ -54,17 +52,6 @@ interface ObjectObjectRelationValueSubComponent {
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
     fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder
     fun addRelationFileValueAddComponent() : AddFileRelationSubComponent.Builder
-}
-
-@Module
-object ObjectRelationValueModule {
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideAddRelationOptionUseCase(
-        repo: BlockRepository
-    ): AddDataViewRelationOption = AddDataViewRelationOption(repo = repo)
 }
 
 @Module
@@ -84,7 +71,7 @@ object ObjectSetObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
-        types: ObjectTypesProvider,
+        storeOfObjectTypes: StoreOfObjectTypes,
         urlBuilder: UrlBuilder,
         setObjectDetails: UpdateDetail,
         addFileToObject: AddFileToObject,
@@ -95,7 +82,7 @@ object ObjectSetObjectRelationValueModule {
         relations = relations,
         values = values,
         details = details,
-        types = types,
+        storeOfObjectTypes = storeOfObjectTypes,
         urlBuilder = urlBuilder,
         addFileToObject = addFileToObject,
         copyFileToCache = copyFileToCacheDirectory,
@@ -115,7 +102,7 @@ object ObjectObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
-        types: ObjectTypesProvider,
+        storeOfObjectTypes: StoreOfObjectTypes,
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
@@ -126,7 +113,7 @@ object ObjectObjectRelationValueModule {
         relations = relations,
         values = values,
         details = details,
-        types = types,
+        storeOfObjectTypes = storeOfObjectTypes,
         urlBuilder = urlBuilder,
         dispatcher = dispatcher,
         updateDetail = updateDetail,

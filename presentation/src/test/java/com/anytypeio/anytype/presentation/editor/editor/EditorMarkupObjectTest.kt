@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectType.Companion.PAGE_URL
+import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -75,7 +75,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = Block.Details(),
@@ -226,7 +226,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = Block.Details(),
@@ -394,7 +394,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = Block.Details(),
@@ -405,7 +405,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         val linkNew = MockDataFactory.randomString()
 
         //TESTING
-        val newObjectType = PAGE_URL
+        val newObjectType = PAGE
         val newObjectId = MockDataFactory.randomString()
         val newObjectName = MockDataFactory.randomString()
         stubCreateNewDocument(

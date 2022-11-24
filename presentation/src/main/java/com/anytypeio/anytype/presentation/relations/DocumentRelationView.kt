@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.presentation.sets.model.FileView
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     abstract val relationId: Id
+    abstract val relationKey: Key
     abstract val name: String
     abstract val value: String?
     abstract val isFeatured: Boolean
@@ -19,6 +21,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     data class Default(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,
@@ -27,6 +30,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     data class Checkbox(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val isFeatured: Boolean = false,
         val isChecked: Boolean
@@ -36,6 +40,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     data class Status(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,
@@ -44,6 +49,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     data class Tags(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,
@@ -52,6 +58,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     data class Object(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,
@@ -60,6 +67,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     data class Source(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,
@@ -68,6 +76,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
 
     data class File(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,
@@ -80,6 +89,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
      */
     data class ObjectType(
         override val relationId: Id,
+        override val relationKey: Key,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,

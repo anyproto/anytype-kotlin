@@ -66,7 +66,7 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
         val objectType = ObjectType(
             url = MockDataFactory.randomUuid(),
             name = "Film",
-            relations = emptyList(),
+            relationLinks = emptyList(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.BASIC    ,
             description = "",
@@ -152,16 +152,11 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
-        stubSetActiveViewer()
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
             details = details,
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = listOf(record1, record2),
-            total = 1,
             objectTypes = listOf(objectType)
         )
 

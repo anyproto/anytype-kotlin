@@ -10,15 +10,16 @@ import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SearchObjects
 
 class HomeDashboardViewModelFactory(
     private val getProfile: GetProfile,
@@ -37,8 +38,9 @@ class HomeDashboardViewModelFactory(
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
+    private val featureToggles: FeatureToggles,
     private val createNewObject: CreateNewObject,
-    private val featureToggles: FeatureToggles
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -61,7 +63,8 @@ class HomeDashboardViewModelFactory(
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
             createNewObject = createNewObject,
-            featureToggles = featureToggles
+            featureToggles = featureToggles,
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 }

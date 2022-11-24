@@ -2,9 +2,14 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
-import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -19,7 +24,11 @@ interface ObjectTypeChangeSubComponent {
         fun build(): ObjectTypeChangeSubComponent
     }
 
-    fun inject(fragment: ObjectTypeChangeFragment)
+    fun inject(fragment: DraftObjectSelectTypeFragment)
+    fun inject(fragment: ObjectSelectTypeFragment)
+    fun inject(fragment: DataViewSelectSourceFragment)
+    fun inject(fragment: EmptyDataViewSelectSourceFragment)
+    fun inject(fragment: AppDefaultObjectTypeFragment)
 }
 
 @Module
@@ -29,17 +38,17 @@ object ObjectTypeChangeModule {
     @Provides
     @PerScreen
     fun provideObjectTypeViewModelFactory(
-        getCompatibleObjectTypes: GetCompatibleObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
-            getCompatibleObjectTypes = getCompatibleObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetCompatibleObjectTypesUseCase(
+    fun provideSearchObjectsUseCase(
         repository: BlockRepository
-    ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
+    ): SearchObjects = SearchObjects(repository)
 }

@@ -45,7 +45,6 @@ interface AppNavigation {
     fun openPageSearch()
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
-    fun openCreateSetScreen(ctx: Id)
     fun openUpdateAppScreen()
 
     fun deletedAccountScreen(deadline: Long)
@@ -108,8 +107,6 @@ interface AppNavigation {
             Command()
 
         data class LaunchObjectSet(val target: Id) : Command()
-
-        data class OpenCreateSetScreen(val ctx: Id) : Command()
 
         object OpenUpdateAppScreen : Command()
 

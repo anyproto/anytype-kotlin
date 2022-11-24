@@ -4,20 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.extension.checkboxFilter
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.extension.index
@@ -36,6 +38,7 @@ import com.anytypeio.anytype.presentation.relations.toFilterValue
 import com.anytypeio.anytype.presentation.relations.toViewRelation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
@@ -57,7 +60,9 @@ open class FilterViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
-    private val objectTypesProvider: ObjectTypesProvider,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val storeOfRelations: StoreOfRelations,
+    private val objectSetDatabase: ObjectSetDatabase,
     private val analytics: Analytics
 ) : ViewModel() {
 
@@ -65,8 +70,8 @@ open class FilterViewModel(
     val isCompleted = MutableSharedFlow<Boolean>(0)
 
     private var filterIndex: Int? = null
-    private var relationId: Id? = null
-    private var relation: Relation? = null
+    private var relationKey: Id? = null
+    private var relation: ObjectWrapper.Relation? = null
     private val jobs = mutableListOf<Job>()
 
     val conditionState = MutableStateFlow<FilterConditionView?>(null)
@@ -91,9 +96,9 @@ open class FilterViewModel(
         }
     }
 
-    fun onStart(relationId: Id, filterIndex: Int?) {
+    fun onStart(relationKey: Key, filterIndex: Int?) {
         this.filterIndex = filterIndex
-        this.relationId = relationId
+        this.relationKey = relationKey
         initStates()
     }
 
@@ -107,25 +112,32 @@ open class FilterViewModel(
                 val dv = state.dataview.content as DV
                 val viewer =
                     dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
-                val relation = dv.relations.first { it.key == relationId }
-                this@FilterViewModel.relation = relation
-
-                setRelationState(viewer, relation)
-                setConditionState(viewer, relation, filterIndex)
-                setValueStates(
-                    objectSet = objectSetState.value,
-                    condition = conditionState.value?.condition,
-                    index = filterIndex
-                )
+                val key = relationKey
+                if (key != null) {
+                    val relation = storeOfRelations.getByKey(key)
+                    if (relation != null) {
+                        this@FilterViewModel.relation = relation
+                        setRelationState(
+                            viewer = viewer,
+                            relation = relation
+                        )
+                        setConditionState(viewer, relation, filterIndex)
+                        setValueStates(
+                            objectSet = objectSetState.value,
+                            condition = conditionState.value?.condition,
+                            index = filterIndex
+                        )
+                    }
+                }
             }
         }
     }
 
-    private fun setRelationState(viewer: DVViewer, relation: Relation) {
+    private fun setRelationState(viewer: DVViewer, relation: ObjectWrapper.Relation) {
         relationState.value = viewer.toViewRelation(relation)
     }
 
-    private fun setConditionState(viewer: DVViewer, relation: Relation, index: Int?) {
+    private fun setConditionState(viewer: DVViewer, relation: ObjectWrapper.Relation, index: Int?) {
         getCondition(relation, viewer, index).let { condition ->
             conditionState.value = FilterConditionView(condition)
             updateUi(relation.format, condition)
@@ -183,7 +195,7 @@ open class FilterViewModel(
     }
 
     private fun getCondition(
-        relation: Relation,
+        relation: ObjectWrapper.Relation,
         viewer: DVViewer,
         index: Int?
     ): Viewer.Filter.Condition {
@@ -196,7 +208,7 @@ open class FilterViewModel(
         }
     }
 
-    private fun setValueStates(
+    private suspend fun setValueStates(
         objectSet: ObjectSet,
         condition: Viewer.Filter.Condition?,
         index: Int?
@@ -210,42 +222,49 @@ open class FilterViewModel(
         val block = objectSet.dataview
         val dv = block.content as DV
         val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
-        val relation = dv.relations.first { it.key == relationId }
-
-        if (index == null) {
-            filterValueState.value = relation.toFilterValue(
-                value = null,
-                details = objectSet.details,
-                urlBuilder = urlBuilder
-            )
-            proceedWithFilterValueList(
-                relation = relation,
-                filter = null,
-                objectTypes = objectTypesProvider.get(),
-                condition = condition
-            )
-        } else {
-            val filter = viewer.filters[index]
-            check(filter.relationKey == relation.key) { "Incorrect filter state" }
-            filterValueState.value = relation.toFilterValue(
-                value = filter.value,
-                details = objectSet.details,
-                urlBuilder = urlBuilder
-            )
-            proceedWithFilterValueList(
-                relation = relation,
-                filter = filter,
-                objectTypes = objectTypesProvider.get(),
-                condition = condition
-            )
+        val key = relationKey
+        if (key != null) {
+            val relation = storeOfRelations.getByKey(key) ?: return
+            if (index == null) {
+                filterValueState.value = relation.toFilterValue(
+                    value = null,
+                    details = objectSet.details,
+                    urlBuilder = urlBuilder,
+                    store = objectSetDatabase.store
+                )
+                proceedWithFilterValueList(
+                    relation = relation,
+                    filter = null,
+                    objectTypes = storeOfObjectTypes.getAll(),
+                    condition = condition,
+                    store = objectSetDatabase.store
+                )
+            } else {
+                val filter = viewer.filters[index]
+                check(filter.relationKey == relation.key) { "Incorrect filter state" }
+                filterValueState.value = relation.toFilterValue(
+                    value = filter.value,
+                    details = objectSet.details,
+                    urlBuilder = urlBuilder,
+                    store = objectSetDatabase.store
+                )
+                proceedWithFilterValueList(
+                    relation = relation,
+                    filter = filter,
+                    objectTypes = storeOfObjectTypes.getAll(),
+                    condition = condition,
+                    store = objectSetDatabase.store
+                )
+            }
         }
     }
 
-    private fun proceedWithFilterValueList(
-        relation: Relation,
+    private suspend fun proceedWithFilterValueList(
+        relation: ObjectWrapper.Relation,
         filter: DVFilter?,
-        objectTypes: List<ObjectType>,
-        condition: Viewer.Filter.Condition
+        objectTypes: List<ObjectWrapper.Type>,
+        condition: Viewer.Filter.Condition,
+        store: ObjectStore
     ) = when (relation.format) {
         Relation.Format.DATE -> {
             val value = (filter?.value as? Double)?.toLong() ?: 0L
@@ -257,23 +276,28 @@ open class FilterViewModel(
         }
         Relation.Format.TAG -> {
             val ids = filter?.value as? List<*>
-            filterValueListState.value = relation.toCreateFilterTagView(ids)
+            filterValueListState.value = relation.toCreateFilterTagView(
+                ids = ids,
+                store = store
+            )
                 .also {
                     optionCountState.value = it.count { view -> view.isSelected }
                 }
         }
         Relation.Format.STATUS -> {
             val ids = filter?.value as? List<*>
-            filterValueListState.value = relation.toCreateFilterStatusView(ids)
-                .also {
+            filterValueListState.value = relation.toCreateFilterStatusView(
+                ids = ids,
+                store = store
+            ).also {
                     optionCountState.value = it.count { view -> view.isSelected }
-                }
+            }
         }
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
             proceedWithSearchObjects(
                 ids = ids,
-                objectTypes = objectTypes
+                objectTypes = storeOfObjectTypes.getAll()
             )
         }
         Relation.Format.CHECKBOX -> {
@@ -288,7 +312,7 @@ open class FilterViewModel(
 
     private fun proceedWithSearchObjects(
         ids: List<*>? = null,
-        objectTypes: List<ObjectType>
+        objectTypes: List<ObjectWrapper.Type>
     ) {
         viewModelScope.launch {
             searchObjects(
@@ -517,7 +541,7 @@ open class FilterViewModel(
     fun onModifyApplyClicked(ctx: Id, input: String) {
         val condition = conditionState.value?.condition
         checkNotNull(condition)
-        val relation = this.relationId
+        val relation = this.relationKey
         checkNotNull(relation)
         val idx = filterIndex
         checkNotNull(idx)
@@ -553,7 +577,7 @@ open class FilterViewModel(
     fun onModifyApplyClicked(ctx: Id) {
         val condition = conditionState.value?.condition
         checkNotNull(condition)
-        val relation = this.relationId
+        val relation = this.relationKey
         checkNotNull(relation)
         val idx = filterIndex
         checkNotNull(idx)
@@ -785,7 +809,9 @@ open class FilterViewModel(
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val searchObjects: SearchObjects,
         private val urlBuilder: UrlBuilder,
-        private val objectTypesProvider: ObjectTypesProvider,
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val storeOfRelations: StoreOfRelations,
+        private val objectSetDatabase: ObjectSetDatabase,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -797,7 +823,9 @@ open class FilterViewModel(
                 updateDataViewViewer = updateDataViewViewer,
                 searchObjects = searchObjects,
                 urlBuilder = urlBuilder,
-                objectTypesProvider = objectTypesProvider,
+                storeOfObjectTypes = storeOfObjectTypes,
+                storeOfRelations = storeOfRelations,
+                objectSetDatabase = objectSetDatabase,
                 analytics = analytics
             ) as T
         }

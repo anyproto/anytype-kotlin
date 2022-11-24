@@ -10,11 +10,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
@@ -318,16 +320,16 @@ fun List<Block.Content.Text.Mark>.filterByRange(textLength: Int): List<Block.Con
     }
 }
 
-fun List<Block>.toDashboardViews(
+suspend fun List<Block>.toDashboardViews(
     details: Block.Details = Block.Details(),
     builder: UrlBuilder,
-    objectTypes: List<ObjectType> = emptyList()
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<DashboardView> = this.mapNotNull { block ->
     when (val content = block.content) {
         is Block.Content.Link -> {
             val targetDetails = details.details[content.target]
             val typeUrl = targetDetails?.map?.type
-            val type = objectTypes.find { it.url == typeUrl }
+            val type = if (typeUrl != null) storeOfObjectTypes.get(typeUrl) else null
             val layoutCode = targetDetails?.layout?.toInt()
             val layout = layoutCode?.let { code ->
                 ObjectType.Layout.values().find { layout ->
@@ -339,7 +341,7 @@ fun List<Block>.toDashboardViews(
                     id = block.id,
                     details = details,
                     builder = builder,
-                    type = type?.url,
+                    type = type?.id,
                     typeName = type?.name,
                     layout = layout
                 )
@@ -350,7 +352,7 @@ fun List<Block>.toDashboardViews(
                             id = block.id,
                             details = details,
                             builder = builder,
-                            type = type?.url,
+                            type = type?.id,
                             typeName = type?.name,
                             layout = layout
                         )
@@ -673,7 +675,7 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
 suspend fun List<Id>.toGridRecordRows(
     showIcon: Boolean,
     columns: List<ColumnView>,
-    relations: List<Relation>,
+    relations: List<ObjectWrapper.Relation>,
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
     store: ObjectStore,
@@ -700,7 +702,7 @@ suspend fun List<Id>.toGridRecordRows(
 
 // TODO maybe rename toViewerHeaders
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
-    relations: List<Relation>,
+    relations: List<ObjectWrapper.Relation>,
     filterBy: List<String>
 ): List<ColumnView> {
     val columns = mutableListOf<ColumnView>()
@@ -712,12 +714,12 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
                     columns.add(
                         ColumnView(
                             key = relation.key,
-                            text = relation.name,
+                            text = relation.name.orEmpty(),
                             format = relation.format.toView(),
                             width = viewerRelation.width ?: 0,
                             isVisible = viewerRelation.isVisible,
-                            isHidden = relation.isHidden,
-                            isReadOnly = relation.isReadOnly,
+                            isHidden = relation.isHidden ?: false,
+                            isReadOnly = relation.isReadonlyValue,
                             isDateIncludeTime = viewerRelation.isDateIncludeTime,
                             dateFormat = viewerRelation.dateFormat,
                             timeFormat = viewerRelation.timeFormat
@@ -728,6 +730,7 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
     return columns
 }
 
+@Deprecated("To be deleted")
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelations(
     relations: List<Relation>
 ): ArrayList<SimpleRelationView> {
@@ -752,33 +755,65 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelations(
     return result
 }
 
-fun Relation.Format.toView() = when (this) {
-    Relation.Format.SHORT_TEXT -> ColumnView.Format.SHORT_TEXT
-    Relation.Format.LONG_TEXT -> ColumnView.Format.LONG_TEXT
-    Relation.Format.NUMBER -> ColumnView.Format.NUMBER
-    Relation.Format.STATUS -> ColumnView.Format.STATUS
-    Relation.Format.DATE -> ColumnView.Format.DATE
-    Relation.Format.FILE -> ColumnView.Format.FILE
-    Relation.Format.CHECKBOX -> ColumnView.Format.CHECKBOX
-    Relation.Format.URL -> ColumnView.Format.URL
-    Relation.Format.EMAIL -> ColumnView.Format.EMAIL
-    Relation.Format.PHONE -> ColumnView.Format.PHONE
-    Relation.Format.EMOJI -> ColumnView.Format.EMOJI
-    Relation.Format.OBJECT -> ColumnView.Format.OBJECT
-    Relation.Format.TAG -> ColumnView.Format.TAG
-    Relation.Format.RELATIONS -> ColumnView.Format.RELATIONS
+fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(
+    relations: List<ObjectWrapper.Relation>
+): ArrayList<SimpleRelationView> {
+    val result = arrayListOf<SimpleRelationView>()
+    this.forEach { viewerRelation ->
+        relations
+            .firstOrNull { it.key == viewerRelation.key }
+            ?.let { relation ->
+                result.add(
+                    SimpleRelationView(
+                        key = relation.key,
+                        title = relation.name.orEmpty(),
+                        format = relation.format.toView(),
+                        isVisible = viewerRelation.isVisible,
+                        isHidden = relation.isHidden ?: false,
+                        isReadonly = relation.isReadonlyValue,
+                        isDefault = Relations.defaultRelations.contains(viewerRelation.key)
+                    )
+                )
+            }
+    }
+    return result
 }
 
-fun List<ObjectType>.toObjectTypeView(selectedSources: List<Id> = emptyList()): List<ObjectTypeView.Item> =
-    map { oType ->
-        ObjectTypeView.Item(
-            id = oType.url,
-            name = oType.name,
-            emoji = oType.emoji,
-            description = oType.description,
-            isSelected = selectedSources.contains(oType.url)
-        )
-    }
+fun RelationFormat.toView() = when (this) {
+    RelationFormat.SHORT_TEXT -> ColumnView.Format.SHORT_TEXT
+    RelationFormat.LONG_TEXT -> ColumnView.Format.LONG_TEXT
+    RelationFormat.NUMBER -> ColumnView.Format.NUMBER
+    RelationFormat.STATUS -> ColumnView.Format.STATUS
+    RelationFormat.DATE -> ColumnView.Format.DATE
+    RelationFormat.FILE -> ColumnView.Format.FILE
+    RelationFormat.CHECKBOX -> ColumnView.Format.CHECKBOX
+    RelationFormat.URL -> ColumnView.Format.URL
+    RelationFormat.EMAIL -> ColumnView.Format.EMAIL
+    RelationFormat.PHONE -> ColumnView.Format.PHONE
+    RelationFormat.EMOJI -> ColumnView.Format.EMOJI
+    RelationFormat.OBJECT -> ColumnView.Format.OBJECT
+    RelationFormat.TAG -> ColumnView.Format.TAG
+    RelationFormat.RELATIONS -> ColumnView.Format.RELATIONS
+    RelationFormat.UNDEFINED -> ColumnView.Format.UNDEFINED
+}
+
+fun ObjectWrapper.Basic.toObjectTypeView(selectedSources: List<Id> = emptyList()): ObjectTypeView =
+    ObjectTypeView(
+        id = id,
+        name = getProperName(),
+        emoji = iconEmoji,
+        description = description,
+        isSelected = selectedSources.contains(id)
+    )
+
+fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList()): ObjectTypeView =
+    ObjectTypeView(
+        id = id,
+        name = name.orEmpty(),
+        emoji = iconEmoji,
+        description = description,
+        isSelected = selectedSources.contains(id)
+    )
 
 fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
     when (layout) {

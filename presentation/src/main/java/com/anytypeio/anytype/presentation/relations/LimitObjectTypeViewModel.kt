@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -38,7 +38,7 @@ class LimitObjectTypeViewModel(
                         DVFilter(
                             relationKey = Relations.TYPE,
                             condition = DVFilterCondition.EQUAL,
-                            value = ObjectType.OBJECT_TYPE_URL
+                            value = ObjectTypeIds.OBJECT_TYPE
                         ),
                         DVFilter(
                             relationKey = Relations.IS_ARCHIVED,

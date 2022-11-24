@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
@@ -73,7 +74,10 @@ import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
-import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
+import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -83,8 +87,7 @@ import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
-import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment
-import com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment
+import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
@@ -96,7 +99,8 @@ import javax.inject.Inject
 open class ObjectSetFragment :
     NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
     TextValueEditReceiver,
-    DateValueEditReceiver {
+    DateValueEditReceiver,
+    OnDataViewSelectSourceAction {
 
     // Controls
 
@@ -187,7 +191,7 @@ open class ObjectSetFragment :
         binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewRecord() }
+            subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewDataViewObject() }
             subscribe(title.editorActionEvents(actionHandler)) {
                 title.apply {
                     hideKeyboard()
@@ -262,8 +266,8 @@ open class ObjectSetFragment :
             DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
         )
 
-        setFragmentResultListener(ObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
-            val source = bundle.getString(ObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
+        setFragmentResultListener(BaseObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
+            val source = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
             if (source != null) {
                 vm.onDataViewSourcePicked(source = source)
             } else {
@@ -582,20 +586,24 @@ open class ObjectSetFragment :
                 )
             }
             is ObjectSetCommand.Modal.EditGridTextCell -> {
+                //todo Relation as object, fix relationKey
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,
-                    relationId = command.relationId,
+                    relationId = "",
                     objectId = command.recordId,
-                    flow = RelationTextValueFragment.FLOW_DATAVIEW
+                    flow = RelationTextValueFragment.FLOW_DATAVIEW,
+                    relationKey = command.relationKey
                 )
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditGridDateCell -> {
+                //todo Relation as object, fix relationKey
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
-                    relationId = command.relationId,
+                    relationId = command.relationKey,
                     objectId = command.objectId,
-                    flow = RelationDateValueFragment.FLOW_DATAVIEW
+                    flow = RelationDateValueFragment.FLOW_DATAVIEW,
+                    relationKey = ""
                 )
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
@@ -607,7 +615,8 @@ open class ObjectSetFragment :
                         RelationValueBaseFragment.CTX_KEY to command.ctx,
                         RelationValueBaseFragment.TARGET_KEY to command.target,
                         RelationValueBaseFragment.DATAVIEW_KEY to command.dataview,
-                        RelationValueBaseFragment.RELATION_KEY to command.relation,
+                        RelationValueBaseFragment.RELATION_KEY to command.relationKey,
+                        RelationValueBaseFragment.RELATION_ID to "",
                         RelationValueBaseFragment.VIEWER_KEY to command.viewer,
                         RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
                         RelationValueBaseFragment.IS_LOCKED_KEY to false
@@ -647,11 +656,14 @@ open class ObjectSetFragment :
                 )
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
-            is ObjectSetCommand.Modal.SetNameForCreatedRecord -> {
+            is ObjectSetCommand.Modal.SetNameForCreatedObject -> {
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.setNameForNewRecordScreen,
-                    bundleOf(SetObjectSetRecordNameFragment.CONTEXT_KEY to command.ctx)
+                    bundleOf(
+                        SetObjectCreateRecordFragmentBase.CONTEXT_KEY to command.ctx,
+                        SetObjectCreateRecordFragmentBase.TARGET_KEY to command.target
+                    )
                 )
             }
             is ObjectSetCommand.Intent.MailTo -> {
@@ -717,22 +729,17 @@ open class ObjectSetFragment :
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.setUrlForNewBookmark,
-                    bundleOf(
-                        SetObjectCreateBookmarkRecordFragment.CTX_KEY to command.ctx
-                    )
-                )
+                    bundleOf(SetObjectCreateRecordFragmentBase.CONTEXT_KEY to command.ctx))
             }
-            is ObjectSetCommand.Modal.OpenSelectSourceScreen -> {
-                findNavController()
-                    .safeNavigate(
-                        R.id.objectSetScreen,
-                        R.id.objectTypeChangeScreen,
-                        bundleOf(
-                            ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType,
-                            ObjectTypeChangeFragment.ARG_IS_SET_SOURCE to true,
-                            ObjectTypeChangeFragment.ARG_SOURCES to command.sources
-                        )
-                    )
+            is ObjectSetCommand.Modal.OpenDataViewSelectSourceScreen -> {
+                val fr = DataViewSelectSourceFragment.newInstance(
+                    selectedTypes = command.selectedTypes
+                )
+                fr.show(childFragmentManager, null)
+            }
+            is ObjectSetCommand.Modal.OpenEmptyDataViewSelectSourceScreen -> {
+                val fr = EmptyDataViewSelectSourceFragment()
+                fr.show(childFragmentManager, null)
             }
         }
     }
@@ -864,11 +871,11 @@ open class ObjectSetFragment :
         ctx: String,
         text: String,
         objectId: String,
-        relationId: String
+        relationKey: Key
     ) = vm.onRelationTextValueChanged(
         value = text,
         objectId = objectId,
-        relationKey = relationId
+        relationKey = relationKey
     )
 
     override fun onNumberValueChanged(
@@ -886,13 +893,17 @@ open class ObjectSetFragment :
         ctx: Id,
         timeInSeconds: Number?,
         objectId: Id,
-        relationId: Id
+        relationKey: Key
     ) {
         vm.onRelationTextValueChanged(
             value = timeInSeconds,
             objectId = objectId,
-            relationKey = relationId
+            relationKey = relationKey
         )
+    }
+
+    override fun onProceedWithSelectSource(id: Id) {
+        vm.onDataViewSourcePicked(source = id)
     }
 
     override fun injectDependencies() {

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Event
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
@@ -36,9 +37,14 @@ sealed class HomeDashboardStateMachine {
 
     class Interactor(
         private val scope: CoroutineScope,
-        private val reducer: Reducer,
         private val channel: Channel<List<Event>> = Channel(),
-        private val events: Flow<List<Event>> = channel.consumeAsFlow()
+        private val events: Flow<List<Event>> = channel.consumeAsFlow(),
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val featureToggles: FeatureToggles,
+        private val reducer: Reducer = Reducer(
+            storeOfObjectTypes = storeOfObjectTypes,
+            featureToggles = featureToggles
+        ),
     ) {
         fun onEvents(events: List<Event>) = scope.launch { channel.send(events) }
         fun state(): Flow<State> = events.scan(State.init(), reducer.function)
@@ -118,7 +124,10 @@ sealed class HomeDashboardStateMachine {
         object OnFinishedCreatingPage : Event()
     }
 
-    class Reducer(private val featureToggles: FeatureToggles) : StateReducer<State, List<Event>> {
+    class Reducer(
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val featureToggles: FeatureToggles
+        ) : StateReducer<State, List<Event>> {
 
         override val function: suspend (State, List<Event>) -> State
             get() = { state, events ->
@@ -144,7 +153,7 @@ sealed class HomeDashboardStateMachine {
             return update
         }
 
-        private fun reduceEvent(
+        private suspend fun reduceEvent(
             state: State, event: Event
         ): State {
             return when (event) {
@@ -154,11 +163,10 @@ sealed class HomeDashboardStateMachine {
                     error = null
                 )
                 is Event.OnShowDashboard -> {
-
                     val new = event.blocks.toDashboardViews(
-                        details = event.details,
-                        builder = event.builder,
-                        objectTypes = event.objectTypes
+                            details = event.details,
+                            builder = event.builder,
+                            storeOfObjectTypes = storeOfObjectTypes
                     )
 
                     val childrenIdsList = event.blocks.getChildrenIdsList(parent = event.context)
@@ -188,7 +196,8 @@ sealed class HomeDashboardStateMachine {
                 is Event.OnBlocksAdded -> {
                     val new = event.blocks.toDashboardViews(
                         details = event.details,
-                        builder = event.builder
+                        builder = event.builder,
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
                     state.copy(
                         isInitialzed = true,

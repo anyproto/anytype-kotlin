@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.objects.toRelationFileValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.addIsHiddenFilter
@@ -135,7 +135,7 @@ class AddFileRelationViewModel(
         }
     }
 
-    private fun proceedWithSearchFiles(ids: List<String>, relation: Relation) {
+    private fun proceedWithSearchFiles(ids: List<String>, relation: ObjectWrapper.Relation) {
         val filters = relation
             .searchObjectsFilter()
             .addIsHiddenFilter()

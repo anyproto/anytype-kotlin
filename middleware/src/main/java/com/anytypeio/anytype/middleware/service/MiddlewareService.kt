@@ -67,6 +67,11 @@ interface MiddlewareService {
     fun objectBookmarkFetch(request: Rpc.Object.BookmarkFetch.Request) : Rpc.Object.BookmarkFetch.Response
 
     @Throws(Exception::class)
+    fun objectCreateRelation(request: Rpc.Object.CreateRelation.Request): Rpc.Object.CreateRelation.Response
+
+    fun objectCreateRelationOption(request: Rpc.Object.CreateRelationOption.Request): Rpc.Object.CreateRelationOption.Response
+
+    @Throws(Exception::class)
     fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response
 
     @Throws(Exception::class)
@@ -136,18 +141,8 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectRelationListAvailable(request: Rpc.ObjectRelation.ListAvailable.Request): Rpc.ObjectRelation.ListAvailable.Response
 
-    @Throws(Exception::class)
-    fun objectRelationOptionAdd(request: Rpc.ObjectRelationOption.Add.Request): Rpc.ObjectRelationOption.Add.Response
-
-    //endregion
-
-    //region OBJECT TYPE commands
-
-    @Throws(Exception::class)
-    fun objectTypeCreate(request: Rpc.ObjectType.Create.Request): Rpc.ObjectType.Create.Response
-
-    @Throws(Exception::class)
-    fun objectTypeList(request: Rpc.ObjectType.List.Request): Rpc.ObjectType.List.Response
+//    @Throws(Exception::class)
+//    fun objectRelationOptionAdd(request: Rpc.ObjectRelationOption.Add.Request): Rpc.ObjectRelationOption.Add.Response
 
     //endregion
 
@@ -270,14 +265,14 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockDataViewViewDelete(request: Rpc.BlockDataview.View.Delete.Request): Rpc.BlockDataview.View.Delete.Response
 
-    @Throws(Exception::class)
-    fun blockDataViewRecordCreate(request: Rpc.BlockDataviewRecord.Create.Request): Rpc.BlockDataviewRecord.Create.Response
-
-    @Throws(Exception::class)
-    fun blockDataViewRecordUpdate(request: Rpc.BlockDataviewRecord.Update.Request): Rpc.BlockDataviewRecord.Update.Response
-
-    @Throws(Exception::class)
-    fun blockDataViewRecordRelationOptionAdd(request: Rpc.BlockDataviewRecord.RelationOption.Add.Request): Rpc.BlockDataviewRecord.RelationOption.Add.Response
+//    @Throws(Exception::class)
+//    fun blockDataViewRecordCreate(request: Rpc.BlockDataviewRecord.Create.Request): Rpc.BlockDataviewRecord.Create.Response
+//
+//    @Throws(Exception::class)
+//    fun blockDataViewRecordUpdate(request: Rpc.BlockDataviewRecord.Update.Request): Rpc.BlockDataviewRecord.Update.Response
+//
+//    @Throws(Exception::class)
+//    fun blockDataViewRecordRelationOptionAdd(request: Rpc.BlockDataviewRecord.RelationOption.Add.Request): Rpc.BlockDataviewRecord.RelationOption.Add.Response
 
     @Throws(Exception::class)
     fun blockDataViewRelationAdd(request: Rpc.BlockDataview.Relation.Add.Request): Rpc.BlockDataview.Relation.Add.Response

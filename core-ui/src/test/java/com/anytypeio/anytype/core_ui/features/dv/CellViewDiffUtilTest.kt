@@ -14,7 +14,7 @@ class CellViewDiffUtilTest {
 
         val oldCell = CellView.Number(
             id = MockDataFactory.randomString(),
-            key = MockDataFactory.randomString(),
+            relationKey = MockDataFactory.randomString(),
             number = MockDataFactory.randomString(),
         )
 
@@ -37,7 +37,7 @@ class CellViewDiffUtilTest {
 
         val oldCell = CellView.Number(
             id = MockDataFactory.randomString(),
-            key = MockDataFactory.randomString(),
+            relationKey = MockDataFactory.randomString(),
             number = MockDataFactory.randomString(),
         )
 
@@ -58,7 +58,7 @@ class CellViewDiffUtilTest {
 
         val oldCell = CellView.Description(
             id = MockDataFactory.randomString(),
-            key = MockDataFactory.randomString(),
+            relationKey = MockDataFactory.randomString(),
             text = MockDataFactory.randomString()
         )
 
@@ -81,7 +81,7 @@ class CellViewDiffUtilTest {
 
         val oldCell = CellView.Description(
             id = MockDataFactory.randomString(),
-            key = MockDataFactory.randomString(),
+            relationKey = MockDataFactory.randomString(),
             text = MockDataFactory.randomString()
         )
 
@@ -102,7 +102,7 @@ class CellViewDiffUtilTest {
 
         val oldCell = CellView.Date(
             id = MockDataFactory.randomString(),
-            key = MockDataFactory.randomString(),
+            relationKey = MockDataFactory.randomString(),
             timeInSecs = MockDataFactory.randomLong(),
             dateFormat = MockDataFactory.randomString()
         )
@@ -126,7 +126,7 @@ class CellViewDiffUtilTest {
 
         val oldCell = CellView.Date(
             id = MockDataFactory.randomString(),
-            key = MockDataFactory.randomString(),
+            relationKey = MockDataFactory.randomString(),
             dateFormat = MockDataFactory.randomString()
         )
 

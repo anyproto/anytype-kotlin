@@ -146,7 +146,7 @@ class ArchiveViewModel(
                     anchor = context,
                     indent = 0,
                     details = details,
-                    relations = emptyList(),
+                    relationLinks = emptyList(),
                     restrictions = emptyList(),
                     selection = emptySet(),
                     objectTypes = emptyList(),

@@ -5,6 +5,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
@@ -19,6 +21,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -56,13 +59,15 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke create relation block  when target block not empty`() {
+    fun `should invoke create relation block  when target block not empty`() = runTest {
+
         // SETUP
+
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
@@ -72,10 +77,20 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateText()
         stubCreateBlock(root = root)
-        stubGetObjectTypes(objectTypes = listOf())
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubSearchObjects()
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+
+        storeOfRelations.merge(
+            listOf(r1, r2, r3)
+        )
+
+        // TESTING
+
         vm.onStart(root)
         val selection = IntRange(1, 1)
         vm.apply {
@@ -101,14 +116,13 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             )
         }
 
-        //TESTING
-
         vm.onSlashItemClicked(
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
-                        relationId = r2.key,
-                        name = r2.name,
+                        relationId = r2.id,
+                        relationKey = r2.key,
+                        name = r2.name.orEmpty(),
                         value = value2,
                         isFeatured = true,
                         format = Relation.Format.SHORT_TEXT
@@ -128,7 +142,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke replace block when target block is empty`() {
+    fun `should invoke replace block when target block is empty`() = runTest {
+
         // SETUP
 
         val header = MockTypicalDocumentFactory.header
@@ -153,9 +168,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         )
 
         val doc = listOf(page, header, title, a)
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
@@ -165,10 +180,20 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateText()
         stubReplaceBlock()
-        stubGetObjectTypes(objectTypes = listOf())
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubSearchObjects()
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
+
+        storeOfRelations.merge(
+            listOf(r1, r2, r3)
+        )
 
         val vm = buildViewModel()
+
+        // TESTING
+
         vm.onStart(root)
         val selection = IntRange(0, 0)
 
@@ -212,8 +237,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
-                        relationId = r3.key,
-                        name = r3.name,
+                        relationKey = r3.key,
+                        relationId = r3.id,
+                        name = r3.name.orEmpty(),
                         value = value3,
                         isFeatured = true,
                         format = Relation.Format.SHORT_TEXT
@@ -232,7 +258,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `before replacing current target should hide slash widget and show nav toolbar until new block is focused`() {
+    fun `before replacing current target should hide slash widget and show nav toolbar until new block is focused`() = runTest {
         // SETUP
 
         val header = MockTypicalDocumentFactory.header
@@ -257,9 +283,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         )
 
         val doc = listOf(page, header, title, a)
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
@@ -270,10 +296,18 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubReplaceBlock()
-        stubGetObjectTypes(objectTypes = listOf())
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubSearchObjects()
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
+
+        storeOfRelations.merge(listOf(r1, r2, r3))
 
         val vm = buildViewModel()
+
+        // TESTING
+
         vm.onStart(root)
         val selection = IntRange(0, 0)
 
@@ -317,8 +351,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
-                        relationId = r3.key,
-                        name = r3.name,
+                        relationId = r3.id,
+                        relationKey = r3.key,
+                        name = r3.name.orEmpty(),
                         value = value3,
                         isFeatured = true,
                         format = Relation.Format.SHORT_TEXT
@@ -333,13 +368,15 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `before creating a new block under current target should hide slash widget and show nav toolbar until new block is focused`() {
+    fun `before creating a new block under current target should hide slash widget and show nav toolbar until new block is focused`() = runTest {
+
         // SETUP
+
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
@@ -349,10 +386,20 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateText()
         stubCreateBlock(root = root)
-        stubGetObjectTypes(objectTypes = listOf())
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubSearchObjects()
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
+
+        storeOfRelations.merge(
+            listOf(r1, r2, r3)
+        )
 
         val vm = buildViewModel()
+
+        // TESTING
+
         vm.onStart(root)
         val selection = IntRange(1, 1)
         vm.apply {
@@ -384,8 +431,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
-                        relationId = r2.key,
-                        name = r2.name,
+                        relationKey = r2.key,
+                        relationId = r2.id,
+                        name = r2.name.orEmpty(),
                         value = value2,
                         isFeatured = true,
                         format = Relation.Format.SHORT_TEXT
@@ -404,9 +452,10 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
@@ -416,8 +465,13 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateText()
         stubCreateBlock(root = root)
-        stubGetObjectTypes(objectTypes = listOf())
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubSearchObjects()
+        stubOpenDocument(document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -466,7 +520,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             //open RelationCreateScreen
             proceedWithAddingRelationToTarget(
                 target = a.id,
-                relation = MockDataFactory.randomUuid()
+                relationKey = MockDataFactory.randomUuid()
             )
         }
 

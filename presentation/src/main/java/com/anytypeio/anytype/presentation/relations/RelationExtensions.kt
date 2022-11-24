@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-fun List<Relation>.views(
+fun List<ObjectWrapper.Relation>.views(
     details: Block.Details,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
@@ -28,7 +28,7 @@ fun List<Relation>.views(
     )
 }
 
-fun Relation.view(
+fun ObjectWrapper.Relation.view(
     details: Block.Details,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
@@ -36,33 +36,35 @@ fun Relation.view(
 ): DocumentRelationView? {
     val relation = this
     return when {
-        relation.isHidden -> null
-        relation.format == Relation.Format.OBJECT -> {
-            val objects = values.buildObjectViews(
-                columnKey = relation.key,
+        relation.isHidden == true -> null
+        relation.format == RelationFormat.OBJECT -> {
+            val objects = values.buildRelationValueObjectViews(
+                relationKey = relation.key,
                 details = details.details,
                 builder = urlBuilder
             )
             DocumentRelationView.Object(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 objects = objects,
                 isFeatured = isFeatured
             )
         }
-        relation.format == Relation.Format.FILE -> {
+        relation.format == RelationFormat.FILE -> {
             val files = values.buildFileViews(
-                columnKey = relation.key,
+                relationKey = relation.key,
                 details = details.details
             )
             DocumentRelationView.File(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 files = files,
                 isFeatured = isFeatured
             )
         }
-        relation.format == Relation.Format.DATE -> {
+        relation.format == RelationFormat.DATE -> {
             //TODO In DataView Relation Date uses DateFormat and TimeFormat
             // so SimpleDateFormat can be different from what we have here
             // see {SetsExtension:buildGridRow()}
@@ -76,50 +78,99 @@ fun Relation.view(
                 null
             }
             DocumentRelationView.Default(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 value = formattedDate,
                 isFeatured = isFeatured,
                 format = relation.format
             )
         }
-        relation.format == Relation.Format.STATUS -> {
+        relation.format == RelationFormat.STATUS -> {
+            val options = buildList {
+                when(val value = values[relation.key]) {
+                    is Id -> {
+                        val status = details.details[value]
+                        if (status != null && status.map.isNotEmpty()) {
+                            add(
+                                ObjectWrapper.Option(status.map)
+                            )
+                        }
+                    }
+                    is List<*> -> {
+                        value.forEach { id ->
+                            val status = details.details[id]
+                            if (status != null && status.map.isNotEmpty()) {
+                                add(
+                                    ObjectWrapper.Option(status.map)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             val status = values.buildStatusViews(
-                selOptions = relation.selections,
-                columnKey = relation.key
+                options = options,
+                relationKey = relation.key
             )
             DocumentRelationView.Status(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 status = status,
                 isFeatured = isFeatured
             )
         }
-        relation.format == Relation.Format.TAG -> {
+        relation.format == RelationFormat.TAG -> {
+            val options = buildList {
+                when(val value = values[relation.key]) {
+                    is Id -> {
+                        val status = details.details[value]
+                        if (status != null && status.map.isNotEmpty()) {
+                            add(
+                                ObjectWrapper.Option(status.map)
+                            )
+                        }
+                    }
+                    is List<*> -> {
+                        value.forEach { id ->
+                            val status = details.details[id]
+                            if (status != null && status.map.isNotEmpty()) {
+                                add(
+                                    ObjectWrapper.Option(status.map)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             val tags = values.buildTagViews(
-                selOptions = relation.selections,
-                columnKey = relation.key
+                options = options,
+                relationKey = relation.key
             )
             DocumentRelationView.Tags(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 tags = tags,
                 isFeatured = isFeatured
             )
         }
-        relation.format == Relation.Format.CHECKBOX -> {
+        relation.format == RelationFormat.CHECKBOX -> {
             DocumentRelationView.Checkbox(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 isChecked = values[relation.key] as? Boolean ?: false,
                 isFeatured = isFeatured
             )
         }
-        relation.format == Relation.Format.NUMBER -> {
+        relation.format == RelationFormat.NUMBER -> {
             val value = values[relation.key]
             DocumentRelationView.Default(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 value = NumberParser.parse(value),
                 isFeatured = isFeatured,
                 format = relation.format
@@ -128,8 +179,9 @@ fun Relation.view(
         else -> {
             val value = values[relation.key]
             DocumentRelationView.Default(
-                relationId = relation.key,
-                name = relation.name,
+                relationId = relation.id,
+                relationKey = relation.key,
+                name = relation.name.orEmpty(),
                 value = value as? String,
                 isFeatured = isFeatured,
                 format = relation.format
@@ -138,6 +190,7 @@ fun Relation.view(
     }
 }
 
+@Deprecated("To be deleted")
 fun Relation.searchObjectsFilter(): List<DVFilter> {
     val filter = arrayListOf<DVFilter>()
     if (objectTypes.isNotEmpty()) {
@@ -147,6 +200,21 @@ fun Relation.searchObjectsFilter(): List<DVFilter> {
                 operator = DVFilterOperator.AND,
                 condition = DVFilterCondition.IN,
                 value = objectTypes
+            )
+        )
+    }
+    return filter.toList()
+}
+
+fun ObjectWrapper.Relation.searchObjectsFilter(): List<DVFilter> {
+    val filter = arrayListOf<DVFilter>()
+    if (relationFormatObjectTypes.isNotEmpty()) {
+        filter.add(
+            DVFilter(
+                relationKey = ObjectSetConfig.TYPE_KEY,
+                operator = DVFilterOperator.AND,
+                condition = DVFilterCondition.IN,
+                value = relationFormatObjectTypes
             )
         )
     }

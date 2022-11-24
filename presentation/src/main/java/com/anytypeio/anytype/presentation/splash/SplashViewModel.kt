@@ -10,19 +10,20 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectType.Companion.NOTE_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.PAGE_URL
+import com.anytypeio.anytype.core_models.ObjectTypeIds.NOTE
+import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -38,12 +39,13 @@ class SplashViewModel(
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount,
-    private val storeObjectTypes: StoreObjectTypes,
     private val getLastOpenedObject: GetLastOpenedObject,
     private val getDefaultEditorType: GetDefaultEditorType,
     private val setDefaultEditorType: SetDefaultEditorType,
     private val createPage: CreatePage,
-    private val appActionManager: AppActionManager
+    private val appActionManager: AppActionManager,
+    private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -145,7 +147,8 @@ class SplashViewModel(
                     updateUserProps(accountId)
                     val props = Props.empty()
                     sendEvent(startTime, openAccount, props)
-                    proceedWithUpdatingObjectTypesStore()
+                    proceedWithGlobalSubscriptions()
+                    commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
                     Timber.e(e, "Error while launching account")
@@ -155,16 +158,9 @@ class SplashViewModel(
         }
     }
 
-    private fun proceedWithUpdatingObjectTypesStore() {
-        viewModelScope.launch {
-            storeObjectTypes.invoke(Unit).process(
-                failure = {
-                    Timber.e(it, "Error while store account object types")
-                    commands.emit(Command.CheckAppStartIntent)
-                },
-                success = { commands.emit(Command.CheckAppStartIntent) }
-            )
-        }
+    private fun proceedWithGlobalSubscriptions() {
+        relationsSubscriptionManager.onStart()
+        objectTypesSubscriptionManager.onStart()
     }
 
     fun onIntentCreateNewObject(type: Id) {
@@ -251,7 +247,7 @@ class SplashViewModel(
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account..."
         //ToDo better to take the name from middleware (see GetLastOpenedObject use case)
-        val DEFAULT_TYPE_FIRST_INSTALL = Pair(NOTE_URL, "Note")
-        val DEFAULT_TYPE_UPDATE = Pair(PAGE_URL, "Page")
+        val DEFAULT_TYPE_FIRST_INSTALL = Pair(NOTE, "Note")
+        val DEFAULT_TYPE_UPDATE = Pair(PAGE, "Page")
     }
 }

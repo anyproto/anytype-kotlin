@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
@@ -11,16 +11,16 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.ValueClassAnswer
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Ignore
@@ -28,10 +28,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.internal.stubbing.answers.ThrowsException
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.kotlin.*
-import org.mockito.stubbing.Answer
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 
 class SplashViewModelTest {
 
@@ -65,7 +69,6 @@ class SplashViewModelTest {
     @Mock
     lateinit var userSettingsRepo: UserSettingsRepository
 
-    private lateinit var storeObjectTypes: StoreObjectTypes
     private lateinit var getLastOpenedObject: GetLastOpenedObject
 
     @Mock
@@ -80,15 +83,17 @@ class SplashViewModelTest {
     @Mock
     private lateinit var getDefaultEditorType: GetDefaultEditorType
 
+    @Mock
+    private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
+
+    @Mock
+    private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+
     lateinit var vm: SplashViewModel
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        storeObjectTypes = StoreObjectTypes(
-            repo = repo,
-            objectTypesProvider = objectTypesProvider
-        )
         getLastOpenedObject = GetLastOpenedObject(
             authRepo = auth,
             blockRepo = repo
@@ -101,12 +106,13 @@ class SplashViewModelTest {
             launchAccount = launchAccount,
             launchWallet = launchWallet,
             analytics = analytics,
-            storeObjectTypes = storeObjectTypes,
             getLastOpenedObject = getLastOpenedObject,
             setDefaultEditorType = setDefaultEditorType,
             getDefaultEditorType = getDefaultEditorType,
             createPage = createPage,
-            appActionManager = appActionManager
+            appActionManager = appActionManager,
+            relationsSubscriptionManager = relationsSubscriptionManager,
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager
         )
     }
 
@@ -162,7 +168,7 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectType.PAGE_URL)
+        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
 
         initViewModel()
 
@@ -199,7 +205,7 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectType.PAGE_URL)
+        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
 
         initViewModel()
 
@@ -219,7 +225,7 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectType.PAGE_URL)
+        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
 
         initViewModel()
 

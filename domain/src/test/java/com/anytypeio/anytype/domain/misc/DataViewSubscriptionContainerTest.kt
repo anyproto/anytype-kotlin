@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.misc
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
@@ -70,7 +71,7 @@ class DataViewSubscriptionContainerTest {
                 mapOf(
                     Relations.ID to "obj1",
                     Relations.NAME to "Jonathan Littel",
-                    Relations.TYPE to ObjectType.PROFILE_URL,
+                    Relations.TYPE to ObjectTypeIds.PROFILE,
                     Relations.LAYOUT to ObjectType.Layout.PROFILE.code,
                     Relations.DESCRIPTION to null
                 )
@@ -82,7 +83,7 @@ class DataViewSubscriptionContainerTest {
                 mapOf(
                     Relations.ID to "obj2",
                     Relations.NAME to "Writer",
-                    Relations.TYPE to ObjectType.PROFILE_URL,
+                    Relations.TYPE to ObjectTypeIds.PROFILE,
                     Relations.LAYOUT to ObjectType.Layout.PROFILE.code
                 )
             )
@@ -99,7 +100,9 @@ class DataViewSubscriptionContainerTest {
                     keys = keys1,
                     afterId = null,
                     beforeId = null,
-                    source = emptyList()
+                    source = emptyList(),
+                    noDepSubscription = null,
+                    ignoreWorkspace = null
                 )
             } doReturn SearchResult(
                 results = initialResults1,

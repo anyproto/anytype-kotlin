@@ -3,15 +3,19 @@ package com.anytypeio.anytype.presentation.relations.add
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView.Option.Tag
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider.Options
+import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -30,6 +34,8 @@ abstract class BaseAddOptionsRelationViewModel(
     private val dispatcher: Dispatcher<Payload>,
     protected val values: ObjectValueProvider,
     protected val relations: ObjectRelationProvider,
+    protected val detailsProvider: ObjectDetailProvider,
+    private val getOptions: GetOptions
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -87,15 +93,29 @@ abstract class BaseAddOptionsRelationViewModel(
         }
     }
 
-    fun onStart(target: Id, relationId: Id) {
-        val s1 = relations.observe(relationId)
+    fun onStart(target: Id, relationKey: Key) {
         jobs += viewModelScope.launch {
-            s1.combine(values.subscribe(target)) { relation, record ->
-                buildViews(relation, record, relationId)
+            combine(
+                relations.observe(relationKey),
+                values.subscribe(target)
+            ) { relation, record ->
                 if (relation.format == Relation.Format.STATUS) {
                     isAddButtonVisible.value = false
                     isMultiple.value = false
                 }
+                getOptions(GetOptions.Params(relationKey)).proceed(
+                    success = { options ->
+                        buildViews(
+                            relation = relation,
+                            record = record,
+                            relationKey = relationKey,
+                            options = options
+                        )
+                    },
+                    failure = {
+                        Timber.e(it, "Error while getting options by id")
+                    }
+                )
             }.collect()
         }
     }
@@ -107,9 +127,18 @@ abstract class BaseAddOptionsRelationViewModel(
         }
     }
 
-    private fun buildViews(relation: Relation, record: Map<String, Any?>, relationId: Id) {
-        allRelationOptions.value =
-            optionsProvider.provideOptions(relation, record, relationId)
+    private fun buildViews(
+        relation: ObjectWrapper.Relation,
+        record: Map<String, Any?>,
+        relationKey: Key,
+        options: List<ObjectWrapper.Option>
+    ) {
+        allRelationOptions.value = optionsProvider.provideOptions(
+                options = options,
+                relation = relation,
+                record = record,
+                relationId = relationKey
+        )
     }
 
     fun onFilterInputChanged(input: String) {
@@ -133,15 +162,14 @@ abstract class BaseAddOptionsRelationViewModel(
 
     fun proceedWithAddingTagToObject(
         target: Id,
-        ctx: Id,
-        relation: Id,
+        relationKey: Key,
         tags: List<Id>
     ) {
         Timber.d("Relations | Adding tag to object with id: $target")
         viewModelScope.launch {
             val obj = values.get(target = target)
             val result = mutableListOf<Id>()
-            val value = obj[relation]
+            val value = obj[relationKey]
             if (value is List<*>) {
                 result.addAll(value.typeOf())
             } else if (value is Id) {
@@ -151,7 +179,7 @@ abstract class BaseAddOptionsRelationViewModel(
             setObjectDetail(
                 UpdateDetail.Params(
                     ctx = target,
-                    key = relation,
+                    key = relationKey,
                     value = result
                 )
             ).process(
@@ -167,15 +195,15 @@ abstract class BaseAddOptionsRelationViewModel(
     }
 
     fun proceedWithAddingStatusToObject(
-        ctx: Id,
-        relation: Id,
+        target: Id,
+        relationKey: Key,
         status: Id
     ) {
         viewModelScope.launch {
             setObjectDetail(
                 UpdateDetail.Params(
-                    ctx = ctx,
-                    key = relation,
+                    ctx = target,
+                    key = relationKey,
                     value = listOf(status)
                 )
             ).process(

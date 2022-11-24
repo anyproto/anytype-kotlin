@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.relations.RelationFileValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -37,6 +38,7 @@ class AddFileRelationFragment :
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
     private val relationId get() = argString(RELATION_ID)
+    private val relationKey get() = argString(RELATION_KEY)
     private val flow get() = arg<Int>(FLOW_KEY)
 
     private lateinit var searchRelationInput: EditText
@@ -104,7 +106,7 @@ class AddFileRelationFragment :
             onFileValueChanged(
                 ctx = ctx,
                 objectId = objectId,
-                relationId = relationId,
+                relationKey = relationKey,
                 ids = ids
             )
         }
@@ -144,18 +146,21 @@ class AddFileRelationFragment :
             ctx: Id,
             objectId: Id,
             relationId: Id,
+            relationKey: Key,
             flow: Int = FLOW_DEFAULT
         ) = AddFileRelationFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,
                 RELATION_ID to relationId,
+                RELATION_KEY to relationKey,
                 FLOW_KEY to flow
             )
         }
 
         const val CONTEXT_ID = "arg.relation.add.file.context"
         const val RELATION_ID = "arg.relation.add.file.relation.id"
+        const val RELATION_KEY = "arg.relation.add.file.relation.key"
         const val OBJECT_ID = "arg.relation.add.file.object.id"
         const val FLOW_KEY = "arg.relation.add.file.flow"
         const val FLOW_DEFAULT = 0
@@ -166,7 +171,7 @@ class AddFileRelationFragment :
         fun onFileValueChanged(
             ctx: Id,
             objectId: Id,
-            relationId: Id,
+            relationKey: Key,
             ids: List<Id>
         )
     }

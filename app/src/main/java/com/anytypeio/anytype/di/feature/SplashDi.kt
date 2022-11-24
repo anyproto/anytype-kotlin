@@ -18,6 +18,8 @@ import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
 import dagger.Module
@@ -48,23 +50,25 @@ object SplashModule {
         launchAccount: LaunchAccount,
         launchWallet: LaunchWallet,
         analytics: Analytics,
-        storeObjectTypes: StoreObjectTypes,
         getLastOpenedObject: GetLastOpenedObject,
         getDefaultEditorType: GetDefaultEditorType,
         setDefaultEditorType: SetDefaultEditorType,
         createPage: CreatePage,
-        appActionManager: AppActionManager
+        appActionManager: AppActionManager,
+        relationsSubscriptionManager: RelationsSubscriptionManager,
+        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
     ): SplashViewModelFactory = SplashViewModelFactory(
         checkAuthorizationStatus = checkAuthorizationStatus,
         launchAccount = launchAccount,
         launchWallet = launchWallet,
         analytics = analytics,
-        storeObjectTypes = storeObjectTypes,
         getLastOpenedObject = getLastOpenedObject,
         setDefaultEditorType = setDefaultEditorType,
         getDefaultEditorType = getDefaultEditorType,
         createPage = createPage,
-        appActionManager = appActionManager
+        appActionManager = appActionManager,
+        relationsSubscriptionManager = relationsSubscriptionManager,
+        objectTypesSubscriptionManager = objectTypesSubscriptionManager
     )
 
     @JvmStatic

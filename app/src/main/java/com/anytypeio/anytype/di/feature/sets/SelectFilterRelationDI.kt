@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.sets
 
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.SelectFilterRelationViewModel
@@ -29,9 +30,11 @@ object SelectFilterRelationModule {
     @PerModal
     fun provideSelectSortRelationViewModelFactory(
         state: StateFlow<ObjectSet>,
-        session: ObjectSetSession
+        session: ObjectSetSession,
+        storeOfRelations: StoreOfRelations
     ): SelectFilterRelationViewModel.Factory = SelectFilterRelationViewModel.Factory(
         state = state,
-        session = session
+        session = session,
+        storeOfRelations = storeOfRelations
     )
 }

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.Key
 
 sealed class ObjectSetCommand {
 
@@ -43,13 +43,13 @@ sealed class ObjectSetCommand {
 
         data class EditGridTextCell(
             val ctx: Id,
-            val relationId: Id,
+            val relationKey: Id,
             val recordId: Id
         ) : Modal()
 
         data class EditGridDateCell(
             val ctx: Id,
-            val relationId: Id,
+            val relationKey: Key,
             val objectId: Id
         ) : Modal()
 
@@ -57,7 +57,7 @@ sealed class ObjectSetCommand {
             val ctx: Id,
             val dataview: Id,
             val target: Id,
-            val relation: Id,
+            val relationKey: Key,
             val targetObjectTypes: List<Id>,
             val viewer: Id
         ) : Modal()
@@ -67,9 +67,9 @@ sealed class ObjectSetCommand {
             val viewer: Id
         ) : Modal()
 
-        data class SetNameForCreatedRecord(val ctx: String) : Modal()
+        data class SetNameForCreatedObject(val ctx: Id, val target: Id) : Modal()
 
-        data class CreateBookmark(val ctx: String) : Modal()
+        data class CreateBookmark(val ctx: Id) : Modal()
 
         data class OpenIconActionMenu(
             val target: Id
@@ -79,10 +79,11 @@ sealed class ObjectSetCommand {
             val ctx: Id
         ) : Modal()
 
-        data class OpenSelectSourceScreen(
-            val smartBlockType: SmartBlockType,
-            val sources: List<Id>
+        data class OpenDataViewSelectSourceScreen(
+            val selectedTypes: List<Id>
         ) : Modal()
+
+        object OpenEmptyDataViewSelectSourceScreen: Modal()
     }
 
     sealed class Intent : ObjectSetCommand() {

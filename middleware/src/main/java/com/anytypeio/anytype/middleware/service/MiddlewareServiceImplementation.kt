@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
+import com.anytypeio.anytype.middleware.BuildConfig
 import service.Service
 import javax.inject.Inject
 
@@ -16,6 +17,13 @@ class MiddlewareServiceImplementation @Inject constructor(
 
     init {
         if (!featureToggles.isLogFromMiddlewareLibrary) {
+            Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
+        }
+    }
+
+    init {
+        // Comment these lines if you want to have more verbose go logs.
+        if (BuildConfig.DEBUG) {
             Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
         }
     }
@@ -154,46 +162,47 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun blockDataViewRecordCreate(request: Rpc.BlockDataviewRecord.Create.Request): Rpc.BlockDataviewRecord.Create.Response {
-        val encoded = Service.blockDataviewRecordCreate(
-            Rpc.BlockDataviewRecord.Create.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.BlockDataviewRecord.Create.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.BlockDataviewRecord.Create.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun blockDataViewRecordRelationOptionAdd(
-        request: Rpc.BlockDataviewRecord.RelationOption.Add.Request
-    ): Rpc.BlockDataviewRecord.RelationOption.Add.Response {
-        val encoded = Service.blockDataviewRecordRelationOptionAdd(
-            Rpc.BlockDataviewRecord.RelationOption.Add.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.BlockDataviewRecord.RelationOption.Add.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.BlockDataviewRecord.RelationOption.Add.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun blockDataViewRecordUpdate(request: Rpc.BlockDataviewRecord.Update.Request): Rpc.BlockDataviewRecord.Update.Response {
-        val encoded = Service.blockDataviewRecordUpdate(
-            Rpc.BlockDataviewRecord.Update.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.BlockDataviewRecord.Update.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.BlockDataviewRecord.Update.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
+    //todo relations refactoring
+//    override fun blockDataViewRecordCreate(request: Rpc.BlockDataviewRecord.Create.Request): Rpc.BlockDataviewRecord.Create.Response {
+//        val encoded = Service.blockDataviewRecordCreate(
+//            Rpc.BlockDataviewRecord.Create.Request.ADAPTER.encode(request)
+//        )
+//        val response = Rpc.BlockDataviewRecord.Create.Response.ADAPTER.decode(encoded)
+//        val error = response.error
+//        if (error != null && error.code != Rpc.BlockDataviewRecord.Create.Response.Error.Code.NULL) {
+//            throw Exception(error.description)
+//        } else {
+//            return response
+//        }
+//    }
+//
+//    override fun blockDataViewRecordRelationOptionAdd(
+//        request: Rpc.BlockDataviewRecord.RelationOption.Add.Request
+//    ): Rpc.BlockDataviewRecord.RelationOption.Add.Response {
+//        val encoded = Service.blockDataviewRecordRelationOptionAdd(
+//            Rpc.BlockDataviewRecord.RelationOption.Add.Request.ADAPTER.encode(request)
+//        )
+//        val response = Rpc.BlockDataviewRecord.RelationOption.Add.Response.ADAPTER.decode(encoded)
+//        val error = response.error
+//        if (error != null && error.code != Rpc.BlockDataviewRecord.RelationOption.Add.Response.Error.Code.NULL) {
+//            throw Exception(error.description)
+//        } else {
+//            return response
+//        }
+//    }
+//
+//    override fun blockDataViewRecordUpdate(request: Rpc.BlockDataviewRecord.Update.Request): Rpc.BlockDataviewRecord.Update.Response {
+//        val encoded = Service.blockDataviewRecordUpdate(
+//            Rpc.BlockDataviewRecord.Update.Request.ADAPTER.encode(request)
+//        )
+//        val response = Rpc.BlockDataviewRecord.Update.Response.ADAPTER.decode(encoded)
+//        val error = response.error
+//        if (error != null && error.code != Rpc.BlockDataviewRecord.Update.Response.Error.Code.NULL) {
+//            throw Exception(error.description)
+//        } else {
+//            return response
+//        }
+//    }
 
     override fun blockDataViewRelationAdd(request: Rpc.BlockDataview.Relation.Add.Request): Rpc.BlockDataview.Relation.Add.Response {
         val encoded = Service.blockDataviewRelationAdd(
@@ -688,6 +697,28 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectCreateRelation(request: Rpc.Object.CreateRelation.Request): Rpc.Object.CreateRelation.Response {
+        val encoded = Service.objectCreateRelation(Rpc.Object.CreateRelation.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.CreateRelation.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CreateRelation.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectCreateRelationOption(request: Rpc.Object.CreateRelationOption.Request): Rpc.Object.CreateRelationOption.Response {
+        val encoded = Service.objectCreateRelationOption(Rpc.Object.CreateRelationOption.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.CreateRelationOption.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CreateRelationOption.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response {
         val encoded = Service.objectCreateSet(Rpc.Object.CreateSet.Request.ADAPTER.encode(request))
         val response = Rpc.Object.CreateSet.Response.ADAPTER.decode(encoded)
@@ -856,18 +887,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun objectRelationOptionAdd(request: Rpc.ObjectRelationOption.Add.Request): Rpc.ObjectRelationOption.Add.Response {
-        val encoded = Service.objectRelationOptionAdd(
-            Rpc.ObjectRelationOption.Add.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.ObjectRelationOption.Add.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.ObjectRelationOption.Add.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
+    //todo relations refactoring
+//    override fun objectRelationOptionAdd(request: Rpc.ObjectRelationOption.Add.Request): Rpc.ObjectRelationOption.Add.Response {
+//        val encoded = Service.objectRelationOptionAdd(
+//            Rpc.ObjectRelationOption.Add.Request.ADAPTER.encode(request)
+//        )
+//        val response = Rpc.ObjectRelationOption.Add.Response.ADAPTER.decode(encoded)
+//        val error = response.error
+//        if (error != null && error.code != Rpc.ObjectRelationOption.Add.Response.Error.Code.NULL) {
+//            throw Exception(error.description)
+//        } else {
+//            return response
+//        }
+//    }
 
     override fun objectRelationRemoveFeatured(request: Rpc.ObjectRelation.RemoveFeatured.Request): Rpc.ObjectRelation.RemoveFeatured.Response {
         val encoded = Service.objectRelationRemoveFeatured(
@@ -993,29 +1025,6 @@ class MiddlewareServiceImplementation @Inject constructor(
                     throw BackwardCompatilityNotSupportedException()
                 else -> throw Exception(error.description)
             }
-        } else {
-            return response
-        }
-    }
-
-    override fun objectTypeCreate(request: Rpc.ObjectType.Create.Request): Rpc.ObjectType.Create.Response {
-        val encoded =
-            Service.objectTypeCreate(Rpc.ObjectType.Create.Request.ADAPTER.encode(request))
-        val response = Rpc.ObjectType.Create.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.ObjectType.Create.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun objectTypeList(request: Rpc.ObjectType.List.Request): Rpc.ObjectType.List.Response {
-        val encoded = Service.objectTypeList(Rpc.ObjectType.List.Request.ADAPTER.encode(request))
-        val response = Rpc.ObjectType.List.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.ObjectType.List.Response.Error.Code.NULL) {
-            throw Exception(error.description)
         } else {
             return response
         }

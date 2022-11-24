@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.SelectSortRelationViewModel
@@ -37,12 +38,14 @@ object SelectSortRelationModule {
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         addDataViewViewerSort: AddDataViewViewerSort,
+        storeOfRelations: StoreOfRelations,
         analytics: Analytics
     ): SelectSortRelationViewModel.Factory = SelectSortRelationViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,
         addDataViewViewerSort = addDataViewViewerSort,
+        storeOfRelations = storeOfRelations,
         analytics = analytics
     )
 

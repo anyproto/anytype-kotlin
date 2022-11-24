@@ -4,10 +4,10 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -44,14 +44,15 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -62,6 +63,8 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.table.CreateTable
@@ -226,9 +229,6 @@ open class EditorPresentationTestSetup {
     lateinit var unsplashRepo: UnsplashRepository
 
     @Mock
-    lateinit var getCompatibleObjectTypes: GetCompatibleObjectTypes
-
-    @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
     @Mock
@@ -285,6 +285,9 @@ open class EditorPresentationTestSetup {
     open lateinit var orchestrator: Orchestrator
 
     private val delegator = Delegator.Default<Action>()
+
+    protected val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    protected val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
@@ -365,7 +368,8 @@ open class EditorPresentationTestSetup {
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
-                coverImageHashProvider = coverImageHashProvider
+                coverImageHashProvider = coverImageHashProvider,
+                storeOfRelations = storeOfRelations
             ),
             orchestrator = orchestrator,
             analytics = analytics,
@@ -373,8 +377,6 @@ open class EditorPresentationTestSetup {
             delegator = delegator,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
-            getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider,
             searchObjects = searchObjects,
             getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
@@ -385,8 +387,10 @@ open class EditorPresentationTestSetup {
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            objectToSet = objectToSet,
             featureToggles = mock(),
+            objectToSet = objectToSet,
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
             tableDelegate = tableDelegate
         )
     }
@@ -395,7 +399,8 @@ open class EditorPresentationTestSetup {
         document: List<Block> = emptyList(),
         details: Block.Details = Block.Details(),
         relations: List<Relation> = emptyList(),
-        objectRestrictions: List<ObjectRestriction> = emptyList()
+        objectRestrictions: List<ObjectRestriction> = emptyList(),
+        relationLinks: List<RelationLink> = emptyList()
     ) {
         openPage.stub {
             onBlocking { execute(any()) } doAnswer
@@ -409,6 +414,7 @@ open class EditorPresentationTestSetup {
                                         root = root,
                                         details = details,
                                         relations = relations,
+                                        relationLinks = relationLinks,
                                         blocks = document,
                                         objectRestrictions = objectRestrictions
                                     )
@@ -596,16 +602,6 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubGetObjectTypes(objectTypes: List<ObjectType> = listOf()) {
-        getCompatibleObjectTypes.stub {
-            onBlocking {
-                invoke(any())
-            } doReturn Either.Right(
-                objectTypes
-            )
-        }
-    }
-
     fun stubUpdateBlocksMark() {
         updateBlocksMark.stub {
             onBlocking {
@@ -633,9 +629,9 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubSearchObjects() {
+    fun stubSearchObjects(objects : List<ObjectWrapper.Basic> = emptyList()) {
         searchObjects.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(listOf())
+            onBlocking { invoke(any()) } doReturn Either.Right(objects)
         }
     }
 

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -90,7 +90,8 @@ sealed class Command {
             data class Default(
                 val ctx: Id,
                 val target: Id,
-                val relation: Id,
+                val relationId: Id,
+                val relationKey: Key,
                 val targetObjectTypes: List<Id>,
                 val isLocked: Boolean
             ) : OpenObjectRelationScreen.Value()
@@ -98,14 +99,16 @@ sealed class Command {
             data class Text(
                 val ctx: Id,
                 val target: Id,
-                val relation: Id,
+                val relationId: Id,
+                val relationKey: Key,
                 val isLocked: Boolean = false
             ) : OpenObjectRelationScreen.Value()
 
             data class Date(
                 val ctx: Id,
                 val target: Id,
-                val relation: Id
+                val relationId: Id,
+                val relationKey: Key,
             ) : OpenObjectRelationScreen.Value()
         }
     }
@@ -113,11 +116,12 @@ sealed class Command {
     object AddSlashWidgetTriggerToFocusedBlock : Command()
     object AddMentionWidgetTriggerToFocusedBlock : Command()
 
-    data class OpenChangeObjectTypeScreen(
-        val ctx: Id,
-        val smartBlockType: SmartBlockType,
-        val excludedTypes: List<Id>,
-        val isDraft: Boolean
+    data class OpenObjectSelectTypeScreen(
+        val excludedTypes: List<Id>
+    ) : Command()
+
+    data class OpenDraftObjectSelectTypeScreen(
+        val excludedTypes: List<Id>
     ) : Command()
 
     data class OpenMoveToScreen(

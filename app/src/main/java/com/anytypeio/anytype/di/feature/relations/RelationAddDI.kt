@@ -5,9 +5,10 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
+import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -43,12 +44,12 @@ object RelationAddToObjectModule {
     @PerDialog
     fun provideViewModelFactory(
         addRelationToObject: AddRelationToObject,
-        objectRelationList: ObjectRelationList,
+        storeOfRelations: StoreOfRelations,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         relationsProvider: ObjectRelationProvider,
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
-        objectRelationList = objectRelationList,
+        storeOfRelations = storeOfRelations,
         addRelationToObject = addRelationToObject,
         dispatcher = dispatcher,
         analytics = analytics,
@@ -61,13 +62,6 @@ object RelationAddToObjectModule {
     fun provideObjectRelationListUseCase(
         repo: BlockRepository
     ): ObjectRelationList = ObjectRelationList(repo)
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideAddRelationToObjectUseCase(
-        repo: BlockRepository
-    ): AddRelationToObject = AddRelationToObject(repo)
 }
 
 @Subcomponent(modules = [RelationAddToDataViewModule::class])
@@ -90,7 +84,7 @@ object RelationAddToDataViewModule {
     @PerDialog
     fun provideViewModelFactory(
         addRelationToDataView: AddRelationToDataView,
-        objectRelationList: ObjectRelationList,
+        storeOfRelations: StoreOfRelations,
         dispatcher: Dispatcher<Payload>,
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
@@ -98,7 +92,7 @@ object RelationAddToDataViewModule {
         analytics: Analytics,
         relationsProvider: ObjectRelationProvider,
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
-        objectRelationList = objectRelationList,
+        storeOfRelations = storeOfRelations,
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
         state = state,

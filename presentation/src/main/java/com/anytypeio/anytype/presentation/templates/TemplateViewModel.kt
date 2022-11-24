@@ -51,7 +51,7 @@ class TemplateViewModel(
                                 anchor = ctx,
                                 indent = EditorViewModel.INITIAL_INDENT,
                                 details = event.details,
-                                relations = event.relations,
+                                relationLinks = event.relationLinks,
                                 restrictions = event.objectRestrictions,
                                 selection = emptySet(),
                                 objectTypes = event.objectTypes

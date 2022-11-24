@@ -3,8 +3,10 @@ package com.anytypeio.anytype.presentation.extension
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectType.Companion.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectWrapper
+
+
+const val MAX_SNIPPET_SIZE = 30
 
 fun Map<Id, Block.Fields>.updateFields(update: Map<Id, Block.Fields>): Map<Id, Block.Fields> {
     val result = this.toMutableMap()

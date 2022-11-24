@@ -19,6 +19,7 @@ data class ColumnView(
     val timeFormat: Block.Content.DataView.TimeFormat? = null
 ) : Parcelable {
 
+    @Deprecated("To be deleted")
     @Parcelize
     enum class Format : Parcelable {
         SHORT_TEXT,
@@ -34,6 +35,7 @@ data class ColumnView(
         EMOJI,
         OBJECT,
         TAG,
-        RELATIONS
+        RELATIONS,
+        UNDEFINED
     }
 }

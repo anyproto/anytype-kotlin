@@ -118,15 +118,12 @@ class ObjectSetReducer {
             is Command.DataView.SetRelation -> {
                 state.copy(
                     blocks = state.blocks.map { block ->
-                        if (block.id == event.id) {
+                        if (block.id == event.dv) {
                             val content = block.content
                             check(content is DV)
                             block.copy(
                                 content = content.copy(
-                                    relations = content.relations.toMutableList().apply {
-                                        removeIf { it.key == event.key }
-                                        add(event.relation)
-                                    }
+                                    relationsIndex = content.relationsIndex + event.links
                                 )
                             )
                         } else

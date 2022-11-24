@@ -17,7 +17,9 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
@@ -52,12 +54,16 @@ class ObjectRelationDateValueTest {
     private val state = MutableStateFlow(ObjectSet.init())
     private val store: ObjectStore = DefaultObjectStore()
     private val db = ObjectSetDatabase(store)
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         TestRelationDateValueFragment.testVmFactory = RelationDateValueViewModel.Factory(
-            relations = DataViewObjectRelationProvider(state),
+            relations = DataViewObjectRelationProvider(
+                objectSetState = state,
+                storeOfRelations = storeOfRelations
+            ),
             values = DataViewObjectValueProvider(db = db)
         )
     }

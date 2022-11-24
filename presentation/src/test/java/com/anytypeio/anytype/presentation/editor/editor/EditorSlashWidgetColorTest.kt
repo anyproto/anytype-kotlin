@@ -392,7 +392,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateTextColor()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -467,7 +467,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBackground()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -554,7 +554,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBackground()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -641,7 +641,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBackground()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -699,7 +699,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBackground()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -745,7 +745,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBackground()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -783,7 +783,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBackground()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 

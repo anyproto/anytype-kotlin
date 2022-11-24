@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.Relations.RELATION_FORMAT_OBJECT_TYPES
 import com.anytypeio.anytype.core_models.ext.typeOf
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 
 /**
  * Wrapper for easily parsing object's relations when object is represented as an untyped structure.
@@ -64,7 +66,7 @@ sealed class ObjectWrapper {
 
         val fileMimeType: String? by default
 
-        inline fun <reified T> getValue(relation: Id) : T? {
+        inline fun <reified T> getValue(relation: Id): T? {
             val value = map.getOrDefault(relation, null)
             return if (value is T)
                 value
@@ -80,7 +82,42 @@ sealed class ObjectWrapper {
 
         val featuredRelations: List<String>? by default
 
+        val smartBlockTypes: List<Double>
+            get() = when (val value = map[Relations.SMARTBLOCKTYPES]) {
+                is Double -> listOf(value)
+                is List<*> -> value.typeOf()
+                else -> emptyList()
+            }
+
         fun isEmpty(): Boolean = map.isEmpty()
+
+        val relationKey: String by default
+        val isFavorite: Boolean? by default
+        val isHidden: Boolean? by default
+        val isReadonly: Boolean? by default
+
+        val relationFormat: RelationFormat?
+            get() = when (val value = map[Relations.RELATION_FORMAT]) {
+                is Double -> RelationFormat.values().singleOrNull { format ->
+                    format.code == value.toInt()
+                }
+                else -> null
+            }
+
+        val restrictions: List<ObjectRestriction>
+            get() = when (val value = map[Relations.RESTRICTIONS]) {
+                is Double -> buildList {
+                    ObjectRestriction.values().firstOrNull { it.code == value.toInt() }
+                }
+                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
+                    ObjectRestriction.values().firstOrNull { it.code == code.toInt() }
+                }
+                else -> emptyList()
+            }
+
+        val relationOptionColor: String? by default
+        val relationOptionText: String? by default
+        val relationReadonlyValue: Boolean? by default
     }
 
     /**
@@ -96,5 +133,105 @@ sealed class ObjectWrapper {
         val picture: String? by default
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
+    }
+
+    /**
+     * Wrapper for object types
+     */
+    data class Type(val map: Map<String, Any?>) : ObjectWrapper() {
+        private val default = map.withDefault { null }
+        val id: Id by default
+        val name: String? by default
+        val description: String? by default
+        val isArchived: Boolean? by default
+        val iconEmoji: String? by default
+        val isDeleted: Boolean? by default
+        val smartBlockTypes: List<SmartBlockType>
+            get() = when (val value = map[Relations.SMARTBLOCKTYPES]) {
+                is Double -> buildList {
+                    SmartBlockType.values().firstOrNull { it.code == value.toInt() }
+                }
+                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
+                    SmartBlockType.values().firstOrNull { it.code == code.toInt() }
+                }
+                else -> emptyList()
+            }
+    }
+
+    data class Relation(val map: Struct) : ObjectWrapper() {
+
+        private val default = map.withDefault { null }
+
+        private val relationKey : Key by default
+
+        val relationFormat: RelationFormat
+            get() {
+                val value = map[Relations.RELATION_FORMAT]
+                return if (value is Double) {
+                    RelationFormat.values().firstOrNull { f ->
+                        f.code == value.toInt()
+                    } ?: RelationFormat.UNDEFINED
+                } else {
+                    RelationFormat.UNDEFINED
+                }
+            }
+
+
+        val relationOptionsDict: List<Id>
+            get() = when (val value = map[Relations.RELATION_OPTION_DICT]) {
+                is Id -> listOf(id)
+                is List<*> -> value.typeOf()
+                else -> emptyList()
+            }
+
+        private val relationReadonlyValue: Boolean? by default
+
+        val id: Id by default
+        val key: Key get() = relationKey
+        val format: RelationFormat get() = relationFormat
+        val name: String? by default
+        val isHidden: Boolean? by default
+        val isReadOnly: Boolean? by default
+        val isArchived: Boolean? by default
+        val isDeleted: Boolean? by default
+        val isReadonly: Boolean? by default
+        val isReadonlyValue: Boolean = relationReadonlyValue ?: false
+
+        val restrictions: List<ObjectRestriction>
+            get() = when (val value = map[Relations.RESTRICTIONS]) {
+                is Double -> buildList {
+                    ObjectRestriction.values().firstOrNull { it.code == value.toInt() }
+                }
+                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
+                    ObjectRestriction.values().firstOrNull { it.code == code.toInt() }
+                }
+                else -> emptyList()
+            }
+
+        val relationFormatObjectTypes
+            get() = when (val value = map[RELATION_FORMAT_OBJECT_TYPES]) {
+                is Id -> listOf(value)
+                is List<*> -> value.typeOf()
+                else -> emptyList()
+            }
+
+        val type: List<Id>
+            get() = when (val value = map[Relations.TYPE]) {
+                is Id -> listOf(value)
+                is List<*> -> value.typeOf()
+                else -> emptyList()
+            }
+
+        val isValid get() = map.containsKey(Relations.RELATION_KEY) && map.containsKey(Relations.ID)
+    }
+
+    data class Option(val map: Struct) {
+        private val default = map.withDefault { null }
+        private val relationOptionText : String? by default
+        private val relationOptionColor : String? by default
+
+        val id: Id by default
+        val title: String = relationOptionText.orEmpty()
+        val color: String = relationOptionColor.orEmpty()
     }
 }

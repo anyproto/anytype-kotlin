@@ -21,6 +21,8 @@ import com.anytypeio.anytype.core_utils.const.DetailsKeys
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
@@ -70,7 +72,7 @@ class DefaultBlockViewRendererTest {
             anchor = anchor,
             indent = indent,
             details = details,
-            relations = emptyList(),
+            relationLinks = emptyList(),
             restrictions = restrictions,
             selection = emptySet(),
             objectTypes = emptyList(),
@@ -99,6 +101,8 @@ class DefaultBlockViewRendererTest {
 
     private lateinit var wrapper: BlockViewRenderWrapper
 
+    private var storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+
 
     @Before
     fun setup() {
@@ -106,7 +110,8 @@ class DefaultBlockViewRendererTest {
         renderer = DefaultBlockViewRenderer(
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
-            coverImageHashProvider = coverImageHashProvider
+            coverImageHashProvider = coverImageHashProvider,
+            storeOfRelations = storeOfRelations
         )
     }
 

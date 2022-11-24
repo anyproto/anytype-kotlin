@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.ext.DefaultDateHelper
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
@@ -35,12 +36,14 @@ object DeletedAccountModule {
         restoreAccount: RestoreAccount,
         logout: Logout,
         helper: DateHelper,
-        analytics: Analytics
+        analytics: Analytics,
+        relationsSubscriptionManager: RelationsSubscriptionManager
     ): DeletedAccountViewModel.Factory = DeletedAccountViewModel.Factory(
         restoreAccount = restoreAccount,
         logout = logout,
         helper = helper,
-        analytics = analytics
+        analytics = analytics,
+        relationsSubscriptionManager = relationsSubscriptionManager
     )
 
     @JvmStatic

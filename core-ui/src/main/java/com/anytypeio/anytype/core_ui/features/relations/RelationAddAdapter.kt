@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.*
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationFormatViewHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationViewHolder
 import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
@@ -44,7 +45,7 @@ class RelationAddAdapter(
         override fun areItemsTheSame(
             oldItem: RelationView.Existing,
             newItem: RelationView.Existing
-        ): Boolean = oldItem.id == newItem.id
+        ): Boolean = oldItem.key == newItem.key
 
         override fun areContentsTheSame(
             oldItem: RelationView.Existing,
@@ -76,7 +77,7 @@ class RelationFormatAdapter(
     override fun onBindViewHolder(holder: DefaultRelationFormatViewHolder, position: Int) {
         getItem(position).apply {
             holder.bind(
-                name = format.prettyName,
+                name = holder.itemView.resources.getString(format.getPrettyName()),
                 format = format,
                 isSelected = isSelected
             )
@@ -252,7 +253,7 @@ class RelationConnectWithAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(format: RelationFormat) {
             binding.ivRelationFormat.bind(format)
-            binding.tvRelationName.text = format.prettyName
+            binding.tvRelationName.text = itemView.resources.getString(format.getPrettyName())
         }
     }
 }

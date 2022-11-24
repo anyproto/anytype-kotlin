@@ -1,0 +1,16 @@
+plugins {
+    id 'maven-publish'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            myLocalPublication(MavenPublication) {
+                artifact(file('lib.aar'))
+                groupId 'io.anytype'
+                artifactId 'android-mw'
+                version = '9.9.13'
+            }
+        }
+    }
+}

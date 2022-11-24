@@ -5,10 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
+import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -24,7 +25,8 @@ class ObjectRelationListViewModelFactory(
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val deleteRelationFromObject: DeleteRelationFromObject,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -39,7 +41,8 @@ class ObjectRelationListViewModelFactory(
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
             deleteRelationFromObject = deleteRelationFromObject,
-            analytics = analytics
+            analytics = analytics,
+            storeOfRelations = storeOfRelations
         ) as T
     }
 }

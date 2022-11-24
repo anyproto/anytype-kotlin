@@ -5,9 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -58,21 +59,22 @@ class RelationTextValueViewModel(
 
     fun onStart(
         relationId: Id,
+        relationKey: Key,
         recordId: String,
         isLocked: Boolean = false
     ) {
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.observe(relationId),
+                relations.observe(relationKey),
                 values.subscribe(recordId)
             ) { relation, values ->
                 val obj = ObjectWrapper.Basic(values)
-                val value = values[relationId]?.toString()
+                val value = values[relationKey]?.toString()
                 val isValueReadOnly = values[Relations.IS_READ_ONLY] as? Boolean ?: false
                 val isValueEditable = !(isValueReadOnly || isLocked)
-                title.value = relation.name
+                title.value = relation.name.orEmpty()
                 when (relation.format) {
-                    Relation.Format.SHORT_TEXT -> {
+                    RelationFormat.SHORT_TEXT -> {
                         views.value = listOf(
                             RelationTextValueView.TextShort(
                                 value = value,
@@ -80,7 +82,7 @@ class RelationTextValueViewModel(
                             )
                         )
                     }
-                    Relation.Format.LONG_TEXT -> {
+                    RelationFormat.LONG_TEXT -> {
                         views.value = listOf(
                             RelationTextValueView.Text(
                                 value = value,
@@ -88,7 +90,7 @@ class RelationTextValueViewModel(
                             )
                         )
                     }
-                    Relation.Format.NUMBER -> {
+                    RelationFormat.NUMBER -> {
                         views.value = listOf(
                             RelationTextValueView.Number(
                                 value = NumberParser.parse(value),
@@ -96,7 +98,7 @@ class RelationTextValueViewModel(
                             )
                         )
                     }
-                    Relation.Format.URL -> {
+                    RelationFormat.URL -> {
                         views.value = listOf(
                             RelationTextValueView.Url(
                                 value = value,
@@ -107,13 +109,14 @@ class RelationTextValueViewModel(
                             actions.value = buildList {
                                 add(RelationValueAction.Url.Browse(value))
                                 add(RelationValueAction.Url.Copy(value))
-                                if (relation.key == Relations.SOURCE && obj.type.contains(ObjectType.BOOKMARK_TYPE)) {
+                                if (relation.key == Relations.SOURCE && obj.type.contains(
+                                        ObjectTypeIds.BOOKMARK)) {
                                     add(RelationValueAction.Url.Reload(value))
                                 }
                             }
                         }
                     }
-                    Relation.Format.EMAIL -> {
+                    RelationFormat.EMAIL -> {
                         views.value = listOf(
                             RelationTextValueView.Email(
                                 value = value,
@@ -127,7 +130,7 @@ class RelationTextValueViewModel(
                             )
                         }
                     }
-                    Relation.Format.PHONE -> {
+                    RelationFormat.PHONE -> {
                         views.value = listOf(
                             RelationTextValueView.Phone(
                                 value = value,

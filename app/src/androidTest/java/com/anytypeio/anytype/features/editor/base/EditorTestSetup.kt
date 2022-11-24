@@ -11,12 +11,11 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
@@ -54,15 +53,16 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -73,6 +73,8 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
@@ -98,6 +100,7 @@ import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
@@ -133,8 +136,6 @@ open class EditorTestSetup {
     lateinit var move: Move
     lateinit var setRelationKey: SetRelationKey
     lateinit var updateDetail: UpdateDetail
-    lateinit var getCompatibleObjectTypes: GetCompatibleObjectTypes
-
 
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
@@ -243,9 +244,6 @@ open class EditorTestSetup {
     lateinit var documentEmojiIconProvider: DocumentEmojiIconProvider
 
     @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
     lateinit var createTable: CreateTable
 
     @Mock
@@ -269,6 +267,9 @@ open class EditorTestSetup {
     private val proxies = Editor.Proxer(
         intents = intents
     )
+
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     open fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -322,7 +323,6 @@ open class EditorTestSetup {
         removeDocCover = RemoveDocCover(repo)
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
-        getCompatibleObjectTypes = GetCompatibleObjectTypes(repo)
         getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
@@ -357,7 +357,8 @@ open class EditorTestSetup {
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
-                coverImageHashProvider = coverImageHashProvider
+                coverImageHashProvider = coverImageHashProvider,
+                storeOfRelations = storeOfRelations
             ),
             orchestrator = Orchestrator(
                 createBlock = createBlock,
@@ -411,8 +412,6 @@ open class EditorTestSetup {
             dispatcher = Dispatcher.Default(),
             detailModificationManager = InternalDetailModificationManager(stores.details),
             updateDetail = updateDetail,
-            getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider,
             searchObjects = getSearchObjects,
             getDefaultEditorType = getDefaultEditorType,
             createObjectSet = createObjectSet,
@@ -425,6 +424,8 @@ open class EditorTestSetup {
             editorTemplateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet,
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = featureToggles,
             tableDelegate = tableDelegate
         )
@@ -505,9 +506,18 @@ open class EditorTestSetup {
         }
     }
 
-    fun stubGetObjectTypes(objectTypes: List<ObjectType>) {
+    fun stubGetObjectTypes(objectTypes: List<ObjectWrapper.Type>) {
         repo.stub {
-            onBlocking { getObjectTypes() } doReturn objectTypes
+            onBlocking {
+                searchObjects(
+                    filters = ObjectSearchConstants.filterObjectType,
+                    keys = ObjectSearchConstants.defaultKeysObjectType,
+                    sorts = emptyList(),
+                    limit = 0,
+                    offset = 0,
+                    fulltext = ""
+                )
+            } doReturn objectTypes.map { it.map }
         }
     }
 

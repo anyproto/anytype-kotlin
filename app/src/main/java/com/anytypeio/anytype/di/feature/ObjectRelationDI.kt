@@ -5,10 +5,11 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
+import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -47,7 +48,8 @@ object DocumentRelationModule {
         addToFeaturedRelations: AddToFeaturedRelations,
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
         deleteRelationFromObject: DeleteRelationFromObject,
-        analytics: Analytics
+        analytics: Analytics,
+        storeOfRelations: StoreOfRelations
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             stores = stores,
@@ -59,7 +61,8 @@ object DocumentRelationModule {
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
             deleteRelationFromObject = deleteRelationFromObject,
-            analytics = analytics
+            analytics = analytics,
+            storeOfRelations = storeOfRelations
         )
     }
 

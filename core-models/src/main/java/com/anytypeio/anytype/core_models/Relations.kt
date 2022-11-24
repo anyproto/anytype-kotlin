@@ -33,6 +33,18 @@ object Relations {
     const val IS_HIGHLIGHTED = "isHighlighted"
     const val URL = "url"
     const val SOURCE = "source"
+    const val SMARTBLOCKTYPES = "smartblockTypes"
+    const val RELATION_KEY = "relationKey"
+    const val RELATION_OPTION_TEXT = "relationOptionText"
+    const val RELATION_OPTION_COLOR = "relationOptionColor"
+    const val RELATION_OPTION_DICT = "relationOptionsDict"
+    const val SCOPE = "scope"
+    const val RESTRICTIONS = "restrictions"
+    const val MAX_COUNT = "relationMaxCount"
+    const val RELATION_IS_READ_ONLY = "relationReadonly"
+    const val RELATION_DEFAULT_VALUE = "relationDefaultValue"
+    const val RELATION_FORMAT_OBJECT_TYPES = "relationFormatObjectTypes"
+
 
     const val PAGE_COVER = "pageCover"
 

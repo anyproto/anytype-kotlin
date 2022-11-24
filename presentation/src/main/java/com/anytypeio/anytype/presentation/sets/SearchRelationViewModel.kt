@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
  */
 abstract class SearchRelationViewModel(
     private val objectSetState: StateFlow<ObjectSet>,
-    private val session: ObjectSetSession
+    private val session: ObjectSetSession,
+    private val storeOfRelations: StoreOfRelations
 ) : BaseListViewModel<SimpleRelationView>() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
@@ -35,7 +37,11 @@ abstract class SearchRelationViewModel(
         // Initializing views before any query.
         viewModelScope.launch {
             _views.value =
-                filterRelationsFromAlreadyInUse(objectSetState.value, session.currentViewerId.value)
+                filterRelationsFromAlreadyInUse(
+                    set = objectSetState.value,
+                    viewerId = session.currentViewerId.value,
+                    storeOfRelations = storeOfRelations
+                )
                     .filterNot { notAllowedRelations(it) }
         }
         // Searching and mapping views based on query changes.
@@ -43,7 +49,11 @@ abstract class SearchRelationViewModel(
             query
                 .consumeAsFlow()
                 .withLatestFrom(objectSetState) { query, state ->
-                    val relations = filterRelationsFromAlreadyInUse(state, session.currentViewerId.value)
+                    val relations = filterRelationsFromAlreadyInUse(
+                        set = state,
+                        viewerId = session.currentViewerId.value,
+                        storeOfRelations = storeOfRelations
+                    )
                     if (query.isEmpty()) {
                         relations
                     } else {
@@ -59,10 +69,15 @@ abstract class SearchRelationViewModel(
         }
     }
 
-    protected open fun filterRelationsFromAlreadyInUse(
-        set: ObjectSet, viewerId: String?
+    protected open suspend fun filterRelationsFromAlreadyInUse(
+        set: ObjectSet,
+        viewerId: String?,
+        storeOfRelations: StoreOfRelations
     ): List<SimpleRelationView> {
-        return set.simpleRelations(viewerId)
+        return set.simpleRelations(
+            viewerId = viewerId,
+            storeOfRelations = storeOfRelations
+        )
     }
 
     private fun notAllowedRelations(relation: SimpleRelationView): Boolean =

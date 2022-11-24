@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.relations.ObjectSetSettingsViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -42,6 +43,7 @@ object ObjectSetSettingsModule {
         modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
         updateDataViewViewer: UpdateDataViewViewer,
         deleteRelationFromDataView: DeleteRelationFromDataView,
+        store: StoreOfRelations,
         analytics: Analytics
     ): ObjectSetSettingsViewModel.Factory = ObjectSetSettingsViewModel.Factory(
         state = state,
@@ -50,7 +52,8 @@ object ObjectSetSettingsModule {
         modifyViewerRelationOrder = modifyViewerRelationOrder,
         updateDataViewViewer = updateDataViewViewer,
         deleteRelationFromDataView = deleteRelationFromDataView,
-        analytics = analytics
+        analytics = analytics,
+        store = store,
     )
 
     @JvmStatic

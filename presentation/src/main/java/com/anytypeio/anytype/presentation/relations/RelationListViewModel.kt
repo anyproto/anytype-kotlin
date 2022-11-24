@@ -7,16 +7,19 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationUnfea
 import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
+import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -42,7 +45,8 @@ class RelationListViewModel(
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val deleteRelationFromObject: DeleteRelationFromObject,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeOfRelations: StoreOfRelations
 ) : BaseViewModel() {
 
     val isEditMode = MutableStateFlow(false)
@@ -60,11 +64,22 @@ class RelationListViewModel(
             eventName = relationsScreenShow
         )
         jobs += viewModelScope.launch {
-            stores.relations.stream().combine(stores.details.stream()) { relations, details ->
+            stores.relationLinks.stream().combine(
+                stores.details.stream(),
+            ) { relationLinks, details ->
+
+                val relations = relationLinks.mapNotNull { storeOfRelations.getByKey(it.key) }
                 val detail = details.details[ctx]
                 val values = detail?.map ?: emptyMap()
                 val featured = detail?.featuredRelations ?: emptyList()
-                relations.views(details, values, urlBuilder, featured).map { view ->
+
+                relations.views(
+                    context = ctx,
+                    details = details,
+                    values = values,
+                    urlBuilder = urlBuilder,
+                    featured = featured
+                ).map { view ->
                     Model.Item(
                         view = view,
                         isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.relationId)
@@ -120,13 +135,14 @@ class RelationListViewModel(
         view: DocumentRelationView,
         ctx: Id
     ) {
+        val relationKey = view.relationKey ?: return
         viewModelScope.launch {
             if (view.isFeatured) {
                 viewModelScope.launch {
                     removeFromFeaturedRelations(
                         RemoveFromFeaturedRelations.Params(
                             ctx = ctx,
-                            relations = listOf(view.relationId)
+                            relations = listOf(relationKey)
                         )
                     ).process(
                         failure = { Timber.e(it, "Error while removing from featured relations") },
@@ -144,7 +160,7 @@ class RelationListViewModel(
                     addToFeaturedRelations(
                         AddToFeaturedRelations.Params(
                             ctx = ctx,
-                            relations = listOf(view.relationId)
+                            relations = listOf(relationKey)
                         )
                     ).process(
                         failure = { Timber.e(it, "Error while adding to featured relations") },
@@ -166,7 +182,7 @@ class RelationListViewModel(
             deleteRelationFromObject(
                 DeleteRelationFromObject.Params(
                     ctx = ctx,
-                    relation = view.relationId
+                    relation = view.relationKey
                 )
             ).process(
                 failure = { Timber.e(it, "Error while deleting relation") },
@@ -212,53 +228,69 @@ class RelationListViewModel(
 
     private fun onRelationClickedListMode(ctx: Id, view: DocumentRelationView) {
         viewModelScope.launch {
-            val relation = stores.relations.current().first { it.key == view.relationId }
-            if (relation.isReadOnly) {
+            val relation = storeOfRelations.getById(view.relationId)
+            if (relation == null) {
+                if (BuildConfig.DEBUG) {
+                    _toasts.emit("$NOT_FOUND_IN_RELATION_STORE[${view.relationId}]")
+                }
+                Timber.w("Couldn't find relation in store by id:${view.relationId}")
+                return@launch
+            }
+            if (relation.isReadonlyValue) {
                 _toasts.emit(NOT_ALLOWED_FOR_RELATION)
                 Timber.d("No interaction allowed with this relation")
                 return@launch
             }
             when (relation.format) {
-                Relation.Format.SHORT_TEXT,
-                Relation.Format.LONG_TEXT,
-                Relation.Format.NUMBER,
-                Relation.Format.URL,
-                Relation.Format.EMAIL,
-                Relation.Format.PHONE -> {
+                RelationFormat.SHORT_TEXT,
+                RelationFormat.LONG_TEXT,
+                RelationFormat.NUMBER,
+                RelationFormat.URL,
+                RelationFormat.EMAIL,
+                RelationFormat.PHONE -> {
                     commands.emit(
                         Command.EditTextRelationValue(
                             ctx = ctx,
-                            relation = view.relationId,
+                            relationId = relation.id,
+                            relationKey = relation.key,
                             target = ctx,
                             isLocked = resolveIsLockedState(ctx)
                         )
                     )
                 }
-                Relation.Format.CHECKBOX -> {
+                RelationFormat.CHECKBOX -> {
                     proceedWithTogglingRelationCheckboxValue(view, ctx)
                 }
-                Relation.Format.DATE -> {
+                RelationFormat.DATE -> {
                     commands.emit(
                         Command.EditDateRelationValue(
                             ctx = ctx,
-                            relation = view.relationId,
+                            relationId = relation.id,
+                            relationKey = relation.key,
                             target = ctx
                         )
                     )
                 }
-                Relation.Format.STATUS,
-                Relation.Format.TAG,
-                Relation.Format.FILE,
-                Relation.Format.OBJECT -> {
+                RelationFormat.STATUS,
+                RelationFormat.TAG,
+                RelationFormat.FILE,
+                RelationFormat.OBJECT -> {
                     commands.emit(
                         Command.EditRelationValue(
                             ctx = ctx,
-                            relation = view.relationId,
+                            relationId = relation.id,
+                            relationKey = relation.key,
                             target = ctx,
-                            targetObjectTypes = relation.objectTypes,
+                            targetObjectTypes = relation.relationFormatObjectTypes,
                             isLocked = resolveIsLockedState(ctx)
                         )
                     )
+                }
+                RelationFormat.EMOJI,
+                RelationFormat.RELATIONS,
+                RelationFormat.UNDEFINED -> {
+                    _toasts.emit(NOT_SUPPORTED_UPDATE_VALUE)
+                    Timber.d("Update value of relation with format:[${relation.format}] is not supported")
                 }
                 else -> {}
             }
@@ -291,27 +323,30 @@ class RelationListViewModel(
 
     private fun getRelations(ctx: Id) {
         viewModelScope.launch {
-            objectRelationList.invoke(ObjectRelationList.Params(ctx = ctx)).process(
-                failure = { throwable -> Timber.e("Error while getting object relation list $throwable") },
-                success = { list: List<Relation> ->
-                    val details = stores.details.current()
-                    val values = details.details[ctx]?.map ?: emptyMap()
-                    views.value = list.views(details, values, urlBuilder).map { Model.Item(it) }
-                }
-            )
+            val relations =
+                stores.relationLinks.current().mapNotNull { storeOfRelations.getByKey(it.key) }
+            val details = stores.details.current()
+            val values = details.details[ctx]?.map ?: emptyMap()
+            views.value =
+                relations.views(
+                    details = details,
+                    values = values,
+                    urlBuilder = urlBuilder
+                )
+                    .map { Model.Item(it) }
         }
     }
 
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
-        relationId: Id
+        relationKey: Key
     ) {
         viewModelScope.launch {
             updateDetail(
                 UpdateDetail.Params(
                     ctx = ctx,
-                    key = relationId,
+                    key = relationKey,
                     value = value
                 )
             ).process(
@@ -319,7 +354,7 @@ class RelationListViewModel(
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
                     detailModificationManager.updateRelationValue(
                         target = ctx,
-                        key = relationId,
+                        key = relationKey,
                         value = value
                     )
                     sendAnalyticsRelationValueEvent(analytics)
@@ -351,20 +386,23 @@ class RelationListViewModel(
     sealed class Command {
         data class EditTextRelationValue(
             val ctx: Id,
-            val relation: Id,
+            val relationId: Id,
+            val relationKey: Key,
             val target: Id,
             val isLocked: Boolean = false
         ) : Command()
 
         data class EditDateRelationValue(
             val ctx: Id,
-            val relation: Id,
+            val relationId: Id,
+            val relationKey: Key,
             val target: Id
         ) : Command()
 
         data class EditRelationValue(
             val ctx: Id,
-            val relation: Id,
+            val relationId: Id,
+            val relationKey: Key,
             val target: Id,
             val targetObjectTypes: List<Id>,
             val isLocked: Boolean = false
@@ -378,5 +416,7 @@ class RelationListViewModel(
 
     companion object {
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
+        const val NOT_FOUND_IN_RELATION_STORE = "Couldn't find in relation store by id:"
+        const val NOT_SUPPORTED_UPDATE_VALUE = "Update value of this relation isn't supported"
     }
 }

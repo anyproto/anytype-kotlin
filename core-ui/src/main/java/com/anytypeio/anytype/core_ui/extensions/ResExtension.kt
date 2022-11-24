@@ -5,9 +5,10 @@ import android.graphics.drawable.Drawable
 import android.webkit.MimeTypeMap
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_models.DVSortType
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
@@ -146,69 +147,69 @@ fun ColumnView.Format.relationIconSmall(): Int? = when (this) {
     else -> null
 }
 
-fun Relation.Format.icon(isMedium: Boolean = false): Int = when (this) {
-    Relation.Format.SHORT_TEXT, Relation.Format.LONG_TEXT -> {
+fun RelationFormat.icon(isMedium: Boolean = false): Int = when (this) {
+    RelationFormat.SHORT_TEXT, RelationFormat.LONG_TEXT -> {
         if (isMedium)
             R.drawable.ic_relation_text_48
         else
             R.drawable.ic_relation_text_32
     }
-    Relation.Format.NUMBER -> {
+    RelationFormat.NUMBER -> {
         if (isMedium)
             R.drawable.ic_relation_number_48
         else
             R.drawable.ic_relation_number_32
     }
-    Relation.Format.STATUS -> {
+    RelationFormat.STATUS -> {
         if (isMedium)
             R.drawable.ic_relation_status_48
         else
             R.drawable.ic_relation_status_32
     }
-    Relation.Format.DATE -> {
+    RelationFormat.DATE -> {
         if (isMedium)
             R.drawable.ic_relation_date_48
         else
             R.drawable.ic_relation_date_32
     }
-    Relation.Format.FILE -> {
+    RelationFormat.FILE -> {
         if (isMedium)
             R.drawable.ic_relation_attachment_48
         else
             R.drawable.ic_relation_attachment_32
     }
-    Relation.Format.CHECKBOX -> {
+    RelationFormat.CHECKBOX -> {
         if (isMedium)
             R.drawable.ic_relation_checkbox_48
         else
             R.drawable.ic_relation_checkbox_32
     }
-    Relation.Format.URL -> {
+    RelationFormat.URL -> {
         if (isMedium)
             R.drawable.ic_relation_url_48
         else
             R.drawable.ic_relation_url_32
     }
-    Relation.Format.EMAIL -> {
+    RelationFormat.EMAIL -> {
         if (isMedium)
             R.drawable.ic_relation_email_48
         else
             R.drawable.ic_relation_email_32
     }
-    Relation.Format.PHONE -> {
+    RelationFormat.PHONE -> {
         if (isMedium)
             R.drawable.ic_relation_phone_number_48
         else
             R.drawable.ic_relation_phone_number_32
     }
-    Relation.Format.EMOJI -> R.drawable.ic_relation_object_32
-    Relation.Format.OBJECT -> {
+    RelationFormat.EMOJI -> R.drawable.ic_relation_object_32
+    RelationFormat.OBJECT -> {
         if (isMedium)
             R.drawable.ic_relation_object_48
         else
             R.drawable.ic_relation_object_32
     }
-    Relation.Format.TAG -> {
+    RelationFormat.TAG -> {
         if (isMedium)
             R.drawable.ic_relation_tag_48
         else
@@ -220,20 +221,20 @@ fun Relation.Format.icon(isMedium: Boolean = false): Int = when (this) {
     }
 }
 
-fun DVSortType.text(format: Relation.Format): Int = when (format) {
-    Relation.Format.TAG, Relation.Format.STATUS -> {
+fun DVSortType.text(format: RelationFormat): Int = when (format) {
+    RelationFormat.TAG, RelationFormat.STATUS -> {
         if (this == DVSortType.ASC)
             R.string.sort_from_first_to_last
         else
             R.string.sort_from_last_to_first
     }
-    Relation.Format.NUMBER, Relation.Format.DATE -> {
+    RelationFormat.NUMBER, RelationFormat.DATE -> {
         if (this == DVSortType.ASC)
             R.string.sort_from_one_to_nine
         else
             R.string.sort_from_nine_to_one
     }
-    Relation.Format.CHECKBOX -> {
+    RelationFormat.CHECKBOX -> {
         if (this == DVSortType.ASC)
             R.string.sort_from_unchecked_to_checked
         else
@@ -280,4 +281,23 @@ fun ObjectLayoutView.getName(): Int? = when (this) {
     is ObjectLayoutView.Relation -> null
     is ObjectLayoutView.Space -> null
     is ObjectLayoutView.Bookmark -> null
+}
+
+@StringRes
+fun RelationFormat.getPrettyName(): Int = when (this) {
+    RelationFormat.LONG_TEXT -> R.string.relation_format_long_text
+    RelationFormat.SHORT_TEXT -> R.string.relation_format_short_text
+    RelationFormat.NUMBER -> R.string.relation_format_number
+    RelationFormat.STATUS -> R.string.relation_format_status
+    RelationFormat.TAG -> R.string.relation_format_tag
+    RelationFormat.DATE -> R.string.relation_format_date
+    RelationFormat.FILE -> R.string.relation_format_file
+    RelationFormat.CHECKBOX -> R.string.relation_format_checkbox
+    RelationFormat.URL -> R.string.relation_format_url
+    RelationFormat.EMAIL -> R.string.relation_format_email
+    RelationFormat.PHONE -> R.string.relation_format_phone
+    RelationFormat.EMOJI -> R.string.relation_format_emoji
+    RelationFormat.OBJECT -> R.string.relation_format_object
+    RelationFormat.RELATIONS -> R.string.relation_format_relation
+    RelationFormat.UNDEFINED -> R.string.undefined
 }

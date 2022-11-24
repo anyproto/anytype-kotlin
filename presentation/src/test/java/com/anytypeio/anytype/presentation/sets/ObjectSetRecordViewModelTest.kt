@@ -1,17 +1,16 @@
 package com.anytypeio.anytype.presentation.sets
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -34,54 +33,9 @@ class ObjectSetRecordViewModelTest {
     lateinit var setObjectDetails: UpdateDetail
 
     private val ctx: Id = MockDataFactory.randomUuid()
-    private val obj: Id = MockDataFactory.randomUuid()
-    private val record = mapOf(
-        Relations.ID to obj
+    private val obj = ObjectWrapper.Basic(
+        mapOf(Relations.ID to MockDataFactory.randomUuid())
     )
-
-    //region Defining dummy object set
-
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            style = Block.Content.Text.Style.TITLE,
-            text = MockDataFactory.randomString(),
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
-
-    private val header = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Layout(
-            type = Block.Content.Layout.Type.HEADER
-        ),
-        fields = Block.Fields.empty(),
-        children = listOf(title.id)
-    )
-
-    private val viewer = DVViewer(
-        id = MockDataFactory.randomUuid(),
-        filters = emptyList(),
-        sorts = emptyList(),
-        type = Block.Content.DataView.Viewer.Type.values().random(),
-        name = MockDataFactory.randomString(),
-        viewerRelations = emptyList()
-    )
-
-    private val dv = Block(
-        id = MockDataFactory.randomUuid(),
-        content = DV(
-            sources = listOf(MockDataFactory.randomString()),
-            relations = emptyList(),
-            viewers = listOf(viewer)
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
-
-    //endregion
 
     @Before
     fun setup() {
@@ -89,18 +43,18 @@ class ObjectSetRecordViewModelTest {
     }
 
     @Test
-    fun `should not crash if cache does not contain relevant data`() {
+    fun `should not crash if store does not contain relevant data`() {
 
         // SETUP
 
-        val emptyCache = ObjectSetRecordCache()
+        val store = DefaultObjectStore()
 
-        val vm = buildViewModel(cache = emptyCache)
+        val vm = buildViewModel(store = store)
 
         // TESTING
 
-        vm.onComplete(
-            ctx = ctx,
+        vm.onActionDone(
+            target = obj.id,
             input = MockDataFactory.randomString()
         )
 
@@ -108,30 +62,24 @@ class ObjectSetRecordViewModelTest {
     }
 
     @Test
-    fun `should proceed with updating record name based on user input on action done`() {
+    fun `should proceed with updating record name based on user input on action done`() = runTest {
 
         // SETUP
 
-        val doc = listOf(
-            header,
-            title,
-            dv
-        )
-
-        val state = MutableStateFlow(ObjectSet(blocks = doc))
-
-        val cache = ObjectSetRecordCache().apply {
-            map[ctx] = record
+        val store = DefaultObjectStore().apply {
+            merge(
+                objects = listOf(obj),
+                dependencies = emptyList(),
+                subscriptions = listOf(ctx)
+            )
         }
 
-        val vm = buildViewModel(
-            cache = cache
-        )
+        val vm = buildViewModel(store = store)
 
         val input = MockDataFactory.randomString()
 
         val params = UpdateDetail.Params(
-            ctx = obj,
+            ctx = obj.id,
             key = Relations.NAME,
             value = input
         )
@@ -140,8 +88,8 @@ class ObjectSetRecordViewModelTest {
 
         // TESTING
 
-        vm.onComplete(
-            ctx = ctx,
+        vm.onActionDone(
+            target = obj.id,
             input = input
         )
 
@@ -155,42 +103,36 @@ class ObjectSetRecordViewModelTest {
 
         // SETUP
 
-        val doc = listOf(
-            header,
-            title,
-            dv
-        )
-
-        val state = MutableStateFlow(ObjectSet(blocks = doc))
-
-        val cache = ObjectSetRecordCache().apply {
-            map[ctx] = record
+        val store = DefaultObjectStore().apply {
+            merge(
+                objects = listOf(obj),
+                dependencies = emptyList(),
+                subscriptions = listOf(ctx)
+            )
         }
 
         val input = MockDataFactory.randomString()
 
         val params = UpdateDetail.Params(
-            ctx = obj,
+            ctx = obj.id,
             key = Relations.NAME,
             value = input
         )
 
         stubSetObjectDetails(params)
 
-        val vm = buildViewModel(
-            cache = cache
-        )
+        val vm = buildViewModel(store = store)
 
         // TESTING
 
         vm.commands.test {
             vm.onButtonClicked(
-                ctx = ctx,
+                target = obj.id,
                 input = input
             )
             assertEquals(
                 expected = ObjectSetRecordViewModel.Command.OpenObject(
-                    ctx = obj
+                    ctx = obj.id
                 ),
                 actual = awaitItem()
             )
@@ -206,40 +148,36 @@ class ObjectSetRecordViewModelTest {
 
         // SETUP
 
-        val doc = listOf(
-            header,
-            title,
-            dv
-        )
-
-        val state = MutableStateFlow(ObjectSet(blocks = doc))
-
-        val cache = ObjectSetRecordCache().apply {
-            map[ctx] = record
+        val store = DefaultObjectStore().apply {
+            merge(
+                objects = listOf(obj),
+                dependencies = emptyList(),
+                subscriptions = listOf(ctx)
+            )
         }
 
         val emptyInput = ""
 
         val params = UpdateDetail.Params(
-            ctx = obj,
+            ctx = obj.id,
             key = Relations.NAME,
             value = emptyInput
         )
 
         stubSetObjectDetails(params)
 
-        val vm = buildViewModel(cache = cache)
+        val vm = buildViewModel(store = store)
 
         // TESTING
 
         vm.commands.test {
             vm.onButtonClicked(
-                ctx = ctx,
+                target = obj.id,
                 input = emptyInput
             )
             assertEquals(
                 expected = ObjectSetRecordViewModel.Command.OpenObject(
-                    ctx = obj
+                    ctx = obj.id
                 ),
                 actual = awaitItem()
             )
@@ -249,10 +187,10 @@ class ObjectSetRecordViewModelTest {
     }
 
     fun buildViewModel(
-        cache: ObjectSetRecordCache
+        store: ObjectStore
     ) : ObjectSetRecordViewModel = ObjectSetRecordViewModel(
         setObjectDetails = setObjectDetails,
-        objectSetRecordCache = cache
+        objectStore = store
     )
 
     private fun stubSetObjectDetails(

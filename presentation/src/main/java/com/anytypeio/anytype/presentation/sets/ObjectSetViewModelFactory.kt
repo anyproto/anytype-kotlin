@@ -8,21 +8,21 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
-import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
-import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.domain.page.CreateNewObject
-import com.anytypeio.anytype.domain.search.CancelSearchSubscription
-import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
@@ -30,10 +30,9 @@ class ObjectSetViewModelFactory(
     private val reducer: ObjectSetReducer,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
-    private val addDataViewRelation: AddNewRelationToDataView,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val setObjectDetails: UpdateDetail,
-    private val createDataViewRecord: CreateDataViewRecord,
+    private val createDataViewObject: CreateDataViewObject,
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
@@ -41,7 +40,6 @@ class ObjectSetViewModelFactory(
     private val interceptThreadStatus: InterceptThreadStatus,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
-    private val objectSetRecordCache: ObjectSetRecordCache,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
@@ -52,7 +50,8 @@ class ObjectSetViewModelFactory(
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val setDataViewSource: SetDataViewSource,
     private val database: ObjectSetDatabase,
-    private val paginator: ObjectSetPaginator
+    private val paginator: ObjectSetPaginator,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -60,10 +59,9 @@ class ObjectSetViewModelFactory(
             reducer = reducer,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
-            addDataViewRelation = addDataViewRelation,
             updateDataViewViewer = updateDataViewViewer,
             setObjectDetails = setObjectDetails,
-            createDataViewRecord = createDataViewRecord,
+            createDataViewObject = createDataViewObject,
             setDocCoverImage = setDocCoverImage,
             downloadUnsplashImage = downloadUnsplashImage,
             updateText = updateText,
@@ -71,7 +69,6 @@ class ObjectSetViewModelFactory(
             interceptThreadStatus = interceptThreadStatus,
             dispatcher = dispatcher,
             delegator = delegator,
-            objectSetRecordCache = objectSetRecordCache,
             coverImageHashProvider = coverImageHashProvider,
             urlBuilder = urlBuilder,
             session = session,
@@ -82,7 +79,8 @@ class ObjectSetViewModelFactory(
             cancelSearchSubscription = cancelSearchSubscription,
             setDataViewSource = setDataViewSource,
             database = database,
-            paginator = paginator
+            paginator = paginator,
+            storeOfRelations = storeOfRelations
         ) as T
     }
 }

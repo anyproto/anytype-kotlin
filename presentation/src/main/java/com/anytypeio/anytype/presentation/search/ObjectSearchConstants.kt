@@ -1,14 +1,22 @@
 package com.anytypeio.anytype.presentation.search
 
-import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_models.ObjectType.Companion.AUDIO_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.DASHBOARD_TYPE
-import com.anytypeio.anytype.core_models.ObjectType.Companion.FILE_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.IMAGE_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.OBJECT_TYPE_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.RELATION_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.TEMPLATE_URL
-import com.anytypeio.anytype.core_models.ObjectType.Companion.VIDEO_URL
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
+import com.anytypeio.anytype.core_models.ObjectTypeIds.DASHBOARD
+import com.anytypeio.anytype.core_models.ObjectTypeIds.DATE
+import com.anytypeio.anytype.core_models.ObjectTypeIds.FILE
+import com.anytypeio.anytype.core_models.ObjectTypeIds.IMAGE
+import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE
+import com.anytypeio.anytype.core_models.ObjectTypeIds.RELATION
+import com.anytypeio.anytype.core_models.ObjectTypeIds.RELATION_OPTION
+import com.anytypeio.anytype.core_models.ObjectTypeIds.TEMPLATE
+import com.anytypeio.anytype.core_models.ObjectTypeIds.VIDEO
+import com.anytypeio.anytype.core_models.Relations
 
 /**
  * This class contains all filters and sorts for different use cases using Rpc.Object.Search command
@@ -31,13 +39,16 @@ object ObjectSearchConstants {
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
-                OBJECT_TYPE_URL,
-                RELATION_URL,
-                TEMPLATE_URL,
-                IMAGE_URL,
-                FILE_URL,
-                VIDEO_URL,
-                AUDIO_URL
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO,
+                DASHBOARD,
+                DATE,
+                RELATION_OPTION
             )
         )
     )
@@ -66,13 +77,16 @@ object ObjectSearchConstants {
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
-                OBJECT_TYPE_URL,
-                RELATION_URL,
-                TEMPLATE_URL,
-                IMAGE_URL,
-                FILE_URL,
-                VIDEO_URL,
-                AUDIO_URL
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO,
+                DASHBOARD,
+                DATE,
+                RELATION_OPTION
             )
         ),
         DVFilter(
@@ -170,9 +184,12 @@ object ObjectSearchConstants {
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
-                OBJECT_TYPE_URL,
-                RELATION_URL,
-                TEMPLATE_URL
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                RELATION_OPTION,
+                DASHBOARD,
+                DATE
             )
         )
     )
@@ -206,14 +223,17 @@ object ObjectSearchConstants {
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
-                OBJECT_TYPE_URL,
-                RELATION_URL,
-                TEMPLATE_URL,
-                IMAGE_URL,
-                FILE_URL,
-                VIDEO_URL,
-                AUDIO_URL,
-                DASHBOARD_TYPE
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO,
+                DASHBOARD,
+                RELATION_OPTION,
+                DASHBOARD,
+                DATE
             )
         )
     )
@@ -249,7 +269,7 @@ object ObjectSearchConstants {
         DVFilter(
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.EQUAL,
-            value = ObjectType.SET_URL
+            value = ObjectTypeIds.SET
         )
     )
 
@@ -284,7 +304,7 @@ object ObjectSearchConstants {
         DVFilter(
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_EQUAL,
-            value = ObjectType.WORKSPACE_URL
+            value = ObjectTypeIds.WORKSPACE
         ),
         DVFilter(
             relationKey = Relations.WORKSPACE_ID,
@@ -315,6 +335,47 @@ object ObjectSearchConstants {
         Relations.IS_ARCHIVED,
         Relations.IS_DELETED,
         Relations.SNIPPET
+    )
+
+    val defaultOptionKeys = listOf(
+        Relations.RELATION_OPTION_TEXT,
+        Relations.RELATION_OPTION_COLOR
+    )
+
+    val defaultDataViewKeys = defaultKeys + defaultOptionKeys
+
+    //endregion
+
+    //region OBJECT TYPES
+    val filterObjectType = listOf(
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.EQUAL,
+            value = OBJECT_TYPE
+        ),
+        DVFilter(
+            relationKey = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.IS_DELETED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        )
+    )
+
+    val defaultKeysObjectType = listOf(
+        Relations.ID,
+        Relations.NAME,
+        Relations.DESCRIPTION,
+        Relations.ICON_IMAGE,
+        Relations.ICON_EMOJI,
+        Relations.TYPE,
+        Relations.LAYOUT,
+        Relations.IS_ARCHIVED,
+        Relations.IS_DELETED,
+        Relations.SMARTBLOCKTYPES
     )
 
     //endregion

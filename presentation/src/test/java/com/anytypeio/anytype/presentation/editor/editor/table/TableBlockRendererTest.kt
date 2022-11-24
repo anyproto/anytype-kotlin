@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -57,7 +58,7 @@ class TableBlockRendererTest {
             focus = focus,
             indent = indent,
             details = details,
-            relations = emptyList(),
+            relationLinks = emptyList(),
             restrictions = restrictions,
             selection = selections,
             objectTypes = listOf()
@@ -85,6 +86,7 @@ class TableBlockRendererTest {
 
     private lateinit var wrapper: BlockViewRenderWrapper
 
+    private var storeOfRelations = DefaultStoreOfRelations()
 
     @Before
     fun setup() {
@@ -92,7 +94,8 @@ class TableBlockRendererTest {
         renderer = DefaultBlockViewRenderer(
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
-            coverImageHashProvider = coverImageHashProvider
+            coverImageHashProvider = coverImageHashProvider,
+            storeOfRelations = storeOfRelations
         )
     }
 

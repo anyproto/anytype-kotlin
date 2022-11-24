@@ -12,11 +12,18 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.relationIcon
 import com.anytypeio.anytype.core_ui.features.sets.CreateFilterAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -118,15 +125,15 @@ open class CreateFilterFromSelectedValueFragment :
         }
     }
 
-    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {}
+    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationKey: Key) {}
 
-    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationId: Id) {
+    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationKey: Key) {
         helper.handleNumberValueChanged(this, number, vm)
     }
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(relationId = relation, filterIndex = FILTER_INDEX_EMPTY)
+        vm.onStart(relationKey = relation, filterIndex = FILTER_INDEX_EMPTY)
     }
 
     override fun onStop() {

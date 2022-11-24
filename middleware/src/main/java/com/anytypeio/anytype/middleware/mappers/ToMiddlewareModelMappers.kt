@@ -454,4 +454,5 @@ fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {
     Relation.Format.OBJECT -> MRelationFormat.object_
     Relation.Format.TAG -> MRelationFormat.tag
     Relation.Format.RELATIONS -> MRelationFormat.relations
+    Relation.Format.UNDEFINED -> throw IllegalStateException("Format was undefined")
 }

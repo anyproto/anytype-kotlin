@@ -6,9 +6,11 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.di.scope.CreateFromScratch
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
+import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.relations.AddNewRelationToObject
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
+import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectBlockViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
@@ -48,24 +50,29 @@ object RelationCreateFromScratchForObjectModule {
     @Provides
     @CreateFromScratch
     fun provideViewModelFactory(
-        addNewRelationToObject: AddNewRelationToObject,
+        addRelationToObject: AddRelationToObject,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        createFromScratchState: StateHolder<CreateFromScratchState>
-    ): RelationCreateFromScratchForObjectViewModel.Factory =
-        RelationCreateFromScratchForObjectViewModel.Factory(
-            addNewRelationToObject = addNewRelationToObject,
+        createFromScratchState: StateHolder<CreateFromScratchState>,
+        createRelation: CreateRelation
+    ) = RelationCreateFromScratchForObjectViewModel.Factory(
+            addRelationToObject = addRelationToObject,
+            createRelation = createRelation,
             dispatcher = dispatcher,
             analytics = analytics,
             createFromScratchState = createFromScratchState
-        )
+    )
 
     @JvmStatic
     @Provides
     @CreateFromScratch
-    fun provideAddNewRelationToObjectUseCase(
-        repo: BlockRepository
-    ): AddNewRelationToObject = AddNewRelationToObject(repo)
+    fun createRelation(
+        repo: BlockRepository,
+        storeOfRelations: StoreOfRelations
+    ) = CreateRelation(
+        repo = repo,
+        storeOfRelations = storeOfRelations
+    )
 
     @JvmStatic
     @Provides
@@ -95,6 +102,7 @@ interface RelationCreateFromScratchForDataViewSubComponent {
 
 @Module
 object RelationCreateFromScratchForDataViewModule {
+
     @JvmStatic
     @Provides
     @CreateFromScratch
@@ -102,20 +110,21 @@ object RelationCreateFromScratchForDataViewModule {
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
-        addNewRelationToDataView: AddNewRelationToDataView,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        createFromScratchState: StateHolder<CreateFromScratchState>
-    ): RelationCreateFromScratchForDataViewViewModel.Factory =
-        RelationCreateFromScratchForDataViewViewModel.Factory(
-            addNewRelationToDataView = addNewRelationToDataView,
+        createFromScratchState: StateHolder<CreateFromScratchState>,
+        createRelation: CreateRelation,
+        addRelationToDataView: AddRelationToDataView
+    ) = RelationCreateFromScratchForDataViewViewModel.Factory(
+            addRelationToDataView = addRelationToDataView,
             dispatcher = dispatcher,
             state = state,
             session = session,
             updateDataViewViewer = updateDataViewViewer,
             analytics = analytics,
-            createFromScratchState = createFromScratchState
-        )
+            createFromScratchState = createFromScratchState,
+            createRelation = createRelation
+    )
 
     @JvmStatic
     @Provides
@@ -126,6 +135,22 @@ object RelationCreateFromScratchForDataViewModule {
             limitObjectTypes = emptyList()
         )
     )
+
+    @JvmStatic
+    @Provides
+    @CreateFromScratch
+    fun createRelation(
+        repo: BlockRepository,
+        storeOfRelations: StoreOfRelations
+    ) = CreateRelation(
+        repo = repo,
+        storeOfRelations = storeOfRelations
+    )
+
+    @JvmStatic
+    @Provides
+    @CreateFromScratch
+    fun addRelationToDataView(repo: BlockRepository) = AddRelationToDataView(repo)
 }
 
 @Subcomponent(modules = [RelationCreateFromScratchForObjectBlockModule::class])
@@ -145,28 +170,23 @@ interface RelationCreateFromScratchForObjectBlockSubComponent {
 
 @Module
 object RelationCreateFromScratchForObjectBlockModule {
-    @JvmStatic
-    @Provides
-    @CreateFromScratch
-    fun provideViewModelFactory(
-        addNewRelationToObject: AddNewRelationToObject,
-        dispatcher: Dispatcher<Payload>,
-        analytics: Analytics,
-        createFromScratchState: StateHolder<CreateFromScratchState>
-    ): RelationCreateFromScratchForObjectBlockViewModel.Factory =
-        RelationCreateFromScratchForObjectBlockViewModel.Factory(
-            addNewRelationToObject = addNewRelationToObject,
-            dispatcher = dispatcher,
-            analytics = analytics,
-            createFromScratchState = createFromScratchState
-        )
 
     @JvmStatic
     @Provides
     @CreateFromScratch
-    fun provideAddNewRelationToObjectUseCase(
-        repo: BlockRepository
-    ): AddNewRelationToObject = AddNewRelationToObject(repo)
+    fun provideViewModelFactory(
+        addRelationToObject: AddRelationToObject,
+        createRelation: CreateRelation,
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics,
+        createFromScratchState: StateHolder<CreateFromScratchState>
+    ) = RelationCreateFromScratchForObjectBlockViewModel.Factory(
+            addRelationToObject = addRelationToObject,
+            createRelation = createRelation,
+            dispatcher = dispatcher,
+            analytics = analytics,
+            createFromScratchState = createFromScratchState
+    )
 
     @JvmStatic
     @Provides
@@ -176,6 +196,17 @@ object RelationCreateFromScratchForObjectBlockModule {
             format = RelationFormat.OBJECT,
             limitObjectTypes = emptyList()
         )
+    )
+
+    @JvmStatic
+    @Provides
+    @CreateFromScratch
+    fun createRelation(
+        repo: BlockRepository,
+        storeOfRelations: StoreOfRelations
+    ) = CreateRelation(
+        repo = repo,
+        storeOfRelations = storeOfRelations
     )
 }
 

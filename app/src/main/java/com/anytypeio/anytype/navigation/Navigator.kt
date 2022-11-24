@@ -15,7 +15,6 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.dashboard.DashboardFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
-import com.anytypeio.anytype.ui.sets.CreateObjectSetFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 
@@ -226,13 +225,6 @@ class Navigator : AppNavigation {
                 bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target)
             )
         }
-    }
-
-    override fun openCreateSetScreen(ctx: Id) {
-        navController?.navigate(
-            R.id.from_desktop_to_create_sets,
-            bundleOf(CreateObjectSetFragment.CONTEXT_ID_KEY to ctx)
-        )
     }
 
     override fun openUserSettingsScreen() {

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.sets.filter.DVFilterConditionCategory
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -24,7 +25,7 @@ fun Viewer.Filter.Condition.type(): Viewer.Filter.Type = when (this) {
     is Viewer.Filter.Condition.Text -> Viewer.Filter.Type.TEXT
 }
 
-fun Relation.toConditionView(condition: DVFilterCondition?): Viewer.Filter.Condition =
+fun ObjectWrapper.Relation.toConditionView(condition: DVFilterCondition?): Viewer.Filter.Condition =
     when (this.format) {
         Relation.Format.SHORT_TEXT,
         Relation.Format.LONG_TEXT,

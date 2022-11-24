@@ -13,6 +13,12 @@ interface ObjectStore {
 
     suspend fun get(target: Id) : ObjectWrapper.Basic?
 
+    suspend fun getAll() : List<ObjectWrapper.Basic>
+    suspend fun getAllAsRelations() : List<ObjectWrapper.Relation>
+
+    // Temporary API until we introduce proper interface for relations store
+    suspend fun getRelationById(id: Id) : ObjectWrapper.Relation?
+
     suspend fun amend(
         target: Id,
         diff: Map<Id, Any?>,
@@ -63,6 +69,18 @@ class DefaultObjectStore : ObjectStore {
 
     override suspend fun get(target: Id): ObjectWrapper.Basic? = mutex.withLock {
         return map[target]?.obj
+    }
+
+    override suspend fun getAll(): List<ObjectWrapper.Basic> {
+        return map.values.map { it.obj }
+    }
+
+    override suspend fun getAllAsRelations(): List<ObjectWrapper.Relation> {
+        return map.values.map { ObjectWrapper.Relation(it.obj.map) }
+    }
+
+    override suspend fun getRelationById(id: Id): ObjectWrapper.Relation? {
+        return map[id]?.obj?.map?.let { ObjectWrapper.Relation(it) }
     }
 
     override suspend fun merge(

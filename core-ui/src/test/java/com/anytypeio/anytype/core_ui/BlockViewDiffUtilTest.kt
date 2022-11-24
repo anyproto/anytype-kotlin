@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui
 
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.CALLOUT_ICON_CHANGED
@@ -1047,6 +1048,7 @@ class BlockViewDiffUtilTest {
 
         val view = DocumentRelationView.Default(
             relationId = MockDataFactory.randomUuid(),
+            relationKey = Relations.TYPE,
             value = null,
             format = RelationFormat.values().random(),
             name = MockDataFactory.randomString()
@@ -1091,6 +1093,7 @@ class BlockViewDiffUtilTest {
 
         val view = DocumentRelationView.Default(
             relationId = MockDataFactory.randomUuid(),
+            relationKey = Relations.TYPE,
             value = null,
             format = RelationFormat.values().random(),
             name = MockDataFactory.randomString()
@@ -1135,6 +1138,7 @@ class BlockViewDiffUtilTest {
 
         val view = DocumentRelationView.Checkbox(
             relationId = MockDataFactory.randomUuid(),
+            relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             isChecked = MockDataFactory.randomBoolean()
         )
@@ -1190,6 +1194,7 @@ class BlockViewDiffUtilTest {
 
         val oldView = DocumentRelationView.Status(
             relationId = MockDataFactory.randomUuid(),
+            relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             status = listOf(oldStatus)
         )
@@ -1245,6 +1250,7 @@ class BlockViewDiffUtilTest {
 
         val oldView = DocumentRelationView.Tags(
             relationId = MockDataFactory.randomUuid(),
+            relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             tags = listOf(oldTag)
         )
@@ -1299,6 +1305,7 @@ class BlockViewDiffUtilTest {
 
         val oldView = DocumentRelationView.Object(
             relationId = MockDataFactory.randomUuid(),
+            relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             objects = listOf(oldObject)
         )
@@ -1352,6 +1359,7 @@ class BlockViewDiffUtilTest {
         )
 
         val oldView = DocumentRelationView.File(
+            relationKey = MockDataFactory.randomUuid(),
             relationId = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
             files = listOf(oldFile)

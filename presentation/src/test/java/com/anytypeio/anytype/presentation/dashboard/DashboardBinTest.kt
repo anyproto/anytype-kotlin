@@ -87,7 +87,9 @@ class DashboardBinTest : DashboardTestSetup() {
                     offset = 0,
                     afterId = null,
                     beforeId = null,
-                    source = emptyList()
+                    source = emptyList(),
+                    ignoreWorkspace = null,
+                    noDepSubscription = null
                 )
             } doReturn SearchResult(
                 results = objects.map {
@@ -211,7 +213,9 @@ class DashboardBinTest : DashboardTestSetup() {
                     offset = 0,
                     afterId = null,
                     beforeId = null,
-                    source = emptyList()
+                    source = emptyList(),
+                    ignoreWorkspace = null,
+                    noDepSubscription = null
                 )
             } doReturn SearchResult(
                 results = objects.map {
@@ -356,7 +360,9 @@ class DashboardBinTest : DashboardTestSetup() {
                     offset = 0,
                     afterId = null,
                     beforeId = null,
-                    source = emptyList()
+                    source = emptyList(),
+                    ignoreWorkspace = null,
+                    noDepSubscription = null
                 )
             } doReturn SearchResult(
                 results = objects.map {

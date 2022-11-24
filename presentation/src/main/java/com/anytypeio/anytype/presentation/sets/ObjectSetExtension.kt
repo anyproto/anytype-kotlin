@@ -1,6 +1,12 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVRecord
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -11,9 +17,10 @@ import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
-fun ObjectSet.featuredRelations(
+suspend fun ObjectSet.featuredRelations(
     ctx: Id,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    relations: List<ObjectWrapper.Relation>
 ): BlockView.FeaturedRelation? {
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
@@ -22,7 +29,7 @@ fun ObjectSet.featuredRelations(
         views.addAll(
             mapFeaturedRelations(
                 ctx = ctx,
-                ids = ids,
+                keys = ids,
                 details = Block.Details(details),
                 relations = relations,
                 urlBuilder = urlBuilder
@@ -39,18 +46,19 @@ fun ObjectSet.featuredRelations(
 
 private fun mapFeaturedRelations(
     ctx: Id,
-    ids: List<String>,
+    keys: List<String>,
     details: Block.Details,
-    relations: List<Relation>,
+    relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder
-): List<DocumentRelationView> = ids.mapNotNull { id ->
-    when (id) {
+): List<DocumentRelationView> = keys.mapNotNull { key ->
+    when (key) {
         Relations.DESCRIPTION -> null
         Relations.TYPE -> {
             val objectTypeId = details.details[ctx]?.type?.firstOrNull()
             if (objectTypeId != null) {
                 DocumentRelationView.ObjectType(
-                    relationId = id,
+                    relationId = details.details[ctx]?.id.orEmpty(),
+                    relationKey = key,
                     name = details.details[objectTypeId]?.name.orEmpty(),
                     isFeatured = true,
                     type = objectTypeId
@@ -69,14 +77,15 @@ private fun mapFeaturedRelations(
                 }
             }
             DocumentRelationView.Source(
-                relationId = id,
+                relationId = details.details[ctx]?.id.orEmpty(),
+                relationKey = key,
                 name = Relations.RELATION_NAME_EMPTY,
                 isFeatured = true,
                 sources = sources
             )
         }
         else -> {
-            val relation = relations.firstOrNull { it.key == id }
+            val relation = relations.firstOrNull { it.key == key }
             relation?.view(
                 details = details,
                 values = details.details[ctx]?.map ?: emptyMap(),

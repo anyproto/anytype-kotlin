@@ -12,9 +12,8 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -51,7 +50,6 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -61,6 +59,8 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -74,6 +74,7 @@ import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddFileToObject
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -217,8 +218,6 @@ object EditorSessionModule {
         delegator: Delegator<Action>,
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
-        getCompatibleObjectTypes: GetCompatibleObjectTypes,
-        objectTypesProvider: ObjectTypesProvider,
         searchObjects: SearchObjects,
         getDefaultEditorType: GetDefaultEditorType,
         findObjectSetForType: FindObjectSetForType,
@@ -228,6 +227,8 @@ object EditorSessionModule {
         setDocImageIcon: SetDocumentImageIcon,
         editorTemplateDelegate: EditorTemplateDelegate,
         createNewObject: CreateNewObject,
+        storeOfRelations: StoreOfRelations,
+        storeOfObjectTypes: StoreOfObjectTypes,
         objectToSet: ConvertObjectToSet,
         featureToggles: FeatureToggles,
         tableDelegate: EditorTableDelegate
@@ -250,8 +251,6 @@ object EditorSessionModule {
         delegator = delegator,
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
-        getCompatibleObjectTypes = getCompatibleObjectTypes,
-        objectTypesProvider = objectTypesProvider,
         searchObjects = searchObjects,
         getDefaultEditorType = getDefaultEditorType,
         findObjectSetForType = findObjectSetForType,
@@ -262,6 +261,8 @@ object EditorSessionModule {
         setDocImageIcon = setDocImageIcon,
         editorTemplateDelegate = editorTemplateDelegate,
         createNewObject = createNewObject,
+        storeOfRelations = storeOfRelations,
+        storeOfObjectTypes = storeOfObjectTypes,
         objectToSet = objectToSet,
         featureToggles = featureToggles,
         tableDelegate = tableDelegate
@@ -307,11 +308,13 @@ object EditorSessionModule {
     fun provideDefaultBlockViewRenderer(
         urlBuilder: UrlBuilder,
         toggleStateHolder: ToggleStateHolder,
-        coverImageHashProvider: CoverImageHashProvider
+        coverImageHashProvider: CoverImageHashProvider,
+        storeOfRelations: StoreOfRelations
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
-        coverImageHashProvider = coverImageHashProvider
+        coverImageHashProvider = coverImageHashProvider,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic
@@ -831,8 +834,12 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideDefaultObjectRelationProvider(
-        storage: Editor.Storage
-    ): ObjectRelationProvider = DefaultObjectRelationProvider(storage.relations)
+        storage: Editor.Storage,
+        storeOfRelations: StoreOfRelations
+    ): ObjectRelationProvider = DefaultObjectRelationProvider(
+        storage = storage,
+        storeOfRelations = storeOfRelations
+    )
 
     @JvmStatic
     @Provides
@@ -927,13 +934,6 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetCompatibleObjectTypesUseCase(
-        repository: BlockRepository
-    ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun findObjectSetForType(
         repo: BlockRepository
     ): FindObjectSetForType = FindObjectSetForType(repo)
@@ -996,6 +996,11 @@ object EditorUseCaseModule {
             main = Dispatchers.Main
         )
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddRelationToObject(repo: BlockRepository) = AddRelationToObject(repo)
 
     @JvmStatic
     @Provides

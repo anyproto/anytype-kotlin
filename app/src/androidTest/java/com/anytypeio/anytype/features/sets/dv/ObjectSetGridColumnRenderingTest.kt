@@ -53,7 +53,7 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
             name = MockDataFactory.randomString(),
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.BASIC,
-            relations = emptyList(),
+            relationLinks = emptyList(),
             description = "",
             isHidden = false,
             smartBlockTypes = listOf(),
@@ -150,15 +150,10 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation1, relation2, relation3, relation4, relation5),
             details = defaultDetails,
-            viewer = viewer.id,
-            dataview = dataview.id,
-            records = emptyList(),
-            total = 1,
             objectTypes = listOf(type)
         )
 

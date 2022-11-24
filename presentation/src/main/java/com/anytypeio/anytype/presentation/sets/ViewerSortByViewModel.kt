@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.relations.sortingExpression
@@ -13,10 +14,12 @@ import com.anytypeio.anytype.presentation.sets.model.SortingView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class ViewerSortByViewModel(private val state: StateFlow<ObjectSet>) : ViewModel() {
+class ViewerSortByViewModel(
+    private val state: StateFlow<ObjectSet>,
+    private val storeOfRelations: StoreOfRelations
+) : ViewModel() {
 
     private val _viewState: MutableStateFlow<ViewerSortByViewState> =
         MutableStateFlow(ViewerSortByViewState.Init)
@@ -46,9 +49,14 @@ class ViewerSortByViewModel(private val state: StateFlow<ObjectSet>) : ViewModel
     }
 
     fun onViewCreated(viewerId: Id) {
-        val set = state.value
-        relations = set.simpleRelations(viewerId)
-        sorts.value = set.sortingExpression(viewerId)
+        viewModelScope.launch {
+            val set = state.value
+            relations = set.simpleRelations(
+                viewerId = viewerId,
+                storeOfRelations = storeOfRelations
+            )
+            sorts.value = set.sortingExpression(viewerId)
+        }
     }
 
     fun itemClicked(sortClick: SortClick) {
@@ -156,11 +164,17 @@ class ViewerSortByViewModel(private val state: StateFlow<ObjectSet>) : ViewModel
 
     private fun isFieldInSorting(key: String): Boolean = sorts.value.any { it.key == key }
 
-    class Factory(private val state: StateFlow<ObjectSet>) : ViewModelProvider.Factory {
+    class Factory(
+        private val state: StateFlow<ObjectSet>,
+        private val storeOfRelations: StoreOfRelations
+    ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ViewerSortByViewModel(state = state) as T
+            return ViewerSortByViewModel(
+                state = state,
+                storeOfRelations = storeOfRelations
+            ) as T
         }
     }
 }

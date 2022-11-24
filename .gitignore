@@ -13,7 +13,8 @@
 /analytics/gradle.properties
 .DS_Store
 **/build
-/libs
+/libs/build
+/libs/lib.aar
 /captures
 .externalNativeBuild
 ktlint

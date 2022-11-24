@@ -8,14 +8,17 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
@@ -218,22 +221,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.SetFields
     ): Payload = remote.setFields(command)
 
-    override suspend fun getObjectTypes(): List<ObjectType> = remote.getObjectTypes()
-
-    override suspend fun createObjectType(
-        prototype: ObjectType.Prototype
-    ): ObjectType = remote.createObjectType(prototype)
-
     override suspend fun createSet(
-        contextId: String,
-        targetId: String?,
-        position: Position?,
         objectType: String?
     ): Response.Set.Create = remote.createSet(
-        contextId = contextId,
-        targetId = targetId,
-        objectType = objectType,
-        position = position
+        objectType = objectType
     )
 
     override suspend fun setActiveDataViewViewer(
@@ -248,20 +239,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         view = view,
         offset = offset,
         limit = limit
-    )
-
-    override suspend fun addNewRelationToDataView(
-        context: Id,
-        target: Id,
-        name: String,
-        format: Relation.Format,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = remote.addNewRelationToDataView(
-        context = context,
-        target = target,
-        name = name,
-        format = format,
-        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun addRelationToDataView(
@@ -305,27 +282,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     )
 
     override suspend fun createDataViewRecord(
-        context: String,
-        target: String,
+        type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>
-    ): Map<String, Any?> = remote.createDataViewRecord(
-        context = context,
-        target = target,
+        prefilled: Map<Id, Any>,
+    ): Id = remote.createDataViewObject(
         template = template,
-        prefilled = prefilled
-    )
-
-    override suspend fun updateDataViewRecord(
-        context: Id,
-        target: Id,
-        record: Id,
-        values: Map<String, Any?>
-    ) = remote.updateDataViewRecord(
-        context = context,
-        target = target,
-        record = record,
-        values = values
+        prefilled = prefilled,
+        type = type
     )
 
     override suspend fun addDataViewViewer(
@@ -348,34 +311,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         ctx = ctx,
         dataview = dataview,
         viewer = viewer
-    )
-
-    override suspend fun addDataViewRelationOption(
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        record: Id,
-        name: String,
-        color: String
-    ): Pair<Payload, Id?> = remote.addDataViewRelationOption(
-        ctx = ctx,
-        dataview = dataview,
-        relation = relation,
-        record = record,
-        name = name,
-        color = color
-    )
-
-    override suspend fun addObjectRelationOption(
-        ctx: Id,
-        relation: Id,
-        name: Id,
-        color: String
-    ): Pair<Payload, Id?> = remote.addObjectRelationOption(
-        ctx = ctx,
-        relation = relation,
-        name = name,
-        color = color
     )
 
     override suspend fun searchObjects(
@@ -403,7 +338,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         offset: Long,
         limit: Int,
         beforeId: Id?,
-        afterId: Id?
+        afterId: Id?,
+        ignoreWorkspace: Boolean?,
+        noDepSubscription: Boolean?
     ): SearchResult = remote.searchObjectsWithSubscription(
         subscription = subscription,
         sorts = sorts,
@@ -413,7 +350,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         offset = offset,
         limit = limit,
         afterId = afterId,
-        beforeId = beforeId
+        beforeId = beforeId,
+        ignoreWorkspace = ignoreWorkspace,
+        noDepSubscription = noDepSubscription
     )
 
     override suspend fun searchObjectsByIdWithSubscription(
@@ -435,24 +374,12 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun addRelationToObject(
         ctx: Id,
-        relation: Id
+        relation: Key
     ): Payload = remote.addRelationToObject(ctx = ctx, relation = relation)
-
-    override suspend fun addNewRelationToObject(
-        ctx: Id,
-        name: String,
-        format: RelationFormat,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = remote.addNewRelationToObject(
-        ctx = ctx,
-        format = format,
-        name = name,
-        limitObjectTypes = limitObjectTypes
-    )
 
     override suspend fun deleteRelationFromObject(
         ctx: Id,
-        relation: Id
+        relation: Key
     ): Payload = remote.deleteRelationFromObject(ctx = ctx, relation = relation)
 
     override suspend fun debugSync(): String = remote.debugSync()
@@ -555,6 +482,28 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     ): Payload {
         return remote.blockDataViewSetSource(ctx, block, sources)
     }
+
+    override suspend fun createRelation(
+        name: String,
+        format: RelationFormat,
+        formatObjectTypes: List<Id>,
+        prefilled: Struct
+    ): ObjectWrapper.Relation = remote.createRelation(
+        name = name,
+        format = format,
+        formatObjectTypes = formatObjectTypes,
+        prefilled = prefilled
+    )
+
+    override suspend fun createRelationOption(
+        relation: Key,
+        name: String,
+        color: String
+    ): ObjectWrapper.Option = remote.createRelationOption(
+        relation = relation,
+        name = name,
+        color = color
+    )
 
     override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload {
         return remote.clearBlockContent(ctx, blockIds)

@@ -3,9 +3,12 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubRelationOptionObject
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -25,9 +28,6 @@ class TagAndStatusTests {
 
     @Mock
     lateinit var gateway: Gateway
-
-    @Mock
-    lateinit var store: ObjectStore
 
     @Before
     fun setup() {
@@ -49,29 +49,25 @@ class TagAndStatusTests {
         )
 
         val selOptions = listOf(
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag1",
-                color = "000",
-                scope = Relation.OptionScope.LOCAL
+                color = "000"
             ),
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag2",
-                color = "111",
-                scope = Relation.OptionScope.LOCAL
+                color = "111"
             ),
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag3",
-                color = "222",
-                scope = Relation.OptionScope.LOCAL
+                color = "222"
             ),
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag4",
-                color = "333",
-                scope = Relation.OptionScope.LOCAL
+                color = "333"
             )
         )
 
@@ -84,53 +80,35 @@ class TagAndStatusTests {
         )
 
         val dataViewRelations = listOf(
-            Relation(
-                key = viewerRelations[0].key,
-                name = "name",
-                format = Relation.Format.LONG_TEXT,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
+            ObjectWrapper.Relation(
+                mapOf(
+                    Relations.RELATION_KEY to viewerRelations[0].key,
+                    Relations.NAME to "name",
+                    Relations.RELATION_FORMAT to Relation.Format.LONG_TEXT.code.toDouble(),
+                    Relations.IS_READ_ONLY to true,
+                    Relations.IS_HIDDEN to false,
+                    Relations.SOURCE to Relation.Source.DETAILS.name
+                )
             ),
-            Relation(
-                key = viewerRelations[1].key,
-                name = "Tags",
-                format = Relation.Format.TAG,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = true,
-                source = Relation.Source.DETAILS,
-                selections = selOptions,
-                defaultValue = null
+            ObjectWrapper.Relation(
+                mapOf(
+                    Relations.RELATION_KEY to viewerRelations[1].key,
+                    Relations.NAME to "Tags",
+                    Relations.RELATION_FORMAT to RelationFormat.TAG.code.toDouble(),
+                    Relations.IS_READ_ONLY to true,
+                    Relations.IS_HIDDEN to false,
+                    Relations.SOURCE to Relation.Source.DETAILS.name
+                )
             )
         )
 
-        val viewerGrid = Block.Content.DataView.Viewer(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            type = Block.Content.DataView.Viewer.Type.GRID,
-            viewerRelations = viewerRelations,
-            sorts = listOf(),
-            filters = listOf()
+        val store = DefaultObjectStore()
+
+        store.merge(
+            objects = listOf(ObjectWrapper.Basic(records)),
+            dependencies = selOptions.map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
         )
-
-        val dataView = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.DataView(
-                sources = listOf("source://1"),
-                viewers = listOf(viewerGrid),
-                relations = dataViewRelations
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf()
-        )
-
-        val blocks = listOf(dataView)
-
-        val objectSet = ObjectSet(blocks = blocks)
 
         //TESTING
 
@@ -156,21 +134,21 @@ class TagAndStatusTests {
             cells = listOf(
                 CellView.Description(
                     id = recordId,
-                    key = viewerRelations[0].key,
+                    relationKey = viewerRelations[0].key,
                     text = "Title4"
                 ),
                 CellView.Tag(
                     id = recordId,
-                    key = viewerRelations[1].key,
+                    relationKey = viewerRelations[1].key,
                     tags = listOf(
                         TagView(
                             id = selOptions[1].id,
-                            tag = selOptions[1].text,
+                            tag = selOptions[1].title,
                             color = selOptions[1].color
                         ),
                         TagView(
                             id = selOptions[2].id,
-                            tag = selOptions[2].text,
+                            tag = selOptions[2].title,
                             color = selOptions[2].color
                         )
                     )
@@ -199,29 +177,25 @@ class TagAndStatusTests {
         )
 
         val selOptions = listOf(
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Status1",
-                color = "000",
-                scope = Relation.OptionScope.LOCAL
+                color = "000"
             ),
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Status2",
-                color = "111",
-                scope = Relation.OptionScope.LOCAL
+                color = "111"
             ),
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Status3",
-                color = "222",
-                scope = Relation.OptionScope.LOCAL
+                color = "222"
             ),
-            Relation.Option(
+            StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
                 text = "Status4",
-                color = "333",
-                scope = Relation.OptionScope.LOCAL
+                color = "333"
             )
         )
 
@@ -230,52 +204,38 @@ class TagAndStatusTests {
             ObjectSetConfig.ID_KEY to recordId,
             ObjectSetConfig.TYPE_KEY to "Type111",
             viewerRelations[0].key to "Title4",
-            viewerRelations[1].key to listOf(selOptions[2].id, selOptions[3].id)
+            viewerRelations[1].key to listOf(selOptions[2].id)
         )
 
         val dataViewRelations = listOf(
-            Relation(
-                key = viewerRelations[0].key,
-                name = "name",
-                format = Relation.Format.LONG_TEXT,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
+            ObjectWrapper.Relation(
+                mapOf(
+                    Relations.RELATION_KEY to viewerRelations[0].key,
+                    Relations.NAME to "name",
+                    Relations.RELATION_FORMAT to Relation.Format.LONG_TEXT.code.toDouble(),
+                    Relations.IS_READ_ONLY to true,
+                    Relations.IS_HIDDEN to false,
+                    Relations.SOURCE to Relation.Source.DETAILS.name
+                )
             ),
-            Relation(
-                key = viewerRelations[1].key,
-                name = "Tags",
-                format = Relation.Format.STATUS,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = true,
-                source = Relation.Source.DETAILS,
-                selections = selOptions,
-                defaultValue = null
+            ObjectWrapper.Relation(
+                mapOf(
+                    Relations.RELATION_KEY to viewerRelations[1].key,
+                    Relations.NAME to "Status",
+                    Relations.RELATION_FORMAT to Relation.Format.STATUS.code.toDouble(),
+                    Relations.IS_READ_ONLY to true,
+                    Relations.IS_HIDDEN to false,
+                    Relations.SOURCE to Relation.Source.DETAILS.name
+                )
             )
         )
 
-        val viewerGrid = Block.Content.DataView.Viewer(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            type = Block.Content.DataView.Viewer.Type.GRID,
-            viewerRelations = viewerRelations,
-            sorts = listOf(),
-            filters = listOf()
-        )
+        val store = DefaultObjectStore()
 
-        val dataView = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.DataView(
-                sources = listOf("source://1"),
-                viewers = listOf(viewerGrid),
-                relations = dataViewRelations
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf()
+        store.merge(
+            objects = listOf(ObjectWrapper.Basic(records)),
+            dependencies = selOptions.map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
         )
 
         //TESTING
@@ -302,22 +262,17 @@ class TagAndStatusTests {
             cells = listOf(
                 CellView.Description(
                     id = recordId,
-                    key = viewerRelations[0].key,
+                    relationKey = viewerRelations[0].key,
                     text = "Title4"
                 ),
                 CellView.Status(
                     id = recordId,
-                    key = viewerRelations[1].key,
+                    relationKey = viewerRelations[1].key,
                     status = listOf(
                         StatusView(
                             id = selOptions[2].id,
-                            status = selOptions[2].text,
+                            status = selOptions[2].title,
                             color = selOptions[2].color
-                        ),
-                        StatusView(
-                            id = selOptions[3].id,
-                            status = selOptions[3].text,
-                            color = selOptions[3].color
                         )
                     )
                 )

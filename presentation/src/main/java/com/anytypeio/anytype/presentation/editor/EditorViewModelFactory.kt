@@ -8,17 +8,17 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -40,7 +40,7 @@ import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
-open class EditorViewModelFactory(
+open class  EditorViewModelFactory(
     private val openPage: OpenPage,
     private val closeObject: CloseBlock,
     private val createDocument: CreateDocument,
@@ -60,8 +60,6 @@ open class EditorViewModelFactory(
     private val delegator: Delegator<Action>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
-    private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
-    private val objectTypesProvider: ObjectTypesProvider,
     private val searchObjects: SearchObjects,
     private val getDefaultEditorType: GetDefaultEditorType,
     private val findObjectSetForType: FindObjectSetForType,
@@ -72,6 +70,8 @@ open class EditorViewModelFactory(
     private val editorTemplateDelegate: EditorTemplateDelegate,
     private val createNewObject: CreateNewObject,
     private val objectToSet: ConvertObjectToSet,
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val featureToggles: FeatureToggles,
     private val tableDelegate: EditorTableDelegate
 ) : ViewModelProvider.Factory {
@@ -97,8 +97,6 @@ open class EditorViewModelFactory(
             delegator = delegator,
             detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
-            getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider,
             searchObjects = searchObjects,
             getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
@@ -110,6 +108,8 @@ open class EditorViewModelFactory(
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
             objectToSet = objectToSet,
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = featureToggles,
             tableDelegate = tableDelegate
         ) as T

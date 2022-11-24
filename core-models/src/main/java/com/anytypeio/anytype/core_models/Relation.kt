@@ -7,35 +7,46 @@ package com.anytypeio.anytype.core_models
  * @property [isReadOnly] editable by user or not
  * @property [isHidden] whether this type is internal (not displayed to user)
  */
-@Deprecated("Will be deprecated. Relations will be treated as objects")
 data class Relation(
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val key: String,
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val name: String,
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val format: Format,
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val source: Source,
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val isHidden: Boolean = false,
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val isReadOnly: Boolean = false,
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val isMulti: Boolean = false,
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val selections: List<Option> = emptyList(),
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val objectTypes: List<String> = emptyList(),
+    @Deprecated("Will be deprecated. Relations will be treated as objects")
     val defaultValue: Any? = null
 ) {
 
-    enum class Format(val prettyName: String) {
-        LONG_TEXT("Text"),
-        SHORT_TEXT("Short text"),
-        NUMBER("Number"),
-        STATUS("Status"),
-        TAG("Tag"),
-        DATE("Date"),
-        FILE("File & Media"),
-        CHECKBOX("Checkbox"),
-        URL("URL"),
-        EMAIL("Email"),
-        PHONE("Phone"),
-        EMOJI("Emoji"),
-        OBJECT("Object"),
-        RELATIONS("Relations")
+    enum class Format(val code: Int) {
+        LONG_TEXT(0),
+        SHORT_TEXT(1),
+        NUMBER(2),
+        STATUS(3),
+        TAG(11),
+        DATE(4),
+        FILE(5),
+        CHECKBOX(6),
+        URL(7),
+        EMAIL(8),
+        PHONE(9),
+        EMOJI(10),
+        OBJECT(100),
+        RELATIONS(101),
+
+        UNDEFINED(-1)
     }
 
     enum class Source {
@@ -45,13 +56,8 @@ data class Relation(
     data class Option(
         val id: String,
         val text: String,
-        val color: String,
-        val scope: OptionScope = OptionScope.LOCAL
+        val color: String
     )
-
-    enum class OptionScope {
-        LOCAL, RELATION, FORMAT
-    }
 
     companion object {
         fun orderedFormatList(): List<Format> = listOf(

@@ -26,6 +26,7 @@ sealed class Event {
             val type: SmartBlockType = SmartBlockType.PAGE,
             val objectTypes: List<ObjectType> = emptyList(),
             val relations: List<Relation> = emptyList(),
+            val relationLinks: List<RelationLink> = emptyList(),
             val objectRestrictions: List<ObjectRestriction> = emptyList(),
             val dataViewRestrictions: List<DataViewRestrictions> = emptyList()
         ) : Command()
@@ -194,24 +195,18 @@ sealed class Event {
             val style: Block.Content.Divider.Style
         ) : Command()
 
-        sealed class ObjectRelations : Command() {
-            data class Set(
-                override val context: String,
-                val id: Id,
-                val relations: List<Relation>
-            ) : ObjectRelations()
-
+        sealed class ObjectRelationLinks : Command() {
             data class Amend(
                 override val context: String,
                 val id: Id,
-                val relations: List<Relation>
-            ) : ObjectRelations()
+                val relationLinks: List<RelationLink>
+            ) : ObjectRelationLinks()
 
             data class Remove(
                 override val context: String,
                 val id: Id,
-                val keys: List<Id>
-            ) : ObjectRelations()
+                val keys: List<Key>
+            ) : ObjectRelationLinks()
         }
 
         sealed class ObjectRelation : Command() {
@@ -250,14 +245,13 @@ sealed class Event {
 
             /**
              * Sent when a data-view's relation has been changed or added.
-             * @property [id] data view's block id
-             * @property [key] relation key
+             * @property [dv] data view's block id
+             * @property [links] relations link for this data view
              */
             data class SetRelation(
                 override val context: Id,
-                val id: Id,
-                val key: String,
-                val relation: Relation
+                val dv: Id,
+                val links: List<RelationLink>
             ) : DataView()
 
 

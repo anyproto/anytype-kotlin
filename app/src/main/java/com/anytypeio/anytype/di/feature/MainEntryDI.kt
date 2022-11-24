@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
@@ -49,14 +50,16 @@ object MainEntryModule {
         observeWallpaper: ObserveWallpaper,
         restoreWallpaper: RestoreWallpaper,
         interceptAccountStatus: InterceptAccountStatus,
-        logout: Logout
+        logout: Logout,
+        relationsSubscriptionManager: RelationsSubscriptionManager
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
         observeWallpaper = observeWallpaper,
         restoreWallpaper = restoreWallpaper,
         interceptAccountStatus = interceptAccountStatus,
-        logout = logout
+        logout = logout,
+        relationsSubscriptionManager = relationsSubscriptionManager
     )
 
     @JvmStatic

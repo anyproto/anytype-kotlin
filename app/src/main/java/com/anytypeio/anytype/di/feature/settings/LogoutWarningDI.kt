@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.ui.settings.LogoutWarningFragment
 import com.anytypeio.anytype.ui_settings.account.LogoutWarningViewModel
 import dagger.Module
@@ -32,8 +33,13 @@ object LogoutWarningModule {
     @PerScreen
     fun provideViewModelFactory(
         logout: Logout,
-        analytics: Analytics
-    ): LogoutWarningViewModel.Factory = LogoutWarningViewModel.Factory(logout, analytics)
+        analytics: Analytics,
+        relationsSubscriptionManager: RelationsSubscriptionManager
+    ): LogoutWarningViewModel.Factory = LogoutWarningViewModel.Factory(
+        logout = logout,
+        analytics = analytics,
+        relationsSubscriptionManager = relationsSubscriptionManager
+    )
 
     @JvmStatic
     @PerScreen

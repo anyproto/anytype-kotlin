@@ -108,7 +108,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
         vm.onStart(root)
 
-        vm.onCreateNewRecord()
+        vm.onCreateNewDataViewObject()
 
         val result = vm.toasts.stream().first()
 

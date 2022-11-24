@@ -23,8 +23,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
-import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
-import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -34,6 +33,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -61,14 +61,11 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
-import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
-import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
 import dagger.Module
@@ -138,17 +135,16 @@ object ObjectSetModule {
     fun provideObjectSetViewModelFactory(
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
-        addDataViewRelation: AddNewRelationToDataView,
         updateDataViewViewer: UpdateDataViewViewer,
         setObjectDetails: UpdateDetail,
         updateText: UpdateText,
         interceptEvents: InterceptEvents,
         interceptThreadStatus: InterceptThreadStatus,
-        createDataViewRecord: CreateDataViewRecord,
+        createDataViewObject: CreateDataViewObject,
+        createNewObject: CreateNewObject,
         reducer: ObjectSetReducer,
         dispatcher: Dispatcher<Payload>,
         delegator: Delegator<Action>,
-        objectSetRecordCache: ObjectSetRecordCache,
         urlBuilder: UrlBuilder,
         coverImageHashProvider: CoverImageHashProvider,
         session: ObjectSetSession,
@@ -158,24 +154,22 @@ object ObjectSetModule {
         getTemplates: GetTemplates,
         dataViewSubscriptionContainer: DataViewSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
-        createNewObject: CreateNewObject,
         setDataViewSource: SetDataViewSource,
         database: ObjectSetDatabase,
-        paginator: ObjectSetPaginator
+        paginator: ObjectSetPaginator,
+        storeOfRelations: StoreOfRelations
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
-        addDataViewRelation = addDataViewRelation,
         updateDataViewViewer = updateDataViewViewer,
         setObjectDetails = setObjectDetails,
-        createDataViewRecord = createDataViewRecord,
+        createDataViewObject = createDataViewObject,
         updateText = updateText,
         interceptEvents = interceptEvents,
         interceptThreadStatus = interceptThreadStatus,
         reducer = reducer,
         dispatcher = dispatcher,
         delegator = delegator,
-        objectSetRecordCache = objectSetRecordCache,
         coverImageHashProvider = coverImageHashProvider,
         urlBuilder = urlBuilder,
         session = session,
@@ -188,7 +182,8 @@ object ObjectSetModule {
         cancelSearchSubscription = cancelSearchSubscription,
         setDataViewSource = setDataViewSource,
         database = database,
-        paginator = paginator
+        paginator = paginator,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic
@@ -237,13 +232,6 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideAddDataViewRelationUseCase(
-        repo: BlockRepository
-    ): AddNewRelationToDataView = AddNewRelationToDataView(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideUpdateDataViewViewerUseCase(
         repo: BlockRepository
     ): UpdateDataViewViewer = UpdateDataViewViewer(repo = repo)
@@ -253,7 +241,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideCreateDataViewRecordUseCase(
         repo: BlockRepository
-    ): CreateDataViewRecord = CreateDataViewRecord(repo = repo)
+    ): CreateDataViewObject = CreateDataViewObject(repo = repo)
 
     @JvmStatic
     @Provides
@@ -318,14 +306,13 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideObjectSetRecordCache(): ObjectSetRecordCache = ObjectSetRecordCache()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideDataViewObjectRelationProvider(
-        state: StateFlow<ObjectSet>
-    ): ObjectRelationProvider = DataViewObjectRelationProvider(state)
+        state: StateFlow<ObjectSet>,
+        storeOfRelations: StoreOfRelations
+    ): ObjectRelationProvider = DataViewObjectRelationProvider(
+        objectSetState = state,
+        storeOfRelations = storeOfRelations
+    )
 
     @JvmStatic
     @Provides

@@ -25,7 +25,7 @@ open class GetListPages(
                     || document.smartBlockType == SmartBlockType.FILE
                     || document.smartBlockType == SmartBlockType.TEMPLATE
                     || document.smartBlockType == SmartBlockType.BUNDLED_RELATION
-                    || document.smartBlockType == SmartBlockType.INDEXED_RELATION
+                    || document.smartBlockType == SmartBlockType.SUB_OBJECT
                     || document.smartBlockType == SmartBlockType.DATABASE
                     || document.smartBlockType == SmartBlockType.ANYTYPE_PROFILE
                     || (document.smartBlockType == SmartBlockType.PROFILE_PAGE

@@ -12,9 +12,11 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
+import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
@@ -35,6 +37,7 @@ class ObjectSetSettingsViewModel(
     private val modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val deleteRelationFromDataView: DeleteRelationFromDataView,
+    private val storeOfRelations: StoreOfRelations,
     private val analytics: Analytics
 ) : BaseListViewModel<ViewerRelationListView>() {
 
@@ -43,6 +46,7 @@ class ObjectSetSettingsViewModel(
     init {
         viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { objectSet ->
+                Timber.d("New update")
                 val result = mutableListOf<ViewerRelationListView>()
                 val viewer = objectSet.viewerById(session.currentViewerId.value)
                 when (viewer.type) {
@@ -94,14 +98,25 @@ class ObjectSetSettingsViewModel(
                     }
                     else -> {}
                 }
-                val relations = objectSet
-                    .simpleRelations(session.currentViewerId.value)
+
+                Timber.d("Relation index: ${objectSet.dv.relationsIndex}")
+
+                val inStore = objectSet.dv.relationsIndex.mapNotNull {
+                    storeOfRelations.getByKey(it.key)
+                }
+
+
+                Timber.d("Found in store: ${inStore.size}, available in index: ${objectSet.dv.relationsIndex.size}")
+
+                val relations = viewer.viewerRelations.toSimpleRelationView(inStore)
                     .filterHiddenRelations()
-                    .map { view ->
-                        ViewerRelationListView.Relation(view)
-                    }
+                    .map { view -> ViewerRelationListView.Relation(view) }
+
                 result.add(ViewerRelationListView.Section.Relations)
                 result.addAll(relations)
+
+                Timber.d("New views: $result")
+
                 _views.value = result
             }
         }
@@ -267,6 +282,7 @@ class ObjectSetSettingsViewModel(
         private val modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val deleteRelationFromDataView: DeleteRelationFromDataView,
+        private val store: StoreOfRelations,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -278,6 +294,7 @@ class ObjectSetSettingsViewModel(
                 modifyViewerRelationOrder = modifyViewerRelationOrder,
                 updateDataViewViewer = updateDataViewViewer,
                 deleteRelationFromDataView = deleteRelationFromDataView,
+                storeOfRelations = store,
                 analytics = analytics
             ) as T
         }
@@ -289,5 +306,4 @@ class ObjectSetSettingsViewModel(
     }
 
     enum class ScreenState { LIST, EDIT }
-
 }

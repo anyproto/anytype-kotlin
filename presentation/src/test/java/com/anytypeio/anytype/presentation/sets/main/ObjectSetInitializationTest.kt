@@ -80,8 +80,8 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
         // TESTING
 
         vm.onStart(ctx = ctx)
-        vm.onCreateNewRecord()
+        vm.onCreateNewDataViewObject()
 
-       verifyNoInteractions(createDataViewRecord)
+       verifyNoInteractions(createNewObject)
     }
 }

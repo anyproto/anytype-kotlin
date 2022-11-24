@@ -6,13 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.objects.toRelationObjectValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -32,7 +33,7 @@ class AddObjectRelationViewModel(
     private val values: ObjectValueProvider,
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
-    private val objectTypesProvider: ObjectTypesProvider
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModel() {
 
     private val _views = MutableStateFlow<List<RelationValueView.Object>>(listOf())
@@ -44,29 +45,30 @@ class AddObjectRelationViewModel(
     val commands = MutableSharedFlow<ObjectValueAddCommand>(0)
     val viewsFiltered: StateFlow<ObjectValueAddView> = _viewsFiltered
 
-    fun onStart(relationId: Id, objectId: String, targetTypes: List<Id>) {
+    fun onStart(relationKey: Key, objectId: String, targetTypes: List<Id>) {
+        Timber.d("key: $relationKey, object: ${objectId}, types: $targetTypes")
         processingViewsSelectionsAndFilter()
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.observe(relationId),
+                relations.observe(relationKey),
                 values.subscribe(objectId)
             ) { relation, value ->
                 when (val ids = value[relation.key]) {
                     is List<*> -> {
                         proceedWithSearchObjects(
-                            ids = ids.typeOf(),
+                            excluded = ids.typeOf(),
                             targetTypes = targetTypes
                         )
                     }
                     is Id -> {
                         proceedWithSearchObjects(
-                            ids = listOf(ids),
+                            excluded = listOf(ids),
                             targetTypes = targetTypes
                         )
                     }
                     null -> {
                         proceedWithSearchObjects(
-                            ids = emptyList(),
+                            excluded = emptyList(),
                             targetTypes = targetTypes
                         )
                     }
@@ -146,7 +148,7 @@ class AddObjectRelationViewModel(
     }
 
     private fun proceedWithSearchObjects(
-        ids: List<String>,
+        excluded: List<Id>,
         targetTypes: List<Id>
     ) {
         viewModelScope.launch {
@@ -158,9 +160,9 @@ class AddObjectRelationViewModel(
                         relationKey = Relations.TYPE,
                         condition = DVFilterCondition.NOT_IN,
                         value = listOf(
-                            ObjectType.OBJECT_TYPE_URL,
-                            ObjectType.RELATION_URL,
-                            ObjectType.TEMPLATE_URL
+                            ObjectTypeIds.OBJECT_TYPE,
+                            ObjectTypeIds.RELATION,
+                            ObjectTypeIds.TEMPLATE
                         )
                     )
                 )
@@ -186,9 +188,9 @@ class AddObjectRelationViewModel(
                 failure = { Timber.e(it, "Error while getting objects") },
                 success = { objects ->
                     _views.value = objects.toRelationObjectValueView(
-                        ids = ids,
+                        excluded = excluded,
                         urlBuilder = urlBuilder,
-                        objectTypes = objectTypesProvider.get()
+                        objectTypes = storeOfObjectTypes.getAll()
                     )
                 }
             )
@@ -200,7 +202,7 @@ class AddObjectRelationViewModel(
         private val values: ObjectValueProvider,
         private val searchObjects: SearchObjects,
         private val urlBuilder: UrlBuilder,
-        private val objectTypesProvider: ObjectTypesProvider
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -209,7 +211,7 @@ class AddObjectRelationViewModel(
                 values = values,
                 searchObjects = searchObjects,
                 urlBuilder = urlBuilder,
-                objectTypesProvider = objectTypesProvider
+                storeOfObjectTypes = storeOfObjectTypes
             ) as T
         }
     }

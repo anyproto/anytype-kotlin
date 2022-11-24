@@ -8,10 +8,24 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
  * @param [diff] difference
  */
 fun ObjectWrapper.Basic.amend(diff: Map<Id, Any?>) = ObjectWrapper.Basic(map + diff)
+fun ObjectWrapper.Relation.amend(diff: Map<Id, Any?>) = ObjectWrapper.Relation(map + diff)
+fun ObjectWrapper.Type.amend(diff: Map<Id, Any?>) = ObjectWrapper.Type(map + diff)
 /**
  * Function for applying granular changes in object.
  */
 fun ObjectWrapper.Basic.unset(keys: List<Id>) = ObjectWrapper.Basic(
+    map.toMutableMap().apply {
+        keys.forEach { k -> remove(k) }
+    }
+)
+
+fun ObjectWrapper.Relation.unset(keys: List<Id>) = ObjectWrapper.Relation(
+    map.toMutableMap().apply {
+        keys.forEach { k -> remove(k) }
+    }
+)
+
+fun ObjectWrapper.Type.unset(keys: List<Id>) = ObjectWrapper.Type(
     map.toMutableMap().apply {
         keys.forEach { k -> remove(k) }
     }

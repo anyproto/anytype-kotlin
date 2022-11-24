@@ -63,7 +63,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(doc)
 
         val vm = buildViewModel()
@@ -103,7 +103,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(doc)
 
         val vm = buildViewModel()
@@ -166,7 +166,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(doc)
 
         val vm = buildViewModel()
@@ -211,7 +211,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
         //stub1()
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(doc)
 
         val vm = buildViewModel()
@@ -253,7 +253,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(doc)
 
         val vm = buildViewModel()

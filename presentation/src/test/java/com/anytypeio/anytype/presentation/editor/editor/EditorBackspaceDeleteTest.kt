@@ -15,7 +15,7 @@ import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubQuote
-import com.anytypeio.anytype.core_models.StubRelation
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubToggle
 import com.anytypeio.anytype.core_models.ext.content
@@ -32,6 +32,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -1309,7 +1310,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should merge description vs text when title - description - featured - text`() {
+    fun `should merge description vs text when title - description - featured - text`() = runTest {
 
         // SETUP
 
@@ -1317,7 +1318,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val description = StubDescription()
         val paragraph = StubParagraph()
 
-        val relation = StubRelation(format = Relation.Format.NUMBER)
+        val relation = StubRelationObject(
+            format = Relation.Format.NUMBER
+        )
 
         val details = Block.Details(
             mapOf(
@@ -1348,12 +1351,16 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = details,
-            relations = listOf(relation)
+            relations = emptyList()
         )
         stubUpdateText()
         stubGetTemplates()
         stubUpdateTextStyle()
         stubMergeBlocks(root)
+
+        storeOfRelations.merge(
+            relations = listOf(relation)
+        )
 
         val vm = buildViewModel()
 
@@ -1391,13 +1398,13 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should merge title vs text when title - featured - text`() {
+    fun `should merge title vs text when title - featured - text`() = runTest {
 
         // SETUP
 
         val featured = StubFeatured()
         val paragraph = StubParagraph()
-        val relation = StubRelation(format = Relation.Format.NUMBER)
+        val relation = StubRelationObject(format = Relation.Format.NUMBER)
 
         val details = Block.Details(
             mapOf(root to Block.Fields(mapOf(Relations.FEATURED_RELATIONS to listOf(relation.key))))
@@ -1419,12 +1426,14 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = details,
-            relations = listOf(relation)
+            relations = emptyList()
         )
         stubUpdateText()
         stubGetTemplates()
         stubUpdateTextStyle()
         stubMergeBlocks(root)
+
+        storeOfRelations.merge(listOf(relation))
 
         val vm = buildViewModel()
 
@@ -1523,7 +1532,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should merge description vs text when description - featured - text`() {
+    fun `should merge description vs text when description - featured - text`() = runTest {
 
         // SETUP
 
@@ -1532,7 +1541,11 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val paragraph = StubParagraph()
 
         val relationKey = MockDataFactory.randomUuid()
-        val relation = StubRelation(relationKey, RelationFormat.NUMBER)
+
+        val relation = StubRelationObject(
+            key = relationKey,
+            format = RelationFormat.NUMBER
+        )
 
         val details = Block.Details(
             mapOf(
@@ -1563,12 +1576,14 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = details,
-            relations = listOf(relation)
+            relations = emptyList()
         )
         stubUpdateText()
         stubGetTemplates()
         stubUpdateTextStyle()
         stubMergeBlocks(root)
+
+        storeOfRelations.merge(listOf(relation))
 
         val vm = buildViewModel()
 

@@ -151,13 +151,10 @@ fun anytype.Event.Message.toCoreModels(
     blockDataviewRelationSet != null -> {
         val event = blockDataviewRelationSet
         checkNotNull(event)
-        val relation = event.relation
-        checkNotNull(relation)
         Event.Command.DataView.SetRelation(
-            id = event.id,
+            dv = event.id,
             context = context,
-            key = event.relationKey,
-            relation = relation.toCoreModels()
+            links = event.relationLinks.map { it.toCoreModels() }
         )
     }
     blockSetDiv != null -> {
@@ -210,31 +207,22 @@ fun anytype.Event.Message.toCoreModels(
             key = event.key?.value_
         )
     }
-    objectRelationsSet != null -> {
-        val event = objectRelationsSet
-        checkNotNull(event)
-        Event.Command.ObjectRelations.Set(
-            context = context,
-            id = event.id,
-            relations = event.relations.map { it.toCoreModels() }
-        )
-    }
     objectRelationsAmend != null -> {
         val event = objectRelationsAmend
         checkNotNull(event)
-        Event.Command.ObjectRelations.Amend(
+        Event.Command.ObjectRelationLinks.Amend(
             context = context,
             id = event.id,
-            relations = event.relations.map { it.toCoreModels() }
+            relationLinks = event.relationLinks.map { it.toCoreModels() }
         )
     }
     objectRelationsRemove != null -> {
         val event = objectRelationsRemove
         checkNotNull(event)
-        Event.Command.ObjectRelations.Remove(
+        Event.Command.ObjectRelationLinks.Remove(
             context = context,
             id = event.id,
-            keys = event.keys
+            keys = event.relationKeys
         )
     }
     else -> null

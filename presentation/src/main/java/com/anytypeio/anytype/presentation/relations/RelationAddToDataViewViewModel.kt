@@ -9,8 +9,8 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.relations.model.RelationView
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RelationAddToDataViewViewModel(
-    objectRelationList: ObjectRelationList,
+    storeOfRelations: StoreOfRelations,
     relationsProvider: ObjectRelationProvider,
     private val state: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
@@ -32,7 +32,7 @@ class RelationAddToDataViewViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics
 ) : RelationAddViewModelBase(
-    objectRelationList = objectRelationList,
+    storeOfRelations = storeOfRelations,
     relationsProvider = relationsProvider
 ) {
 
@@ -41,7 +41,7 @@ class RelationAddToDataViewViewModel(
             addRelationToDataView(
                 AddRelationToDataView.Params(
                     ctx = ctx,
-                    relation = relation.id,
+                    relation = relation.key,
                     dv = dv
                 )
             ).process(
@@ -49,7 +49,7 @@ class RelationAddToDataViewViewModel(
                     dispatcher.send(it).also {
                         proceedWithAddingNewRelationToCurrentViewer(
                             ctx = ctx,
-                            relation = relation.id
+                            relation = relation.key
                         )
                     }
                     sendAnalyticsAddRelationEvent(
@@ -97,7 +97,7 @@ class RelationAddToDataViewViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val objectRelationList: ObjectRelationList,
+        private val storeOfRelations: StoreOfRelations,
         private val addRelationToDataView: AddRelationToDataView,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
@@ -107,7 +107,7 @@ class RelationAddToDataViewViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationAddToDataViewViewModel(
                 addRelationToDataView = addRelationToDataView,
-                objectRelationList = objectRelationList,
+                storeOfRelations = storeOfRelations,
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,

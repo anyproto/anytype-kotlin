@@ -15,3 +15,5 @@ enable_analytics_for_debug:
 
 pr_check: compile_android_test_sources test_debug_all
 
+setup_local_mw:
+	./gradlew libs:publishToMavenLocal

@@ -147,7 +147,7 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateText()
         stubTurnIntoStyle()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 

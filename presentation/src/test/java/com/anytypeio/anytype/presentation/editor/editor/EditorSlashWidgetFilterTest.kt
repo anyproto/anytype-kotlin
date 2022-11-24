@@ -3,9 +3,14 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.presentation.MockObjectTypes
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
@@ -14,9 +19,11 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -214,27 +221,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
     //region {4}
     @Test
-    fun `should return Update command with filtered style items `() {
+    fun `should return Update command with filtered style items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -264,27 +281,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered style items `() {
+    fun `should return Update command with empty filtered style items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -304,27 +331,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered media items `() {
+    fun `should return Update command with filtered media items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -348,25 +385,38 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered media items `() {
+    fun `should return Update command with empty filtered media items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(
+                    key = it.key,
+                    format = it.relationFormat
+                )
+            }
+        )
+
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -388,25 +438,25 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered object items `() {
+    fun `should return Update command with filtered object items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val value1 = MockDataFactory.randomString()
-        val value2 = MockDataFactory.randomString()
-        val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
-        val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
+        val type1 = MockObjectTypes.objectTypePage
+        val type2 = MockObjectTypes.objectTypeNote
+        val type3 = MockObjectTypes.objectTypeTask
+        val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        storeOfObjectTypes.merge(
+            listOf(type1, type2, type3)
+        )
+
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -417,54 +467,66 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        val event = SlashEvent.Filter(filter = "/d", viewType = HOLDER_NUMBERED)
+        val event = SlashEvent.Filter(filter = "/e", viewType = HOLDER_NUMBERED)
         vm.onSlashTextWatcherEvent(event = event)
         val state = vm.controlPanelViewState.value
         val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         assertNotNull(command)
         val expectedItems = listOf(
-            SlashItem.Subheader.ObjectType,
+            SlashItem.Subheader.Actions,
+            SlashItem.Actions.LinkTo,
             SlashItem.ObjectType(
-                url = type1.url,
-                name = type1.name,
-                emoji = type1.emoji,
-                description = type1.description,
-                layout = type1.layout
+                objectTypeView = ObjectTypeView(
+                    id = type1.id,
+                    name = type1.name.orEmpty(),
+                    description = type1.description,
+                    emoji = type1.iconEmoji
+                )
             ),
             SlashItem.ObjectType(
-                url = type2.url,
-                name = type2.name,
-                emoji = type2.emoji,
-                description = type2.description,
-                layout = type2.layout
+                objectTypeView = ObjectTypeView(
+                    id = type2.id,
+                    name = type2.name.orEmpty(),
+                    description = type2.description,
+                    emoji = type2.iconEmoji
+                )
             )
         )
         assertEquals(expected = expectedItems, actual = command.objectItems)
     }
 
     @Test
-    fun `should return Update command with empty filtered object items `() {
+    fun `should return Update command with empty filtered object items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -484,27 +546,31 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered relation items `() {
+    fun `should return Update command with filtered relation items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -523,17 +589,19 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashRelationView.Section.Subheader,
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = r1.key,
-                    name = r1.name,
+                    relationId = r1.id,
+                    relationKey = r1.key,
+                    name = r1.name.orEmpty(),
                     value = value1,
                     format = Relation.Format.SHORT_TEXT
                 )
             ),
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = r2.key,
-                    name = r2.name,
-                    value = value2.toString(),
+                    relationId = r2.id,
+                    relationKey = r2.key,
+                    name = r2.name.orEmpty(),
+                    value = value2,
                     format = Relation.Format.SHORT_TEXT
                 )
             ),
@@ -542,27 +610,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered relation items `() {
+    fun `should return Update command with empty filtered relation items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -582,27 +660,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered other items `() {
+    fun `should return Update command with filtered other items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -626,27 +714,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered other items `() {
+    fun `should return Update command with empty filtered other items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -666,27 +764,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered actions items `() {
+    fun `should return Update command with filtered actions items `() = runTest{
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -710,27 +818,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered actions items `() {
+    fun `should return Update command with empty filtered actions items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -750,27 +868,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered alignment items `() {
+    fun `should return Update command with filtered alignment items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -794,27 +922,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered alignment items `() {
+    fun `should return Update command with empty filtered alignment items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -834,27 +972,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered color items `() {
+    fun `should return Update command with filtered color items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -892,27 +1040,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered color items `() {
+    fun `should return Update command with empty filtered color items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -932,27 +1090,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with filtered background items `() {
+    fun `should return Update command with filtered background items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -990,27 +1158,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with empty filtered background items `() {
+    fun `should return Update command with empty filtered background items `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1032,27 +1210,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
     //region {5}
     @Test
-    fun `should return Update command with alignment right item `() {
+    fun `should return Update command with alignment right item `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1077,27 +1265,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
     //region {6}
     @Test
-    fun `should send Stop event after 3 empty search results `() {
+    fun `should send Stop event after 3 empty search results `() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1119,27 +1317,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
     //region {7}
     @Test
-    fun `should show all action items on action filter`() {
+    fun `should show all action items on action filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1169,21 +1377,25 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
     //region {8}
     @Test
-    fun `should show all media items on media filter`() {
+    fun `should show all media items on media filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails)
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+        storeOfObjectTypes.merge(objectTypes)
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1212,21 +1424,26 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
     //region {9}
     @Test
-    fun `should show all divider items on other filter`() {
+    fun `should show all divider items on other filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails)
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1254,21 +1471,26 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
     //region {10}
     @Test
-    fun `should show all divider items on divider filter`() {
+    fun `should show all divider items on divider filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails)
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1293,28 +1515,37 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     //endregion
 
     @Test
-    fun `should show all object items on objects filter`() {
+    fun `should show all object items on objects filter`() = runTest {
+
         // SETUP
+
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = MockObjectTypes.objectTypePage
+        val type2 = MockObjectTypes.objectTypeNote
+        val type3 = MockObjectTypes.objectTypeCustom
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
+        stubSearchObjects(
+            listOf(type1, type2, type3).map { ObjectWrapper.Basic(it.map) }
+        )
         stubOpenDocument(doc, customDetails)
 
+        storeOfObjectTypes.merge(
+            listOf(type1, type2, type3)
+        )
+
         val vm = buildViewModel()
+
+        // TESTING
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
         }
-
-        // TESTING
 
         vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
         vm.onSlashTextWatcherEvent(SlashEvent.Filter("/objects", HOLDER_NUMBERED))
@@ -1323,62 +1554,77 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         val expectedItems = listOf(
-            SlashItem.Subheader.ObjectType,
+            SlashItem.Subheader.Actions,
             SlashItem.Actions.LinkTo,
             SlashItem.ObjectType(
-                url = type1.url,
-                name = type1.name,
-                emoji = type1.emoji,
-                description = type1.description,
-                layout = type1.layout
+                objectTypeView = ObjectTypeView(
+                    id = type1.id,
+                    name = type1.name.orEmpty(),
+                    description = type1.description,
+                    emoji = type1.iconEmoji
+                )
             ),
             SlashItem.ObjectType(
-                url = type2.url,
-                name = type2.name,
-                emoji = type2.emoji,
-                description = type2.description,
-                layout = type2.layout
+                objectTypeView = ObjectTypeView(
+                    id = type2.id,
+                    name = type2.name.orEmpty(),
+                    description = type2.description,
+                    emoji = type2.iconEmoji
+                )
             ),
             SlashItem.ObjectType(
-                url = type3.url,
-                name = type3.name,
-                emoji = type3.emoji,
-                description = type3.description,
-                layout = type3.layout
+                objectTypeView = ObjectTypeView(
+                    id = type3.id,
+                    name = type3.name.orEmpty(),
+                    description = type3.description,
+                    emoji = type3.iconEmoji
+                )
             )
         )
         assertEquals(expected = expectedItems, actual = command.objectItems)
     }
 
     @Test
-    fun `should show all relations items on relations filter`() {
+    fun `should show all relations items on relations filter`() = runTest {
+
         // SETUP
+
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val r1 = StubRelationObject(name = "Ad")
+        val r2 = StubRelationObject(name = "De")
+        val r3 = StubRelationObject(name = "HJ")
+        val objectRelations = listOf(r1, r2, r3)
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relationLinks = objectRelations.map {
+                RelationLink(key = it.key, format = it.relationFormat)
+            }
+        )
 
         val vm = buildViewModel()
+        storeOfRelations.merge(objectRelations)
+        storeOfObjectTypes.merge(objectTypes)
+
+        // TESTING
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
         }
-
-        // TESTING
 
         vm.onSlashTextWatcherEvent(SlashEvent.Filter("/r", HOLDER_NUMBERED))
         vm.onSlashTextWatcherEvent(SlashEvent.Filter("/relations", HOLDER_NUMBERED))
@@ -1390,24 +1636,27 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashRelationView.Section.Subheader,
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = r1.key,
-                    name = r1.name,
+                    relationId = r1.id,
+                    relationKey = r1.key,
+                    name = r1.name.orEmpty(),
                     value = value1,
                     format = Relation.Format.SHORT_TEXT
                 )
             ),
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = r2.key,
-                    name = r2.name,
+                    relationId = r2.id,
+                    relationKey = r2.key,
+                    name = r2.name.orEmpty(),
                     value = value2,
                     format = Relation.Format.SHORT_TEXT
                 )
             ),
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = r3.key,
-                    name = r3.name,
+                    relationId = r3.id,
+                    relationKey = r3.key,
+                    name = r3.name.orEmpty(),
                     value = value3,
                     format = Relation.Format.SHORT_TEXT
                 )
@@ -1417,21 +1666,26 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return all unselected color items on color filter`() {
+    fun `should return all unselected color items on color filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails)
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1465,21 +1719,26 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return all unselected background items on background filter`() {
+    fun `should return all unselected background items on background filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails)
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1518,21 +1777,26 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return table of contents on toc filter`() {
+    fun `should return table of contents on toc filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails)
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1555,21 +1819,26 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return table of contents and simple table on table filter`() {
+    fun `should return table of contents and simple table on table filter`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObjectType(name = "Hd")
+        val type2 = StubObjectType(name = "Df")
+        val type3 = StubObjectType(name = "LK")
+        val objectTypes = listOf(type1, type2, type3)
         val fields = Block.Fields.empty()
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails)
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
+        )
 
         val vm = buildViewModel()
+        storeOfObjectTypes.merge(objectTypes)
+
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1601,7 +1870,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf())
+        stubSearchObjects()
         stubOpenDocument(doc, customDetails)
 
         val vm = buildViewModel()
@@ -1638,7 +1907,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf())
+        stubSearchObjects()
         stubOpenDocument(doc, customDetails)
 
         val vm = buildViewModel()
@@ -1675,7 +1944,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf())
+        stubSearchObjects()
         stubOpenDocument(doc, customDetails)
 
         val vm = buildViewModel()
@@ -1712,7 +1981,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf())
+        stubSearchObjects()
         stubOpenDocument(doc, customDetails)
 
         val vm = buildViewModel()
@@ -1749,7 +2018,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf())
+        stubSearchObjects()
         stubOpenDocument(doc, customDetails)
 
         val vm = buildViewModel()
@@ -1786,7 +2055,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        stubGetObjectTypes(listOf())
+        stubSearchObjects()
         stubOpenDocument(doc, customDetails)
 
         val vm = buildViewModel()

@@ -4,10 +4,11 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
@@ -18,16 +19,17 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
-fun ObjectWrapper.Basic.values(
-    relations: List<Relation>,
+suspend fun ObjectWrapper.Basic.values(
+    relations: List<ObjectWrapper.Relation>,
     settings: List<DVViewerRelation>,
     details: Map<Id, Block.Fields>,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    storeOfObjects: ObjectStore
 ): List<DefaultObjectRelationValueView> {
     val values = mutableListOf<DefaultObjectRelationValueView>()
     relations.forEach { relation ->
         when (relation.format) {
-            Relation.Format.SHORT_TEXT, Relation.Format.LONG_TEXT -> {
+            RelationFormat.SHORT_TEXT, RelationFormat.LONG_TEXT -> {
                 val value = DefaultObjectRelationValueView.Text(
                     objectId = id,
                     relationKey = relation.key,
@@ -35,7 +37,7 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.NUMBER -> {
+            RelationFormat.NUMBER -> {
                 val number = map.getOrDefault(key = relation.key, null)
                 val value = DefaultObjectRelationValueView.Number(
                     objectId = id,
@@ -44,7 +46,7 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.URL -> {
+            RelationFormat.URL -> {
                 val value = DefaultObjectRelationValueView.Url(
                     objectId = id,
                     relationKey = relation.key,
@@ -52,7 +54,7 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.EMAIL -> {
+            RelationFormat.EMAIL -> {
                 val value = DefaultObjectRelationValueView.Email(
                     objectId = id,
                     relationKey = relation.key,
@@ -60,7 +62,7 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.PHONE -> {
+            RelationFormat.PHONE -> {
                 val value = DefaultObjectRelationValueView.Phone(
                     objectId = id,
                     relationKey = relation.key,
@@ -68,7 +70,7 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.CHECKBOX -> {
+            RelationFormat.CHECKBOX -> {
                 val value = DefaultObjectRelationValueView.Checkbox(
                     objectId = id,
                     relationKey = relation.key,
@@ -76,7 +78,7 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.DATE -> {
+            RelationFormat.DATE -> {
                 val setting = settings.find { it.key == relation.key }
                 val format: String
                 val dateFormat: String
@@ -106,23 +108,29 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.STATUS -> {
+            RelationFormat.STATUS -> {
                 val value = DefaultObjectRelationValueView.Status(
                     objectId = id,
                     relationKey = relation.key,
-                    status = statuses(relation = relation.key, options = relation.selections)
+                    status = statuses(
+                        relation = relation.key,
+                        storeOfObjects = storeOfObjects
+                    )
                 )
                 values.add(value)
             }
-            Relation.Format.TAG -> {
+            RelationFormat.TAG -> {
                 val value = DefaultObjectRelationValueView.Tag(
                     objectId = id,
                     relationKey = relation.key,
-                    tags = tags(relation = relation.key, options = relation.selections)
+                    tags = tags(
+                        relation = relation.key,
+                        storeOfObjects = storeOfObjects
+                    )
                 )
                 values.add(value)
             }
-            Relation.Format.FILE -> {
+            RelationFormat.FILE -> {
                 val value = DefaultObjectRelationValueView.File(
                     objectId = id,
                     relationKey = relation.key,
@@ -130,7 +138,7 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.OBJECT -> {
+            RelationFormat.OBJECT -> {
                 val value = DefaultObjectRelationValueView.Object(
                     objectId = id,
                     relationKey = relation.key,
@@ -142,11 +150,8 @@ fun ObjectWrapper.Basic.values(
                 )
                 values.add(value)
             }
-            Relation.Format.EMOJI -> {
-                // Ignoring this relation format.
-            }
-            Relation.Format.RELATIONS -> {
-                // Ignoring this relation format.
+            else -> {
+                Timber.w("Skipping relation format: ${relation.format}")
             }
         }
     }
@@ -154,23 +159,25 @@ fun ObjectWrapper.Basic.values(
     return values
 }
 
-fun ObjectWrapper.Basic.valuesFilteredByHidden(
-    relations: List<Relation>,
+suspend fun ObjectWrapper.Basic.valuesFilteredByHidden(
+    relations: List<ObjectWrapper.Relation>,
     settings: List<DVViewerRelation>,
     details: Map<Id, Block.Fields>,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    storeOfObjects: ObjectStore
 ): List<DefaultObjectRelationValueView> {
     return values(
-        relations = relations.filter { !it.isHidden },
+        relations = relations.filter { it.isHidden != true },
         settings = settings,
         details = details,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        storeOfObjects = storeOfObjects
     )
 }
 
-fun ObjectWrapper.Basic.statuses(
+suspend fun ObjectWrapper.Basic.statuses(
     relation: Id,
-    options: List<Relation.Option>
+    storeOfObjects: ObjectStore
 ) : List<StatusView> {
     val result = mutableListOf<StatusView>()
     val keys : List<Id> = when(val value = map.getOrDefault(relation, null)) {
@@ -179,13 +186,13 @@ fun ObjectWrapper.Basic.statuses(
         else -> emptyList()
     }
     keys.forEach { key ->
-        val option = options.find { it.id == key }
+        val option = storeOfObjects.get(key)
         if (option != null) {
             result.add(
                 StatusView(
                     id = option.id,
-                    status = option.text,
-                    color = option.color
+                    status = option.relationOptionText.orEmpty(),
+                    color = option.relationOptionColor.orEmpty()
                 )
             )
         }
@@ -193,9 +200,9 @@ fun ObjectWrapper.Basic.statuses(
     return result
 }
 
-fun ObjectWrapper.Basic.tags(
+suspend fun ObjectWrapper.Basic.tags(
     relation: Id,
-    options: List<Relation.Option>
+    storeOfObjects: ObjectStore
 ) : List<TagView> {
     val result = mutableListOf<TagView>()
     val keys : List<Id> = when(val value = map.getOrDefault(relation, null)) {
@@ -204,13 +211,13 @@ fun ObjectWrapper.Basic.tags(
         else -> emptyList()
     }
     keys.forEach { key ->
-        val option = options.find { it.id == key }
+        val option = storeOfObjects.get(key)
         if (option != null) {
             result.add(
                 TagView(
                     id = option.id,
-                    tag = option.text,
-                    color = option.color
+                    tag = option.relationOptionText.orEmpty(),
+                    color = option.relationOptionColor.orEmpty()
                 )
             )
         }

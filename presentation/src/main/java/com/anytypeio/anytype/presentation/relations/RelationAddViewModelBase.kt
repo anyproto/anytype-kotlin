@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.relations
 
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -19,14 +19,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Base view model for adding a relation either to an object or to a set.
  */
 abstract class RelationAddViewModelBase(
-    private val objectRelationList: ObjectRelationList,
     private val relationsProvider: ObjectRelationProvider,
+    private val storeOfRelations: StoreOfRelations
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -46,35 +45,29 @@ abstract class RelationAddViewModelBase(
 
     abstract fun sendAnalyticsEvent(length: Int)
 
-    fun onStart(ctx: Id) {
+    fun onStart() {
         jobs += viewModelScope.launch {
-            objectRelationList(ObjectRelationList.Params(ctx)).process(
-                success = { relations ->
-                    getVisibleRelations(relations)
-                        .collect { visibleRelations ->
-                            views.value = visibleRelations
-                        }
-                },
-                failure = { Timber.e(it, "Error while fetching list of available relations") }
-            )
+            val all = storeOfRelations.getAll().filter { it.isValid }
+            getVisibleRelations(available = all).collect { filtered ->
+                    views.value = filtered
+            }
         }
     }
 
     fun onStop() {
-        jobs.forEach(Job::cancel)
-        jobs.clear()
+        jobs.cancel()
     }
 
-    private fun getVisibleRelations(available: List<Relation>): Flow<List<RelationView.Existing>> {
+    private fun getVisibleRelations(available: List<ObjectWrapper.Relation>): Flow<List<RelationView.Existing>> {
         return relationsProvider.observeAll().map { addedRelations ->
             val addedRelationKeys = addedRelations.map { it.key }.toSet()
             available
-                .filter { !it.isHidden }
+                .filter { it.isHidden != true }
                 .filter { relation -> !addedRelationKeys.contains(relation.key) }
                 .map {
                     RelationView.Existing(
-                        id = it.key,
-                        name = it.name,
+                        key = it.key,
+                        name = it.name.orEmpty(),
                         format = it.format
                     )
                 }

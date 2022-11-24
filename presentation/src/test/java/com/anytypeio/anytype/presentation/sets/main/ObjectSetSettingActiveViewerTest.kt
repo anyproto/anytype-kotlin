@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -62,6 +63,8 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 )
             }
         )
+        val keys = ObjectSearchConstants.defaultKeys + doc.dv.content<DV>().relationsIndex.map { it.key }
+
         stubSearchWithSubscription(
             subscription = root,
             filters = doc.dv.content<DV>().viewers.first().filters,
@@ -69,27 +72,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = doc.dv.content<DV>().sources,
-            keys = ObjectSearchConstants.defaultKeys + doc.dv.content<DV>().relations.map { it.key },
-            limit = ObjectSetConfig.DEFAULT_LIMIT,
-            offset = 0,
-            result = SearchResult(
-                results = doc.initialObjects,
-                dependencies = emptyList(),
-                counter = SearchResult.Counter(
-                    total = doc.initialObjects.size,
-                    prev = 0,
-                    next = 0
-                )
-            )
-        )
-        stubSearchWithSubscription(
-            subscription = root,
-            filters = doc.dv.content<DV>().viewers.last().filters,
-            sorts = doc.dv.content<DV>().viewers.last().sorts,
-            afterId = null,
-            beforeId = null,
-            sources = doc.dv.content<DV>().sources,
-            keys = doc.dv.content<DV>().relations.map { it.key },
+            keys = keys,
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(
@@ -109,6 +92,18 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 doc.dv
             )
         )
+
+        println(storeOfRelations.getAll().toString())
+
+        println(doc.relationsObjects)
+
+        runBlocking {
+            storeOfRelations.merge(
+                relations = doc.relationsObjects
+            )
+        }
+
+        println(storeOfRelations.getAll().toString())
 
         val vm = givenViewModel()
 
@@ -132,8 +127,8 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
 
             val expectedColumnsBefore = listOf(
                 ColumnView(
-                    key = doc.relations[0].key,
-                    text = doc.relations[0].name,
+                    key = doc.relationsObjects[0].key,
+                    text = doc.relationsObjects[0].name.orEmpty(),
                     format = ColumnView.Format.LONG_TEXT,
                     width = 0,
                     isVisible = true,
@@ -141,8 +136,8 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                     isReadOnly = false
                 ),
                 ColumnView(
-                    key = doc.relations[1].key,
-                    text = doc.relations[1].name,
+                    key = doc.relationsObjects[1].key,
+                    text = doc.relationsObjects[1].name.orEmpty(),
                     format = ColumnView.Format.LONG_TEXT,
                     width = 0,
                     isVisible = true,
@@ -164,13 +159,13 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                     cells = listOf(
                         CellView.Description(
                             id = doc.firstRecordId,
-                            text = doc.firstRecord[doc.relations[0].key] as String,
-                            key = doc.relations[0].key
+                            text = doc.firstRecord[doc.relationsObjects[0].key] as String,
+                            relationKey = doc.relationsObjects[0].key
                         ),
                         CellView.Description(
                             id = doc.firstRecordId,
-                            text = doc.firstRecord[doc.relations[1].key] as String,
-                            key = doc.relations[1].key
+                            text = doc.firstRecord[doc.relationsObjects[1].key] as String,
+                            relationKey = doc.relationsObjects[1].key
                         )
                     )
                 ),
@@ -184,13 +179,13 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                     cells = listOf(
                         CellView.Description(
                             id = doc.secondRecordId,
-                            text = doc.secondRecord[doc.relations[0].key] as String,
-                            key = doc.relations[0].key
+                            text = doc.secondRecord[doc.relationsObjects[0].key] as String,
+                            relationKey = doc.relationsObjects[0].key
                         ),
                         CellView.Description(
                             id = doc.secondRecordId,
-                            text = doc.secondRecord[doc.relations[1].key] as String,
-                            key = doc.relations[1].key
+                            text = doc.secondRecord[doc.relationsObjects[1].key] as String,
+                            relationKey = doc.relationsObjects[1].key
                         )
                     )
                 )
@@ -234,8 +229,8 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                     cells = listOf(
                         CellView.Description(
                             id = doc.secondRecordId,
-                            text = doc.secondRecord[doc.relations[1].key] as String,
-                            key = doc.relations[1].key
+                            text = doc.secondRecord[doc.relationsObjects[1].key] as String,
+                            relationKey = doc.relationsObjects[1].key
                         )
                     )
                 ),
@@ -249,8 +244,8 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                     cells = listOf(
                         CellView.Description(
                             id = doc.firstRecordId,
-                            text = doc.firstRecord[doc.relations[1].key] as String,
-                            key = doc.relations[1].key
+                            text = doc.firstRecord[doc.relationsObjects[1].key] as String,
+                            relationKey = doc.relationsObjects[1].key
                         )
                     )
                 )

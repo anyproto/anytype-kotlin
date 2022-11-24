@@ -78,7 +78,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubUpdateBlocksMark()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
@@ -292,7 +292,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -389,7 +389,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -460,7 +460,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -549,7 +549,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -630,7 +630,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -699,7 +699,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -782,7 +782,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -863,7 +863,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -932,7 +932,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -1021,7 +1021,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -1102,7 +1102,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateBlocksMark()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 

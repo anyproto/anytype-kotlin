@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.os.bundleOf
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.relations.RelationActionAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -45,6 +45,7 @@ open class RelationTextValueFragment :
 
     private val ctx get() = arg<String>(CONTEXT_ID)
     private val relationId get() = arg<String>(RELATION_ID)
+    private val relationKey get() = arg<Key>(RELATION_KEY)
     private val objectId get() = arg<String>(OBJECT_ID)
     private val flow get() = arg<Int>(FLOW_KEY)
     private val isLocked get() = arg<Boolean>(LOCKED_KEY)
@@ -82,7 +83,7 @@ open class RelationTextValueFragment :
                 withParent<TextValueEditReceiver> {
                     onTextValueChanged(
                         ctx = ctx,
-                        relationId = relationId,
+                        relationKey = relationKey,
                         objectId = objectId,
                         text = parsed
                     )
@@ -122,7 +123,7 @@ open class RelationTextValueFragment :
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
-        jobs += lifecycleScope.subscribe(vm.actions) { relationValueActionAdapter.submitList(it)  }
+        jobs += lifecycleScope.subscribe(vm.actions) { relationValueActionAdapter.submitList(it) }
         jobs += lifecycleScope.subscribe(vm.intents) { proceedWithAction(it) }
         jobs += lifecycleScope.subscribe(vm.title) { binding.tvRelationHeader.text = it }
         jobs += lifecycleScope.subscribe(vm.isDismissed) { isDismissed ->
@@ -138,6 +139,7 @@ open class RelationTextValueFragment :
         } else {
             vm.onStart(
                 relationId = relationId,
+                relationKey = relationKey,
                 recordId = objectId,
                 isLocked = isLocked,
             )
@@ -154,7 +156,7 @@ open class RelationTextValueFragment :
         withParent<TextValueEditReceiver> {
             onTextValueChanged(
                 ctx = ctx,
-                relationId = relationId,
+                relationKey = relationKey,
                 objectId = objectId,
                 text = txt
             )
@@ -167,7 +169,7 @@ open class RelationTextValueFragment :
         withParent<TextValueEditReceiver> {
             onNumberValueChanged(
                 ctx = ctx,
-                relationId = relationId,
+                relationKey = relationKey,
                 objectId = objectId,
                 number = number
             )
@@ -221,6 +223,7 @@ open class RelationTextValueFragment :
         fun new(
             ctx: Id,
             relationId: Id,
+            relationKey: Key,
             objectId: Id,
             flow: Int = FLOW_DEFAULT,
             isLocked: Boolean = false,
@@ -228,6 +231,7 @@ open class RelationTextValueFragment :
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 RELATION_ID to relationId,
+                RELATION_KEY to relationKey,
                 OBJECT_ID to objectId,
                 FLOW_KEY to flow,
                 LOCKED_KEY to isLocked
@@ -238,7 +242,7 @@ open class RelationTextValueFragment :
             ctx: Id,
             name: String = "",
             value: Long? = null
-        ) = new(ctx, "", "", FLOW_CHANGE_DATE)
+        ) = new(ctx, "", "", "", FLOW_CHANGE_DATE)
             .apply {
                 arguments?.apply {
                     putString(KEY_NAME, name)
@@ -248,6 +252,7 @@ open class RelationTextValueFragment :
 
         const val CONTEXT_ID = "arg.edit-relation-value.context"
         const val RELATION_ID = "arg.edit-relation-value.relation.id"
+        const val RELATION_KEY = "arg.edit-relation-value.relation.key"
         const val OBJECT_ID = "arg.edit-relation-value.object.id"
         const val FLOW_KEY = "arg.edit-relation-value.flow"
         const val LOCKED_KEY = "arg.edit-relation-value.locked"
@@ -264,14 +269,14 @@ open class RelationTextValueFragment :
             ctx: Id,
             text: String,
             objectId: Id,
-            relationId: Id
+            relationKey: Key
         )
 
         fun onNumberValueChanged(
             ctx: Id,
             number: Double?,
             objectId: Id,
-            relationId: Id
+            relationKey: Key
         )
     }
 }

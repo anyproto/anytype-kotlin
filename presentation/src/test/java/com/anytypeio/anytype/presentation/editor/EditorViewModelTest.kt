@@ -22,7 +22,6 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -56,12 +55,15 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -137,7 +139,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -289,9 +290,6 @@ open class EditorViewModelTest {
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
     @Mock
-    lateinit var getCompatibleObjectTypes: GetCompatibleObjectTypes
-
-    @Mock
     lateinit var repo: BlockRepository
 
     @Mock
@@ -302,9 +300,6 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var searchObjects: SearchObjects
-
-    @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
@@ -373,6 +368,9 @@ open class EditorViewModelTest {
         fields = Block.Fields.empty(),
         children = listOf(title.id)
     )
+
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     @Before
     fun setup() {
@@ -3964,7 +3962,8 @@ open class EditorViewModelTest {
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
-                coverImageHashProvider = coverImageHashProvider
+                coverImageHashProvider = coverImageHashProvider,
+                storeOfRelations = storeOfRelations
             ),
             orchestrator = Orchestrator(
                 createBlock = createBlock,
@@ -4015,8 +4014,6 @@ open class EditorViewModelTest {
             delegator = delegator,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
-            getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider,
             searchObjects = searchObjects,
             getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
@@ -4027,8 +4024,10 @@ open class EditorViewModelTest {
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             createNewObject = createNewObject,
-            objectToSet = objectToSet,
             featureToggles = mock(),
+            objectToSet = objectToSet,
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
             tableDelegate = tableDelegate
         )
     }

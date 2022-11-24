@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationDateValueBinding
@@ -28,6 +29,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
     private val relationId get() = argString(RELATION_ID)
+    private val relationKey get() = argString(RELATION_KEY)
     private val flow get() = arg<Int>(FLOW_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,7 +107,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
             onDateValueChanged(
                 ctx = ctx,
                 objectId = objectId,
-                relationId = relationId,
+                relationKey = relationKey,
                 timeInSeconds = timeInSeconds
             )
         }
@@ -148,12 +150,14 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
         fun new(
             ctx: Id,
             relationId: Id,
+            relationKey: Key,
             objectId: Id,
             flow: Int = FLOW_DEFAULT
         ) = RelationDateValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 RELATION_ID to relationId,
+                RELATION_KEY to relationKey,
                 OBJECT_ID to objectId,
                 FLOW_KEY to flow
             )
@@ -161,6 +165,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
 
         const val CONTEXT_ID = "arg.relation.date.context"
         const val RELATION_ID = "arg.relation.date.relation.id"
+        const val RELATION_KEY = "arg.relation.date.relation.key"
         const val OBJECT_ID = "arg.relation.date.object.id"
 
         const val FLOW_KEY = "arg.relation.date.flow"
@@ -173,7 +178,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
             ctx: Id,
             timeInSeconds: Number?,
             objectId: Id,
-            relationId: Id
+            relationKey: Key
         )
     }
 }

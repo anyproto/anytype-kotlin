@@ -3,7 +3,6 @@ package com.anytypeio.anytype.domain.block.repo
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -13,12 +12,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -145,15 +146,7 @@ interface BlockRepository {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
-    @Deprecated("Part of soon-to-be-deprecated API")
-    suspend fun getObjectTypes(): List<ObjectType>
-
-    suspend fun createObjectType(prototype: ObjectType.Prototype): ObjectType
-
     suspend fun createSet(
-        context: Id,
-        target: Id? = null,
-        position: Position? = null,
         objectType: String? = null
     ): CreateObjectSet.Response
 
@@ -166,16 +159,8 @@ interface BlockRepository {
         limit: Int
     ): Payload
 
-    suspend fun addNewRelationToDataView(
-        context: Id,
-        target: Id,
-        name: String,
-        format: Relation.Format,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload>
-
-    suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
-    suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Id): Payload
+    suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Key): Payload
+    suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Key): Payload
 
     suspend fun updateDataViewViewer(
         context: Id,
@@ -189,19 +174,11 @@ interface BlockRepository {
         viewer: DVViewer
     ): Payload
 
-    suspend fun createDataViewRecord(
-        context: Id,
-        target: Id,
+    suspend fun createDataViewObject(
+        type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>
-    ): DVRecord
-
-    suspend fun updateDataViewRecord(
-        context: Id,
-        target: Id,
-        record: Id,
-        values: Map<String, Any?>
-    )
+        prefilled: Map<Id, Any>,
+    ): Id
 
     suspend fun addDataViewViewer(
         ctx: String,
@@ -216,22 +193,6 @@ interface BlockRepository {
         viewer: Id
     ): Payload
 
-    suspend fun addDataViewRelationOption(
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        record: Id,
-        name: String,
-        color: String
-    ): Pair<Payload, Id?>
-
-    suspend fun addObjectRelationOption(
-        ctx: Id,
-        relation: Id,
-        name: Id,
-        color: String
-    ): Pair<Payload, Id?>
-
     suspend fun searchObjects(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -239,7 +200,7 @@ interface BlockRepository {
         offset: Int,
         limit: Int,
         keys: List<Id> = emptyList()
-    ): List<Map<String, Any?>>
+    ): List<Struct>
 
     suspend fun searchObjectsWithSubscription(
         subscription: Id,
@@ -251,6 +212,8 @@ interface BlockRepository {
         limit: Int,
         beforeId: Id?,
         afterId: Id?,
+        ignoreWorkspace: Boolean?,
+        noDepSubscription: Boolean?
     ): SearchResult
 
     suspend fun searchObjectsByIdWithSubscription(
@@ -263,14 +226,8 @@ interface BlockRepository {
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
 
-    suspend fun addRelationToObject(ctx: Id, relation: Id): Payload
-    suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload
-    suspend fun addNewRelationToObject(
-        ctx: Id,
-        name: String,
-        format: RelationFormat,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload>
+    suspend fun addRelationToObject(ctx: Id, relation: Key): Payload
+    suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
     suspend fun debugSync(): String
     suspend fun debugLocalStore(path: String): String
@@ -323,6 +280,19 @@ interface BlockRepository {
     suspend fun objectToSet(ctx: Id, source: List<String>): Id
 
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
+
+    suspend fun createRelation(
+        name: String,
+        format: RelationFormat,
+        formatObjectTypes: List<Id>,
+        prefilled: Struct
+    ) : ObjectWrapper.Relation
+
+    suspend fun createRelationOption(
+        relation: Id,
+        name: String,
+        color: String
+    ) : ObjectWrapper.Option
 
     suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload
 

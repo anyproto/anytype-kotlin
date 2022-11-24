@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ViewerSortByViewModel
 import com.anytypeio.anytype.ui.sets.ViewerSortByFragment
@@ -29,8 +30,12 @@ object ViewerSortByModule {
     @Provides
     @ViewerSortByScope
     fun provideViewerSortByViewModelFactory(
-        state: StateFlow<ObjectSet>
-    ): ViewerSortByViewModel.Factory = ViewerSortByViewModel.Factory(state)
+        state: StateFlow<ObjectSet>,
+        storeOfRelations: StoreOfRelations
+    ): ViewerSortByViewModel.Factory = ViewerSortByViewModel.Factory(
+        state = state,
+        storeOfRelations = storeOfRelations
+    )
 }
 
 @Scope

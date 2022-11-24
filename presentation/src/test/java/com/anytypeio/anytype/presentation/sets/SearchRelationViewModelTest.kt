@@ -6,6 +6,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.MockRelationFactory
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationCustomNumber
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationCustomText
@@ -24,7 +26,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +54,8 @@ class SearchRelationViewModelTest {
 
     private val dispatcher = Dispatcher.Default<Payload>()
 
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
@@ -59,11 +63,16 @@ class SearchRelationViewModelTest {
 
     @ExperimentalTime
     @Test
-    fun `relation Name and Done should be visible`() = runBlocking {
+    fun `relation Name and Done should be visible`() = runTest {
+
+        // SETUP
+
+        val relations = MockRelationFactory.getAllRelations()
+
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 dataViewId = dataViewId,
-                relations = MockRelationFactory.getAllRelations(),
+                relations = relations,
                 viewerRelations = listOf(
                     DVViewerRelation(
                         key = relationName.key,
@@ -97,12 +106,16 @@ class SearchRelationViewModelTest {
             )
         )
 
+        storeOfRelations.merge(relations)
+
         val vm = buildViewModel(state)
+
+        // TESTING
 
         val expected = listOf(
             SimpleRelationView(
                 key = relationName.key,
-                title = relationName.name,
+                title = relationName.name.orEmpty(),
                 format = ColumnView.Format.SHORT_TEXT,
                 isVisible = true,
                 isHidden = true,
@@ -111,16 +124,16 @@ class SearchRelationViewModelTest {
             ),
             SimpleRelationView(
                 key = relationLastModifiedDate.key,
-                title = relationLastModifiedDate.name,
+                title = relationLastModifiedDate.name.orEmpty(),
                 format = ColumnView.Format.DATE,
                 isVisible = true,
                 isHidden = false,
-                isReadonly = true,
+                isReadonly = false,
                 isDefault = false
             ),
             SimpleRelationView(
                 key = relationCustomNumber.key,
-                title = relationCustomNumber.name,
+                title = relationCustomNumber.name.orEmpty(),
                 format = ColumnView.Format.NUMBER,
                 isVisible = true,
                 isHidden = false,
@@ -129,7 +142,7 @@ class SearchRelationViewModelTest {
             ),
             SimpleRelationView(
                 key = relationCustomText.key,
-                title = relationCustomText.name,
+                title = relationCustomText.name.orEmpty(),
                 format = ColumnView.Format.LONG_TEXT,
                 isVisible = true,
                 isHidden = false,
@@ -138,7 +151,7 @@ class SearchRelationViewModelTest {
             ),
             SimpleRelationView(
                 key = relationDone.key,
-                title = relationDone.name,
+                title = relationDone.name.orEmpty(),
                 format = ColumnView.Format.CHECKBOX,
                 isVisible = true,
                 isHidden = true,
@@ -147,7 +160,7 @@ class SearchRelationViewModelTest {
             ),
             SimpleRelationView(
                 key = relationStatus.key,
-                title = relationStatus.name,
+                title = relationStatus.name.orEmpty(),
                 format = ColumnView.Format.STATUS,
                 isVisible = true,
                 isHidden = false,
@@ -156,7 +169,7 @@ class SearchRelationViewModelTest {
             ),
             SimpleRelationView(
                 key = relationTag.key,
-                title = relationTag.name,
+                title = relationTag.name.orEmpty(),
                 format = ColumnView.Format.TAG,
                 isVisible = true,
                 isHidden = false,
@@ -174,11 +187,16 @@ class SearchRelationViewModelTest {
 
     @ExperimentalTime
     @Test
-    fun `relation with format Emoji, File, Relation should not be visible`() = runBlocking {
+    fun `relation with format Emoji, File, Relation should not be visible`() = runTest {
+
+        // SETUP
+
+        val relations = MockRelationFactory.getAllRelations()
+
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultObjectSet(
                 dataViewId = dataViewId,
-                relations = MockRelationFactory.getAllRelations(),
+                relations = relations,
                 viewerRelations = listOf(
                     DVViewerRelation(
                         key = relationName.key,
@@ -208,12 +226,16 @@ class SearchRelationViewModelTest {
             )
         )
 
+        storeOfRelations.merge(relations)
+
         val vm = buildViewModel(state)
+
+        // TESTING
 
         val expected = listOf(
             SimpleRelationView(
                 key = relationName.key,
-                title = relationName.name,
+                title = relationName.name.orEmpty(),
                 format = ColumnView.Format.SHORT_TEXT,
                 isVisible = true,
                 isHidden = true,
@@ -222,7 +244,7 @@ class SearchRelationViewModelTest {
             ),
             SimpleRelationView(
                 key = relationCustomNumber.key,
-                title = relationCustomNumber.name,
+                title = relationCustomNumber.name.orEmpty(),
                 format = ColumnView.Format.NUMBER,
                 isVisible = true,
                 isHidden = false,
@@ -231,7 +253,7 @@ class SearchRelationViewModelTest {
             ),
             SimpleRelationView(
                 key = relationCustomText.key,
-                title = relationCustomText.name,
+                title = relationCustomText.name.orEmpty(),
                 format = ColumnView.Format.LONG_TEXT,
                 isVisible = true,
                 isHidden = false,
@@ -253,7 +275,8 @@ class SearchRelationViewModelTest {
             session = session,
             addDataViewViewerSort = addDataViewViewerSort,
             dispatcher = dispatcher,
-            analytics = analytics
+            analytics = analytics,
+            storeOfRelations = storeOfRelations
         )
     }
 }

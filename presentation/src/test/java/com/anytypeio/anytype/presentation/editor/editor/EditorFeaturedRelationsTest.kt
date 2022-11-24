@@ -6,6 +6,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
@@ -17,12 +19,14 @@ import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertEquals
 
 class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
@@ -51,7 +55,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should render object type and text relation as featured relation`() {
+    fun `should render object type and text relation as featured relation`() = runTest {
 
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
@@ -76,16 +80,14 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val relationObjectType = Relation(
-            key = Block.Fields.TYPE_KEY,
-            name = "Object Type",
-            format = Relation.Format.OBJECT,
-            source = Relation.Source.DERIVED
-        )
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
 
+        val relationObjectType = StubObjectType(
+            id = objectTypeId,
+            name = "Object Type"
+        )
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -95,8 +97,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                relationObjectType.key to objectTypeId,
-                Relations.FEATURED_RELATIONS to listOf(relationObjectType.key, r3.key)
+                Relations.TYPE to objectTypeId,
+                Relations.FEATURED_RELATIONS to listOf(Relations.TYPE, r3.key)
             )
         )
 
@@ -115,11 +117,19 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = listOf(r1, r2, r3, relationObjectType)
+            relations = emptyList()
+        )
+
+        storeOfRelations.merge(
+            listOf(r1, r2, r3)
+        )
+
+        storeOfObjectTypes.merge(
+            types = listOf(relationObjectType)
         )
 
         val vm = buildViewModel()
@@ -137,14 +147,16 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 id = featuredBlock.id,
                 relations = listOf(
                     DocumentRelationView.ObjectType(
-                        relationId = Relations.TYPE,
+                        relationId = objectTypeId,
+                        relationKey = Relations.TYPE,
                         name = objectTypeName,
                         isFeatured = true,
                         type = objectTypeId
                     ),
                     DocumentRelationView.Default(
-                        relationId = r3.key,
-                        name = r3.name,
+                        relationId = r3.id,
+                        relationKey = r3.key,
+                        name = r3.name.orEmpty(),
                         value = value3,
                         isFeatured = true,
                         format = Relation.Format.SHORT_TEXT
@@ -171,11 +183,14 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
         )
 
-        vm.state.test().assertValue(ViewState.Success(expected))
+        assertEquals(
+            expected = ViewState.Success(expected),
+            actual = vm.state.value
+        )
     }
 
     @Test
-    fun `should not render featured relations when featured block not present`() {
+    fun `should not render featured relations when featured block not present`() = runTest {
 
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
@@ -194,16 +209,14 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val relationObjectType = Relation(
-            key = Block.Fields.TYPE_KEY,
-            name = "Object Type",
-            format = Relation.Format.OBJECT,
-            source = Relation.Source.DERIVED
-        )
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
 
+        val relationObjectType = StubObjectType(
+            id = objectTypeId,
+            name = "Object Type"
+        )
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -213,8 +226,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                relationObjectType.key to objectTypeId,
-                Relations.FEATURED_RELATIONS to listOf(relationObjectType.key)
+                Relations.TYPE to objectTypeId,
+                Relations.FEATURED_RELATIONS to listOf(Relations.TYPE)
             )
         )
 
@@ -232,11 +245,19 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
 
         stubInterceptEvents()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = listOf(r1, r2, r3, relationObjectType)
+            relations = emptyList()
+        )
+
+        storeOfRelations.merge(
+            listOf(r1, r2, r3)
+        )
+
+        storeOfObjectTypes.merge(
+            listOf(relationObjectType)
         )
 
         val vm = buildViewModel()
@@ -275,7 +296,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should not render featured relations when list of ids is empty`() {
+    fun `should not render featured relations when list of ids is empty`() = runTest {
 
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
@@ -300,14 +321,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val relationObjectType = Relation(
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
+        val relationObjectType = StubRelationObject(
             key = Block.Fields.TYPE_KEY,
             name = "Object Type",
-            format = Relation.Format.OBJECT,
-            source = Relation.Source.DERIVED
+            format = Relation.Format.OBJECT
         )
 
 
@@ -338,11 +358,15 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
 
         stubInterceptEvents()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = listOf(r1, r2, r3, relationObjectType)
+            relations = emptyList()
+        )
+
+        storeOfRelations.merge(
+            listOf(r1, r2, r3, relationObjectType)
         )
 
         val vm = buildViewModel()
@@ -381,7 +405,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should not render text featured relation when appropriate relation is not present`() {
+    fun `should not render text featured relation when appropriate relation is not present`() = runTest {
 
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
@@ -406,16 +430,14 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val objectTypeName = "Movie"
         val objectTypeDescription = MockDataFactory.randomString()
 
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val relationObjectType = Relation(
+        val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+        val r2 = MockTypicalDocumentFactory.relationObject("De")
+        val r3 = MockTypicalDocumentFactory.relationObject("HJ")
+        val relationObjectType = StubRelationObject(
             key = Block.Fields.TYPE_KEY,
             name = "Object Type",
-            format = Relation.Format.OBJECT,
-            source = Relation.Source.DERIVED
+            format = Relation.Format.OBJECT
         )
-
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -444,69 +466,76 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
 
         stubInterceptEvents()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = listOf(r1, r2, relationObjectType)
+            relations = emptyList()
+        )
+
+        storeOfRelations.merge(
+            listOf(r1, r2, relationObjectType)
         )
 
         val vm = buildViewModel()
 
         vm.onStart(root)
 
-        val expected =
-            listOf(
-                BlockView.Title.Basic(
-                    id = title.id,
-                    isFocused = false,
-                    text = title.content<Block.Content.Text>().text,
-                    emoji = null
-                ),
-                BlockView.FeaturedRelation(
-                    id = featuredBlock.id,
-                    relations = listOf(
-                        DocumentRelationView.ObjectType(
-                            relationId = Relations.TYPE,
-                            name = objectTypeName,
-                            isFeatured = true,
-                            type = objectTypeId
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                emoji = null
+            ),
+            BlockView.FeaturedRelation(
+                id = featuredBlock.id,
+                relations = listOf(
+                    DocumentRelationView.ObjectType(
+                        relationId = objectTypeId,
+                        relationKey = Relations.TYPE,
+                        name = objectTypeName,
+                        isFeatured = true,
+                        type = objectTypeId
+                    )
+                )
+            ),
+            BlockView.Text.Numbered(
+                isFocused = false,
+                id = block.id,
+                marks = emptyList(),
+                background = block.parseThemeBackgroundColor(),
+                text = block.content<Block.Content.Text>().text,
+                alignment = block.content<Block.Content.Text>().align?.toView(),
+                number = 1,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
                     )
-                ),
-                BlockView.Text.Numbered(
-                    isFocused = false,
-                    id = block.id,
-                    marks = emptyList(),
-                    background = block.parseThemeBackgroundColor(),
-                    text = block.content<Block.Content.Text>().text,
-                    alignment = block.content<Block.Content.Text>().align?.toView(),
-                    number = 1,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
-                        )
-                    } else {
-                        emptyList()
-                    }
-                )
+                } else {
+                    emptyList()
+                }
             )
+        )
 
-        vm.state.test().assertValue(ViewState.Success(expected))
+        assertEquals(
+            expected = ViewState.Success(expected),
+            actual = vm.state.value
+        )
     }
 
     @Test
-    fun `should not render relation in featured relations if corresponding relation is hidden`() {
+    fun `should not render relation in featured relations if corresponding relation is hidden`() = runTest {
 
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
         val block = MockTypicalDocumentFactory.a
 
-        val r1 = MockTypicalDocumentFactory.relation(name = "Ad", isHidden = false)
-        val r2 = MockTypicalDocumentFactory.relation(name = "De", isHidden = true)
-        val r3 = MockTypicalDocumentFactory.relation(name = "HJ", isHidden = true)
+        val r1 = MockTypicalDocumentFactory.relationObject(name = "Ad", isHidden = false)
+        val r2 = MockTypicalDocumentFactory.relationObject(name = "De", isHidden = true)
+        val r3 = MockTypicalDocumentFactory.relationObject(name = "HJ", isHidden = true)
 
         val featuredBlock = Block(
             id = MockDataFactory.randomUuid(),
@@ -528,11 +557,9 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
-        val relationObjectType = Relation(
-            key = Relations.TYPE,
-            name = "Object Type",
-            format = Relation.Format.OBJECT,
-            source = Relation.Source.DERIVED
+        val relationObjectType = StubObjectType(
+            id = objectTypeId,
+            name = "Object Type"
         )
 
         val value1 = MockDataFactory.randomString()
@@ -544,8 +571,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                relationObjectType.key to objectTypeId,
-                Relations.FEATURED_RELATIONS to listOf(relationObjectType.key, r1.key, r2.key, r3.key)
+                Relations.TYPE to objectTypeId,
+                Relations.FEATURED_RELATIONS to listOf(Relations.TYPE, r1.key, r2.key, r3.key)
             )
         )
 
@@ -564,11 +591,19 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = listOf(r1, r2, r3, relationObjectType)
+            relations = emptyList()
+        )
+
+        storeOfRelations.merge(
+            listOf(r1, r2, r3)
+        )
+
+        storeOfObjectTypes.merge(
+            listOf(relationObjectType)
         )
 
         val vm = buildViewModel()
@@ -586,14 +621,16 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 id = featuredBlock.id,
                 relations = listOf(
                     DocumentRelationView.ObjectType(
-                        relationId = Relations.TYPE,
+                        relationId = objectTypeId,
+                        relationKey = Relations.TYPE,
                         name = objectTypeName,
                         isFeatured = true,
                         type = objectTypeId
                     ),
                     DocumentRelationView.Default(
-                        relationId = r1.key,
-                        name = r1.name,
+                        relationId = r1.id,
+                        relationKey = r1.key,
+                        name = r1.name.orEmpty(),
                         value = value1,
                         isFeatured = true,
                         format = Relation.Format.SHORT_TEXT
@@ -620,6 +657,9 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
         )
 
-        vm.state.test().assertValue(ViewState.Success(expected))
+        assertEquals(
+            expected = ViewState.Success(expected),
+            actual = vm.state.value
+        )
     }
 }

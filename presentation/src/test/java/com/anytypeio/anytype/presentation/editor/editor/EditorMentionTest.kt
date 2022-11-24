@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.base.Either
@@ -310,7 +311,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document)
         stubInterceptEvents()
-        stubGetDefaultObjectType(type = "_otnote")
+        stubGetDefaultObjectType(type = ObjectTypeIds.NOTE)
 
         updateText.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
@@ -327,7 +328,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 invoke(
                     CreateNewDocument.Params(
                         name = newPageName,
-                        type = "_otnote"
+                        type = ObjectTypeIds.NOTE
                     )
                 )
             } doReturn Either.Right(
@@ -367,7 +368,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             invoke(
                 CreateNewDocument.Params(
                     name = newPageName,
-                    type = "_otnote"
+                    type = ObjectTypeIds.NOTE
                 )
             )
         }
@@ -899,7 +900,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     )
         }
         stubInterceptEvents()
-        stubGetObjectTypes()
+        stubSearchObjects()
 
         val vm = buildViewModel()
 
@@ -1047,7 +1048,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     )
         }
         stubInterceptEvents()
-        stubGetObjectTypes()
+        stubSearchObjects()
 
         val vm = buildViewModel()
 

@@ -24,7 +24,6 @@ message Event {
             Object.Details.Set objectDetailsSet = 16;
             Object.Details.Amend objectDetailsAmend = 50;
             Object.Details.Unset objectDetailsUnset = 51;
-            Object.Relations.Set objectRelationsSet = 22;
             Object.Relations.Amend objectRelationsAmend = 52;
             Object.Relations.Remove objectRelationsRemove = 53;
 
@@ -56,19 +55,20 @@ message Event {
             Block.Set.VerticalAlign blockSetVerticalAlign = 36;
             Block.Set.TableRow blockSetTableRow = 37;
 
-            Block.Dataview.RecordsSet blockDataviewRecordsSet = 18;
-            Block.Dataview.RecordsUpdate blockDataviewRecordsUpdate = 26;
-            Block.Dataview.RecordsInsert blockDataviewRecordsInsert = 27;
-            Block.Dataview.RecordsDelete blockDataviewRecordsDelete = 28;
-
-            Block.Dataview.SourceSet blockDataviewSourceSet = 35;
             Block.Dataview.ViewSet blockDataviewViewSet = 19;
             Block.Dataview.ViewDelete blockDataviewViewDelete = 20;
             Block.Dataview.ViewOrder blockDataviewViewOrder = 29;
-            Block.Dataview.RelationDelete blockDataviewRelationDelete = 24;
-            Block.Dataview.RelationSet blockDataviewRelationSet = 23;
+            Block.Dataview.SourceSet blockDataviewSourceSet = 35;
             Block.Dataview.GroupOrderUpdate blockDataViewGroupOrderUpdate = 38;
             Block.Dataview.ObjectOrderUpdate blockDataViewObjectOrderUpdate = 39;
+            Block.Dataview.RelationDelete blockDataviewRelationDelete = 124;
+            Block.Dataview.RelationSet blockDataviewRelationSet = 123;
+
+            // deprecated
+            Block.Dataview.OldRelationDelete blockDataviewOldRelationDelete = 24;
+            // deprecated
+            Block.Dataview.OldRelationSet blockDataviewOldRelationSet = 23;
+
 
 
             User.Block.Join userBlockJoin = 31;
@@ -177,31 +177,15 @@ message Event {
         }
 
         message Relations {
-            message Set {
-                string id = 1; // context objectId
-                repeated anytype.model.Relation relations = 2;
-            }
 
             message Amend {
                 string id = 1; // context objectId
-                repeated anytype.model.Relation relations = 2;
+                repeated anytype.model.RelationLink relationLinks = 2;
             }
 
             message Remove {
                 string id = 1; // context objectId
-                repeated string keys = 2;
-            }
-        }
-
-        message Relation {
-            message Set {
-                string id = 1; // context objectId
-                string relationKey = 2;
-                anytype.model.Relation relation = 3; // missing value means relation should be removed
-            }
-            message Remove {
-                string id = 1; // context objectId
-                string relationKey = 2;
+                repeated string relationKeys = 2;
             }
         }
 
@@ -209,6 +193,11 @@ message Event {
         message Remove {
             // notifies that objects were removed
             repeated string ids = 1;
+        }
+
+        message Restriction {
+            string id = 1;
+            anytype.model.Restrictions restrictions = 2;
         }
     }
     message Block {
@@ -675,8 +664,6 @@ message Event {
                 string id = 1; // dataview block's id
                 string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
                 anytype.model.Block.Content.Dataview.View view = 3;
-                uint32 offset = 4; // middleware will try to preserve the current aciveview's offset&limit but may reset it in case it becomes invalid or not actual anymore
-                uint32 limit = 5;
             }
 
             message ViewDelete {
@@ -695,46 +682,27 @@ message Event {
                 repeated string source = 2;
             }
 
-            message RelationDelete {
+            message OldRelationDelete {
                 string id = 1; // dataview block's id
                 string relationKey = 2; // relation key to remove
             }
 
             // sent when the dataview relation has been changed or added
-            message RelationSet {
+            message OldRelationSet {
                 string id = 1; // dataview block's id
                 string relationKey = 2; // relation key to update
                 anytype.model.Relation relation = 3;
             }
 
-            // sent when the active view's visible records should be replaced
-            message RecordsSet {
+            message RelationDelete {
                 string id = 1; // dataview block's id
-                string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
-                repeated google.protobuf.Struct records = 3;
-                uint32 total = 7; // total number of records
+                repeated string relationKeys = 2; // relation key to remove
             }
 
-            // sent when client should insert new records on the active view
-            message RecordsInsert {
+            // sent when the dataview relation has been changed or added
+            message RelationSet {
                 string id = 1; // dataview block's id
-                string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
-                repeated google.protobuf.Struct records = 3;
-                uint32 insertPosition = 5; // position to insert
-            }
-
-            // sent when client should update existing records on the active view
-            message RecordsUpdate {
-                string id = 1; // dataview block's id
-                string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
-                repeated google.protobuf.Struct records = 4; // records to update. Use 'id' field to get records ids
-            }
-
-            // sent when client should remove existing records on the active view
-            message RecordsDelete {
-                string id = 1; // dataview block's id
-                string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
-                repeated string removed = 6;
+                repeated anytype.model.RelationLink relationLinks = 2; // relation id to update
             }
 
             message GroupOrderUpdate {

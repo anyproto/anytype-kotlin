@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -8,9 +9,10 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 
+@Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
+    objectTypes: List<ObjectWrapper.Type>
 ): List<DefaultObjectView> =
     this.map { obj ->
         val typeUrl = obj.getProperType()
@@ -19,7 +21,7 @@ fun List<ObjectWrapper.Basic>.toView(
             id = obj.id,
             name = obj.getProperName(),
             type = typeUrl,
-            typeName = getProperTypeName(url = typeUrl, types = objectTypes),
+            typeName = getProperTypeName(id = typeUrl, types = objectTypes),
             layout = layout,
             icon = ObjectIcon.from(
                 obj = obj,
@@ -29,9 +31,29 @@ fun List<ObjectWrapper.Basic>.toView(
         )
     }
 
+fun List<ObjectWrapper.Basic>.toViews(
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectWrapper.Type>
+): List<DefaultObjectView> = map { obj ->
+    val typeUrl = obj.getProperType()
+    val layout = obj.getProperLayout()
+    DefaultObjectView(
+        id = obj.id,
+        name = obj.getProperName(),
+        type = typeUrl,
+        typeName = objectTypes.firstOrNull { it.id == typeUrl }?.name,
+        layout = layout,
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = layout,
+            builder = urlBuilder
+        )
+    )
+}
+
 fun List<ObjectWrapper.Basic>.toLinkToView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
+    objectTypes: List<ObjectWrapper.Type>
 ): List<LinkToItemView.Object> =
     this.mapIndexed { index, obj ->
         val typeUrl = obj.getProperType()
@@ -39,7 +61,7 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
         LinkToItemView.Object(
             id = obj.id,
             title = obj.getProperName(),
-            subtitle = getProperTypeName(url = typeUrl, types = objectTypes),
+            subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
             type = typeUrl,
             layout = layout,
             icon = ObjectIcon.from(
@@ -53,14 +75,14 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
 
 fun ObjectWrapper.Basic.toLinkToObjectView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
+    objectTypes: List<ObjectWrapper.Type>
 ): LinkToItemView.LinkedTo.Object {
     val typeUrl = this.getProperType()
     val layout = this.getProperLayout()
     return LinkToItemView.LinkedTo.Object(
         id = this.id,
         title = this.getProperName(),
-        subtitle = getProperTypeName(url = typeUrl, types = objectTypes),
+        subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
         type = typeUrl,
         layout = layout,
         icon = ObjectIcon.from(
@@ -74,13 +96,13 @@ fun ObjectWrapper.Basic.toLinkToObjectView(
 fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
     ids: List<*>? = null,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
+    objectTypes: List<ObjectWrapper.Type>
 ): List<CreateFilterView.Object> =
     this.map { obj ->
         CreateFilterView.Object(
             id = obj.id,
             typeName = getProperTypeName(
-                url = obj.getProperType(),
+                id = obj.getProperType(),
                 types = objectTypes
             ),
             name = obj.getProperName(),
@@ -94,20 +116,20 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
     }
 
 fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
-    ids: List<String>,
+    excluded: List<Id>,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
+    objectTypes: List<ObjectWrapper.Type>
 ): List<RelationValueView.Object> =
     this.mapNotNull { obj ->
         val typeUrl = obj.getProperType()
         val layout = obj.getProperLayout()
-        if (obj.id !in ids) {
+        if (obj.id !in excluded) {
             if (obj.isDeleted == null || obj.isDeleted == false) {
                 RelationValueView.Object.Default(
                     id = obj.id,
                     name = obj.getProperName(),
                     typeName = getProperTypeName(
-                        url = typeUrl,
+                        id = typeUrl,
                         types = objectTypes
                     ),
                     type = typeUrl,
@@ -157,8 +179,7 @@ private fun ObjectWrapper.Basic.getProperType() = type.firstOrNull()
 private fun ObjectWrapper.Basic.getProperFileExt() = fileExt.orEmpty()
 private fun ObjectWrapper.Basic.getProperFileMime() = fileMimeType.orEmpty()
 
-private fun getProperTypeName(url: String?, types: List<ObjectType>) =
-    types.find { it.url == url }?.name.orEmpty()
+private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) = types.find { it.id == id }?.name.orEmpty()
 
 private fun ObjectWrapper.Basic.getProperFileImage(urlBuilder: UrlBuilder): String? =
     iconImage?.let { if (it.isBlank()) null else urlBuilder.thumbnail(it) }

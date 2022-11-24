@@ -286,7 +286,9 @@ data class Block(
         data class DataView(
             val sources: List<String>,
             val viewers: List<Viewer>,
-            val relations: List<Relation>
+            @Deprecated("To be deleted")
+            val relations: List<Relation>,
+            val relationsIndex: List<RelationLink> = emptyList()
         ) : Content() {
 
             data class Viewer(
@@ -334,12 +336,16 @@ data class Block(
                 enum class Type { ASC, DESC, CUSTOM }
             }
 
+            /**
+             * [relationFormat] optional relation format, which should be specified for date-related filtering.
+             */
             data class Filter(
                 val relationKey: String,
+                val relationFormat: RelationFormat? = null,
                 val operator: Operator = Operator.AND,
                 val condition: Condition,
                 val quickOption: QuickOption = QuickOption.EXACT_DATE,
-                val value: Any?
+                val value: Any? = null
             ) {
                 enum class Operator { AND, OR }
                 enum class Condition {

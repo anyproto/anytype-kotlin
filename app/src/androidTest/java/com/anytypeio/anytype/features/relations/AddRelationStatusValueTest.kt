@@ -10,26 +10,30 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.StubRelationOptionObject
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -74,9 +78,12 @@ class AddRelationStatusValueTest {
     @Mock
     lateinit var analytics: Analytics
 
-    private lateinit var addRelationOption: AddDataViewRelationOption
-    private lateinit var addObjectRelationOption: AddObjectRelationOption
+    @Mock
+    lateinit var objectDetailProvider: ObjectDetailProvider
+
+    private lateinit var createRelationOption: CreateRelationOption
     private lateinit var updateDetail: UpdateDetail
+    private lateinit var getOptions: GetOptions
     private lateinit var urlBuilder: UrlBuilder
 
     @get:Rule
@@ -88,25 +95,31 @@ class AddRelationStatusValueTest {
     private val ctx = MockDataFactory.randomUuid()
     private val state = MutableStateFlow(ObjectSet.init())
     private val store : ObjectStore = DefaultObjectStore()
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val db = ObjectSetDatabase(store = store)
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        addRelationOption = AddDataViewRelationOption(repo)
-        addObjectRelationOption = AddObjectRelationOption(repo)
+        createRelationOption = CreateRelationOption(repo)
+        getOptions = GetOptions(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
         TestRelationOptionValueDVAddFragment.testVmFactory = AddOptionsRelationDVViewModel.Factory(
-            relations = DataViewObjectRelationProvider(state),
+            relations = DataViewObjectRelationProvider(
+                objectSetState = state,
+                storeOfRelations = storeOfRelations
+            ),
             values = DataViewObjectValueProvider(
                 db = db
             ),
-            addDataViewRelationOption = addRelationOption,
             dispatcher = dispatcher,
             optionsProvider = AddOptionsRelationProvider(),
             setObjectDetail = updateDetail,
-            analytics = analytics
+            analytics = analytics,
+            createRelationOption = createRelationOption,
+            detailsProvider = objectDetailProvider,
+            getOptions = getOptions
         )
     }
 
@@ -156,34 +169,9 @@ class AddRelationStatusValueTest {
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
-        )
+        state.value = ObjectSet(blocks = listOf(dv))
 
-        repo.stub {
-            onBlocking {
-                addDataViewRelationOption(
-                    ctx = any(),
-                    dataview = any(),
-                    relation = any(),
-                    color = any(),
-                    name = any(),
-                    record = any()
-                )
-            } doReturn Pair(
-                Payload(
-                    context = ctx,
-                    events = emptyList()
-                ),
-                MockDataFactory.randomUuid()
-            )
-        }
+        stubCreateRelationOption()
 
         // TESTING
 
@@ -213,16 +201,7 @@ class AddRelationStatusValueTest {
 
         // Verifying that the request is made.
 
-        verifyBlocking(repo, times(1)) {
-            addDataViewRelationOption(
-                ctx = any(),
-                dataview = any(),
-                relation = any(),
-                color = any(),
-                name = any(),
-                record = any()
-            )
-        }
+        verifyCreateRelationOptionCalled()
     }
 
     @Test
@@ -281,24 +260,7 @@ class AddRelationStatusValueTest {
 //            )
         )
 
-        repo.stub {
-            onBlocking {
-                addDataViewRelationOption(
-                    ctx = any(),
-                    dataview = any(),
-                    relation = any(),
-                    color = any(),
-                    name = any(),
-                    record = any()
-                )
-            } doReturn Pair(
-                Payload(
-                    context = ctx,
-                    events = emptyList()
-                ),
-                MockDataFactory.randomUuid()
-            )
-        }
+        stubCreateRelationOption()
 
         // TESTING
 
@@ -610,14 +572,10 @@ class AddRelationStatusValueTest {
         // Veryfying UI
 
         verifyBlocking(repo, times(1)) {
-            updateDataViewRecord(
-                context = ctx,
-                target = dv.id,
-                record = target,
-                values = mapOf(
-                    ObjectSetConfig.ID_KEY to target,
-                    relationKey to listOf(option2.id)
-                )
+            updateDetail(
+                ctx = target,
+                key = relationKey,
+                value = listOf(option2.id)
             )
         }
     }
@@ -627,5 +585,36 @@ class AddRelationStatusValueTest {
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )
+    }
+
+    private fun verifyCreateRelationOptionCalled() {
+        verifyBlocking(repo, times(1)) {
+            createRelationOption(
+                relation = any(),
+                color = any(),
+                name = any()
+            )
+        }
+    }
+
+    private fun stubCreateRelationOption(
+        relation: Key = MockDataFactory.randomUuid(),
+        name: String = MockDataFactory.randomString(),
+        id: Id = MockDataFactory.randomUuid(),
+        color: String = ThemeColor.values().random().code
+    ) {
+        repo.stub {
+            onBlocking {
+                createRelationOption(
+                    relation = relation,
+                    color = color,
+                    name = name
+                )
+            } doReturn StubRelationOptionObject(
+                id = id,
+                text = name,
+                color = color
+            )
+        }
     }
 }

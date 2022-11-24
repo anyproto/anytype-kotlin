@@ -2,11 +2,8 @@ package com.anytypeio.anytype.presentation.objects
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.SmartBlockType
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -16,10 +13,9 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class ObjectTypeChangeViewModel(
-    private val getCompatibleObjectTypes: GetCompatibleObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -27,7 +23,7 @@ class ObjectTypeChangeViewModel(
         emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
     }
 
-    val views = MutableStateFlow<List<ObjectTypeView.Item>>(emptyList())
+    val views = MutableStateFlow<List<ObjectTypeView>>(emptyList())
 
     val results = combine(searchQuery, views) { query, views ->
         if (query.isEmpty())
@@ -37,41 +33,26 @@ class ObjectTypeChangeViewModel(
     }
 
     fun onStart(
-        smartBlockType: SmartBlockType,
-        excludedTypes: List<Id> = emptyList(),
-        isDraft: Boolean,
-        selectedSources: List<Id>,
+        isWithSet: Boolean,
+        isWithBookmark: Boolean,
+        excludeTypes: List<Id>,
+        selectedTypes: List<Id>,
         isSetSource: Boolean
     ) {
         viewModelScope.launch {
-            getCompatibleObjectTypes.invoke(
-                GetCompatibleObjectTypes.Params(
-                    smartBlockType = smartBlockType,
-                    isSetIncluded = if (isSetSource) true else isDraft
-                )
-            ).proceed(
-                failure = { Timber.e(it, "Error while getting object types") },
-                success = { types ->
-                    if (excludedTypes.isEmpty()) {
-                        setViews(
-                            objectTypes = types,
-                            selectedSources = selectedSources
-                        )
-                    } else {
-                        setViews(
-                            objectTypes = types.filter { !excludedTypes.contains(it.url) },
-                            selectedSources = selectedSources
-                        )
-                    }
-                }
+            val all = storeOfObjectTypes.getAll()
+            val objectTypeViews = all.getObjectTypeViewsForSBPage(
+                isWithSet = isWithSet,
+                isWithBookmark = isWithBookmark,
+                selectedTypes = selectedTypes,
+                excludeTypes = excludeTypes
             )
+            setViews(objectTypeViews)
         }
     }
 
-    private fun setViews(objectTypes: List<ObjectType>, selectedSources: List<Id>) {
-        views.value = objectTypes
-            .toObjectTypeView(selectedSources = selectedSources)
-            .sortedBy { !selectedSources.contains(it.id) }
+    private fun setViews(objectTypeViews: List<ObjectTypeView>) {
+        views.value = objectTypeViews
     }
 
     fun onQueryChanged(input: String) {

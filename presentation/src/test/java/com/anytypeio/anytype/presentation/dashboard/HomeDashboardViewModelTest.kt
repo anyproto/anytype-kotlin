@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -127,6 +128,8 @@ class HomeDashboardViewModelTest {
 
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
+    private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -154,7 +157,8 @@ class HomeDashboardViewModelTest {
             objectStore = objectStore,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             createNewObject = createNewObject,
-            featureToggles = mock()
+            featureToggles = mock(),
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 

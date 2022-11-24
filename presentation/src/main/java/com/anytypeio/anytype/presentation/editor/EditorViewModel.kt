@@ -16,14 +16,18 @@ import com.anytypeio.anytype.core_models.Block.Prototype
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.addMention
 import com.anytypeio.anytype.core_models.ext.asMap
@@ -45,8 +49,10 @@ import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -54,8 +60,6 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.clipboard.Paste.Companion.DEFAULT_RANGE
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -63,12 +67,15 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
@@ -88,10 +95,6 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.SideEffect
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.core_utils.tools.toPrettyString
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -99,6 +102,8 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlight
 import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
 import com.anytypeio.anytype.presentation.editor.editor.ext.fillTableOfContents
+import com.anytypeio.anytype.presentation.editor.editor.ext.findSearchResultPosition
+import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
 import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
 import com.anytypeio.anytype.presentation.editor.editor.ext.isStyleClearable
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
@@ -109,8 +114,6 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.toReadMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
-import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
-import com.anytypeio.anytype.presentation.editor.editor.ext.findSearchResultPosition
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.markup
@@ -159,8 +162,8 @@ import com.anytypeio.anytype.presentation.editor.selection.getAllSelectedColumns
 import com.anytypeio.anytype.presentation.editor.selection.getAllSelectedRows
 import com.anytypeio.anytype.presentation.editor.selection.getIdsInColumn
 import com.anytypeio.anytype.presentation.editor.selection.getIdsInRow
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetColumnItems
 import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetCellItems
+import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetColumnItems
 import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRowItems
 import com.anytypeio.anytype.presentation.editor.selection.toggleTableMode
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelection
@@ -194,16 +197,16 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
-import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import com.anytypeio.anytype.presentation.relations.views
+import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
@@ -249,8 +252,6 @@ class EditorViewModel(
     private val delegator: Delegator<Action>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
-    private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
-    private val objectTypesProvider: ObjectTypesProvider,
     private val searchObjects: SearchObjects,
     private val getDefaultEditorType: GetDefaultEditorType,
     private val findObjectSetForType: FindObjectSetForType,
@@ -262,6 +263,8 @@ class EditorViewModel(
     private val templateDelegate: EditorTemplateDelegate,
     private val createNewObject: CreateNewObject,
     private val objectToSet: ConvertObjectToSet,
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val featureToggles: FeatureToggles,
     private val tableDelegate: EditorTableDelegate
 ) : ViewStateViewModel<ViewState>(),
@@ -524,6 +527,7 @@ class EditorViewModel(
                     orchestrator.stores.details.update(event.details)
                     orchestrator.stores.relations.update(event.relations)
                     orchestrator.stores.objectTypes.update(event.objectTypes)
+                    orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
                     val objectType = event.details.details[context]?.type?.firstOrNull()
                     proceedWithShowingObjectTypesWidget(objectType, event.blocks)
@@ -531,8 +535,8 @@ class EditorViewModel(
                 is Event.Command.Details -> {
                     orchestrator.stores.details.apply { update(current().process(event)) }
                 }
-                is Event.Command.ObjectRelations -> {
-                    orchestrator.stores.relations.apply { update(current().process(event)) }
+                is Event.Command.ObjectRelationLinks -> {
+                    orchestrator.stores.relationLinks.apply { update(current().process(event)) }
                 }
                 else -> {
                     // do nothing
@@ -703,7 +707,7 @@ class EditorViewModel(
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = details,
-                    relations = orchestrator.stores.relations.current(),
+                    relationLinks = orchestrator.stores.relationLinks.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection(),
                     objectTypes = orchestrator.stores.objectTypes.current()
@@ -2955,7 +2959,7 @@ class EditorViewModel(
         }
     }
 
-    fun onAddNewObjectClicked(type: String, layout: ObjectType.Layout) {
+    private fun onAddNewObjectClicked(type: String) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
         val position: Position
@@ -2980,7 +2984,7 @@ class EditorViewModel(
             position = position,
             target = target,
             type = type,
-            layout = layout
+            layout = null
         )
 
         val startTime = System.currentTimeMillis()
@@ -2996,7 +3000,7 @@ class EditorViewModel(
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         objType = type,
-                        layout = layout.code.toDouble(),
+                        layout = null,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime,
                         middleTime = middleTime,
@@ -3651,52 +3655,14 @@ class EditorViewModel(
                 }
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
-                        val relationId =
-                            (clicked.value as BlockView.Relation.Related).view.relationId
-                        val relation =
-                            orchestrator.stores.relations.current().first { it.key == relationId }
-                        if (relation.isReadOnly) {
-                            sendToast(NOT_ALLOWED_FOR_RELATION)
-                            Timber.d("No interaction allowed with this relation")
-                            return
-                        }
-                        when (relation.format) {
-                            Relation.Format.SHORT_TEXT,
-                            Relation.Format.LONG_TEXT,
-                            Relation.Format.URL,
-                            Relation.Format.PHONE,
-                            Relation.Format.NUMBER,
-                            Relation.Format.EMAIL -> {
-                                dispatch(
-                                    Command.OpenObjectRelationScreen.Value.Text(
-                                        ctx = context,
-                                        target = context,
-                                        relation = relationId,
-                                        isLocked = mode == EditorMode.Locked
-                                    )
-                                )
+                        when (clicked.value) {
+                            is BlockView.Relation.Placeholder -> {
+                                Timber.d("Clicked in BlockView.Relation.Placeholder")
                             }
-                            Relation.Format.CHECKBOX -> {
-                                proceedWithTogglingBlockRelationCheckbox(clicked.value, relationId)
-                            }
-                            Relation.Format.DATE -> {
-                                dispatch(
-                                    Command.OpenObjectRelationScreen.Value.Date(
-                                        ctx = context,
-                                        target = context,
-                                        relation = relationId
-                                    )
-                                )
-                            }
-                            else -> {
-                                dispatch(
-                                    Command.OpenObjectRelationScreen.Value.Default(
-                                        ctx = context,
-                                        target = context,
-                                        relation = relationId,
-                                        targetObjectTypes = relation.objectTypes,
-                                        isLocked = mode == EditorMode.Locked
-                                    )
+                            is BlockView.Relation.Related -> {
+                                val relationView = clicked.value.view
+                                proceedWithRelationBlockClicked(
+                                    relationView = relationView
                                 )
                             }
                         }
@@ -3712,57 +3678,65 @@ class EditorViewModel(
                 }
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
-                        val relationId = clicked.relation.relationId
-                        val relation =
-                            orchestrator.stores.relations.current().first { it.key == relationId }
-                        if (relation.isReadOnly) {
-                            sendToast(NOT_ALLOWED_FOR_RELATION)
-                            return
-                        }
-                        when (relation.format) {
-                            Relation.Format.SHORT_TEXT,
-                            Relation.Format.LONG_TEXT,
-                            Relation.Format.URL,
-                            Relation.Format.PHONE,
-                            Relation.Format.NUMBER,
-                            Relation.Format.EMAIL -> {
-                                dispatch(
-                                    Command.OpenObjectRelationScreen.Value.Text(
-                                        ctx = context,
-                                        target = context,
-                                        relation = relationId,
-                                        isLocked = mode == EditorMode.Locked
-                                    )
-                                )
-                            }
-                            Relation.Format.CHECKBOX -> {
-                                val view = clicked.relation
-                                if (view is DocumentRelationView.Checkbox) {
-                                    proceedWithSetObjectDetails(
-                                        ctx = context,
-                                        key = relationId,
-                                        value = !view.isChecked
-                                    )
+                        viewModelScope.launch {
+                            val relationId = clicked.relation.relationId
+                            val relation = storeOfRelations.getById(relationId)
+                            if (relation != null) {
+                                if (relation.isReadOnly == true) {
+                                    sendToast(NOT_ALLOWED_FOR_RELATION)
                                 }
-                            }
-                            Relation.Format.DATE -> {
-                                dispatch(
-                                    Command.OpenObjectRelationScreen.Value.Date(
-                                        ctx = context,
-                                        target = context,
-                                        relation = relationId
-                                    )
-                                )
-                            }
-                            else -> {
-                                dispatch(
-                                    Command.OpenObjectRelationScreen.Value.Default(
-                                        ctx = context,
-                                        target = context,
-                                        relation = relationId,
-                                        targetObjectTypes = relation.objectTypes,
-                                        isLocked = mode == EditorMode.Locked
-                                    )
+                                when (relation.format) {
+                                    Relation.Format.SHORT_TEXT,
+                                    Relation.Format.LONG_TEXT,
+                                    Relation.Format.URL,
+                                    Relation.Format.PHONE,
+                                    Relation.Format.NUMBER,
+                                    Relation.Format.EMAIL -> {
+                                        dispatch(
+                                            Command.OpenObjectRelationScreen.Value.Text(
+                                                ctx = context,
+                                                target = context,
+                                                relationKey = relationId,
+                                                relationId = relationId,
+                                                isLocked = mode == EditorMode.Locked
+                                            )
+                                        )
+                                    }
+                                    Relation.Format.CHECKBOX -> {
+                                        val view = clicked.relation
+                                        if (view is DocumentRelationView.Checkbox) {
+                                            proceedWithSetObjectDetails(
+                                                ctx = context,
+                                                key = relationId,
+                                                value = !view.isChecked
+                                            )
+                                        }
+                                    }
+                                    Relation.Format.DATE -> {
+                                        dispatch(
+                                            Command.OpenObjectRelationScreen.Value.Date(
+                                                ctx = context,
+                                                target = context,
+                                                relationId = relationId,
+                                                relationKey = relationId
+                                            )
+                                        )
+                                    }
+                                    else -> {
+                                        dispatch(
+                                            Command.OpenObjectRelationScreen.Value.Default(
+                                                ctx = context,
+                                                target = context,
+                                                relationId = relationId,
+                                                relationKey = relationId,
+                                                targetObjectTypes = relation.relationFormatObjectTypes,
+                                                isLocked = mode == EditorMode.Locked
+                                            )
+                                        )
+                                    }
+                                }
+                                proceedWithRelationBlockClicked(
+                                    relationView = clicked.relation
                                 )
                             }
                         }
@@ -3780,14 +3754,7 @@ class EditorViewModel(
                         Timber.d("No interaction allowed with this object type")
                         return
                     }
-                    dispatch(
-                        Command.OpenChangeObjectTypeScreen(
-                            ctx = context,
-                            smartBlockType = getObjectSmartBlockType(),
-                            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE),
-                            isDraft = isObjectTypesWidgetVisible
-                        )
-                    )
+                    proceedWithOpeningSelectingObjectTypeScreen()
                 } else {
                     sendToast("Your object is locked. To change its type, simply unlock it.")
                 }
@@ -3888,10 +3855,9 @@ class EditorViewModel(
     }
 
     private fun proceedWithTogglingBlockRelationCheckbox(
-        value: BlockView.Relation.Related,
+        view: DocumentRelationView.Checkbox,
         relation: Id
     ) {
-        val view = value.view as DocumentRelationView.Checkbox
         proceedWithSetObjectDetails(
             ctx = context,
             key = relation,
@@ -4163,19 +4129,19 @@ class EditorViewModel(
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
-        relationId: Id
+        relationKey: Key
     ) {
-        Timber.d("onRelationTextValueChanged, ctx:[$ctx] value:[$value] relationId:[$relationId]")
+        Timber.d("onRelationTextValueChanged, ctx:[$ctx] value:[$value] relationId:[$relationKey]")
         proceedWithSetObjectDetails(
             ctx = ctx,
-            key = relationId,
+            key = relationKey,
             value = value
         )
     }
 
     fun onObjectTypeChanged(type: Id, isObjectDraft: Boolean) {
         Timber.d("onObjectTypeChanged, typeId:[$type], isObjectDraft:[$isObjectDraft]")
-        if (type == ObjectType.SET_URL) {
+        if (type == ObjectTypeIds.SET) {
             viewModelScope.launch {
                 val params = ConvertObjectToSet.Params(
                     ctx = context,
@@ -4323,7 +4289,7 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) { objectTypes ->
+                getObjectTypes { objectTypes ->
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -4356,8 +4322,8 @@ class EditorViewModel(
         }
     }
 
-    fun proceedWithAddingRelationToTarget(target: Id, relation: Id) {
-        Timber.d("proceedWithAddingRelationToTarget, target:[$target], relation:[$relation]")
+    fun proceedWithAddingRelationToTarget(target: Id, relationKey: Key) {
+        Timber.d("proceedWithAddingRelationToTarget, target:[$target], relation:[$relationKey]")
         val newBlockView = cutSlashFilterFromViews(target)
 
         // cut text from List<Block> and send TextUpdate Intent
@@ -4368,7 +4334,7 @@ class EditorViewModel(
                 marks = newBlockView.marks.map { it.mark() }
             )
             onSlashRelationItemClicked(
-                relation = relation,
+                relationKey = relationKey,
                 targetId = target,
                 isBlockEmpty = newBlockView.text.isEmpty()
             )
@@ -4403,7 +4369,7 @@ class EditorViewModel(
                 getRelations { proceedWithRelations(it) }
             }
             is SlashItem.Main.Objects -> {
-                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) {
+                getObjectTypes {
                     proceedWithObjectTypes(it)
                 }
             }
@@ -4509,17 +4475,22 @@ class EditorViewModel(
                 cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onAddNewObjectClicked(
-                    type = item.url,
-                    layout = item.layout
+                    type = item.objectTypeView.id
                 )
             }
             is SlashItem.Relation -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)
-                onSlashRelationItemClicked(
-                    relation = item.relation.view.relationId,
-                    targetId = targetId,
-                    isBlockEmpty = isBlockEmpty
-                )
+                val relationKey = item.relation.view.relationKey
+                if (relationKey != null) {
+                    onSlashRelationItemClicked(
+                        relationKey = relationKey,
+                        targetId = targetId,
+                        isBlockEmpty = isBlockEmpty
+                    )
+                } else {
+                    Timber.e("On create relation block error, relation key is null")
+                }
+
             }
             is SlashItem.Other.Line -> {
                 cutSlashFilter(targetId = targetId)
@@ -4657,41 +4628,40 @@ class EditorViewModel(
     }
 
     private fun getObjectTypes(
-        excluded: List<Id> = emptyList(),
-        action: (List<ObjectType>) -> Unit
+        action: (List<ObjectTypeView>) -> Unit
     ) {
         viewModelScope.launch {
-            getCompatibleObjectTypes.invoke(
-                GetCompatibleObjectTypes.Params(
-                    smartBlockType = blocks.first { it.id == context }
-                        .content<Content.Smart>().type,
-                    excludedTypes = excluded
-                )
-            ).proceed(
-                failure = {
-                    Timber.e(it, "Error while getting object types")
-                },
-                success = { objectTypes ->
-                    action.invoke(objectTypes)
-                }
+            val views = storeOfObjectTypes.getAll().getObjectTypeViewsForSBPage(
+                isWithSet = true,
+                isWithBookmark = false,
+                selectedTypes = emptyList(),
+                excludeTypes = emptyList()
             )
+            action.invoke(views)
         }
     }
 
     private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
-        val relations = orchestrator.stores.relations.current()
+        val relationLinks = orchestrator.stores.relationLinks.current()
         val details = orchestrator.stores.details.current()
         val detail = details.details[context]
         val values = detail?.map ?: emptyMap()
-        val update = relations.views(
-            details = details,
-            values = values,
-            urlBuilder = urlBuilder
-        ).map { SlashRelationView.Item(it) }
-        action.invoke(update)
+        viewModelScope.launch {
+            val update = relationLinks.mapNotNull { relationLink ->
+                val relation =
+                    storeOfRelations.getByKey(relationLink.key) ?: return@mapNotNull null
+                val relationView = relation.view(
+                    details = details,
+                    values = values,
+                    urlBuilder = urlBuilder
+                ) ?: return@mapNotNull null
+                SlashRelationView.Item(relationView)
+            }
+            action.invoke(update)
+        }
     }
 
-    private fun proceedWithObjectTypes(objectTypes: List<ObjectType>) {
+    private fun proceedWithObjectTypes(objectTypes: List<ObjectTypeView>) {
         onSlashWidgetStateChanged(
             SlashWidgetState.UpdateItems.empty().copy(
                 objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = objectTypes)
@@ -4896,21 +4866,21 @@ class EditorViewModel(
     }
 
     private fun onSlashRelationItemClicked(
-        relation: Id, targetId: Id, isBlockEmpty: Boolean
+        relationKey: Key, targetId: Id, isBlockEmpty: Boolean
     ) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStopAndClearFocus)
         val intent = if (isBlockEmpty) {
             Intent.CRUD.Replace(
                 context = context,
                 target = targetId,
-                prototype = Prototype.Relation(key = relation)
+                prototype = Prototype.Relation(key = relationKey)
             )
         } else {
             Intent.CRUD.Create(
                 context = context,
                 target = targetId,
                 position = Position.BOTTOM,
-                prototype = Prototype.Relation(key = relation)
+                prototype = Prototype.Relation(key = relationKey)
             )
         }
         viewModelScope.launch {
@@ -5517,11 +5487,11 @@ class EditorViewModel(
                         name = result.name.getMentionName(MENTION_TITLE_EMPTY),
                         mentionTrigger = mentionText
                     )
-                    val type = objectTypesProvider.get().firstOrNull { it.url == objectType }
+//                    val type = objectType?.let { storeOfObjectTypes.get(it) }
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         objType = objectType,
-                        layout = type?.layout?.code?.toDouble(),
+                        layout = null,
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime,
                         middleTime = middleTime,
@@ -5621,10 +5591,13 @@ class EditorViewModel(
                 searchObjects(params).process(
                     success = { result ->
                         val objects = result
-                            .toView(urlBuilder, objectTypesProvider.get())
+                            .toView(
+                                urlBuilder = urlBuilder,
+                                objectTypes = storeOfObjectTypes.getAll()
+                            )
                             .filter {
                                 SupportedLayouts.layouts.contains(it.layout)
-                                        && it.type != ObjectType.TEMPLATE_URL
+                                        && it.type != ObjectTypeIds.TEMPLATE
                             }
                         controlPanelInteractor.onEvent(
                             ControlPanelMachine.Event.Mentions.OnResult(
@@ -5688,7 +5661,7 @@ class EditorViewModel(
         Timber.d("onObjectTypesWidgetItemClicked, id:[$typeId]")
         dispatchObjectCreateEvent(typeId)
         proceedWithHidingObjectTypeWidget()
-        if (typeId == ObjectType.SET_URL) {
+        if (typeId == ObjectTypeIds.SET) {
             viewModelScope.launch {
                 val params = ConvertObjectToSet.Params(
                     ctx = context,
@@ -5716,14 +5689,7 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
-        dispatch(
-            Command.OpenChangeObjectTypeScreen(
-                ctx = context,
-                smartBlockType = getObjectSmartBlockType(),
-                excludedTypes = listOf(ObjectType.BOOKMARK_TYPE),
-                isDraft = true
-            )
-        )
+        proceedWithOpeningSelectingObjectTypeScreen()
     }
 
     fun onObjectTypesWidgetDoneClicked() {
@@ -5743,7 +5709,7 @@ class EditorViewModel(
             return
         }
         when (objectType) {
-            ObjectType.NOTE_URL -> {
+            ObjectTypeIds.NOTE -> {
                 val root = blocks.find { it.id == context } ?: return
                 if (root.children.size == 2) {
                     val lastBlock = blocks.find { it.id == root.children.last() }
@@ -5767,34 +5733,27 @@ class EditorViewModel(
     }
 
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
-        val smartBlockType = getObjectSmartBlockType()
-        val params = GetCompatibleObjectTypes.Params(
-            smartBlockType = smartBlockType,
-            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE),
-            isSetIncluded = true
-        )
         viewModelScope.launch {
-            getCompatibleObjectTypes.invoke(params).proceed(
-                failure = { Timber.e(it, "Error while getting object types") },
-                success = { objectTypes ->
-                    proceedWithSortingObjectTypesForObjectTypeWidget(
-                        views = objectTypes.toObjectTypeView()
-                    )
-                }
+            val excludeTypes = orchestrator.stores.details.current().details[context]?.type
+            val views = storeOfObjectTypes.getAll().getObjectTypeViewsForSBPage(
+                isWithSet = true,
+                isWithBookmark = false,
+                selectedTypes = emptyList(),
+                excludeTypes = excludeTypes ?: emptyList()
             )
+            proceedWithSortingObjectTypesForObjectTypeWidget(views = views)
         }
     }
 
-    private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView.Item>) {
+    private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView>) {
         getDefaultEditorType.execute(Unit).fold(
             onFailure = {
                 Timber.e(it, "Error while getting default object type")
             },
             onSuccess = { response ->
                 val filtered = views.filter { it.id != response.type }
-                val result = listOf(ObjectTypeView.Search) + filtered
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(result)
+                    ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(filtered)
                 )
             }
         )
@@ -5809,27 +5768,34 @@ class EditorViewModel(
         val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         if (wrapper.isDraft != true) return
         if (objectType != null) {
-            val type = objectTypesProvider.get().firstOrNull { it.url == objectType }
-            if (type != null) {
-                viewModelScope.sendAnalyticsObjectCreateEvent(
-                    analytics = analytics,
-                    objType = type.name,
-                    layout = type.layout.code.toDouble(),
-                    route = EventsDictionary.Routes.objCreateHome,
-                    context = analyticsContext
-                )
+            viewModelScope.launch {
+                val type = storeOfObjectTypes.get(objectType)
+                if (type != null) {
+                    viewModelScope.sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = type.name,
+                        layout = wrapper.layout?.code?.toDouble(),
+                        route = EventsDictionary.Routes.objCreateHome,
+                        context = analyticsContext
+                    )
+                }
             }
         } else {
-            val type =
-                objectTypesProvider.get().firstOrNull { it.url == wrapper.type.firstOrNull() }
-            if (type != null) {
-                viewModelScope.sendAnalyticsObjectCreateEvent(
-                    analytics = analytics,
-                    objType = type.name,
-                    layout = type.layout.code.toDouble(),
-                    route = EventsDictionary.Routes.objCreateHome,
-                    context = analyticsContext
-                )
+            viewModelScope.launch {
+                val type = if (wrapper.type.isNotEmpty()) wrapper.type.first().let {
+                    storeOfObjectTypes.get(it)
+                } else {
+                    null
+                }
+                if (type != null) {
+                    viewModelScope.sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = type.name,
+                        layout = wrapper.layout?.code?.toDouble(),
+                        route = EventsDictionary.Routes.objCreateHome,
+                        context = analyticsContext
+                    )
+                }
             }
         }
     }
@@ -5841,6 +5807,20 @@ class EditorViewModel(
         } else {
             SmartBlockType.PAGE
         }
+    }
+
+    private fun proceedWithOpeningSelectingObjectTypeScreen() {
+        val excludeTypes = orchestrator.stores.details.current().details[context]?.type
+        val command = if (isObjectTypesWidgetVisible) {
+            Command.OpenDraftObjectSelectTypeScreen(
+                excludedTypes = excludeTypes ?: emptyList()
+            )
+        } else {
+            Command.OpenObjectSelectTypeScreen(
+                excludedTypes = excludeTypes ?: emptyList()
+            )
+        }
+        dispatch(command)
     }
     //endregion
 
@@ -5863,12 +5843,7 @@ class EditorViewModel(
 
     fun onCreateNewSetForType(type: Id) {
         viewModelScope.launch {
-            createObjectSet(
-                CreateObjectSet.Params(
-                    ctx = "",
-                    type = type
-                )
-            ).process(
+            createObjectSet(CreateObjectSet.Params(type = type)).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
                 success = { response -> proceedWithOpeningSet(response.target) }
             )
@@ -5922,11 +5897,11 @@ class EditorViewModel(
             success = { result ->
                 val middleTime = System.currentTimeMillis()
                 proceedToAddObjectToTextAsLink(id = result.id)
-                val objType = objectTypesProvider.get().firstOrNull { it.url == type }
+//                val objType = objectTypesProvider.get().firstOrNull { it.url == type }
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
                     objType = type,
-                    layout = objType?.layout?.code?.toDouble(),
+                    layout = null,
                     route = EventsDictionary.Routes.objTurnInto,
                     context = analyticsContext,
                     startTime = startTime,
@@ -6426,6 +6401,74 @@ class EditorViewModel(
 
     fun onSetBlockTextValueScreenDismiss() {
         clearSelections()
+    }
+    //endregion
+
+    //region RELATIONS
+    private fun proceedWithRelationBlockClicked(
+        relationView: DocumentRelationView
+    ) {
+        val relationId = relationView.relationId
+        viewModelScope.launch {
+            val relation = storeOfRelations.getById(relationId)
+            if (relation == null) {
+                Timber.w("Couldn't find relation in store by id:${relationId}")
+                return@launch
+            }
+            if (relation.isReadonlyValue) {
+                _toasts.emit(NOT_ALLOWED_FOR_RELATION)
+                Timber.d("No interaction allowed with this relation")
+                return@launch
+            }
+            when (relation.format) {
+                RelationFormat.SHORT_TEXT,
+                RelationFormat.LONG_TEXT,
+                RelationFormat.URL,
+                RelationFormat.PHONE,
+                RelationFormat.NUMBER,
+                RelationFormat.EMAIL -> {
+                    dispatch(
+                        Command.OpenObjectRelationScreen.Value.Text(
+                            ctx = context,
+                            target = context,
+                            relationId = relationId,
+                            relationKey = relation.key,
+                            isLocked = mode == EditorMode.Locked
+                        )
+                    )
+                }
+                RelationFormat.CHECKBOX -> {
+                    check(relationView is DocumentRelationView.Checkbox)
+                    proceedWithSetObjectDetails(
+                        ctx = context,
+                        key = relation.key,
+                        value = !relationView.isChecked
+                    )
+                }
+                RelationFormat.DATE -> {
+                    dispatch(
+                        Command.OpenObjectRelationScreen.Value.Date(
+                            ctx = context,
+                            target = context,
+                            relationId = relationId,
+                            relationKey = relation.key
+                        )
+                    )
+                }
+                else -> {
+                    dispatch(
+                        Command.OpenObjectRelationScreen.Value.Default(
+                            ctx = context,
+                            target = context,
+                            relationId = relationId,
+                            relationKey = relation.key,
+                            targetObjectTypes = relation.relationFormatObjectTypes,
+                            isLocked = mode == EditorMode.Locked
+                        )
+                    )
+                }
+            }
+        }
     }
     //endregion
 }

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
@@ -33,7 +34,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     }
 
     @Test
-    fun `block dragging events do not alter overall state`() {
+    fun `block dragging events do not alter overall state`() = runTest {
 
         // SETUP
 
@@ -98,7 +99,10 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val blocks = listOf(profile) + pages
 
-        val views = blocks.toDashboardViews(builder = builder)
+        val views = blocks.toDashboardViews(
+            builder = builder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
 
         val expected = HomeDashboardStateMachine.State(
             isLoading = false,
@@ -124,7 +128,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     }
 
     @Test
-    fun `should start dispatching drag-and-drop actions when the dragged item is dropped`() {
+    fun `should start dispatching drag-and-drop actions when the dragged item is dropped`() = runTest {
 
         val pages = listOf(
             createBlockLink(),
@@ -152,7 +156,10 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val blocks = listOf(dashboard) + pages
 
-        val views = blocks.toDashboardViews(builder = builder)
+        val views = blocks.toDashboardViews(
+            builder = builder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
 
         val from = 0
         val to = 1
@@ -181,7 +188,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     }
 
     @Test
-    fun `should call move use-case for dropping the last block before the first block`() {
+    fun `should call move use-case for dropping the last block before the first block`() = runTest {
 
         val links = listOf(
             createBlockLink(),
@@ -210,7 +217,10 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val blocks = listOf(dashboard) + links
 
-        val views = blocks.toDashboardViews(builder = builder)
+        val views = blocks.toDashboardViews(
+            builder = builder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
 
         val from = 2
         val to = 0
@@ -239,7 +249,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     }
 
     @Test
-    fun `should call move use-case for dropping the first block after the second block`() {
+    fun `should call move use-case for dropping the first block after the second block`() = runTest {
 
         val links = listOf(
             createBlockLink(),
@@ -268,7 +278,10 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val blocks = listOf(dashboard) + links
 
-        val views = blocks.toDashboardViews(builder = builder)
+        val views = blocks.toDashboardViews(
+            builder = builder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
 
         val from = 0
         val to = 1
@@ -297,7 +310,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     }
 
     @Test
-    fun `should call move use-case for dropping the first block after the third block`() {
+    fun `should call move use-case for dropping the first block after the third block`() = runTest {
 
         val links = listOf(
             createBlockLink(),
@@ -326,7 +339,10 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val blocks = listOf(dashboard) + links
 
-        val views = blocks.toDashboardViews(builder = builder)
+        val views = blocks.toDashboardViews(
+            builder = builder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
 
         val from = 0
         val to = 2

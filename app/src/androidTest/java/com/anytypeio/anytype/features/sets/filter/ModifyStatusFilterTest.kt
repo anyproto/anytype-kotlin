@@ -19,14 +19,20 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -60,8 +66,6 @@ class ModifyStatusFilterTest {
     lateinit var repo: BlockRepository
     @Mock
     lateinit var gateway: Gateway
-    @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
     lateinit var analytics: Analytics
@@ -74,6 +78,10 @@ class ModifyStatusFilterTest {
     private val session = ObjectSetSession()
     private val state = MutableStateFlow(ObjectSet.init())
     private val dispatcher = Dispatcher.Default<Payload>()
+    private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
+    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    private val objectStore: ObjectStore = DefaultObjectStore()
+    private val db = ObjectSetDatabase(store = objectStore)
 
     @Before
     fun setup() {
@@ -88,8 +96,10 @@ class ModifyStatusFilterTest {
             dispatcher = dispatcher,
             searchObjects = searchObjects,
             urlBuilder = urlBuilder,
-            objectTypesProvider = objectTypesProvider,
-            analytics = analytics
+            storeOfObjectTypes = storeOfObjectTypes,
+            analytics = analytics,
+            storeOfRelations = storeOfRelations,
+            objectSetDatabase = db
         )
     }
 

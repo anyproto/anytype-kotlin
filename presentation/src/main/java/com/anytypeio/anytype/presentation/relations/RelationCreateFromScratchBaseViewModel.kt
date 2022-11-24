@@ -6,9 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
+import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.relations.AddNewRelationToObject
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
+import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateRelationEvent
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
@@ -18,7 +19,11 @@ import com.anytypeio.anytype.presentation.relations.model.StateHolder
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -74,34 +79,41 @@ abstract class RelationCreateFromScratchBaseViewModel : BaseViewModel() {
 }
 
 class RelationCreateFromScratchForObjectViewModel(
-    private val addNewRelationToObject: AddNewRelationToObject,
+    private val createFromScratchState: StateHolder<CreateFromScratchState>,
+    private val createRelation: CreateRelation,
+    private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-    private val createFromScratchState: StateHolder<CreateFromScratchState>
-) : RelationCreateFromScratchBaseViewModel() {
+): RelationCreateFromScratchBaseViewModel() {
 
     override val createFromScratchSession get() = createFromScratchState.state
 
     fun onCreateRelationClicked(ctx: Id) {
+        proceedWithCreatingRelation(ctx)
+    }
+
+    private fun proceedWithCreatingRelation(ctx: Id) {
         viewModelScope.launch {
             val state = createFromScratchState.state.value
             val format = state.format
-            addNewRelationToObject(
-                AddNewRelationToObject.Params(
-                    ctx = ctx,
+            createRelation(
+                CreateRelation.Params(
                     format = format,
                     name = name.value,
-                    limitObjectTypes = state.limitObjectTypes.map { it.id }
+                    limitObjectTypes = state.limitObjectTypes.map { it.id },
+                    prefilled = emptyMap()
                 )
             ).process(
-                success = { (_, payload) ->
-                    dispatcher.send(payload).also {
+                success = { relation ->
+                    proceedWithAddingRelationToObject(
+                        ctx = ctx,
+                        relation = relation.key
+                    ).also {
                         sendAnalyticsCreateRelationEvent(
                             analytics = analytics,
                             type = EventsDictionary.Type.menu,
                             format = format.name
                         )
-                        isDismissed.value = true
                     }
                 },
                 failure = {
@@ -111,55 +123,16 @@ class RelationCreateFromScratchForObjectViewModel(
         }
     }
 
-    class Factory(
-        private val addNewRelationToObject: AddNewRelationToObject,
-        private val dispatcher: Dispatcher<Payload>,
-        private val analytics: Analytics,
-        private val createFromScratchState: StateHolder<CreateFromScratchState>
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return RelationCreateFromScratchForObjectViewModel(
-                dispatcher = dispatcher,
-                addNewRelationToObject = addNewRelationToObject,
-                analytics = analytics,
-                createFromScratchState = createFromScratchState
-            ) as T
-        }
-    }
-}
-
-class RelationCreateFromScratchForObjectBlockViewModel(
-    private val addNewRelationToObject: AddNewRelationToObject,
-    private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics,
-    private val createFromScratchState: StateHolder<CreateFromScratchState>
-) : RelationCreateFromScratchBaseViewModel() {
-
-    override val createFromScratchSession get() = createFromScratchState.state
-
-    val commands = MutableSharedFlow<Command>(replay = 0)
-
-    fun onCreateRelationClicked(ctx: Id) {
+    private fun proceedWithAddingRelationToObject(ctx: Id, relation: Key) {
         viewModelScope.launch {
-            val state = createFromScratchState.state.value
-            val format = state.format
-            addNewRelationToObject(
-                AddNewRelationToObject.Params(
+            addRelationToObject(
+                AddRelationToObject.Params(
                     ctx = ctx,
-                    format = format,
-                    name = name.value,
-                    limitObjectTypes = state.limitObjectTypes.map { it.id }
+                    relationKey = relation
                 )
             ).process(
-                success = { (relation, payload) ->
-                    dispatcher.send(payload)
-                    sendAnalyticsCreateRelationEvent(
-                        analytics = analytics,
-                        type = EventsDictionary.Type.block,
-                        format = format.name
-                    )
-                    commands.emit(Command.OnSuccess(relation))
+                success = { payload ->
+                    dispatcher.send(payload).also { isDismissed.value = true }
                 },
                 failure = {
                     Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
@@ -169,18 +142,105 @@ class RelationCreateFromScratchForObjectBlockViewModel(
     }
 
     class Factory(
-        private val addNewRelationToObject: AddNewRelationToObject,
+        private val createFromScratchState: StateHolder<CreateFromScratchState>,
+        private val createRelation: CreateRelation,
+        private val addRelationToObject: AddRelationToObject,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
-        private val createFromScratchState: StateHolder<CreateFromScratchState>
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return RelationCreateFromScratchForObjectViewModel(
+                dispatcher = dispatcher,
+                analytics = analytics,
+                createFromScratchState = createFromScratchState,
+                createRelation = createRelation,
+                addRelationToObject = addRelationToObject
+            ) as T
+        }
+    }
+}
+
+class RelationCreateFromScratchForObjectBlockViewModel(
+    private val addRelationToObject: AddRelationToObject,
+    private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics,
+    private val createFromScratchState: StateHolder<CreateFromScratchState>,
+    private val createRelation: CreateRelation
+) : RelationCreateFromScratchBaseViewModel() {
+
+    override val createFromScratchSession get() = createFromScratchState.state
+
+    val commands = MutableSharedFlow<Command>(replay = 0)
+
+    fun onCreateRelationClicked(ctx: Id) {
+        proceedWithCreatingRelation(ctx = ctx)
+    }
+
+    private fun proceedWithCreatingRelation(ctx: Id) {
+        viewModelScope.launch {
+            val state = createFromScratchState.state.value
+            val format = state.format
+            createRelation(
+                CreateRelation.Params(
+                    format = format,
+                    name = name.value,
+                    limitObjectTypes = state.limitObjectTypes.map { it.id },
+                    prefilled = emptyMap()
+                )
+            ).process(
+                success = { relation ->
+                    proceedWithAddingRelationToObject(
+                        ctx = ctx,
+                        relationKey = relation.key
+                    ).also {
+                        sendAnalyticsCreateRelationEvent(
+                            analytics = analytics,
+                            type = EventsDictionary.Type.block,
+                            format = format.name
+                        )
+                    }
+                },
+                failure = {
+                    Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
+                }
+            )
+        }
+    }
+
+    private fun proceedWithAddingRelationToObject(ctx: Id, relationKey: Id) {
+        viewModelScope.launch {
+            addRelationToObject(
+                AddRelationToObject.Params(
+                    ctx = ctx,
+                    relationKey = relationKey
+                )
+            ).process(
+                success = { payload ->
+                    dispatcher.send(payload).also { commands.emit(Command.OnSuccess(relationKey)) }
+                },
+                failure = {
+                    Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
+                }
+            )
+        }
+    }
+
+    class Factory(
+        private val addRelationToObject: AddRelationToObject,
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics,
+        private val createFromScratchState: StateHolder<CreateFromScratchState>,
+        private val createRelation: CreateRelation
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForObjectBlockViewModel(
                 dispatcher = dispatcher,
-                addNewRelationToObject = addNewRelationToObject,
+                addRelationToObject = addRelationToObject,
                 analytics = analytics,
-                createFromScratchState = createFromScratchState
+                createFromScratchState = createFromScratchState,
+                createRelation = createRelation
             ) as T
         }
     }
@@ -194,37 +254,41 @@ class RelationCreateFromScratchForDataViewViewModel(
     private val state: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val addNewRelationToDataView: AddNewRelationToDataView,
+    private val addRelationToDataView: AddRelationToDataView,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-    private val createFromScratchState: StateHolder<CreateFromScratchState>
+    private val createFromScratchState: StateHolder<CreateFromScratchState>,
+    private val createRelation: CreateRelation
 ) : RelationCreateFromScratchBaseViewModel() {
 
     override val createFromScratchSession: Flow<CreateFromScratchState> get() = createFromScratchState.state
 
     fun onCreateRelationClicked(ctx: Id, dv: Id) {
+        proceedWithCreatingRelation(ctx = ctx, dv = dv)
+    }
+
+    private fun proceedWithCreatingRelation(ctx: Id, dv: Id) {
         viewModelScope.launch {
             val state = createFromScratchState.state.value
             val format = state.format
-            addNewRelationToDataView(
-                AddNewRelationToDataView.Params(
-                    ctx = ctx,
+            createRelation(
+                CreateRelation.Params(
                     format = format,
                     name = name.value,
-                    target = dv,
-                    limitObjectTypes = state.limitObjectTypes.map { it.id }
+                    limitObjectTypes = state.limitObjectTypes.map { it.id },
+                    prefilled = emptyMap()
                 )
             ).process(
-                success = { (relation, payload) ->
-                    dispatcher.send(payload).also {
+                success = { relation ->
+                    proceedWithAddingRelationToDataView(
+                        ctx = ctx,
+                        relationKey = relation.key,
+                        dv = dv
+                    ).also {
                         sendAnalyticsCreateRelationEvent(
                             analytics = analytics,
                             type = EventsDictionary.Type.dataView,
                             format = format.name
-                        )
-                        proceedWithAddingNewRelationToCurrentViewer(
-                            ctx = ctx,
-                            relation = relation
                         )
                     }
                 },
@@ -235,7 +299,31 @@ class RelationCreateFromScratchForDataViewViewModel(
         }
     }
 
-    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relation: Id) {
+    private fun proceedWithAddingRelationToDataView(ctx: Id, dv: Id, relationKey: Key) {
+        viewModelScope.launch {
+            addRelationToDataView(
+                AddRelationToDataView.Params(
+                    ctx = ctx,
+                    dv = dv,
+                    relation = relationKey
+                )
+            ).process(
+                success = { payload ->
+                    dispatcher.send(payload).also {
+                        proceedWithAddingNewRelationToCurrentViewer(
+                            ctx = ctx,
+                            relationKey = relationKey
+                        )
+                    }
+                },
+                failure = {
+                    Timber.d(it, "Error while adding relation with key: $relationKey to data view: $dv")
+                }
+            )
+        }
+    }
+
+    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relationKey: Key) {
         val state = state.value
         val block = state.dataview
         val dv = block.content as DV
@@ -247,7 +335,7 @@ class RelationCreateFromScratchForDataViewViewModel(
                 viewer = viewer.copy(
                     viewerRelations = viewer.viewerRelations + listOf(
                         DVViewerRelation(
-                            key = relation,
+                            key = relationKey,
                             isVisible = true
                         )
                     )
@@ -263,8 +351,9 @@ class RelationCreateFromScratchForDataViewViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val addNewRelationToDataView: AddNewRelationToDataView,
+        private val addRelationToDataView: AddRelationToDataView,
         private val createFromScratchState: StateHolder<CreateFromScratchState>,
+        private val createRelation: CreateRelation,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
@@ -272,12 +361,13 @@ class RelationCreateFromScratchForDataViewViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForDataViewViewModel(
                 dispatcher = dispatcher,
-                addNewRelationToDataView = addNewRelationToDataView,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 state = state,
                 analytics = analytics,
-                createFromScratchState = createFromScratchState
+                createFromScratchState = createFromScratchState,
+                createRelation = createRelation,
+                addRelationToDataView = addRelationToDataView
             ) as T
         }
     }

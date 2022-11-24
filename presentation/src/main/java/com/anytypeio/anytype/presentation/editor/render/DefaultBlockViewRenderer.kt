@@ -3,10 +3,11 @@ package com.anytypeio.anytype.presentation.editor.render
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectType.Companion.BOOKMARK_TYPE
+import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -43,7 +45,8 @@ import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 class DefaultBlockViewRenderer @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val toggleStateHolder: ToggleStateHolder,
-    private val coverImageHashProvider: CoverImageHashProvider
+    private val coverImageHashProvider: CoverImageHashProvider,
+    private val storeOfRelations: StoreOfRelations
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
@@ -53,7 +56,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         anchor: Id,
         indent: Int,
         details: Block.Details,
-        relations: List<Relation>,
+        relationLinks: List<RelationLink>,
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
         count: Int,
@@ -129,7 +132,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -175,7 +178,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -213,7 +216,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
@@ -254,7 +257,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -295,7 +298,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -336,7 +339,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -384,7 +387,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -424,7 +427,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -477,7 +480,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -517,7 +520,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -562,7 +565,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         anchor = block.id,
                                         indent = indent.inc(),
                                         details = details,
-                                        relations = relations,
+                                        relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
                                         objectTypes = objectTypes,
@@ -683,7 +686,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             anchor = block.id,
                             indent = indent,
                             details = details,
-                            relations = relations,
+                            relationLinks = relationLinks,
                             restrictions = restrictions,
                             selection = selection,
                             count = mCounter,
@@ -706,7 +709,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                             content = content,
                             indent = indent,
                             details = details,
-                            relations = relations,
                             urlBuilder = urlBuilder,
                             schema = blockDecorationScheme
                         )
@@ -718,7 +720,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                     val featured = featured(
                         ctx = root.id,
                         block = block,
-                        relations = relations,
                         details = details
                     )
 
@@ -2024,17 +2025,17 @@ class DefaultBlockViewRenderer @Inject constructor(
         return cells
     }
 
-    private fun relation(
+    private suspend fun relation(
         ctx: Id,
         block: Block,
         content: Content.RelationBlock,
         indent: Int,
         details: Block.Details,
-        relations: List<Relation>,
         urlBuilder: UrlBuilder,
         schema: NestedDecorationData
     ): BlockView.Relation {
-        if (content.key.isNullOrEmpty()) {
+        val relationKey = content.key
+        if (relationKey.isNullOrEmpty()) {
             return BlockView.Relation.Placeholder(
                 id = block.id,
                 indent = indent,
@@ -2042,7 +2043,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 background = block.parseThemeBackgroundColor()
             )
         } else {
-            val relation = relations.firstOrNull { it.key == content.key }
+            val relation = storeOfRelations.getByKey(relationKey)
             if (relation != null) {
                 val view = relation.view(
                     details = details,
@@ -2076,39 +2077,37 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
     }
 
-    private fun featured(
+    private suspend fun featured(
         ctx: Id,
         block: Block,
-        details: Block.Details,
-        relations: List<Relation>
+        details: Block.Details
     ): BlockView.FeaturedRelation {
         val obj = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
         val views = mapFeaturedRelations(
             ctx = ctx,
-            ids = obj.featuredRelations ?: emptyList(),
-            details = details,
-            relations = relations
+            keys = obj.featuredRelations ?: emptyList(),
+            details = details
         )
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,
-            allowChangingObjectType = !obj.type.contains(BOOKMARK_TYPE)
+            allowChangingObjectType = !obj.type.contains(BOOKMARK)
         )
     }
 
-    private fun mapFeaturedRelations(
+    private suspend fun mapFeaturedRelations(
         ctx: Id,
-        ids: List<String>,
-        details: Block.Details,
-        relations: List<Relation>
-    ): List<DocumentRelationView> = ids.mapNotNull { id ->
-        when (id) {
+        keys: List<Key>,
+        details: Block.Details
+    ): List<DocumentRelationView> = keys.mapNotNull { key ->
+        when (key) {
             Relations.DESCRIPTION -> null
             Relations.TYPE -> {
                 val objectTypeId = details.details[ctx]?.type?.firstOrNull()
                 if (objectTypeId != null) {
                     DocumentRelationView.ObjectType(
-                        relationId = id,
+                        relationId = objectTypeId,
+                        relationKey = key,
                         name = details.details[objectTypeId]?.name.orEmpty(),
                         isFeatured = true,
                         type = objectTypeId
@@ -2118,7 +2117,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 }
             }
             else -> {
-                val relation = relations.firstOrNull { it.key == id }
+                val relation = storeOfRelations.getByKey(key)
                 relation?.view(
                     details = details,
                     values = details.details[ctx]?.map ?: emptyMap(),

@@ -3,11 +3,13 @@ package com.anytypeio.anytype.di.feature.sets;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -45,7 +47,9 @@ object CreateFilterModule {
         updateDataViewViewer: UpdateDataViewViewer,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder,
-        objectTypesProvider: ObjectTypesProvider,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        storeOfRelations: StoreOfRelations,
+        objectSetDatabase: ObjectSetDatabase,
         analytics: Analytics
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectSetState = state,
@@ -54,7 +58,9 @@ object CreateFilterModule {
         updateDataViewViewer = updateDataViewViewer,
         searchObjects = searchObjects,
         urlBuilder = urlBuilder,
-        objectTypesProvider = objectTypesProvider,
+        storeOfObjectTypes = storeOfObjectTypes,
+        storeOfRelations = storeOfRelations,
+        objectSetDatabase = objectSetDatabase,
         analytics = analytics
     )
 }

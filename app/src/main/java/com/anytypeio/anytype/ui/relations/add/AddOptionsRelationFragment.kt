@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.relations.add
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationViewModel
@@ -17,15 +18,14 @@ class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
     override fun onStatusClicked(status: RelationValueView.Option.Status) {
         vm.onAddObjectStatusClicked(
             ctx = ctx,
-            relation = relation,
+            relationKey = relationKey,
             status = status
         )
     }
 
     override fun onCreateOptionClicked(name: String) {
         vm.onCreateObjectRelationOptionClicked(
-            ctx = ctx,
-            relation = relation,
+            relationKey = relationKey,
             obj = target,
             name = name
         )
@@ -33,9 +33,8 @@ class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
 
     override fun onAddButtonClicked() {
         vm.onAddSelectedValuesToObjectClicked(
-            ctx = ctx,
             obj = target,
-            relation = relation,
+            relationKey = relationKey
         )
     }
 
@@ -51,12 +50,14 @@ class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
         fun new(
             ctx: Id,
             objectId: Id,
-            relationId: Id
+            relationId: Id,
+            relationKey: Key
         ) = AddOptionsRelationFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to objectId,
-                RELATION_KEY to relationId
+                RELATION_ID to relationId,
+                RELATION_KEY to relationKey
             )
         }
     }

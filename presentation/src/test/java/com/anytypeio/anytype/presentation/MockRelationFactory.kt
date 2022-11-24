@@ -1,331 +1,250 @@
 package com.anytypeio.anytype.presentation
 
+import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 object MockRelationFactory {
 
     //ID
-    val relationId = Relation(
+    val relationId = StubRelationObject(
         key = "id",
         name = "Anytype ID",
         format = Relation.Format.OBJECT,
-        source = Relation.Source.DERIVED,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //OBJECT TYPE
-    val relationObjType = Relation(
+    val relationObjType = StubRelationObject(
         key = "type",
         name = "Object type",
         format = Relation.Format.OBJECT,
-        source = Relation.Source.DERIVED,
         isHidden = true,
         isReadOnly = true,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf("_otobjectType"),
-        defaultValue = null
+        objectTypes = listOf(OBJECT_TYPE)
     )
 
     //LAYOUT
-    val relationLayout = Relation(
+    val relationLayout = StubRelationObject(
         key = "layout",
         name = "Layout",
         format = Relation.Format.NUMBER,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
 
     //LAST MODIFIED DATE
-    val relationLastModifiedDate = Relation(
+    val relationLastModifiedDate = StubRelationObject(
         key = "lastModifiedDate",
         name = "Last modified date",
         format = Relation.Format.DATE,
-        source = Relation.Source.DERIVED,
         isHidden = false,
         isReadOnly = true,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
     //FEATURED RELATIONS
-    val relationFeaturedRelations = Relation(
+    val relationFeaturedRelations = StubRelationObject(
         key = "featuredRelations",
         name = "Featured Relations",
         format = Relation.Format.OBJECT,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf("_otrelation"),
-        defaultValue = null
+        objectTypes = listOf(ObjectTypeIds.RELATION)
     )
 
     //SNIPPET
-    val relationSnippet = Relation(
+    val relationSnippet = StubRelationObject(
         key = "snippet",
         name = "",
         format = Relation.Format.LONG_TEXT,
-        source = Relation.Source.DERIVED,
         isHidden = true,
         isReadOnly = true,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
     //NAME
-    val relationName = Relation(
+    val relationName = StubRelationObject(
         key = "name",
         name = "Name",
         format = Relation.Format.SHORT_TEXT,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
     //DONE
-    val relationDone = Relation(
+    val relationDone = StubRelationObject(
         key = "done",
         name = "Done",
         format = Relation.Format.CHECKBOX,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
     //DESCRIPTION
-    val relationDescription = Relation(
+    val relationDescription = StubRelationObject(
         key = "description",
         name = "Description",
         format = Relation.Format.LONG_TEXT,
-        source = Relation.Source.DETAILS,
         isHidden = false,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //ICON EMOJI
-    val relationIconEmoji = Relation(
+    val relationIconEmoji = StubRelationObject(
         key = "iconEmoji",
         name = "Emoji",
         format = Relation.Format.EMOJI,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
     //ICON IMAGE
-    val relationIconImage = Relation(
+    val relationIconImage = StubRelationObject(
         key = "iconImage",
         name = "Image",
         format = Relation.Format.FILE,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
     //SET OF
-    val relationSetOf = Relation(
+    val relationSetOf = StubRelationObject(
         key = "setOf",
         name = "Set of",
         format = Relation.Format.OBJECT,
-        source = Relation.Source.DETAILS,
         isHidden = false,
         isReadOnly = true,
-        isMulti = false,
-        selections = emptyList(),
-        objectTypes = listOf(),
-        defaultValue = null
+        objectTypes = listOf()
     )
 
     //COVER_X, SAME COVER_Y, COVER_TYPE, COVER_SCALE,
-    val relationCoverX = Relation(
+    val relationCoverX = StubRelationObject(
         key = "coverX",
         name = "Cover x offset",
         format = Relation.Format.NUMBER,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //LAST OPENED DATE
-    val relationLastOpenedDate = Relation(
+    val relationLastOpenedDate = StubRelationObject(
         key = "lastOpenedDate",
         name = "Last opened date",
         format = Relation.Format.DATE,
-        source = Relation.Source.ACCOUNT,
         isHidden = false,
         isReadOnly = true,
-        isMulti = false,
-        selections = emptyList(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //IS HIDDEN
-    val relationIsHidden = Relation(
+    val relationIsHidden = StubRelationObject(
         key = "isHidden",
         name = "Hidden",
         format = Relation.Format.CHECKBOX,
-        source = Relation.Source.DETAILS,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //IS ARCHIVED
-    val relationIsArchived = Relation(
+    val relationIsArchived = StubRelationObject(
         key = "isArchived",
         name = "Archived",
         format = Relation.Format.CHECKBOX,
-        source = Relation.Source.ACCOUNT,
         isHidden = true,
         isReadOnly = false,
-        isMulti = false,
-        selections = emptyList(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //IS FAVORITE
-    val relationIsFavorite = Relation(
+    val relationIsFavorite = StubRelationObject(
         key = "isFavorite",
         name = "Favorited",
         format = Relation.Format.CHECKBOX,
-        source = Relation.Source.ACCOUNT,
         isHidden = true,
         isReadOnly = true,
-        isMulti = false,
-        selections = emptyList(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     val optionTag1 = Relation.Option(
         id = MockDataFactory.randomUuid(),
         text = MockDataFactory.randomString(),
-        color = "purple",
-        scope = Relation.OptionScope.RELATION
+        color = "purple"
     )
 
     val optionTag2 = Relation.Option(
         id = MockDataFactory.randomUuid(),
         text = MockDataFactory.randomString(),
-        color = "ice",
-        scope = Relation.OptionScope.RELATION
+        color = "ice"
     )
 
     val optionTag3 = Relation.Option(
         id = MockDataFactory.randomUuid(),
         text = MockDataFactory.randomString(),
-        color = "red",
-        scope = Relation.OptionScope.RELATION
+        color = "red"
     )
 
     //TAG
-    val relationTag = Relation(
+    val relationTag = StubRelationObject(
         key = "tag",
         name = "Tag",
         format = Relation.Format.TAG,
-        source = Relation.Source.DETAILS,
         isHidden = false,
         isReadOnly = false,
-        isMulti = false,
-        selections = listOf(optionTag1, optionTag2, optionTag3),
+        relationOptionsDict = listOf(
+            optionTag1.id, optionTag2.id, optionTag3.id
+        ),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     val optionStatus = Relation.Option(
         id = MockDataFactory.randomUuid(),
         text = MockDataFactory.randomString(),
-        color = "blue",
-        scope = Relation.OptionScope.LOCAL
+        color = "blue"
     )
 
     //STATUS
-    val relationStatus = Relation(
+    val relationStatus = StubRelationObject(
         key = "status",
         name = "Status",
         format = Relation.Format.STATUS,
-        source = Relation.Source.DETAILS,
         isHidden = false,
         isReadOnly = false,
-        isMulti = false,
-        selections = listOf(optionStatus),
+        relationOptionsDict = listOf(optionStatus.id),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //CUSTOM TEXT RELATION
-    val relationCustomText = Relation(
+    val relationCustomText = StubRelationObject(
         key = MockDataFactory.randomUuid(),
         name = MockDataFactory.randomString(),
         format = Relation.Format.LONG_TEXT,
-        source = Relation.Source.DETAILS,
         isHidden = false,
         isReadOnly = false,
-        isMulti = false,
-        selections = listOf(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     //CUSTOM NUMBER RELATION
-    val relationCustomNumber = Relation(
+    val relationCustomNumber = StubRelationObject(
         key = MockDataFactory.randomUuid(),
         name = MockDataFactory.randomString(),
         format = Relation.Format.NUMBER,
-        source = Relation.Source.DETAILS,
         isHidden = false,
         isReadOnly = false,
-        isMulti = false,
-        selections = listOf(),
         objectTypes = listOf(),
-        defaultValue = null
     )
 
     fun getAllRelations() = listOf(

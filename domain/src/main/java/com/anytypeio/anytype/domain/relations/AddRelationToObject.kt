@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.relations
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -15,16 +16,16 @@ class AddRelationToObject(
     override suspend fun run(params: Params) = safe {
         repo.addRelationToObject(
             ctx = params.ctx,
-            relation = params.relation
+            relation = params.relationKey
         )
     }
 
     /**
      * @param ctx id of the object
-     * @param relation relation id or key
+     * @param relationKey relation key
      */
     class Params(
         val ctx: Id,
-        val relation: Id
+        val relationKey: Key
     )
 }

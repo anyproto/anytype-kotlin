@@ -62,7 +62,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -99,7 +99,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -173,7 +173,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -218,7 +218,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -292,7 +292,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -367,7 +367,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -608,7 +608,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(document = doc)
         stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
+        stubSearchObjects()
         val vm = buildViewModel()
 
         vm.onStart(root)

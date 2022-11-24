@@ -42,10 +42,12 @@ class DataViewSubscriptionContainer(
                 filters = params.filters,
                 offset = params.offset,
                 limit = params.limit,
-                keys = params.keys,
+                keys = params.keys.distinct(),
                 afterId = null,
                 beforeId = null,
-                source = params.sources
+                source = params.sources,
+                ignoreWorkspace = null,
+                noDepSubscription = null
             )
             store.merge(
                 objects = initial.results,

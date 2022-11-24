@@ -5,46 +5,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
-import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
-import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import javax.inject.Inject
 
-class ObjectTypeChangeFragment :
+abstract class BaseObjectTypeChangeFragment :
     BaseBottomSheetTextInputFragment<FragmentObjectTypeChangeBinding>() {
 
-    private val smartBlockType: SmartBlockType get() = arg(ARG_SMART_BLOCK_TYPE)
-    private val excludedTypes: List<Id>
-        get() = argOrNull<List<Id>>(ARG_EXCLUDED_TYPES) ?: emptyList()
-
-    private val vm by viewModels<ObjectTypeChangeViewModel> { factory }
-
-    private val isDraft: Boolean get() = argOrNull<Boolean>(OBJECT_IS_DRAFT_KEY) ?: false
-
-    private val isSetSource: Boolean get() = argOrNull<Boolean>(ARG_IS_SET_SOURCE) ?: false
-
-    private val selectedSources : List<Id>
-        get() = argOrNull<List<Id>>(ARG_SOURCES) ?: emptyList()
+    abstract fun setTitle()
+    abstract fun startWithParams()
+    abstract fun onItemClicked(id: Id, name: String)
 
     @Inject
     lateinit var factory: ObjectTypeChangeViewModelFactory
+    protected val vm by viewModels<ObjectTypeChangeViewModel> { factory }
+
+    protected val excludeTypes: List<Id>
+        get() = argOrNull<List<Id>>(ARG_EXCLUDE_TYPES) ?: emptyList()
+    protected val selectedTypes: List<Id>
+        get() = argOrNull<List<Id>>(ARG_SELECTED_TYPES) ?: emptyList()
 
     private val objectTypeAdapter by lazy {
         ObjectTypeVerticalAdapter(
@@ -57,31 +47,19 @@ class ObjectTypeChangeFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (isSetSource) {
-            binding.tvTitle.text = getString(R.string.select_source)
-        }
+        setTitle()
         binding.recycler.apply {
             adapter = objectTypeAdapter
             layoutManager = LinearLayoutManager(context)
         }
     }
 
-    private fun observeViews(views: List<ObjectTypeView.Item>) {
+    private fun observeViews(views: List<ObjectTypeView>) {
         objectTypeAdapter.update(views)
     }
 
-    private fun onItemClicked(id: String, name: String) {
-        val bundle = bundleOf(
-            OBJECT_TYPE_URL_KEY to id,
-            OBJECT_TYPE_NAME_KEY to name,
-            OBJECT_IS_DRAFT_KEY to isDraft
-        )
-        setFragmentResult(OBJECT_TYPE_REQUEST_KEY, bundle)
-        view?.rootView?.hideKeyboard()
-        dismiss()
-    }
-
     override fun onStart() {
+        super.onStart()
         expand()
         with(lifecycleScope) {
             jobs += subscribe(vm.results) { observeViews(it) }
@@ -89,22 +67,7 @@ class ObjectTypeChangeFragment :
                 vm.onQueryChanged(it.toString())
             }
         }
-        super.onStart()
-        vm.onStart(
-            smartBlockType = smartBlockType,
-            excludedTypes = excludedTypes,
-            isDraft = isDraft,
-            selectedSources = selectedSources,
-            isSetSource = isSetSource
-        )
-    }
-
-    override fun injectDependencies() {
-        componentManager().objectTypeChangeComponent.get().inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().objectTypeChangeComponent.release()
+        startWithParams()
     }
 
     override fun inflateBinding(
@@ -115,13 +78,9 @@ class ObjectTypeChangeFragment :
     )
 
     companion object {
-        const val ARG_SMART_BLOCK_TYPE = "arg.object-type.smart-block-type"
-        const val ARG_EXCLUDED_TYPES = "arg.object-type.excluded-types"
-        const val ARG_IS_SET_SOURCE = "arg.object-type.is-set-source"
-        const val ARG_SOURCES = "arg.object-type.sources"
+        const val ARG_EXCLUDE_TYPES = "arg.object-type-change.exclude-types"
+        const val ARG_SELECTED_TYPES = "arg.object-type-change.selected-types"
         const val OBJECT_TYPE_URL_KEY = "object-type-url.key"
-        const val OBJECT_TYPE_NAME_KEY = "object-type-name.key"
         const val OBJECT_TYPE_REQUEST_KEY = "object-type.request"
-        const val OBJECT_IS_DRAFT_KEY = "arg.object-type-change.isDraft"
     }
 }

@@ -4,7 +4,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.presentation.MockObjectTypes
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
@@ -12,9 +15,12 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.number.NumberParser
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -256,7 +262,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {OBJECTS}
     @Test
-    fun `should return Update command with all object types item when click on Objects item`() {
+    fun `should return Update command with all object types item when click on Objects item`() = runTest {
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -286,50 +292,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             block
         )
 
-        val type1 = ObjectType(
-            url = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            relations = emptyList(),
-            layout = ObjectType.Layout.values().random(),
-            emoji = MockDataFactory.randomString(),
-            description = MockDataFactory.randomString(),
-            isHidden = MockDataFactory.randomBoolean(),
-            smartBlockTypes = listOf(SmartBlockType.PAGE),
-            isArchived = false,
-            isReadOnly = false
-        )
-
-        val type2 = ObjectType(
-            url = ObjectType.PAGE_URL,
-            name = MockDataFactory.randomString(),
-            relations = emptyList(),
-            layout = ObjectType.Layout.values().random(),
-            emoji = MockDataFactory.randomString(),
-            description = MockDataFactory.randomString(),
-            isHidden = MockDataFactory.randomBoolean(),
-            smartBlockTypes = listOf(SmartBlockType.PAGE),
-            isArchived = false,
-            isReadOnly = false
-        )
-
-        val type3 = ObjectType(
-            url = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            relations = emptyList(),
-            layout = ObjectType.Layout.values().random(),
-            emoji = MockDataFactory.randomString(),
-            description = MockDataFactory.randomString(),
-            isHidden = MockDataFactory.randomBoolean(),
-            smartBlockTypes = listOf(SmartBlockType.PAGE),
-            isArchived = false,
-            isReadOnly = false
-        )
+        val type1 = MockObjectTypes.objectTypePage
+        val type2 = MockObjectTypes.objectTypeNote
+        val type3 = MockObjectTypes.objectTypeTask
 
         stubInterceptEvents()
         stubOpenDocument(document = doc)
-        stubGetObjectTypes(
-            objectTypes = listOf(type1, type2, type3)
-        )
+        storeOfObjectTypes.merge(listOf(type2, type1, type3))
+//        stubSearchObjects(
+//            objects = listOf(type1, type2, type3)
+//        )
 
         val vm = buildViewModel()
 
@@ -365,25 +337,28 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.Subheader.ObjectTypeWithBlack,
             SlashItem.Actions.LinkTo,
             SlashItem.ObjectType(
-                url = type1.url,
-                name = type1.name,
-                emoji = type1.emoji,
-                description = type1.description,
-                layout = type1.layout
+                objectTypeView = ObjectTypeView(
+                    id = type1.id,
+                    name = type1.name.orEmpty(),
+                    description = type1.description,
+                    emoji = type1.iconEmoji
+                )
             ),
             SlashItem.ObjectType(
-                url = type2.url,
-                name = type2.name,
-                emoji = type2.emoji,
-                description = type2.description,
-                layout = type2.layout
+                objectTypeView = ObjectTypeView(
+                    id = type2.id,
+                    name = type2.name.orEmpty(),
+                    description = type2.description,
+                    emoji = type2.iconEmoji
+                )
             ),
             SlashItem.ObjectType(
-                url = type3.url,
-                name = type3.name,
-                emoji = type3.emoji,
-                description = type3.description,
-                layout = type3.layout
+                objectTypeView = ObjectTypeView(
+                    id = type3.id,
+                    name = type3.name.orEmpty(),
+                    description = type3.description,
+                    emoji = type3.iconEmoji
+                )
             )
         )
 
@@ -406,32 +381,31 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {RELATIONS}
     @Test
-    fun `should return Update command with relation items when clicked on Relations item`() {
+    fun `should return Update command with relation items when clicked on Relations item`() = runTest {
         // SETUP
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
-        val relation1 = Relation(
+        val relation1 = StubRelationObject(
             key = MockDataFactory.randomString(),
             name = "Album's title",
-            format = Relation.Format.SHORT_TEXT,
-            source = Relation.Source.values().random()
+            format = Relation.Format.SHORT_TEXT
         )
 
-        val relation2 = Relation(
+        val relation2 = StubRelationObject(
             key = MockDataFactory.randomString(),
             name = "Album's year",
-            format = Relation.Format.NUMBER,
-            source = Relation.Source.values().random()
+            format = Relation.Format.NUMBER
         )
 
-        val relation3 = Relation(
+        val relation3 = StubRelationObject(
             key = MockDataFactory.randomString(),
             name = "Album's artist",
-            format = Relation.Format.SHORT_TEXT,
-            source = Relation.Source.values().random()
+            format = Relation.Format.SHORT_TEXT
         )
+
+        val objectRelations = listOf(relation1, relation2, relation3)
 
         val value1 = "Safe as milk"
         val value2 = 1967.0
@@ -481,10 +455,17 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = customDetails,
-            relations = listOf(relation1, relation2, relation3)
+            relationLinks = objectRelations.map {
+                RelationLink(
+                    key = it.key,
+                    format = it.relationFormat
+                )
+            }
         )
 
         val vm = buildViewModel()
+
+        storeOfRelations.merge(listOf(relation1, relation2, relation3))
 
         vm.onStart(root)
 
@@ -519,24 +500,27 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashRelationView.RelationNew,
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = relation1.key,
-                    name = relation1.name,
+                    relationId = relation1.id,
+                    relationKey = relation1.key,
+                    name = relation1.name.orEmpty(),
                     value = value1,
                     format = relation1.format
                 )
             ),
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = relation2.key,
-                    name = relation2.name,
+                    relationId = relation2.id,
+                    relationKey = relation2.key,
+                    name = relation2.name.orEmpty(),
                     value = NumberParser.parse(value2),
                     format = relation2.format
                 )
             ),
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
-                    relationId = relation3.key,
-                    name = relation3.name,
+                    relationId = relation3.id,
+                    relationKey = relation3.key,
+                    name = relation3.name.orEmpty(),
                     value = value3,
                     format = relation3.format
                 )

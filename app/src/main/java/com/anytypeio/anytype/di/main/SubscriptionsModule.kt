@@ -70,9 +70,11 @@ object SubscriptionsModule {
     @Provides
     @Singleton
     fun relationsSubscriptionManager(
-        subscription: RelationsSubscriptionContainer
+        subscription: RelationsSubscriptionContainer,
+        workspaceManager: WorkspaceManager
     ): RelationsSubscriptionManager = RelationsSubscriptionManager(
-        subscription = subscription
+        subscription = subscription,
+        workspaceManager = workspaceManager
     )
 
     @JvmStatic

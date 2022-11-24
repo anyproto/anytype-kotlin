@@ -7,13 +7,19 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.sets.ViewerSortAdapter
+import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentViewerSortBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -39,8 +45,8 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
         )
     }
 
-    private lateinit var dividerItem: DividerItemDecoration
-    private lateinit var dividerItemEdit: DividerItemDecoration
+    private lateinit var dividerItem: RecyclerView.ItemDecoration
+    private lateinit var dividerItemEdit: RecyclerView.ItemDecoration
 
     private fun navigateToSelectSort() {
         val fr = SelectSortRelationFragment.new(ctx)
@@ -54,12 +60,14 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(drawable(R.drawable.decoration_viewer_sort))
-        }
-        dividerItemEdit = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(drawable(R.drawable.decoration_viewer_sort_edit))
-        }
+        dividerItem = DividerVerticalItemDecoration(
+            divider = requireContext().drawable(R.drawable.decoration_viewer_sort),
+            isShowInLastItem = false
+        )
+        dividerItemEdit = DividerVerticalItemDecoration(
+            divider = requireContext().drawable(R.drawable.decoration_viewer_sort_edit),
+            isShowInLastItem = false
+        )
         binding.viewerSortRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewerSortAdapter

@@ -77,6 +77,17 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/txtEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:textSize="15sp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/glyph_active"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:text="@string/filter_empty_state" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
@@ -84,19 +95,5 @@
         android:paddingBottom="@dimen/dp_16"
         tools:listitem="@layout/item_modify_viewer_relation_order"
         tools:visibility="invisible" />
-
-    <TextView
-        android:id="@+id/txtEmptyState"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/inter_regular"
-        android:gravity="center"
-        android:paddingTop="23dp"
-        android:paddingBottom="43dp"
-        android:text="@string/filter_empty_state"
-        android:textColor="#CBC9BD"
-        android:textSize="15sp"
-        android:visibility="visible" />
 
 </LinearLayout>

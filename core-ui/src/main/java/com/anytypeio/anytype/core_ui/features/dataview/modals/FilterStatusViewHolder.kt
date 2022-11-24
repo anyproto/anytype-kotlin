@@ -2,13 +2,14 @@ package com.anytypeio.anytype.core_ui.features.dataview.modals
 
 import android.widget.ImageView
 import android.widget.TextView
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterStatusBinding
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import timber.log.Timber
@@ -18,7 +19,7 @@ class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) :
 
     override val textTitle: TextView get() = binding.tvTitle
     override val textCondition: TextView get() = binding.tvCondition
-    override val iconFormat: ImageView get() = binding.iconFormat
+    override val iconFormat: RelationFormatIconWidget get() = binding.iconFormat
     override val iconArrow: ImageView get() = binding.iconArrow
     override val iconRemove: ImageView get() = binding.iconRemoveStatus
 

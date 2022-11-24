@@ -54,7 +54,7 @@
         android:layout_height="68dp"
         android:textSize="15sp"
         android:fontFamily="@font/inter_regular"
-        android:textColor="#CBC9BD"
+        android:textColor="@color/glyph_active"
         android:gravity="center"
         android:layout_marginBottom="@dimen/dp_20"
         android:text="@string/sort_empty_state" />
@@ -65,6 +65,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
+        android:paddingBottom="@dimen/dp_16"
         tools:listitem="@layout/item_viewer_sort" />
 
 </LinearLayout>

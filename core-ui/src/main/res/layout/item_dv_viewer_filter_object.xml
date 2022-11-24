@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/dv_viewer_filter_item_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dv_viewer_filter_item_height">
 
-    <ImageView
-        android:id="@+id/iconFormat"
+    <FrameLayout
+        android:id="@+id/iconFormatContainer"
+        style="@style/DVFilterFormatIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:background="@drawable/ic_relation_format_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iconRemoveObject"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/DVFilterFormatIcon"
-        tools:srcCompat="@drawable/ic_relation_checkbox_32" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
+            android:id="@+id/iconFormat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvTitle"
@@ -23,19 +31,19 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
-        app:layout_goneMarginEnd="@dimen/dp_20"
         app:layout_constraintEnd_toStartOf="@+id/iconArrow"
-        app:layout_constraintStart_toEndOf="@+id/iconFormat"
+        app:layout_constraintStart_toEndOf="@+id/iconFormatContainer"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginEnd="@dimen/dp_20"
         tools:text="Using the Hello World guide, you’ll start a branch" />
 
     <TextView
         android:id="@+id/tvCondition"
+        style="@style/ViewerFilterConditionStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        style="@style/ViewerFilterConditionStyle"
-        app:layout_constraintStart_toEndOf="@+id/iconFormat"
+        app:layout_constraintStart_toEndOf="@+id/iconFormatContainer"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
         tools:text="Contains" />
 
@@ -43,11 +51,11 @@
         android:layout_width="0dp"
         android:layout_height="22dp"
         android:layout_marginEnd="12dp"
-        app:layout_goneMarginEnd="@dimen/dp_20"
         app:layout_constraintBottom_toBottomOf="@id/tvCondition"
         app:layout_constraintEnd_toStartOf="@id/iconArrow"
         app:layout_constraintStart_toEndOf="@id/tvCondition"
-        app:layout_constraintTop_toTopOf="@+id/tvCondition">
+        app:layout_constraintTop_toTopOf="@+id/tvCondition"
+        app:layout_goneMarginEnd="@dimen/dp_20">
 
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
             android:id="@+id/object0"
@@ -56,8 +64,8 @@
             android:layout_marginStart="8dp"
             android:visibility="gone"
             app:emojiSize="18dp"
-            app:nameTextSize="15sp"
             app:nameTextColor="#6C6A5F"
+            app:nameTextSize="15sp"
             tools:visibility="visible" />
 
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
@@ -67,8 +75,8 @@
             android:layout_marginStart="8dp"
             android:visibility="gone"
             app:emojiSize="18dp"
-            app:nameTextSize="15sp"
             app:nameTextColor="#6C6A5F"
+            app:nameTextSize="15sp"
             tools:visibility="visible" />
 
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
@@ -76,10 +84,10 @@
             android:layout_width="wrap_content"
             android:layout_height="22dp"
             android:layout_marginStart="8dp"
-            app:emojiSize="18dp"
-            app:nameTextSize="15sp"
-            app:nameTextColor="#6C6A5F"
             android:visibility="gone"
+            app:emojiSize="18dp"
+            app:nameTextColor="#6C6A5F"
+            app:nameTextSize="15sp"
             tools:visibility="visible" />
     </LinearLayout>
 
@@ -95,9 +103,9 @@
 
     <ImageView
         android:id="@+id/iconRemoveObject"
+        style="@style/DVFilterRemoveIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/DVFilterRemoveIcon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

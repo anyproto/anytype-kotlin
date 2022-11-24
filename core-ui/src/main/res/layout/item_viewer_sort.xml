@@ -17,14 +17,23 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <ImageView
-        android:id="@+id/ivRelation"
+    <FrameLayout
+        android:id="@+id/ivRelationContainer"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        tools:src="@drawable/ic_relation_name_48" />
+        android:background="@drawable/ic_relation_format_background">
+
+        <com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
+            android:id="@+id/ivRelation"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:src="@drawable/ic_relation_format_checkbox_small"/>
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="0dp"

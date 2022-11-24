@@ -4,8 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_ui.extensions.relationIcon
+import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -14,7 +13,7 @@ abstract class FilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     abstract val textTitle: TextView
     abstract val textCondition: TextView
-    abstract val iconFormat: ImageView
+    abstract val iconFormat: RelationFormatIconWidget
     abstract val iconArrow: ImageView
     abstract val iconRemove: ImageView
 
@@ -28,6 +27,6 @@ abstract class FilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
         textTitle.text = title
         textCondition.text = condition
-        iconFormat.setBackgroundResource(format.relationIcon(isMedium = true))
+        iconFormat.bind(format)
     }
 }

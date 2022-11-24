@@ -5,15 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/dv_viewer_filter_item_height">
 
-    <ImageView
-        android:id="@+id/iconFormat"
+    <FrameLayout
+        android:id="@+id/iconFormatContainer"
+        style="@style/DVFilterFormatIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        app:layout_constraintStart_toEndOf="@+id/iconRemoveStatus"
-        style="@style/DVFilterFormatIcon"
+        android:background="@drawable/ic_relation_format_background"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/ic_relation_checkbox_32" />
+        app:layout_constraintStart_toEndOf="@+id/iconRemoveStatus"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
+            android:id="@+id/iconFormat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvTitle"
@@ -24,32 +32,32 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
         app:layout_constraintEnd_toStartOf="@+id/iconArrow"
-        app:layout_constraintStart_toEndOf="@+id/iconFormat"
+        app:layout_constraintStart_toEndOf="@+id/iconFormatContainer"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Name" />
 
     <TextView
         android:id="@+id/tvCondition"
+        style="@style/ViewerFilterConditionStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        style="@style/ViewerFilterConditionStyle"
-        app:layout_constraintStart_toEndOf="@+id/iconFormat"
+        app:layout_constraintStart_toEndOf="@+id/iconFormatContainer"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
         tools:text="Contains" />
 
     <TextView
         android:id="@+id/tvValue"
+        style="@style/ViewerFilterTextValueStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="12dp"
-        app:layout_goneMarginEnd="@dimen/dp_20"
-        style="@style/ViewerFilterTextValueStyle"
         app:layout_constraintBottom_toBottomOf="@+id/tvCondition"
         app:layout_constraintEnd_toStartOf="@+id/iconArrow"
         app:layout_constraintStart_toEndOf="@+id/tvCondition"
         app:layout_constraintTop_toTopOf="@+id/tvCondition"
+        app:layout_goneMarginEnd="@dimen/dp_20"
         tools:text="'World'" />
 
     <ImageView
@@ -64,9 +72,9 @@
 
     <ImageView
         android:id="@+id/iconRemoveStatus"
+        style="@style/DVFilterRemoveIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/DVFilterRemoveIcon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

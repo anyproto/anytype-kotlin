@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerSortBinding
-import com.anytypeio.anytype.core_ui.extensions.icon
 import com.anytypeio.anytype.core_ui.extensions.text
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -62,7 +61,7 @@ class ViewerSortAdapter(
                 }
                 tvTitle.text = item.name
                 tvSubtitle.setText(item.type.text(item.format))
-                ivRelation.setImageResource(item.format.icon(isMedium = true))
+                ivRelation.bind(item.format)
             }
         }
     }

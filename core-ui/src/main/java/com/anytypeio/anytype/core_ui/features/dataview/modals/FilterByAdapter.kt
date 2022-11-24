@@ -3,8 +3,13 @@ package com.anytypeio.anytype.core_ui.features.dataview.modals
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.*
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterDateBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterNumberBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterStatusBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterTextBinding
 import com.anytypeio.anytype.presentation.sets.filter.FilterClick
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_CHECKBOX
@@ -133,7 +138,6 @@ class FilterByAdapter(
                 }
             }
             HOLDER_OBJECT -> {
-                val views = inflater.inflate(R.layout.item_dv_viewer_filter_object, parent, false)
                 FilterObjectViewHolder(
                     ItemDvViewerFilterObjectBinding.inflate(
                         inflater, parent, false

@@ -4,6 +4,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterDateBinding
+import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -16,7 +17,7 @@ class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :
 
     override val textTitle: TextView get() = binding.tvTitle
     override val textCondition: TextView get() = binding.tvCondition
-    override val iconFormat: ImageView get() = binding.iconFormat
+    override val iconFormat: RelationFormatIconWidget get() = binding.iconFormat
     override val iconArrow: ImageView get() = binding.iconArrow
     override val iconRemove: ImageView get() = binding.iconRemoveDate
 

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor.listener
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
@@ -69,6 +70,7 @@ sealed interface ListenerType {
         data class ObjectTypeOpenSet(val type: String) : Relation()
         data class Featured(val relation: DocumentRelationView) : Relation()
         data class SetSource(val sources: List<ObjectView>) : Relation()
+        object ChangeSourceByRelation : Relation()
     }
 
     data class TableOfContentsItem(val target: Id, val item: Id) : ListenerType

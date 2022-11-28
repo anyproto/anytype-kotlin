@@ -16,7 +16,8 @@ sealed class ObjectView {
         override val id: String,
         val name: String,
         val icon: ObjectIcon,
-        val types: List<String>
+        val types: List<String> = emptyList(),
+        val isRelation: Boolean = false
     ) : ObjectView()
 
     data class Deleted(override val id: String) : ObjectView()

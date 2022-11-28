@@ -1140,6 +1140,9 @@ class ObjectSetViewModel(
                 }
                 dispatch(command)
             }
+            is ListenerType.Relation.ChangeSourceByRelation -> {
+                toast("Currently, this source can be changed via Desktop only")
+            }
             else -> {}
         }
     }

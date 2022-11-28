@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -17,7 +18,7 @@ import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
-suspend fun ObjectSet.featuredRelations(
+fun ObjectSet.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder,
     relations: List<ObjectWrapper.Relation>
@@ -73,7 +74,9 @@ private fun mapFeaturedRelations(
             objectSet.setOf.forEach { objectTypeId ->
                 val wrapper = ObjectWrapper.Basic(details.details[objectTypeId]?.map.orEmpty())
                 if (!wrapper.isEmpty()) {
-                    sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
+                    sources.add(
+                        wrapper.toObjectView(urlBuilder = urlBuilder)
+                    )
                 }
             }
             DocumentRelationView.Source(
@@ -145,6 +148,7 @@ fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when 
             layout = layout,
             builder = urlBuilder
         ),
-        types = type
+        types = type,
+        isRelation = type.contains(ObjectTypeIds.RELATION)
     )
 }

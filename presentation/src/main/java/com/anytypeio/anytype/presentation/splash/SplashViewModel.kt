@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectTypeIds.NOTE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -63,8 +64,11 @@ class SplashViewModel(
                 },
                 onSuccess = { result ->
                     Timber.d("getDefaultPageType: ${result.type}")
-                    if (result.type == null) {
+                    val defaultObjectType = result.type
+                    if (defaultObjectType == null) {
                         commands.emit(Command.CheckFirstInstall)
+                    } else if (defaultObjectType.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
+                        fallbackToNoteAsDefaultObjectType()
                     } else {
                         checkAuthorizationStatus()
                     }
@@ -80,6 +84,24 @@ class SplashViewModel(
         } else {
             DEFAULT_TYPE_UPDATE
         }
+        proceedWithUpdatingDefaultObjectType(
+            typeId = typeId,
+            typeName = typeName
+        )
+    }
+
+    private fun fallbackToNoteAsDefaultObjectType() {
+        val (typeId, typeName) = DEFAULT_TYPE_FIRST_INSTALL
+        proceedWithUpdatingDefaultObjectType(
+            typeId = typeId,
+            typeName = typeName
+        )
+    }
+
+    private fun proceedWithUpdatingDefaultObjectType(
+        typeId: String,
+        typeName: String
+    ) {
         appActionManager.setup(
             AppActionManager.Action.CreateNew(
                 type = typeId,
@@ -114,7 +136,6 @@ class SplashViewModel(
     }
 
     private fun proceedWithLaunchingWallet() {
-        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             launchWallet(BaseUseCase.None).either(
                 fnL = { retryLaunchingWallet() },
@@ -246,7 +267,6 @@ class SplashViewModel(
 
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account..."
-        //ToDo better to take the name from middleware (see GetLastOpenedObject use case)
         val DEFAULT_TYPE_FIRST_INSTALL = Pair(NOTE, "Note")
         val DEFAULT_TYPE_UPDATE = Pair(PAGE, "Page")
     }

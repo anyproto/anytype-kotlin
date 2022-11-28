@@ -21,4 +21,7 @@ object ObjectTypeIds {
     const val DASHBOARD = "ot-dashboard"
     const val BOOKMARK = "ot-bookmark"
     const val RELATION_OPTION = "ot-relationOption"
+
+    const val MARKETPLACE_OBJECT_TYPE_PREFIX = "_ot"
+    const val DEFAULT_OBJECT_TYPE_PREFIX = "ot-"
 }

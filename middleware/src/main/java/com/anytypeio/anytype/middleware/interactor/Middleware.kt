@@ -698,7 +698,7 @@ class Middleware(
         val (image, emoji) = when (val icon = command.icon) {
             is Command.SetTextIcon.Icon.Emoji -> "" to icon.unicode
             is Command.SetTextIcon.Icon.Image -> icon.hash to ""
-            Command.SetTextIcon.Icon.None -> "" to ""
+            is Command.SetTextIcon.Icon.None -> "" to ""
         }
         val request = Rpc.BlockText.SetIcon.Request(
             contextId = command.context,

@@ -16,7 +16,7 @@ class SetDefaultEditorType(
     @property [type] object type
     @see ObjectTypeConst for possible values.
      **/
-    class Params(
+    data class Params(
         val type: Id,
         val name: String
     )

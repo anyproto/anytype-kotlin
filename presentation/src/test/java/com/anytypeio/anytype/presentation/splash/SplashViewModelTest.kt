@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.splash
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -12,7 +11,6 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
@@ -20,8 +18,10 @@ import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -35,6 +35,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 
 class SplashViewModelTest {
@@ -62,12 +63,6 @@ class SplashViewModelTest {
 
     @Mock
     lateinit var auth: AuthRepository
-
-    @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
-    lateinit var userSettingsRepo: UserSettingsRepository
 
     private lateinit var getLastOpenedObject: GetLastOpenedObject
 
@@ -233,6 +228,37 @@ class SplashViewModelTest {
             verify(launchWallet, times(1)).invoke(any())
             verify(launchAccount, times(1)).invoke(any())
         }
+    }
+
+    @Test
+    fun `should fallback to default object type if default object type contains deprecated prefix id`() = runTest {
+        stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+        stubGetDefaultObjectType(type = ObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
+
+        initViewModel()
+
+        verify(setDefaultEditorType, times(1)).invoke(
+            SetDefaultEditorType.Params(
+                SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.first,
+                SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.second
+            )
+        )
+    }
+
+    @Test
+    fun `should not fallback to default object type if default object type does not contain deprecated prefix id`() = runTest {
+        stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+        stubGetDefaultObjectType(type = ObjectTypeIds.DEFAULT_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
+
+        initViewModel()
+
+        verifyNoInteractions(setDefaultEditorType)
     }
 
     //Todo can't mock Amplitude

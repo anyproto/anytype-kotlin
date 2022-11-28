@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/videoUploadingPlaceholderRoot"
     android:layout_width="match_parent"
-    style="@style/BlockMediaRootLayoutStyle"
     android:layout_height="wrap_content"
     android:background="@drawable/item_block_multi_select_mode_selector">
 
@@ -56,5 +55,11 @@
             app:layout_constraintTop_toTopOf="@+id/editUrl" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector" />
 
 </FrameLayout>

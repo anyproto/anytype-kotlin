@@ -1,11 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.upload
 
 import android.view.View
+import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoUploadingBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -37,6 +39,20 @@ class VideoUpload(
     }
 
     override fun select(isSelected: Boolean) {
-        root.isSelected = isSelected
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.isSelected = isSelected
+        } else {
+            binding.selected.isSelected = isSelected
+        }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        super.applyDecorations(decorations)
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+                content = binding.card,
+                res = itemView.resources
+            )
+        }
     }
 }

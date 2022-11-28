@@ -33,6 +33,7 @@ message Event {
             Object.Subscription.Remove subscriptionRemove = 61;
             Object.Subscription.Position subscriptionPosition = 62;
             Object.Subscription.Counters subscriptionCounters = 63;
+            Object.Subscription.Groups subscriptionGroups = 64;
 
             Block.Add blockAdd = 2;
             Block.Delete blockDelete = 3;
@@ -174,6 +175,11 @@ message Event {
                 string subId = 4; // subscription id
             }
 
+            message Groups {
+                string subId = 1;
+                anytype.model.Block.Content.Dataview.Group group = 2;
+                bool remove = 3;
+            }
         }
 
         message Relations {

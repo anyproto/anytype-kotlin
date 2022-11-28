@@ -1285,16 +1285,20 @@ message Rpc {
             }
         }
 
-        message RelationSearchDistinct {
+        message GroupsSubscribe {
             message Request {
-                string relationKey = 1;
-                repeated anytype.model.Block.Content.Dataview.Filter filters = 2;
+                string subId = 1;
+                string relationKey = 2;
+                repeated anytype.model.Block.Content.Dataview.Filter filters = 3;
+                repeated string source = 4;
             }
 
             message Response {
                 Error error = 1;
 
                 repeated anytype.model.Block.Content.Dataview.Group groups = 2;
+
+                string subId = 3;
 
                 message Error {
                     Code code = 1;

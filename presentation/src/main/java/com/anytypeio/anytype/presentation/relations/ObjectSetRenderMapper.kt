@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -13,7 +12,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.ext.CURRENT_MONTH
 import com.anytypeio.anytype.core_utils.ext.CURRENT_WEEK
@@ -30,7 +28,6 @@ import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
@@ -706,8 +703,9 @@ fun ObjectWrapper.Relation.toObjects(
     throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
 }
 
-fun DVFilter.toView(
-    relation: Relation,
+suspend fun DVFilter.toView(
+    store: ObjectStore,
+    relation: ObjectWrapper.Relation,
     details: Map<Id, Block.Fields>,
     isInEditMode: Boolean,
     urlBuilder: UrlBuilder
@@ -715,7 +713,7 @@ fun DVFilter.toView(
     Relation.Format.SHORT_TEXT -> {
         FilterView.Expression.TextShort(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.TextShort(relation.toText(value)),
@@ -727,7 +725,7 @@ fun DVFilter.toView(
     Relation.Format.LONG_TEXT -> {
         FilterView.Expression.Text(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Text(relation.toText(value)),
@@ -739,7 +737,7 @@ fun DVFilter.toView(
     Relation.Format.URL -> {
         FilterView.Expression.Url(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Url(relation.toUrl(value)),
@@ -751,7 +749,7 @@ fun DVFilter.toView(
     Relation.Format.EMAIL -> {
         FilterView.Expression.Email(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Email(relation.toEmail(value)),
@@ -763,7 +761,7 @@ fun DVFilter.toView(
     Relation.Format.PHONE -> {
         FilterView.Expression.Phone(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Phone(relation.toPhone(value)),
@@ -775,7 +773,7 @@ fun DVFilter.toView(
     Relation.Format.NUMBER -> {
         FilterView.Expression.Number(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toNumberView(),
             filterValue = FilterValue.Number(NumberParser.parse(value)),
@@ -787,7 +785,7 @@ fun DVFilter.toView(
     Relation.Format.DATE -> {
         FilterView.Expression.Date(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toDateView(),
             quickOption = quickOption,
@@ -800,10 +798,15 @@ fun DVFilter.toView(
     Relation.Format.STATUS -> {
         FilterView.Expression.Status(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
-            filterValue = FilterValue.Status(relation.toStatus(value)),
+            filterValue = FilterValue.Status(
+                relation.toStatus(
+                    value = value,
+                    store = store
+                )
+            ),
             format = relation.format.toView(),
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
@@ -812,10 +815,15 @@ fun DVFilter.toView(
     Relation.Format.TAG -> {
         FilterView.Expression.Tag(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
-            filterValue = FilterValue.Tag(relation.toTags(value)),
+            filterValue = FilterValue.Tag(
+                relation.toTags(
+                    value = value,
+                    store = store
+                )
+            ),
             format = relation.format.toView(),
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
@@ -824,7 +832,7 @@ fun DVFilter.toView(
     Relation.Format.OBJECT -> {
         FilterView.Expression.Object(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
             filterValue = FilterValue.Object(relation.toObjects(value, details, urlBuilder)),
@@ -836,7 +844,7 @@ fun DVFilter.toView(
     Relation.Format.CHECKBOX -> {
         FilterView.Expression.Checkbox(
             key = relationKey,
-            title = relation.name,
+            title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toCheckboxView(),
             filterValue = FilterValue.Check(relation.toCheckbox(value)),

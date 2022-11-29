@@ -16,11 +16,14 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -66,6 +69,9 @@ class FilterListTest {
     private val session = ObjectSetSession()
     private val state = MutableStateFlow(ObjectSet.init())
     private val dispatcher = Dispatcher.Default<Payload>()
+    private val storeOfObjects = DefaultObjectStore()
+    private val db = ObjectSetDatabase(storeOfObjects)
+    private val storeOfRelations = DefaultStoreOfRelations()
 
     @Before
     fun setup() {
@@ -79,7 +85,9 @@ class FilterListTest {
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             state = state,
-            analytics = analytics
+            analytics = analytics,
+            storeOfRelations = storeOfRelations,
+            objectSetDatabase = db
         )
     }
 

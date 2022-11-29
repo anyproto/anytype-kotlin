@@ -7,11 +7,13 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFilterEvent
 import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.relations.filterExpression
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand.Modal
 import com.anytypeio.anytype.presentation.sets.model.FilterScreenData
@@ -28,6 +30,8 @@ class ViewerFilterViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val urlBuilder: UrlBuilder,
+    private val storeOfRelations: StoreOfRelations,
+    private val db: ObjectSetDatabase,
     private val analytics: Analytics
 ) : BaseListViewModel<FilterView>() {
 
@@ -39,8 +43,6 @@ class ViewerFilterViewModel(
     init {
         viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { objectSet ->
-                val block = objectSet.dataview
-                val dv = block.content as DV
                 val filterExpression = objectSet.filterExpression(session.currentViewerId.value)
                 if (filterExpression.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
@@ -52,7 +54,8 @@ class ViewerFilterViewModel(
                     }
                 }
                 _views.value = filterExpression.toView(
-                    relations = dv.relations,
+                    storeOfRelations = storeOfRelations,
+                    storeOfObjects = db.store,
                     details = objectSet.details,
                     screenState = screenState.value,
                     urlBuilder = urlBuilder
@@ -202,7 +205,9 @@ class ViewerFilterViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val urlBuilder: UrlBuilder,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val storeOfRelations: StoreOfRelations,
+        private val objectSetDatabase: ObjectSetDatabase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -212,7 +217,9 @@ class ViewerFilterViewModel(
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
                 urlBuilder = urlBuilder,
-                analytics = analytics
+                analytics = analytics,
+                storeOfRelations = storeOfRelations,
+                db = objectSetDatabase
             ) as T
         }
     }

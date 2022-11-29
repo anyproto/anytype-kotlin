@@ -4,8 +4,9 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.relations.toView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
@@ -62,19 +63,21 @@ fun List<CreateFilterView>.checkboxFilter(
     )
 }
 
-fun List<DVFilter>.toView(
-    relations: List<Relation>,
+suspend fun List<DVFilter>.toView(
+    storeOfRelations: StoreOfRelations,
+    storeOfObjects: ObjectStore,
     details: Map<Id, Block.Fields>,
     screenState: ViewerFilterViewModel.ScreenState,
     urlBuilder: UrlBuilder
 ) = mapNotNull { filter ->
-    val relation = relations.find { it.key == filter.relationKey }
+    val relation = storeOfRelations.getByKey(filter.relationKey)
     if (relation != null) {
         filter.toView(
             relation = relation,
             details = details,
             isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            store = storeOfObjects
         )
     } else {
         Timber.w("Could not found relation: ${filter.relationKey} for filter: $filter")

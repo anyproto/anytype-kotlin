@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -427,7 +428,11 @@ open class FilterViewModel(
                 filter = DVFilter(
                     relationKey = relation,
                     value = value,
-                    condition = condition.toDomain()
+                    condition = condition.toDomain(),
+                    relationFormat = if (format == ColumnView.Format.DATE)
+                        RelationFormat.DATE
+                    else
+                        null
                 )
             )
         }

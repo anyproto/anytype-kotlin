@@ -4,7 +4,9 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -39,14 +41,18 @@ object ViewerFilterModule {
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,
         urlBuilder: UrlBuilder,
-        analytics: Analytics
+        analytics: Analytics,
+        storeOfRelations: StoreOfRelations,
+        db: ObjectSetDatabase
     ): ViewerFilterViewModel.Factory = ViewerFilterViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,
         urlBuilder = urlBuilder,
-        analytics = analytics
+        analytics = analytics,
+        storeOfRelations = storeOfRelations,
+        objectSetDatabase = db
     )
 }
 

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.mappers
 
 import anytype.model.Range
+import anytype.model.RelationFormat
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.ObjectType
@@ -353,7 +354,8 @@ fun Block.Content.DataView.Filter.toMiddlewareModel(): MDVFilter =
         operator_ = operator.toMiddlewareModel(),
         condition = condition.toMiddlewareModel(),
         quickOption = quickOption.toMiddlewareModel(),
-        value_ = value
+        value_ = value,
+        format = relationFormat?.toMiddlewareModel() ?: RelationFormat.longtext
     )
 
 fun Block.Content.DataView.Filter.Operator.toMiddlewareModel(): MDVFilterOperator = when (this) {

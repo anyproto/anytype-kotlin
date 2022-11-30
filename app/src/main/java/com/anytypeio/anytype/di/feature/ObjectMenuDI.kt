@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.menu.ObjectSetMenuViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
@@ -92,6 +94,7 @@ object ObjectMenuModule {
     fun provideViewModelFactory(
         setObjectIsArchived: SetObjectIsArchived,
         duplicateObject: DuplicateObject,
+        debugTreeShareDownloader: DebugTreeShareDownloader,
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
         addBackLinkToObject: AddBackLinkToObject,
@@ -100,10 +103,12 @@ object ObjectMenuModule {
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>,
         updateFields: UpdateFields,
+        featureToggles: FeatureToggles,
         delegator: Delegator<Action>
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
+        debugTreeShareDownloader = debugTreeShareDownloader,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
         addBackLinkToObject = addBackLinkToObject,
@@ -113,14 +118,15 @@ object ObjectMenuModule {
         dispatcher = dispatcher,
         updateFields = updateFields,
         delegator = delegator,
-        menuOptionsProvider = createMenuOptionsProvider(storage)
+        menuOptionsProvider = createMenuOptionsProvider(storage, featureToggles)
     )
 
     @JvmStatic
-    private fun createMenuOptionsProvider(storage: Editor.Storage) =
+    private fun createMenuOptionsProvider(storage: Editor.Storage, featureToggles: FeatureToggles) =
         ObjectMenuOptionsProviderImpl(
             details = storage.details.stream().map { it.details },
-            restrictions = storage.objectRestrictions.stream()
+            restrictions = storage.objectRestrictions.stream(),
+            featureToggles = featureToggles
         )
 }
 
@@ -140,6 +146,7 @@ object ObjectSetMenuModule {
         urlBuilder: UrlBuilder,
         analytics: Analytics,
         state: StateFlow<ObjectSet>,
+        featureToggles: FeatureToggles,
         dispatcher: Dispatcher<Payload>
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
@@ -152,7 +159,7 @@ object ObjectSetMenuModule {
         analytics = analytics,
         state = state,
         dispatcher = dispatcher,
-        menuOptionsProvider = createMenuOptionsProvider(state)
+        menuOptionsProvider = createMenuOptionsProvider(state, featureToggles)
     )
 
     @JvmStatic
@@ -173,9 +180,13 @@ object ObjectSetMenuModule {
     )
 
     @JvmStatic
-    private fun createMenuOptionsProvider(state: StateFlow<ObjectSet>) =
+    private fun createMenuOptionsProvider(
+        state: StateFlow<ObjectSet>,
+        featureToggles: FeatureToggles
+    ) =
         ObjectMenuOptionsProviderImpl(
             details = state.map { it.details },
-            restrictions = state.map { it.objectRestrictions }
+            restrictions = state.map { it.objectRestrictions },
+            featureToggles = featureToggles
         )
 }

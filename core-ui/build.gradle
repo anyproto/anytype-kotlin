@@ -53,6 +53,7 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.androidxCore
+    implementation applicationDependencies.lifecycleRuntime
 
     implementation applicationDependencies.design
     implementation applicationDependencies.recyclerView

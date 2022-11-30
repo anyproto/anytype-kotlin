@@ -123,7 +123,8 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
@@ -409,7 +410,7 @@ object EditorSessionModule {
         setRelationKey: SetRelationKey,
         analytics: Analytics,
         updateBlocksMark: UpdateBlocksMark,
-        middlewareShareDownloader: MiddlewareShareDownloader,
+        documentFileShareDownloader: DocumentFileShareDownloader,
         clearBlockContent: ClearBlockContent,
         clearBlockStyle: ClearBlockStyle
     ): Orchestrator = Orchestrator(
@@ -431,7 +432,7 @@ object EditorSessionModule {
         updateDivider = updateDivider,
         memory = memory,
         downloadFile = downloadFile,
-        middlewareShareDownloader = middlewareShareDownloader,
+        documentFileShareDownloader = documentFileShareDownloader,
         turnIntoDocument = turnIntoDocument,
         textInteractor = Interactor.TextInteractor(
             proxies = proxer,
@@ -1034,17 +1035,25 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun providesMiddlewareShareDownloader(
+    fun providesDocumentFileShareDownloader(
         repo: BlockRepository,
         context: Context,
         fileProvider: UriFileProvider
-    ): MiddlewareShareDownloader = MiddlewareShareDownloader(
+    ): DocumentFileShareDownloader = DocumentFileShareDownloader(
         repo = repo,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        ),
+        context = context.applicationContext,
+        uriFileProvider = fileProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun providesDebugTreeShareDownloader(
+        repo: BlockRepository,
+        context: Context,
+        fileProvider: UriFileProvider
+    ): DebugTreeShareDownloader = DebugTreeShareDownloader(
+        repo = repo,
         context = context.applicationContext,
         uriFileProvider = fileProvider
     )

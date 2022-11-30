@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -24,7 +25,6 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -33,6 +33,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
@@ -596,7 +597,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
     private fun givenDelegateId(id: String) {
         createNewObject.stub {
-            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(id)
+            onBlocking { execute(Unit) } doReturn Resultat.success(id)
         }
     }
 }

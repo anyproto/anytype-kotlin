@@ -5,12 +5,12 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -541,16 +541,15 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         params: CreateBlock.Params
     ) {
         createBlock.stub {
-            onBlocking { execute(params) } doAnswer
-                    ValueClassAnswer(
-                        Pair(
-                            MockDataFactory.randomUuid(),
-                            Payload(
-                                context = root,
-                                events = emptyList()
-                            )
-                        )
+            onBlocking { execute(params) } doReturn Resultat.success(
+                Pair(
+                    MockDataFactory.randomUuid(),
+                    Payload(
+                        context = root,
+                        events = emptyList()
                     )
+                )
+            )
         }
     }
 

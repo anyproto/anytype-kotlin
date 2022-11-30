@@ -21,7 +21,7 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
 
     val sheet: FrameLayout? get() = dialog?.findViewById(BOTTOM_SHEET_ID)
 
-    protected val jobs = mutableListOf<Job>()
+    val jobs = mutableListOf<Job>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

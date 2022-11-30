@@ -233,6 +233,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="relations_description">List of related objects</string>
     <string name="history_description">All version of object</string>
     <string name="history">History</string>
+    <string name="object_debug">Object Debug</string>
+    <string name="object_diagnostics">Diagnostics</string>
     <string name="provide_name">Provide name for new object</string>
     <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>

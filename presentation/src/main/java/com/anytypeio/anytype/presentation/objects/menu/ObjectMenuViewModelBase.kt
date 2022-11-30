@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.objects.menu
 
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
@@ -42,7 +43,7 @@ abstract class ObjectMenuViewModelBase(
     private val duplicateObject: DuplicateObject
 ) : BaseViewModel() {
 
-    private val jobs = mutableListOf<Job>()
+    protected val jobs = mutableListOf<Job>()
     val isDismissed = MutableStateFlow(false)
     val isObjectArchived = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -54,6 +55,7 @@ abstract class ObjectMenuViewModelBase(
             hasCover = false,
             hasLayout = false,
             hasRelations = false,
+            hasDiagnosticsVisibility = false
         )
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
@@ -100,7 +102,7 @@ abstract class ObjectMenuViewModelBase(
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             removeFromFavorite(
                 RemoveFromFavorite.Params(
                     target = ctx
@@ -119,7 +121,7 @@ abstract class ObjectMenuViewModelBase(
     }
 
     protected fun proceedWithAddingToFavorites(ctx: Id) {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             addToFavorite(
                 AddToFavorite.Params(
                     target = ctx
@@ -138,7 +140,7 @@ abstract class ObjectMenuViewModelBase(
     }
 
     fun proceedWithUpdatingArchivedStatus(ctx: Id, isArchived: Boolean) {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             setObjectIsArchived(
                 SetObjectIsArchived.Params(
                     context = ctx,
@@ -169,11 +171,14 @@ abstract class ObjectMenuViewModelBase(
             ).fold(
                 onSuccess = { obj ->
                     sendAnalyticsObjectLinkToEvent(analytics)
-                    commands.emit(Command.OpenSnackbar(
-                        id = addTo,
-                        currentObjectName = fromName,
-                        targetObjectName = obj.getProperName(),
-                        icon = ObjectIcon.from(obj, obj.layout, urlBuilder)))
+                    commands.emit(
+                        Command.OpenSnackbar(
+                            id = addTo,
+                            currentObjectName = fromName,
+                            targetObjectName = obj.getProperName(),
+                            icon = ObjectIcon.from(obj, obj.layout, urlBuilder)
+                        )
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while adding link from object to object")
@@ -207,6 +212,10 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
+    open fun onDiagnosticsClicked(ctx: Id) {
+        throw IllegalStateException("You should not call diagnostics for sets")
+    }
+
     sealed class Command {
         object OpenObjectIcons : Command()
         object OpenSetIcons : Command()
@@ -217,7 +226,8 @@ abstract class ObjectMenuViewModelBase(
         object OpenObjectRelations : Command()
         object OpenSetRelations : Command()
         object OpenLinkToChooser : Command()
-        class OpenSnackbar(
+        data class ShareDebugTree(val uri: Uri) : Command()
+        data class OpenSnackbar(
             val id: Id,
             val currentObjectName: String?,
             val targetObjectName: String?,

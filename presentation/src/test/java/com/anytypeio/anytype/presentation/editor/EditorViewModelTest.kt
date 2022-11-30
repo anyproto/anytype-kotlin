@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
@@ -117,9 +118,9 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.TXT
+import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -233,7 +234,7 @@ open class EditorViewModelTest {
     lateinit var downloadFile: DownloadFile
 
     @Mock
-    lateinit var middlewareShareDownloader: MiddlewareShareDownloader
+    lateinit var documentFileShareDownloader: DocumentFileShareDownloader
 
     @Mock
     lateinit var uploadBlock: UploadBlock
@@ -2665,7 +2666,7 @@ open class EditorViewModelTest {
         vm.startSharingFile(id = file.id)
 
         runTest {
-            verify(middlewareShareDownloader, times(1)).execute(
+            verify(documentFileShareDownloader, times(1)).execute(
                 params = eq(
                     MiddlewareShareDownloader.Params(
                         name = file.content<Block.Content.File>().name.orEmpty(),
@@ -3743,7 +3744,7 @@ open class EditorViewModelTest {
         objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
+            onBlocking { execute(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,
@@ -3768,7 +3769,7 @@ open class EditorViewModelTest {
     ) {
 
         closePage.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(Unit)
+            onBlocking { execute(any()) } doReturn Resultat.success(Unit)
         }
 
         exception?.let {
@@ -3797,7 +3798,7 @@ open class EditorViewModelTest {
         events: List<Event> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
+            onBlocking { execute(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = context,
@@ -3857,7 +3858,7 @@ open class EditorViewModelTest {
 
     private fun stubCreateBlock(root: String) {
         createBlock.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
+            onBlocking { execute(any()) } doReturn Resultat.success(
                 Pair(
                     MockDataFactory.randomString(), Payload(
                         context = root,
@@ -3881,8 +3882,8 @@ open class EditorViewModelTest {
     }
 
     private fun givenSharedFile() {
-        middlewareShareDownloader.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(Uri.EMPTY)
+        documentFileShareDownloader.stub {
+            onBlocking { execute(any()) } doReturn Resultat.success(Uri.EMPTY)
         }
     }
 
@@ -3967,7 +3968,7 @@ open class EditorViewModelTest {
                 updateTextColor = updateTextColor,
                 duplicateBlock = duplicateBlock,
                 downloadFile = downloadFile,
-                middlewareShareDownloader = middlewareShareDownloader,
+                documentFileShareDownloader = documentFileShareDownloader,
                 undo = undo,
                 redo = redo,
                 updateText = updateText,
@@ -4523,7 +4524,7 @@ open class EditorViewModelTest {
 
     private fun givenDelegateId(id: String) {
         createNewObject.stub {
-            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(id)
+            onBlocking { execute(Unit) } doReturn Resultat.success(id)
         }
     }
 }

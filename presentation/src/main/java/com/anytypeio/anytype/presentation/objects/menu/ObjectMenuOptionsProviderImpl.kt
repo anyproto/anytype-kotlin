@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -15,6 +16,7 @@ import timber.log.Timber
 class ObjectMenuOptionsProviderImpl(
     private val details: Flow<Map<Id, Block.Fields>>,
     private val restrictions: Flow<List<ObjectRestriction>>,
+    private val featureToggles: FeatureToggles,
 ) : ObjectMenuOptionsProvider {
 
     private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = details
@@ -58,12 +60,14 @@ class ObjectMenuOptionsProviderImpl(
                     hasIcon = hasIcon,
                     hasCover = hasCover,
                     hasLayout = hasLayout,
+                    hasDiagnosticsVisibility = featureToggles.isDebug,
                 )
                 ObjectType.Layout.TODO -> Options(
                     hasIcon = false,
                     hasCover = hasCover,
                     hasLayout = hasLayout,
                     hasRelations = true,
+                    hasDiagnosticsVisibility = featureToggles.isDebug,
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -71,6 +75,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasCover = false,
                     hasLayout = hasLayout,
                     hasRelations = true,
+                    hasDiagnosticsVisibility = featureToggles.isDebug,
                 )
             }
         } else {
@@ -79,6 +84,7 @@ class ObjectMenuOptionsProviderImpl(
                 hasIcon = hasIcon,
                 hasCover = hasCover,
                 hasLayout = hasLayout,
+                hasDiagnosticsVisibility = featureToggles.isDebug,
             )
         }
         return options

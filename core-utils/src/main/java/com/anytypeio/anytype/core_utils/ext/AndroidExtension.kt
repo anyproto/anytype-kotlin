@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_utils.ext
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -352,5 +353,24 @@ fun NavController.safeNavigate(
 ) {
     if (currentDestinationId == currentDestination?.id) {
         navigate(id, args)
+    }
+}
+
+fun Fragment.shareFile(uri: Uri) {
+    try {
+        val shareIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            putExtra(Intent.EXTRA_STREAM, uri)
+            type = requireContext().contentResolver.getType(uri)
+        }
+        startActivity(shareIntent)
+    } catch (e: Exception) {
+        if (e is ActivityNotFoundException) {
+            toast("No application found to open the selected file")
+        } else {
+            toast("Could not open file: ${e.message}")
+        }
+        Timber.e(e, "Error while opening file")
     }
 }

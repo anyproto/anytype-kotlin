@@ -581,7 +581,7 @@ class MiddlewareServiceImplementation @Inject constructor(
     }
 
     override fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response {
-        val encoded = Service.debugSync(Rpc.Debug.Tree.Request.ADAPTER.encode(request))
+        val encoded = Service.debugTree(Rpc.Debug.Tree.Request.ADAPTER.encode(request))
         val response = Rpc.Debug.Tree.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Debug.Tree.Response.Error.Code.NULL) {

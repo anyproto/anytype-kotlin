@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.anytypeio.anytype.test_utils.utils.TestUtils
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -367,7 +367,7 @@ class ListBlockTesting : EditorTestSetup() {
         createBlock.stub {
             onBlocking {
                 execute(params)
-            } doAnswer ValueClassAnswer(
+            } doReturn Resultat.success(
                 Pair(new.id, Payload(context = root, events = events))
             )
         }

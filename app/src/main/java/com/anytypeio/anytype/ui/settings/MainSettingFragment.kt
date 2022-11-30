@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +14,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Command
+import com.anytypeio.anytype.ui.settings.system.SettingsActivity
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -27,6 +30,9 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: MainSettingsViewModel.Factory
+
+    @Inject
+    lateinit var featureToggles: FeatureToggles
 
     private val vm by viewModels<MainSettingsViewModel> { factory }
 
@@ -46,6 +52,10 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
         vm.onOptionClicked(Event.OnAppearanceClicked)
     }
 
+    private val onDebugClicked = {
+        vm.onOptionClicked(Event.OnDebugClicked)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,7 +69,9 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                         onAccountAndDataClicked = onAccountAndDataClicked,
                         onAboutAppClicked = onAboutAppClicked,
                         onAppearanceClicked = onAppearanceClicked,
-                        onPersonalizationClicked = onPersonalizationClicked
+                        onDebugClicked = onDebugClicked,
+                        onPersonalizationClicked = onPersonalizationClicked,
+                        showDebugMenu = featureToggles.isDebug
                     )
                 }
             }
@@ -89,12 +101,16 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
             Command.OpenPersonalizationScreen -> {
                 findNavController().navigate(R.id.actionOpenPersonalizationScreen)
             }
+            Command.OpenDebugScreen -> {
+                startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+            }
         }
     }
 
     override fun injectDependencies() {
         componentManager().mainSettingsComponent.get().inject(this)
     }
+
     override fun releaseDependencies() {
         componentManager().mainSettingsComponent.release()
     }

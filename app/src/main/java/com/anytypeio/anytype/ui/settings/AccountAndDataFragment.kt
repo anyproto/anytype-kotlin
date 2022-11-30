@@ -1,8 +1,5 @@
 package com.anytypeio.anytype.ui.settings
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,8 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -27,7 +24,6 @@ import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataViewModel
-import timber.log.Timber
 import javax.inject.Inject
 
 class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
@@ -80,24 +76,7 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    private fun shareFile(uri: Uri) {
-        try {
-            val shareIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                putExtra(Intent.EXTRA_STREAM, uri)
-                type = requireContext().contentResolver.getType(uri)
-            }
-            startActivity(shareIntent)
-        } catch (e: Exception) {
-            if (e is ActivityNotFoundException) {
-                toast("No application found to open the selected file")
-            } else {
-                toast("Could not open file: ${e.message}")
-            }
-            Timber.e(e, "Error while opening file")
-        }
-    }
+
 
     private fun proceedWithClearFileCacheWarning() {
         vm.onClearCacheButtonClicked()

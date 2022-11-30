@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
@@ -103,9 +104,8 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -140,24 +140,31 @@ open class EditorTestSetup {
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     @Mock
-    lateinit var middlewareShareDownloader: MiddlewareShareDownloader
+    lateinit var documentFileShareDownloader: DocumentFileShareDownloader
 
     @Mock
     lateinit var openPage: OpenPage
+
     @Mock
     lateinit var closePage: CloseBlock
+
     @Mock
     lateinit var updateText: UpdateText
+
     @Mock
     lateinit var createBlock: CreateBlock
+
     @Mock
     lateinit var interceptEvents: InterceptEvents
+
     @Mock
     lateinit var updateCheckbox: UpdateCheckbox
+
     @Mock
     lateinit var unlinkBlocks: UnlinkBlocks
 
     lateinit var getSearchObjects: SearchObjects
+
     @Mock
     lateinit var duplicateBlock: DuplicateBlock
 
@@ -341,7 +348,7 @@ open class EditorTestSetup {
             applyTemplate = applyTemplate
         )
 
-        featureToggles = DefaultFeatureToggles()
+        featureToggles = mock<DefaultFeatureToggles>()
 
 
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
@@ -375,7 +382,7 @@ open class EditorTestSetup {
                 duplicateBlock = duplicateBlock,
                 updateAlignment = updateAlignment,
                 downloadFile = downloadFile,
-                middlewareShareDownloader = middlewareShareDownloader,
+                documentFileShareDownloader = documentFileShareDownloader,
                 mergeBlocks = mergeBlocks,
                 updateTextColor = updateTextColor,
                 replaceBlock = replaceBlock,
@@ -455,7 +462,7 @@ open class EditorTestSetup {
         relations: List<Relation> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
+            onBlocking { execute(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,
@@ -479,7 +486,7 @@ open class EditorTestSetup {
         events: List<Event.Command>
     ) {
         createBlock.stub {
-            onBlocking { execute(params) } doAnswer ValueClassAnswer(
+            onBlocking { execute(params) } doReturn Resultat.success(
                 Pair(
                     MockDataFactory.randomUuid(),
                     Payload(context = root, events = events)

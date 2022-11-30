@@ -18,8 +18,10 @@ import com.anytypeio.anytype.ui_settings.R
 fun MainSettingScreen(
     onAccountAndDataClicked: () -> Unit,
     onAboutAppClicked: () -> Unit,
+    onDebugClicked: () -> Unit,
     onPersonalizationClicked: () -> Unit,
-    onAppearanceClicked: () -> Unit
+    onAppearanceClicked: () -> Unit,
+    showDebugMenu: Boolean
 ) {
     Column {
         Box(
@@ -51,6 +53,14 @@ fun MainSettingScreen(
             onClick = onAboutAppClicked
         )
         Divider()
+        if (showDebugMenu) {
+            Option(
+                image = R.drawable.ic_debug,
+                text = stringResource(R.string.debug),
+                onClick = onDebugClicked
+            )
+            Divider()
+        }
         Box(modifier = Modifier.height(16.dp))
     }
 }

@@ -51,6 +51,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderBlockEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSplitBlockEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUndoEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUploadMediaEvent
+import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import timber.log.Timber
 
@@ -68,7 +69,7 @@ class Orchestrator(
     private val turnIntoStyle: TurnIntoStyle,
     private val updateCheckbox: UpdateCheckbox,
     private val downloadFile: DownloadFile,
-    private val middlewareShareDownloader: MiddlewareShareDownloader,
+    private val documentFileShareDownloader: DocumentFileShareDownloader,
     val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,
     private val uploadBlock: UploadBlock,
@@ -442,7 +443,7 @@ class Orchestrator(
                     )
                 }
                 is Intent.Media.ShareFile -> {
-                    middlewareShareDownloader.execute(
+                    documentFileShareDownloader.execute(
                         params = MiddlewareShareDownloader.Params(
                             hash = intent.hash,
                             name = intent.name

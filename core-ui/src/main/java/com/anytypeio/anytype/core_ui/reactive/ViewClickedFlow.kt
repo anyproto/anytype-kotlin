@@ -1,16 +1,27 @@
 package com.anytypeio.anytype.core_ui.reactive
 
 import android.os.Looper
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 fun View.clicks(): Flow<Unit> = callbackFlow {
     checkMainThread()
@@ -42,20 +53,21 @@ fun EditText.focusChanges(): Flow<Boolean> = callbackFlow {
 }.conflate()
 
 
-fun View.touches(handled: (MotionEvent) -> Boolean = { true }): Flow<MotionEvent> = callbackFlow<MotionEvent> {
-    checkMainThread()
-    val listener = View.OnTouchListener { _, event ->
-        performClick()
-        if (handled(event)) {
-            trySend(event)
-            true
-        } else {
-            false
+fun View.touches(handled: (MotionEvent) -> Boolean = { true }): Flow<MotionEvent> =
+    callbackFlow<MotionEvent> {
+        checkMainThread()
+        val listener = View.OnTouchListener { _, event ->
+            performClick()
+            if (handled(event)) {
+                trySend(event)
+                true
+            } else {
+                false
+            }
         }
-    }
-    setOnTouchListener(listener)
-    awaitClose { setOnTouchListener(null) }
-}.conflate()
+        setOnTouchListener(listener)
+        awaitClose { setOnTouchListener(null) }
+    }.conflate()
 
 fun EditText.afterTextChanges(): Flow<CharSequence> = callbackFlow<CharSequence> {
     checkMainThread()
@@ -95,4 +107,32 @@ fun TextView.editorActionEvents(
 
 fun checkMainThread() = check(Looper.myLooper() == Looper.getMainLooper()) {
     "Expected to be called on the main thread but was " + Thread.currentThread().name
+}
+
+fun BaseFragment<*>.click(
+    view: View,
+    action: () -> Unit
+) {
+    jobs += view.clicks()
+        .throttleFirst()
+        .onEach { action() }
+        .launchIn(lifecycleScope)
+}
+
+fun BaseBottomSheetFragment<*>.click(
+    view: View,
+    action: () -> Unit
+) {
+    jobs += view.clicks()
+        .throttleFirst()
+        .onEach { action() }
+        .launchIn(lifecycleScope)
+}
+
+fun <T> BaseFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
+    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
+}
+
+fun <T> BaseBottomSheetFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
+    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
 }

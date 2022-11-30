@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
@@ -22,6 +23,8 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -35,6 +38,7 @@ class ObjectMenuViewModel(
     dispatcher: Dispatcher<Payload>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
     duplicateObject: DuplicateObject,
+    private val debugTreeShareDownloader: DebugTreeShareDownloader,
     private val storage: Editor.Storage,
     private val analytics: Analytics,
     private val updateFields: UpdateFields
@@ -86,6 +90,30 @@ class ObjectMenuViewModel(
             }
         }
         add(ObjectAction.SEARCH_ON_PAGE)
+    }
+
+    override fun onDiagnosticsClicked(ctx: Id) {
+        jobs += viewModelScope.launch {
+            debugTreeShareDownloader.stream(
+                MiddlewareShareDownloader.Params(hash = ctx, name = "$ctx.zip")
+            ).collect { result ->
+                result.fold(
+                    onSuccess = { uri ->
+                        commands.emit(Command.ShareDebugTree(uri))
+                    },
+                    onLoading = {
+                        sendToast(
+                            "Do not go away from this menu and don't turn the screen off. " +
+                                    "Tree diagnostic is started to collect."
+                        )
+                    },
+                    onFailure = {
+                        sendToast("Error while collecting tree diagnostics")
+                        Timber.e(it, "Error while adding link from object to object")
+                    }
+                )
+            }
+        }
     }
 
     override fun onIconClicked(ctx: Id) {
@@ -255,6 +283,7 @@ class ObjectMenuViewModel(
     class Factory(
         private val setObjectIsArchived: SetObjectIsArchived,
         private val duplicateObject: DuplicateObject,
+        private val debugTreeShareDownloader: DebugTreeShareDownloader,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val addBackLinkToObject: AddBackLinkToObject,
@@ -270,6 +299,7 @@ class ObjectMenuViewModel(
             return ObjectMenuViewModel(
                 setObjectIsArchived = setObjectIsArchived,
                 duplicateObject = duplicateObject,
+                debugTreeShareDownloader = debugTreeShareDownloader,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 addBackLinkToObject = addBackLinkToObject,

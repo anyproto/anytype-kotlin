@@ -38,6 +38,7 @@ class MainSettingsViewModel(
             Event.OnAccountAndDataClicked -> commands.emit(Command.OpenAccountAndDataScreen)
             Event.OnAppearanceClicked -> commands.emit(Command.OpenAppearanceScreen)
             Event.OnPersonalizationClicked -> commands.emit(Command.OpenPersonalizationScreen)
+            Event.OnDebugClicked -> commands.emit(Command.OpenDebugScreen)
         }
     }
 
@@ -67,6 +68,7 @@ class MainSettingsViewModel(
                     eventName = EventsDictionary.personalisationSettingsShow
                 )
             }
+            Event.OnDebugClicked -> {}
         }
     }
 
@@ -83,15 +85,17 @@ class MainSettingsViewModel(
 
     sealed class Event {
         object OnAboutClicked : Event()
-        object OnAppearanceClicked: Event()
-        object OnAccountAndDataClicked: Event()
-        object OnPersonalizationClicked: Event()
+        object OnAppearanceClicked : Event()
+        object OnAccountAndDataClicked : Event()
+        object OnPersonalizationClicked : Event()
+        object OnDebugClicked : Event()
     }
 
     sealed class Command {
         object OpenAboutScreen : Command()
-        object OpenAppearanceScreen: Command()
-        object OpenAccountAndDataScreen: Command()
-        object OpenPersonalizationScreen: Command()
+        object OpenAppearanceScreen : Command()
+        object OpenAccountAndDataScreen : Command()
+        object OpenPersonalizationScreen : Command()
+        object OpenDebugScreen : Command()
     }
 }

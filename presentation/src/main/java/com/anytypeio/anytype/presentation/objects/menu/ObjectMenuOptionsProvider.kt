@@ -10,6 +10,7 @@ interface ObjectMenuOptionsProvider {
         val hasCover: Boolean,
         val hasLayout: Boolean,
         val hasRelations: Boolean,
+        val hasDiagnosticsVisibility: Boolean,
     ) {
         val hasHistory: Boolean = false
         companion object {
@@ -18,6 +19,7 @@ interface ObjectMenuOptionsProvider {
                 hasCover = true,
                 hasLayout = true,
                 hasRelations = true,
+                hasDiagnosticsVisibility = true
             )
         }
     }

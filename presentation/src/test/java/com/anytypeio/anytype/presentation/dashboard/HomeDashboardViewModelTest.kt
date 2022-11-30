@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.config.Gateway
@@ -35,7 +36,6 @@ import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -372,7 +372,7 @@ class HomeDashboardViewModelTest {
 
     private fun givenDelegateId(id: String) {
         createNewObject.stub {
-            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(id)
+            onBlocking { execute(Unit) } doReturn Resultat.success(id)
         }
     }
 

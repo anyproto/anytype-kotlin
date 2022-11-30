@@ -25,7 +25,7 @@ abstract class BaseFragment<T : ViewBinding>(
     val binding: T get() = _binding!!
     val hasBinding get() = _binding != null
 
-    protected val jobs = mutableListOf<Job>()
+    val jobs = mutableListOf<Job>()
 
     abstract fun injectDependencies()
     abstract fun releaseDependencies()

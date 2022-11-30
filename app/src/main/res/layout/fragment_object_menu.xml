@@ -137,6 +137,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/optionHistory" />
 
+    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
+        android:id="@+id/objectDiagnostics"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/default_ripple"
+        app:icon="@drawable/ic_object_menu_diagnostics"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/historyDivider"
+        app:subtitle="@string/object_debug"
+        app:title="@string/object_diagnostics" />
+
+    <View
+        android:id="@+id/objectDiagnosticsDivider"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="21dp"
+        android:background="@color/shape_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/objectDiagnostics" />
+
     <FrameLayout
         android:id="@+id/rvContainer"
         android:layout_width="match_parent"
@@ -144,7 +167,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/historyDivider">
+        app:layout_constraintTop_toBottomOf="@+id/objectDiagnosticsDivider">
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_gravity="center_vertical"

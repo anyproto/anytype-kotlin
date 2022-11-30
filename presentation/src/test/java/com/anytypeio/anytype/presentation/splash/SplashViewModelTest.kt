@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
@@ -19,7 +20,6 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -143,7 +144,7 @@ class SplashViewModelTest {
         stubLaunchAccount()
         stubGetLastOpenedObject()
         getDefaultEditorType.stub {
-            onBlocking { execute(Unit) } doAnswer ValueClassAnswer (Exception("error"))
+            onBlocking { execute(Unit) } doThrow Exception("error")
         }
 
         initViewModel()
@@ -231,35 +232,37 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun `should fallback to default object type if default object type contains deprecated prefix id`() = runTest {
-        stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
-        stubLaunchWallet()
-        stubLaunchAccount()
-        stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
+    fun `should fallback to default object type if default object type contains deprecated prefix id`() =
+        runTest {
+            stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
+            stubLaunchWallet()
+            stubLaunchAccount()
+            stubGetLastOpenedObject()
+            stubGetDefaultObjectType(type = ObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
 
-        initViewModel()
+            initViewModel()
 
-        verify(setDefaultEditorType, times(1)).invoke(
-            SetDefaultEditorType.Params(
-                SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.first,
-                SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.second
+            verify(setDefaultEditorType, times(1)).invoke(
+                SetDefaultEditorType.Params(
+                    SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.first,
+                    SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.second
+                )
             )
-        )
-    }
+        }
 
     @Test
-    fun `should not fallback to default object type if default object type does not contain deprecated prefix id`() = runTest {
-        stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
-        stubLaunchWallet()
-        stubLaunchAccount()
-        stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectTypeIds.DEFAULT_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
+    fun `should not fallback to default object type if default object type does not contain deprecated prefix id`() =
+        runTest {
+            stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
+            stubLaunchWallet()
+            stubLaunchAccount()
+            stubGetLastOpenedObject()
+            stubGetDefaultObjectType(type = ObjectTypeIds.DEFAULT_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
 
-        initViewModel()
+            initViewModel()
 
-        verifyNoInteractions(setDefaultEditorType)
-    }
+            verifyNoInteractions(setDefaultEditorType)
+        }
 
     //Todo can't mock Amplitude
 //    @Test
@@ -361,7 +364,7 @@ class SplashViewModelTest {
 
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(
+            onBlocking { execute(Unit) } doReturn Resultat.success(
                 GetDefaultEditorType.Response(
                     type,
                     name

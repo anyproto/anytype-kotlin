@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -18,7 +19,7 @@ class ObjectMenuOptionsProviderImplTest {
     private val objectId: String = "objectId"
     private val details = MutableStateFlow<Map<Id, Fields>>(mapOf())
     private val restrictions = MutableStateFlow<List<ObjectRestriction>>(emptyList())
-    private val provider = ObjectMenuOptionsProviderImpl(details, restrictions)
+    private val provider = ObjectMenuOptionsProviderImpl(details, restrictions, mock())
 
     @Test
     fun `when layout note - options are layout, relations, history`() {
@@ -30,6 +31,7 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = false,
             hasLayout = true,
             hasRelations = true,
+            hasDiagnosticsVisibility = false
         )
 
         assertOptions(
@@ -47,6 +49,7 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = true,
             hasLayout = true,
             hasRelations = true,
+            hasDiagnosticsVisibility = false
         )
 
         assertOptions(
@@ -61,7 +64,7 @@ class ObjectMenuOptionsProviderImplTest {
         )
 
         assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL
+            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = false)
         )
     }
 
@@ -73,7 +76,7 @@ class ObjectMenuOptionsProviderImplTest {
         )
 
         assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL
+            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = false)
         )
     }
 
@@ -85,7 +88,10 @@ class ObjectMenuOptionsProviderImplTest {
         restrictions.value = listOf(ObjectRestriction.LAYOUT_CHANGE)
 
         assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasLayout = false)
+            expected = ObjectMenuOptionsProvider.Options.ALL.copy(
+                hasLayout = false,
+                hasDiagnosticsVisibility = false
+            )
         )
     }
 
@@ -102,6 +108,7 @@ class ObjectMenuOptionsProviderImplTest {
                 hasCover = false,
                 hasLayout = false,
                 hasRelations = true,
+                hasDiagnosticsVisibility = false
             )
         )
     }

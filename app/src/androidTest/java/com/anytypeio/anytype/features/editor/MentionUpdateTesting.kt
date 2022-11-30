@@ -12,12 +12,12 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
@@ -114,7 +114,7 @@ class MentionUpdateTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         openPage.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(
+            onBlocking { execute(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,

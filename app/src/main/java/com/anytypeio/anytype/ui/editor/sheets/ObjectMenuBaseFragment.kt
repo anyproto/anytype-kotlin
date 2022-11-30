@@ -5,16 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
-import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.click
+import com.anytypeio.anytype.core_ui.reactive.proceed
 import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
@@ -29,10 +29,9 @@ import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.relations.RelationListFragment
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
-abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
+abstract class ObjectMenuBaseFragment :
+    BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
     OnMoveToAction {
 
     protected val ctx get() = arg<Id>(CTX_KEY)
@@ -53,30 +52,12 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.optionHistory
-            .clicks()
-            .onEach { vm.onHistoryClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.optionLayout
-            .clicks()
-            .onEach { vm.onLayoutClicked(ctx) }
-            .launchIn(lifecycleScope)
-
-        binding.optionIcon
-            .clicks()
-            .onEach { vm.onIconClicked(ctx) }
-            .launchIn(lifecycleScope)
-
-        binding.optionRelations
-            .clicks()
-            .onEach { vm.onRelationsClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.optionCover
-            .clicks()
-            .onEach { vm.onCoverClicked(ctx) }
-            .launchIn(lifecycleScope)
+        click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx) }
+        click(binding.optionHistory) { vm.onHistoryClicked() }
+        click(binding.optionLayout) { vm.onLayoutClicked(ctx) }
+        click(binding.optionIcon) { vm.onIconClicked(ctx) }
+        click(binding.optionRelations) { vm.onRelationsClicked() }
+        click(binding.optionCover) { vm.onCoverClicked(ctx) }
 
         binding.rvActions.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -91,13 +72,12 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
     }
 
     override fun onStart() {
-        with(lifecycleScope) {
-            jobs += subscribe(vm.actions) { actionAdapter.submitList(it) }
-            jobs += subscribe(vm.toasts) { toast(it) }
-            jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
-            jobs += subscribe(vm.commands) { command -> execute(command) }
-            jobs += subscribe(vm.options) { options -> renderOptions(options) }
-        }
+        proceed(vm.actions) { actionAdapter.submitList(it) }
+        proceed(vm.toasts) { toast(it) }
+        proceed(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+        proceed(vm.commands) { command -> execute(command) }
+        proceed(vm.options) { options -> renderOptions(options) }
+
         super.onStart()
         vm.onStart(
             ctx = ctx,
@@ -110,11 +90,13 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
 
     // TODO refactor to recycler view
     private fun renderOptions(options: ObjectMenuOptionsProvider.Options) {
-        val iconVisibility = if (options.hasIcon) View.VISIBLE else View.GONE
-        val coverVisibility = if (options.hasCover) View.VISIBLE else View.GONE
-        val layoutVisibility = if (options.hasLayout) View.VISIBLE else View.GONE
-        val relationsVisibility = if (options.hasRelations) View.VISIBLE else View.GONE
-        val historyVisibility = if (options.hasHistory) View.VISIBLE else View.GONE
+        val iconVisibility = options.hasIcon.toVisibility()
+        val coverVisibility = options.hasCover.toVisibility()
+        val layoutVisibility = options.hasLayout.toVisibility()
+        val relationsVisibility = options.hasRelations.toVisibility()
+        val historyVisibility = options.hasHistory.toVisibility()
+        val objectDiagnosticsVisibility = options.hasDiagnosticsVisibility.toVisibility()
+
         binding.optionIcon.visibility = iconVisibility
         binding.optionCover.visibility = coverVisibility
         binding.optionLayout.visibility = layoutVisibility
@@ -125,85 +107,103 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
         binding.layoutDivider.visibility = layoutVisibility
         binding.relationsDivider.visibility = relationsVisibility
         binding.historyDivider.visibility = historyVisibility
+        binding.objectDiagnostics.visibility = objectDiagnosticsVisibility
+        binding.objectDiagnosticsDivider.visibility = objectDiagnosticsVisibility
     }
 
     private fun execute(command: ObjectMenuViewModelBase.Command) {
         when (command) {
-            ObjectMenuViewModelBase.Command.OpenObjectCover -> {
-                findNavController().navigate(
-                    R.id.objectCoverScreen,
-                    bundleOf(SelectCoverObjectFragment.CTX_KEY to ctx)
-                )
-            }
-            ObjectMenuViewModelBase.Command.OpenObjectIcons -> {
-                findNavController().navigate(
-                    R.id.objectIconPickerScreen,
-                    bundleOf(
-                        IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
-                    )
-                )
-            }
-            ObjectMenuViewModelBase.Command.OpenObjectLayout -> {
-                val fr = ObjectLayoutFragment.new(ctx)
-                fr.show(childFragmentManager, null)
-            }
-            ObjectMenuViewModelBase.Command.OpenObjectRelations -> {
-                findNavController().navigate(
-                    R.id.objectRelationListScreen,
-                    bundleOf(
-                        RelationListFragment.ARG_CTX to ctx,
-                        RelationListFragment.ARG_TARGET to null,
-                        RelationListFragment.ARG_LOCKED to isLocked,
-                        RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
-                    )
-                )
-            }
-            ObjectMenuViewModelBase.Command.OpenSetCover -> {
-                findNavController().navigate(
-                    R.id.objectSetCoverScreen,
-                    bundleOf(SelectCoverObjectSetFragment.CTX_KEY to ctx)
-                )
-            }
-            ObjectMenuViewModelBase.Command.OpenSetIcons -> {
-                findNavController().navigate(
-                    R.id.objectSetIconPickerScreen,
-                    bundleOf(
-                        IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
-                    )
-                )
-            }
-            ObjectMenuViewModelBase.Command.OpenSetLayout -> {
-                toast(COMING_SOON_MSG)
-            }
-            ObjectMenuViewModelBase.Command.OpenSetRelations -> {
-                toast(COMING_SOON_MSG)
-            }
-            ObjectMenuViewModelBase.Command.OpenLinkToChooser -> {
-                val fr = MoveToFragment.new(
-                    ctx = ctx,
-                    blocks = emptyList(),
-                    restorePosition = null,
-                    restoreBlock = null,
-                    title = getString(R.string.link_to)
-                )
-                fr.show(childFragmentManager, null)
-            }
-            is ObjectMenuViewModelBase.Command.OpenSnackbar -> {
-                binding.root.postDelayed({
-                    dialog?.window
-                        ?.decorView
-                        ?.showActionableSnackBar(
-                            command.currentObjectName,
-                            command.targetObjectName,
-                            command.icon,
-                            binding.anchor
-                        ) {
-                            vm.proceedWithOpeningPage(command.id)
-                        }
-                }, 300L)
-            }
+            ObjectMenuViewModelBase.Command.OpenObjectCover -> openObjectCover()
+            ObjectMenuViewModelBase.Command.OpenObjectIcons -> openObjectIcons()
+            ObjectMenuViewModelBase.Command.OpenObjectLayout -> openObjectLayout()
+            ObjectMenuViewModelBase.Command.OpenObjectRelations -> openObjectRelations()
+            ObjectMenuViewModelBase.Command.OpenSetCover -> openSetCover()
+            ObjectMenuViewModelBase.Command.OpenSetIcons -> openSetIcons()
+            ObjectMenuViewModelBase.Command.OpenSetLayout -> toast(COMING_SOON_MSG)
+            ObjectMenuViewModelBase.Command.OpenSetRelations -> toast(COMING_SOON_MSG)
+            ObjectMenuViewModelBase.Command.OpenLinkToChooser -> openLinkChooser(command)
+            is ObjectMenuViewModelBase.Command.OpenSnackbar -> openSnackbar(command)
+            is ObjectMenuViewModelBase.Command.ShareDebugTree -> shareFile(command.uri)
         }
     }
+
+    private fun openObjectCover() {
+        findNavController().navigate(
+            R.id.objectCoverScreen,
+            bundleOf(SelectCoverObjectFragment.CTX_KEY to ctx)
+        )
+    }
+
+    private fun openObjectIcons() {
+        findNavController().navigate(
+            R.id.objectIconPickerScreen,
+            bundleOf(
+                IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+            )
+        )
+    }
+
+    private fun openObjectLayout() {
+        val fr = ObjectLayoutFragment.new(ctx)
+        fr.show(childFragmentManager, null)
+    }
+
+    private fun openObjectRelations() {
+        findNavController().navigate(
+            R.id.objectRelationListScreen,
+            bundleOf(
+                RelationListFragment.ARG_CTX to ctx,
+                RelationListFragment.ARG_TARGET to null,
+                RelationListFragment.ARG_LOCKED to isLocked,
+                RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            )
+        )
+    }
+
+    private fun openSetCover() {
+        findNavController().navigate(
+            R.id.objectSetCoverScreen,
+            bundleOf(SelectCoverObjectSetFragment.CTX_KEY to ctx)
+        )
+    }
+
+
+    private fun openSetIcons() {
+        findNavController().navigate(
+            R.id.objectSetIconPickerScreen,
+            bundleOf(
+                IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+            )
+        )
+    }
+
+
+    private fun openLinkChooser(command: ObjectMenuViewModelBase.Command) {
+        val fr = MoveToFragment.new(
+            ctx = ctx,
+            blocks = emptyList(),
+            restorePosition = null,
+            restoreBlock = null,
+            title = getString(R.string.link_to)
+        )
+        fr.show(childFragmentManager, null)
+    }
+
+    private fun openSnackbar(command: ObjectMenuViewModelBase.Command.OpenSnackbar) {
+        binding.root.postDelayed({
+            dialog?.window
+                ?.decorView
+                ?.showActionableSnackBar(
+                    command.currentObjectName,
+                    command.targetObjectName,
+                    command.icon,
+                    binding.anchor
+                ) {
+                    vm.proceedWithOpeningPage(command.id)
+                }
+        }, 300L)
+    }
+
 
     override fun onMoveTo(
         target: Id,
@@ -244,3 +244,5 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
         fun onUndoRedoClicked()
     }
 }
+
+private fun Boolean.toVisibility() = if (this) View.VISIBLE else View.GONE

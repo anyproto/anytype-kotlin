@@ -2,17 +2,11 @@ package com.anytypeio.anytype.presentation.util.downloader
 
 import android.content.Context
 import android.net.Uri
-import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Hash
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import kotlinx.coroutines.withContext
 import java.io.File
 
-class MiddlewareShareDownloader(
-    private val repo: BlockRepository,
-    private val dispatchers: AppCoroutineDispatchers,
+abstract class MiddlewareShareDownloader(
     private val context: Context,
     private val uriFileProvider: UriFileProvider
 ) : ResultInteractor<MiddlewareShareDownloader.Params, Uri>() {
@@ -22,7 +16,9 @@ class MiddlewareShareDownloader(
         val name: String
     )
 
-    override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
+    abstract suspend fun downloadFile(hash: String, path: String): String
+
+    override suspend fun doWork(params: Params): Uri {
         val cacheDir = context.cacheDir
 
         require(cacheDir != null) { "Impossible to cache files!" }
@@ -38,17 +34,11 @@ class MiddlewareShareDownloader(
             if (tempDir.exists()) tempDir.deleteRecursively()
             tempDir.mkdirs()
 
-            val tempResult = File(
-                repo.downloadFile(
-                    Command.DownloadFile(
-                        hash = params.hash,
-                        path = tempFileFolderPath
-                    )
-                )
-            )
+            val tempResult = File(downloadFile(params.hash, tempFileFolderPath))
 
             tempResult.renameTo(resultFile)
         }
-        uriFileProvider.getUriForFile(resultFile)
+        return uriFileProvider.getUriForFile(resultFile)
     }
 }
+

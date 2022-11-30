@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
@@ -99,9 +100,8 @@ import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -183,7 +183,7 @@ open class EditorPresentationTestSetup {
     lateinit var downloadFile: DownloadFile
 
     @Mock
-    lateinit var middlewareShareDownloader: MiddlewareShareDownloader
+    lateinit var documentFileShareDownloader: DocumentFileShareDownloader
 
     @Mock
     lateinit var uploadBlock: UploadBlock
@@ -296,22 +296,31 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var createTableColumn: CreateTableColumn
+
     @Mock
     lateinit var createTableRow: CreateTableRow
+
     @Mock
     lateinit var deleteTableColumn: DeleteTableColumn
+
     @Mock
     lateinit var deleteTableRow: DeleteTableRow
+
     @Mock
     lateinit var duplicateTableRow: DuplicateTableRow
+
     @Mock
     lateinit var duplicateTableColumn: DuplicateTableColumn
+
     @Mock
     lateinit var fillTableColumn: FillTableColumn
+
     @Mock
     lateinit var moveTableRow: MoveTableRow
+
     @Mock
     lateinit var moveTableColumn: MoveTableColumn
+
     @Mock
     lateinit var setTableRowHeader: SetTableRowHeader
 
@@ -347,7 +356,7 @@ open class EditorPresentationTestSetup {
             updateTextColor = updateTextColor,
             duplicateBlock = duplicateBlock,
             downloadFile = downloadFile,
-            middlewareShareDownloader = middlewareShareDownloader,
+            documentFileShareDownloader = documentFileShareDownloader,
             undo = undo,
             redo = redo,
             updateText = updateText,
@@ -445,25 +454,24 @@ open class EditorPresentationTestSetup {
         relationLinks: List<RelationLink> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doAnswer
-                    ValueClassAnswer(
-                        Result.Success(
-                            Payload(
+            onBlocking { execute(any()) } doReturn Resultat.success(
+                Result.Success(
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.ShowObject(
                                 context = root,
-                                events = listOf(
-                                    Event.Command.ShowObject(
-                                        context = root,
-                                        root = root,
-                                        details = details,
-                                        relations = relations,
-                                        relationLinks = relationLinks,
-                                        blocks = document,
-                                        objectRestrictions = objectRestrictions
-                                    )
-                                )
+                                root = root,
+                                details = details,
+                                relations = relations,
+                                relationLinks = relationLinks,
+                                blocks = document,
+                                objectRestrictions = objectRestrictions
                             )
                         )
                     )
+                )
+            )
         }
     }
 
@@ -547,15 +555,14 @@ open class EditorPresentationTestSetup {
 
     fun stubCreateBlock(root: String) {
         createBlock.stub {
-            onBlocking { execute(any()) } doAnswer
-                    ValueClassAnswer(
-                        Pair(
-                            MockDataFactory.randomString(), Payload(
-                                context = root,
-                                events = listOf()
-                            )
-                        )
+            onBlocking { execute(any()) } doReturn Resultat.success(
+                Pair(
+                    MockDataFactory.randomString(), Payload(
+                        context = root,
+                        events = listOf()
                     )
+                )
+            )
 
         }
     }
@@ -620,7 +627,7 @@ open class EditorPresentationTestSetup {
 
     fun stubClosePage() {
         closePage.stub {
-            onBlocking { execute(any()) } doAnswer ValueClassAnswer(Unit)
+            onBlocking { execute(any()) } doReturn Resultat.success(Unit)
         }
     }
 
@@ -671,7 +678,7 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubSearchObjects(objects : List<ObjectWrapper.Basic> = emptyList()) {
+    fun stubSearchObjects(objects: List<ObjectWrapper.Basic> = emptyList()) {
         searchObjects.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(objects)
         }
@@ -679,7 +686,7 @@ open class EditorPresentationTestSetup {
 
     fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(
+            onBlocking { execute(Unit) } doReturn Resultat.success(
                 GetDefaultEditorType.Response(
                     type,
                     name

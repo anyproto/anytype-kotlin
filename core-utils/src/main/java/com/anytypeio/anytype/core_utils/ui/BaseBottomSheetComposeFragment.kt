@@ -4,8 +4,19 @@ import android.os.Bundle
 import android.view.View
 import com.anytypeio.anytype.core_utils.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.Job
 
 abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
+
+    protected val jobs = mutableListOf<Job>()
+
+    override fun onStop() {
+        super.onStop()
+        jobs.apply {
+            forEach { it.cancel() }
+            clear()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

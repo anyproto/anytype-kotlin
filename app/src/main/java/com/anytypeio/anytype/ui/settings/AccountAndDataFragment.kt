@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.ui.settings
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +13,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
@@ -22,6 +27,7 @@ import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataViewModel
+import timber.log.Timber
 import javax.inject.Inject
 
 class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
@@ -29,10 +35,14 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
     @Inject
     lateinit var factory: AccountAndDataViewModel.Factory
 
+    @Inject
+    lateinit var toggles: FeatureToggles
+
     private val vm by viewModels<AccountAndDataViewModel> { factory }
 
     private val onKeychainPhraseClicked = {
-        val bundle = bundleOf(KeychainPhraseDialog.ARG_SCREEN_TYPE to EventsDictionary.Type.screenSettings)
+        val bundle =
+            bundleOf(KeychainPhraseDialog.ARG_SCREEN_TYPE to EventsDictionary.Type.screenSettings)
         findNavController().navigate(R.id.keychainDialog, bundle)
     }
 
@@ -45,6 +55,11 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        jobs += lifecycleScope.subscribe(vm.debugSyncReportUri) { uri ->
+            if (uri != null) {
+                shareFile(uri)
+            }
+        }
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -54,11 +69,33 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
                         onClearFileCachedClicked = { proceedWithClearFileCacheWarning() },
                         onDeleteAccountClicked = { proceedWithAccountDeletion() },
                         onLogoutClicked = onLogoutClicked,
+                        onDebugSyncReportClicked = { vm.onDebugSyncReportClicked() },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
-                        isClearCacheInProgress = vm.isClearFileCacheInProgress.collectAsState().value
+                        isClearCacheInProgress = vm.isClearFileCacheInProgress.collectAsState().value,
+                        isDebugSyncReportInProgress = vm.isDebugSyncReportInProgress.collectAsState().value,
+                        isShowDebug = toggles.isDebug
                     )
                 }
             }
+        }
+    }
+
+    private fun shareFile(uri: Uri) {
+        try {
+            val shareIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                putExtra(Intent.EXTRA_STREAM, uri)
+                type = requireContext().contentResolver.getType(uri)
+            }
+            startActivity(shareIntent)
+        } catch (e: Exception) {
+            if (e is ActivityNotFoundException) {
+                toast("No application found to open the selected file")
+            } else {
+                toast("Could not open file: ${e.message}")
+            }
+            Timber.e(e, "Error while opening file")
         }
     }
 

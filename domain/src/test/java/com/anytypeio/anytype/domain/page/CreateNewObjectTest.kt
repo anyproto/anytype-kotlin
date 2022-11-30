@@ -97,7 +97,7 @@ class CreateNewObjectTest {
 
     private fun givenGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn flow {
+            onBlocking { asFlow(Unit) } doReturn flow {
                 emit(
                     GetDefaultEditorType.Response(
                         type,

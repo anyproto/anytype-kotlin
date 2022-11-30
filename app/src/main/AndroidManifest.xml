@@ -23,9 +23,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.anytypeio.anytype.ui.main.MainActivity"
-            android:screenOrientation="portrait"
             android:exported="true"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <intent-filter android:label="filter">
                 <action android:name="android.intent.action.VIEW" />
@@ -44,10 +44,22 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.settings.system.SettingsActivity"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
             android:exported="false"
+            android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

@@ -27,7 +27,7 @@ class CreateNewObject(
         )
     }
 
-    override suspend fun doWork(params: Unit) = getDefaultEditorType(Unit)
+    override suspend fun doWork(params: Unit) = getDefaultEditorType.asFlow(Unit)
         .map { it.type }
         .catch { emit(null) }
         .map { type ->

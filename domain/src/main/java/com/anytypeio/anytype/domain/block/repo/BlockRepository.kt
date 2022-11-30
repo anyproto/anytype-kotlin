@@ -230,6 +230,9 @@ interface BlockRepository {
     suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
     suspend fun debugSync(): String
+
+    suspend fun debugTree(objectId: Id, path: String): String
+
     suspend fun debugLocalStore(path: String): String
 
     suspend fun turnInto(

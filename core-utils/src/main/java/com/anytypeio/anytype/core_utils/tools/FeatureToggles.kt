@@ -12,4 +12,6 @@ interface FeatureToggles {
 
     val isLogEditorControlPanelMachine: Boolean
 
+    val isDebug: Boolean
+
 }

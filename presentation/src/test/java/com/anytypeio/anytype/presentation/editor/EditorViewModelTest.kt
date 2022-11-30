@@ -3921,14 +3921,10 @@ open class EditorViewModelTest {
 
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn flow {
-                emit(
-                    GetDefaultEditorType.Response(
-                        type,
-                        name
-                    )
-                )
-            }
+            onBlocking { run(Unit) } doReturn GetDefaultEditorType.Response(
+                type,
+                name
+            )
         }
     }
 

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.page.CreatePage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow

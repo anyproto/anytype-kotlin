@@ -1,5 +1,9 @@
 package com.anytypeio.anytype.di.main
 
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import com.anytypeio.anytype.app.TogglePrefs
 import com.anytypeio.anytype.app.DefaultFeatureToggles
 import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -21,6 +25,13 @@ object UtilModule {
     @Singleton
     fun provideUrlBuilder(gateway: Gateway): UrlBuilder = UrlBuilder(gateway)
 
+    @JvmStatic
+    @Provides
+    @Singleton
+    @TogglePrefs
+    fun providesSharedPreferences(
+        context: Context
+    ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     @Module
     interface Bindings {

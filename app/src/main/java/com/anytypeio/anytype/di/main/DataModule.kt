@@ -226,8 +226,9 @@ object DataModule {
     fun provideMiddleware(
         service: MiddlewareService,
         factory: MiddlewareFactory,
-        logger: MiddlewareProtobufLogger
-    ): Middleware = Middleware(service, factory, logger)
+        logger: MiddlewareProtobufLogger,
+        protobufConverter: ProtobufConverterProvider
+    ): Middleware = Middleware(service, factory, logger, protobufConverter)
 
     @JvmStatic
     @Provides

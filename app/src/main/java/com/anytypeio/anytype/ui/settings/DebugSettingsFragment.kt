@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentDebugSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
 import com.anytypeio.anytype.domain.debugging.DebugLocalStore
@@ -54,9 +55,8 @@ class DebugSettingsFragment : BaseFragment<FragmentDebugSettingsBinding>(R.layou
 
         binding.btnSync.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                debugSync.invoke(Unit).proceed(
-                    failure = {},
-                    success = { status -> saveToFile(status) }
+                debugSync.execute(Unit).fold(
+                    onSuccess = { status -> saveToFile(status) }
                 )
             }
         }

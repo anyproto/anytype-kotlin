@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dashboard_background"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/DashboardGreetingTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:text="@string/settings_screen"
+        android:textColor="@color/text_primary" />
+
+    <androidx.fragment.app.FragmentContainerView xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment"
+        android:name="com.anytypeio.anytype.ui.settings.system.PreferenceFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".ui.settings.system.SettingsActivity" />
+</LinearLayout>

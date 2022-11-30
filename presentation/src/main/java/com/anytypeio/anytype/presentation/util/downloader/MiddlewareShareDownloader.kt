@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.presentation.util.TEMPORARY_DIRECTORY_NAME
 import kotlinx.coroutines.withContext
 import java.io.File
 

@@ -10,6 +10,7 @@
     <string name="appearance">Appearance</string>
     <string name="recovery_phrase">Recovery phrase</string>
     <string name="clear_file_cache">Clear file cache</string>
+    <string name="debug_sync_report">Debug Sync Report</string>
     <string name="account">Account</string>
     <string name="reset_account">Reset account</string>
     <string name="delete_account">Delete account</string>

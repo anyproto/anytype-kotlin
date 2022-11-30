@@ -33,7 +33,7 @@ class TemplateViewModel(
 
     fun onStart(ctx: Id) {
         viewModelScope.launch {
-            state.value = openTemplate(OpenTemplate.Params(ctx))
+            state.value = openTemplate.asFlow(OpenTemplate.Params(ctx))
                 .map { result ->
                     when(result) {
                         is Result.Failure -> {

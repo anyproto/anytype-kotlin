@@ -383,6 +383,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     ): Payload = remote.deleteRelationFromObject(ctx = ctx, relation = relation)
 
     override suspend fun debugSync(): String = remote.debugSync()
+
+    override suspend fun debugTree(objectId: Id, path: String): String =
+        remote.debugTree(objectId = objectId, path = path)
+
     override suspend fun debugLocalStore(path: String): String = remote.debugLocalStore(path)
 
     override suspend fun turnInto(

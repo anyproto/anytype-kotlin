@@ -43,7 +43,7 @@ class MiddlewareTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        middleware = Middleware(service, factory, mock())
+        middleware = Middleware(service, factory, mock(), mock())
     }
 
     @Test

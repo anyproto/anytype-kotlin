@@ -43,6 +43,7 @@ class Middleware(
     private val service: MiddlewareService,
     private val factory: MiddlewareFactory,
     private val logger: MiddlewareProtobufLogger,
+    private val protobufConverter: ProtobufConverterProvider,
 ) {
 
     @Throws(Exception::class)
@@ -818,7 +819,16 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.debugSync(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.toString()
+        return protobufConverter.provideConverter().toJson(response)
+    }
+
+    @Throws(Exception::class)
+    fun debugTree(objectId: Id, path: String): String {
+        val request = Rpc.Debug.Tree.Request(objectId = objectId, path = path)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugTree(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.filename
     }
 
     @Throws(Exception::class)

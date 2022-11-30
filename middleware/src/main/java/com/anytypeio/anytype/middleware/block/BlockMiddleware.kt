@@ -418,6 +418,10 @@ class BlockMiddleware(
     )
 
     override suspend fun debugSync(): String = middleware.debugSync()
+
+    override suspend fun debugTree(objectId: Id, path: String): String =
+        middleware.debugTree(objectId = objectId, path = path)
+
     override suspend fun debugLocalStore(path: String): String =
         middleware.debugExportLocalStore(path)
 

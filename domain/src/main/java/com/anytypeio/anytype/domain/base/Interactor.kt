@@ -4,9 +4,13 @@ import com.anytypeio.anytype.domain.base.Interactor.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
-import kotlin.Result
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -51,20 +55,24 @@ abstract class Interactor<in P>(
     }
 }
 
-abstract class ResultInteractor<in P, R> {
-    operator fun invoke(params: P): Flow<R> = flow { emit(doWork(params)) }
+abstract class ResultInteractor<in P, R>(
+    private val context: CoroutineContext = Dispatchers.IO
+) {
+    fun asFlow(params: P): Flow<R> = flow { emit(doWork(params)) }.flowOn(context)
+
+    fun stream(params: P): Flow<Resultat<R>> {
+        return asFlow(params)
+            .map {
+                @Suppress("USELESS_CAST")
+                Resultat.Success(run(params)) as Resultat<R>
+            }
+            .onStart { emit(Resultat.Loading()) }
+            .catch { e -> emit(Resultat.Failure(e)) }
+            .flowOn(context)
+    }
+
     suspend fun run(params: P) = doWork(params)
-    suspend fun execute(params: P): Result<R> = runCatching { doWork(params) }
+    suspend fun execute(params: P): Resultat<R> = runCatchingL { doWork(params) }
 
     protected abstract suspend fun doWork(params: P): R
-}
-
-suspend fun <R, T> Result<T>.suspendFold(
-    onSuccess: suspend (value: T) -> R,
-    onFailure: suspend (Throwable) -> R
-): R {
-    return when (val exception = exceptionOrNull()) {
-        null -> onSuccess(getOrNull() as T)
-        else -> onFailure(exception)
-    }
 }

@@ -176,6 +176,7 @@ dependencies {
     implementation applicationDependencies.composeFoundation
     implementation applicationDependencies.composeMaterial
     implementation applicationDependencies.composeToolingPreview
+    implementation applicationDependencies.preference
     debugImplementation applicationDependencies.composeTooling
 
     implementation databaseDependencies.room

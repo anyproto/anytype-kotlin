@@ -363,6 +363,9 @@ interface MiddlewareService {
     fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response
 
     @Throws(Exception::class)
+    fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response
+
+    @Throws(Exception::class)
     fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
 
     //endregion

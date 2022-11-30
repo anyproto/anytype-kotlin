@@ -33,11 +33,17 @@ fun AccountAndDataScreen(
     onClearFileCachedClicked: () -> Unit,
     onDeleteAccountClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
+    onDebugSyncReportClicked: () -> Unit,
     isLogoutInProgress: Boolean,
-    isClearCacheInProgress: Boolean
+    isClearCacheInProgress: Boolean,
+    isDebugSyncReportInProgress: Boolean,
+    isShowDebug: Boolean,
 ) {
     Column {
-        Box(Modifier.padding(vertical = 6.dp).align(Alignment.CenterHorizontally)) {
+        Box(
+            Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)) {
             Dragger()
         }
         Toolbar(stringResource(R.string.account_and_data))
@@ -56,18 +62,27 @@ fun AccountAndDataScreen(
             isInProgress = isClearCacheInProgress
         )
         Divider()
+        if (isShowDebug) {
+            ActionWithProgressBar(
+                name = stringResource(R.string.debug_sync_report),
+                color = colorResource(R.color.text_primary),
+                onClick = onDebugSyncReportClicked,
+                isInProgress = isDebugSyncReportInProgress
+            )
+            Divider()
+        }
         Section(stringResource(R.string.account))
         Action(
-                name = stringResource(R.string.delete_account),
-                color = colorResource(R.color.text_primary),
-                onClick = onDeleteAccountClicked
+            name = stringResource(R.string.delete_account),
+            color = colorResource(R.color.text_primary),
+            onClick = onDeleteAccountClicked
         )
         Divider()
         ActionWithProgressBar(
-                name = stringResource(R.string.log_out),
-                color = colorResource(R.color.palette_dark_red),
-                onClick = onLogoutClicked,
-                isInProgress = isLogoutInProgress
+            name = stringResource(R.string.log_out),
+            color = colorResource(R.color.palette_dark_red),
+            onClick = onLogoutClicked,
+            isInProgress = isLogoutInProgress
         )
         Divider()
         Box(Modifier.height(54.dp))
@@ -77,7 +92,9 @@ fun AccountAndDataScreen(
 @Composable
 fun Section(name: String) {
     Box(
-        modifier = Modifier.height(52.dp).fillMaxWidth(),
+        modifier = Modifier
+            .height(52.dp)
+            .fillMaxWidth(),
         contentAlignment = Alignment.BottomStart
     ) {
         Text(
@@ -98,7 +115,9 @@ fun Pincode(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.height(52.dp).clickable(onClick = onClick)
+        modifier = Modifier
+            .height(52.dp)
+            .clickable(onClick = onClick)
     ) {
         Image(
             painterResource(R.drawable.ic_pin_code),
@@ -138,7 +157,10 @@ fun Action(
     onClick: () -> Unit = {}
 ) {
     Box(
-        modifier = Modifier.height(52.dp).fillMaxWidth().clickable(onClick = onClick),
+        modifier = Modifier
+            .height(52.dp)
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.CenterStart
     ) {
         Text(
@@ -160,7 +182,10 @@ fun ActionWithProgressBar(
     isInProgress: Boolean
 ) {
     Box(
-        modifier = Modifier.height(52.dp).fillMaxWidth().clickable(onClick = onClick),
+        modifier = Modifier
+            .height(52.dp)
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.CenterStart
     ) {
         Text(
@@ -173,7 +198,10 @@ fun ActionWithProgressBar(
         )
         if (isInProgress) {
             CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 20.dp).size(24.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 20.dp)
+                    .size(24.dp),
                 color = colorResource(R.color.shape_secondary)
             )
         }

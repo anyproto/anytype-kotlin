@@ -352,6 +352,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockTableExpand(request: Rpc.BlockTable.Expand.Request): Rpc.BlockTable.Expand.Response
 
+    @Throws(Exception::class)
+    fun blockTableColumnMove(request: Rpc.BlockTable.ColumnMove.Request): Rpc.BlockTable.ColumnMove.Response
+
     //endregion
 
     //region DEBUG commands

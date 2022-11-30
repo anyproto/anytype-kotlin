@@ -68,7 +68,17 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.domain.table.CreateTableColumn
+import com.anytypeio.anytype.domain.table.CreateTableRow
+import com.anytypeio.anytype.domain.table.DeleteTableColumn
+import com.anytypeio.anytype.domain.table.DeleteTableRow
+import com.anytypeio.anytype.domain.table.DuplicateTableColumn
+import com.anytypeio.anytype.domain.table.DuplicateTableRow
+import com.anytypeio.anytype.domain.table.FillTableColumn
 import com.anytypeio.anytype.domain.table.FillTableRow
+import com.anytypeio.anytype.domain.table.MoveTableColumn
+import com.anytypeio.anytype.domain.table.MoveTableRow
+import com.anytypeio.anytype.domain.table.SetTableRowHeader
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
@@ -80,6 +90,7 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.table.DefaultEditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
@@ -267,8 +278,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var fillTableRow: FillTableRow
 
-    @Mock
     lateinit var tableDelegate: EditorTableDelegate
+
+    lateinit var dispatcher: Dispatcher<Payload>
 
     lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
@@ -281,6 +293,27 @@ open class EditorPresentationTestSetup {
     private lateinit var objectToSet: ConvertObjectToSet
     private lateinit var clearBlockContent: ClearBlockContent
     private lateinit var clearBlockStyle: ClearBlockStyle
+
+    @Mock
+    lateinit var createTableColumn: CreateTableColumn
+    @Mock
+    lateinit var createTableRow: CreateTableRow
+    @Mock
+    lateinit var deleteTableColumn: DeleteTableColumn
+    @Mock
+    lateinit var deleteTableRow: DeleteTableRow
+    @Mock
+    lateinit var duplicateTableRow: DuplicateTableRow
+    @Mock
+    lateinit var duplicateTableColumn: DuplicateTableColumn
+    @Mock
+    lateinit var fillTableColumn: FillTableColumn
+    @Mock
+    lateinit var moveTableRow: MoveTableRow
+    @Mock
+    lateinit var moveTableColumn: MoveTableColumn
+    @Mock
+    lateinit var setTableRowHeader: SetTableRowHeader
 
     open lateinit var orchestrator: Orchestrator
 
@@ -353,6 +386,15 @@ open class EditorPresentationTestSetup {
             clearBlockStyle = clearBlockStyle
         )
 
+        dispatcher = Dispatcher.Default()
+
+        tableDelegate = DefaultEditorTableDelegate(
+            dispatcher, createTableColumn, createTableRow,
+            deleteTableColumn, deleteTableRow, duplicateTableRow,
+            duplicateTableColumn, fillTableRow, fillTableColumn,
+            moveTableRow, moveTableColumn, setTableRowHeader
+        )
+
         return EditorViewModel(
             openPage = openPage,
             closePage = closePage,
@@ -373,7 +415,7 @@ open class EditorPresentationTestSetup {
             ),
             orchestrator = orchestrator,
             analytics = analytics,
-            dispatcher = Dispatcher.Default(),
+            dispatcher = dispatcher,
             delegator = delegator,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,

@@ -1296,4 +1296,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun blockTableColumnMove(request: Rpc.BlockTable.ColumnMove.Request): Rpc.BlockTable.ColumnMove.Response {
+        val encoded = Service.blockTableColumnMove(
+            Rpc.BlockTable.ColumnMove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockTable.ColumnMove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.ColumnMove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

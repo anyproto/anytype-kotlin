@@ -272,16 +272,12 @@ class BlockViewDiffUtil(
         val changes: List<Int>
     ) {
 
-        val isLoadingChanged: Boolean get() = changes.contains(LOADING_STATE_CHANGED)
         val isIndentChanged: Boolean get() = changes.contains(INDENT_CHANGED)
         val isCursorChanged: Boolean get() = changes.contains(CURSOR_CHANGED)
         val isCoverChanged: Boolean get() = changes.contains(COVER_CHANGED)
-        val isMarkupChanged: Boolean get() = changes.contains(MARKUP_CHANGED)
         val isTextChanged: Boolean get() = changes.contains(TEXT_CHANGED)
         val isTextColorChanged: Boolean get() = changes.contains(TEXT_COLOR_CHANGED)
-        val isFocusChanged: Boolean get() = changes.contains(FOCUS_CHANGED)
         val isBackgroundColorChanged: Boolean get() = changes.contains(BACKGROUND_COLOR_CHANGED)
-        val isModeChanged: Boolean get() = changes.contains(READ_WRITE_MODE_CHANGED)
         val isSelectionChanged: Boolean get() = changes.contains(SELECTION_CHANGED)
         val isTitleIconChanged: Boolean get() = changes.contains(TITLE_ICON_CHANGED)
         val isSearchHighlightChanged: Boolean get() = changes.contains(SEARCH_HIGHLIGHT_CHANGED)
@@ -289,7 +285,6 @@ class BlockViewDiffUtil(
             get() = changes.contains(
                 GHOST_EDITOR_SELECTION_CHANGED
             )
-        val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
         val isTitleCheckboxChanged: Boolean get() = changes.contains(TITLE_CHECKBOX_CHANGED)
         val isObjectTitleChanged: Boolean get() = changes.contains(OBJECT_TITLE_CHANGED)
         val isObjectIconChanged: Boolean get() = changes.contains(OBJECT_ICON_CHANGED)

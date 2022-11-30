@@ -224,7 +224,8 @@ class TableBlockTest {
                     columns = columns,
                     rows = rows,
                     isSelected = false,
-                    selectedCellsIds = emptyList()
+                    selectedCellsIds = emptyList(),
+                    tab = null
                 )
             )
             val adapter = givenAdapter(views)
@@ -256,7 +257,8 @@ class TableBlockTest {
                     columns = columns,
                     rows = rows,
                     isSelected = false,
-                    selectedCellsIds = emptyList()
+                    selectedCellsIds = emptyList(),
+                    tab = null
                 )
             )
 

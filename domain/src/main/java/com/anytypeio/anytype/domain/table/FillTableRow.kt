@@ -18,7 +18,7 @@ class FillTableRow(
     }
 
     /**
-     * @property [targetIds] the list of id rows that need to be filled in
+     * @property [targetIds] the list of rows that need to be filled in
      */
     data class Params(
         val ctx: Id,

@@ -626,4 +626,18 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
             rows = rows
         )
     }
+
+    override suspend fun moveTableColumn(
+        ctx: Id,
+        target: Id,
+        dropTarget: Id,
+        position: Position
+    ): Payload {
+        return remote.moveTableColumn(
+            ctx = ctx,
+            target = target,
+            dropTarget = dropTarget,
+            position = position
+        )
+    }
 }

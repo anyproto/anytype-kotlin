@@ -295,4 +295,11 @@ interface BlockDataStore {
         name: String,
         color: String
     ) : ObjectWrapper.Option
+
+    suspend fun moveTableColumn(
+        ctx: Id,
+        target: Id,
+        dropTarget: Id,
+        position: Position
+    ): Payload
 }

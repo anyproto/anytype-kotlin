@@ -165,6 +165,8 @@ import com.anytypeio.anytype.presentation.editor.selection.getIdsInRow
 import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetCellItems
 import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetColumnItems
 import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRowItems
+import com.anytypeio.anytype.presentation.editor.selection.getTableColumnsById
+import com.anytypeio.anytype.presentation.editor.selection.getTableRowsById
 import com.anytypeio.anytype.presentation.editor.selection.toggleTableMode
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelection
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
@@ -726,7 +728,57 @@ class EditorViewModel(
                 orchestrator.stores.views.update(views)
                 renderCommand.send(Unit)
             }
+            .onEach { refreshTableToolbar() }
             .launchIn(viewModelScope)
+    }
+
+    private fun refreshTableToolbar() {
+        val tableMode = mode
+        if (tableMode is EditorMode.Table) {
+            controlPanelViewState.value?.let { state ->
+                if (state.simpleTableWidget.isVisible) {
+                    val tableBlock = views.find { it.id == tableMode.tableId }
+                    if (tableBlock is BlockView.Table) {
+                        when (tableMode.tab) {
+                            BlockView.Table.Tab.CELL -> {}
+                            BlockView.Table.Tab.COLUMN -> {
+                                val selectedColumns = mutableSetOf<BlockView.Table.Column>()
+                                tableBlock.cells.forEach {
+                                    if (currentSelection().contains(it.getId())) {
+                                        selectedColumns.add(it.column)
+                                    }
+                                }
+                                val event =
+                                    ControlPanelMachine.Event.SimpleTableWidget.ShowColumnTab(
+                                        columnItems = getSimpleTableWidgetColumnItems(
+                                            selectedColumns = selectedColumns,
+                                            columnsSize = tableBlock.columns.size
+                                        ),
+                                        tableId = tableBlock.id,
+                                        columnsSize = selectedColumns.size
+                                    )
+                                controlPanelInteractor.onEvent(event)
+                            }
+                            BlockView.Table.Tab.ROW -> {
+                                val selectedRows = tableBlock.getAllSelectedRows(
+                                    selectedCellsIds = currentSelection()
+                                )
+                                val rowItems = getSimpleTableWidgetRowItems(
+                                    selectedRows = selectedRows.selectedRows,
+                                    rowsSize = tableBlock.rows.size
+                                )
+                                val event = ControlPanelMachine.Event.SimpleTableWidget.ShowRowTab(
+                                    rowItems = rowItems,
+                                    tableId = tableBlock.id,
+                                    rowsSize = selectedRows.selectedRows.size
+                                )
+                                controlPanelInteractor.onEvent(event)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun refreshStyleToolbar(document: Document) {
@@ -6053,87 +6105,288 @@ class EditorViewModel(
 
     fun onSimpleTableWidgetItemClicked(item: SimpleTableWidgetItem) {
         Timber.d("onSimpleTableWidgetItemClicked, item:[$item]")
-        when (item) {
-            SimpleTableWidgetItem.Cell.ClearContents -> {
-                viewModelScope.launch {
-                    orchestrator.proxies.intents.send(
-                        Intent.Text.ClearContent(
-                            context = context,
-                            targets = currentSelection().toList()
+        viewModelScope.launch {
+            when (item) {
+                SimpleTableWidgetItem.Cell.ClearContents -> {
+                    proceedTableWidgetClearContentClicked()
+                }
+                is SimpleTableWidgetItem.Row.ClearContents -> {
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.ClearContents(
+                            ctx = context,
+                            rows = item.rows.map { it.value }
                         )
                     )
+                    proceedTableWidgetClearContentClicked()
                 }
-            }
-            SimpleTableWidgetItem.Cell.ResetStyle -> {
-                viewModelScope.launch {
-                    orchestrator.proxies.intents.send(
-                        Intent.Text.ClearStyle(
-                            context = context,
-                            targets = currentSelection().toList()
+                is SimpleTableWidgetItem.Column.ClearContents -> {
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.ClearContents(
+                            ctx = context,
+                            columns = item.columns.map { it.value }
                         )
                     )
+                    proceedTableWidgetClearContentClicked()
                 }
-            }
-            SimpleTableWidgetItem.Cell.Color -> {
-                onShowColorBackgroundToolbarEvent(
-                    ids = currentSelection().toList(),
-                    navigatedFromCellsMenu = true,
-                    navigateFromStylingTextToolbar = false
-                )
-            }
-            SimpleTableWidgetItem.Cell.Style -> {
-                val selected = blocks.filter { currentSelection().contains(it.id) }
-                val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OtherToolbar.Show(
-                        state = state,
+                SimpleTableWidgetItem.Cell.ResetStyle -> {
+                    proceedTableWidgetResetStyleClicked()
+                }
+                is SimpleTableWidgetItem.Column.ResetStyle -> {
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.ResetStyle(
+                            ctx = context,
+                            columns = item.columns.map { it.value }
+                        )
+                    )
+                    proceedTableWidgetResetStyleClicked()
+                }
+                is SimpleTableWidgetItem.Row.ResetStyle -> {
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.ResetStyle(
+                            ctx = context,
+                            rows = item.rows.map { it.value }
+                        )
+                    )
+                    proceedTableWidgetResetStyleClicked()
+                }
+                SimpleTableWidgetItem.Cell.Color -> {
+                    onShowColorBackgroundToolbarEvent(
+                        ids = currentSelection().toList(),
                         navigatedFromCellsMenu = true,
                         navigateFromStylingTextToolbar = false
                     )
-                )
-            }
-            SimpleTableWidgetItem.Tab.Cell -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Table) {
-                    proceedWithUpdateTabInTableMode(
-                        tableId = currentMode.tableId,
-                        tab = BlockView.Table.Tab.CELL,
-                        modeTable = currentMode
-                    )
                 }
-            }
-            SimpleTableWidgetItem.Tab.Row -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Table) {
-                    proceedWithUpdateTabInTableMode(
-                        tableId = currentMode.tableId,
-                        tab = BlockView.Table.Tab.ROW,
-                        modeTable = currentMode
-                    )
-                }
-            }
-            SimpleTableWidgetItem.Tab.Column -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Table) {
-                    proceedWithUpdateTabInTableMode(
-                        tableId = currentMode.tableId,
-                        tab = BlockView.Table.Tab.COLUMN,
-                        modeTable = currentMode
-                    )
-                }
-            }
-            is SimpleTableWidgetItem.Column.InsertLeft -> {
-                viewModelScope.launch {
-                    tableDelegate.onEditorTableEvent(
-                        EditorTableEvent.CreateColumn(
+                is SimpleTableWidgetItem.Column.Color -> {
+                    tableDelegate.onEditorTableColumnEvent(
+                        event = EditorTableEvent.Column.Color(
                             ctx = context,
-                            target = item.column.value,
-                            position = Position.LEFT
+                            columns = item.columns.map { it.value }
+                        )
+                    )
+                    onShowColorBackgroundToolbarEvent(
+                        ids = currentSelection().toList(),
+                        navigatedFromCellsMenu = true,
+                        navigateFromStylingTextToolbar = false
+                    )
+                }
+                is SimpleTableWidgetItem.Row.Color -> {
+                    tableDelegate.onEditorTableRowEvent(
+                        event = EditorTableEvent.Row.Color(
+                            ctx = context,
+                            rows = item.rows.map { it.value }
+                        )
+                    )
+                    onShowColorBackgroundToolbarEvent(
+                        ids = currentSelection().toList(),
+                        navigatedFromCellsMenu = true,
+                        navigateFromStylingTextToolbar = false
+                    )
+                }
+                is SimpleTableWidgetItem.Column.Style -> {
+                    tableDelegate.onEditorTableColumnEvent(
+                        event = EditorTableEvent.Column.Style(
+                            ctx = context,
+                            columns = item.columns.map { it.value }
+                        )
+                    )
+                    proceedTableWidgetStyleClicked()
+                }
+                SimpleTableWidgetItem.Cell.Style -> {
+                    proceedTableWidgetStyleClicked()
+                }
+                is SimpleTableWidgetItem.Row.Style -> {
+                    tableDelegate.onEditorTableRowEvent(
+                        event = EditorTableEvent.Row.Style(
+                            ctx = context,
+                            rows = item.rows.map { it.value }
+                        )
+                    )
+                    proceedTableWidgetStyleClicked()
+                }
+                SimpleTableWidgetItem.Tab.Cell -> {
+                    val currentMode = mode
+                    if (currentMode is EditorMode.Table) {
+                        proceedWithUpdateTabInTableMode(
+                            tableId = currentMode.tableId,
+                            tab = BlockView.Table.Tab.CELL,
+                            modeTable = currentMode
+                        )
+                    }
+                }
+                SimpleTableWidgetItem.Tab.Row -> {
+                    val currentMode = mode
+                    if (currentMode is EditorMode.Table) {
+                        proceedWithUpdateTabInTableMode(
+                            tableId = currentMode.tableId,
+                            tab = BlockView.Table.Tab.ROW,
+                            modeTable = currentMode
+                        )
+                    }
+                }
+                SimpleTableWidgetItem.Tab.Column -> {
+                    val currentMode = mode
+                    if (currentMode is EditorMode.Table) {
+                        proceedWithUpdateTabInTableMode(
+                            tableId = currentMode.tableId,
+                            tab = BlockView.Table.Tab.COLUMN,
+                            modeTable = currentMode
+                        )
+                    }
+                }
+                is SimpleTableWidgetItem.Column.Delete -> {
+                    proceedWithExitingTableMode()
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.Delete(
+                            ctx = context,
+                            columns = listOf(item.column.value)
+                        )
+                    )
+
+                }
+                is SimpleTableWidgetItem.Column.Duplicate -> {
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.Duplicate(
+                            ctx = context,
+                            columns = listOf(item.column.value)
+                        )
+                    )
+
+                }
+                is SimpleTableWidgetItem.Column.InsertLeft -> {
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.CreateLeft(
+                            ctx = context,
+                            columns = listOf(item.column.value)
+                        )
+                    )
+
+                }
+                is SimpleTableWidgetItem.Column.InsertRight -> {
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.CreateRight(
+                            ctx = context,
+                            columns = listOf(item.column.value)
+                        )
+                    )
+
+                }
+                is SimpleTableWidgetItem.Column.MoveLeft -> {
+                    val response = views.getTableColumnsById(mode, item.column)
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.MoveLeft(
+                            ctx = context,
+                            columns = listOf(item.column.id.value),
+                            targetDrop = response.columnLeft?.id?.value
                         )
                     )
                 }
+                is SimpleTableWidgetItem.Column.MoveRight -> {
+                    val response = views.getTableColumnsById(mode, item.column)
+                    tableDelegate.onEditorTableColumnEvent(
+                        EditorTableEvent.Column.MoveRight(
+                            ctx = context,
+                            columns = listOf(item.column.id.value),
+                            targetDrop = response.columnRight?.id?.value
+                        )
+                    )
+                }
+                is SimpleTableWidgetItem.Row.Delete -> {
+                    proceedWithExitingTableMode()
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.Delete(
+                            ctx = context,
+                            rows = listOf(item.row.value)
+                        )
+                    )
+                }
+                is SimpleTableWidgetItem.Row.Duplicate -> {
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.Duplicate(
+                            ctx = context,
+                            rows = listOf(item.row.value)
+                        )
+                    )
+                }
+                is SimpleTableWidgetItem.Row.InsertAbove -> {
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.CreateAbove(
+                            ctx = context,
+                            rows = listOf(item.row.value)
+                        )
+                    )
+                }
+                is SimpleTableWidgetItem.Row.InsertBelow -> {
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.CreateBelow(
+                            ctx = context,
+                            rows = listOf(item.row.value)
+                        )
+                    )
+                }
+                is SimpleTableWidgetItem.Row.MoveDown -> {
+                    val response = views.getTableRowsById(
+                        mode = mode,
+                        row = item.row
+                    )
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.MoveDown(
+                            ctx = context,
+                            rows = listOf(item.row.id.value),
+                            targetDrop = response.rowBottom?.id?.value
+                        )
+                    )
+                }
+                is SimpleTableWidgetItem.Row.MoveUp -> {
+                    val response = views.getTableRowsById(
+                        mode = mode,
+                        row = item.row
+                    )
+                    tableDelegate.onEditorTableRowEvent(
+                        EditorTableEvent.Row.MoveUp(
+                            ctx = context,
+                            rows = listOf(item.row.id.value),
+                            targetDrop = response.rowTop?.id?.value
+                        )
+                    )
+                }
+                else -> {
+                    Timber.w("Simple table action $item not implemented")
+                }
             }
-            else -> Unit
+        }
+    }
+
+    private fun proceedTableWidgetStyleClicked() {
+        val selected = blocks.filter { currentSelection().contains(it.id) }
+        val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OtherToolbar.Show(
+                state = state,
+                navigatedFromCellsMenu = true,
+                navigateFromStylingTextToolbar = false
+            )
+        )
+    }
+
+    private fun proceedTableWidgetClearContentClicked() {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.ClearContent(
+                    context = context,
+                    targets = currentSelection().toList()
+                )
+            )
+        }
+    }
+
+    private fun proceedTableWidgetResetStyleClicked() {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.ClearStyle(
+                    context = context,
+                    targets = currentSelection().toList()
+                )
+            )
         }
     }
 

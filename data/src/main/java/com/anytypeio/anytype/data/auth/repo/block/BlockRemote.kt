@@ -51,11 +51,12 @@ interface BlockRemote {
         type: String?,
         template: Id?
     ): Id
+
     suspend fun createPage(command: Command.CreateNewDocument): String
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String): Payload
     suspend fun openObjectSet(id: String): Payload
-    suspend fun openObjectPreview(id: Id) : Payload
+    suspend fun openObjectPreview(id: Id): Payload
     suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String): Payload
     suspend fun closeDashboard(id: String)
@@ -293,5 +294,12 @@ interface BlockRemote {
         targetId: Id,
         columns: Int,
         rows: Int
+    ): Payload
+
+    suspend fun moveTableColumn(
+        ctx: Id,
+        target: Id,
+        dropTarget: Id,
+        position: Position
     ): Payload
 }

@@ -7,12 +7,12 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class CreateTableColumn(
+class CreateTableRow(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, CreateTableColumn.Params>() {
+) : BaseUseCase<Payload, CreateTableRow.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Payload> = safe {
-        repo.createTableColumn(
+        repo.createTableRow(
             ctx = params.ctx,
             targetId = params.target,
             position = params.position
@@ -21,8 +21,8 @@ class CreateTableColumn(
 
     /**
      * @param ctx - id of the context object
-     * @param target - id of the closest column
-     * @param position - position of the new column, relative to [target]
+     * @param target - id of the closest row
+     * @param position - position of the new row, relative to [target]
      */
     data class Params(
         val ctx: Id,

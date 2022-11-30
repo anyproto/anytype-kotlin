@@ -60,8 +60,10 @@ class EditableCellHolder(
         clicked: (ListenerType) -> Unit,
     ) {
         if (item is BlockView.Text.Paragraph) {
-            if (item.mode == BlockView.Mode.EDIT) {
-                content.enableEditMode()
+            content.pauseTextWatchers {
+                if (item.mode == BlockView.Mode.EDIT) {
+                    content.enableEditMode()
+                }
             }
             if (payloads.any { p -> p.isBackgroundColorChanged }) {
                 applyBackground(item)

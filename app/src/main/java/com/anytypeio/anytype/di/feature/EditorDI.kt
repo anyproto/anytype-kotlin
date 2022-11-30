@@ -82,7 +82,16 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.CreateTableColumn
+import com.anytypeio.anytype.domain.table.CreateTableRow
+import com.anytypeio.anytype.domain.table.DeleteTableColumn
+import com.anytypeio.anytype.domain.table.DeleteTableRow
+import com.anytypeio.anytype.domain.table.DuplicateTableColumn
+import com.anytypeio.anytype.domain.table.DuplicateTableRow
+import com.anytypeio.anytype.domain.table.FillTableColumn
 import com.anytypeio.anytype.domain.table.FillTableRow
+import com.anytypeio.anytype.domain.table.MoveTableColumn
+import com.anytypeio.anytype.domain.table.MoveTableRow
+import com.anytypeio.anytype.domain.table.SetTableRowHeader
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
@@ -297,10 +306,30 @@ object EditorSessionModule {
     @PerScreen
     fun provideTableDelegate(
         dispatcher: Dispatcher<Payload>,
-        createTableColumn: CreateTableColumn
+        createTableColumn: CreateTableColumn,
+        createTableRow: CreateTableRow,
+        deleteTableColumn: DeleteTableColumn,
+        deleteTableRow: DeleteTableRow,
+        duplicateTableRow: DuplicateTableRow,
+        duplicateTableColumn: DuplicateTableColumn,
+        fillTableRow: FillTableRow,
+        fillTableColumn: FillTableColumn,
+        moveTableRow: MoveTableRow,
+        moveTableColumn: MoveTableColumn,
+        setTableRowHeader: SetTableRowHeader
     ): EditorTableDelegate = DefaultEditorTableDelegate(
         dispatcher = dispatcher,
-        createTableColumn = createTableColumn
+        createTableColumn = createTableColumn,
+        createTableRow = createTableRow,
+        deleteTableColumn = deleteTableColumn,
+        deleteTableRow = deleteTableRow,
+        duplicateTableColumn = duplicateTableColumn,
+        duplicateTableRow = duplicateTableRow,
+        fillTableColumn = fillTableColumn,
+        fillTableRow = fillTableRow,
+        moveTableColumn = moveTableColumn,
+        moveTableRow = moveTableRow,
+        setTableRowHeader = setTableRowHeader
     )
 
     @JvmStatic
@@ -1040,6 +1069,69 @@ object EditorUseCaseModule {
     fun provideBlockTableCreateColumn(
         repo: BlockRepository
     ): CreateTableColumn = CreateTableColumn(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableCreateRow(
+        repo: BlockRepository
+    ): CreateTableRow = CreateTableRow(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableDeleteRow(
+        repo: BlockRepository
+    ): DeleteTableRow = DeleteTableRow(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableDeleteColumn(
+        repo: BlockRepository
+    ): DeleteTableColumn = DeleteTableColumn(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableDuplicateColumn(
+        repo: BlockRepository
+    ): DuplicateTableColumn = DuplicateTableColumn(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableDuplicateRow(
+        repo: BlockRepository
+    ): DuplicateTableRow = DuplicateTableRow(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableFillColumn(
+        repo: BlockRepository
+    ): FillTableColumn = FillTableColumn(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableMoveColumn(
+        repo: BlockRepository
+    ): MoveTableColumn = MoveTableColumn(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableMoveRow(
+        repo: BlockRepository
+    ): MoveTableRow = MoveTableRow(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBlockTableSetHeaderRow(
+        repo: BlockRepository
+    ): SetTableRowHeader = SetTableRowHeader(repo)
 
     @Module
     interface Bindings {

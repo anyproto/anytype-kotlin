@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.selection
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem.Column.InsertRight
@@ -416,9 +417,6 @@ fun getSimpleTableWidgetColumnItems(
             val ids = selectedColumns.map { it.id }
             addAll(
                 listOf(
-                    SimpleTableWidgetItem.Column.Delete(ids),
-                    SimpleTableWidgetItem.Column.Copy(ids),
-                    SimpleTableWidgetItem.Column.Duplicate(ids),
                     SimpleTableWidgetItem.Column.ClearContents(ids),
                     SimpleTableWidgetItem.Column.Color(ids),
                     SimpleTableWidgetItem.Column.Style(ids),
@@ -441,9 +439,6 @@ fun getSimpleTableWidgetRowItems(
             val ids = selectedRows.map { it.id }
             addAll(
                 listOf(
-                    SimpleTableWidgetItem.Row.Delete(ids),
-                    SimpleTableWidgetItem.Row.Copy(ids),
-                    SimpleTableWidgetItem.Row.Duplicate(ids),
                     SimpleTableWidgetItem.Row.ClearContents(ids),
                     SimpleTableWidgetItem.Row.Color(ids),
                     SimpleTableWidgetItem.Row.Style(ids),
@@ -457,19 +452,25 @@ fun getSimpleTableWidgetRowItems(
 fun BlockView.Table.Column.getTableWidgetItemsByColumn(
     columnsSize: Int
 ): List<SimpleTableWidgetItem> = mutableListOf<SimpleTableWidgetItem>().apply {
+    val column = this@getTableWidgetItemsByColumn
     add(InsertLeft(id))
     add(InsertRight(id))
-    if (index.value > 0) add(MoveLeft(id))
-    if (index.value < columnsSize - 1) add(MoveRight(id))
+    if (index.value > 0) add(MoveLeft(column = column))
+    if (index.value < columnsSize - 1) add(MoveRight(column = column))
+    add(SimpleTableWidgetItem.Column.Duplicate(id))
+    add(SimpleTableWidgetItem.Column.Delete(id))
 }
 
 fun BlockView.Table.Row.getTableWidgetItemsByRow(
     rowSize: Int
 ): List<SimpleTableWidgetItem> = mutableListOf<SimpleTableWidgetItem>().apply {
+    val row = this@getTableWidgetItemsByRow
     add(InsertAbove(id))
     add(InsertBelow(id))
-    if (index.value > 0) add(MoveUp(id))
-    if (index.value < rowSize - 1) add(MoveDown(id))
+    if (index.value > 0) add(MoveUp(row = row))
+    if (index.value < rowSize - 1) add(MoveDown(row = row))
+    add(SimpleTableWidgetItem.Row.Delete(id))
+    add(SimpleTableWidgetItem.Row.Duplicate(id))
 }
 
 fun BlockView.Table.getIdsInRow(index: BlockView.Table.RowIndex): List<Id> =
@@ -522,3 +523,47 @@ data class SelectedColumns(
     val cellsInColumns: List<Id>,
     val selectedColumns: Set<BlockView.Table.Column>
 )
+
+data class TableRowsByIndex(
+    val row: BlockView.Table.Row,
+    val rowTop: BlockView.Table.Row?,
+    val rowBottom: BlockView.Table.Row?
+)
+
+data class TableColumnsByIndex(
+    val column: BlockView.Table.Column,
+    val columnLeft: BlockView.Table.Column?,
+    val columnRight: BlockView.Table.Column?
+)
+
+fun List<BlockView>.getTableRowsById(
+    mode: Editor.Mode,
+    row: BlockView.Table.Row
+): TableRowsByIndex {
+    val tableBlockId = (mode as? Editor.Mode.Table)?.tableId
+    val tableBlock = find { it.id == tableBlockId }
+    val rows = (tableBlock as? BlockView.Table)?.rows
+    val rowTop = rows?.getOrNull(row.index.value - 1)
+    val rowBottom = rows?.getOrNull(row.index.value + 1)
+    return TableRowsByIndex(
+        row = row,
+        rowTop = rowTop,
+        rowBottom = rowBottom
+    )
+}
+
+fun List<BlockView>.getTableColumnsById(
+    mode: Editor.Mode,
+    column: BlockView.Table.Column
+): TableColumnsByIndex {
+    val tableBlockId = (mode as? Editor.Mode.Table)?.tableId
+    val tableBlock = find { it.id == tableBlockId }
+    val columns = (tableBlock as? BlockView.Table)?.columns
+    val columnLeft = columns?.getOrNull(column.index.value - 1)
+    val columnRight = columns?.getOrNull(column.index.value + 1)
+    return TableColumnsByIndex(
+        column = column,
+        columnLeft = columnLeft,
+        columnRight = columnRight
+    )
+}

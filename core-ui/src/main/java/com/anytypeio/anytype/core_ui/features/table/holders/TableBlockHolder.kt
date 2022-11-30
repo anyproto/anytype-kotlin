@@ -87,9 +87,9 @@ class TableBlockHolder(
         item: BlockView.Table
     ) {
         payloads.forEach { payload ->
+            if (payload.tableCellsChanged()) applyCells(item)
             if (payload.selectionChanged()) applySelection(item)
             if (payload.backgroundColorChanged()) applyBackground(item)
-            if (payload.tableCellsChanged()) applyCells(item)
             if (payload.tableCellsSelectionChanged()) updateCellsSelection(item)
         }
     }

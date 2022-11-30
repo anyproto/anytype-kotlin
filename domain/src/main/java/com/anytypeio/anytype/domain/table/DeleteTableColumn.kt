@@ -2,31 +2,27 @@ package com.anytypeio.anytype.domain.table
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class CreateTableColumn(
+class DeleteTableColumn(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, CreateTableColumn.Params>() {
+) : BaseUseCase<Payload, DeleteTableColumn.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Payload> = safe {
-        repo.createTableColumn(
+        repo.deleteTableColumn(
             ctx = params.ctx,
-            targetId = params.target,
-            position = params.position
+            targetId = params.target
         )
     }
 
     /**
      * @param ctx - id of the context object
-     * @param target - id of the closest column
-     * @param position - position of the new column, relative to [target]
+     * @param target - id of the column to delete
      */
     data class Params(
         val ctx: Id,
-        val target: Id,
-        val position: Position
+        val target: Id
     )
 }

@@ -17,8 +17,6 @@ import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSe
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetCellItems
-import com.anytypeio.anytype.presentation.editor.selection.getSimpleTableWidgetRowItems
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
@@ -679,9 +677,6 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             isVisible = true,
             tableId = tableId,
             columnItems = listOf(
-                SimpleTableWidgetItem.Column.Delete(ids),
-                SimpleTableWidgetItem.Column.Copy(ids),
-                SimpleTableWidgetItem.Column.Duplicate(ids),
                 SimpleTableWidgetItem.Column.ClearContents(ids),
                 SimpleTableWidgetItem.Column.Color(ids),
                 SimpleTableWidgetItem.Column.Style(ids),
@@ -782,9 +777,6 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             isVisible = true,
             tableId = tableId,
             columnItems = listOf(
-                SimpleTableWidgetItem.Column.Delete(ids),
-                SimpleTableWidgetItem.Column.Copy(ids),
-                SimpleTableWidgetItem.Column.Duplicate(ids),
                 SimpleTableWidgetItem.Column.ClearContents(ids),
                 SimpleTableWidgetItem.Column.Color(ids),
                 SimpleTableWidgetItem.Column.Style(ids),
@@ -860,9 +852,6 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             isVisible = true,
             tableId = tableId,
             rowItems = listOf(
-                SimpleTableWidgetItem.Row.Delete(idsRow),
-                SimpleTableWidgetItem.Row.Copy(idsRow),
-                SimpleTableWidgetItem.Row.Duplicate(idsRow),
                 SimpleTableWidgetItem.Row.ClearContents(idsRow),
                 SimpleTableWidgetItem.Row.Color(idsRow),
                 SimpleTableWidgetItem.Row.Style(idsRow),
@@ -942,10 +931,15 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             rowItems = listOf(
                 SimpleTableWidgetItem.Row.InsertAbove(BlockView.Table.RowId(rows[0].id)),
                 SimpleTableWidgetItem.Row.InsertBelow(BlockView.Table.RowId(rows[0].id)),
-                SimpleTableWidgetItem.Row.MoveDown(BlockView.Table.RowId(rows[0].id)),
-                SimpleTableWidgetItem.Row.Delete(idsRow),
-                SimpleTableWidgetItem.Row.Copy(idsRow),
-                SimpleTableWidgetItem.Row.Duplicate(idsRow),
+                SimpleTableWidgetItem.Row.MoveDown(
+                    row = BlockView.Table.Row(
+                        id = BlockView.Table.RowId(rows[0].id),
+                        index = BlockView.Table.RowIndex(0),
+                        isHeader = false
+                    )
+                ),
+                SimpleTableWidgetItem.Row.Delete(BlockView.Table.RowId(rows[0].id)),
+                SimpleTableWidgetItem.Row.Duplicate(BlockView.Table.RowId(rows[0].id)),
                 SimpleTableWidgetItem.Row.ClearContents(idsRow),
                 SimpleTableWidgetItem.Row.Color(idsRow),
                 SimpleTableWidgetItem.Row.Style(idsRow),
@@ -1079,13 +1073,16 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         var id = BlockView.Table.ColumnId(columns[0].id)
         var ids = listOf(id)
+        var column = BlockView.Table.Column(
+            id = id,
+            index = BlockView.Table.ColumnIndex(0)
+        )
         var expectedItems = listOf(
             SimpleTableWidgetItem.Column.InsertLeft(id),
             SimpleTableWidgetItem.Column.InsertRight(id),
-            SimpleTableWidgetItem.Column.MoveRight(id),
-            SimpleTableWidgetItem.Column.Delete(ids),
-            SimpleTableWidgetItem.Column.Copy(ids),
-            SimpleTableWidgetItem.Column.Duplicate(ids),
+            SimpleTableWidgetItem.Column.MoveRight(column),
+            SimpleTableWidgetItem.Column.Duplicate(id),
+            SimpleTableWidgetItem.Column.Delete(id),
             SimpleTableWidgetItem.Column.ClearContents(ids),
             SimpleTableWidgetItem.Column.Color(ids),
             SimpleTableWidgetItem.Column.Style(ids),
@@ -1157,14 +1154,17 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         id = BlockView.Table.ColumnId(columns[1].id)
         ids = listOf(id)
+        column = BlockView.Table.Column(
+            id = id,
+            index = BlockView.Table.ColumnIndex(1)
+        )
         expectedItems = listOf(
             SimpleTableWidgetItem.Column.InsertLeft(id),
             SimpleTableWidgetItem.Column.InsertRight(id),
-            SimpleTableWidgetItem.Column.MoveLeft(id),
-            SimpleTableWidgetItem.Column.MoveRight(id),
-            SimpleTableWidgetItem.Column.Delete(ids),
-            SimpleTableWidgetItem.Column.Copy(ids),
-            SimpleTableWidgetItem.Column.Duplicate(ids),
+            SimpleTableWidgetItem.Column.MoveLeft(column),
+            SimpleTableWidgetItem.Column.MoveRight(column),
+            SimpleTableWidgetItem.Column.Duplicate(id),
+            SimpleTableWidgetItem.Column.Delete(id),
             SimpleTableWidgetItem.Column.ClearContents(ids),
             SimpleTableWidgetItem.Column.Color(ids),
             SimpleTableWidgetItem.Column.Style(ids),
@@ -1236,13 +1236,16 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         id = BlockView.Table.ColumnId(columns[2].id)
         ids = listOf(id)
+        column = BlockView.Table.Column(
+            id = id,
+            index = BlockView.Table.ColumnIndex(2)
+        )
         expectedItems = listOf(
             SimpleTableWidgetItem.Column.InsertLeft(id),
             SimpleTableWidgetItem.Column.InsertRight(id),
-            SimpleTableWidgetItem.Column.MoveLeft(id),
-            SimpleTableWidgetItem.Column.Delete(ids),
-            SimpleTableWidgetItem.Column.Copy(ids),
-            SimpleTableWidgetItem.Column.Duplicate(ids),
+            SimpleTableWidgetItem.Column.MoveLeft(column),
+            SimpleTableWidgetItem.Column.Duplicate(id),
+            SimpleTableWidgetItem.Column.Delete(id),
             SimpleTableWidgetItem.Column.ClearContents(ids),
             SimpleTableWidgetItem.Column.Color(ids),
             SimpleTableWidgetItem.Column.Style(ids),
@@ -1307,9 +1310,6 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         ids =
             listOf(BlockView.Table.ColumnId(columns[0].id), BlockView.Table.ColumnId(columns[2].id))
         expectedItems = listOf(
-            SimpleTableWidgetItem.Column.Delete(ids),
-            SimpleTableWidgetItem.Column.Copy(ids),
-            SimpleTableWidgetItem.Column.Duplicate(ids),
             SimpleTableWidgetItem.Column.ClearContents(ids),
             SimpleTableWidgetItem.Column.Color(ids),
             SimpleTableWidgetItem.Column.Style(ids),

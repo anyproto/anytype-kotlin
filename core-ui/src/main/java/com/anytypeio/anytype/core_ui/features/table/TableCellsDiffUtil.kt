@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
+import timber.log.Timber
 
 class TableCellsDiffUtil(
     private val old: List<BlockView.Table.Cell>,
@@ -82,7 +83,7 @@ class TableCellsDiffUtil(
         }
 
         return if (changes.isNotEmpty())
-            BlockViewDiffUtil.Payload(changes)
+            BlockViewDiffUtil.Payload(changes).also { Timber.d("Returning TableCellsDiffUtil payload: $it") }
         else
             super.getChangePayload(oldItemPosition, newItemPosition)
     }

@@ -1236,7 +1236,8 @@ class BlockViewSearchTextTest {
                 columns = columns,
                 rows = rows,
                 isSelected = false,
-                selectedCellsIds = emptyList()
+                selectedCellsIds = emptyList(),
+                tab = null
             )
         )
 
@@ -1401,7 +1402,8 @@ class BlockViewSearchTextTest {
                 columns = columns,
                 rows = rows,
                 isSelected = false,
-                selectedCellsIds = emptyList()
+                selectedCellsIds = emptyList(),
+                tab = null
             )
         )
 
@@ -1562,7 +1564,8 @@ class BlockViewSearchTextTest {
                 columns = columns,
                 isSelected = false,
                 selectedCellsIds = emptyList(),
-                rows = rows
+                rows = rows,
+                tab = null
             )
         )
 
@@ -1687,7 +1690,8 @@ class BlockViewSearchTextTest {
                 columns = columns,
                 rows = rows,
                 isSelected = false,
-                selectedCellsIds = emptyList()
+                selectedCellsIds = emptyList(),
+                tab = null
             )
         )
 

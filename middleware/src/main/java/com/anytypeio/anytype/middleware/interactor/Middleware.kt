@@ -1853,6 +1853,25 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun moveTableColumn(
+        ctx: Id,
+        target: Id,
+        dropTarget: Id,
+        position: Position
+    ): Payload {
+        val request = Rpc.BlockTable.ColumnMove.Request(
+            contextId = ctx,
+            targetId = target,
+            dropTargetId = dropTarget,
+            position = position.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableColumnMove(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any)
     }

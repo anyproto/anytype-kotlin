@@ -667,4 +667,18 @@ class BlockMiddleware(
         name = name,
         color = color
     )
+
+    override suspend fun moveTableColumn(
+        ctx: Id,
+        target: Id,
+        dropTarget: Id,
+        position: Position
+    ): Payload {
+        return middleware.moveTableColumn(
+            ctx = ctx,
+            target = target,
+            dropTarget = dropTarget,
+            position = position
+        )
+    }
 }

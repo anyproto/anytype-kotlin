@@ -1969,7 +1969,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             background = block.parseThemeBackgroundColor(),
-            selectedCellsIds = selection.toList()
+            selectedCellsIds = selection.toList(),
+            tab = (mode as? EditorMode.Table)?.tab
         )
     }
 

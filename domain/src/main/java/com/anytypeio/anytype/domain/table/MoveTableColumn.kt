@@ -7,26 +7,30 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class CreateTableColumn(
+class MoveTableColumn(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, CreateTableColumn.Params>() {
+) : BaseUseCase<Payload, MoveTableColumn.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Payload> = safe {
-        repo.createTableColumn(
+        repo.moveTableColumn(
             ctx = params.ctx,
-            targetId = params.target,
+            target = params.column,
+            dropTarget = params.targetDrop,
             position = params.position
         )
     }
 
     /**
+     * Params for moving a column
      * @param ctx - id of the context object
-     * @param target - id of the closest column
-     * @param position - position of the new column, relative to [target]
+     * @param column - id of the column which we want to move
+     * @param targetDrop - id of the column in relation to which the move is positioned
+     * @param position - position of the moved [column], relative to [targetDrop]
      */
     data class Params(
         val ctx: Id,
-        val target: Id,
+        val column: Id,
+        val targetDrop: Id,
         val position: Position
     )
 }

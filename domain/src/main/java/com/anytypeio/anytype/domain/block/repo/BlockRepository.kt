@@ -129,7 +129,7 @@ interface BlockRepository {
     /**
      * Creates bookmark object from url and returns its id.
      */
-    suspend fun createBookmarkObject(url: Url) : Id
+    suspend fun createBookmarkObject(url: Url): Id
 
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
 
@@ -296,7 +296,7 @@ interface BlockRepository {
 
     suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload
 
-    suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>) : Payload
+    suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>): Payload
 
     suspend fun fillTableColumn(ctx: Id, blockIds: List<Id>): Payload
 
@@ -352,5 +352,12 @@ interface BlockRepository {
         targetId: String,
         columns: Int,
         rows: Int
+    ): Payload
+
+    suspend fun moveTableColumn(
+        ctx: Id,
+        target: Id,
+        dropTarget: Id,
+        position: Position
     ): Payload
 }

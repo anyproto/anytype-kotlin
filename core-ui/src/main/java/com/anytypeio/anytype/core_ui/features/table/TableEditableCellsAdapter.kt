@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
+import timber.log.Timber
 
 class TableEditableCellsAdapter(
     private var items: List<BlockView.Table.Cell>,
@@ -112,6 +113,7 @@ class TableEditableCellsAdapter(
         position: Int,
         payloads: MutableList<Any>
     ) {
+        Timber.d("Update Table cells with payload, position:[$position], payloads:[$payloads]")
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
         } else {

@@ -7,26 +7,29 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class CreateTableColumn(
+class DuplicateTableRow(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, CreateTableColumn.Params>() {
+) : BaseUseCase<Payload, DuplicateTableRow.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Payload> = safe {
-        repo.createTableColumn(
+        repo.duplicateTableRow(
             ctx = params.ctx,
-            targetId = params.target,
+            targetId = params.targetDrop,
+            blockId = params.row,
             position = params.position
         )
     }
 
     /**
      * @param ctx - id of the context object
-     * @param target - id of the closest column
-     * @param position - position of the new column, relative to [target]
+     * @param row - row to duplicate
+     * @param targetDrop - id of the row in relation to which the duplicate is positioned
+     * @param position - position of the new row, relative to [targetDrop]
      */
     data class Params(
         val ctx: Id,
-        val target: Id,
+        val targetDrop: Id,
+        val row: Id,
         val position: Position
     )
 }

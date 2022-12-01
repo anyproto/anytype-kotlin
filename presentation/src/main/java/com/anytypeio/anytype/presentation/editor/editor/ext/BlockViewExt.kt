@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bo
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
+import com.anytypeio.anytype.presentation.editor.selection.updateCellsMode
 import com.anytypeio.anytype.presentation.extension.shift
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import timber.log.Timber
@@ -352,7 +353,8 @@ fun List<BlockView>.enterSAM(
             isSelected = isSelected
         )
         is BlockView.Table -> view.copy(
-            isSelected = isSelected
+            isSelected = isSelected,
+            cells = view.cells.updateCellsMode(mode = BlockView.Mode.READ),
         )
         else -> view.also { check(view !is BlockView.Permission) }
     }

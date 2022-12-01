@@ -46,6 +46,12 @@ class TableEditableCellsAdapter(
             binding = binding,
             clicked = clicked
         ).apply {
+            content.editorTouchProcessor.onLongClick = {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    clicked(ListenerType.CellLongClick(tableId = items[pos].tableId))
+                }
+            }
             content.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {

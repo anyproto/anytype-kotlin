@@ -3603,6 +3603,13 @@ class EditorViewModel(
                     else -> Unit
                 }
             }
+            is ListenerType.CellLongClick -> {
+                when (mode) {
+                    EditorMode.Edit -> proceedWithEnteringActionMode(clicked.tableId)
+                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.tableId)
+                    else -> Unit
+                }
+            }
             is ListenerType.LinkToObject -> {
                 when (mode) {
                     EditorMode.Edit -> onPageClicked(blockLinkId = clicked.target)

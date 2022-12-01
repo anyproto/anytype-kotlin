@@ -45,6 +45,7 @@ sealed interface ListenerType {
     }
 
     data class LongClick(val target: String, val dimensions: BlockDimensions = BlockDimensions()) : ListenerType
+    data class CellLongClick(val tableId: Id) : ListenerType
 
     data class EditableBlock(val target: String) : ListenerType
 

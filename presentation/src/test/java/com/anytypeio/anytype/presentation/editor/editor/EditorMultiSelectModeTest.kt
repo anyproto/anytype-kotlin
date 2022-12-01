@@ -1436,6 +1436,44 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         assertEquals(table.id, selectedId)
     }
 
+    @Test
+    fun `when long clicking on cells - should enter select mode`() {
+
+        val columns = StubTableColumns(size = 3)
+        val rows = StubTableRows(size = 2)
+        val cells = StubTableCells(columns = columns, rows = rows)
+        val columnLayout = StubLayoutColumns(children = columns.map { it.id })
+        val rowLayout = StubLayoutRows(children = rows.map { it.id })
+        val table = StubTable(children = listOf(columnLayout.id, rowLayout.id))
+
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+
+        val page = Block(
+            id = root,
+            children = listOf(header.id) + listOf(table.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val document =
+            listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.onClickListener(ListenerType.CellLongClick(tableId = table.id))
+
+        val selectedId = vm.currentSelection().first()
+
+        assertEquals(1, vm.currentSelection().size)
+        assertEquals(table.id, selectedId)
+    }
+
     private fun clearPendingCoroutines() {
         coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
     }

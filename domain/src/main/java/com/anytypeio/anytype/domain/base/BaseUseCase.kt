@@ -7,6 +7,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
+@Deprecated(
+    "Consider replace with the more useful class",
+    replaceWith = ReplaceWith(
+        expression = "ResultInteractor<Params, Type>",
+        imports = arrayOf("com.anytypeio.anytype.domain.base")
+    )
+)
 abstract class BaseUseCase<out Type, in Params>(
     private val context: CoroutineContext = Dispatchers.IO
 ) where Type : Any {
@@ -32,7 +39,7 @@ abstract class BaseUseCase<out Type, in Params>(
      */
     inline fun <Type> safe(
         block: () -> Type
-    ) : Either<Throwable, Type> = try {
+    ): Either<Throwable, Type> = try {
         Either.Right(block())
     } catch (t: Throwable) {
         Either.Left(t)

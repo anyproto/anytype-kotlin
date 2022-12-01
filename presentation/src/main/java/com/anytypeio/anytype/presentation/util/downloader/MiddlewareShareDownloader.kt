@@ -6,6 +6,10 @@ import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import java.io.File
 
+/**
+ * Base class for downloading files in the local storage for later sharing
+ * using middleware for data receiving
+ * */
 abstract class MiddlewareShareDownloader(
     private val context: Context,
     private val uriFileProvider: UriFileProvider
@@ -16,6 +20,11 @@ abstract class MiddlewareShareDownloader(
         val name: String
     )
 
+    /**
+     * @param hash is a some middleware id
+     * @param path is local storage path to the file created
+     * @return path to the file in the local storage
+     * */
     abstract suspend fun downloadFile(hash: String, path: String): String
 
     override suspend fun doWork(params: Params): Uri {

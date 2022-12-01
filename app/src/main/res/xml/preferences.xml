@@ -4,4 +4,8 @@
         android:defaultValue="false"
         android:key="@string/debug_mode"
         android:title="Debug mode" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/trouble_mode"
+        android:title="Troubleshooting mode" />
 </PreferenceScreen>

@@ -69,14 +69,12 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         isClearCacheInProgress = vm.isClearFileCacheInProgress.collectAsState().value,
                         isDebugSyncReportInProgress = vm.isDebugSyncReportInProgress.collectAsState().value,
-                        isShowDebug = toggles.isDebug
+                        isShowDebug = toggles.isTroubleshootingMode
                     )
                 }
             }
         }
     }
-
-
 
     private fun proceedWithClearFileCacheWarning() {
         vm.onClearCacheButtonClicked()

@@ -8,8 +8,13 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubDataView
+import com.anytypeio.anytype.core_models.StubDataViewView
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -28,25 +33,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            style = Block.Content.Text.Style.TITLE,
-            text = MockDataFactory.randomString(),
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
-
-    private val header = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Layout(
-            type = Block.Content.Layout.Type.HEADER
-        ),
-        fields = Block.Fields.empty(),
-        children = listOf(title.id)
-    )
+    private val title = StubTitle()
+    private val header = StubHeader(children = listOf(title.id))
 
     @Before
     fun setup() {
@@ -59,27 +47,17 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         // SETUP
 
-        val viewer = DVViewer(
-            id = MockDataFactory.randomUuid(),
-            filters = emptyList(),
-            sorts = emptyList(),
-            type = Block.Content.DataView.Viewer.Type.GRID,
-            name = MockDataFactory.randomString(),
-            viewerRelations = emptyList()
+        val viewer = StubDataViewView(
+            type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        val dv = Block(
+        val dv = StubDataView(
             id = MockDataFactory.randomUuid(),
-            content = DV(
-                sources = listOf(MockDataFactory.randomString()),
-                relations = emptyList(),
-                viewers = listOf(viewer)
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
+            views = listOf(viewer),
+            sources = listOf(MockDataFactory.randomString())
         )
 
-        val type = MockDataFactory.randomUuid()
+        val givenType = MockDataFactory.randomUuid()
         val newObjectId = MockDataFactory.randomUuid()
 
         stubInterceptEvents()
@@ -87,7 +65,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         stubInterceptThreadStatus()
         stubSearchWithSubscription()
         stubSubscriptionEventChannel()
-        stubGetTemplates(type = type)
+        stubGetTemplates(type = givenType)
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -97,7 +75,10 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             details = Block.Details(
                 mapOf(
                     root to Block.Fields(
-                        map = mapOf(Relations.SET_OF to listOf(type))
+                        map = mapOf(Relations.SET_OF to listOf(givenType))
+                    ),
+                    givenType to Block.Fields(
+                        map = mapOf(Relations.TYPE to ObjectTypeIds.OBJECT_TYPE)
                     )
                 )
             )
@@ -113,9 +94,9 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         verifyBlocking(createDataViewObject, times(1)) {
             invoke(
-                CreateDataViewObject.Params(
-                    template = null,
-                    type = type
+                CreateDataViewObject.Params.SetByType(
+                    type = givenType,
+                    filters = viewer.filters
                 )
             )
         }
@@ -133,24 +114,14 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             MockDataFactory.randomUuid()
         )
 
-        val viewer = DVViewer(
-            id = MockDataFactory.randomUuid(),
-            filters = emptyList(),
-            sorts = emptyList(),
-            type = Block.Content.DataView.Viewer.Type.GRID,
-            name = MockDataFactory.randomString(),
-            viewerRelations = emptyList()
+        val viewer = StubDataViewView(
+            type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        val dv = Block(
+        val dv = StubDataView(
             id = MockDataFactory.randomUuid(),
-            content = DV(
-                sources = listOf(MockDataFactory.randomString()),
-                relations = emptyList(),
-                viewers = listOf(viewer)
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
+            views = listOf(viewer),
+            sources = listOf(MockDataFactory.randomString())
         )
 
         val newObjectId = MockDataFactory.randomUuid()
@@ -176,6 +147,9 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                         map = mapOf(
                             Relations.SET_OF to listOf(givenType)
                         )
+                    ),
+                    givenType to Block.Fields(
+                        map = mapOf(Relations.TYPE to ObjectTypeIds.OBJECT_TYPE)
                     )
                 )
             )
@@ -191,9 +165,9 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         verifyBlocking(createDataViewObject, times(1)) {
             invoke(
-                CreateDataViewObject.Params(
-                    template = null,
-                    type = givenType
+                CreateDataViewObject.Params.SetByType(
+                    type = givenType,
+                    filters = viewer.filters
                 )
             )
         }
@@ -250,6 +224,9 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                         map = mapOf(
                             Relations.SET_OF to listOf(givenType)
                         )
+                    ),
+                    givenType to Block.Fields(
+                        map = mapOf(Relations.TYPE to ObjectTypeIds.OBJECT_TYPE)
                     )
                 )
             )
@@ -265,9 +242,9 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         verifyBlocking(createDataViewObject, times(1)) {
             invoke(
-                CreateDataViewObject.Params(
-                    template = givenTemplate,
-                    type = givenType
+                CreateDataViewObject.Params.SetByType(
+                    type = givenType,
+                    filters = viewer.filters
                 )
             )
         }
@@ -309,7 +286,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         val givenTemplate = MockDataFactory.randomUuid()
 
-        val source = MockDataFactory.randomString()
+        val givenType = MockDataFactory.randomString()
 
         val filter = DVFilter(
             relationKey = relationStakeholderKey,
@@ -340,7 +317,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(source),
+                sources = listOf(givenType),
                 relations = listOf(relationStakeHolders),
                 viewers = listOf(viewer)
             ),
@@ -356,7 +333,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         stubSearchWithSubscription()
         stubSubscriptionEventChannel()
         stubGetTemplates(
-            type = source,
+            type = givenType,
             templates = listOf(givenTemplate)
         )
         stubOpenObjectSet(
@@ -369,8 +346,11 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                 mapOf(
                     root to Block.Fields(
                         map = mapOf(
-                            Relations.SET_OF to listOf(source)
+                            Relations.SET_OF to listOf(givenType)
                         )
+                    ),
+                    givenType to Block.Fields(
+                        map = mapOf(Relations.TYPE to ObjectTypeIds.OBJECT_TYPE)
                     )
                 )
             )
@@ -386,10 +366,9 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         verifyBlocking(createDataViewObject, times(1)) {
             invoke(
-                CreateDataViewObject.Params(
-                    template = givenTemplate,
-                    prefilled = mapOf(relationStakeholderKey to relationStakeholderValue),
-                    type = source
+                CreateDataViewObject.Params.SetByType(
+                    type = givenType,
+                    filters = viewer.filters
                 )
             )
         }

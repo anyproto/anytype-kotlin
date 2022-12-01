@@ -45,7 +45,10 @@ class ObjectIconTextWidget @JvmOverloads constructor(
         binding.objectName.setTextColor(textColor)
     }
 
-    fun setup(name: String?, icon: ObjectIcon) {
+    fun setup(
+        name: String?,
+        icon: ObjectIcon = ObjectIcon.None
+    ) {
         binding.objectName.text = name
         binding.objectIcon.setIcon(icon)
         if (icon is ObjectIcon.None) {

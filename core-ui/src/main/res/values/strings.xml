@@ -579,5 +579,6 @@
     <string name="error_block_selection">Block selection error</string>
     <string name="undefined">Undefined</string>
     <string name="set_by_relations">Relations: %1$s</string>
+    <string name="set_by_type">Type: %1$s</string>
 
 </resources>

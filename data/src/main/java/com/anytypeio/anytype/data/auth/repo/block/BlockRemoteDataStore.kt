@@ -284,7 +284,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun createDataViewRecord(
         type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>,
+        prefilled: Struct,
     ): Id = remote.createDataViewObject(
         template = template,
         prefilled = prefilled,

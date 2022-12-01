@@ -385,7 +385,7 @@ class BlockDataRepository(
     override suspend fun createDataViewObject(
         type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>,
+        prefilled: Struct,
     ): Id = remote.createDataViewRecord(
         template = template,
         prefilled = prefilled,

@@ -20,11 +20,13 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewSource
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -89,6 +91,9 @@ abstract class TestObjectSetSetup {
     lateinit var auth: AuthRepository
 
     @Mock
+    lateinit var userSettingsRepository: UserSettingsRepository
+
+    @Mock
     lateinit var gateway: Gateway
     @Mock
     lateinit var interceptEvents: InterceptEvents
@@ -105,6 +110,7 @@ abstract class TestObjectSetSetup {
     lateinit var createNewObject: CreateNewObject
 
     private lateinit var getTemplates: GetTemplates
+    private lateinit var getDefaultEditorType: GetDefaultEditorType
 
     private val session = ObjectSetSession()
     private val reducer = ObjectSetReducer()
@@ -147,7 +153,15 @@ abstract class TestObjectSetSetup {
         setDataViewSource = SetDataViewSource(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
-        createDataViewObject = CreateDataViewObject(repo)
+        getDefaultEditorType = GetDefaultEditorType(
+            userSettingsRepository = userSettingsRepository
+        )
+        createDataViewObject = CreateDataViewObject(
+            getTemplates = getTemplates,
+            repo = repo,
+            storeOfRelations = storeOfRelations,
+            getDefaultEditorType = getDefaultEditorType
+        )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
@@ -192,7 +206,6 @@ abstract class TestObjectSetSetup {
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             delegator = delegator,
-            getTemplates = getTemplates,
             createNewObject = createNewObject,
             setDataViewSource = setDataViewSource,
             cancelSearchSubscription = cancelSearchSubscription,

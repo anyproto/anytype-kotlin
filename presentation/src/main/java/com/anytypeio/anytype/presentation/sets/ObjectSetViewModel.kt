@@ -10,7 +10,6 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -44,7 +43,6 @@ import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -94,7 +92,6 @@ class ObjectSetViewModel(
     private val closeBlock: CloseBlock,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val setObjectDetails: UpdateDetail,
-    private val createDataViewObject: CreateDataViewObject,
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
@@ -106,7 +103,7 @@ class ObjectSetViewModel(
     private val coverImageHashProvider: CoverImageHashProvider,
     private val session: ObjectSetSession,
     private val analytics: Analytics,
-    private val getTemplates: GetTemplates,
+    private val createDataViewObject: CreateDataViewObject,
     private val createNewObject: CreateNewObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
@@ -746,35 +743,41 @@ class ObjectSetViewModel(
                 val setObject = ObjectWrapper.Basic(
                     currentState.details[context]?.map ?: emptyMap()
                 )
-                val setOfTypeId = setObject.setOf.singleOrNull()
-                if (setOfTypeId == ObjectTypeIds.BOOKMARK) {
-                    dispatch(
-                        ObjectSetCommand.Modal.CreateBookmark(
-                            ctx = context
-                        )
-                    )
-                } else if (!setOfTypeId.isNullOrEmpty()) {
-                    viewModelScope.launch {
-                        createDataViewObject(
-                            CreateDataViewObject.Params(
-                                template = resolveTemplateForNewRecord(),
-                                prefilled = resolvePrefilledRecordData(currentState),
-                                type = setOfTypeId
-                            )
-                        ).process(
-                            failure = { Timber.e(it, "Error while creating new record") },
-                            success = { record ->
-                                dispatch(
-                                    ObjectSetCommand.Modal.SetNameForCreatedObject(
-                                        ctx = context,
-                                        target = record
+                val viewer = currentState.viewerById(session.currentViewerId.value)
+                val sourceId = setObject.setOf.singleOrNull()
+                if (sourceId == null) {
+                    toast("Unabled to define source for new object")
+                } else {
+                    val sourceDetails = currentState.details[sourceId]
+                    if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
+                        when(sourceDetails.type.firstOrNull()) {
+                            ObjectTypeIds.OBJECT_TYPE -> {
+                                if (sourceId == ObjectTypeIds.BOOKMARK) {
+                                    dispatch(
+                                        ObjectSetCommand.Modal.CreateBookmark(
+                                            ctx = context
+                                        )
+                                    )
+                                } else {
+                                    proceedWithCreatingDataViewObject(
+                                        CreateDataViewObject.Params.SetByType(
+                                            type = sourceId,
+                                            filters = viewer.filters
+                                        )
+                                    )
+                                }
+                            }
+                            ObjectTypeIds.RELATION -> {
+                                proceedWithCreatingDataViewObject(
+                                    CreateDataViewObject.Params.SetByRelation(
+                                        filters = viewer.filters
                                     )
                                 )
                             }
-                        )
+                        }
+                    } else {
+                        toast("Unabled to define source for new object")
                     }
-                } else {
-                    toast("Unabled to define type for new object")
                 }
             }
         } else {
@@ -782,32 +785,19 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun resolvePrefilledRecordData(setOfObjects: ObjectSet): Map<Id, Any> = buildMap {
-        val viewer = setOfObjects.viewerById(session.currentViewerId.value)
-        val block = setOfObjects.dataview
-        val dv = block.content as DV
-        viewer.filters.forEach { filter ->
-            val relation = dv.relations.find { it.key == filter.relationKey }
-            if (relation != null && !relation.isReadOnly) {
-                if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
-                    filter.value?.let { put(filter.relationKey, it) }
+    private fun proceedWithCreatingDataViewObject(params: CreateDataViewObject.Params) {
+        viewModelScope.launch {
+            createDataViewObject(params).process(
+                failure = { Timber.e(it, "Error while creating new record") },
+                success = { record ->
+                    dispatch(
+                        ObjectSetCommand.Modal.SetNameForCreatedObject(
+                            ctx = context,
+                            target = record
+                        )
+                    )
                 }
-            }
-        }
-    }
-
-    private suspend fun resolveTemplateForNewRecord(): Id? {
-        val obj = ObjectWrapper.Basic(reducer.state.value.details[context]?.map ?: emptyMap())
-        val type = obj.setOf.singleOrNull()
-        return if (type != null) {
-            val templates = try {
-                getTemplates.run(GetTemplates.Params(type))
-            } catch (e: Exception) {
-                emptyList()
-            }
-            templates.singleOrNull()?.id
-        } else {
-            null
+            )
         }
     }
 

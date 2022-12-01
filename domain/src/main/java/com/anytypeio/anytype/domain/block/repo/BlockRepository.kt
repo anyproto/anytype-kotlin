@@ -177,7 +177,7 @@ interface BlockRepository {
     suspend fun createDataViewObject(
         type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>,
+        prefilled: Struct,
     ): Id
 
     suspend fun addDataViewViewer(

@@ -168,7 +168,6 @@ open class ObjectSetViewModelTestSetup {
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
-        getTemplates = getTemplates,
         createNewObject = createNewObject,
         setDataViewSource = setDataViewSource,
         setObjectDetails = setObjectDetails,

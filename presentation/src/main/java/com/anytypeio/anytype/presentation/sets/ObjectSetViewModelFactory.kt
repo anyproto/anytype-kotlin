@@ -19,7 +19,6 @@ import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -44,7 +43,6 @@ class ObjectSetViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
     private val analytics: Analytics,
-    private val getTemplates: GetTemplates,
     private val createNewObject: CreateNewObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
@@ -73,7 +71,6 @@ class ObjectSetViewModelFactory(
             urlBuilder = urlBuilder,
             session = session,
             analytics = analytics,
-            getTemplates = getTemplates,
             createNewObject = createNewObject,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,

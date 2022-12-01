@@ -151,7 +151,6 @@ object ObjectSetModule {
         analytics: Analytics,
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
-        getTemplates: GetTemplates,
         dataViewSubscriptionContainer: DataViewSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
         setDataViewSource: SetDataViewSource,
@@ -176,7 +175,6 @@ object ObjectSetModule {
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
-        getTemplates = getTemplates,
         createNewObject = createNewObject,
         dataViewSubscriptionContainer = dataViewSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
@@ -240,8 +238,16 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideCreateDataViewRecordUseCase(
-        repo: BlockRepository
-    ): CreateDataViewObject = CreateDataViewObject(repo = repo)
+        repo: BlockRepository,
+        storeOfRelations: StoreOfRelations,
+        getDefaultEditorType: GetDefaultEditorType,
+        getTemplates: GetTemplates
+    ): CreateDataViewObject = CreateDataViewObject(
+        repo = repo,
+        getDefaultEditorType = getDefaultEditorType,
+        getTemplates = getTemplates,
+        storeOfRelations = storeOfRelations
+    )
 
     @JvmStatic
     @Provides

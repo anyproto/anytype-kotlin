@@ -316,7 +316,7 @@ class BlockMiddleware(
     override suspend fun createDataViewObject(
         type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>,
+        prefilled: Struct,
     ): Id = middleware.objectCreate(
         template = template,
         prefilled = prefilled,

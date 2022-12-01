@@ -194,7 +194,6 @@ sealed class ObjectWrapper {
         val isReadOnly: Boolean? by default
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
-        val isReadonly: Boolean? by default
         val isReadonlyValue: Boolean = relationReadonlyValue ?: false
 
         val restrictions: List<ObjectRestriction>

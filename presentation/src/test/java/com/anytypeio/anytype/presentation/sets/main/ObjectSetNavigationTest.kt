@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
@@ -61,15 +62,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     private val title = StubTitle()
-
-    private val header = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Layout(
-            type = Block.Content.Layout.Type.HEADER
-        ),
-        fields = Block.Fields.empty(),
-        children = listOf(title.id)
-    )
+    private val header = StubHeader(children = listOf(title.id))
 
     private val linkedProjectRelation = StubRelationObject(
         key = MockDataFactory.randomString(),

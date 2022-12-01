@@ -318,8 +318,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         setTextColor(context.color(R.color.text_secondary))
                         setTextSize(context.dimen(R.dimen.featured_relations_text_size))
                         setup(
-                            name = obj.name,
-                            icon = obj.icon
+                            name = resources.getString(
+                                R.string.set_by_type,
+                                obj.name
+                            )
                         )
                     }
                     is ObjectView.Deleted -> {

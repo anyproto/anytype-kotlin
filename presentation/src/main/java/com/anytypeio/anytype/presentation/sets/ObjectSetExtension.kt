@@ -71,8 +71,8 @@ private fun mapFeaturedRelations(
         Relations.SET_OF -> {
             val objectSet = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty())
             val sources = mutableListOf<ObjectView>()
-            objectSet.setOf.forEach { objectTypeId ->
-                val wrapper = ObjectWrapper.Basic(details.details[objectTypeId]?.map.orEmpty())
+            objectSet.setOf.forEach { sourceId ->
+                val wrapper = ObjectWrapper.Basic(details.details[sourceId]?.map.orEmpty())
                 if (!wrapper.isEmpty()) {
                     sources.add(
                         wrapper.toObjectView(urlBuilder = urlBuilder)

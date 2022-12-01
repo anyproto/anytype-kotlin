@@ -119,7 +119,7 @@ interface BlockDataStore {
     suspend fun createDataViewRecord(
         type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>,
+        prefilled: Struct,
     ): Id
 
     suspend fun addDataViewViewer(

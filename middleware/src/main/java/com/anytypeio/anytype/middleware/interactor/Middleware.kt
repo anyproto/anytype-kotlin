@@ -916,11 +916,11 @@ class Middleware(
     fun objectCreate(
         type: Id,
         template: Id?,
-        prefilled: Map<Id, Any>,
+        prefilled: Struct,
         shouldSelectType: Boolean = false,
         shouldEmptyDelete: Boolean = false
     ) : Id {
-        val details: Map<String, Any> = buildMap {
+        val details: Struct = buildMap {
             put(Relations.TYPE, type)
             putAll(prefilled)
         }

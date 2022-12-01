@@ -1,8 +1,9 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -17,25 +18,8 @@ import org.mockito.kotlin.verifyNoInteractions
 
 class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            style = Block.Content.Text.Style.TITLE,
-            text = MockDataFactory.randomString(),
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
-
-    private val header = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Layout(
-            type = Block.Content.Layout.Type.HEADER
-        ),
-        fields = Block.Fields.empty(),
-        children = listOf(title.id)
-    )
+    private val title = StubTitle()
+    private val header = StubHeader(children = listOf(title.id))
 
     private val ctx: Id = MockDataFactory.randomUuid()
 

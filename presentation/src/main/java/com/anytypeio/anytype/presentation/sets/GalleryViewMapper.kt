@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.Id
@@ -39,7 +40,7 @@ suspend fun DVViewer.buildGalleryViews(
         }
     }
     return objects.mapNotNull { id -> store.get(id) }.map { obj ->
-        if (obj.coverType == null && coverRelationKey == null) {
+        if (obj.coverType == CoverType.NONE && coverRelationKey == null) {
             Viewer.GalleryView.Item.Default(
                 objectId = obj.id,
                 relations = obj.values(
@@ -66,7 +67,7 @@ suspend fun DVViewer.buildGalleryViews(
             var coverImage: Url? = null
             var coverGradient: String? = null
 
-            if (obj.coverType != null ) {
+            if (obj.coverType != CoverType.NONE) {
                 val coverContainer = BasicObjectCoverWrapper(obj)
                     .getCover(urlBuilder, coverImageHashProvider)
 

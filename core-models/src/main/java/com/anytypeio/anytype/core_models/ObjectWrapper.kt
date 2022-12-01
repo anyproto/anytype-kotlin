@@ -23,12 +23,12 @@ sealed class ObjectWrapper {
 
         val coverId: String? by default
 
-        val coverType: CoverType?
+        val coverType: CoverType
             get() = when (val value = map[Relations.COVER_TYPE]) {
                 is Double -> CoverType.values().find { type ->
                     type.code == value.toInt()
-                }
-                else -> null
+                } ?: CoverType.NONE
+                else -> CoverType.NONE
             }
 
         val isArchived: Boolean? by default

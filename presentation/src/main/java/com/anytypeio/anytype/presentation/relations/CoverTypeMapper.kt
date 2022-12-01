@@ -5,16 +5,14 @@ import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import timber.log.Timber
 
 fun CoverWrapper.getCover(
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider
 ): CoverContainer {
-    val type = coverType ?: return CoverContainer()
+    val type = coverType
 
     var coverColor: CoverColor? = null
     var coverImage: Url? = null
@@ -41,14 +39,13 @@ fun CoverWrapper.getCover(
         CoverType.GRADIENT -> {
             coverGradient = coverId
         }
-        else -> {
-            Timber.d("Missing cover type: $type")
-            if (BuildConfig.DEBUG) {
-                throw IllegalStateException("Missing cover type: $type")
-            }
-        }
+        CoverType.NONE -> {}
     }
-    return CoverContainer(coverColor, coverImage, coverGradient)
+    return CoverContainer(
+        coverColor = coverColor,
+        coverImage = coverImage,
+        coverGradient = coverGradient
+    )
 }
 
 class CoverContainer(
@@ -58,24 +55,24 @@ class CoverContainer(
 )
 
 interface CoverWrapper {
-    val coverType: CoverType?
+    val coverType: CoverType
     val coverId: String?
 }
 
 class BlockFieldsCoverWrapper(val fields: Block.Fields?) : CoverWrapper {
 
-    override val coverType: CoverType?
+    override val coverType: CoverType
         get() {
-            val value = fields?.coverType?.toInt() ?: return null
-            return CoverType.values().find { type -> type.code == value }
+            val value = fields?.coverType?.toInt() ?: return CoverType.NONE
+            return CoverType.values().find { type ->
+                type.code == value
+            } ?: CoverType.NONE
         }
 
     override val coverId = fields?.coverId
 }
 
 class BasicObjectCoverWrapper(val obj: ObjectWrapper.Basic?) : CoverWrapper {
-
-    override val coverType = obj?.coverType
-
+    override val coverType = obj?.coverType ?: CoverType.NONE
     override val coverId = obj?.coverId
 }

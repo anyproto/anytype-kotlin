@@ -802,7 +802,6 @@ class BlockAdapter(
                 clickListener = onClickListener,
                 onTextBlockTextChanged = onTextBlockTextChanged,
                 onMentionEvent = onMentionEvent,
-                onSlashEvent = onSlashEvent,
                 onSelectionChanged = onSelectionChanged,
                 onFocusChanged = onFocusChanged
             )

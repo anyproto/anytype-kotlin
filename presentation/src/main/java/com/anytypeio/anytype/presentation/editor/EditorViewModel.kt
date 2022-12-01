@@ -39,7 +39,6 @@ import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
-import com.anytypeio.anytype.core_models.ext.textStyle
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -99,6 +98,7 @@ import com.anytypeio.anytype.presentation.editor.editor.SideEffect
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.ext.getOnFocusChangedEvent
 import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlights
 import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
@@ -468,18 +468,11 @@ class EditorViewModel(
                     orchestrator.stores.textSelection.update(Editor.TextSelection.empty())
                 } else {
                     if (!focus.isPending) {
-                        try {
-                            controlPanelInteractor.onEvent(
-                                ControlPanelMachine.Event.OnFocusChanged(
-                                    id = focus.id,
-                                    style = if (focus.id == context)
-                                        Content.Text.Style.TITLE
-                                    else
-                                        blocks.first { it.id == focus.id }.textStyle()
-                                )
-                            )
-                        } catch (e: NoSuchElementException) {
-                            Timber.e(e, "Could not found focused block. Doc size: ${blocks.size}")
+                        val event = views.getOnFocusChangedEvent(blockId = focus.id)
+                        if (event != null) {
+                            controlPanelInteractor.onEvent(event)
+                        } else {
+                            Timber.w("Couldn't found focused block by id:[${focus.id}]")
                         }
                     }
                 }

@@ -72,6 +72,8 @@ data class ControlPanelState(
                  * Toolbar is shown for Any block type except Title
                  */
                 object Title: TargetBlockType
+
+                object Cell: TargetBlockType
             }
 
             companion object {

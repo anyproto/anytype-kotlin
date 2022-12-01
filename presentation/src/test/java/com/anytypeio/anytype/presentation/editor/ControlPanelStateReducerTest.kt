@@ -55,7 +55,7 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnFocusChanged(
             id = MockDataFactory.randomUuid(),
-            style = Block.Content.Text.Style.P
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val actual = runBlocking {
@@ -175,7 +175,7 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnFocusChanged(
             id = MockDataFactory.randomUuid(),
-            style = Block.Content.Text.Style.P
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val actual = runBlocking {
@@ -265,7 +265,7 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnFocusChanged(
             id = MockDataFactory.randomUuid(),
-            style = Block.Content.Text.Style.P
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val actual = runBlocking {
@@ -535,7 +535,7 @@ class ControlPanelStateReducerTest {
                 state = ControlPanelState.init(),
                 event = ControlPanelMachine.Event.OnFocusChanged(
                     id = id,
-                    style = Block.Content.Text.Style.P
+                    type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
         }
@@ -617,7 +617,7 @@ class ControlPanelStateReducerTest {
                 state = ControlPanelState.init(),
                 event = ControlPanelMachine.Event.OnFocusChanged(
                     id = id,
-                    style = Block.Content.Text.Style.BULLET
+                    type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
         }
@@ -689,7 +689,7 @@ class ControlPanelStateReducerTest {
                 state = ControlPanelState.init(),
                 event = ControlPanelMachine.Event.OnFocusChanged(
                     id = id,
-                    style = Block.Content.Text.Style.P
+                    type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
 
@@ -785,7 +785,7 @@ class ControlPanelStateReducerTest {
 
         val eventFocus = ControlPanelMachine.Event.OnFocusChanged(
             id = MockDataFactory.randomUuid(),
-            style = Block.Content.Text.Style.P
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val stateAfterFocus = runBlocking {
@@ -823,7 +823,7 @@ class ControlPanelStateReducerTest {
 
         val eventFocus = ControlPanelMachine.Event.OnFocusChanged(
             id = MockDataFactory.randomUuid(),
-            style = Block.Content.Text.Style.P
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val stateAfterFocus = runBlocking {

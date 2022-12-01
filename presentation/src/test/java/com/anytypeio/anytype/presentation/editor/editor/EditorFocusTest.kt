@@ -3,7 +3,13 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubLayoutColumns
+import com.anytypeio.anytype.core_models.StubLayoutRows
 import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.StubTable
+import com.anytypeio.anytype.core_models.StubTableCells
+import com.anytypeio.anytype.core_models.StubTableColumns
+import com.anytypeio.anytype.core_models.StubTableRows
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -17,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verifyNoInteractions
+import kotlin.test.assertEquals
 
 
 class EditorFocusTest : EditorPresentationTestSetup() {
@@ -323,6 +330,177 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             ControlPanelState(
                 navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = true)
             )
+        )
+    }
+
+    @Test
+    fun `when set focus in text block - Main toolbar should be with Any type`() {
+
+        // SETUP
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val first = StubParagraph()
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, first.id)
+        )
+        val doc = listOf(page, header, title, first)
+        val vm = buildViewModel()
+
+        // STUB
+        stubInterceptEvents()
+        stubOpenDocument(doc)
+        stubUpdateText()
+
+        // TESTING Click on text block
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = first.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = first.id,
+                selection = IntRange(0, 0)
+            )
+        }
+
+        // EXPECTED
+        val expectedState = ControlPanelState.init().copy(
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
+                targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
+            )
+        )
+
+        // ASSERT
+        assertEquals(
+            expected = expectedState,
+            actual = vm.controlPanelViewState.test().value()
+        )
+    }
+
+    @Test
+    fun `when set focus in title block - Main toolbar should be with Title type`() {
+
+        // SETUP
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val first = StubParagraph()
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, first.id)
+        )
+        val doc = listOf(page, header, title, first)
+        val vm = buildViewModel()
+
+        // STUB
+        stubInterceptEvents()
+        stubOpenDocument(doc)
+        stubUpdateText()
+
+        // TESTING Click on title block
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = title.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = title.id,
+                selection = IntRange(0, 0)
+            )
+        }
+
+        // EXPECTED
+        val expectedState = ControlPanelState.init().copy(
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
+                targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Title
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
+            )
+        )
+
+        // ASSERT
+        assertEquals(
+            expected = expectedState,
+            actual = vm.controlPanelViewState.test().value()
+        )
+    }
+
+    @Test
+    fun `when set focus in cell block - Main toolbar should be with Cell type`() {
+
+        // SETUP
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val columns = StubTableColumns(size = 3)
+        val rows = StubTableRows(size = 2)
+        val cells = StubTableCells(columns = columns, rows = rows)
+        val columnLayout = StubLayoutColumns(children = columns.map { it.id })
+        val rowLayout = StubLayoutRows(children = rows.map { it.id })
+        val table = StubTable(children = listOf(columnLayout.id, rowLayout.id))
+        val paragraph = StubParagraph()
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, table.id, paragraph.id) + listOf(table.id) + listOf(
+                paragraph.id
+            )
+        )
+        val doc = listOf(
+            page,
+            header,
+            title,
+            table,
+            columnLayout,
+            rowLayout
+        ) + columns + rows + cells + paragraph
+        val vm = buildViewModel()
+
+        // STUB
+        stubInterceptEvents()
+        stubOpenDocument(doc)
+        stubUpdateText()
+
+        // TESTING Click on cell block
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = cells[0].id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = cells[0].id,
+                selection = IntRange(0, 0)
+            )
+        }
+
+        // EXPECTED
+        val expectedState = ControlPanelState.init().copy(
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
+                targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
+            )
+        )
+
+        // ASSERT
+        assertEquals(
+            expected = expectedState,
+            actual = vm.controlPanelViewState.test().value()
         )
     }
 }

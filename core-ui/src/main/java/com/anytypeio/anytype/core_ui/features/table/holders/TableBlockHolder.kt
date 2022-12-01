@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.selection.TableCellsSelectionState
 
 class TableBlockHolder(
@@ -27,7 +26,6 @@ class TableBlockHolder(
     clickListener: (ListenerType) -> Unit,
     onTextBlockTextChanged: (BlockView.Text) -> Unit,
     onMentionEvent: (MentionEvent) -> Unit,
-    onSlashEvent: (SlashEvent) -> Unit,
     onSelectionChanged: (Id, IntRange) -> Unit,
     onFocusChanged: (Id, Boolean) -> Unit
 ) : BlockViewHolder(binding.root) {
@@ -48,7 +46,6 @@ class TableBlockHolder(
         clicked = clickListener,
         onTextBlockTextChanged = onTextBlockTextChanged,
         onMentionEvent = onMentionEvent,
-        onSlashEvent = onSlashEvent,
         onSelectionChanged = onSelectionChanged,
         onFocusChanged = onFocusChanged
     )

@@ -1326,6 +1326,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             binding.toolbar.state = when (state.mainToolbar.targetBlockType) {
                 Main.TargetBlockType.Any -> BlockToolbarWidget.State.Any
                 Main.TargetBlockType.Title -> BlockToolbarWidget.State.Title
+                Main.TargetBlockType.Cell -> BlockToolbarWidget.State.Cell
             }
         } else {
             binding.toolbar.invisible()

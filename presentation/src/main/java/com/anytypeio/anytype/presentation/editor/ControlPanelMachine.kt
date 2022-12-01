@@ -112,7 +112,7 @@ sealed class ControlPanelMachine {
          */
         data class OnFocusChanged(
             val id: String,
-            val style: Style
+            val type: Toolbar.Main.TargetBlockType
         ) : Event()
 
         sealed class SearchToolbar : Event() {
@@ -497,32 +497,30 @@ sealed class ControlPanelMachine {
                     !state.mainToolbar.isVisible -> state.copy(
                         mainToolbar = state.mainToolbar.copy(
                             isVisible = true,
-                            targetBlockType = when (event.style) {
-                                Style.TITLE -> Toolbar.Main.TargetBlockType.Title
-                                else -> Toolbar.Main.TargetBlockType.Any
+                            targetBlockType = when (event.type) {
+                                Toolbar.Main.TargetBlockType.Any -> Toolbar.Main.TargetBlockType.Any
+                                Toolbar.Main.TargetBlockType.Cell -> Toolbar.Main.TargetBlockType.Cell
+                                Toolbar.Main.TargetBlockType.Title -> Toolbar.Main.TargetBlockType.Title
                             }
                         ),
                         styleTextToolbar = Toolbar.Styling.reset(),
                         mentionToolbar = Toolbar.MentionToolbar.reset(),
                         slashWidget = Toolbar.SlashWidget.reset(),
                         markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
-                        navigationToolbar = Toolbar.Navigation(
-                            isVisible = false
-                        ),
+                        navigationToolbar = Toolbar.Navigation.reset(),
                         styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
                         simpleTableWidget = Toolbar.SimpleTableWidget.reset()
                     )
                     else -> {
                         state.copy(
                             mainToolbar = state.mainToolbar.copy(
-                                targetBlockType = when (event.style) {
-                                    Style.TITLE -> Toolbar.Main.TargetBlockType.Title
-                                    else -> Toolbar.Main.TargetBlockType.Any
+                                targetBlockType = when (event.type) {
+                                    Toolbar.Main.TargetBlockType.Any -> Toolbar.Main.TargetBlockType.Any
+                                    Toolbar.Main.TargetBlockType.Cell -> Toolbar.Main.TargetBlockType.Cell
+                                    Toolbar.Main.TargetBlockType.Title -> Toolbar.Main.TargetBlockType.Title
                                 }
                             ),
-                            styleTextToolbar = state.styleTextToolbar.copy(
-                                isVisible = false
-                            ),
+                            styleTextToolbar = Toolbar.Styling.reset(),
                             mentionToolbar = Toolbar.MentionToolbar.reset(),
                             slashWidget = Toolbar.SlashWidget.reset(),
                             objectTypesToolbar = Toolbar.ObjectTypes.reset(),

@@ -18,7 +18,7 @@ class BlockToolbarWidget @JvmOverloads constructor(
     sealed interface State {
 
         /**
-         * Toolbar is shown for Any block type except Title
+         * Toolbar is shown for Any block type except Title or Cells
          */
         object Any : State
 
@@ -26,6 +26,11 @@ class BlockToolbarWidget @JvmOverloads constructor(
          * Toolbar is shown specially for Title block
          */
         object Title : State
+
+        /**
+         * Toolbar is shown specially for Simple Table cells
+         */
+        object Cell : State
     }
 
     private val binding = WidgetBlockToolbarBinding.inflate(
@@ -55,6 +60,13 @@ class BlockToolbarWidget @JvmOverloads constructor(
                     blockActions.gone()
                     blockMentionButton.gone()
                     slashWidgetButton.gone()
+                }
+                State.Cell -> {
+                    done.visible()
+                    blockActions.visible()
+                    blockMentionButton.visible()
+                    slashWidgetButton.gone()
+                    changeStyleButton.gone()
                 }
             }
         }

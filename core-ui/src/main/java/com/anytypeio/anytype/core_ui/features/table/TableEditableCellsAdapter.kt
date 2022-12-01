@@ -14,7 +14,6 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import timber.log.Timber
 
 class TableEditableCellsAdapter(
@@ -22,7 +21,6 @@ class TableEditableCellsAdapter(
     private val clicked: (ListenerType) -> Unit,
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
     private val onMentionEvent: (MentionEvent) -> Unit,
-    private val onSlashEvent: (SlashEvent) -> Unit,
     private val onSelectionChanged: (Id, IntRange) -> Unit,
     private val onFocusChanged: (Id, Boolean) -> Unit
 ) : RecyclerView.Adapter<EditableCellHolder>(),
@@ -93,7 +91,7 @@ class TableEditableCellsAdapter(
                 onSplitLineEnterClicked = { _, _, _ -> },
                 onNonEmptyBlockBackspaceClicked = { _, _ -> },
                 onMentionEvent = onMentionEvent,
-                onSlashEvent = onSlashEvent,
+                onSlashEvent = {},
                 onBackPressedCallback = null
             )
         }

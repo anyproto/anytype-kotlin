@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
@@ -435,10 +437,22 @@ fun List<BlockView>.updateCursorAndEditMode(
         is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.File -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
+        is BlockView.MediaPlaceholder.Video -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
+        is BlockView.MediaPlaceholder.Bookmark -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
+        is BlockView.MediaPlaceholder.Picture -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
         is BlockView.Media.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
@@ -515,10 +529,22 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.MediaPlaceholder.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.MediaPlaceholder.File -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
+        is BlockView.MediaPlaceholder.Video -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
+        is BlockView.MediaPlaceholder.Bookmark -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
+        is BlockView.MediaPlaceholder.Picture -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
         is BlockView.Media.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
@@ -1322,4 +1348,31 @@ fun List<BlockView>.findSearchResultPosition(): Int {
         }
     }
     return -1
+}
+
+fun List<BlockView>.getOnFocusChangedEvent(blockId: Id): ControlPanelMachine.Event.OnFocusChanged? {
+    val blockView = find { it.id == blockId }
+    return if (blockView != null) {
+        when (blockView) {
+            is BlockView.Title -> ControlPanelMachine.Event.OnFocusChanged(
+                id = blockId,
+                type = ControlPanelState.Toolbar.Main.TargetBlockType.Title
+            )
+            else -> ControlPanelMachine.Event.OnFocusChanged(
+                id = blockId,
+                type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
+            )
+        }
+
+    } else {
+        val cellView = findTableCellView(id = blockId)
+        if (cellView != null) {
+            ControlPanelMachine.Event.OnFocusChanged(
+                id = blockId,
+                type = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+            )
+        } else {
+            null
+        }
+    }
 }

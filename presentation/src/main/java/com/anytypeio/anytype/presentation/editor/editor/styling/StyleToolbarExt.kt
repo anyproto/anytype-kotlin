@@ -131,6 +131,29 @@ fun List<Block.Content.Text>.getStyleOtherToolbarState(): StyleToolbarState.Othe
     )
 }
 
+fun List<Block.Content.Text>.getStyleOtherStateForTableCells(): StyleToolbarState.Other {
+    return StyleToolbarState.Other(
+        isSupportBold = true,
+        isSupportItalic = true,
+        isSupportCode = true,
+        isSupportLinked = false,
+        isSupportStrikethrough = true,
+        isSupportUnderline = true,
+        isSupportAlignStart = all { it.alignmentSupport().contains(Alignment.START) },
+        isSupportAlignCenter = all { it.alignmentSupport().contains(Alignment.CENTER) },
+        isSupportAlignEnd = all { it.alignmentSupport().contains(Alignment.END) },
+        isBoldSelected = all { it.isBold() },
+        isItalicSelected = all { it.isItalic() },
+        isStrikethroughSelected = all { it.isStrikethrough() },
+        isUnderlineSelected = all { it.isUnderline() },
+        isCodeSelected = all { it.isCode() },
+        isLinkedSelected = all { it.isLinked() },
+        isAlignCenterSelected = all { it.isAlignCenter() },
+        isAlignStartSelected = all { it.isAlignStart() },
+        isAlignEndSelected = all { it.isAlignEnd() }
+    )
+}
+
 private fun Block.Content.Text.isSupportBold(): Boolean = when (this.style) {
     Block.Content.Text.Style.H1,
     Block.Content.Text.Style.H2,

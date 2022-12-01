@@ -145,6 +145,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.editor.styling.getIds
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleBackgroundToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleColorBackgroundToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleOtherStateForTableCells
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleOtherToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleTextToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
@@ -6352,7 +6353,7 @@ class EditorViewModel(
 
     private fun proceedTableWidgetStyleClicked() {
         val selected = blocks.filter { currentSelection().contains(it.id) }
-        val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
+        val state = selected.map { it.content.asText() }.getStyleOtherStateForTableCells()
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OtherToolbar.Show(
                 state = state,

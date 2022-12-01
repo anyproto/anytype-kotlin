@@ -604,4 +604,90 @@ class StyleToolbarExtKtTest {
 
         Assert.assertEquals(expected, result)
     }
+
+    @Test
+    fun `should return style other state without links for cells`() {
+
+        val child = MockDataFactory.randomUuid()
+
+        val backgroundLime = ThemeColor.TEAL.code
+        val textColorRed = ThemeColor.RED.code
+
+        val given1Text = MockDataFactory.randomString()
+        val given1 = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                style = Block.Content.Text.Style.P,
+                text = given1Text,
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(0, given1Text.length),
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    ),
+                    Block.Content.Text.Mark(
+                        range = IntRange(0, given1Text.length),
+                        type = Block.Content.Text.Mark.Type.ITALIC
+                    ),
+                    Block.Content.Text.Mark(
+                        range = IntRange(0, given1Text.length),
+                        type = Block.Content.Text.Mark.Type.KEYBOARD
+                    )
+                ),
+                color = textColorRed,
+                align = Block.Align.AlignCenter
+            ),
+            backgroundColor = backgroundLime,
+            children = emptyList()
+        )
+
+        val given2Text = MockDataFactory.randomString()
+        val given2 = Block(
+            id = child,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Text(
+                style = Block.Content.Text.Style.P,
+                text = given2Text,
+                marks = listOf(
+                    Block.Content.Text.Mark(
+                        range = IntRange(0, given2Text.length),
+                        type = Block.Content.Text.Mark.Type.BOLD
+                    ),
+                    Block.Content.Text.Mark(
+                        range = IntRange(0, given2Text.length),
+                        type = Block.Content.Text.Mark.Type.ITALIC
+                    ),
+                    Block.Content.Text.Mark(
+                        range = IntRange(0, given2Text.length),
+                        type = Block.Content.Text.Mark.Type.KEYBOARD
+                    )
+                ),
+                color = textColorRed,
+                align = Block.Align.AlignCenter
+            ),
+            backgroundColor = backgroundLime,
+            children = emptyList()
+        )
+
+        val result =
+            listOf(given1, given2).map { it.content.asText() }.getStyleOtherStateForTableCells()
+
+        val expected = StyleToolbarState.Other(
+            isSupportBold = true,
+            isSupportItalic = true,
+            isSupportStrikethrough = true,
+            isSupportUnderline = true,
+            isSupportCode = true,
+            isSupportLinked = false,
+            isSupportAlignEnd = true,
+            isSupportAlignCenter = true,
+            isSupportAlignStart = true,
+            isAlignCenterSelected = true,
+            isBoldSelected = true,
+            isItalicSelected = true,
+            isCodeSelected = true
+        )
+
+        Assert.assertEquals(expected, result)
+    }
 }

@@ -803,7 +803,8 @@ class BlockAdapter(
                 onTextBlockTextChanged = onTextBlockTextChanged,
                 onMentionEvent = onMentionEvent,
                 onSelectionChanged = onSelectionChanged,
-                onFocusChanged = onFocusChanged
+                onFocusChanged = onFocusChanged,
+                clipboardInterceptor = clipboardInterceptor
             )
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }

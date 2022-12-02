@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_ui.layout.TableHorizontalItemDivider
 import com.anytypeio.anytype.core_ui.layout.TableVerticalItemDivider
 import com.anytypeio.anytype.core_ui.features.table.TableEditableCellsAdapter
 import com.anytypeio.anytype.core_ui.layout.TableCellSelectionDecoration
+import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -27,7 +28,8 @@ class TableBlockHolder(
     onTextBlockTextChanged: (BlockView.Text) -> Unit,
     onMentionEvent: (MentionEvent) -> Unit,
     onSelectionChanged: (Id, IntRange) -> Unit,
-    onFocusChanged: (Id, Boolean) -> Unit
+    onFocusChanged: (Id, Boolean) -> Unit,
+    clipboardInterceptor: ClipboardInterceptor
 ) : BlockViewHolder(binding.root) {
 
     private val root: FrameLayout = binding.root
@@ -47,7 +49,8 @@ class TableBlockHolder(
         onTextBlockTextChanged = onTextBlockTextChanged,
         onMentionEvent = onMentionEvent,
         onSelectionChanged = onSelectionChanged,
-        onFocusChanged = onFocusChanged
+        onFocusChanged = onFocusChanged,
+        clipboardInterceptor = clipboardInterceptor
     )
 
     private val lm =

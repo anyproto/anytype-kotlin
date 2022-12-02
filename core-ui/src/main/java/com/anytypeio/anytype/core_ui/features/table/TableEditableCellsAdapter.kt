@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_ui.features.editor.ItemProviderAdapter
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.features.editor.withBlock
 import com.anytypeio.anytype.core_ui.features.table.holders.EditableCellHolder
+import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -22,7 +23,8 @@ class TableEditableCellsAdapter(
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
     private val onMentionEvent: (MentionEvent) -> Unit,
     private val onSelectionChanged: (Id, IntRange) -> Unit,
-    private val onFocusChanged: (Id, Boolean) -> Unit
+    private val onFocusChanged: (Id, Boolean) -> Unit,
+    private val clipboardInterceptor: ClipboardInterceptor
 ) : RecyclerView.Adapter<EditableCellHolder>(),
     ItemProviderAdapter<BlockView.Text.Paragraph?> {
 
@@ -83,6 +85,7 @@ class TableEditableCellsAdapter(
                     }
                 }
             }
+            content.clipboardInterceptor = clipboardInterceptor
             this.setupViewHolder(
                 onTextChanged = { editable ->
                     this.withBlock<BlockView.Text> { item ->

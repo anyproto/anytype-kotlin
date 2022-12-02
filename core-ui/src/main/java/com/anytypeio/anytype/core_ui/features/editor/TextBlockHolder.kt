@@ -54,6 +54,13 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
+    fun setupTableCell() {
+        with(content) {
+            setSpannableFactory(DefaultSpannableFactory())
+            setupCustomInsertionActionMode(isWithBookmark = false)
+        }
+    }
+
     fun setBlockText(
         text: String,
         markup: Markup,
@@ -369,12 +376,14 @@ interface TextBlockHolder : TextHolder {
 
     //region CONTEXT MENU
 
-    private fun setupCustomInsertionActionMode() {
+    private fun setupCustomInsertionActionMode(isWithBookmark: Boolean = true) {
         content.customInsertionActionModeCallback = object : ActionMode.Callback2() {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
                 if (getLink() != null) {
                     menu.addLink()
-                    menu.add(0, R.id.menuBookmark, 3, R.string.bookmark)
+                    if (isWithBookmark) {
+                        menu.add(0, R.id.menuBookmark, 3, R.string.bookmark)
+                    }
                     menu.pasteToText()
                 }
                 return true

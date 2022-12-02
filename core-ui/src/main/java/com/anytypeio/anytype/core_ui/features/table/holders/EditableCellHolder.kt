@@ -27,7 +27,7 @@ class EditableCellHolder(
     private val mentionInitialsSize: Float
 
     init {
-        setup()
+        setupTableCell()
         with(itemView.context) {
             mentionIconSize =
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)

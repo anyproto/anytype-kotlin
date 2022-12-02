@@ -1559,6 +1559,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             hidingSoftInput()
                         } else {
                             proceedWithHidingSoftInput()
+                            delayKeyboardHide(insets)
                         }
                         behavior.apply {
                             setState(BottomSheetBehavior.STATE_EXPANDED)

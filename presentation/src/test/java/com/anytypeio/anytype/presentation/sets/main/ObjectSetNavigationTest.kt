@@ -33,7 +33,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -133,7 +132,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = dv.content<DV>().sources,
-            keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relationsIndex.map { it.key },
+            keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(
@@ -258,7 +257,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 afterId = null,
                 beforeId = null,
                 sources = dv.content<DV>().sources,
-                keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relationsIndex.map { it.key },
+                keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
                 limit = ObjectSetConfig.DEFAULT_LIMIT,
                 offset = 0,
                 result = SearchResult(
@@ -380,7 +379,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = dv.content<DV>().sources,
-            keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relationsIndex.map { it.key },
+            keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(
@@ -497,7 +496,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 afterId = null,
                 beforeId = null,
                 sources = dv.content<DV>().sources,
-                keys = ObjectSearchConstants.defaultKeys + dv.content<DV>().relationsIndex.map { it.key },
+                keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
                 limit = ObjectSetConfig.DEFAULT_LIMIT,
                 offset = 0,
                 result = SearchResult(

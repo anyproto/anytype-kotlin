@@ -63,7 +63,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 )
             }
         )
-        val keys = ObjectSearchConstants.defaultKeys + doc.dv.content<DV>().relationsIndex.map { it.key }
+        val keys = (ObjectSearchConstants.defaultDataViewKeys + doc.dv.content<DV>().relationsIndex.map { it.key }).distinct()
 
         stubSearchWithSubscription(
             subscription = root,

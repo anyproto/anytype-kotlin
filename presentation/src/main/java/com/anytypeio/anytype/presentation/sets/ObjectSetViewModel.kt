@@ -195,7 +195,7 @@ class ObjectSetViewModel(
                 val view = dv.viewers.find { it.id == v } ?: dv.viewers.firstOrNull()
                 if (view != null) {
                     val dataViewKeys = dv.relationsIndex.map { it.key }
-                    val defaultKeys = ObjectSearchConstants.defaultKeys
+                    val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
                     DataViewSubscriptionContainer.Params(
                         subscription = context,
                         sorts = view.sorts,

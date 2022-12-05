@@ -298,5 +298,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="settings_screen">Settings</string>
 
     <string name="snack_link_to">linked to</string>
+    <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Recovery phrase copied</string>
 </resources>

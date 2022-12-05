@@ -1077,7 +1077,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenObjectSnackbar -> {
-                    binding.root.showActionableSnackBar(getFrom(), command.text, command.icon) {
+                    binding.root.showActionableSnackBar(
+                        getFrom(),
+                        command.text,
+                        command.icon,
+                        middleString = R.string.snack_move_to
+                    ) {
                         if (command.isSet) {
                             vm.proceedWithOpeningSet(command.id)
                         } else {

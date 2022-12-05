@@ -197,6 +197,7 @@ abstract class ObjectMenuBaseFragment :
                     command.currentObjectName,
                     command.targetObjectName,
                     command.icon,
+                    R.string.snack_link_to,
                     binding.anchor
                 ) {
                     vm.proceedWithOpeningPage(command.id)

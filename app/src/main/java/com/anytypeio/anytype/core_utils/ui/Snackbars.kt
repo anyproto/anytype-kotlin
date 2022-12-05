@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -15,6 +16,7 @@ fun View.showActionableSnackBar(
     from: String?,
     to: String?,
     icon: ObjectIcon,
+    @StringRes middleString: Int,
     anchor: View? = null,
     click: () -> Unit
 ) {
@@ -31,9 +33,9 @@ fun View.showActionableSnackBar(
     with(newView.findViewById<TextView>(R.id.snackbar_text)) {
         if (from.isNullOrEmpty()) {
             this.text =
-                "${resources.getString(R.string.untitled)} ${resources.getString(R.string.snack_link_to)}"
+                "${resources.getString(R.string.untitled)} ${resources.getString(middleString)}"
         } else {
-            this.text = "$from ${resources.getString(R.string.snack_link_to)}"
+            this.text = "$from ${resources.getString(middleString)}"
         }
     }
 

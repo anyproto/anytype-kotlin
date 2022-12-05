@@ -155,7 +155,8 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             invoke(
                 CreateDataViewObject.Params.SetByRelation(
-                    filters = viewer.filters
+                    filters = viewer.filters,
+                    relations = listOf(givenSourceRelation.id)
                 )
             )
         }

@@ -3,8 +3,10 @@ package com.anytypeio.anytype.domain.dataview.interactor
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -38,7 +40,8 @@ class CreateDataViewObject(
                 repo.createDataViewObject(
                     template = resolveTemplateForNewObject(type = type),
                     prefilled = resolveSetByRelationPrefilledObjectData(
-                        filters = params.filters
+                        filters = params.filters,
+                        relations = params.relations
                     ),
                     type = type
                 )
@@ -66,7 +69,10 @@ class CreateDataViewObject(
         return templates.singleOrNull()?.id
     }
 
-    private suspend fun resolveSetByRelationPrefilledObjectData(filters: List<DVFilter>): Struct = try {
+    private suspend fun resolveSetByRelationPrefilledObjectData(
+        filters: List<DVFilter>,
+        relations: List<Key>
+    ): Struct = try {
         buildMap {
             filters.forEach { filter ->
                 val relation = storeOfRelations.getByKey(filter.relationKey)
@@ -77,26 +83,14 @@ class CreateDataViewObject(
                             put(filter.relationKey, value)
                         }
                     } else {
-                        when(relation.format) {
-                            Relation.Format.LONG_TEXT,
-                            Relation.Format.SHORT_TEXT,
-                            Relation.Format.URL,
-                            Relation.Format.EMAIL,
-                            Relation.Format.PHONE,
-                            Relation.Format.EMOJI -> {
-                                put(filter.relationKey, EMPTY_STRING_VALUE)
-                            }
-                            Relation.Format.NUMBER -> {
-                                put(filter.relationKey, null)
-                            }
-                            Relation.Format.CHECKBOX -> {
-                                put(filter.relationKey, false)
-                            }
-                            else -> {
-                                put(filter.relationKey, null)
-                            }
-                        }
+                        put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))
                     }
+                }
+            }
+            relations.forEach { id ->
+                val relation = storeOfRelations.getById(id)
+                if (relation != null && !containsKey(relation.key)) {
+                    put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))
                 }
             }
         }
@@ -112,13 +106,36 @@ class CreateDataViewObject(
         }
     }
 
+    private fun resolveDefaultValueByFormat(format: RelationFormat) : Any? {
+        when(format) {
+            Relation.Format.LONG_TEXT,
+            Relation.Format.SHORT_TEXT,
+            Relation.Format.URL,
+            Relation.Format.EMAIL,
+            Relation.Format.PHONE,
+            Relation.Format.EMOJI -> {
+                return EMPTY_STRING_VALUE
+            }
+            Relation.Format.NUMBER -> {
+                return null
+            }
+            Relation.Format.CHECKBOX -> {
+                return false
+            }
+            else -> {
+                return null
+            }
+        }
+    }
+
     sealed class Params {
         data class SetByType(
             val type: Id,
             val filters: List<DVFilter>
         ) : Params()
         data class SetByRelation(
-            val filters: List<DVFilter>
+            val filters: List<DVFilter>,
+            val relations: List<Id>
         ) : Params()
     }
 

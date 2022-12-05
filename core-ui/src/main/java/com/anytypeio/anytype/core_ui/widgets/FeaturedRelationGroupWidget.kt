@@ -359,7 +359,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             setup(
                 name = if (names.size == 1) {
                     resources.getString(
-                        R.string.set_by_relations,
+                        R.string.set_by_relation,
                         names.first()
                     )
                 } else {

@@ -770,7 +770,8 @@ class ObjectSetViewModel(
                             ObjectTypeIds.RELATION -> {
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByRelation(
-                                        filters = viewer.filters
+                                        filters = viewer.filters,
+                                        relations = setObject.setOf
                                     )
                                 )
                             }

@@ -267,9 +267,7 @@ data class ControlPanelState(
         data class SimpleTableWidget(
             override val isVisible: Boolean,
             val tableId: Id,
-            val cellItems: List<SimpleTableWidgetItem> = emptyList(),
-            val rowItems: List<SimpleTableWidgetItem> = emptyList(),
-            val columnItems: List<SimpleTableWidgetItem> = emptyList(),
+            val items: List<SimpleTableWidgetItem> = emptyList(),
             val selectedCount: Int,
             val tab: BlockView.Table.Tab
         ) : Toolbar() {
@@ -277,9 +275,7 @@ data class ControlPanelState(
                 fun reset(): SimpleTableWidget = SimpleTableWidget(
                     isVisible = false,
                     tableId = "",
-                    cellItems = emptyList(),
-                    rowItems = emptyList(),
-                    columnItems = emptyList(),
+                    items = emptyList(),
                     selectedCount = 0,
                     tab = BlockView.Table.Tab.CELL
                 )

@@ -676,7 +676,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Column.ClearContents(ids),
                 SimpleTableWidgetItem.Column.Color(ids),
                 SimpleTableWidgetItem.Column.Style(ids),
@@ -776,7 +776,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val expectedSimpleTableWidget1 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Column.ClearContents(ids),
                 SimpleTableWidgetItem.Column.Color(ids),
                 SimpleTableWidgetItem.Column.Style(ids),
@@ -851,7 +851,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val expectedSimpleTableWidget2 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Row.ClearContents(idsRow),
                 SimpleTableWidgetItem.Row.Color(idsRow),
                 SimpleTableWidgetItem.Row.Style(idsRow),
@@ -928,7 +928,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val expectedSimpleTableWidget3 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Row.InsertAbove(BlockView.Table.RowId(rows[0].id)),
                 SimpleTableWidgetItem.Row.InsertBelow(BlockView.Table.RowId(rows[0].id)),
                 SimpleTableWidgetItem.Row.MoveDown(
@@ -989,7 +989,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val expectedSimpleTableWidget4 = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            cellItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Cell.ClearContents,
                 SimpleTableWidgetItem.Cell.Color,
                 SimpleTableWidgetItem.Cell.Style,
@@ -1091,7 +1091,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         var expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = expectedItems,
+            items = expectedItems,
             selectedCount = 1,
             tab = BlockView.Table.Tab.COLUMN
         )
@@ -1173,7 +1173,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = expectedItems,
+            items = expectedItems,
             selectedCount = 1,
             tab = BlockView.Table.Tab.COLUMN
         )
@@ -1254,7 +1254,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = expectedItems,
+            items = expectedItems,
             selectedCount = 1,
             tab = BlockView.Table.Tab.COLUMN
         )
@@ -1318,7 +1318,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            columnItems = expectedItems,
+            items = expectedItems,
             selectedCount = 2,
             tab = BlockView.Table.Tab.COLUMN
         )

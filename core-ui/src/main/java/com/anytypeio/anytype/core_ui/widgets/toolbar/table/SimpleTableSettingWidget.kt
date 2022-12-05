@@ -4,11 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetSimpleTableBinding
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 
 class SimpleTableSettingWidget @JvmOverloads constructor(
     context: Context,
@@ -22,36 +23,48 @@ class SimpleTableSettingWidget @JvmOverloads constructor(
 
     var onItemClickListener: (SimpleTableWidgetItem) -> Unit = {}
 
-    private val cellAdapter = SimpleTableWidgetAdapter(items = listOf(),
-        onClick = { item -> onItemClickListener.invoke(item) })
-    private val columnAdapter = SimpleTableWidgetAdapter(items = listOf(),
-        onClick = { item -> onItemClickListener.invoke(item) })
-    private val rowAdapter = SimpleTableWidgetAdapter(items = listOf(),
-        onClick = { item -> onItemClickListener.invoke(item) })
-
-    private val pagerAdapter = SimpleTableSettingAdapter(
-        cellAdapter = cellAdapter,
-        columnAdapter = columnAdapter,
-        rowAdapter = rowAdapter
+    private val itemsAdapter = SimpleTableWidgetAdapter(
+        onClick = { item -> onItemClickListener.invoke(item) }
     )
 
+    init {
+        binding.recyclerItems.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            setHasFixedSize(true)
+            adapter = itemsAdapter
+        }
+        binding.tabsLayout.apply {
+            addTab(
+                newTab().setText(context.getString(R.string.simple_tables_widget_tab_cell)),
+                true
+            )
+            addTab(newTab().setText(context.getString(R.string.simple_tables_widget_tab_column)))
+            addTab(newTab().setText(context.getString(R.string.simple_tables_widget_tab_row)))
+        }
+    }
+
     fun onStateChanged(
-        cellItems: List<SimpleTableWidgetItem>,
-        rowItems: List<SimpleTableWidgetItem>,
-        columnItems: List<SimpleTableWidgetItem>
+        items: List<SimpleTableWidgetItem>,
+        tab: BlockView.Table.Tab
     ) {
-        if (cellItems.isNotEmpty() && binding.tabsLayout.selectedTabPosition != TAB_CELL_POSITION) {
-            binding.tabsLayout.selectTab(binding.tabsLayout.getTabAt(TAB_CELL_POSITION))
+        itemsAdapter.submitList(items)
+        when (tab) {
+            BlockView.Table.Tab.CELL -> {
+                if (binding.tabsLayout.selectedTabPosition != TAB_CELL_POSITION) {
+                    binding.tabsLayout.selectTab(binding.tabsLayout.getTabAt(TAB_CELL_POSITION))
+                }
+            }
+            BlockView.Table.Tab.COLUMN -> {
+                if (binding.tabsLayout.selectedTabPosition != TAB_COLUMN_POSITION) {
+                    binding.tabsLayout.selectTab(binding.tabsLayout.getTabAt(TAB_COLUMN_POSITION))
+                }
+            }
+            BlockView.Table.Tab.ROW -> {
+                if (binding.tabsLayout.selectedTabPosition != TAB_ROW_POSITION) {
+                    binding.tabsLayout.selectTab(binding.tabsLayout.getTabAt(TAB_ROW_POSITION))
+                }
+            }
         }
-        if (columnItems.isNotEmpty() && binding.tabsLayout.selectedTabPosition != TAB_COLUMN_POSITION) {
-            binding.tabsLayout.selectTab(binding.tabsLayout.getTabAt(TAB_COLUMN_POSITION))
-        }
-        if (rowItems.isNotEmpty() && binding.tabsLayout.selectedTabPosition != TAB_ROW_POSITION) {
-            binding.tabsLayout.selectTab(binding.tabsLayout.getTabAt(TAB_ROW_POSITION))
-        }
-        cellAdapter.update(cellItems)
-        columnAdapter.update(columnItems)
-        rowAdapter.update(rowItems)
     }
 
     fun setListener(listener: (SimpleTableWidgetItem) -> Unit = {}) {
@@ -61,29 +74,16 @@ class SimpleTableSettingWidget @JvmOverloads constructor(
         }
     }
 
-    init {
-        binding.viewpager.adapter = pagerAdapter
-        binding.viewpager.isUserInputEnabled = false
-        TabLayoutMediator(binding.tabsLayout, binding.viewpager) { tab, position ->
-            tab.text = when (position) {
-                TAB_CELL_POSITION -> context.getString(R.string.simple_tables_widget_tab_cell)
-                TAB_COLUMN_POSITION -> context.getString(R.string.simple_tables_widget_tab_column)
-                TAB_ROW_POSITION -> context.getString(R.string.simple_tables_widget_tab_row)
-                else -> throw IllegalStateException("Unexpected position: $position")
-            }
-        }.attach()
-    }
-
     private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab?) {
-            when (tab?.text) {
-                context.getString(R.string.simple_tables_widget_tab_cell) -> {
+            when (tab?.position) {
+                TAB_CELL_POSITION -> {
                     onItemClickListener(SimpleTableWidgetItem.Tab.Cell)
                 }
-                context.getString(R.string.simple_tables_widget_tab_row) -> {
+                TAB_ROW_POSITION -> {
                     onItemClickListener(SimpleTableWidgetItem.Tab.Row)
                 }
-                context.getString(R.string.simple_tables_widget_tab_column) -> {
+                TAB_COLUMN_POSITION -> {
                     onItemClickListener(SimpleTableWidgetItem.Tab.Column)
                 }
             }

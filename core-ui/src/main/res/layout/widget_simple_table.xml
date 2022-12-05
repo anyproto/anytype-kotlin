@@ -13,28 +13,34 @@
         android:layout_width="48dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/dragger" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabGravity="center"
         app:tabBackground="@null"
-        app:tabMode="fixed"
+        app:tabGravity="center"
         app:tabIndicator="@null"
+        app:tabMode="scrollable"
+        app:tabRippleColor="@null"
+        android:layout_marginTop="@dimen/dp_10"
         app:tabSelectedTextColor="@color/text_primary"
         app:tabTextAppearance="@style/BlockTableWidgetTabsStyle"
-        app:tabTextColor="@color/text_tertiary" />
+        app:tabTextColor="@color/text_tertiary"
+        tools:ignore="SpeakableTextPresentCheck" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewpager"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerItems"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="6dp"
         android:layout_marginEnd="6dp"
-        android:paddingTop="@dimen/dp_20"
-        android:overScrollMode="never" />
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/dp_20"
+        android:paddingBottom="@dimen/dp_16"
+        tools:listitem="@layout/item_simple_table_action"
+        tools:visibility="visible" />
 
 </LinearLayout>

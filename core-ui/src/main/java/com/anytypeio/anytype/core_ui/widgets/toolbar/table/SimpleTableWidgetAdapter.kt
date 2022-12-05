@@ -2,20 +2,16 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar.table
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSimpleTableActionBinding
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 
 class SimpleTableWidgetAdapter(
-    private var items: List<SimpleTableWidgetItem>,
     private val onClick: (SimpleTableWidgetItem) -> Unit
-) : RecyclerView.Adapter<SimpleTableWidgetAdapter.VH>() {
-
-    fun update(items: List<SimpleTableWidgetItem>) {
-        this.items = items
-        notifyDataSetChanged()
-    }
+) : ListAdapter<SimpleTableWidgetItem, SimpleTableWidgetAdapter.VH>(Differ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val inflater = LayoutInflater.from(parent.context)
@@ -24,17 +20,29 @@ class SimpleTableWidgetAdapter(
         ).apply {
             itemView.setOnClickListener {
                 val pos = bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) onClick(items[pos])
+                if (pos != RecyclerView.NO_POSITION) onClick(getItem(pos))
             }
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = items.size
+    object Differ : DiffUtil.ItemCallback<SimpleTableWidgetItem>() {
+        override fun areItemsTheSame(
+            oldItem: SimpleTableWidgetItem,
+            newItem: SimpleTableWidgetItem
+        ): Boolean {
+            return newItem == oldItem
+        }
+
+        override fun areContentsTheSame(
+            oldItem: SimpleTableWidgetItem,
+            newItem: SimpleTableWidgetItem
+        ): Boolean = oldItem == newItem
+    }
 
     class VH(binding: ItemSimpleTableActionBinding) : RecyclerView.ViewHolder(binding.root) {
 

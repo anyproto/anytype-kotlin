@@ -1545,10 +1545,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     )
                     visible()
                 }
+
                 binding.simpleTableWidget.onStateChanged(
-                    cellItems = state.simpleTableWidget.cellItems,
-                    rowItems = state.simpleTableWidget.rowItems,
-                    columnItems = state.simpleTableWidget.columnItems
+                    items = state.simpleTableWidget.items,
+                    tab = state.simpleTableWidget.tab
+
                 )
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
                     keyboardDelayJobs += lifecycleScope.launch {

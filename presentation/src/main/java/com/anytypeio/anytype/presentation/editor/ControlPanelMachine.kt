@@ -1032,7 +1032,7 @@ sealed class ControlPanelMachine {
                     simpleTableWidget = Toolbar.SimpleTableWidget(
                         isVisible = true,
                         tableId = event.tableId,
-                        cellItems = event.cellItems,
+                        items = event.cellItems,
                         selectedCount = event.cellSize,
                         tab = BlockView.Table.Tab.CELL
                     )
@@ -1043,7 +1043,7 @@ sealed class ControlPanelMachine {
                     simpleTableWidget = Toolbar.SimpleTableWidget(
                         isVisible = true,
                         tableId = event.tableId,
-                        columnItems = event.columnItems,
+                        items = event.columnItems,
                         selectedCount = event.columnsSize,
                         tab = BlockView.Table.Tab.COLUMN
                     )
@@ -1054,7 +1054,7 @@ sealed class ControlPanelMachine {
                     simpleTableWidget = Toolbar.SimpleTableWidget(
                         isVisible = true,
                         tableId = event.tableId,
-                        rowItems = event.rowItems,
+                        items = event.rowItems,
                         selectedCount = event.rowsSize,
                         tab = BlockView.Table.Tab.ROW
                     )

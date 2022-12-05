@@ -414,7 +414,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         var expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Row.InsertAbove(selectedRow),
                 SimpleTableWidgetItem.Row.InsertBelow(selectedRow),
                 SimpleTableWidgetItem.Row.MoveUp(
@@ -713,7 +713,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Row.InsertAbove(selectedRow),
                 SimpleTableWidgetItem.Row.InsertBelow(selectedRow),
                 SimpleTableWidgetItem.Row.MoveUp(
@@ -1012,7 +1012,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Row.InsertAbove(selectedRow),
                 SimpleTableWidgetItem.Row.InsertBelow(selectedRow),
                 SimpleTableWidgetItem.Row.MoveDown(
@@ -1304,7 +1304,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         expectedSimpleTableWidget = ControlPanelState.Toolbar.SimpleTableWidget(
             isVisible = true,
             tableId = tableId,
-            rowItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Row.InsertAbove(selectedRow),
                 SimpleTableWidgetItem.Row.InsertBelow(selectedRow),
                 SimpleTableWidgetItem.Row.MoveUp(
@@ -1679,7 +1679,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
             tableId = tableId,
             selectedCount = 1,
             tab = BlockView.Table.Tab.COLUMN,
-            columnItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Column.InsertLeft(selectedColumn),
                 SimpleTableWidgetItem.Column.InsertRight(selectedColumn),
                 SimpleTableWidgetItem.Column.MoveLeft(
@@ -1935,7 +1935,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
             tableId = tableId,
             selectedCount = 1,
             tab = BlockView.Table.Tab.COLUMN,
-            columnItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Column.InsertLeft(selectedColumn),
                 SimpleTableWidgetItem.Column.InsertRight(selectedColumn),
                 SimpleTableWidgetItem.Column.MoveLeft(
@@ -2183,7 +2183,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
             tableId = tableId,
             selectedCount = 1,
             tab = BlockView.Table.Tab.COLUMN,
-            columnItems = listOf(
+            items = listOf(
                 SimpleTableWidgetItem.Column.InsertLeft(selectedColumn),
                 SimpleTableWidgetItem.Column.InsertRight(selectedColumn),
                 SimpleTableWidgetItem.Column.MoveLeft(

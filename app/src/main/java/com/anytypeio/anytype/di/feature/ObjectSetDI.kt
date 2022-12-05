@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -402,6 +403,11 @@ object ObjectSetModule {
             main = Dispatchers.Main
         )
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getOptions(repo: BlockRepository) = GetOptions(repo)
 
     @JvmStatic
     @Provides

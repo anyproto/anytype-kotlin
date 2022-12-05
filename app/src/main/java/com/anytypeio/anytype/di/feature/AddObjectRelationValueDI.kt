@@ -90,9 +90,4 @@ object AddObjectRelationValueModule {
     fun createRelationOption(
         repo: BlockRepository
     ): CreateRelationOption = CreateRelationOption(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun getOptions(repo: BlockRepository) = GetOptions(repo)
 }

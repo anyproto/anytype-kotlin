@@ -143,12 +143,12 @@ class TagAndStatusTests {
                     tags = listOf(
                         TagView(
                             id = selOptions[1].id,
-                            tag = selOptions[1].title,
+                            tag = selOptions[1].name.orEmpty(),
                             color = selOptions[1].color
                         ),
                         TagView(
                             id = selOptions[2].id,
-                            tag = selOptions[2].title,
+                            tag = selOptions[2].name.orEmpty(),
                             color = selOptions[2].color
                         )
                     )
@@ -271,7 +271,7 @@ class TagAndStatusTests {
                     status = listOf(
                         StatusView(
                             id = selOptions[2].id,
-                            status = selOptions[2].title,
+                            status = selOptions[2].name.orEmpty(),
                             color = selOptions[2].color
                         )
                     )

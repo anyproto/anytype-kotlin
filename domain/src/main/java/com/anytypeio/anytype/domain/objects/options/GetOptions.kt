@@ -51,7 +51,7 @@ class GetOptions(
             offset = 0,
             keys = listOf(
                 Relations.ID,
-                Relations.RELATION_OPTION_TEXT,
+                Relations.NAME,
                 Relations.RELATION_OPTION_COLOR
             ),
             fulltext = "",

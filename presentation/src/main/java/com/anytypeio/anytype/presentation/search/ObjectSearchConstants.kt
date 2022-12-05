@@ -338,7 +338,7 @@ object ObjectSearchConstants {
     )
 
     val defaultOptionKeys = listOf(
-        Relations.RELATION_OPTION_TEXT,
+        Relations.NAME,
         Relations.RELATION_OPTION_COLOR
     )
 

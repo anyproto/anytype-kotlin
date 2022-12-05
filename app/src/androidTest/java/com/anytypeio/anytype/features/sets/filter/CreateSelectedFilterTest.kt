@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -69,6 +70,7 @@ class CreateSelectedFilterTest {
 
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
+    private lateinit var getOptions: GetOptions
     private lateinit var urlBuilder: UrlBuilder
 
     private val root = MockDataFactory.randomUuid()
@@ -85,6 +87,7 @@ class CreateSelectedFilterTest {
         MockitoAnnotations.openMocks(this)
         updateDataViewViewer = UpdateDataViewViewer(repo)
         searchObjects = SearchObjects(repo)
+        getOptions = GetOptions(repo)
         urlBuilder = UrlBuilder(gateway)
         TestCreateSelectedFilterFragment.testVmFactory = FilterViewModel.Factory(
             session = session,
@@ -96,7 +99,8 @@ class CreateSelectedFilterTest {
             analytics = analytics,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
-            objectSetDatabase = db
+            objectSetDatabase = db,
+            getOptions = getOptions
         )
     }
 

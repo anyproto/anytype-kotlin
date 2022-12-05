@@ -35,7 +35,6 @@ object Relations {
     const val SOURCE = "source"
     const val SMARTBLOCKTYPES = "smartblockTypes"
     const val RELATION_KEY = "relationKey"
-    const val RELATION_OPTION_TEXT = "relationOptionText"
     const val RELATION_OPTION_COLOR = "relationOptionColor"
     const val RELATION_OPTION_DICT = "relationOptionsDict"
     const val SCOPE = "scope"

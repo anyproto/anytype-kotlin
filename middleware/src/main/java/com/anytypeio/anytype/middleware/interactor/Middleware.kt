@@ -1019,7 +1019,7 @@ class Middleware(
         val request = Rpc.Object.CreateRelationOption.Request(
             details = buildMap {
                 put(Relations.RELATION_KEY, relation)
-                put(Relations.RELATION_OPTION_TEXT, name)
+                put(Relations.NAME, name)
                 put(Relations.RELATION_OPTION_COLOR, color)
             }
         )

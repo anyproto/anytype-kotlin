@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -50,6 +51,7 @@ object ModifyFilterModule {
         storeOfObjectTypes: StoreOfObjectTypes,
         analytics: Analytics,
         objectSetDatabase: ObjectSetDatabase,
+        getOptions: GetOptions,
         storeOfRelations: StoreOfRelations
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectSetState = state,
@@ -61,6 +63,7 @@ object ModifyFilterModule {
         storeOfObjectTypes = storeOfObjectTypes,
         objectSetDatabase = objectSetDatabase,
         storeOfRelations = storeOfRelations,
-        analytics = analytics
+        analytics = analytics,
+        getOptions = getOptions
     )
 }

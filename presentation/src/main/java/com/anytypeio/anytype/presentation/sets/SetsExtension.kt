@@ -324,7 +324,7 @@ fun Struct.buildTagViews(
             add(
                 TagView(
                     id = option.id,
-                    tag = option.title,
+                    tag = option.name.orEmpty(),
                     color = option.color
                 )
             )
@@ -347,7 +347,7 @@ fun Struct.buildStatusViews(
                 add(
                     StatusView(
                         id = o.id,
-                        status = o.title,
+                        status = o.name.orEmpty(),
                         color = o.color
                     )
                 )

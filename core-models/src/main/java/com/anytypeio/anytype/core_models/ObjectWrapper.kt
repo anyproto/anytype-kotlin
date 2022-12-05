@@ -176,14 +176,6 @@ sealed class ObjectWrapper {
                 }
             }
 
-
-        val relationOptionsDict: List<Id>
-            get() = when (val value = map[Relations.RELATION_OPTION_DICT]) {
-                is Id -> listOf(id)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
-            }
-
         private val relationReadonlyValue: Boolean? by default
 
         val id: Id by default
@@ -226,11 +218,10 @@ sealed class ObjectWrapper {
 
     data class Option(val map: Struct) {
         private val default = map.withDefault { null }
-        private val relationOptionText : String? by default
         private val relationOptionColor : String? by default
 
         val id: Id by default
-        val title: String = relationOptionText.orEmpty()
+        val name: String? by default
         val color: String = relationOptionColor.orEmpty()
     }
 }

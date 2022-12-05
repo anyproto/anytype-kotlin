@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -1141,6 +1142,11 @@ object EditorUseCaseModule {
     fun provideBlockTableSetHeaderRow(
         repo: BlockRepository
     ): SetTableRowHeader = SetTableRowHeader(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getOptions(repo: BlockRepository) = GetOptions(repo)
 
     @Module
     interface Bindings {

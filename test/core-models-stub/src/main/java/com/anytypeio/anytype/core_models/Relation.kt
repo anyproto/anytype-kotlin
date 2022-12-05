@@ -67,7 +67,7 @@ fun StubRelationOptionObject(
 ): ObjectWrapper.Option = ObjectWrapper.Option(
         mapOf(
             Relations.ID to id,
-            Relations.RELATION_OPTION_TEXT to text,
+            Relations.NAME to text,
             Relations.RELATION_OPTION_COLOR to color,
         )
 )

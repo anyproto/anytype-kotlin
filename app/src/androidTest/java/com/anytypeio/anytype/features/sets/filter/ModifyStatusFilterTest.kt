@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -70,8 +71,9 @@ class ModifyStatusFilterTest {
     @Mock
     lateinit var analytics: Analytics
 
-    lateinit var updateDataViewViewer: UpdateDataViewViewer
-    lateinit var searchObjects: SearchObjects
+    private lateinit var updateDataViewViewer: UpdateDataViewViewer
+    private lateinit var searchObjects: SearchObjects
+    private lateinit var getOptions: GetOptions
     lateinit var urlBuilder: UrlBuilder
 
     private val root = MockDataFactory.randomUuid()
@@ -88,6 +90,7 @@ class ModifyStatusFilterTest {
         MockitoAnnotations.openMocks(this)
         updateDataViewViewer = UpdateDataViewViewer(repo)
         searchObjects = SearchObjects(repo)
+        getOptions = GetOptions(repo)
         urlBuilder = UrlBuilder(gateway)
         TestModifyFilterFromSelectedValueFragment.testVmFactory = FilterViewModel.Factory(
             objectSetState = state,
@@ -95,6 +98,7 @@ class ModifyStatusFilterTest {
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             searchObjects = searchObjects,
+            getOptions = getOptions,
             urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes,
             analytics = analytics,

@@ -576,7 +576,7 @@ class RelationValueDVViewModel(
                 add(
                     RelationValueView.Option.Status(
                         id = id,
-                        name = wrapper.title,
+                        name = wrapper.name.orEmpty(),
                         color = wrapper.color.ifEmpty { null },
                     )
                 )
@@ -598,7 +598,7 @@ class RelationValueDVViewModel(
                 add(
                     RelationValueView.Option.Tag(
                         id = id,
-                        name = wrapper.title,
+                        name = wrapper.name.orEmpty(),
                         color = wrapper.color.ifEmpty { null },
                         removable = isRemovable,
                         isCheckboxShown = false,
@@ -700,7 +700,7 @@ class RelationValueViewModel(
                 add(
                     RelationValueView.Option.Status(
                         id = id,
-                        name = wrapper.title,
+                        name = wrapper.name.orEmpty(),
                         color = wrapper.color.ifEmpty { null },
                     )
                 )
@@ -722,7 +722,7 @@ class RelationValueViewModel(
                 add(
                     RelationValueView.Option.Tag(
                         id = id,
-                        name = wrapper.title,
+                        name = wrapper.name.orEmpty(),
                         color = wrapper.color.ifEmpty { null },
                         removable = isRemovable,
                         isCheckboxShown = false,

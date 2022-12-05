@@ -32,7 +32,7 @@ class AddOptionsRelationProvider {
                     if (!selectedIds.contains(o.id)) {
                         val tag = RelationValueView.Option.Tag(
                             id = o.id,
-                            name = o.title,
+                            name = o.name.orEmpty(),
                             color = o.color,
                             isSelected = selectedIds.contains(o.id),
                             isCheckboxShown = true,
@@ -47,7 +47,7 @@ class AddOptionsRelationProvider {
                     if (o.id != statusId) {
                         val statusView = RelationValueView.Option.Status(
                             id = o.id,
-                            name = o.title,
+                            name = o.name.orEmpty(),
                             color = o.color
                         )
                         views.add(statusView)

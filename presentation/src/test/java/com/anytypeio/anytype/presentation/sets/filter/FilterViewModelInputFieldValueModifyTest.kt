@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
@@ -55,6 +56,9 @@ class FilterViewModelInputFieldValueModifyTest {
 
     @Mock
     lateinit var searchObjects: SearchObjects
+
+    @Mock
+    lateinit var getOptions: GetOptions
 
     @Mock
     lateinit var analytics: Analytics
@@ -189,7 +193,8 @@ class FilterViewModelInputFieldValueModifyTest {
             analytics = analytics,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
-            objectSetDatabase = db
+            objectSetDatabase = db,
+            getOptions = getOptions
         )
     }
 

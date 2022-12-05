@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
@@ -57,6 +58,9 @@ class FilterViewModelInputFieldValueCreateTest {
     lateinit var searchObjects: SearchObjects
 
     @Mock
+    lateinit var getOptions: GetOptions
+
+    @Mock
     lateinit var analytics: Analytics
 
     private lateinit var viewModel: FilterViewModel
@@ -65,6 +69,7 @@ class FilterViewModelInputFieldValueCreateTest {
     private val dataViewId = MockDataFactory.randomString()
     private val session = ObjectSetSession()
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
+
 
     //LONG TEXT
     private val relation1 = StubRelationObject(
@@ -181,7 +186,8 @@ class FilterViewModelInputFieldValueCreateTest {
             analytics = analytics,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
-            objectSetDatabase = db
+            objectSetDatabase = db,
+            getOptions = getOptions
         )
     }
 

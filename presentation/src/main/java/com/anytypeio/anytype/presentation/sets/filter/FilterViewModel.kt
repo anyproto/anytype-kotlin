@@ -15,11 +15,12 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.extension.checkboxFilter
 import com.anytypeio.anytype.presentation.extension.hasValue
@@ -64,7 +65,8 @@ open class FilterViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storeOfRelations: StoreOfRelations,
     private val objectSetDatabase: ObjectSetDatabase,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val getOptions: GetOptions
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -236,9 +238,7 @@ open class FilterViewModel(
                 proceedWithFilterValueList(
                     relation = relation,
                     filter = null,
-                    objectTypes = storeOfObjectTypes.getAll(),
-                    condition = condition,
-                    store = objectSetDatabase.store
+                    condition = condition
                 )
             } else {
                 val filter = viewer.filters[index]
@@ -252,9 +252,7 @@ open class FilterViewModel(
                 proceedWithFilterValueList(
                     relation = relation,
                     filter = filter,
-                    objectTypes = storeOfObjectTypes.getAll(),
                     condition = condition,
-                    store = objectSetDatabase.store
                 )
             }
         }
@@ -263,10 +261,8 @@ open class FilterViewModel(
     private suspend fun proceedWithFilterValueList(
         relation: ObjectWrapper.Relation,
         filter: DVFilter?,
-        objectTypes: List<ObjectWrapper.Type>,
-        condition: Viewer.Filter.Condition,
-        store: ObjectStore
-    ) = when (relation.format) {
+        condition: Viewer.Filter.Condition
+    ) : Unit = when (relation.format) {
         Relation.Format.DATE -> {
             val value = (filter?.value as? Double)?.toLong() ?: 0L
             filterValueListState.value = relation.toCreateFilterDateView(
@@ -276,23 +272,10 @@ open class FilterViewModel(
             )
         }
         Relation.Format.TAG -> {
-            val ids = filter?.value as? List<*>
-            filterValueListState.value = relation.toCreateFilterTagView(
-                ids = ids,
-                store = store
-            )
-                .also {
-                    optionCountState.value = it.count { view -> view.isSelected }
-                }
+            proceedWithParsingTagValues(filter, relation)
         }
         Relation.Format.STATUS -> {
-            val ids = filter?.value as? List<*>
-            filterValueListState.value = relation.toCreateFilterStatusView(
-                ids = ids,
-                store = store
-            ).also {
-                    optionCountState.value = it.count { view -> view.isSelected }
-            }
+            proceedWithParsingStatusValues(filter, relation)
         }
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
@@ -308,6 +291,60 @@ open class FilterViewModel(
         else -> {
             filterValueListState.value = emptyList()
             Timber.e("No need values list for format ${relation.format}")
+        }
+    }
+
+    private fun proceedWithParsingTagValues(
+        filter: DVFilter?,
+        relation: ObjectWrapper.Relation
+    ) {
+        val ids: List<Id> = (filter?.value as? List<*>)?.typeOf() ?: emptyList()
+        viewModelScope.launch {
+            getOptions(
+                GetOptions.Params(
+                    relation = relation.key
+                )
+            ).process(
+                success = { options ->
+                    filterValueListState.value = options.toCreateFilterTagView(
+                        selected = ids
+                    ).also {
+                        optionCountState.value = it.count { view -> view.isSelected }
+                    }
+                },
+                failure = {
+                    filterValueListState.value = emptyList<CreateFilterView.Tag>().also {
+                        optionCountState.value = it.count { view -> view.isSelected }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun proceedWithParsingStatusValues(
+        filter: DVFilter?,
+        relation: ObjectWrapper.Relation
+    ) {
+        val ids: List<Id> = (filter?.value as? List<*>)?.typeOf() ?: emptyList()
+        viewModelScope.launch {
+            getOptions(
+                GetOptions.Params(
+                    relation = relation.key
+                )
+            ).process(
+                success = { options ->
+                    filterValueListState.value = options.toCreateFilterStatusView(
+                        selected = ids
+                    ).also {
+                        optionCountState.value = it.count { view -> view.isSelected }
+                    }
+                },
+                failure = {
+                    filterValueListState.value = emptyList<CreateFilterView.Status>().also {
+                        optionCountState.value = it.count { view -> view.isSelected }
+                    }
+                }
+            )
         }
     }
 
@@ -817,6 +854,7 @@ open class FilterViewModel(
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val storeOfRelations: StoreOfRelations,
         private val objectSetDatabase: ObjectSetDatabase,
+        private val getOptions: GetOptions,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -831,6 +869,7 @@ open class FilterViewModel(
                 storeOfObjectTypes = storeOfObjectTypes,
                 storeOfRelations = storeOfRelations,
                 objectSetDatabase = objectSetDatabase,
+                getOptions = getOptions,
                 analytics = analytics
             ) as T
         }

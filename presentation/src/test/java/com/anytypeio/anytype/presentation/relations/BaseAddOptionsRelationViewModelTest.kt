@@ -123,7 +123,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         viewModel.ui.test {
             viewModel.onStart(targetId, relationId)
-            val query = MockDataFactory.randomString() + notSelectedOption.title
+            val query = MockDataFactory.randomString() + notSelectedOption.name.orEmpty()
             viewModel.onFilterInputChanged(query)
             // first item is emmit in constructor, second - at onStart
             val actual = listOf(awaitItem(), awaitItem(), awaitItem())[2]
@@ -159,7 +159,7 @@ class BaseAddOptionsRelationViewModelTest {
         viewModel.ui.test {
             viewModel.onStart(targetId, relationId)
 
-            val query = notSelectedOption.title.substring(1)
+            val query = notSelectedOption.name.orEmpty().substring(1)
             viewModel.onFilterInputChanged(query)
             // first item is emmit in constructor, second - at onStart
             val actual = listOf(awaitItem(), awaitItem(), awaitItem())[2]
@@ -202,7 +202,7 @@ class BaseAddOptionsRelationViewModelTest {
                 actual = actual
             )
 
-            val query = notSelectedOption.title
+            val query = notSelectedOption.name.orEmpty()
             viewModel.onFilterInputChanged(query)
 
             // because `ui` has distinct under the hood
@@ -239,7 +239,7 @@ class BaseAddOptionsRelationViewModelTest {
                 actual = actual
             )
 
-            val query = selectedOption.title
+            val query = selectedOption.name.orEmpty()
             viewModel.onFilterInputChanged(query)
 
             assertEquals(
@@ -251,7 +251,7 @@ class BaseAddOptionsRelationViewModelTest {
 
     private fun tag(option: ObjectWrapper.Option) = Tag(
         id = option.id,
-        name = option.title,
+        name = option.name.orEmpty(),
         color = option.color,
         isSelected = false,
         isCheckboxShown = true

@@ -12,7 +12,8 @@ import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.model.Session
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -32,7 +33,8 @@ class SetupNewAccountViewModel(
     private val session: Session,
     private val createAccount: CreateAccount,
     private val analytics: Analytics,
-    private val storeObjectTypes: StoreObjectTypes
+    private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
@@ -101,20 +103,8 @@ class SetupNewAccountViewModel(
                     updateUserProps(account.id)
                     sendAuthEvent(startTime)
                     _state.postValue(SetupNewAccountViewState.Success)
-                    proceedWithUpdatingObjectTypesStore()
-                }
-            )
-        }
-    }
-
-    private fun proceedWithUpdatingObjectTypesStore() {
-        viewModelScope.launch {
-            storeObjectTypes.invoke(Unit).process(
-                failure = {
-                    Timber.e(it, "Error while store account object types")
-                    navigateToDashboard()
-                },
-                success = {
+                    relationsSubscriptionManager.onStart()
+                    objectTypesSubscriptionManager.onStart()
                     navigateToDashboard()
                 }
             )

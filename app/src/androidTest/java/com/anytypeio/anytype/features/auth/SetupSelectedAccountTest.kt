@@ -8,14 +8,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
@@ -73,7 +73,11 @@ class SetupSelectedAccountTest {
     @Mock
     lateinit var workspaceManager: WorkspaceManager
 
-    lateinit var storeObjectTypes: StoreObjectTypes
+    @Mock
+    private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
+
+    @Mock
+    private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 
     @Before
     fun setup() {
@@ -84,16 +88,13 @@ class SetupSelectedAccountTest {
             configStorage = configStorage,
             workspaceManager = workspaceManager
         )
-        storeObjectTypes = StoreObjectTypes(
-            repo = blockRepository,
-            objectTypesProvider = DefaultObjectTypesProvider()
-        )
         TestSetupSelectedAccountFragment.testViewModelFactory =
             SetupSelectedAccountViewModelFactory(
                 startAccount = startAccount,
                 pathProvider = pathProvider,
                 analytics = analytics,
-                storeObjectTypes = storeObjectTypes
+                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+                relationsSubscriptionManager = relationsSubscriptionManager
             )
     }
 

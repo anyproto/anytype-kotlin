@@ -4,7 +4,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerFeature
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
@@ -14,11 +13,11 @@ import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModelFactory
@@ -208,23 +207,17 @@ object SetupNewAccountModule {
         createAccount: CreateAccount,
         session: Session,
         analytics: Analytics,
-        storeObjectTypes: StoreObjectTypes
+        relationsSubscriptionManager: RelationsSubscriptionManager,
+        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
     ): SetupNewAccountViewModelFactory {
         return SetupNewAccountViewModelFactory(
             createAccount = createAccount,
             session = session,
             analytics = analytics,
-            storeObjectTypes = storeObjectTypes
+            relationsSubscriptionManager = relationsSubscriptionManager,
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager
         )
     }
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideStoreObjectTypesUseCase(
-        repo: BlockRepository,
-        objectTypesProvider: ObjectTypesProvider
-    ): StoreObjectTypes = StoreObjectTypes(repo, objectTypesProvider)
 
     @JvmStatic
     @Provides
@@ -248,23 +241,17 @@ object SetupSelectedAccountModule {
         startAccount: StartAccount,
         pathProvider: PathProvider,
         analytics: Analytics,
-        storeObjectTypes: StoreObjectTypes
+        relationsSubscriptionManager: RelationsSubscriptionManager,
+        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
     ): SetupSelectedAccountViewModelFactory {
         return SetupSelectedAccountViewModelFactory(
             startAccount = startAccount,
             pathProvider = pathProvider,
             analytics = analytics,
-            storeObjectTypes = storeObjectTypes
+            relationsSubscriptionManager = relationsSubscriptionManager,
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager
         )
     }
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideStoreObjectTypesUseCase(
-        repo: BlockRepository,
-        objectTypesProvider: ObjectTypesProvider
-    ): StoreObjectTypes = StoreObjectTypes(repo, objectTypesProvider)
 
     @JvmStatic
     @Provides

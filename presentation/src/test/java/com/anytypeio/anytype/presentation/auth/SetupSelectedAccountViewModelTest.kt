@@ -10,11 +10,12 @@ import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -62,7 +63,11 @@ class SetupSelectedAccountViewModelTest {
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
-    private lateinit var storeObjectTypes: StoreObjectTypes
+    @Mock
+    private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
+
+    @Mock
+    private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 
     private lateinit var startAccount: StartAccount
 
@@ -74,10 +79,6 @@ class SetupSelectedAccountViewModelTest {
             featuresConfigProvider = featuresConfigProvider,
             configStorage = configStorage,
             workspaceManager = workspaceManager
-        )
-        storeObjectTypes = StoreObjectTypes(
-            repo = blockRepo,
-            objectTypesProvider = objectTypesProvider
         )
     }
 
@@ -216,7 +217,8 @@ class SetupSelectedAccountViewModelTest {
             startAccount = startAccount,
             analytics = analytics,
             pathProvider = pathProvider,
-            storeObjectTypes = storeObjectTypes
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+            relationsSubscriptionManager = relationsSubscriptionManager
         )
     }
 }

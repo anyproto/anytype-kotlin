@@ -2,13 +2,11 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
@@ -109,14 +107,6 @@ object SplashModule {
             repository = authRepository,
             pathProvider = pathProvider
         )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideStoreObjectTypesUseCase(
-        repo: BlockRepository,
-        objectTypesProvider: ObjectTypesProvider
-    ) : StoreObjectTypes = StoreObjectTypes(repo, objectTypesProvider)
 
     @JvmStatic
     @Provides

@@ -12,8 +12,9 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.Job
@@ -28,7 +29,8 @@ class SetupSelectedAccountViewModel(
     private val startAccount: StartAccount,
     private val pathProvider: PathProvider,
     private val analytics: Analytics,
-    private val storeObjectTypes: StoreObjectTypes
+    private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val isMigrationInProgress = MutableStateFlow(false)
@@ -76,7 +78,8 @@ class SetupSelectedAccountViewModel(
                             )
                         )
                     } else {
-                        proceedWithUpdatingObjectTypesStore()
+                        proceedWithGlobalSubscriptions()
+                        navigateToDashboard()
                     }
                 }
             )
@@ -85,20 +88,6 @@ class SetupSelectedAccountViewModel(
 
     fun onRetryClicked(id: Id) {
         selectAccount(id)
-    }
-
-    private fun proceedWithUpdatingObjectTypesStore() {
-        viewModelScope.launch {
-            storeObjectTypes.invoke(Unit).process(
-                failure = {
-                    Timber.e(it, "Error while store account object types")
-                    navigateToDashboard()
-                },
-                success = {
-                    navigateToDashboard()
-                }
-            )
-        }
     }
 
     private fun navigateToDashboard() {
@@ -120,6 +109,11 @@ class SetupSelectedAccountViewModel(
             middleTime = middleTime,
             eventName = openAccount
         )
+    }
+
+    private fun proceedWithGlobalSubscriptions() {
+        relationsSubscriptionManager.onStart()
+        objectTypesSubscriptionManager.onStart()
     }
 
     companion object {

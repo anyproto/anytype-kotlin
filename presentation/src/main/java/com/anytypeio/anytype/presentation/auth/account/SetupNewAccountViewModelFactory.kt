@@ -4,14 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
-import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.model.Session
 
 class SetupNewAccountViewModelFactory(
     private val createAccount: CreateAccount,
     private val session: Session,
     private val analytics: Analytics,
-    private val storeObjectTypes: StoreObjectTypes
+    private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -20,7 +22,8 @@ class SetupNewAccountViewModelFactory(
             createAccount = createAccount,
             session = session,
             analytics = analytics,
-            storeObjectTypes = storeObjectTypes
+            relationsSubscriptionManager = relationsSubscriptionManager,
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager
         ) as T
     }
 }

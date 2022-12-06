@@ -52,7 +52,7 @@
             app:layout_goneMarginTop="@dimen/dp_12" />
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progressBarRecycler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"

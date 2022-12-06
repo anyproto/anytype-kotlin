@@ -36,6 +36,8 @@ import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
+import com.anytypeio.anytype.ui.moving.hideProgress
+import com.anytypeio.anytype.ui.moving.showProgress
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
@@ -123,12 +125,12 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
                     recyclerView.invisible()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
-                    progressBar.visible()
+                    showProgress()
                 }
             }
             is ObjectSearchView.Success -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
                     recyclerView.visible()
@@ -137,7 +139,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
             }
             ObjectSearchView.EmptyPages -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text = getString(R.string.search_empty_pages)
@@ -146,7 +148,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
             }
             is ObjectSearchView.NoResults -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text =
@@ -156,7 +158,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
             }
             is ObjectSearchView.Error -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text = state.error
@@ -202,7 +204,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
         }
         binding.recyclerView.invisible()
         binding.tvScreenStateMessage.invisible()
-        binding.progressBar.invisible()
+        binding.hideProgress()
         clearSearchText.setOnClickListener {
             filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
             clearSearchText.invisible()

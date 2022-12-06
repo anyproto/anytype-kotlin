@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -61,9 +62,9 @@ class LinkToObjectViewModel(
 
     override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
         objects.emit(
-            data.filter {
+            Resultat.success(data.filter {
                 SupportedLayouts.layouts.contains(it.layout)
-            }
+            })
         )
     }
 

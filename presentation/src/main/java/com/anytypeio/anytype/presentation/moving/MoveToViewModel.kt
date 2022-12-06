@@ -8,6 +8,9 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -47,21 +50,34 @@ class MoveToViewModel(
         emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
     }
 
-    val types = MutableStateFlow(emptyList<ObjectWrapper.Type>())
-    val objects = MutableStateFlow(emptyList<ObjectWrapper.Basic>())
+    val types = MutableStateFlow<Resultat<List<ObjectWrapper.Type>>>(Resultat.Loading())
+    val objects = MutableStateFlow<Resultat<List<ObjectWrapper.Basic>>>(Resultat.Loading())
 
     init {
         viewModelScope.launch {
             combine(objects, types) { listOfObjects, listOfTypes ->
-                listOfObjects.toViews(
-                    urlBuilder = urlBuilder,
-                    objectTypes = listOfTypes
-                )
+                if (listOfObjects.isLoading || listOfTypes.isLoading) {
+                    Resultat.Loading()
+                } else {
+                    Resultat.success(
+                        listOfObjects.getOrThrow().toViews(
+                            urlBuilder = urlBuilder,
+                            objectTypes = listOfTypes.getOrThrow()
+                        )
+                    )
+                }
             }.collectLatest { views ->
-                if (views.isNotEmpty())
-                    _viewState.value = MoveToView.Success(views)
-                else
-                    _viewState.value = MoveToView.NoResults(userInput.value)
+                if (views.isSuccess) {
+                    with(views.getOrThrow()) {
+                        if (this.isEmpty()) {
+                            _viewState.value = MoveToView.NoResults(userInput.value)
+                        } else {
+                            _viewState.value = MoveToView.Success(this)
+                        }
+                    }
+                } else {
+                    _viewState.value = MoveToView.Loading
+                }
             }
         }
     }
@@ -73,6 +89,7 @@ class MoveToViewModel(
     private fun startProcessingSearchQuery(ctx: Id) {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
+                objects.value = Resultat.Loading()
                 sendSearchQueryEvent()
                 val params = getSearchObjectsParams(ctx).copy(fulltext = query)
                 searchObjects(params = params).process(
@@ -120,7 +137,7 @@ class MoveToViewModel(
             getObjectTypes.invoke(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = {
-                    types.value = it
+                    types.value = Resultat.success(it)
                     startProcessingSearchQuery(ctx)
                 }
             )
@@ -129,7 +146,7 @@ class MoveToViewModel(
 
     private fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
 
-        val filteredTypes = types.value
+        val filteredTypes = types.value.getOrDefault(emptyList())
             .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
             .map { objectType -> objectType.id }
 
@@ -160,10 +177,10 @@ class MoveToViewModel(
     }
 
     fun setObjects(ctx: Id, data: List<ObjectWrapper.Basic>) {
-        objects.value = data
+        objects.value = Resultat.success(data
             .filter {
                 SupportedLayouts.layouts.contains(it.layout) && it.id != ctx
-            }
+            })
     }
 
     sealed class Command {

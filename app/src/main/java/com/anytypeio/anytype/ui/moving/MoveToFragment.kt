@@ -111,12 +111,12 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
                     recyclerView.invisible()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
-                    progressBar.visible()
+                    showProgress()
                 }
             }
             is MoveToView.Success -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
                     recyclerView.visible()
@@ -125,7 +125,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
             }
             MoveToView.EmptyPages -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text = getString(R.string.search_empty_pages)
@@ -134,7 +134,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
             }
             is MoveToView.NoResults -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text =
@@ -144,7 +144,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
             }
             is MoveToView.Error -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text = state.error
@@ -153,10 +153,10 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
             }
             MoveToView.Init -> {
                 with(binding) {
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
-                    progressBar.invisible()
                 }
             }
             else -> Timber.d("Skipping state: $state")
@@ -206,7 +206,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
         }
         binding.recyclerView.invisible()
         binding.tvScreenStateMessage.invisible()
-        binding.progressBar.invisible()
+        binding.hideProgress()
         clearSearchText.setOnClickListener {
             filterInputField.setText(EMPTY_FILTER_TEXT)
             clearSearchText.invisible()
@@ -290,4 +290,15 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 interface OnMoveToAction {
     fun onMoveTo(target: Id, blocks: List<Id>, text: String, icon: ObjectIcon, isSet: Boolean)
     fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?)
+}
+
+
+fun FragmentObjectSearchBinding.hideProgress() {
+    searchView.progressBar.invisible()
+    progressBarRecycler.invisible()
+}
+
+fun FragmentObjectSearchBinding.showProgress() {
+    searchView.progressBar.visible()
+    progressBarRecycler.visible()
 }

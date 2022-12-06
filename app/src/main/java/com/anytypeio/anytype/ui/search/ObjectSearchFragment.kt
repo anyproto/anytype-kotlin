@@ -31,11 +31,14 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
+import com.anytypeio.anytype.ui.moving.hideProgress
+import com.anytypeio.anytype.ui.moving.showProgress
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import timber.log.Timber
 import javax.inject.Inject
 
-class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectSearchBinding>(R.layout.fragment_object_search) {
+class ObjectSearchFragment :
+    ViewStateFragment<ObjectSearchView, FragmentObjectSearchBinding>(R.layout.fragment_object_search) {
 
     @Inject
     lateinit var factory: ObjectSearchViewModelFactory
@@ -125,12 +128,12 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectS
                     recyclerView.invisible()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
-                    progressBar.visible()
+                    showProgress()
                 }
             }
             is ObjectSearchView.Success -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
                     recyclerView.visible()
@@ -139,7 +142,7 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectS
             }
             ObjectSearchView.EmptyPages -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text = getString(R.string.search_empty_pages)
@@ -148,16 +151,17 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectS
             }
             is ObjectSearchView.NoResults -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
-                    tvScreenStateMessage.text = getString(R.string.search_no_results, state.searchText)
+                    tvScreenStateMessage.text =
+                        getString(R.string.search_no_results, state.searchText)
                     tvScreenStateSubMessage.visible()
                 }
             }
             is ObjectSearchView.Error -> {
                 with(binding) {
-                    progressBar.invisible()
+                    hideProgress()
                     recyclerView.invisible()
                     tvScreenStateMessage.visible()
                     tvScreenStateMessage.text = state.error
@@ -172,10 +176,8 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectS
         with(binding) {
             recyclerView.invisible()
             tvScreenStateMessage.invisible()
-            progressBar.invisible()
-            searchView.root.findViewById<View>(R.id.clearSearchText).setOnClickListener {
-
-            }
+            hideProgress()
+            searchView.root.findViewById<View>(R.id.clearSearchText).setOnClickListener {}
         }
         clearSearchText.setOnClickListener {
             filterInputField.setText(EMPTY_FILTER_TEXT)

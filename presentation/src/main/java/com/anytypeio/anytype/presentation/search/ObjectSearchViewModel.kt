@@ -9,11 +9,14 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
+import com.anytypeio.anytype.presentation.moving.MoveToView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -49,8 +52,8 @@ open class ObjectSearchViewModel(
             emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
-    protected val types = MutableSharedFlow<List<ObjectWrapper.Type>>(replay = 0)
-    protected val objects = MutableSharedFlow<List<ObjectWrapper.Basic>>(replay = 0)
+    protected val types = MutableSharedFlow<Resultat<List<ObjectWrapper.Type>>>(replay = 0)
+    protected val objects = MutableSharedFlow<Resultat<List<ObjectWrapper.Basic>>>(replay = 0)
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -58,16 +61,31 @@ open class ObjectSearchViewModel(
 
     init {
         viewModelScope.launch {
+            types.emit(Resultat.loading())
+            objects.emit(Resultat.loading())
             combine(objects, types) { listOfObjects, listOfTypes ->
-                listOfObjects.toViews(
-                    urlBuilder = urlBuilder,
-                    objectTypes = listOfTypes
-                )
+                if (listOfObjects.isLoading || listOfTypes.isLoading) {
+                    Resultat.Loading()
+                } else {
+                    Resultat.success(
+                        listOfObjects.getOrThrow().toViews(
+                            urlBuilder = urlBuilder,
+                            objectTypes = listOfTypes.getOrThrow()
+                        )
+                    )
+                }
             }.collectLatest { views ->
-                if (views.isNotEmpty())
-                    stateData.postValue(ObjectSearchView.Success(views))
-                else
-                    stateData.postValue(ObjectSearchView.NoResults(userInput.value))
+                if (views.isSuccess) {
+                    with(views.getOrThrow()) {
+                        if (this.isEmpty()) {
+                            stateData.postValue(ObjectSearchView.NoResults(userInput.value))
+                        } else {
+                            stateData.postValue(ObjectSearchView.Success(this))
+                        }
+                    }
+                } else {
+                    stateData.postValue(ObjectSearchView.Loading)
+                }
             }
         }
     }
@@ -91,7 +109,7 @@ open class ObjectSearchViewModel(
             )
             getObjectTypes.invoke(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
-                success = { types.emit(it) }
+                success = { types.emit(Resultat.success(it)) }
             )
         }
     }
@@ -99,6 +117,7 @@ open class ObjectSearchViewModel(
     private fun startProcessingSearchQuery(ignore: Id?) {
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
+                objects.emit(Resultat.Loading())
                 sendSearchQueryEvent(query)
                 val params = getSearchObjectsParams(ignore).copy(fulltext = query)
                 searchObjects(params = params).process(
@@ -118,7 +137,7 @@ open class ObjectSearchViewModel(
     }
 
     open suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
-        objects.emit(data)
+        objects.emit(Resultat.success(data))
     }
 
     fun onSearchTextChanged(searchText: String) {

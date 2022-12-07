@@ -22,6 +22,25 @@ object ObjectTypeIds {
     const val BOOKMARK = "ot-bookmark"
     const val RELATION_OPTION = "ot-relationOption"
 
-    const val MARKETPLACE_OBJECT_TYPE_PREFIX = "_ot"
     const val DEFAULT_OBJECT_TYPE_PREFIX = "ot-"
+}
+
+object MarketplaceObjectTypeIds {
+    const val OBJECT_TYPE = "_otobjectType"
+    const val PAGE = "_otpage"
+    const val RELATION = "_otrelation"
+    const val TEMPLATE = "_ottemplate"
+    const val IMAGE = "_otimage"
+    const val FILE = "_otfile"
+    const val VIDEO = "_otvideo"
+    const val AUDIO = "_otaudio"
+    const val SET = "_otset"
+    const val TASK = "_ottask"
+    const val DATE = "_otdate"
+    const val PROFILE = "_otprofile"
+    const val NOTE = "_otnote"
+    const val DASHBOARD = "_otdashboard"
+    const val BOOKMARK = "_otbookmark"
+
+    const val MARKETPLACE_OBJECT_TYPE_PREFIX = "_ot"
 }

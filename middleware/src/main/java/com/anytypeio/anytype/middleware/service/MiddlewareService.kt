@@ -369,4 +369,11 @@ interface MiddlewareService {
     fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
 
     //endregion
+
+    //region WORKSPACE
+
+    @Throws(Exception::class)
+    fun workspaceObjectListAdd(request: Rpc.Workspace.Object.ListAdd.Request): Rpc.Workspace.Object.ListAdd.Response
+
+    //endregion
 }

@@ -4,17 +4,20 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultSectionViewHolder
+import com.anytypeio.anytype.core_ui.databinding.ItemDefaultListSectionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeItemBinding
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHolder
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHorizontalHolder
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
+import com.anytypeio.anytype.presentation.objects.ObjectTypeItemView
 
 class ObjectTypeVerticalAdapter(
-    private var data: ArrayList<ObjectTypeView>,
+    private var data: ArrayList<ObjectTypeItemView>,
     private val onItemClick: (Id, String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    fun update(data: List<ObjectTypeView>) {
+    fun update(data: List<ObjectTypeItemView>) {
         this.data.clear()
         this.data.addAll(data)
         notifyDataSetChanged()
@@ -22,31 +25,71 @@ class ObjectTypeVerticalAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val viewHolder: RecyclerView.ViewHolder = ObjectTypeHolder(
-            binding = ItemObjectTypeItemBinding.inflate(
-                inflater, parent, false
-            )
-        ).apply {
-            itemView.setOnClickListener {
-                if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                    val item = data[bindingAdapterPosition] as ObjectTypeView
-                    onItemClick(item.id, item.name)
+        return when (viewType) {
+            VIEW_TYPE_OBJECT_TYPE -> {
+                ObjectTypeHolder(
+                    binding = ItemObjectTypeItemBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
+                    itemView.setOnClickListener {
+                        if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+                            val item = data[bindingAdapterPosition] as ObjectTypeItemView.Type
+                            onItemClick(item.view.id, item.view.name)
+                        }
+                    }
                 }
             }
+            VIEW_TYPE_SECTION -> {
+                DefaultSectionViewHolder(
+                    binding = ItemDefaultListSectionBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
+            }
+            else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
-        return viewHolder
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val root = holder.itemView
+        val item = data[position]
         when (holder) {
             is ObjectTypeHolder -> {
-                holder.bind(data[position] as ObjectTypeView)
+                check(item is ObjectTypeItemView.Type)
+                holder.bind(item.view)
             }
             is ObjectTypeHorizontalHolder -> {
-                holder.bind(data[position] as ObjectTypeView)
+                check(item is ObjectTypeItemView.Type)
+                holder.bind(item.view)
+            }
+            is DefaultSectionViewHolder -> {
+                when(item) {
+                    ObjectTypeItemView.Section.Marketplace -> {
+                        holder.bind(
+                            root.resources.getString(R.string.marketplace)
+                        )
+                    }
+                    ObjectTypeItemView.Section.Library -> {
+                        holder.bind(
+                            root.resources.getString(R.string.my_types)
+                        )
+                    }
+                    else -> {}
+                }
             }
         }
     }
 
+    override fun getItemViewType(position: Int): Int = when (data[position]) {
+        is ObjectTypeItemView.Type -> VIEW_TYPE_OBJECT_TYPE
+        is ObjectTypeItemView.Section -> VIEW_TYPE_SECTION
+    }
+
     override fun getItemCount(): Int = data.size
+
+    companion object {
+        const val VIEW_TYPE_OBJECT_TYPE = 0
+        const val VIEW_TYPE_SECTION = 1
+    }
 }

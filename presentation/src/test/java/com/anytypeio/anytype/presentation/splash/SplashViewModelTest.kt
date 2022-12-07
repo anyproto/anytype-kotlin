@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
@@ -29,7 +30,6 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
@@ -238,7 +238,7 @@ class SplashViewModelTest {
             stubLaunchWallet()
             stubLaunchAccount()
             stubGetLastOpenedObject()
-            stubGetDefaultObjectType(type = ObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
+            stubGetDefaultObjectType(type = MARKETPLACE_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
 
             initViewModel()
 

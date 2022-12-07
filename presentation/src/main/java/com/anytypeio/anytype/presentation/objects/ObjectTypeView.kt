@@ -5,6 +5,14 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectTypeIds.TASK
 
+sealed class ObjectTypeItemView {
+    data class Type(val view: ObjectTypeView) : ObjectTypeItemView()
+    sealed class Section : ObjectTypeItemView() {
+        object Library : Section()
+        object Marketplace : Section()
+    }
+}
+
 data class ObjectTypeView(
     val id: String,
     val name: String,

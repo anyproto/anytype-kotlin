@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
 import com.anytypeio.anytype.core_models.ObjectTypeIds.DASHBOARD
@@ -366,6 +367,24 @@ object ObjectSearchConstants {
         )
     )
 
+    val filterObjectTypeMarketplace = listOf(
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.EQUAL,
+            value = MarketplaceObjectTypeIds.OBJECT_TYPE
+        ),
+        DVFilter(
+            relationKey = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.IS_DELETED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        )
+    )
+
     val defaultKeysObjectType = listOf(
         Relations.ID,
         Relations.NAME,
@@ -376,8 +395,16 @@ object ObjectSearchConstants {
         Relations.LAYOUT,
         Relations.IS_ARCHIVED,
         Relations.IS_DELETED,
-        Relations.SMARTBLOCKTYPES
+        Relations.SMARTBLOCKTYPES,
+        Relations.SOURCE_OBJECT
     )
 
     //endregion
+
+    fun defaultObjectTypeSorts() : List<DVSort> = listOf(
+        DVSort(
+            relationKey = Relations.NAME,
+            type = DVSortType.ASC
+        )
+    )
 }

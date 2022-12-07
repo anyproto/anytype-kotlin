@@ -17,11 +17,10 @@ import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
  *
  */
 fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
-    isWithSet: Boolean,
-    isWithBookmark: Boolean,
-    excludeTypes: List<String>,
-    selectedTypes: List<String>
-
+    isWithSet: Boolean = false,
+    isWithBookmark: Boolean = false,
+    excludeTypes: List<String> = emptyList(),
+    selectedTypes: List<String> = emptyList()
 ): List<ObjectTypeView> {
     val result = mutableListOf<ObjectTypeView>()
     forEach { obj ->

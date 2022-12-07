@@ -1882,6 +1882,17 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun workspaceObjectListAdd(objects: List<Id>): List<Id> {
+        val request = Rpc.Workspace.Object.ListAdd.Request(
+            objectIds = objects
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceObjectListAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.objectIds
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any)
     }

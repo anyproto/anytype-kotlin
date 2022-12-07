@@ -43,6 +43,7 @@ object Relations {
     const val RELATION_IS_READ_ONLY = "relationReadonly"
     const val RELATION_DEFAULT_VALUE = "relationDefaultValue"
     const val RELATION_FORMAT_OBJECT_TYPES = "relationFormatObjectTypes"
+    const val SOURCE_OBJECT = "sourceObject"
 
 
     const val PAGE_COVER = "pageCover"

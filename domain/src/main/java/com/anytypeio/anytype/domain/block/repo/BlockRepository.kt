@@ -363,4 +363,6 @@ interface BlockRepository {
         dropTarget: Id,
         position: Position
     ): Payload
+
+    suspend fun addObjectToWorkspace(objects: List<Id>) : List<Id>
 }

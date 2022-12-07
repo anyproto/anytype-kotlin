@@ -16,8 +16,8 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel.Command
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import javax.inject.Inject
 
 abstract class BaseObjectTypeChangeFragment :
@@ -38,7 +38,7 @@ abstract class BaseObjectTypeChangeFragment :
 
     private val objectTypeAdapter by lazy {
         ObjectTypeVerticalAdapter(
-            onItemClick = ::onItemClicked,
+            onItemClick = vm::onItemClicked,
             data = arrayListOf()
         )
     }
@@ -54,17 +54,23 @@ abstract class BaseObjectTypeChangeFragment :
         }
     }
 
-    private fun observeViews(views: List<ObjectTypeView>) {
-        objectTypeAdapter.update(views)
-    }
-
     override fun onStart() {
         super.onStart()
         expand()
         with(lifecycleScope) {
-            jobs += subscribe(vm.results) { observeViews(it) }
+            jobs += subscribe(vm.views) { objectTypeAdapter.update(it) }
             jobs += subscribe(binding.searchObjectTypeInput.textChanges()) {
                 vm.onQueryChanged(it.toString())
+            }
+            jobs += subscribe(vm.commands) { command ->
+                when(command) {
+                    is Command.DispatchType -> {
+                       onItemClicked(
+                           id = command.id,
+                           name = command.name
+                       )
+                    }
+                }
             }
         }
         startWithParams()

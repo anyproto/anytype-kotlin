@@ -46,39 +46,6 @@ class GetObjectTypeTest {
     }
 
     @Test
-    fun `should call repo only once if the first call was successful`() {
-
-        val type = ObjectWrapper.Type(
-            mapOf(Relations.ID to MockDataFactory.randomUuid())
-        )
-
-        runBlocking {
-            stubGetObjectTypes(types = listOf(type))
-            val firstTimeResult = usecase.invoke(params = defaultParams)
-            firstTimeResult.either(
-                { Assert.fail() },
-                { results ->
-                    assertEquals(
-                        expected = listOf(type),
-                        actual = results
-                    )
-                }
-            )
-            val secondTimeResult = usecase.invoke(params = defaultParams)
-            assertEquals(firstTimeResult, secondTimeResult)
-
-            verify(repo, times(1)).searchObjects(
-                filters = defaultParams.filters,
-                keys = defaultParams.keys,
-                sorts = defaultParams.sorts,
-                limit = defaultParams.limit,
-                offset = defaultParams.offset,
-                fulltext = ""
-            )
-        }
-    }
-
-    @Test
     fun `should return all object types`() {
 
         val type1 = ObjectWrapper.Type(
@@ -109,7 +76,7 @@ class GetObjectTypeTest {
             val secondTimeResult = usecase.invoke(params = defaultParams)
             assertEquals(firstTimeResult, secondTimeResult)
 
-            verify(repo, times(1)).searchObjects(
+            verify(repo, times(2)).searchObjects(
                 filters = defaultParams.filters,
                 keys = defaultParams.keys,
                 sorts = defaultParams.sorts,

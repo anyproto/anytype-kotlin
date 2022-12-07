@@ -685,4 +685,8 @@ class BlockMiddleware(
             position = position
         )
     }
+
+    override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
+        return middleware.workspaceObjectListAdd(objects)
+    }
 }

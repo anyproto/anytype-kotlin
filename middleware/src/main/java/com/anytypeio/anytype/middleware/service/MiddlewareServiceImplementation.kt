@@ -1320,4 +1320,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun workspaceObjectListAdd(request: Rpc.Workspace.Object.ListAdd.Request): Rpc.Workspace.Object.ListAdd.Response {
+        val encoded = Service.workspaceObjectListAdd(
+            Rpc.Workspace.Object.ListAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Workspace.Object.ListAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Workspace.Object.ListAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

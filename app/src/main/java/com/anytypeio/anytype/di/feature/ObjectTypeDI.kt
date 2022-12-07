@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(modules = [ObjectTypeChangeModule::class])
 @PerScreen
@@ -37,18 +39,42 @@ object ObjectTypeChangeModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun dispatchers() : AppCoroutineDispatchers = AppCoroutineDispatchers(
+        io = Dispatchers.IO,
+        computation = Dispatchers.Default,
+        main = Dispatchers.Main
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideObjectTypeViewModelFactory(
-        storeOfObjectTypes: StoreOfObjectTypes
+        getObjectTypes: GetObjectTypes,
+        addObjectToWorkspace: AddObjectToWorkspace,
+        dispatchers: AppCoroutineDispatchers
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
-            storeOfObjectTypes = storeOfObjectTypes
+            getObjectTypes = getObjectTypes,
+            addObjectToWorkspace = addObjectToWorkspace,
+            dispatchers = dispatchers
         )
     }
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideSearchObjectsUseCase(
+    fun getObjectTypes(
         repository: BlockRepository
-    ): SearchObjects = SearchObjects(repository)
+    ): GetObjectTypes = GetObjectTypes(repository)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun addObjectToWorkspace(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ) : AddObjectToWorkspace = AddObjectToWorkspace(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 }

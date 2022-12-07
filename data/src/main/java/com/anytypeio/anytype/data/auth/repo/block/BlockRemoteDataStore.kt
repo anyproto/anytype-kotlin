@@ -644,4 +644,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
             position = position
         )
     }
+
+    override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
+        return remote.addObjectToWorkspace(objects)
+    }
 }

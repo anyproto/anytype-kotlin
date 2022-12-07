@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeRe
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.anytypeio.anytype.core_utils.ext.multilineIme
 import com.anytypeio.anytype.core_utils.ext.showKeyboard
+import com.anytypeio.anytype.core_utils.text.OnEnterActionListener
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
 
@@ -270,13 +271,9 @@ class TextInputWidget : AppCompatEditText {
     fun enableEnterKeyDetector(
         onEnterClicked: (IntRange) -> Unit
     ) {
-        setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == inputAction.toIMECode()) {
-                onEnterClicked.invoke(v.selectionStart..v.selectionEnd)
-                return@setOnEditorActionListener true
-            }
-            false
-        }
+        setOnEditorActionListener(OnEnterActionListener(onEnter = { tv ->
+            onEnterClicked.invoke(tv.selectionStart..tv.selectionEnd)
+        }))
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

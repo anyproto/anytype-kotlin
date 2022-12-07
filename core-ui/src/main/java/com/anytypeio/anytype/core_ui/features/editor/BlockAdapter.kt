@@ -74,7 +74,6 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setup
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setupPlaceholder
-import com.anytypeio.anytype.core_ui.features.editor.holders.ext.toIMECode
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Bookmark
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
@@ -122,6 +121,7 @@ import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.core_utils.text.OnNewLineActionListener
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -487,20 +487,18 @@ class BlockAdapter(
                                 onFocusChanged(blocks[pos].id, hasFocus)
                             }
                         }
-                        setOnEditorActionListener { v, actionId, _ ->
-                            if (actionId == BlockView.InputAction.NewLine.toIMECode()) {
-                                val pos = bindingAdapterPosition
-                                if (pos != RecyclerView.NO_POSITION) {
-                                    onSplitDescription(
-                                        views[pos].id,
-                                        v.editableText,
-                                        v.selectionStart..v.selectionEnd
-                                    )
-                                    return@setOnEditorActionListener true
-                                }
-                            }
-                            false
-                        }
+                        setOnEditorActionListener(
+                            OnNewLineActionListener(
+                                onEnter = { tv ->
+                                    withBlock<BlockView.Description> { item ->
+                                        onSplitDescription(
+                                            item.id,
+                                            tv.editableText,
+                                            tv.selectionStart..tv.selectionEnd
+                                        )
+                                    }
+                                })
+                        )
                         selectionWatcher = { selection ->
                             val pos = bindingAdapterPosition
                             if (pos != RecyclerView.NO_POSITION) {

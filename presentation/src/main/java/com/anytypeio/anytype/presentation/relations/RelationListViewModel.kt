@@ -308,7 +308,7 @@ class RelationListViewModel(
             updateDetail(
                 UpdateDetail.Params(
                     ctx = ctx,
-                    key = view.relationId,
+                    key = view.relationKey,
                     value = !view.isChecked
                 )
             ).process(

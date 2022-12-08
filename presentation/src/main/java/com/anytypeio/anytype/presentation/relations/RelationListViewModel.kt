@@ -202,7 +202,7 @@ class RelationListViewModel(
             views.value = views.value.map { view ->
                 if (view is Model.Item) {
                     view.copy(
-                        isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.view.relationId)
+                        isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.view.relationKey)
                     )
                 } else {
                     view

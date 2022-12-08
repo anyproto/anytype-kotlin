@@ -40,7 +40,7 @@ object Relations {
     const val SCOPE = "scope"
     const val RESTRICTIONS = "restrictions"
     const val MAX_COUNT = "relationMaxCount"
-    const val RELATION_IS_READ_ONLY = "relationReadonly"
+    const val RELATION_READ_ONLY_VALUE = "relationReadonlyValue"
     const val RELATION_DEFAULT_VALUE = "relationDefaultValue"
     const val RELATION_FORMAT_OBJECT_TYPES = "relationFormatObjectTypes"
     const val SOURCE_OBJECT = "sourceObject"

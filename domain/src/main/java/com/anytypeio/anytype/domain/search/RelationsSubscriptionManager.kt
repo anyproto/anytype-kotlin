@@ -61,7 +61,7 @@ class RelationsSubscriptionManager(
                     Relations.IS_FAVORITE,
                     Relations.RESTRICTIONS,
                     Relations.MAX_COUNT,
-                    Relations.RELATION_IS_READ_ONLY,
+                    Relations.RELATION_READ_ONLY_VALUE,
                     Relations.RELATION_DEFAULT_VALUE,
                     Relations.RELATION_FORMAT_OBJECT_TYPES
                 ),

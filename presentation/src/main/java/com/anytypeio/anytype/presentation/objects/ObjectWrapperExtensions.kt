@@ -191,7 +191,7 @@ suspend fun ObjectWrapper.Basic.statuses(
             result.add(
                 StatusView(
                     id = option.id,
-                    status = option.relationOptionText.orEmpty(),
+                    status = option.name.orEmpty(),
                     color = option.relationOptionColor.orEmpty()
                 )
             )
@@ -216,7 +216,7 @@ suspend fun ObjectWrapper.Basic.tags(
             result.add(
                 TagView(
                     id = option.id,
-                    tag = option.relationOptionText.orEmpty(),
+                    tag = option.name.orEmpty(),
                     color = option.relationOptionColor.orEmpty()
                 )
             )

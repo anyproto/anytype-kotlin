@@ -116,7 +116,6 @@ sealed class ObjectWrapper {
             }
 
         val relationOptionColor: String? by default
-        val relationOptionText: String? by default
         val relationReadonlyValue: Boolean? by default
     }
 

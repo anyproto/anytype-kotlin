@@ -158,24 +158,26 @@ fun statusRelation(
 ): DocumentRelationView? {
     val objectDetails = details.details[context]?.map ?: return null
     val optionId = StatusParser.parse(objectDetails[relationDetails.key])
-    if (optionId != null) {
-        val map = details.details[optionId]?.map ?: return null
-        val optionDetails = ObjectWrapper.Basic(map)
-        val statusView = StatusView(
-            id = optionId,
-            status = optionDetails.relationOptionText.orEmpty(),
-            color = optionDetails.relationOptionColor.orEmpty()
-        )
-        return DocumentRelationView.Status(
-            relationId = relationDetails.id,
-            relationKey = relationDetails.key,
-            name = relationDetails.name.orEmpty(),
-            isFeatured = isFeatured,
-            status = listOf(statusView)
-        )
-    } else {
-        return null
+    val statuses = buildList {
+        if (optionId != null) {
+            val map = details.details[optionId]?.map ?: return null
+            val optionDetails = ObjectWrapper.Basic(map)
+            add(
+                StatusView(
+                    id = optionId,
+                    status = optionDetails.name.orEmpty(),
+                    color = optionDetails.relationOptionColor.orEmpty()
+                )
+            )
+        }
     }
+    return DocumentRelationView.Status(
+        relationId = relationDetails.id,
+        relationKey = relationDetails.key,
+        name = relationDetails.name.orEmpty(),
+        isFeatured = isFeatured,
+        status = statuses
+    )
 }
 
 fun tagRelation(
@@ -185,35 +187,31 @@ fun tagRelation(
     isFeatured: Boolean
 ): DocumentRelationView? {
     val objectDetails = details.details[context]?.map ?: return null
+    val tagViews = mutableListOf<TagView>()
     val tagIds = TagParser.parse(objectDetails[relationDetails.key])
-    if (tagIds == null || tagIds.isEmpty()) {
-        return null
-    } else {
-        val tagViews = mutableListOf<TagView>()
-        tagIds.forEach { id ->
-            val map = details.details[id]?.map ?: emptyMap()
-            val optionDetails = ObjectWrapper.Basic(map)
-            val tagView = TagView(
-                id = id,
-                tag = optionDetails.relationOptionText.orEmpty(),
-                color = optionDetails.relationOptionColor.orEmpty()
-            )
-            tagViews.add(tagView)
-        }
-        return DocumentRelationView.Tags(
-            relationId = relationDetails.id,
-            relationKey = relationDetails.key,
-            name = relationDetails.name.orEmpty(),
-            isFeatured = isFeatured,
-            tags = tagViews
+    tagIds.forEach { id ->
+        val map = details.details[id]?.map ?: emptyMap()
+        val optionDetails = ObjectWrapper.Basic(map)
+        val tagView = TagView(
+            id = id,
+            tag = optionDetails.name.orEmpty(),
+            color = optionDetails.relationOptionColor.orEmpty()
         )
+        tagViews.add(tagView)
     }
+    return DocumentRelationView.Tags(
+        relationId = relationDetails.id,
+        relationKey = relationDetails.key,
+        name = relationDetails.name.orEmpty(),
+        isFeatured = isFeatured,
+        tags = tagViews
+    )
 }
 
 object StatusParser {
-    fun parse(value: Any?): String? {
-        val result: String? = when (value) {
-            is String -> value
+    fun parse(value: Any?): Id? {
+        val result: Id? = when (value) {
+            is Id -> value
             is List<*> -> value.firstOrNull().toString()
             else -> null
         }
@@ -222,11 +220,11 @@ object StatusParser {
 }
 
 object TagParser {
-    fun parse(value: Any?): List<String>? {
-        val result: List<String>? = when (value) {
-            is String -> listOf(value)
+    fun parse(value: Any?): List<Id> {
+        val result: List<Id> = when (value) {
+            is Id -> listOf(value)
             is List<*> -> value.typeOf()
-            else -> null
+            else -> emptyList()
         }
         return result
     }

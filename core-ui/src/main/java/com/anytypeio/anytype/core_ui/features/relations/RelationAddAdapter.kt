@@ -2,54 +2,112 @@ package com.anytypeio.anytype.core_ui.features.relations
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.*
+import com.anytypeio.anytype.core_ui.common.DefaultSectionViewHolder
+import com.anytypeio.anytype.core_ui.databinding.ItemDefaultListSectionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchConnectWithBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchLimitObjectTypesBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchNameInputBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatCreateFromScratchBinding
 import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationFormatViewHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationViewHolder
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
+import com.anytypeio.anytype.presentation.relations.model.RelationItemView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
+import com.anytypeio.anytype.presentation.relations.model.Section
 
 class RelationAddAdapter(
     val onItemClick: (RelationView.Existing) -> Unit
-) : ListAdapter<RelationView.Existing, DefaultRelationViewHolder>(Differ) {
+) : ListAdapter<RelationItemView, RecyclerView.ViewHolder>(Differ) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ) = DefaultRelationViewHolder(
-        binding = ItemRelationFormatBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-    ).apply {
-        itemView.setOnClickListener {
-            if (bindingAdapterPosition != RecyclerView.NO_POSITION)
-                onItemClick(getItem(bindingAdapterPosition))
+    ) = when(viewType) {
+        R.layout.item_relation_format -> {
+            DefaultRelationViewHolder(
+                binding = ItemRelationFormatBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            ).apply {
+                itemView.setOnClickListener {
+                    if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+                        val item = getItem(bindingAdapterPosition)
+                        if (item is RelationView.Existing) { onItemClick(item) }
+                    }
+                }
+            }
+        }
+        R.layout.item_default_list_section -> {
+            DefaultSectionViewHolder(
+                binding =ItemDefaultListSectionBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            ).apply {
+                binding.tvSectionName.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.dp_20)
+                }
+            }
+        }
+        else -> throw IllegalStateException("Unexpected view type: $viewType")
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = getItem(position)
+        when(holder) {
+            is DefaultRelationViewHolder -> {
+                check(item is RelationView.Existing)
+                holder.bind(name = item.name, format = item.format)
+            }
+            is DefaultSectionViewHolder -> {
+                check(item is Section)
+                when(item) {
+                    Section.Marketplace -> {
+                        holder.bind(holder.itemView.resources.getString(R.string.marketplace))
+                    }
+                    Section.Library -> {
+                        holder.bind(holder.itemView.resources.getString(R.string.my_relations))
+                    }
+                }
+            }
         }
     }
 
-    override fun onBindViewHolder(holder: DefaultRelationViewHolder, position: Int) {
-        getItem(position).apply { holder.bind(name = name, format = format) }
+    override fun getItemViewType(position: Int): Int = when(val item = getItem(position)) {
+        is RelationView.Existing -> R.layout.item_relation_format
+        is Section -> R.layout.item_default_list_section
+        else -> throw IllegalStateException("Unexpected type: ${item::class.simpleName}")
     }
 
-    override fun getItemViewType(position: Int): Int = R.layout.item_relation_format
-
-    object Differ : DiffUtil.ItemCallback<RelationView.Existing>() {
+    object Differ : DiffUtil.ItemCallback<RelationItemView>() {
         override fun areItemsTheSame(
-            oldItem: RelationView.Existing,
-            newItem: RelationView.Existing
-        ): Boolean = oldItem.key == newItem.key
+            oldItem: RelationItemView,
+            newItem: RelationItemView
+        ): Boolean {
+            return if (oldItem is RelationView.Existing && newItem is RelationView.Existing)
+                oldItem.key == newItem.key
+            else
+                oldItem == newItem
+        }
 
         override fun areContentsTheSame(
-            oldItem: RelationView.Existing,
-            newItem: RelationView.Existing
+            oldItem: RelationItemView,
+            newItem: RelationItemView
         ): Boolean = oldItem == newItem
     }
 }

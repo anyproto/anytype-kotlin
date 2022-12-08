@@ -2,31 +2,6 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
-@Deprecated("To be deleted")
-fun StubRelation(
-    key: String = MockDataFactory.randomString(),
-    name: String = MockDataFactory.randomString(),
-    format: Relation.Format = Relation.Format.SHORT_TEXT,
-    source: Relation.Source = Relation.Source.LOCAL,
-    isHidden: Boolean = false,
-    isReadOnly: Boolean = false,
-    isMulti: Boolean = false,
-    selections: List<Relation.Option> = emptyList(),
-    objectTypes: List<String> = emptyList(),
-    defaultValue: Any? = null
-): Relation = Relation(
-    key,
-    name,
-    format,
-    source,
-    isHidden,
-    isReadOnly,
-    isMulti,
-    selections,
-    objectTypes,
-    defaultValue
-)
-
 fun StubRelationObject(
     id: String = MockDataFactory.randomString(),
     key: String = MockDataFactory.randomString(),
@@ -35,7 +10,8 @@ fun StubRelationObject(
     isHidden: Boolean = false,
     isReadOnly: Boolean = false,
     objectTypes: List<Id> = emptyList(),
-    relationOptionsDict: List<Id> = emptyList()
+    relationOptionsDict: List<Id> = emptyList(),
+    sourceObject: Id = MockDataFactory.randomUuid()
 ): ObjectWrapper.Relation = ObjectWrapper.Relation(
     map = mapOf(
         Relations.ID to id,
@@ -45,19 +21,9 @@ fun StubRelationObject(
         Relations.IS_READ_ONLY to isReadOnly,
         Relations.RELATION_FORMAT_OBJECT_TYPES to objectTypes,
         Relations.RELATION_FORMAT to format.code.toDouble(),
-        Relations.RELATION_OPTION_DICT to relationOptionsDict
+        Relations.RELATION_OPTION_DICT to relationOptionsDict,
+        Relations.SOURCE_OBJECT to sourceObject
     )
-)
-
-@Deprecated("To be deleted")
-fun StubRelationOption(
-    id: String = MockDataFactory.randomUuid(),
-    text: String = MockDataFactory.randomString(),
-    color: String = MockDataFactory.randomString()
-): Relation.Option = Relation.Option(
-    id = id,
-    text = text,
-    color = color
 )
 
 fun StubRelationOptionObject(

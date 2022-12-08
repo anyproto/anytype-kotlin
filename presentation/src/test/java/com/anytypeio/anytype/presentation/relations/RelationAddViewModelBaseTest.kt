@@ -1,81 +1,275 @@
 package com.anytypeio.anytype.presentation.relations
 
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.relations.GetRelations
+import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.presentation.relations.model.RelationView
+import com.anytypeio.anytype.presentation.relations.model.Section
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class RelationAddViewModelBaseTest {
 
     @get:Rule
-    internal val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = CoroutinesTestRule()
 
-    private val availableHidden = StubRelationObject(isHidden = true)
-    private val available = StubRelationObject()
-    private val availableRelations = listOf(available, availableHidden)
+    private val appCoroutineDispatchers = AppCoroutineDispatchers(
+        io = coroutineTestRule.testDispatcher,
+        main = coroutineTestRule.testDispatcher,
+        computation = coroutineTestRule.testDispatcher
+    )
+
+    @Mock
+    lateinit var repo: BlockRepository
 
     private val relationsProvider = FakeObjectRelationProvider()
 
-    @Test
-    fun `no added relations - results are available without hidden`() {
-        runTest {
-            // SETUP
-            val store = DefaultStoreOfRelations()
-            val vm = createVM(store)
+    @Before
+    fun setup() {
+        MockitoAnnotations.openMocks(this)
+    }
 
-            // TESTING
-            store.merge(availableRelations)
-            vm.onStart()
-            coroutineTestRule.testDispatcher.scheduler.runCurrent()
-            vm.results.test {
-                assertEquals(
-                    actual = awaitItem(),
-                    expected = listOf(
-                        RelationView.Existing(
-                            key = available.key,
-                            name = available.name.orEmpty(),
-                            format = available.format
+    @Test
+    fun `no added relations - results are available without hidden`() = runTest {
+
+        // SETUP
+
+        val relation = StubRelationObject()
+
+        repo.stub {
+            onBlocking {
+                searchObjects(
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
+                    filters = buildList {
+                        addAll(ObjectSearchConstants.filterMyRelations())
+                        add(
+                            DVFilter(
+                                relationKey = Relations.IS_HIDDEN,
+                                condition = DVFilterCondition.EQUAL,
+                                value = false
+                            )
                         )
+                    },
+                    limit = 0,
+                    offset = 0,
+                    fulltext = ""
+                )
+            } doReturn listOf(relation.map)
+        }
+
+        repo.stub {
+            onBlocking {
+                searchObjects(
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
+                    filters = buildList {
+                        addAll(ObjectSearchConstants.filterMarketplaceRelations())
+                        add(
+                            DVFilter(
+                                relationKey = Relations.ID,
+                                condition = DVFilterCondition.NOT_IN,
+                                value = listOf(relation.sourceObject)
+                            )
+                        )
+                        add(
+                            DVFilter(
+                                relationKey = Relations.IS_HIDDEN,
+                                condition = DVFilterCondition.EQUAL,
+                                value = false
+                            )
+                        )
+                    },
+                    limit = 0,
+                    offset = 0,
+                    fulltext = ""
+                )
+            } doReturn emptyList()
+        }
+
+        val vm = givenViewModel(relationsProvider = relationsProvider)
+
+        // TESTING
+
+        coroutineTestRule.testDispatcher.scheduler.runCurrent()
+
+        vm.results.test {
+            assertEquals(
+                actual = awaitItem(),
+                expected = listOf(
+                    Section.Library,
+                    RelationView.Existing(
+                        key = relation.key,
+                        id = relation.id,
+                        name = relation.name.orEmpty(),
+                        format = relation.format,
+                        workspace = null
                     )
                 )
-            }
+            )
         }
     }
 
     @Test
-    fun `added relations equal to available - results are empty`() {
-        relationsProvider.relation = available
-        runTest {
+    fun `added relations equal to available - results are empty`() = runTest {
             // SETUP
-            val store = DefaultStoreOfRelations()
-            val vm = createVM(store)
+            val vm = givenViewModel(relationsProvider)
 
             // TESTING
-            store.merge(availableRelations)
-            vm.onStart()
+
             vm.results.test {
                 assertEquals(
                     actual = awaitItem(),
                     expected = emptyList()
                 )
             }
+    }
+
+    @Test
+    fun `should query relations from library and marketplace filtering out already addded relations`() = runTest {
+
+        // SETUP
+
+        val marketplace = listOf(
+            StubRelationObject(),
+            StubRelationObject(),
+            StubRelationObject()
+        )
+
+        val library = listOf(
+            StubRelationObject(sourceObject = marketplace[0].id),
+            StubRelationObject(),
+            StubRelationObject()
+        )
+
+        repo.stub {
+            onBlocking {
+                searchObjects(
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
+                    filters = buildList {
+                        addAll(ObjectSearchConstants.filterMyRelations())
+                        add(
+                            DVFilter(
+                                relationKey = Relations.IS_HIDDEN,
+                                condition = DVFilterCondition.EQUAL,
+                                value = false
+                            )
+                        )
+                    },
+                    limit = 0,
+                    offset = 0,
+                    fulltext = ""
+                )
+            } doReturn library.map { it.map }
+        }
+
+        repo.stub {
+            onBlocking {
+                searchObjects(
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
+                    filters = buildList {
+                        addAll(ObjectSearchConstants.filterMarketplaceRelations())
+                        add(
+                            DVFilter(
+                                relationKey = Relations.ID,
+                                condition = DVFilterCondition.NOT_IN,
+                                value = library.mapNotNull { it.sourceObject }
+                            )
+                        )
+                        add(
+                            DVFilter(
+                                relationKey = Relations.IS_HIDDEN,
+                                condition = DVFilterCondition.EQUAL,
+                                value = false
+                            )
+                        )
+                    },
+                    limit = 0,
+                    offset = 0,
+                    fulltext = ""
+                )
+            } doReturn marketplace.takeLast(2).map { it.map }
+        }
+
+        val vm = givenViewModel(relationsProvider = relationsProvider)
+
+        // TESTING
+
+        coroutineTestRule.testDispatcher.scheduler.runCurrent()
+
+        vm.results.test {
+            assertEquals(
+                actual = awaitItem(),
+                expected = listOf(
+                    Section.Library,
+                    RelationView.Existing(
+                        key = library[0].key,
+                        id = library[0].id,
+                        name = library[0].name.orEmpty(),
+                        format = library[0].format,
+                        workspace = null
+                    ),
+                    RelationView.Existing(
+                        key = library[1].key,
+                        id = library[1].id,
+                        name = library[1].name.orEmpty(),
+                        format = library[1].format,
+                        workspace = null
+                    ),
+                    RelationView.Existing(
+                        key = library[2].key,
+                        id = library[2].id,
+                        name = library[2].name.orEmpty(),
+                        format = library[2].format,
+                        workspace = null
+                    ),
+                    Section.Marketplace,
+                    RelationView.Existing(
+                        key = marketplace[1].key,
+                        id = marketplace[1].id,
+                        name = marketplace[1].name.orEmpty(),
+                        format = marketplace[1].format,
+                        workspace = null
+                    ),
+                    RelationView.Existing(
+                        key = marketplace[2].key,
+                        id = marketplace[2].id,
+                        name = marketplace[2].name.orEmpty(),
+                        format = marketplace[2].format,
+                        workspace = null
+                    ),
+                )
+            )
         }
     }
 
-    private fun createVM(
-        storeOfRelations: StoreOfRelations
+    private fun givenViewModel(
+        relationsProvider: ObjectRelationProvider
     ) = object : RelationAddViewModelBase(
-        storeOfRelations = storeOfRelations,
-        relationsProvider = relationsProvider
+        relationsProvider = relationsProvider,
+        getRelations = GetRelations(repo),
+        appCoroutineDispatchers = appCoroutineDispatchers,
+        addObjectToWorkspace = AddObjectToWorkspace(
+            repo = repo,
+            dispatchers = appCoroutineDispatchers
+        )
     ) {
         override fun sendAnalyticsEvent(length: Int) {}
     }

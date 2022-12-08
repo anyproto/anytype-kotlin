@@ -181,6 +181,8 @@ sealed class ObjectWrapper {
 
         val id: Id by default
         val key: Key get() = relationKey
+        val workspaceId: Id? by default
+        val sourceObject: Id? by default
         val format: RelationFormat get() = relationFormat
         val name: String? by default
         val isHidden: Boolean? by default

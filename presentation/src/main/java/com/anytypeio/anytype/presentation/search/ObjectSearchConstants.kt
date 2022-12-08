@@ -401,10 +401,46 @@ object ObjectSearchConstants {
 
     //endregion
 
-    fun defaultObjectTypeSorts() : List<DVSort> = listOf(
+    fun defaultObjectSearchSorts() : List<DVSort> = listOf(
         DVSort(
             relationKey = Relations.NAME,
             type = DVSortType.ASC
+        )
+    )
+
+    fun filterMyRelations() : List<DVFilter> = listOf(
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.EQUAL,
+            value = RELATION
+        ),
+        DVFilter(
+            relationKey = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.IS_DELETED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        )
+    )
+
+    fun filterMarketplaceRelations() : List<DVFilter> = listOf(
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.EQUAL,
+            value = MarketplaceObjectTypeIds.RELATION
+        ),
+        DVFilter(
+            relationKey = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.IS_DELETED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
         )
     )
 }

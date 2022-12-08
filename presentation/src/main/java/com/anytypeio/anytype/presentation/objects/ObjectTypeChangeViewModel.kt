@@ -178,7 +178,7 @@ class ObjectTypeChangeViewModel(
                         )
                     }
                 },
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 query = query,
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
@@ -203,7 +203,7 @@ class ObjectTypeChangeViewModel(
                     )
                 }
             },
-            sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+            sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
             query = query,
             keys = ObjectSearchConstants.defaultKeysObjectType
         )

@@ -6,13 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
+import com.anytypeio.anytype.domain.relations.GetRelations
+import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
-import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,29 +28,39 @@ class RelationAddToObjectViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-    val storeOfRelations: StoreOfRelations
+    val storeOfRelations: StoreOfRelations,
+    appCoroutineDispatchers: AppCoroutineDispatchers,
+    getRelations: GetRelations,
+    addObjectToWorkspace: AddObjectToWorkspace
 ) : RelationAddViewModelBase(
     relationsProvider = relationsProvider,
-    storeOfRelations = storeOfRelations
+    appCoroutineDispatchers = appCoroutineDispatchers,
+    getRelations = getRelations,
+    addObjectToWorkspace = addObjectToWorkspace
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    fun onRelationSelected(ctx: Id, relation: RelationView.Existing, screenType: String) {
+    fun onRelationSelected(
+        ctx: Id,
+        relation: Key,
+        format: RelationFormat,
+        screenType: String
+    ) {
         viewModelScope.launch {
             addRelationToObject(
                 AddRelationToObject.Params(
                     ctx = ctx,
-                    relationKey = relation.key
+                    relationKey = relation
                 )
             ).process(
                 success = {
                     dispatcher.send(it).also {
-                        commands.emit(Command.OnRelationAdd(relation = relation.key))
+                        commands.emit(Command.OnRelationAdd(relation = relation))
                         sendAnalyticsAddRelationEvent(
                             analytics = analytics,
                             type = screenType,
-                            format = relation.format.getPropName()
+                            format = format.getPropName()
                         )
                         isDismissed.value = true
                     }
@@ -73,6 +87,9 @@ class RelationAddToObjectViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val relationsProvider: ObjectRelationProvider,
+        private val appCoroutineDispatchers: AppCoroutineDispatchers,
+        private val getRelations: GetRelations,
+        private val addObjectToWorkspace: AddObjectToWorkspace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -81,7 +98,10 @@ class RelationAddToObjectViewModel(
                 addRelationToObject = addRelationToObject,
                 storeOfRelations = storeOfRelations,
                 dispatcher = dispatcher,
-                analytics = analytics
+                analytics = analytics,
+                appCoroutineDispatchers = appCoroutineDispatchers,
+                getRelations = getRelations,
+                addObjectToWorkspace = addObjectToWorkspace
             ) as T
         }
     }

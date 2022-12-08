@@ -44,3 +44,7 @@ object MarketplaceObjectTypeIds {
 
     const val MARKETPLACE_OBJECT_TYPE_PREFIX = "_ot"
 }
+
+object Marketplace {
+    const val MARKETPLACE_ID = "_anytype_marketplace"
+}

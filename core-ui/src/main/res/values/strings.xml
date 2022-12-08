@@ -583,5 +583,6 @@
     <string name="set_by_type">Type: %1$s</string>
     <string name="marketplace">Marketplace</string>
     <string name="my_types">My types</string>
+    <string name="my_relations">My relations</string>
 
 </resources>

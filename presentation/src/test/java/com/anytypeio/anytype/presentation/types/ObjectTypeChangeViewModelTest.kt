@@ -99,7 +99,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = ObjectSearchConstants.defaultKeysObjectType,
@@ -143,7 +143,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = "",
@@ -171,7 +171,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMyTypeKeys,
@@ -184,7 +184,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMarketplaceTypeKeys,
@@ -230,7 +230,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = "",
@@ -245,7 +245,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMarketplaceTypeFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = "",
@@ -258,7 +258,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = query,
@@ -273,7 +273,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMarketplaceTypeFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = query,
@@ -299,7 +299,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMyTypeKeys,
@@ -312,7 +312,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMarketplaceTypeKeys,
@@ -331,7 +331,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMyTypeKeys,
@@ -344,7 +344,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMarketplaceTypeKeys,
@@ -389,7 +389,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = "",
@@ -404,7 +404,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMarketplaceTypeFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = "",
@@ -436,7 +436,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMyTypeKeys,
@@ -449,7 +449,7 @@ class ObjectTypeChangeViewModelTest {
         verifyBlocking(repo, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
-                sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 limit = 0,
                 offset = 0,
                 keys = expectedMarketplaceTypeKeys,
@@ -496,7 +496,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
-                    sorts = ObjectSearchConstants.defaultObjectTypeSorts(),
+                    sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     limit = 0,
                     offset = 0,
                     fulltext = "",

@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddHeaderAdapter
 import com.anytypeio.anytype.core_ui.reactive.focusChanges
@@ -34,7 +36,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
-import com.anytypeio.anytype.presentation.relations.model.RelationView
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Command
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.io.Serializable
 import javax.inject.Inject
@@ -56,7 +58,10 @@ abstract class RelationAddBaseFragment : BaseBottomSheetTextInputFragment<Fragme
     }
 
     private val relationAdapter = RelationAddAdapter { relation ->
-        onRelationSelected(ctx = ctx, relation = relation)
+        vm.onRelationSelected(
+            ctx = ctx,
+            relation = relation
+        )
     }
 
     private val concatAdapter = ConcatAdapter(createFromScratchAdapter, relationAdapter)
@@ -94,6 +99,17 @@ abstract class RelationAddBaseFragment : BaseBottomSheetTextInputFragment<Fragme
             subscribe(searchRelationInput.textChanges()) {
                 if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
             }
+            subscribe(vm.command) { command ->
+                when(command) {
+                    is Command.DispatchSelectedRelation -> {
+                        onRelationSelected(
+                            ctx = command.ctx,
+                            relation = command.relation,
+                            format = command.format
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -108,12 +124,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetTextInputFragment<Fragme
         BottomSheetBehavior.from(root.parent as View).state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    override fun onStart() {
-        super.onStart()
-        vm.onStart()
-    }
-
-    abstract fun onRelationSelected(ctx: Id, relation: RelationView.Existing)
+    abstract fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat)
     abstract fun onCreateFromScratchClicked()
 
     override fun inflateBinding(
@@ -136,10 +147,11 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToObjectViewModel.Factory
     override val vm: RelationAddToObjectViewModel by viewModels { factory }
 
-    override fun onRelationSelected(ctx: Id, relation: RelationView.Existing) {
+    override fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat) {
         vm.onRelationSelected(
             ctx = ctx,
             relation = relation,
+            format = format,
             screenType = EventsDictionary.Type.menu
         )
     }
@@ -177,10 +189,11 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToDataViewViewModel.Factory
     override val vm: RelationAddToDataViewViewModel by viewModels { factory }
 
-    override fun onRelationSelected(ctx: Id, relation: RelationView.Existing) {
+    override fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat) {
         vm.onRelationSelected(
             ctx = ctx,
             relation = relation,
+            format = format,
             dv = dv,
             screenType = EventsDictionary.Type.dataView
         )
@@ -235,10 +248,11 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment() {
         super.onStart()
     }
 
-    override fun onRelationSelected(ctx: Id, relation: RelationView.Existing) {
+    override fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat) {
         vm.onRelationSelected(
             ctx = ctx,
             relation = relation,
+            format = format,
             screenType = EventsDictionary.Type.block
         )
     }

@@ -7,13 +7,16 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.relations.GetRelations
+import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
-import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -23,25 +26,35 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RelationAddToDataViewViewModel(
-    storeOfRelations: StoreOfRelations,
     relationsProvider: ObjectRelationProvider,
     private val state: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
+    private val getRelations: GetRelations,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val addObjectToWorkspace: AddObjectToWorkspace,
+    appCoroutineDispatchers: AppCoroutineDispatchers
 ) : RelationAddViewModelBase(
-    storeOfRelations = storeOfRelations,
-    relationsProvider = relationsProvider
+    relationsProvider = relationsProvider,
+    appCoroutineDispatchers = appCoroutineDispatchers,
+    getRelations = getRelations,
+    addObjectToWorkspace = addObjectToWorkspace
 ) {
 
-    fun onRelationSelected(ctx: Id, relation: RelationView.Existing, dv: Id, screenType: String) {
+    fun onRelationSelected(
+        ctx: Id,
+        relation: Key,
+        format: RelationFormat,
+        dv: Id,
+        screenType: String
+    ) {
         viewModelScope.launch {
             addRelationToDataView(
                 AddRelationToDataView.Params(
                     ctx = ctx,
-                    relation = relation.key,
+                    relation = relation,
                     dv = dv
                 )
             ).process(
@@ -49,13 +62,13 @@ class RelationAddToDataViewViewModel(
                     dispatcher.send(it).also {
                         proceedWithAddingNewRelationToCurrentViewer(
                             ctx = ctx,
-                            relation = relation.key
+                            relation = relation
                         )
                     }
                     sendAnalyticsAddRelationEvent(
                         analytics = analytics,
                         type = screenType,
-                        format = relation.format.getPropName()
+                        format = format.getPropName()
                     )
                 },
                 failure = {
@@ -97,23 +110,27 @@ class RelationAddToDataViewViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val storeOfRelations: StoreOfRelations,
         private val addRelationToDataView: AddRelationToDataView,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val relationsProvider: ObjectRelationProvider,
+        private val appCoroutineDispatchers: AppCoroutineDispatchers,
+        private val getRelations: GetRelations,
+        private val addObjectToWorkspace: AddObjectToWorkspace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationAddToDataViewViewModel(
                 addRelationToDataView = addRelationToDataView,
-                storeOfRelations = storeOfRelations,
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 state = state,
                 analytics = analytics,
                 relationsProvider = relationsProvider,
+                appCoroutineDispatchers = appCoroutineDispatchers,
+                getRelations = getRelations,
+                addObjectToWorkspace = addObjectToWorkspace
             ) as T
         }
     }

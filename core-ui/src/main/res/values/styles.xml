@@ -15,7 +15,7 @@
     </style>
 
     <style name="BlockTextContentStyle" parent="DefaultEditorTextStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_font</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>

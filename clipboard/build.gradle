@@ -19,8 +19,6 @@ android {
             buildConfigField ANYTYPE_CLIPBOARD_LABEL_TYPE, ANYTYPE_CLIPBOARD_LABEL, ANYTYPE_CLIPBOARD_LABEL_VALUE
         }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField ANYTYPE_CLIPBOARD_URI_TYPE, ANYTYPE_CLIPBOARD_URI, ANYTYPE_CLIPBOARD_URI_VALUE
             buildConfigField ANYTYPE_CLIPBOARD_LABEL_TYPE, ANYTYPE_CLIPBOARD_LABEL, ANYTYPE_CLIPBOARD_LABEL_VALUE
         }

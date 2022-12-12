@@ -4,18 +4,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -151,97 +148,6 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         }
 
         verifyBlocking(createBlock, times(1)) { execute(params) }
-    }
-
-    @Test
-    fun `should create a new document after title if document has only title block`() {
-
-        // SETUP
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
-            children = listOf(header.id)
-        )
-
-        val params = CreateDocument.Params(
-            context = root,
-            target = title.id,
-            position = Position.BOTTOM
-        )
-
-        val document = listOf(page, header, title)
-
-        stubOpenDocument(document = document)
-        stubInterceptEvents(InterceptEvents.Params(context = root))
-        stubCreateDocument(params)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.apply {
-            onStart(root)
-            onBlockFocusChanged(
-                id = title.id,
-                hasFocus = true
-            )
-            onAddNewPageClicked()
-        }
-
-        verifyBlocking(createDocument, times(1)) { invoke(params) }
-    }
-
-    @Test
-    fun `should create a new document below document title`() {
-
-        // SETUP
-
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
-            ),
-            children = emptyList()
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
-            children = listOf(header.id, block.id)
-        )
-
-        val params = CreateDocument.Params(
-            context = root,
-            target = title.id,
-            position = Position.BOTTOM
-        )
-
-        val document = listOf(page, header, title)
-
-        stubOpenDocument(document = document)
-        stubInterceptEvents(InterceptEvents.Params(context = root))
-        stubCreateDocument(params)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.apply {
-            onStart(root)
-            onBlockFocusChanged(
-                id = title.id,
-                hasFocus = true
-            )
-            onAddNewPageClicked()
-        }
-
-        verifyBlocking(createDocument, times(1)) { invoke(params) }
     }
 
     @Test
@@ -548,23 +454,6 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
                         context = root,
                         events = emptyList()
                     )
-                )
-            )
-        }
-    }
-
-    private fun stubCreateDocument(
-        params: CreateDocument.Params
-    ) {
-        createDocument.stub {
-            onBlocking { invoke(params) } doReturn Either.Right(
-                CreateDocument.Result(
-                    id = MockDataFactory.randomUuid(),
-                    payload = Payload(
-                        context = root,
-                        events = emptyList()
-                    ),
-                    target = MockDataFactory.randomUuid()
                 )
             )
         }

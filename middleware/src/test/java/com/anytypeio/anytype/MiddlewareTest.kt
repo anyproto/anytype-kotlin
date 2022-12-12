@@ -7,6 +7,7 @@ import anytype.model.Range
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
 import com.anytypeio.anytype.middleware.service.MiddlewareService
@@ -70,13 +71,15 @@ class MiddlewareTest {
 
         // SETUP
 
-        val command = Command.CreateDocument(
+        val templateId = MockDataFactory.randomUuid()
+
+        val command = Command.CreateBlockLinkWithObject(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
             position = Position.INNER,
-            emoji = null,
-            type = null,
-            layout = null
+            template = templateId,
+            prefilled = emptyMap(),
+            internalFlags = listOf()
         )
 
         val response = Rpc.BlockLink.CreateWithObject.Response(
@@ -89,7 +92,8 @@ class MiddlewareTest {
             contextId = command.context,
             targetId = command.target,
             position = Block.Position.Inner,
-            details = mapOf<String, Any?>()
+            details = mapOf<String, Any?>(),
+            templateId = templateId
         )
 
         service.stub {
@@ -114,19 +118,19 @@ class MiddlewareTest {
     }
 
     @Test
-    fun `should create request to create new document with emoji`() {
+    fun `should create request to create new document with name`() {
 
         // SETUP
 
-        val emoji = "🎒"
+        val name = MockDataFactory.randomString()
 
-        val command = Command.CreateDocument(
+        val command = Command.CreateBlockLinkWithObject(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
             position = Position.INNER,
-            emoji = emoji,
-            type = null,
-            layout = null
+            template = null,
+            prefilled = buildMap { put(Relations.NAME, name) },
+            internalFlags = listOf()
         )
 
         val response = Rpc.BlockLink.CreateWithObject.Response(
@@ -139,7 +143,7 @@ class MiddlewareTest {
             contextId = command.context,
             targetId = command.target,
             position = Block.Position.Inner,
-            details = mapOf("iconEmoji" to emoji)
+            details = buildMap { put(Relations.NAME, name) }
         )
 
         service.stub {

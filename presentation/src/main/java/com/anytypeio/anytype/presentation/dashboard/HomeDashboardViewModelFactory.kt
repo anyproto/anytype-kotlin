@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -39,7 +39,7 @@ class HomeDashboardViewModelFactory(
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
     private val featureToggles: FeatureToggles,
-    private val createNewObject: CreateNewObject,
+    private val createObject: CreateObject,
     private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
 
@@ -62,7 +62,7 @@ class HomeDashboardViewModelFactory(
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
-            createNewObject = createNewObject,
+            createObject = createObject,
             featureToggles = featureToggles,
             storeOfObjectTypes = storeOfObjectTypes
         ) as T

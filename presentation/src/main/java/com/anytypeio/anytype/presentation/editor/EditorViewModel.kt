@@ -70,9 +70,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateDocument
-import com.anytypeio.anytype.domain.page.CreateNewDocument
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
+import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -240,9 +239,8 @@ import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 class EditorViewModel(
     private val openPage: OpenPage,
     private val closePage: CloseBlock,
-    private val createDocument: CreateDocument,
-    private val createObject: CreateObject,
-    private val createNewDocument: CreateNewDocument,
+    private val createBlockLinkWithObject: CreateBlockLinkWithObject,
+    private val createObjectAsMentionOrLink: CreateObjectAsMentionOrLink,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -265,7 +263,7 @@ class EditorViewModel(
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
     private val templateDelegate: EditorTemplateDelegate,
-    private val createNewObject: CreateNewObject,
+    private val createObject: CreateObject,
     private val objectToSet: ConvertObjectToSet,
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
@@ -3026,22 +3024,23 @@ class EditorViewModel(
             position = Position.BOTTOM
         }
 
-        val params = CreateObject.Params(
+        val params = CreateBlockLinkWithObject.Params(
             context = context,
             position = position,
             target = target,
-            type = type,
-            layout = null
+            type = type
         )
 
         val startTime = System.currentTimeMillis()
 
         viewModelScope.launch {
-            createObject(
+            createBlockLinkWithObject.execute(
                 params = params
-            ).proceed(
-                failure = { Timber.e(it, "Error while creating new object with params: $params") },
-                success = { result ->
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while creating new object with params: $params")
+                },
+                onSuccess = { result ->
                     val middleTime = System.currentTimeMillis()
                     orchestrator.proxies.payloads.send(result.payload)
                     sendAnalyticsObjectCreateEvent(
@@ -3053,7 +3052,7 @@ class EditorViewModel(
                         middleTime = middleTime,
                         context = analyticsContext
                     )
-                    proceedWithOpeningObject(result.target)
+                    proceedWithOpeningObject(result.objectId)
                 }
             )
         }
@@ -3071,53 +3070,11 @@ class EditorViewModel(
         )
 
         jobs += viewModelScope.launch {
-            createNewObject.execute(Unit).fold(
-                onSuccess = { id ->
-                    proceedWithOpeningObject(id)
-                },
-                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
-            )
-        }
-    }
-
-    @Deprecated("Not used")
-    fun onAddNewPageClicked() {
-        Timber.d("onAddNewPageClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-
-        val position: Position
-
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
-
-        var target = focused.id
-
-        if (focused.id == context) {
-            if (focused.children.isEmpty())
-                position = Position.INNER
-            else {
-                position = Position.TOP
-                target = focused.children.first()
-            }
-        } else {
-            position = Position.BOTTOM
-        }
-
-        val params = CreateDocument.Params(
-            context = context,
-            position = position,
-            target = target
-        )
-
-        viewModelScope.launch {
-            createDocument(
-                params = params
-            ).proceed(
-                failure = { Timber.e(it, "Error while creating new page with params: $params") },
-                success = { result ->
-                    orchestrator.proxies.payloads.send(result.payload)
-                    proceedWithOpeningObject(result.target)
-                }
-            )
+            createObject.execute(CreateObject.Param(type = null))
+                .fold(
+                    onSuccess = { result -> proceedWithOpeningObject(result.objectId) },
+                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                )
         }
     }
 
@@ -5520,7 +5477,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreateNewObject(objectType: String?, mentionText: String) {
-        val params = CreateNewDocument.Params(
+        val params = CreateObjectAsMentionOrLink.Params(
             name = mentionText.removePrefix(MENTION_PREFIX),
             type = objectType
         )
@@ -5528,13 +5485,13 @@ class EditorViewModel(
         val startTime = System.currentTimeMillis()
 
         viewModelScope.launch {
-            createNewDocument(
+            createObjectAsMentionOrLink.execute(
                 params = params
-            ).proceed(
-                failure = {
+            ).fold(
+                onFailure = {
                     Timber.e(it, "Error while creating new page with params: $params")
                 },
-                success = { result ->
+                onSuccess = { result ->
                     val middleTime = System.currentTimeMillis()
                     onCreateMentionInText(
                         id = result.id,
@@ -5945,10 +5902,10 @@ class EditorViewModel(
 
     private suspend fun createObjectAddProceedToAddToTextAsLink(name: String, type: String?) {
         val startTime = System.currentTimeMillis()
-        val params = CreateNewDocument.Params(name, type)
-        createNewDocument.invoke(params).process(
-            failure = { Timber.e(it, "Error while creating new page with params: $params") },
-            success = { result ->
+        val params = CreateObjectAsMentionOrLink.Params(name, type)
+        createObjectAsMentionOrLink.execute(params).fold(
+            onFailure = { Timber.e(it, "Error while creating new page with params: $params") },
+            onSuccess = { result ->
                 val middleTime = System.currentTimeMillis()
                 proceedToAddObjectToTextAsLink(id = result.id)
 //                val objType = objectTypesProvider.get().firstOrNull { it.url == type }

@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 
@@ -28,7 +28,7 @@ class SplashViewModelFactory(
     private val getDefaultEditorType: GetDefaultEditorType,
     private val setDefaultEditorType: SetDefaultEditorType,
     private val appActionManager: AppActionManager,
-    private val createPage: CreatePage,
+    private val createObject: CreateObject,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModelProvider.Factory {
@@ -44,7 +44,7 @@ class SplashViewModelFactory(
             getDefaultEditorType = getDefaultEditorType,
             setDefaultEditorType = setDefaultEditorType,
             appActionManager = appActionManager,
-            createPage = createPage,
+            createObject = createObject,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager
         ) as T

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -588,8 +590,16 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun givenDelegateId(id: String) {
-        createNewObject.stub {
-            onBlocking { execute(Unit) } doReturn Resultat.success(id)
+        createObject.stub {
+            onBlocking { execute(CreateObject.Param(null)) } doReturn Resultat.success(
+                CreateObject.Result(
+                    objectId = id,
+                    event = Payload(
+                        context = id,
+                        events = listOf()
+                    )
+                )
+            )
         }
     }
 }

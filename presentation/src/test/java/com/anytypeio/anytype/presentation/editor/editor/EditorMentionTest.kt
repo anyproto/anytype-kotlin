@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
-import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -34,7 +34,6 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -323,19 +322,18 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         Mockito.`when`(documentEmojiIconProvider.random()).thenReturn(emoji)
 
-        createNewDocument.stub {
+        createObjectAsMentionOrLink.stub {
             onBlocking {
-                invoke(
-                    CreateNewDocument.Params(
+                execute(
+                    CreateObjectAsMentionOrLink.Params(
                         name = newPageName,
                         type = ObjectTypeIds.NOTE
                     )
                 )
-            } doReturn Either.Right(
-                CreateNewDocument.Result(
+            } doReturn Resultat.success(
+                CreateObjectAsMentionOrLink.Result(
                     name = newPageName,
-                    id = newPageId,
-                    emoji = emoji
+                    id = newPageId
                 )
             )
         }
@@ -364,9 +362,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             )
         }
 
-        verifyBlocking(createNewDocument, times(1)) {
-            invoke(
-                CreateNewDocument.Params(
+        verifyBlocking(createObjectAsMentionOrLink, times(1)) {
+            execute(
+                CreateObjectAsMentionOrLink.Params(
                     name = newPageName,
                     type = ObjectTypeIds.NOTE
                 )
@@ -492,19 +490,18 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         Mockito.`when`(documentEmojiIconProvider.random()).thenReturn(emoji)
 
-        createNewDocument.stub {
+        createObjectAsMentionOrLink.stub {
             onBlocking {
-                invoke(
-                    CreateNewDocument.Params(
+                execute(
+                    CreateObjectAsMentionOrLink.Params(
                         name = newPageName,
                         type = "_otarticle"
                     )
                 )
-            } doReturn Either.Right(
-                CreateNewDocument.Result(
+            } doReturn Resultat.success(
+                CreateObjectAsMentionOrLink.Result(
                     name = newPageName,
-                    id = newPageId,
-                    emoji = emoji
+                    id = newPageId
                 )
             )
         }
@@ -533,9 +530,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             )
         }
 
-        verifyBlocking(createNewDocument, times(1)) {
-            invoke(
-                CreateNewDocument.Params(
+        verifyBlocking(createObjectAsMentionOrLink, times(1)) {
+            execute(
+                CreateObjectAsMentionOrLink.Params(
                     name = newPageName,
                     type = "_otarticle"
                 )

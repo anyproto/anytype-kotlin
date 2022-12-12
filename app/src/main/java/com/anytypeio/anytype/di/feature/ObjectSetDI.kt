@@ -36,8 +36,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateNewObject
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
@@ -142,7 +141,7 @@ object ObjectSetModule {
         interceptEvents: InterceptEvents,
         interceptThreadStatus: InterceptThreadStatus,
         createDataViewObject: CreateDataViewObject,
-        createNewObject: CreateNewObject,
+        createObject: CreateObject,
         reducer: ObjectSetReducer,
         dispatcher: Dispatcher<Payload>,
         delegator: Delegator<Action>,
@@ -176,7 +175,7 @@ object ObjectSetModule {
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
-        createNewObject = createNewObject,
+        createObject = createObject,
         dataViewSubscriptionContainer = dataViewSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
         setDataViewSource = setDataViewSource,
@@ -188,14 +187,14 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideCreateNewObject(
-        getDefaultEditorType: GetDefaultEditorType,
+    fun getCreateObject(
+        repo: BlockRepository,
         getTemplates: GetTemplates,
-        createPage: CreatePage,
-    ): CreateNewObject = CreateNewObject(
-        getDefaultEditorType,
-        getTemplates,
-        createPage
+        getDefaultEditorType: GetDefaultEditorType
+    ): CreateObject = CreateObject(
+        repo = repo,
+        getTemplates = getTemplates,
+        getDefaultEditorType = getDefaultEditorType
     )
 
     @JvmStatic
@@ -204,15 +203,6 @@ object ObjectSetModule {
     fun provideSetDataViewSource(
         repo: BlockRepository
     ): SetDataViewSource = SetDataViewSource(repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideCreatePageUseCase(
-        repo: BlockRepository
-    ): CreatePage = CreatePage(
-        repo = repo
-    )
 
     @JvmStatic
     @Provides

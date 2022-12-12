@@ -2,6 +2,8 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -9,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
@@ -74,19 +77,15 @@ class BlockDataRepository(
         command: Command.UpdateAlignment
     ): Payload = remote.updateAlignment(command)
 
-    override suspend fun createPage(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: String?,
-        template: Id?
-    ) = remote.createPage(
-        ctx = ctx,
-        emoji = emoji,
-        isDraft = isDraft,
-        type = type,
-        template = template
-    )
+    override suspend fun createObject(
+        command: Command.CreateObject
+    ): CreateObjectResult {
+        return remote.createObject(command)
+    }
+
+    override suspend fun createBlockLinkWithObject(
+        command: Command.CreateBlockLinkWithObject
+    ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
     override suspend fun closePage(id: String) {
         remote.closePage(id)
@@ -139,22 +138,6 @@ class BlockDataRepository(
         command: Command.Duplicate
     ): Pair<List<Id>, Payload> = remote.duplicate(command).let { (ids, payload) ->
         Pair(ids, payload)
-    }
-
-    override suspend fun createDocument(
-        command: Command.CreateDocument
-    ): Triple<String, String, Payload> {
-        return remote.createDocument(
-            command
-        ).let { (id, target, payload) ->
-            Triple(id, target, payload)
-        }
-    }
-
-    override suspend fun createNewDocument(
-        command: Command.CreateNewDocument
-    ): Id {
-        return remote.createNewDocument(command)
     }
 
     override suspend fun move(command: Command.Move): Payload {
@@ -382,16 +365,6 @@ class BlockDataRepository(
         viewer = viewer
     )
 
-    override suspend fun createDataViewObject(
-        type: Id,
-        template: Id?,
-        prefilled: Struct,
-    ): Id = remote.createDataViewRecord(
-        template = template,
-        prefilled = prefilled,
-        type = type
-    )
-
     override suspend fun searchObjects(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -460,8 +433,8 @@ class BlockDataRepository(
 
     override suspend fun debugSync(): String = remote.debugSync()
 
-    override suspend fun debugTree(objectId: Id, path: String): String
-    = remote.debugTree(objectId = objectId, path = path)
+    override suspend fun debugTree(objectId: Id, path: String): String =
+        remote.debugTree(objectId = objectId, path = path)
 
     override suspend fun debugLocalStore(path: String): String =
         remote.debugLocalStore(path)
@@ -551,7 +524,7 @@ class BlockDataRepository(
         return remote.objectToSet(ctx, source)
     }
 
-    override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload {
+    override suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload {
         return remote.clearBlockContent(ctx, blockIds)
     }
 

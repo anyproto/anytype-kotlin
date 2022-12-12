@@ -33,7 +33,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -107,7 +107,7 @@ abstract class TestObjectSetSetup {
     lateinit var cancelSearchSubscription: CancelSearchSubscription
 
     @Mock
-    lateinit var createNewObject: CreateNewObject
+    lateinit var createObject: CreateObject
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultEditorType: GetDefaultEditorType
@@ -206,7 +206,7 @@ abstract class TestObjectSetSetup {
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             delegator = delegator,
-            createNewObject = createNewObject,
+            createObject = createObject,
             setDataViewSource = setDataViewSource,
             cancelSearchSubscription = cancelSearchSubscription,
             paginator = paginator,

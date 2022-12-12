@@ -2,6 +2,8 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -35,8 +37,6 @@ interface BlockDataStore {
     suspend fun updateAlignment(command: Command.UpdateAlignment): Payload
     suspend fun openDashboard(contextId: String, id: String): Payload
 
-    suspend fun createDocument(command: Command.CreateDocument): Triple<Id, Id, Payload>
-    suspend fun createNewDocument(command: Command.CreateNewDocument): String
     suspend fun updateDocumentTitle(command: Command.UpdateTitle)
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateTextStyle(command: Command.UpdateStyle): Payload
@@ -48,13 +48,6 @@ interface BlockDataStore {
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun move(command: Command.Move): Payload
     suspend fun unlink(command: Command.Unlink): Payload
-    suspend fun createPage(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: String?,
-        template: Id?
-    ): Id
 
     suspend fun openPage(id: String): Payload
     suspend fun openObjectSet(id: String): Payload
@@ -115,12 +108,6 @@ interface BlockDataStore {
         target: String,
         viewer: DVViewer
     ): Payload
-
-    suspend fun createDataViewRecord(
-        type: Id,
-        template: Id?,
-        prefilled: Struct,
-    ): Id
 
     suspend fun addDataViewViewer(
         ctx: String,
@@ -307,4 +294,10 @@ interface BlockDataStore {
     ): Payload
 
     suspend fun addObjectToWorkspace(objects: List<Id>) : List<Id>
+
+    suspend fun createObject(command: Command.CreateObject): CreateObjectResult
+
+    suspend fun createBlockLinkWithObject(
+        command: Command.CreateBlockLinkWithObject
+    ): CreateBlockLinkWithObjectResult
 }

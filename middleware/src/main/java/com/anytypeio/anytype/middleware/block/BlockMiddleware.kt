@@ -3,6 +3,8 @@ package com.anytypeio.anytype.middleware.block
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -39,24 +41,6 @@ class BlockMiddleware(
     override suspend fun closeDashboard(id: String) {
         middleware.objectClose(id)
     }
-
-    override suspend fun createPage(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: String?,
-        template: Id?
-    ): String = middleware.blockLinkCreateWithObject(
-        ctx = ctx,
-        emoji = emoji,
-        isDraft = isDraft,
-        type = type,
-        template = template
-    )
-
-    override suspend fun createPage(
-        command: Command.CreateNewDocument
-    ): String = middleware.objectCreate(command)
 
     override suspend fun openPage(id: String): Payload = middleware.objectOpen(id)
     override suspend fun openProfile(id: String): Payload = middleware.objectOpen(id)
@@ -123,10 +107,6 @@ class BlockMiddleware(
         command.position,
         command.prototype
     )
-
-    override suspend fun createDocument(
-        command: Command.CreateDocument
-    ): Triple<String, String, Payload> = middleware.blockLinkCreateWithObject(command)
 
     override suspend fun duplicate(
         command: Command.Duplicate
@@ -313,16 +293,6 @@ class BlockMiddleware(
         viewer = viewer
     )
 
-    override suspend fun createDataViewObject(
-        type: Id,
-        template: Id?,
-        prefilled: Struct,
-    ): Id = middleware.objectCreate(
-        template = template,
-        prefilled = prefilled,
-        type = type
-    )
-
     override suspend fun addDataViewViewer(
         ctx: String,
         target: String,
@@ -500,14 +470,14 @@ class BlockMiddleware(
         ctx: String,
         target: String,
         position: Position,
-        rowCount: Int,
-        columnCount: Int
+        rows: Int,
+        columns: Int
     ): Payload = middleware.createTable(
         ctx = ctx,
         target = target,
         position = position,
-        rowCount = rowCount,
-        columnCount = columnCount
+        rows = rows,
+        columns = columns
     )
 
     override suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload =
@@ -689,4 +659,12 @@ class BlockMiddleware(
     override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
         return middleware.workspaceObjectListAdd(objects)
     }
+
+    override suspend fun createObject(
+        command: Command.CreateObject
+    ): CreateObjectResult = middleware.objectCreate(command)
+
+    override suspend fun createBlockLinkWithObject(
+        command: Command.CreateBlockLinkWithObject
+    ): CreateBlockLinkWithObjectResult = middleware.blockLinkCreateWithObject(command)
 }

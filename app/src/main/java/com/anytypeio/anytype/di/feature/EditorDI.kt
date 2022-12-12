@@ -54,7 +54,6 @@ import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -63,11 +62,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateDocument
-import com.anytypeio.anytype.domain.page.CreateNewDocument
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
+import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
@@ -216,10 +213,9 @@ object EditorSessionModule {
         interceptThreadStatus: InterceptThreadStatus,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
-        createDocument: CreateDocument,
         createObjectSet: CreateObjectSet,
-        createObject: CreateObject,
-        createNewDocument: CreateNewDocument,
+        createBlockLinkWithObject: CreateBlockLinkWithObject,
+        createObjectAsMentionOrLink: CreateObjectAsMentionOrLink,
         documentExternalEventReducer: DocumentExternalEventReducer,
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
@@ -237,7 +233,7 @@ object EditorSessionModule {
         setDocCoverImage: SetDocCoverImage,
         setDocImageIcon: SetDocumentImageIcon,
         editorTemplateDelegate: EditorTemplateDelegate,
-        createNewObject: CreateNewObject,
+        createObject: CreateObject,
         storeOfRelations: StoreOfRelations,
         storeOfObjectTypes: StoreOfObjectTypes,
         objectToSet: ConvertObjectToSet,
@@ -246,9 +242,8 @@ object EditorSessionModule {
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
-        createDocument = createDocument,
-        createObject = createObject,
-        createNewDocument = createNewDocument,
+        createBlockLinkWithObject = createBlockLinkWithObject,
+        createObjectAsMentionOrLink = createObjectAsMentionOrLink,
         interceptEvents = interceptEvents,
         interceptThreadStatus = interceptThreadStatus,
         updateLinkMarks = updateLinkMarks,
@@ -271,25 +266,12 @@ object EditorSessionModule {
         setDocCoverImage = setDocCoverImage,
         setDocImageIcon = setDocImageIcon,
         editorTemplateDelegate = editorTemplateDelegate,
-        createNewObject = createNewObject,
+        createObject = createObject,
         storeOfRelations = storeOfRelations,
         storeOfObjectTypes = storeOfObjectTypes,
         objectToSet = objectToSet,
         featureToggles = featureToggles,
         tableDelegate = tableDelegate
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideCreateNewObject(
-        getDefaultEditorType: GetDefaultEditorType,
-        getTemplates: GetTemplates,
-        createPage: CreatePage,
-    ): CreateNewObject = CreateNewObject(
-        getDefaultEditorType,
-        getTemplates,
-        createPage
     )
 
     @JvmStatic
@@ -648,15 +630,6 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideCreatePageUseCase(
-        repo: BlockRepository
-    ): CreatePage = CreatePage(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideDownloadFileUseCase(
         downloader: Downloader
     ): DownloadFile = DownloadFile(
@@ -685,34 +658,23 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideCreateDocumentUseCase(
-        repo: BlockRepository,
-        documentEmojiIconProvider: DocumentEmojiIconProvider
-    ): CreateDocument = CreateDocument(
-        repo = repo,
-        documentEmojiProvider = documentEmojiIconProvider
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideCreateObjectUseCase(
         repo: BlockRepository,
-        documentEmojiIconProvider: DocumentEmojiIconProvider
-    ): CreateObject = CreateObject(
-        repo = repo,
-        documentEmojiProvider = documentEmojiIconProvider
-    )
+        getTemplates: GetTemplates
+    ): CreateBlockLinkWithObject =
+        CreateBlockLinkWithObject(repo = repo, getTemplates = getTemplates)
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideCreateNewDocumentUseCase(
+    fun provideCreateObjectAsMentionOrLink(
         repo: BlockRepository,
-        documentEmojiIconProvider: DocumentEmojiIconProvider
-    ): CreateNewDocument = CreateNewDocument(
+        getDefaultEditorType: GetDefaultEditorType,
+        getTemplates: GetTemplates
+    ): CreateObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
         repo = repo,
-        documentEmojiProvider = documentEmojiIconProvider
+        getDefaultEditorType = getDefaultEditorType,
+        getTemplates = getTemplates
     )
 
     @JvmStatic
@@ -1147,6 +1109,19 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun getOptions(repo: BlockRepository) = GetOptions(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getCreateObject(
+        repo: BlockRepository,
+        getTemplates: GetTemplates,
+        getDefaultEditorType: GetDefaultEditorType
+    ): CreateObject = CreateObject(
+        repo = repo,
+        getTemplates = getTemplates,
+        getDefaultEditorType = getDefaultEditorType
+    )
 
     @Module
     interface Bindings {

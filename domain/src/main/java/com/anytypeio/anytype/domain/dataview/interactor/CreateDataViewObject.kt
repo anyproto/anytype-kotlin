@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.dataview.interactor
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
@@ -7,6 +8,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -25,40 +27,51 @@ class CreateDataViewObject(
 ) : BaseUseCase<Id, CreateDataViewObject.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        when(params) {
+        when (params) {
             is Params.SetByType -> {
-                repo.createDataViewObject(
+                val command = Command.CreateObject(
                     template = resolveTemplateForNewObject(type = params.type),
                     prefilled = resolveSetByTypePrefilledObjectData(
-                        filters = params.filters
+                        filters = params.filters,
+                        type = params.type
                     ),
-                    type = params.type
+                    internalFlags = listOf()
                 )
+                val result = repo.createObject(command)
+                result.id
             }
             is Params.SetByRelation -> {
                 val type = resolveDefaultObjectType()
-                repo.createDataViewObject(
+                val command = Command.CreateObject(
                     template = resolveTemplateForNewObject(type = type),
                     prefilled = resolveSetByRelationPrefilledObjectData(
                         filters = params.filters,
-                        relations = params.relations
+                        relations = params.relations,
+                        type = type
                     ),
-                    type = type
+                    internalFlags = listOf()
                 )
+                val result = repo.createObject(command)
+                result.id
             }
         }
     }
 
-    private suspend fun resolveSetByTypePrefilledObjectData(filters: List<DVFilter>): Struct = buildMap {
-        filters.forEach { filter ->
-            val relation = storeOfRelations.getByKey(filter.relationKey)
-            if (relation != null && relation.isReadOnly == false) {
-                if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
-                    filter.value?.let { put(filter.relationKey, it) }
+    private suspend fun resolveSetByTypePrefilledObjectData(
+        filters: List<DVFilter>,
+        type: Id
+    ): Struct =
+        buildMap {
+            filters.forEach { filter ->
+                val relation = storeOfRelations.getByKey(filter.relationKey)
+                if (relation != null && relation.isReadOnly == false) {
+                    if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
+                        filter.value?.let { put(filter.relationKey, it) }
+                    }
                 }
             }
+            put(Relations.TYPE, type)
         }
-    }
 
     private suspend fun resolveTemplateForNewObject(type: Id): Id? {
         val templates = try {
@@ -71,7 +84,8 @@ class CreateDataViewObject(
 
     private suspend fun resolveSetByRelationPrefilledObjectData(
         filters: List<DVFilter>,
-        relations: List<Key>
+        relations: List<Key>,
+        type: Id? = null
     ): Struct = try {
         buildMap {
             filters.forEach { filter ->
@@ -93,12 +107,15 @@ class CreateDataViewObject(
                     put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))
                 }
             }
+            if (type != null) {
+                put(Relations.TYPE, type)
+            }
         }
     } catch (e: Exception) {
         emptyMap()
     }
 
-    private suspend fun resolveDefaultObjectType() : Id {
+    private suspend fun resolveDefaultObjectType(): Id {
         return try {
             getDefaultEditorType.run(Unit).type ?: ObjectTypeIds.NOTE
         } catch (e: Exception) {
@@ -106,8 +123,8 @@ class CreateDataViewObject(
         }
     }
 
-    private fun resolveDefaultValueByFormat(format: RelationFormat) : Any? {
-        when(format) {
+    private fun resolveDefaultValueByFormat(format: RelationFormat): Any? {
+        when (format) {
             Relation.Format.LONG_TEXT,
             Relation.Format.SHORT_TEXT,
             Relation.Format.URL,
@@ -133,6 +150,7 @@ class CreateDataViewObject(
             val type: Id,
             val filters: List<DVFilter>
         ) : Params()
+
         data class SetByRelation(
             val filters: List<DVFilter>,
             val relations: List<Id>

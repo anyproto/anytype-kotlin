@@ -155,32 +155,33 @@ sealed class Command {
     )
 
     /**
-     * Command for creating a new document / page
-     * @property context id of the context of the block (i.e. page, dashboard or something else)
-     * @property target id of the block associated with the block we need to create
-     * @property position position of the block that we need to create in relation with the target block
-     * @property emoji random emoji for new page
-     * @property type object type
-     * @property layout object layout
+     * Command for creating a new object with linked block
+     * @property [context] id of the context of the block (i.e. page, dashboard or something else)
+     * @property [target] id of the block associated with the block we need to create
+     * @property [position] position of the block that we need to create in relation with the target block
      * @property [template] id of the template for this object (optional)
+     * @property [prefilled] new object details
+     * @property [internalFlags] flags responsible for the object creation logic
      */
-    class CreateDocument(
+    data class CreateBlockLinkWithObject(
         val context: Id,
         val target: Id,
         val position: Position,
-        val emoji: String?,
-        val type: String?,
-        val layout: ObjectType.Layout?,
-        val template: Id? = null
+        val template: Id?,
+        val prefilled: Struct,
+        val internalFlags: List<InternalFlags>
     )
 
     /**
-     * Command for creating a new document / page
+     * Command for creating a new object
+     * @property [prefilled] new object details
+     * @property [template] id of the template for this object (optional)
+     * @property [internalFlags] flags responsible for the object creation logic
      */
-    class CreateNewDocument(
-        val name: String,
-        val emoji: String?,
-        val type: String?
+    data class CreateObject(
+        val prefilled: Struct,
+        val template: Id?,
+        val internalFlags: List<InternalFlags>
     )
 
     class Move(

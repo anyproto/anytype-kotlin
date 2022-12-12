@@ -2,7 +2,6 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
 import anytype.model.Block
-import anytype.model.InternalFlag
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.Range
@@ -10,6 +9,8 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.middleware.mappers.MRelation
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.parse
+import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toPayload
@@ -313,78 +315,6 @@ class Middleware(
         val response = service.blockDataViewViewUpdate(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun blockLinkCreateWithObject(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: String?,
-        template: Id?
-    ): Id {
-        val details: MutableMap<String, Any> = mutableMapOf()
-        emoji?.let { details[Relations.ICON_EMOJI] = it }
-        isDraft?.let { details[Relations.IS_DRAFT] = it }
-        type?.let { details[Relations.TYPE] = it }
-
-        val flags = buildList {
-            if (isDraft == true)
-                add(InternalFlag(InternalFlag.Value.editorDeleteEmpty))
-        }
-
-        val request = Rpc.BlockLink.CreateWithObject.Request(
-            contextId = ctx.orEmpty(),
-            details = details,
-            position = Block.Position.Inner,
-            templateId = template.orEmpty(),
-            internalFlags = flags
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockLinkCreateWithObject(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.targetId
-    }
-
-    @Throws(Exception::class)
-    fun blockLinkCreateWithObject(command: Command.CreateDocument): Triple<String, String, Payload> {
-
-        val details: MutableMap<String, Any> = mutableMapOf()
-
-        command.emoji?.let { details[Relations.ICON_EMOJI] = it }
-        command.type?.let { details[Relations.TYPE] = it }
-        command.layout?.let { details[Relations.LAYOUT] = it.toMiddlewareModel().value.toDouble() }
-
-        val position: Block.Position = command.position.toMiddlewareModel()
-
-        val flags = buildList<InternalFlag> {
-            // Add flags when needed
-        }
-
-        val request = Rpc.BlockLink.CreateWithObject.Request(
-            contextId = command.context,
-            targetId = command.target,
-            position = position,
-            details = details,
-            templateId = command.template.orEmpty(),
-            internalFlags = flags
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockLinkCreateWithObject(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return Triple(
-            response.blockId,
-            response.targetId,
-            response.event.toPayload()
-        )
     }
 
     @Throws(Exception::class)
@@ -914,50 +844,38 @@ class Middleware(
 
     @Throws(Exception::class)
     fun objectCreate(
-        type: Id,
-        template: Id?,
-        prefilled: Struct,
-        shouldSelectType: Boolean = false,
-        shouldEmptyDelete: Boolean = false
-    ) : Id {
-        val details: Struct = buildMap {
-            put(Relations.TYPE, type)
-            putAll(prefilled)
-        }
-        val flags = buildList {
-            if (shouldSelectType) add(InternalFlag(InternalFlag.Value.editorSelectType))
-            if (shouldEmptyDelete) add(InternalFlag(InternalFlag.Value.editorDeleteEmpty))
-        }
+        command: Command.CreateObject
+    ): CreateObjectResult {
         val request = Rpc.Object.Create.Request(
-            details = details.toMap(),
-            templateId = template.orEmpty(),
-            internalFlags = flags
+            details = command.prefilled,
+            templateId = command.template.orEmpty(),
+            internalFlags = command.internalFlags.toMiddlewareModel()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.objectId
+        return response.toCoreModel()
     }
 
     @Throws(Exception::class)
-    fun objectCreate(command: Command.CreateNewDocument): Id {
-        TODO("relations refactoring")
-//        val details: Map<String, Any> = buildMap {
-//            command.emoji?.let { put(Relations.ICON_EMOJI, it) }
-//            command.name.let { put(Relations.NAME, it) }
-//            command.type?.let { put(Relations.TYPE, it) }
-//        }
-//        val flags = buildList<InternalFlag> {
-//
-//        }
-//        val request = Rpc.Object.Create.Request(
-//            details = details.toMap(),
-//            internalFlags = flags
-//        )
-//        if (BuildConfig.DEBUG) logRequest(request)
-//        val response = service.objectCreate(request)
-//        if (BuildConfig.DEBUG) logResponse(response)
-//        return response.pageId
+    fun blockLinkCreateWithObject(
+        command: Command.CreateBlockLinkWithObject
+    ): CreateBlockLinkWithObjectResult {
+
+        val request = Rpc.BlockLink.CreateWithObject.Request(
+            contextId = command.context,
+            details = command.prefilled,
+            templateId = command.template.orEmpty(),
+            internalFlags = command.internalFlags.toMiddlewareModel(),
+            targetId = command.target,
+            position = command.position.toMiddlewareModel(),
+            fields = null
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockLinkCreateWithObject(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toCoreModel()
     }
 
     @Throws(Exception::class)
@@ -988,7 +906,7 @@ class Middleware(
         format: RelationFormat,
         formatObjectTypes: List<Id>,
         prefilled: Struct
-    ) : ObjectWrapper.Relation {
+    ): ObjectWrapper.Relation {
         val request = Rpc.Object.CreateRelation.Request(
             details = buildMap {
                 put(Relations.NAME, name)
@@ -1015,7 +933,7 @@ class Middleware(
         relation: Key,
         name: String,
         color: String
-    ) : ObjectWrapper.Option {
+    ): ObjectWrapper.Option {
         val request = Rpc.Object.CreateRelationOption.Request(
             details = buildMap {
                 put(Relations.RELATION_KEY, relation)
@@ -1606,15 +1524,15 @@ class Middleware(
         ctx: String,
         target: String,
         position: Position,
-        rowCount: Int,
-        columnCount: Int
+        rows: Int,
+        columns: Int
     ): Payload {
         val request = Rpc.BlockTable.Create.Request(
             contextId = ctx,
             targetId = target,
             position = position.toMiddlewareModel(),
-            rows = rowCount,
-            columns = columnCount
+            rows = rows,
+            columns = columns
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.createTable(request)

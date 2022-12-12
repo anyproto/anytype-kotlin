@@ -39,7 +39,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -90,7 +90,7 @@ class HomeDashboardViewModel(
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val createNewObject: CreateNewObject,
+    private val createObject: CreateObject,
     featureToggles: FeatureToggles
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
@@ -274,12 +274,12 @@ class HomeDashboardViewModel(
     fun onAddNewDocumentClicked() {
         Timber.d("onAddNewDocumentClicked, ")
         subscriptions += viewModelScope.launch {
-            createNewObject.execute(Unit).fold(
-                onSuccess = { id ->
+            createObject.execute(CreateObject.Param(type = null)).fold(
+                onSuccess = { result ->
                     machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
-                    proceedWithOpeningDocument(id)
+                    proceedWithOpeningDocument(result.objectId)
                 },
-                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                onFailure = { e -> Timber.e(e, "Error while creating a new object") }
             )
         }
     }

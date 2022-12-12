@@ -27,7 +27,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -105,7 +105,7 @@ open class DashboardTestSetup {
     lateinit var getTemplates: GetTemplates
 
     @Mock
-    lateinit var createNewObject: CreateNewObject
+    lateinit var createObject: CreateObject
 
     private lateinit var objectStore: ObjectStore
 
@@ -148,7 +148,7 @@ open class DashboardTestSetup {
                     main = coroutineTestRule.testDispatcher
                 )
             ),
-            createNewObject = createNewObject,
+            createObject = createObject,
             featureToggles = mock(),
             storeOfObjectTypes = storeOfObjectTypes
         )

@@ -2,6 +2,8 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -32,27 +34,21 @@ interface BlockRemote {
     suspend fun unlink(command: Command.Unlink): Payload
     suspend fun updateTextColor(command: Command.UpdateTextColor): Payload
     suspend fun updateBackgroundColor(command: Command.UpdateBackgroundColor): Payload
-    suspend fun updateAlignment(command: Command.UpdateAlignment) : Payload
+    suspend fun updateAlignment(command: Command.UpdateAlignment): Payload
 
-    suspend fun createDocument(command: Command.CreateDocument): Triple<String, String, Payload>
     suspend fun updateDocumentTitle(command: Command.UpdateTitle)
     suspend fun updateText(command: Command.UpdateText)
-    suspend fun updateTextStyle(command: Command.UpdateStyle) : Payload
+    suspend fun updateTextStyle(command: Command.UpdateStyle): Payload
     suspend fun setTextIcon(command: Command.SetTextIcon): Payload
 
     suspend fun setLinkAppearance(command: Command.SetLinkAppearance): Payload
 
     suspend fun updateCheckbox(command: Command.UpdateCheckbox): Payload
     suspend fun move(command: Command.Move): Payload
-    suspend fun createPage(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: String?,
-        template: Id?
-    ): Id
+    suspend fun createBlockLinkWithObject(
+        command: Command.CreateBlockLinkWithObject
+    ): CreateBlockLinkWithObjectResult
 
-    suspend fun createPage(command: Command.CreateNewDocument): String
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String): Payload
     suspend fun openObjectSet(id: String): Payload
@@ -68,15 +64,15 @@ interface BlockRemote {
     suspend fun removeDocumentCover(ctx: String): Payload
     suspend fun removeDocumentIcon(ctx: Id): Payload
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
-    suspend fun setupBookmark(command: Command.SetupBookmark) : Payload
+    suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
-    suspend fun createBookmarkObject(url: Url) : Id
+    suspend fun createBookmarkObject(url: Url): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
-    suspend fun undo(command: Command.Undo) : Payload
-    suspend fun redo(command: Command.Redo) : Payload
+    suspend fun undo(command: Command.Undo): Payload
+    suspend fun redo(command: Command.Redo): Payload
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>
-    suspend fun paste(command: Command.Paste) : Response.Clipboard.Paste
-    suspend fun copy(command: Command.Copy) : Response.Clipboard.Copy
+    suspend fun paste(command: Command.Paste): Response.Clipboard.Paste
+    suspend fun copy(command: Command.Copy): Response.Clipboard.Copy
 
     suspend fun uploadFile(command: Command.UploadFile): String
     suspend fun downloadFile(command: Command.DownloadFile): String
@@ -117,17 +113,12 @@ interface BlockRemote {
         targets: List<String>,
         style: Block.Content.Text.Style
     ): Payload
+
     suspend fun duplicateDataViewViewer(
         context: String,
         target: String,
         viewer: DVViewer
     ): Payload
-
-    suspend fun createDataViewObject(
-        type: Id,
-        template: Id?,
-        prefilled: Struct,
-    ): Id
 
     suspend fun addDataViewViewer(
         ctx: String,
@@ -174,7 +165,7 @@ interface BlockRemote {
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
-    suspend fun addRelationToObject(ctx: Id, relation: Key) : Payload
+    suspend fun addRelationToObject(ctx: Id, relation: Key): Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
     suspend fun debugSync(): String
@@ -198,13 +189,13 @@ interface BlockRemote {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean) : Payload
+    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
+    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean): Payload
 
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
     suspend fun deleteObjects(targets: List<Id>)
 
-    suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload
+    suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload
 
     suspend fun clearFileCache()
 
@@ -231,17 +222,17 @@ interface BlockRemote {
         format: RelationFormat,
         formatObjectTypes: List<Id>,
         prefilled: Struct
-    ) : ObjectWrapper.Relation
+    ): ObjectWrapper.Relation
 
     suspend fun createRelationOption(
         relation: Id,
         name: String,
         color: String
-    ) : ObjectWrapper.Option
+    ): ObjectWrapper.Option
 
-    suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>) : Payload
+    suspend fun clearBlockContent(ctx: Id, blockIds: List<Id>): Payload
 
-    suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>) : Payload
+    suspend fun clearBlockStyle(ctx: Id, blockIds: List<Id>): Payload
 
     suspend fun fillTableColumn(ctx: Id, blockIds: List<Id>): Payload
 
@@ -307,4 +298,6 @@ interface BlockRemote {
     ): Payload
 
     suspend fun addObjectToWorkspace(objects: List<Id>): List<Id>
+
+    suspend fun createObject(command: Command.CreateObject): CreateObjectResult
 }

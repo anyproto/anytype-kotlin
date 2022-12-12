@@ -66,9 +66,8 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateDocument
-import com.anytypeio.anytype.domain.page.CreateNewDocument
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
+import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
@@ -222,7 +221,7 @@ open class EditorViewModelTest {
     lateinit var splitBlock: SplitBlock
 
     @Mock
-    lateinit var createObject: CreateObject
+    lateinit var createBlockLinkWithObject: CreateBlockLinkWithObject
 
     @Mock
     lateinit var updateAlignment: UpdateAlignment
@@ -258,10 +257,7 @@ open class EditorViewModelTest {
     lateinit var createBookmarkBlock: CreateBookmarkBlock
 
     @Mock
-    lateinit var createDocument: CreateDocument
-
-    @Mock
-    lateinit var createNewDocument: CreateNewDocument
+    lateinit var createObjectAsMentionOrLink: CreateObjectAsMentionOrLink
 
     @Mock
     lateinit var replaceBlock: ReplaceBlock
@@ -326,7 +322,7 @@ open class EditorViewModelTest {
     private lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     @Mock
-    lateinit var createNewObject: CreateNewObject
+    lateinit var createObject: CreateObject
 
     @Mock
     lateinit var createTable: CreateTable
@@ -3947,9 +3943,8 @@ open class EditorViewModelTest {
         vm = EditorViewModel(
             openPage = openPage,
             closePage = closePage,
-            createDocument = createDocument,
             createObject = createObject,
-            createNewDocument = createNewDocument,
+            createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
@@ -4020,7 +4015,7 @@ open class EditorViewModelTest {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject,
+            createBlockLinkWithObject = createBlockLinkWithObject,
             featureToggles = mock(),
             objectToSet = objectToSet,
             storeOfRelations = storeOfRelations,
@@ -4523,8 +4518,16 @@ open class EditorViewModelTest {
     }
 
     private fun givenDelegateId(id: String) {
-        createNewObject.stub {
-            onBlocking { execute(Unit) } doReturn Resultat.success(id)
+        createObject.stub {
+            onBlocking { execute(CreateObject.Param(null)) } doReturn Resultat.success(
+                CreateObject.Result(
+                    objectId = id,
+                    event = Payload(
+                        context = id,
+                        events = listOf()
+                    )
+                )
+            )
         }
     }
 }

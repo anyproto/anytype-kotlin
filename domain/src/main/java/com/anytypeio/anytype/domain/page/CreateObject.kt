@@ -1,65 +1,64 @@
 package com.anytypeio.anytype.domain.page
 
-import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.templates.GetTemplates
 
+/**
+ * Use case for creating a new object
+ */
 class CreateObject(
     private val repo: BlockRepository,
-    private val documentEmojiProvider: DocumentEmojiIconProvider
-) : BaseUseCase<CreateObject.Result, CreateObject.Params>() {
+    private val getDefaultEditorType: GetDefaultEditorType,
+    private val getTemplates: GetTemplates
+) : ResultInteractor<CreateObject.Param, CreateObject.Result>() {
 
-    override suspend fun run(params: Params) = try {
-        repo.createDocument(
-            command = Command.CreateDocument(
-                context = params.context,
-                target = params.target,
-                position = params.position,
-                emoji = null,
-                type = params.type,
-                layout = params.layout,
-                template = params.template
-            )
-        ).let { (id, target, payload) ->
-            Either.Right(
-                Result(
-                    id = id,
-                    target = target,
-                    payload = payload
-                )
-            )
+    override suspend fun doWork(params: Param): Result {
+
+        val type = params.type ?: getDefaultEditorType.run(Unit).type
+
+        val template = if (type != null) {
+            getTemplates.run(GetTemplates.Params(type = type)).singleOrNull()?.id
+        } else {
+            null
         }
-    } catch (t: Throwable) {
-        Either.Left(t)
+
+        val internalFlags = if (template != null) {
+            listOf()
+        } else {
+            listOf(InternalFlags.ShouldSelectType, InternalFlags.ShouldEmptyDelete)
+        }
+
+        val prefilled = buildMap {
+            if (type != null) put(Relations.TYPE, type)
+        }
+
+        val command = Command.CreateObject(
+            template = template,
+            prefilled = prefilled,
+            internalFlags = internalFlags
+        )
+
+        val result = repo.createObject(command)
+
+        return Result(
+            objectId = result.id,
+            event = result.event
+        )
     }
 
-    /**
-     * Params for creating a new object
-     * @property context id of the context of the block (i.e. page, dashboard or something else)
-     * @property target id of the block associated with the block we need to create
-     * @property position position of the block that we need to create in relation with the target block
-     * @property [template] id of the template for this object (optional)
-     */
-    data class Params(
-        val context: Id,
-        val target: Id,
-        val position: Position,
-        val type: String,
-        val layout: ObjectType.Layout?,
-        val template: Id? = null
+    data class Param(
+        val type: String?
     )
 
-    /**
-     * Result for this use-case
-     * @property id id of the new block (link)
-     * @property target id of the target for this new block
-     * @property payload payload of events
-     */
     data class Result(
-        val id: Id,
-        val target: Id,
-        val payload: Payload
+        val objectId: Id,
+        val event: Payload
     )
 }

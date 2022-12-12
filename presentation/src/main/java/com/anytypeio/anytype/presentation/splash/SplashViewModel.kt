@@ -23,7 +23,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -44,7 +44,7 @@ class SplashViewModel(
     private val getLastOpenedObject: GetLastOpenedObject,
     private val getDefaultEditorType: GetDefaultEditorType,
     private val setDefaultEditorType: SetDefaultEditorType,
-    private val createPage: CreatePage,
+    private val createObject: CreateObject,
     private val appActionManager: AppActionManager,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
@@ -187,19 +187,15 @@ class SplashViewModel(
 
     fun onIntentCreateNewObject(type: Id) {
         viewModelScope.launch {
-            createPage.execute(
-                CreatePage.Params(
-                    ctx = null,
-                    emoji = null,
-                    isDraft = true,
-                    type = type
-                )
+            createObject.execute(
+                CreateObject.Param(type = type)
             ).fold(
                 onFailure = { e ->
+                    Timber.e(e, "Error while creating a new object with type:$type")
                     proceedWithNavigation()
                 },
-                onSuccess = { target ->
-                    commands.emit(Command.NavigateToObject(target))
+                onSuccess = { result ->
+                    commands.emit(Command.NavigateToObject(result.objectId))
                 }
             )
         }

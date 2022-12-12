@@ -408,7 +408,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         val newObjectType = PAGE
         val newObjectId = MockDataFactory.randomString()
         val newObjectName = MockDataFactory.randomString()
-        stubCreateNewDocument(
+        stubCreateObjectAsMentionOrLink(
             name = newObjectName,
             type = newObjectType,
             id = newObjectId

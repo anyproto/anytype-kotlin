@@ -27,7 +27,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -117,7 +117,7 @@ class HomeDashboardViewModelTest {
     lateinit var objectStore: ObjectStore
 
     @Mock
-    lateinit var createNewObject: CreateNewObject
+    lateinit var createObject: CreateObject
 
     private lateinit var vm: HomeDashboardViewModel
 
@@ -153,7 +153,7 @@ class HomeDashboardViewModelTest {
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
-            createNewObject = createNewObject,
+            createObject = createObject,
             featureToggles = mock(),
             storeOfObjectTypes = storeOfObjectTypes
         )
@@ -371,8 +371,16 @@ class HomeDashboardViewModelTest {
     }
 
     private fun givenDelegateId(id: String) {
-        createNewObject.stub {
-            onBlocking { execute(Unit) } doReturn Resultat.success(id)
+        createObject.stub {
+            onBlocking { execute(CreateObject.Param(null)) } doReturn Resultat.success(
+                CreateObject.Result(
+                    objectId = id,
+                    event = Payload(
+                        context = id,
+                        events = listOf()
+                    )
+                )
+            )
         }
     }
 

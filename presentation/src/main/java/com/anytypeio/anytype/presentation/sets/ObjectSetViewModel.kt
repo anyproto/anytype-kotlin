@@ -38,7 +38,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -104,7 +104,7 @@ class ObjectSetViewModel(
     private val session: ObjectSetSession,
     private val analytics: Analytics,
     private val createDataViewObject: CreateDataViewObject,
-    private val createNewObject: CreateNewObject,
+    private val createObject: CreateObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val setDataViewSource: SetDataViewSource,
@@ -199,7 +199,7 @@ class ObjectSetViewModel(
                     DataViewSubscriptionContainer.Params(
                         subscription = context,
                         sorts = view.sorts,
-                        filters = view.filters.map { f : DVFilter ->
+                        filters = view.filters.map { f: DVFilter ->
                             val r = storeOfRelations.getByKey(f.relationKey)
                             if (r != null && r.relationFormat == RelationFormat.DATE) {
                                 f.copy(
@@ -750,7 +750,7 @@ class ObjectSetViewModel(
                 } else {
                     val sourceDetails = currentState.details[sourceId]
                     if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
-                        when(sourceDetails.type.firstOrNull()) {
+                        when (sourceDetails.type.firstOrNull()) {
                             ObjectTypeIds.OBJECT_TYPE -> {
                                 if (sourceId == ObjectTypeIds.BOOKMARK) {
                                     dispatch(
@@ -1100,11 +1100,14 @@ class ObjectSetViewModel(
             props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
         )
         jobs += viewModelScope.launch {
-            createNewObject.execute(Unit).fold(
-                onSuccess = { id ->
-                    proceedWithOpeningObject(id)
+            createObject.execute(CreateObject.Param(type = null)).fold(
+                onSuccess = { result ->
+                    proceedWithOpeningObject(result.objectId)
                 },
-                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                onFailure = { e ->
+                    Timber.e(e, "Error while creating a new object")
+                    toast("Error while creating a new object")
+                }
             )
         }
     }

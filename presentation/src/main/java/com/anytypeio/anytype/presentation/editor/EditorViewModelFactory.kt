@@ -20,9 +20,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateDocument
-import com.anytypeio.anytype.domain.page.CreateNewDocument
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
+import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -43,10 +42,9 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 open class  EditorViewModelFactory(
     private val openPage: OpenPage,
     private val closeObject: CloseBlock,
-    private val createDocument: CreateDocument,
     private val createObjectSet: CreateObjectSet,
-    private val createObject: CreateObject,
-    private val createNewDocument: CreateNewDocument,
+    private val createBlockLinkWithObject: CreateBlockLinkWithObject,
+    private val createObjectAsMentionOrLink: CreateObjectAsMentionOrLink,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -68,7 +66,7 @@ open class  EditorViewModelFactory(
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
     private val editorTemplateDelegate: EditorTemplateDelegate,
-    private val createNewObject: CreateNewObject,
+    private val createObject: CreateObject,
     private val objectToSet: ConvertObjectToSet,
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
@@ -85,12 +83,11 @@ open class  EditorViewModelFactory(
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
-            createObject = createObject,
+            createBlockLinkWithObject = createBlockLinkWithObject,
             reducer = documentEventReducer,
             urlBuilder = urlBuilder,
             renderer = renderer,
-            createDocument = createDocument,
-            createNewDocument = createNewDocument,
+            createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             orchestrator = orchestrator,
             analytics = analytics,
             dispatcher = dispatcher,
@@ -106,7 +103,7 @@ open class  EditorViewModelFactory(
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject,
+            createObject = createObject,
             objectToSet = objectToSet,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,

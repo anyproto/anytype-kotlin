@@ -35,7 +35,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -59,7 +59,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
@@ -104,7 +103,7 @@ open class ObjectSetViewModelTestSetup {
     lateinit var getTemplates: GetTemplates
 
     @Mock
-    lateinit var createNewObject: CreateNewObject
+    lateinit var createObject: CreateObject
 
     @Mock
     lateinit var setDataViewSource: SetDataViewSource
@@ -168,7 +167,7 @@ open class ObjectSetViewModelTestSetup {
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
-        createNewObject = createNewObject,
+        createObject = createObject,
         setDataViewSource = setDataViewSource,
         setObjectDetails = setObjectDetails,
         paginator = paginator,

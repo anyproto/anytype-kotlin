@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -71,7 +71,7 @@ class SplashViewModelTest {
     private lateinit var setDefaultEditorType: SetDefaultEditorType
 
     @Mock
-    lateinit var createPage: CreatePage
+    lateinit var createObject: CreateObject
 
     @Mock
     lateinit var appActionManager: AppActionManager
@@ -105,7 +105,7 @@ class SplashViewModelTest {
             getLastOpenedObject = getLastOpenedObject,
             setDefaultEditorType = setDefaultEditorType,
             getDefaultEditorType = getDefaultEditorType,
-            createPage = createPage,
+            createObject = createObject,
             appActionManager = appActionManager,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager

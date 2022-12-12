@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
@@ -38,7 +38,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke createObject UseCase on clicked on object type item`() {
+    fun `should invoke CreateBlockLinkWithObject UseCase on clicked on object type item`() {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
@@ -49,7 +49,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateText()
         stubSearchObjects(listOf(type1, type2, type3))
-        stubCreateObject(root, a.id)
+        stubCreateBlockLinkWithObject(root, a.id)
         stubOpenDocument(doc)
 
         val vm = buildViewModel()
@@ -78,14 +78,13 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             )
         )
 
-        val params = CreateObject.Params(
+        val params = CreateBlockLinkWithObject.Params(
             context = root,
             target = a.id,
             position = Position.BOTTOM,
-            type = type2.id,
-            layout = null
+            type = type2.id
         )
 
-        verifyBlocking(createObject, times(1)) { invoke(params) }
+        verifyBlocking(createBlockLinkWithObject, times(1)) { execute(params) }
     }
 }

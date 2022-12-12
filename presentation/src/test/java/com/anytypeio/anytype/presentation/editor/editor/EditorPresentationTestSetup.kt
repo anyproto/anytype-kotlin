@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -55,9 +54,8 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateDocument
-import com.anytypeio.anytype.domain.page.CreateNewDocument
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
+import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
@@ -107,7 +105,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -171,7 +168,7 @@ open class EditorPresentationTestSetup {
     lateinit var splitBlock: SplitBlock
 
     @Mock
-    lateinit var createObject: CreateObject
+    lateinit var createBlockLinkWithObject: CreateBlockLinkWithObject
 
     @Mock
     lateinit var updateAlignment: UpdateAlignment
@@ -210,13 +207,10 @@ open class EditorPresentationTestSetup {
     lateinit var createBookmarkBlock: CreateBookmarkBlock
 
     @Mock
-    lateinit var createDocument: CreateDocument
-
-    @Mock
     lateinit var setRelationKey: SetRelationKey
 
     @Mock
-    lateinit var createNewDocument: CreateNewDocument
+    lateinit var createObjectAsMentionOrLink: CreateObjectAsMentionOrLink
 
     @Mock
     lateinit var replaceBlock: ReplaceBlock
@@ -246,9 +240,6 @@ open class EditorPresentationTestSetup {
     lateinit var setObjectType: SetObjectType
 
     @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
     lateinit var searchObjects: SearchObjects
 
     @Mock
@@ -267,7 +258,7 @@ open class EditorPresentationTestSetup {
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     @Mock
-    lateinit var createNewObject: CreateNewObject
+    lateinit var createObject: CreateObject
 
     @Mock
     lateinit var getTemplates: GetTemplates
@@ -407,9 +398,8 @@ open class EditorPresentationTestSetup {
         return EditorViewModel(
             openPage = openPage,
             closePage = closePage,
-            createDocument = createDocument,
-            createObject = createObject,
-            createNewDocument = createNewDocument,
+            createBlockLinkWithObject = createBlockLinkWithObject,
+            createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
@@ -437,7 +427,7 @@ open class EditorPresentationTestSetup {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject,
+            createObject = createObject,
             featureToggles = mock(),
             objectToSet = objectToSet,
             storeOfRelations = storeOfRelations,
@@ -578,14 +568,14 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubCreateObject(root: String, target: String) {
-        createObject.stub {
+    fun stubCreateBlockLinkWithObject(root: String, target: String) {
+        createBlockLinkWithObject.stub {
             onBlocking {
-                invoke(any())
-            } doReturn Either.Right(
-                CreateObject.Result(
+                execute(any())
+            } doReturn Resultat.success(
+                CreateBlockLinkWithObject.Result(
                     id = root,
-                    target = target,
+                    objectId = target,
                     payload = Payload(
                         context = root,
                         events = emptyList()
@@ -695,11 +685,11 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubCreateNewDocument(name: String, type: String, id: String) {
-        val params = CreateNewDocument.Params(name, type)
-        val result = CreateNewDocument.Result(id, name, null)
-        createNewDocument.stub {
-            onBlocking { invoke(params) } doReturn Either.Right(result)
+    fun stubCreateObjectAsMentionOrLink(name: String, type: String, id: String) {
+        val params = CreateObjectAsMentionOrLink.Params(name, type)
+        val result = CreateObjectAsMentionOrLink.Result(id, name)
+        createObjectAsMentionOrLink.stub {
+            onBlocking { execute(params) } doReturn Resultat.success(result)
         }
     }
 

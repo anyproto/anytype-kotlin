@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -43,7 +43,7 @@ class ObjectSetViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
     private val analytics: Analytics,
-    private val createNewObject: CreateNewObject,
+    private val createObject: CreateObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val setDataViewSource: SetDataViewSource,
@@ -71,7 +71,7 @@ class ObjectSetViewModelFactory(
             urlBuilder = urlBuilder,
             session = session,
             analytics = analytics,
-            createNewObject = createNewObject,
+            createObject = createObject,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,
             setDataViewSource = setDataViewSource,

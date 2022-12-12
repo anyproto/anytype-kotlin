@@ -65,9 +65,8 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateDocument
-import com.anytypeio.anytype.domain.page.CreateNewDocument
-import com.anytypeio.anytype.domain.page.CreateNewObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
+import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
@@ -112,15 +111,13 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 open class EditorTestSetup {
 
-    lateinit var createObject: CreateObject
-    lateinit var createDocument: CreateDocument
+    lateinit var createBlockLinkWithObject: CreateBlockLinkWithObject
     lateinit var downloadFile: DownloadFile
     lateinit var undo: Undo
     lateinit var redo: Redo
@@ -184,13 +181,13 @@ open class EditorTestSetup {
     lateinit var mergeBlocks: MergeBlocks
 
     @Mock
-    lateinit var createNewObject: CreateNewObject
+    lateinit var createObject: CreateObject
 
     lateinit var editorTemplateDelegate: EditorTemplateDelegate
     lateinit var getTemplates: GetTemplates
     lateinit var applyTemplate: ApplyTemplate
 
-    lateinit var createNewDocument: CreateNewDocument
+    lateinit var createObjectAsMentionOrLink: CreateObjectAsMentionOrLink
     lateinit var interceptThreadStatus: InterceptThreadStatus
 
     lateinit var setDocCoverImage: SetDocCoverImage
@@ -288,7 +285,6 @@ open class EditorTestSetup {
         )
 
         splitBlock = SplitBlock(repo)
-        createDocument = CreateDocument(repo, documentEmojiIconProvider)
         undo = Undo(repo)
         redo = Redo(repo)
         objectToSet = ConvertObjectToSet(repo)
@@ -296,12 +292,12 @@ open class EditorTestSetup {
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
         uploadBlock = UploadBlock(repo)
-        createObject = CreateObject(repo, documentEmojiIconProvider)
+        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, getTemplates)
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
         updateFields = UpdateFields(repo)
         setObjectType = SetObjectType(repo)
-        createNewDocument = CreateNewDocument(repo, documentEmojiIconProvider)
+        createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(repo, getDefaultEditorType, getTemplates)
         getSearchObjects = SearchObjects(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepository)
@@ -357,9 +353,8 @@ open class EditorTestSetup {
             interceptEvents = interceptEvents,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
-            createObject = createObject,
+            createBlockLinkWithObject = createBlockLinkWithObject,
             documentEventReducer = DocumentExternalEventReducer(),
-            createDocument = createDocument,
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
@@ -413,7 +408,7 @@ open class EditorTestSetup {
                 clearBlockContent = clearBlockContent,
                 clearBlockStyle = clearBlockStyle
             ),
-            createNewDocument = createNewDocument,
+            createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptThreadStatus = interceptThreadStatus,
             analytics = analytics,
             dispatcher = Dispatcher.Default(),
@@ -429,7 +424,7 @@ open class EditorTestSetup {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             editorTemplateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject,
+            createObject = createObject,
             objectToSet = objectToSet,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,

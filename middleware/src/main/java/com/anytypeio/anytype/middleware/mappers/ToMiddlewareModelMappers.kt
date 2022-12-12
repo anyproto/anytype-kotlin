@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.middleware.mappers
 
+import anytype.model.InternalFlag
 import anytype.model.Range
 import anytype.model.RelationFormat
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
@@ -363,20 +365,21 @@ fun Block.Content.DataView.Filter.Operator.toMiddlewareModel(): MDVFilterOperato
     Block.Content.DataView.Filter.Operator.OR -> MDVFilterOperator.Or
 }
 
-fun Block.Content.DataView.Filter.QuickOption.toMiddlewareModel(): MDVFilterQuickOption = when (this) {
-    Block.Content.DataView.Filter.QuickOption.EXACT_DATE -> MDVFilterQuickOption.ExactDate
-    Block.Content.DataView.Filter.QuickOption.YESTERDAY -> MDVFilterQuickOption.Yesterday
-    Block.Content.DataView.Filter.QuickOption.TODAY -> MDVFilterQuickOption.Today
-    Block.Content.DataView.Filter.QuickOption.TOMORROW -> MDVFilterQuickOption.Tomorrow
-    Block.Content.DataView.Filter.QuickOption.LAST_WEEK -> MDVFilterQuickOption.LastWeek
-    Block.Content.DataView.Filter.QuickOption.CURRENT_WEEK -> MDVFilterQuickOption.CurrentWeek
-    Block.Content.DataView.Filter.QuickOption.NEXT_WEEK -> MDVFilterQuickOption.NextWeek
-    Block.Content.DataView.Filter.QuickOption.LAST_MONTH -> MDVFilterQuickOption.LastMonth
-    Block.Content.DataView.Filter.QuickOption.CURRENT_MONTH -> MDVFilterQuickOption.CurrentMonth
-    Block.Content.DataView.Filter.QuickOption.NEXT_MONTH -> MDVFilterQuickOption.NextMonth
-    Block.Content.DataView.Filter.QuickOption.DAYS_AGO -> MDVFilterQuickOption.NumberOfDaysAgo
-    Block.Content.DataView.Filter.QuickOption.DAYS_AHEAD -> MDVFilterQuickOption.NumberOfDaysNow
-}
+fun Block.Content.DataView.Filter.QuickOption.toMiddlewareModel(): MDVFilterQuickOption =
+    when (this) {
+        Block.Content.DataView.Filter.QuickOption.EXACT_DATE -> MDVFilterQuickOption.ExactDate
+        Block.Content.DataView.Filter.QuickOption.YESTERDAY -> MDVFilterQuickOption.Yesterday
+        Block.Content.DataView.Filter.QuickOption.TODAY -> MDVFilterQuickOption.Today
+        Block.Content.DataView.Filter.QuickOption.TOMORROW -> MDVFilterQuickOption.Tomorrow
+        Block.Content.DataView.Filter.QuickOption.LAST_WEEK -> MDVFilterQuickOption.LastWeek
+        Block.Content.DataView.Filter.QuickOption.CURRENT_WEEK -> MDVFilterQuickOption.CurrentWeek
+        Block.Content.DataView.Filter.QuickOption.NEXT_WEEK -> MDVFilterQuickOption.NextWeek
+        Block.Content.DataView.Filter.QuickOption.LAST_MONTH -> MDVFilterQuickOption.LastMonth
+        Block.Content.DataView.Filter.QuickOption.CURRENT_MONTH -> MDVFilterQuickOption.CurrentMonth
+        Block.Content.DataView.Filter.QuickOption.NEXT_MONTH -> MDVFilterQuickOption.NextMonth
+        Block.Content.DataView.Filter.QuickOption.DAYS_AGO -> MDVFilterQuickOption.NumberOfDaysAgo
+        Block.Content.DataView.Filter.QuickOption.DAYS_AHEAD -> MDVFilterQuickOption.NumberOfDaysNow
+    }
 
 fun Block.Content.DataView.Filter.Condition.toMiddlewareModel(): MDVFilterCondition = when (this) {
     Block.Content.DataView.Filter.Condition.EQUAL -> MDVFilterCondition.Equal
@@ -457,4 +460,12 @@ fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {
     Relation.Format.TAG -> MRelationFormat.tag
     Relation.Format.RELATIONS -> MRelationFormat.relations
     Relation.Format.UNDEFINED -> throw IllegalStateException("Format was undefined")
+}
+
+fun List<InternalFlags>.toMiddlewareModel(): List<InternalFlag> = map {
+    when (it) {
+        InternalFlags.ShouldEmptyDelete -> InternalFlag(InternalFlag.Value.editorDeleteEmpty)
+        InternalFlags.ShouldSelectTemplate -> InternalFlag(InternalFlag.Value.editorSelectTemplate)
+        InternalFlags.ShouldSelectType -> InternalFlag(InternalFlag.Value.editorSelectType)
+    }
 }

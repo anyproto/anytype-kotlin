@@ -66,6 +66,6 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
         vm.onStart(ctx = ctx)
         vm.onCreateNewDataViewObject()
 
-       verifyNoInteractions(createNewObject)
+       verifyNoInteractions(createObject)
     }
 }

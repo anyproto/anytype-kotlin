@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.mappers
 
 import anytype.ResponseEvent
+import anytype.Rpc
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.ObjectLinksInfo
@@ -707,4 +708,20 @@ fun MAccountStatus.core(): AccountStatus = when (statusType) {
     )
     MAccountStatusType.StartedDeletion -> AccountStatus.Deleted
     MAccountStatusType.Deleted -> AccountStatus.Deleted
+}
+
+fun Rpc.Object.Create.Response.toCoreModel(): CreateObjectResult {
+    return CreateObjectResult(
+        id = objectId,
+        event = event.toPayload(),
+        details = details
+    )
+}
+
+fun Rpc.BlockLink.CreateWithObject.Response.toCoreModel(): CreateBlockLinkWithObjectResult {
+    return CreateBlockLinkWithObjectResult(
+        blockId = blockId,
+        objectId = targetId,
+        event = event.toPayload()
+    )
 }

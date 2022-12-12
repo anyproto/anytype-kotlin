@@ -2,6 +2,8 @@ package com.anytypeio.anytype.domain.block.repo
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -9,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
@@ -50,16 +53,13 @@ interface BlockRepository {
     suspend fun create(command: Command.Create): Pair<Id, Payload>
 
     /**
-     * Creates a new document / page.
-     * @return pair of values, where the first one is block id and the second one is target id.
+     * Creates just the new page, without adding the link to it from some other page
      */
-    suspend fun createDocument(command: Command.CreateDocument): Triple<Id, Id, Payload>
+    suspend fun createObject(command: Command.CreateObject): CreateObjectResult
 
-    /**
-     * Creates a new document / page, without positioning and targets.
-     * @return block id of the new document.
-     */
-    suspend fun createNewDocument(command: Command.CreateNewDocument): Id
+    suspend fun createBlockLinkWithObject(
+        command: Command.CreateBlockLinkWithObject
+    ): CreateBlockLinkWithObjectResult
 
     suspend fun merge(command: Command.Merge): Payload
 
@@ -89,14 +89,6 @@ interface BlockRepository {
     suspend fun updateAlignment(command: Command.UpdateAlignment): Payload
 
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload
-
-    suspend fun createPage(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: Id?,
-        template: Id?
-    ): Id
 
     suspend fun openObjectPreview(id: Id): Result<Payload>
 
@@ -173,12 +165,6 @@ interface BlockRepository {
         target: Id,
         viewer: DVViewer
     ): Payload
-
-    suspend fun createDataViewObject(
-        type: Id,
-        template: Id?,
-        prefilled: Struct,
-    ): Id
 
     suspend fun addDataViewViewer(
         ctx: String,

@@ -2,12 +2,15 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
@@ -32,19 +35,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.closeDashboard(id = id)
     }
 
-    override suspend fun createPage(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: String?,
-        template: Id?
-    ): Id = remote.createPage(
-        ctx = ctx,
-        emoji = emoji,
-        isDraft = isDraft,
-        type = type,
-        template = template
-    )
+    override suspend fun createBlockLinkWithObject(
+        command: Command.CreateBlockLinkWithObject
+    ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
     override suspend fun openPage(id: String): Payload = remote.openPage(id)
     override suspend fun openProfile(id: String): Payload = remote.openProfile(id)
@@ -98,14 +91,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun create(
         command: Command.Create
     ): Pair<String, Payload> = remote.create(command)
-
-    override suspend fun createDocument(
-        command: Command.CreateDocument
-    ): Triple<String, String, Payload> = remote.createDocument(command)
-
-    override suspend fun createNewDocument(
-        command: Command.CreateNewDocument
-    ): String = remote.createPage(command)
 
     override suspend fun move(command: Command.Move): Payload {
         return remote.move(command)
@@ -279,16 +264,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         context = context,
         target = target,
         viewer = viewer
-    )
-
-    override suspend fun createDataViewRecord(
-        type: Id,
-        template: Id?,
-        prefilled: Struct,
-    ): Id = remote.createDataViewObject(
-        template = template,
-        prefilled = prefilled,
-        type = type
     )
 
     override suspend fun addDataViewViewer(
@@ -647,5 +622,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
         return remote.addObjectToWorkspace(objects)
+    }
+
+    override suspend fun createObject(
+        command: Command.CreateObject
+    ): CreateObjectResult {
+        return remote.createObject(command)
     }
 }

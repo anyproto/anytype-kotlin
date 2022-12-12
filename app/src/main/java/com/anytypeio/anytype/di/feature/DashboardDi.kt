@@ -24,8 +24,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.page.CreateNewObject
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -79,7 +78,7 @@ object HomeDashboardModule {
         cancelSearchSubscription: CancelSearchSubscription,
         objectStore: ObjectStore,
         featureToggles: FeatureToggles,
-        createNewObject: CreateNewObject,
+        createObject: CreateObject,
         storeOfObjectTypes: StoreOfObjectTypes
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
@@ -98,22 +97,9 @@ object HomeDashboardModule {
         objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
         objectStore = objectStore,
-        createNewObject = createNewObject,
+        createObject = createObject,
         featureToggles = featureToggles,
         storeOfObjectTypes = storeOfObjectTypes
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideCreateNewObject(
-        getDefaultEditorType: GetDefaultEditorType,
-        getTemplates: GetTemplates,
-        createPage: CreatePage,
-    ) : CreateNewObject = CreateNewObject(
-        getDefaultEditorType,
-        getTemplates,
-        createPage
     )
 
     @JvmStatic
@@ -151,15 +137,6 @@ object HomeDashboardModule {
     ): CloseDashboard = CloseDashboard(
         repo = repo,
         provider = provider
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideCreatePageUseCase(
-        repo: BlockRepository
-    ): CreatePage = CreatePage(
-        repo = repo
     )
 
     @JvmStatic
@@ -286,5 +263,18 @@ object HomeDashboardModule {
             computation = Dispatchers.Default,
             main = Dispatchers.Main
         )
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getCreateObject(
+        repo: BlockRepository,
+        getTemplates: GetTemplates,
+        getDefaultEditorType: GetDefaultEditorType
+    ): CreateObject = CreateObject(
+        repo = repo,
+        getTemplates = getTemplates,
+        getDefaultEditorType = getDefaultEditorType
     )
 }

@@ -6,6 +6,7 @@ import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.core_utils.ui.getNavigationId
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command
 import timber.log.Timber
@@ -14,10 +15,14 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
     @LayoutRes private val layout: Int
 ) : BaseFragment<BINDING>(layout) {
 
+    private val currentNavigationId by lazy { getNavigationId() }
+
     val navObserver = Observer<EventWrapper<Command>> { event ->
         event.getContentIfNotHandled()?.let {
             try {
-                navigate(it)
+                if (currentNavigationId == getNavigationId()) {
+                    throttle { navigate(it) }
+                }
             } catch (e: Exception) {
                 Timber.e(e, "Navigation: $it")
                 if (BuildConfig.DEBUG) {
@@ -51,7 +56,10 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
             is Command.OpenSettings -> navigation.openSettings()
             is Command.OpenObject -> navigation.openDocument(command.id, command.editorSettings)
             is Command.OpenArchive -> navigation.openArchive(command.target)
-            is Command.OpenObjectSet -> navigation.openObjectSet(command.target, command.isPopUpToDashboard)
+            is Command.OpenObjectSet -> navigation.openObjectSet(
+                command.target,
+                command.isPopUpToDashboard
+            )
             is Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
             is Command.LaunchDocument -> navigation.launchDocument(command.id)
             is Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(command.target)

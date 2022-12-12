@@ -910,7 +910,7 @@ class ObjectSetViewModel(
     }
 
     fun onViewerSettingsClicked() {
-        Timber.d("onViewerRelationsClicked, ")
+        Timber.d("onViewerSettingsClicked, ")
         if (isRestrictionPresent(DataViewRestriction.RELATION)) {
             toast(NOT_ALLOWED)
         } else {

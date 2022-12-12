@@ -8,11 +8,20 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_utils.BuildConfig
+import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 abstract class BaseFragment<T : ViewBinding>(
     @LayoutRes private val layout: Int,
@@ -26,6 +35,7 @@ abstract class BaseFragment<T : ViewBinding>(
     val hasBinding get() = _binding != null
 
     val jobs = mutableListOf<Job>()
+    private val throttleFlow = MutableSharedFlow<() -> Unit>(0)
 
     abstract fun injectDependencies()
     abstract fun releaseDependencies()
@@ -33,6 +43,15 @@ abstract class BaseFragment<T : ViewBinding>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectDependencies()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        proceed(throttleFlow.throttleFirst(LONG_THROTTLE_DURATION)) { it() }
+    }
+
+    protected fun throttle(task: () -> Unit) {
+        jobs += this.lifecycleScope.launch { throttleFlow.emit { task() } }
     }
 
     override fun onStop() {
@@ -59,7 +78,9 @@ abstract class BaseFragment<T : ViewBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (applyWindowRootInsets) { onApplyWindowRootInsets() }
+        if (applyWindowRootInsets) {
+            onApplyWindowRootInsets()
+        }
     }
 
     open fun onApplyWindowRootInsets() {
@@ -73,10 +94,20 @@ abstract class BaseFragment<T : ViewBinding>(
         }
     }
 
+    protected fun DialogFragment.showChildFragment(tag: String? = null) {
+        jobs += this@BaseFragment.lifecycleScope.launch {
+            throttleFlow.emit { show(this@BaseFragment.childFragmentManager, tag) }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
     protected abstract fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?): T
+}
+
+fun <T> BaseFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
+    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
 }

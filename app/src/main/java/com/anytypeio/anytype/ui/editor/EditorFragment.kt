@@ -132,10 +132,10 @@ import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
+import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
-import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
 import com.anytypeio.anytype.ui.relations.RelationAddResult
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
@@ -886,7 +886,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenTextBlockIconPicker -> {
                     TextBlockIconPickerFragment.new(
                         context = ctx, blockId = command.block
-                    ).show(childFragmentManager, null)
+                    ).showChildFragment()
                 }
                 Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
@@ -901,7 +901,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(
                         target = command.target
-                    ).show(childFragmentManager, null)
+                    ).showChildFragment()
                 }
                 is Command.OpenGallery -> {
                     pickerDelegate.openFilePicker(command.mimeType, null)
@@ -936,7 +936,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         isProfile = false,
                         fromName = getFrom()
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.OpenProfileMenu -> {
                     hideKeyboard()
@@ -963,7 +963,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = ObjectLayoutFragment.new(command.ctx).apply {
                         onDismissListener = { vm.onLayoutDialogDismissed() }
                     }
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.OpenFullScreenImage -> {
                     val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
@@ -978,7 +978,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.AlertDialog -> {
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
-                        AlertUpdateAppFragment().show(childFragmentManager, TAG_ALERT)
+                        AlertUpdateAppFragment().showChildFragment(TAG_ALERT)
                     } else {
                         // Do nothing
                     }
@@ -988,7 +988,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.Dialog.SelectLanguage -> {
                     SelectProgrammingLanguageFragment.new(command.target)
-                        .show(childFragmentManager, null)
+                        .showChildFragment()
                 }
                 is Command.OpenObjectRelationScreen.RelationAdd -> {
                     hideKeyboard()
@@ -998,7 +998,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             target = command.target,
                             mode = RelationListFragment.MODE_ADD
                         )
-                        .show(childFragmentManager, null)
+                        .showChildFragment()
                 }
                 is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
@@ -1023,7 +1023,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         targetObjectTypes = command.targetObjectTypes,
                         isLocked = command.isLocked
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.OpenObjectRelationScreen.Value.Text -> {
                     hideKeyboard()
@@ -1034,7 +1034,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         objectId = command.target,
                         isLocked = command.isLocked
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.OpenObjectRelationScreen.Value.Date -> {
                     hideKeyboard()
@@ -1044,7 +1044,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         relationId = command.relationId,
                         relationKey = command.relationKey
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 Command.AddSlashWidgetTriggerToFocusedBlock -> {
                     binding.recycler.addTextFromSelectedStart(text = "/")
@@ -1054,14 +1054,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = DraftObjectSelectTypeFragment.newInstance(
                         excludeTypes = command.excludedTypes
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.OpenObjectSelectTypeScreen -> {
                     hideKeyboard()
                     val fr = ObjectSelectTypeFragment.newInstance(
                         excludeTypes = command.excludedTypes
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.OpenMoveToScreen -> {
                     jobs += lifecycleScope.launch {
@@ -1073,7 +1073,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             restorePosition = command.restorePosition,
                             restoreBlock = command.restoreBlock
                         )
-                        fr.show(childFragmentManager, null)
+                        fr.showChildFragment()
                     }
                 }
                 is Command.OpenObjectSnackbar -> {
@@ -1099,7 +1099,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             position = command.position,
                             ignore = vm.context
                         )
-                        fr.show(childFragmentManager, null)
+                        fr.showChildFragment()
                     }
                 }
                 is Command.AddMentionWidgetTriggerToFocusedBlock -> {
@@ -1125,7 +1125,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         rangeEnd = command.range.last,
                         isWholeBlockMarkup = command.isWholeBlockMarkup
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.ShowKeyboard -> {
                     binding.recycler.findFocus()?.focusAndShowKeyboard()
@@ -1144,7 +1144,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         ctx = command.ctx,
                         block = command.block
                     )
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
                 is Command.ScrollToPosition -> {
                     val lm = binding.recycler.layoutManager as LinearLayoutManager
@@ -1162,7 +1162,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             hideKeyboard()
                         }
                     }
-                    fr.show(childFragmentManager, null)
+                    fr.showChildFragment()
                 }
             }
         }

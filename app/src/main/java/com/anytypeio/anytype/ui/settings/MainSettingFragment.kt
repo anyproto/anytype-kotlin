@@ -12,17 +12,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
-import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Command
+import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
 import com.anytypeio.anytype.ui.settings.system.SettingsActivity
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -90,16 +88,16 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
     private fun processCommands(command: Command) {
         when (command) {
             Command.OpenAboutScreen -> {
-                findNavController().navigate(R.id.actionOpenAboutAppScreen)
+                safeNavigate(R.id.actionOpenAboutAppScreen)
             }
             Command.OpenAccountAndDataScreen -> {
-                findNavController().navigate(R.id.actionOpenAccountAndDataScreen)
+                safeNavigate(R.id.actionOpenAccountAndDataScreen)
             }
             Command.OpenAppearanceScreen -> {
-                findNavController().navigate(R.id.actionOpenAppearanceScreen)
+                safeNavigate(R.id.actionOpenAppearanceScreen)
             }
             Command.OpenPersonalizationScreen -> {
-                findNavController().navigate(R.id.actionOpenPersonalizationScreen)
+                safeNavigate(R.id.actionOpenPersonalizationScreen)
             }
             Command.OpenDebugScreen -> {
                 startActivity(Intent(requireActivity(), SettingsActivity::class.java))

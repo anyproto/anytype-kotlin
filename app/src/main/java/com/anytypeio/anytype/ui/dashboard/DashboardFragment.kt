@@ -17,12 +17,11 @@ import androidx.transition.TransitionSet
 import androidx.viewpager2.widget.ViewPager2
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.click
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -38,8 +37,6 @@ import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -442,51 +439,15 @@ class DashboardFragment :
                 })
         }
 
-        binding.btnAddDoc
-            .clicks()
-            .onEach { vm.onAddNewDocumentClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.btnSearch
-            .clicks()
-            .onEach { vm.onPageSearchClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.btnMarketplace
-            .clicks()
-            .onEach { toast(getString(R.string.coming_soon)) }
-            .launchIn(lifecycleScope)
-
-        binding.ivSettings
-            .clicks()
-            .throttleFirst()
-            .onEach { vm.onSettingsClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.avatarContainer
-            .clicks()
-            .onEach { vm.onAvatarClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.tvCancel
-            .clicks()
-            .onEach { vm.onCancelSelectionClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.tvSelectAll
-            .clicks()
-            .onEach { vm.onSelectAllClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.tvRestore
-            .clicks()
-            .onEach { vm.onPutBackClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.tvDelete
-            .clicks()
-            .onEach { vm.onDeleteObjectsClicked() }
-            .launchIn(lifecycleScope)
+        click(binding.btnAddDoc) { vm.onAddNewDocumentClicked() }
+        click(binding.btnSearch) { vm.onPageSearchClicked() }
+        click(binding.btnMarketplace) { toast(getString(R.string.coming_soon)) }
+        click(binding.ivSettings) { vm.onSettingsClicked() }
+        click(binding.avatarContainer) { vm.onAvatarClicked() }
+        click(binding.tvCancel) { vm.onCancelSelectionClicked() }
+        click(binding.tvSelectAll) { vm.onSelectAllClicked() }
+        click(binding.tvRestore) { vm.onPutBackClicked() }
+        click(binding.tvDelete) { vm.onDeleteObjectsClicked() }
     }
 
     override fun inflateBinding(

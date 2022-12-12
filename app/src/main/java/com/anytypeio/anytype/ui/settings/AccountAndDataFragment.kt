@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_utils.ext.shareFile
@@ -39,11 +38,11 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
     private val onKeychainPhraseClicked = {
         val bundle =
             bundleOf(KeychainPhraseDialog.ARG_SCREEN_TYPE to EventsDictionary.Type.screenSettings)
-        findNavController().navigate(R.id.keychainDialog, bundle)
+        safeNavigate(R.id.keychainDialog, bundle)
     }
 
     private val onLogoutClicked = {
-        findNavController().navigate(R.id.logoutWarningScreen)
+        safeNavigate(R.id.logoutWarningScreen)
     }
 
     override fun onCreateView(
@@ -62,10 +61,10 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
                 MaterialTheme(typography = typography) {
                     AccountAndDataScreen(
                         onKeychainPhraseClicked = onKeychainPhraseClicked,
-                        onClearFileCachedClicked = { proceedWithClearFileCacheWarning() },
-                        onDeleteAccountClicked = { proceedWithAccountDeletion() },
+                        onClearFileCachedClicked = { throttle { proceedWithClearFileCacheWarning() } },
+                        onDeleteAccountClicked = { throttle { proceedWithAccountDeletion() } },
                         onLogoutClicked = onLogoutClicked,
-                        onDebugSyncReportClicked = { vm.onDebugSyncReportClicked() },
+                        onDebugSyncReportClicked = { throttle { vm.onDebugSyncReportClicked() } },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         isClearCacheInProgress = vm.isClearFileCacheInProgress.collectAsState().value,
                         isDebugSyncReportInProgress = vm.isDebugSyncReportInProgress.collectAsState().value,

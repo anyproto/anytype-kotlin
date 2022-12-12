@@ -12,11 +12,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.click
-import com.anytypeio.anytype.core_ui.reactive.proceed
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.shareFile
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -75,7 +76,7 @@ abstract class ObjectMenuBaseFragment :
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }
         proceed(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
-        proceed(vm.commands) { command -> execute(command) }
+        proceed(vm.commands.throttleFirst()) { command -> execute(command) }
         proceed(vm.options) { options -> renderOptions(options) }
 
         super.onStart()
@@ -121,7 +122,7 @@ abstract class ObjectMenuBaseFragment :
             ObjectMenuViewModelBase.Command.OpenSetIcons -> openSetIcons()
             ObjectMenuViewModelBase.Command.OpenSetLayout -> toast(COMING_SOON_MSG)
             ObjectMenuViewModelBase.Command.OpenSetRelations -> toast(COMING_SOON_MSG)
-            ObjectMenuViewModelBase.Command.OpenLinkToChooser -> openLinkChooser(command)
+            ObjectMenuViewModelBase.Command.OpenLinkToChooser -> openLinkChooser()
             is ObjectMenuViewModelBase.Command.OpenSnackbar -> openSnackbar(command)
             is ObjectMenuViewModelBase.Command.ShareDebugTree -> shareFile(command.uri)
         }
@@ -178,7 +179,7 @@ abstract class ObjectMenuBaseFragment :
     }
 
 
-    private fun openLinkChooser(command: ObjectMenuViewModelBase.Command) {
+    private fun openLinkChooser() {
         val fr = MoveToFragment.new(
             ctx = ctx,
             blocks = emptyList(),

@@ -594,7 +594,7 @@ open class ObjectSetFragment :
                     flow = RelationTextValueFragment.FLOW_DATAVIEW,
                     relationKey = command.relationKey
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditGridDateCell -> {
                 //todo Relation as object, fix relationKey
@@ -605,7 +605,7 @@ open class ObjectSetFragment :
                     flow = RelationDateValueFragment.FLOW_DATAVIEW,
                     relationKey = ""
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditRelationCell -> {
                 findNavController().safeNavigate(
@@ -628,25 +628,25 @@ open class ObjectSetFragment :
                     ctx = command.ctx,
                     viewer = command.viewer
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.CreateViewer -> {
                 val fr = CreateDataViewViewerFragment.new(
                     ctx = command.ctx,
                     target = command.target
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditDataViewViewer -> {
                 val fr = EditDataViewViewerFragment.new(
                     ctx = command.ctx,
                     viewer = command.viewer
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ManageViewer -> {
                 val fr = ManageViewerFragment.new(ctx = command.ctx, dataview = command.dataview)
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenSettings -> {
                 val fr = ObjectSetSettingsFragment.new(
@@ -654,7 +654,7 @@ open class ObjectSetFragment :
                     dv = command.dv,
                     viewer = command.viewer
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.SetNameForCreatedObject -> {
                 findNavController().safeNavigate(
@@ -712,11 +712,11 @@ open class ObjectSetFragment :
                 val fr = ViewerFilterFragment.new(
                     ctx = command.ctx
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ModifyViewerSorts -> {
                 val fr = ViewerSortFragment.new(ctx)
-                fr.show(childFragmentManager, EMPTY_TAG)
+                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
                 findNavController().safeNavigate(
@@ -735,11 +735,11 @@ open class ObjectSetFragment :
                 val fr = DataViewSelectSourceFragment.newInstance(
                     selectedTypes = command.selectedTypes
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.OpenEmptyDataViewSelectSourceScreen -> {
                 val fr = EmptyDataViewSelectSourceFragment()
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
         }
     }

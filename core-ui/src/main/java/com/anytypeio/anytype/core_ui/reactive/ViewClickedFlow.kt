@@ -128,11 +128,3 @@ fun BaseBottomSheetFragment<*>.click(
         .onEach { action() }
         .launchIn(lifecycleScope)
 }
-
-fun <T> BaseFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
-}
-
-fun <T> BaseBottomSheetFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
-}

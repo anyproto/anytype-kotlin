@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.databinding.FragmentUserSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
@@ -38,26 +37,23 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
 
     override fun onStart() {
         super.onStart()
-        with(lifecycleScope) {
-            jobs += subscribe(vm.commands) { observe(it) }
-            jobs += subscribe(vm.defaultObjectTypeName) { binding.objectType.text = it }
-        }
+        proceed(vm.commands) { observe(it) }
+        proceed(vm.defaultObjectTypeName) { binding.objectType.text = it }
     }
 
     private fun observe(command: OtherSettingsViewModel.Command) {
         when (command) {
-            is OtherSettingsViewModel.Command.Exit -> dismiss()
+            is OtherSettingsViewModel.Command.Exit -> throttle { dismiss() }
             is OtherSettingsViewModel.Command.NavigateToObjectTypesScreen -> {
-                val fr = AppDefaultObjectTypeFragment.newInstance(
+                AppDefaultObjectTypeFragment.newInstance(
                     excludeTypes = command.excludeTypes
-                )
-                fr.show(childFragmentManager, null)
+                ).showChildFragment()
             }
             is OtherSettingsViewModel.Command.Toast -> toast(command.msg)
             is OtherSettingsViewModel.Command.ShowClearCacheAlert -> {
                 val dialog = ClearCacheAlertFragment.new()
                 dialog.onClearAccepted = { vm.proceedWithClearCache() }
-                dialog.show(childFragmentManager, null)
+                dialog.showChildFragment()
             }
         }
     }

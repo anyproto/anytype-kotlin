@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -25,7 +24,7 @@ class AppearanceFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<AppearanceViewModel> { factory }
 
     private val onWallpaperClicked = {
-        findNavController().navigate(R.id.wallpaperSetScreen)
+        safeNavigate(R.id.wallpaperSetScreen)
     }
 
     override fun onCreateView(
@@ -39,9 +38,9 @@ class AppearanceFragment : BaseBottomSheetComposeFragment() {
                 MaterialTheme(typography = typography) {
                     AppearanceScreen(
                         onWallpaperClicked = onWallpaperClicked,
-                        light = { vm.onLight() },
-                        dark = { vm.onDark() },
-                        system = { vm.onSystem() },
+                        light = { throttle { vm.onLight() } },
+                        dark = { throttle { vm.onDark() } },
+                        system = { throttle { vm.onSystem() } },
                         selectedMode = vm.selectedTheme.collectAsState().value
                     )
                 }

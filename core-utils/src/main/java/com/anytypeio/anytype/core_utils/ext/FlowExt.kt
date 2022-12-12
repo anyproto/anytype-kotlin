@@ -105,3 +105,4 @@ fun MutableList<Job>.cancel() {
 }
 
 const val DEFAULT_THROTTLE_DURATION = 1000L
+const val LONG_THROTTLE_DURATION = 2000L

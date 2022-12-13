@@ -98,6 +98,7 @@ class DragAndDropDelegate {
                     val block = blockAdapter.views[dndTargetPos]
                     if (block is BlockView.Selectable)
                         vm.onClickListener(ListenerType.LongClick(block.id))
+                    dndTargetPos = NO_POSITION
                     operationProcessed = true
                 }
                 stopScrollDownJob()
@@ -164,6 +165,7 @@ class DragAndDropDelegate {
     }
 
     private fun handleDragging(target: View, ratio: Float) {
+        if (dndTargetPos == NO_POSITION) return
         val vh = binding.recycler.findContainingViewHolder(target)
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos) {
@@ -542,7 +544,7 @@ class DragAndDropDelegate {
         val ratio = dropContainer.ratio
 
         if (vh != null) {
-            if (vh.bindingAdapterPosition != dndTargetPos) {
+            if (vh.bindingAdapterPosition != dndTargetPos && dndTargetPos != NO_POSITION) {
                 target.isSelected = false
                 if (vh is SupportNesting) {
                     when (ratio) {

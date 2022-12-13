@@ -1563,6 +1563,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             hidingSoftInput()
+                            delayKeyboardHide(insets)
                         } else {
                             proceedWithHidingSoftInput()
                             delayKeyboardHide(insets)

@@ -30,7 +30,6 @@ class SimpleTableSettingWidget @JvmOverloads constructor(
     init {
         binding.recyclerItems.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            setHasFixedSize(true)
             adapter = itemsAdapter
         }
         binding.tabsLayout.apply {

@@ -1,9 +1,11 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: "androidx.navigation.safeargs.kotlin"
-apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'com.google.firebase.appdistribution'
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-kapt"
+    id "androidx.navigation.safeargs.kotlin"
+    id "com.google.firebase.crashlytics"
+    id "com.google.firebase.appdistribution"
+}
 
 apply from: "$rootDir/versioning.gradle"
 
@@ -23,7 +25,6 @@ android {
     def config = rootProject.ext
 
     compileSdkVersion config.compile_sdk
-    buildToolsVersion config.build_tools
 
     defaultConfig {
         applicationId config.application_id
@@ -95,10 +96,6 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion config.compose_version
     }
@@ -120,6 +117,16 @@ android {
     }
 
     ndkVersion "23.2.8568313"
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 }
 
 dependencies {

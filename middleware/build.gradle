@@ -1,18 +1,7 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-
-android {
-
-    def config = rootProject.extensions.getByName("ext")
-
-    compileSdkVersion config["compile_sdk"]
-
-    defaultConfig {
-        minSdkVersion config["min_sdk"]
-        targetSdkVersion config["target_sdk"]
-        testInstrumentationRunner config["test_runner"]
-    }
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
 }
 
 dependencies {
@@ -23,7 +12,6 @@ dependencies {
     implementation project(':core-utils')
 
     def applicationDependencies = rootProject.ext.mainApplication
-    def anytypeDependencies = rootProject.ext.anytype
     def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation applicationDependencies.kotlin
@@ -32,7 +20,7 @@ dependencies {
     implementation applicationDependencies.gsonWire
     implementation applicationDependencies.gson
     implementation applicationDependencies.javaxInject
-    implementation anytypeDependencies.middleware
+    implementation libs.middleware
 
     testImplementation project(":test:utils")
     testImplementation unitTestDependencies.junit

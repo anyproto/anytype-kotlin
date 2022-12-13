@@ -1,0 +1,10 @@
+[versions]
+middleware_version = "v0.24.0-rc4"
+
+[libraries]
+middleware = { module = "io.anytype:android-mw", version.ref = "middleware_version" }
+agp = { module = "com.android.tools.build:gradle", version = "7.3.0" }
+
+[bundles]
+
+[plugins]

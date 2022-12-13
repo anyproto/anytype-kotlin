@@ -1,33 +1,7 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlinx-serialization'
-
-android {
-    def config = rootProject.extensions.getByName("ext")
-
-    compileSdkVersion compile_sdk
-
-    defaultConfig {
-        minSdkVersion config["min_sdk"]
-        targetSdkVersion config["target_sdk"]
-
-        testInstrumentationRunner config["test_runner"]
-    }
-
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
-    }
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlinx-serialization"
 }
 
 dependencies {

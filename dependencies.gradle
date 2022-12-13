@@ -24,7 +24,7 @@ ext {
 
     // Architecture Components
     lifecycle_version = '2.5.1'
-    navigation_version = '2.3.5'
+    navigation_version = '2.5.3'
 
     // Third party libraries
     exoplayer_version = '2.17.1'
@@ -87,8 +87,6 @@ ext {
     okhttp_version = '4.2.2'
 
     // Anytype
-
-    middleware_version = 'v0.24.0-rc4'
 
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
@@ -196,9 +194,5 @@ ext {
     analytics = [
             amplitude: "com.amplitude:android-sdk:$amplitude_version",
             okhttp   : "com.squareup.okhttp3:okhttp:$okhttp_version"
-    ]
-
-    anytype = [
-            middleware: "io.anytype:android-mw:$middleware_version"
     ]
 }

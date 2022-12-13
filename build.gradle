@@ -1,10 +1,12 @@
+import com.android.build.gradle.LibraryPlugin
+
 apply from: './dependencies.gradle'
 
 buildscript {
     ext.kotlin_version = '1.7.10'
     ext.gradle_tools = '3.1.3'
     ext.build_tools = '32.0.0'
-    ext.nav_version = '2.3.0'
+    ext.nav_version = '2.5.3'
     ext.dokka_version = '1.4.32'
 
     ext.compile_sdk = 32
@@ -23,7 +25,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        def libs = project.extensions.getByName("libs") as org.gradle.accessors.dm.LibrariesForLibs
+        classpath(libs.agp)
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath 'com.google.gms:google-services:4.3.14'
@@ -37,7 +40,30 @@ buildscript {
 
 def testDebugAll = tasks.create("testDebugAll")
 
+//https://www.droidcon.com/2022/03/11/reducing-gradle-boilerplate-in-multi-module-android-projects/
 subprojects {
+    project.plugins.whenPluginAdded { plugin ->
+        if (plugin instanceof LibraryPlugin) {
+
+            android {
+                def config = rootProject.extensions.getByName("ext")
+                compileSdkVersion config["compile_sdk"]
+
+                defaultConfig {
+                    minSdkVersion config["min_sdk"]
+                    targetSdkVersion config["target_sdk"]
+                    testInstrumentationRunner config["test_runner"]
+                }
+
+                testOptions {
+                    unitTests {
+                        includeAndroidResources = true
+                    }
+                }
+            }
+        }
+    }
+
     plugins.withId("kotlin") {
         testDebugAll.dependsOn(tasks.named("test"))
     }

@@ -1,23 +1,11 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
 
 android {
+
     def config = rootProject.extensions.getByName("ext")
-
-    compileSdkVersion config["compile_sdk"]
-
-    defaultConfig {
-        minSdkVersion config["min_sdk"]
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
-    }
 
     buildFeatures {
         compose true

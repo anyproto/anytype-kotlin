@@ -327,7 +327,7 @@ fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
  * Use this class for picking images from external storage
  */
 class GetImageContract : ActivityResultContract<Int, Uri?>() {
-    override fun createIntent(context: Context, input: Int?): Intent {
+    override fun createIntent(context: Context, input: Int): Intent {
         return Intent(
             Intent.ACTION_PICK,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI

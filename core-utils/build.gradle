@@ -1,16 +1,11 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
+}
 
 android {
-    def config = rootProject.extensions.getByName("ext")
-
-    compileSdkVersion config["compile_sdk"]
-
     defaultConfig {
-        minSdkVersion config["min_sdk"]
-        targetSdkVersion config["target_sdk"]
-        testInstrumentationRunner config["test_runner"]
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
     }
 

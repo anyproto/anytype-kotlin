@@ -1,5 +1,5 @@
 [versions]
-middleware_version = "v0.24.0-rc4"
+middleware_version = "v0.24.0"
 
 [libraries]
 middleware = { module = "io.anytype:android-mw", version.ref = "middleware_version" }

@@ -162,7 +162,7 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
                 ctx = ctx,
                 query = createFromScratchAdapter.query
             )
-            .show(childFragmentManager, null)
+            .showChildFragment()
     }
 
     override fun injectDependencies() {
@@ -206,7 +206,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
                 dv = dv,
                 query = createFromScratchAdapter.query
             )
-            .show(childFragmentManager, null)
+            .showChildFragment()
     }
 
     override fun injectDependencies() {

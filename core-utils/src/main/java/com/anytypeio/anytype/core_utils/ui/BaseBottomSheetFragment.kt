@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -109,5 +110,5 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
 }
 
 fun <T> BaseBottomSheetFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
+    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
 }

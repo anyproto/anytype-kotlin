@@ -811,7 +811,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 vm.actions.collectLatest {
                     binding.blockActionToolbar.bind(it)
                     delay(DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR)
-                    binding.blockActionToolbar.post {
+                    handler.post {
                         binding.blockActionToolbar.scrollToPosition(0, smooth = true)
                     }
                 }
@@ -1695,7 +1695,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             if (minPosY <= cursorCoord) {
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoord)
                 Timber.d("New scroll y: $scrollY")
-                binding.recycler.post {
+                handler.post {
                     binding.recycler.smoothScrollBy(0, scrollY)
                 }
             }
@@ -1725,7 +1725,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             if (minPosY <= cursorCoordinate) {
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
                 binding.recycler.addItemDecoration(footerMentionDecorator)
-                binding.recycler.post {
+                handler.post {
                     binding.recycler.smoothScrollBy(0, scrollY)
                 }
             }
@@ -1762,7 +1762,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             if (minPosY <= cursorCoordinate) {
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
                 binding.recycler.addItemDecoration(slashWidgetFooter)
-                binding.recycler.post {
+                handler.post {
                     binding.recycler.smoothScrollBy(
                         0,
                         scrollY,

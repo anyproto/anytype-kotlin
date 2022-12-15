@@ -97,7 +97,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
             }
             is DateValueCommand.OpenDatePicker -> {
                 DatePickerFragment.new(command.timeInSeconds)
-                    .show(childFragmentManager, null)
+                    .showChildFragment()
             }
         }
     }

@@ -81,7 +81,7 @@ open class ModifyFilterFromInputFieldValueFragment :
                     mode = PickFilterConditionFragment.MODE_MODIFY,
                     type = commands.type,
                     index = commands.index
-                ).show(childFragmentManager, null)
+                ).showChildFragment()
             }
             FilterViewModel.Commands.HideInput -> {
                 binding.enterTextValueInputField.gone()

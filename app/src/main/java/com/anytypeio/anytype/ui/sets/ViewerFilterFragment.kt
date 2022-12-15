@@ -123,7 +123,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
                     relation = command.relation,
                     index = command.filterIndex
                 )
-                fr.show(childFragmentManager, fr.javaClass.canonicalName)
+                fr.showChildFragment(fr.javaClass.canonicalName)
             }
             is ViewerFilterCommand.Modal.UpdateSelectValueFilter -> {
                 val fr = ModifyFilterFromSelectedValueFragment.new(
@@ -131,7 +131,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
                     relation = command.relation,
                     index = command.filterIndex
                 )
-                fr.show(childFragmentManager, fr.javaClass.canonicalName)
+                fr.showChildFragment(fr.javaClass.canonicalName)
             }
         }
     }

@@ -257,7 +257,7 @@ class DashboardFragment :
                             is HomeDashboardViewModel.Alert.Delete -> {
                                 val dialog = DeleteAlertFragment.new(alert.count)
                                 dialog.onDeletionAccepted = { vm.onDeletionAccepted() }
-                                dialog.show(childFragmentManager, null)
+                                dialog.showChildFragment()
                             }
                         }
                     }

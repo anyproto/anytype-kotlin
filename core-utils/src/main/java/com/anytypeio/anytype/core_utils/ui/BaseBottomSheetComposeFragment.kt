@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_utils.ui
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.IdRes
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -13,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -54,6 +56,17 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
         }
     }
 
+    protected fun DialogFragment.showChildFragment(tag: String? = null) {
+        jobs += this@BaseBottomSheetComposeFragment.lifecycleScope.launch {
+            throttleFlow.emit {
+                show(
+                    this@BaseBottomSheetComposeFragment.childFragmentManager,
+                    tag
+                )
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectDependencies()
@@ -76,5 +89,5 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
 fun Fragment.getNavigationId() = findNavController().currentDestination?.id
 
 fun <T> BaseBottomSheetComposeFragment.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
+    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
 }

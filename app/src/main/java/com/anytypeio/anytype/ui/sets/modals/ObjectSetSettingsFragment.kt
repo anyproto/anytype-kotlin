@@ -137,7 +137,7 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
                     ctx = ctx,
                     dv = dv,
                     viewer = viewer
-                ).show(childFragmentManager, null)
+                ).showChildFragment()
             }
         }
     }

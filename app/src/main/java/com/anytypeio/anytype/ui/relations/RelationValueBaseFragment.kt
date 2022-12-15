@@ -504,7 +504,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
                     types = types,
                     flow = fragmentFlow
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddStatusOrTagScreen -> {
                 val fr = AddOptionsRelationDVFragment.new(
@@ -515,7 +515,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
                     dataview = dataview,
                     viewer = viewer
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 val fr = AddFileRelationFragment.new(
@@ -525,11 +525,11 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
                     flow = AddFileRelationFragment.FLOW_DATAVIEW,
                     relationKey = relationKey
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
                 //turn off for now https://app.clickup.com/t/h59z1j
-                //FileActionsFragment().show(childFragmentManager, null)
+                //FileActionsFragment().showChildFragment()
                 openFilePicker()
             }
         }
@@ -629,7 +629,7 @@ class RelationValueFragment : RelationValueBaseFragment() {
                     objectId = target,
                     types = types
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddStatusOrTagScreen -> {
                 val fr = AddOptionsRelationFragment.new(
@@ -638,7 +638,7 @@ class RelationValueFragment : RelationValueBaseFragment() {
                     relationId = relationId,
                     relationKey = relationKey
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 val fr = AddFileRelationFragment.new(
@@ -648,11 +648,11 @@ class RelationValueFragment : RelationValueBaseFragment() {
                     objectId = target,
                     flow = AddFileRelationFragment.FLOW_DEFAULT
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
                 //turn off for now https://app.clickup.com/t/h59z1j
-                //FileActionsFragment().show(childFragmentManager, null)
+                //FileActionsFragment().showChildFragment()
                 openFilePicker()
             }
         }

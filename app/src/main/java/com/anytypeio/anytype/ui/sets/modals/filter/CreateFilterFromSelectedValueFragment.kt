@@ -145,7 +145,7 @@ open class CreateFilterFromSelectedValueFragment :
         when (commands) {
             is FilterViewModel.Commands.OpenDatePicker -> {
                 DatePickerFragment.new(commands.timeInSeconds)
-                    .show(childFragmentManager, null)
+                    .showChildFragment()
             }
             is FilterViewModel.Commands.OpenConditionPicker -> {
                 PickFilterConditionFragment.new(
@@ -153,7 +153,7 @@ open class CreateFilterFromSelectedValueFragment :
                     mode = PickFilterConditionFragment.MODE_CREATE,
                     type = commands.type,
                     index = commands.index
-                ).show(childFragmentManager, null)
+                ).showChildFragment()
             }
             FilterViewModel.Commands.ShowCount -> binding.tvOptionCount.visible()
             FilterViewModel.Commands.HideCount -> binding.tvOptionCount.gone()

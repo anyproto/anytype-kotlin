@@ -146,7 +146,7 @@ abstract class ObjectMenuBaseFragment :
 
     private fun openObjectLayout() {
         val fr = ObjectLayoutFragment.new(ctx)
-        fr.show(childFragmentManager, null)
+        fr.showChildFragment()
     }
 
     private fun openObjectRelations() {
@@ -187,7 +187,7 @@ abstract class ObjectMenuBaseFragment :
             restoreBlock = null,
             title = getString(R.string.link_to)
         )
-        fr.show(childFragmentManager, null)
+        fr.showChildFragment()
     }
 
     private fun openSnackbar(command: ObjectMenuViewModelBase.Command.OpenSnackbar) {

@@ -91,7 +91,7 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
         }
         binding.btnPlus.setOnClickListener {
             if (!isLocked) {
-                RelationAddToObjectFragment.new(ctx).show(childFragmentManager, null)
+                RelationAddToObjectFragment.new(ctx).showChildFragment()
             } else {
                 toast(getString(R.string.unlock_your_object_to_add_new_relation))
             }
@@ -109,7 +109,7 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
                     objectId = command.target,
                     isLocked = command.isLocked
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             is Command.EditDateRelationValue -> {
                 val fr = RelationDateValueFragment.new(
@@ -118,7 +118,7 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
                     relationKey = command.relationKey,
                     objectId = command.target
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             is Command.EditRelationValue -> {
                 val fr = RelationValueFragment.new(
@@ -129,7 +129,7 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
                     targetObjectTypes = command.targetObjectTypes,
                     isLocked = command.isLocked
                 )
-                fr.show(childFragmentManager, null)
+                fr.showChildFragment()
             }
             is Command.SetRelationKey -> {
                 withParent<OnFragmentInteractionListener> {

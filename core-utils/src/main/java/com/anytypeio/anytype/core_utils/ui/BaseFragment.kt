@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_utils.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +21,12 @@ import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
+
 
 abstract class BaseFragment<T : ViewBinding>(
     @LayoutRes private val layout: Int,
@@ -29,6 +34,7 @@ abstract class BaseFragment<T : ViewBinding>(
 ) : Fragment(layout) {
 
     var applyWindowRootInsets: Boolean = true
+    protected val handler = Handler(Looper.getMainLooper())
 
     private var _binding: T? = null
     val binding: T get() = _binding!!
@@ -56,6 +62,7 @@ abstract class BaseFragment<T : ViewBinding>(
 
     override fun onStop() {
         super.onStop()
+        handler.removeCallbacksAndMessages(null)
         jobs.apply {
             forEach { it.cancel() }
             clear()
@@ -109,5 +116,5 @@ abstract class BaseFragment<T : ViewBinding>(
 }
 
 fun <T> BaseFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.onEach { body(it) }.launchIn(lifecycleScope)
+    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
 }

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -41,4 +42,4 @@ fun <T : Parcelable> Fragment.argList(key: String): ArrayList<T> {
 }
 
 fun <T> CoroutineScope.subscribe(flow: Flow<T>, body: suspend (T) -> Unit): Job =
-    flow.onEach { body(it) }.launchIn(this)
+    flow.cancellable().onEach { body(it) }.launchIn(this)

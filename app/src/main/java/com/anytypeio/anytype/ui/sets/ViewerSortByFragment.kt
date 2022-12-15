@@ -78,14 +78,14 @@ class ViewerSortByFragment : BaseBottomSheetFragment<FragmentSortingBinding>() {
                     selected = command.old,
                     relations = command.relations,
                     sorts = command.sortingExpression
-                ).show(childFragmentManager, null)
+                ).showChildFragment()
             }
             is ViewerSortByCommand.Modal.ShowSortingTypeList -> {
                 PickSortingTypeFragment.new(
                     key = command.key,
                     type = command.selected
                 )
-                    .show(childFragmentManager, null)
+                    .showChildFragment()
             }
             is ViewerSortByCommand.Apply -> dispatchResultAndDismiss(command)
             is ViewerSortByCommand.BackToCustomize -> exitToCustomizeScreen()

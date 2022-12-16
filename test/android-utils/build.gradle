@@ -9,7 +9,7 @@ dependencies {
     implementation mainApplication.appcompat
     implementation mainApplication.kotlin
     implementation mainApplication.coroutinesAndroid
-    implementation mainApplication.androidxCore
+    implementation libs.androidxCore
     implementation mainApplication.design
     implementation mainApplication.recyclerView
 }

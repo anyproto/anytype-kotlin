@@ -11,7 +11,7 @@ dependencies {
     implementation applicationDependencies.appcompat
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutinesAndroid
-    implementation applicationDependencies.androidxCore
+    implementation libs.androidxCore
     implementation applicationDependencies.timber
     implementation applicationDependencies.kotlinxSerializationJson
 

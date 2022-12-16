@@ -4,7 +4,6 @@ ext {
     kotlinx_serialization_json_version = '1.4.0'
 
     // AndroidX
-    androidx_core_version = '1.7.0'
     androidx_core_ktx_version = '1.7.0'
     androidx_test_core_version = '1.4.0'
     androidx_core_testing_version = '2.1.0'
@@ -92,7 +91,6 @@ ext {
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
             coroutinesAndroid:          "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version",
-            androidxCore:               "androidx.core:core-ktx:$androidx_core_version",
             fragment:                   "androidx.fragment:fragment-ktx:$fragment_version",
             navigation:                 "androidx.navigation:navigation-fragment-ktx:$navigation_version",
             navigationUi:               "androidx.navigation:navigation-ui-ktx:$navigation_version",

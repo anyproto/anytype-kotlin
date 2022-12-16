@@ -2,7 +2,10 @@ package com.anytypeio.anytype.core_ui.widgets.text
 
 import android.R.id.copy
 import android.R.id.paste
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
 import android.graphics.Canvas
 import android.text.InputType
 import android.text.Spanned
@@ -12,6 +15,9 @@ import android.util.AttributeSet
 import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
+import android.view.inputmethod.InputConnectionWrapper
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.anytypeio.anytype.core_ui.R
@@ -67,6 +73,15 @@ class TextInputWidget : AppCompatEditText {
         EditorTouchProcessor(
             fallback = { e -> super.onTouchEvent(e) }
         )
+    }
+
+    override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnectionWrapper? {
+        val defaultInputConnection = super.onCreateInputConnection(outAttrs)
+        return if (defaultInputConnection == null) {
+            defaultInputConnection
+        } else {
+            TextInputConnection(defaultInputConnection, false)
+        }
     }
 
     private val watchers: MutableList<TextWatcher> = mutableListOf()
@@ -298,5 +313,18 @@ class TextInputWidget : AppCompatEditText {
 
     companion object {
         val DEFAULT_INPUT_WIDGET_ACTION = BlockView.InputAction.NewLine
+    }
+
+    private inner class TextInputConnection(
+        target: InputConnection, mutable: Boolean
+    ) : InputConnectionWrapper(target, mutable) {
+
+        private val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+
+        override fun commitText(text: CharSequence, newCursorPosition: Int): Boolean {
+            clipboard.setPrimaryClip(ClipData.newPlainText(null, text))
+            onTextContextMenuItem(paste)
+            return true
+        }
     }
 }

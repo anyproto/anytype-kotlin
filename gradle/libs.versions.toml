@@ -1,8 +1,10 @@
 [versions]
 middleware_version = "v0.24.0"
+androidx_core_version = "1.7.0"
 
 [libraries]
 middleware = { module = "io.anytype:android-mw", version.ref = "middleware_version" }
+androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidx_core_version" }
 agp = { module = "com.android.tools.build:gradle", version = "7.3.0" }
 
 [bundles]

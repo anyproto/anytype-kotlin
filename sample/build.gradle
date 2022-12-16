@@ -51,7 +51,7 @@ dependencies {
     implementation applicationDependencies.glide
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.constraintLayout
-    implementation applicationDependencies.androidxCore
+    implementation libs.androidxCore
     implementation applicationDependencies.timber
     implementation applicationDependencies.fragment
     implementation applicationDependencies.design

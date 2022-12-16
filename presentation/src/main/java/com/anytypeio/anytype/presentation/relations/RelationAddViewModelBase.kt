@@ -6,12 +6,14 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
+import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.relations.model.RelationItemView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
@@ -39,10 +41,11 @@ import timber.log.Timber
  * Base view model for adding a relation either to an object or to a set.
  */
 abstract class RelationAddViewModelBase(
-    private val relationsProvider: ObjectRelationProvider,
+    relationsProvider: ObjectRelationProvider,
     private val getRelations: GetRelations,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-    private val addObjectToWorkspace: AddObjectToWorkspace
+    private val addObjectToWorkspace: AddObjectToWorkspace,
+    private val workspaceManager: WorkspaceManager
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -65,10 +68,13 @@ abstract class RelationAddViewModelBase(
                 searchQuery,
                 objectRelationKeys
             ) { query, keys ->
-                val myRelations = proceedWithGettingMyRelations(query = query)
+                val myRelations = proceedWithGettingMyRelations(
+                    query = query
+                )
+                val excludedRelations = myRelations.mapNotNull { it.sourceObject }
                 val marketplaceRelations = proceedWithGettingMarketplaceRelations(
                     query = query,
-                    excluded = myRelations.mapNotNull { it.sourceObject }
+                    excluded = excludedRelations
                 )
                 buildViews(
                     myRelations = myRelations,
@@ -76,7 +82,7 @@ abstract class RelationAddViewModelBase(
                     objectRelationKeys = keys
                 )
             }.flowOn(appCoroutineDispatchers.io).catch {
-                sendToast("An error occured. Please try again later.")
+                sendToast("An error occurred. Please try again later.")
             }.collect { views ->
                 results.value = views
             }
@@ -123,8 +129,8 @@ abstract class RelationAddViewModelBase(
     private suspend fun proceedWithGettingMarketplaceRelations(
         excluded: List<Id>,
         query: String
-    ) = getRelations.execute(
-        GetRelations.Params(
+    ): List<ObjectWrapper.Relation> {
+        val params = GetRelations.Params(
             sorts = defaultObjectSearchSorts(),
             filters = buildList {
                 addAll(filterMarketplaceRelations())
@@ -144,13 +150,26 @@ abstract class RelationAddViewModelBase(
                         value = false
                     )
                 )
+                add(
+                    DVFilter(
+                        relationKey = Relations.WORKSPACE_ID,
+                        condition = DVFilterCondition.EQUAL,
+                        value = MARKETPLACE_ID
+                    )
+                )
             },
             query = query
         )
-    )
+        val result = getRelations.execute(
+            params = params
+        )
+        return result
+    }
 
-    private suspend fun proceedWithGettingMyRelations(query: String) = getRelations.execute(
-        GetRelations.Params(
+    private suspend fun proceedWithGettingMyRelations(
+        query: String
+    ): List<ObjectWrapper.Relation> {
+        val params = GetRelations.Params(
             sorts = defaultObjectSearchSorts(),
             filters = buildList {
                 addAll(filterMyRelations())
@@ -161,10 +180,21 @@ abstract class RelationAddViewModelBase(
                         value = false
                     )
                 )
+                add(
+                    DVFilter(
+                        relationKey = Relations.WORKSPACE_ID,
+                        condition = DVFilterCondition.EQUAL,
+                        value = workspaceManager.getCurrentWorkspace()
+                    )
+                )
             },
             query = query
         )
-    )
+        val result = getRelations.execute(
+            params = params
+        )
+        return result
+    }
 
     abstract fun sendAnalyticsEvent(length: Int)
 
@@ -178,7 +208,7 @@ abstract class RelationAddViewModelBase(
         relation: RelationView.Existing
     ) {
         viewModelScope.launch {
-            if (relation.workspace == Marketplace.MARKETPLACE_ID) {
+            if (relation.workspace == MARKETPLACE_ID) {
                 addObjectToWorkspace(
                     AddObjectToWorkspace.Params(
                         objects = listOf(relation.id)
@@ -196,11 +226,12 @@ abstract class RelationAddViewModelBase(
                         sendToast("Something went wrong. Please, try again later.")
                     }
                 )
+            } else {
+                proceedWithDispatchingSelectedRelation(
+                    ctx = ctx,
+                    relation = relation
+                )
             }
-            proceedWithDispatchingSelectedRelation(
-                ctx = ctx,
-                relation = relation
-            )
         }
     }
 
@@ -222,7 +253,7 @@ abstract class RelationAddViewModelBase(
             val ctx: Id,
             val relation: Key,
             val format: RelationFormat
-        ): Command()
+        ) : Command()
     }
 
     companion object {

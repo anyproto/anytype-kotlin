@@ -10,8 +10,8 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -54,7 +54,8 @@ object RelationAddToObjectModule {
         relationsProvider: ObjectRelationProvider,
         getRelations: GetRelations,
         appCoroutineDispatchers: AppCoroutineDispatchers,
-        addObjectToWorkspace: AddObjectToWorkspace
+        addObjectToWorkspace: AddObjectToWorkspace,
+        workspaceManager: WorkspaceManager
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
         storeOfRelations = storeOfRelations,
         addRelationToObject = addRelationToObject,
@@ -63,15 +64,9 @@ object RelationAddToObjectModule {
         relationsProvider = relationsProvider,
         getRelations = getRelations,
         appCoroutineDispatchers = appCoroutineDispatchers,
-        addObjectToWorkspace = addObjectToWorkspace
+        addObjectToWorkspace = addObjectToWorkspace,
+        workspaceManager = workspaceManager
     )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideObjectRelationListUseCase(
-        repo: BlockRepository
-    ): ObjectRelationList = ObjectRelationList(repo)
 
     @JvmStatic
     @Provides
@@ -128,7 +123,8 @@ object RelationAddToDataViewModule {
         relationsProvider: ObjectRelationProvider,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
-        addObjectToWorkspace: AddObjectToWorkspace
+        addObjectToWorkspace: AddObjectToWorkspace,
+        workspaceManager: WorkspaceManager
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
@@ -139,15 +135,9 @@ object RelationAddToDataViewModule {
         relationsProvider = relationsProvider,
         appCoroutineDispatchers = appCoroutineDispatchers,
         getRelations = getRelations,
-        addObjectToWorkspace = addObjectToWorkspace
+        addObjectToWorkspace = addObjectToWorkspace,
+        workspaceManager = workspaceManager
     )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideObjectRelationListUseCase(
-        repo: BlockRepository
-    ): ObjectRelationList = ObjectRelationList(repo)
 
     @JvmStatic
     @Provides

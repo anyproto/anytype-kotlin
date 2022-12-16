@@ -17,7 +17,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -38,7 +37,6 @@ import timber.log.Timber
 class RelationListViewModel(
     private val stores: Editor.Storage,
     private val urlBuilder: UrlBuilder,
-    private val objectRelationList: ObjectRelationList,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDetail: UpdateDetail,
     private val detailModificationManager: DetailModificationManager,

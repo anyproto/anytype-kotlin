@@ -153,7 +153,6 @@ interface BlockDataStore {
 
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
-    suspend fun relationListAvailable(ctx: Id): List<Relation>
     suspend fun addRelationToObject(ctx: Id, relation: Key) : Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 

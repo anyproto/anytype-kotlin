@@ -26,7 +26,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
-import com.anytypeio.anytype.domain.relations.ObjectRelationList
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -80,7 +79,6 @@ class ObjectRelationListTest {
     @Mock
     lateinit var storeOfRelations: StoreOfRelations
 
-    private lateinit var objectRelationList: ObjectRelationList
     private lateinit var updateDetail: UpdateDetail
     private lateinit var addToFeaturedRelations: AddToFeaturedRelations
     private lateinit var removeFromFeaturedRelations: RemoveFromFeaturedRelations
@@ -95,7 +93,6 @@ class ObjectRelationListTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
-        objectRelationList = ObjectRelationList(repo)
         updateDetail = UpdateDetail(repo)
         addToFeaturedRelations = AddToFeaturedRelations(repo)
         removeFromFeaturedRelations = RemoveFromFeaturedRelations(repo)
@@ -103,7 +100,6 @@ class ObjectRelationListTest {
         TestRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
             stores = storage,
             urlBuilder = urlBuilder,
-            objectRelationList = objectRelationList,
             dispatcher = dispatcher,
             detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,

@@ -520,7 +520,6 @@ class EditorViewModel(
             when (event) {
                 is Event.Command.ShowObject -> {
                     orchestrator.stores.details.update(event.details)
-                    orchestrator.stores.relations.update(event.relations)
                     orchestrator.stores.objectTypes.update(event.objectTypes)
                     orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)

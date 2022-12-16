@@ -1098,17 +1098,6 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectRelationListAvailable(ctx: Id): List<MRelation> {
-        val request = Rpc.ObjectRelation.ListAvailable.Request(
-            contextId = ctx
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationListAvailable(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.relations
-    }
-
-    @Throws(Exception::class)
     fun objectRelationRemoveFeatured(
         ctx: Id,
         relations: List<Id>

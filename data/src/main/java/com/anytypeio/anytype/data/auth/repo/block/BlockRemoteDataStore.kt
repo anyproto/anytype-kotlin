@@ -344,9 +344,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         subscriptions: List<Id>
     ) = remote.cancelObjectSearchSubscription(subscriptions)
 
-    override suspend fun relationListAvailable(ctx: Id): List<Relation> =
-        remote.relationListAvailable(ctx)
-
     override suspend fun addRelationToObject(
         ctx: Id,
         relation: Key

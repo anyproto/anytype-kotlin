@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -35,12 +36,14 @@ class RelationAddToDataViewViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val addObjectToWorkspace: AddObjectToWorkspace,
-    appCoroutineDispatchers: AppCoroutineDispatchers
+    private val appCoroutineDispatchers: AppCoroutineDispatchers,
+    private val workspaceManager: WorkspaceManager
 ) : RelationAddViewModelBase(
     relationsProvider = relationsProvider,
     appCoroutineDispatchers = appCoroutineDispatchers,
     getRelations = getRelations,
-    addObjectToWorkspace = addObjectToWorkspace
+    addObjectToWorkspace = addObjectToWorkspace,
+    workspaceManager = workspaceManager
 ) {
 
     fun onRelationSelected(
@@ -116,7 +119,8 @@ class RelationAddToDataViewViewModel(
         private val relationsProvider: ObjectRelationProvider,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val getRelations: GetRelations,
-        private val addObjectToWorkspace: AddObjectToWorkspace
+        private val addObjectToWorkspace: AddObjectToWorkspace,
+        private val workspaceManager: WorkspaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -130,7 +134,8 @@ class RelationAddToDataViewViewModel(
                 relationsProvider = relationsProvider,
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 getRelations = getRelations,
-                addObjectToWorkspace = addObjectToWorkspace
+                addObjectToWorkspace = addObjectToWorkspace,
+                workspaceManager = workspaceManager
             ) as T
         }
     }

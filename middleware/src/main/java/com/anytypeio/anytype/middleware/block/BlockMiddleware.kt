@@ -371,10 +371,6 @@ class BlockMiddleware(
         subscriptions: List<Id>
     ) = middleware.objectSearchUnsubscribe(subscriptions = subscriptions)
 
-    override suspend fun relationListAvailable(
-        ctx: Id
-    ): List<Relation> = middleware.objectRelationListAvailable(ctx).map { it.toCoreModels() }
-
     override suspend fun addRelationToObject(
         ctx: Id, relation: Key
     ): Payload = middleware.objectRelationAdd(ctx, relation)

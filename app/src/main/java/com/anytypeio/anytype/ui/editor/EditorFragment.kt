@@ -136,10 +136,7 @@ import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragme
 import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
-import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
-import com.anytypeio.anytype.ui.relations.RelationAddResult
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
-import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment.Companion.RELATION_ADD_RESULT_KEY
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment.Companion.RELATION_NEW_RESULT_KEY
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
@@ -1107,14 +1104,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenAddRelationScreen -> {
                     hideSoftInput()
-                    findNavController().safeNavigate(
-                        R.id.pageScreen,
-                        R.id.action_pageScreen_to_relationAddToObjectBlockFragment,
-                        bundleOf(
-                            CTX_KEY to command.ctx,
-                            RelationAddToObjectBlockFragment.TARGET_KEY to command.target
-                        )
+                    val fr = RelationAddToObjectBlockFragment.newInstance(
+                        ctx = command.ctx,
+                        target = command.target
                     )
+                    fr.showChildFragment()
                 }
                 is Command.OpenLinkToObjectOrWebScreen -> {
                     hideSoftInput()
@@ -2116,17 +2110,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
+    override fun onAddRelationToTarget(target: Id, relationKey: Key) {
+        vm.proceedWithAddingRelationToTarget(
+            target = target,
+            relationKey = relationKey
+        )
+    }
+
     private fun proceedWithResult(savedStateHandle: SavedStateHandle) {
-        if (savedStateHandle.contains(RELATION_ADD_RESULT_KEY)) {
-            val resultRelationAdd = savedStateHandle.get<RelationAddResult>(RELATION_ADD_RESULT_KEY)
-            savedStateHandle.remove<RelationAddResult>(RELATION_ADD_RESULT_KEY)
-            if (resultRelationAdd != null) {
-                vm.proceedWithAddingRelationToTarget(
-                    target = resultRelationAdd.target,
-                    relationKey = resultRelationAdd.relation
-                )
-            }
-        }
         if (savedStateHandle.contains(RELATION_NEW_RESULT_KEY)) {
             val resultRelationNew = savedStateHandle.get<RelationNewResult>(RELATION_NEW_RESULT_KEY)
             savedStateHandle.remove<RelationNewResult>(RELATION_NEW_RESULT_KEY)
@@ -2199,4 +2190,5 @@ interface OnFragmentInteractionListener {
     fun onSetTextBlockValue()
     fun onMentionClicked(target: Id)
     fun onCopyLink(link: String)
+    fun onAddRelationToTarget(target: Id, relationKey: Key)
 }

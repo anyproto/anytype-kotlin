@@ -421,8 +421,6 @@ class BlockDataRepository(
         subscriptions: List<Id>
     ) = remote.cancelObjectSearchSubscription(subscriptions)
 
-    override suspend fun relationListAvailable(ctx: Id) = remote.relationListAvailable(ctx)
-
     override suspend fun addRelationToObject(
         ctx: Id, relation: Id
     ): Payload = remote.addRelationToObject(ctx, relation)

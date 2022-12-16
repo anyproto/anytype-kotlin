@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.relations.LimitObjectTypeAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationConnectWithAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationFormatAdapter
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationCreateFromScratchBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -255,13 +257,12 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
     private fun observeCommands(command: RelationCreateFromScratchForObjectBlockViewModel.Command) {
         when (command) {
             is RelationCreateFromScratchForObjectBlockViewModel.Command.OnSuccess -> {
-                val result = RelationNewResult(
-                    target = target,
-                    relation = command.relation
-                )
-                val editorScreenEntry = findNavController().getBackStackEntry(R.id.pageScreen)
-                editorScreenEntry.savedStateHandle.set(RELATION_NEW_RESULT_KEY, result)
-                findNavController().popBackStack(R.id.pageScreen, false)
+                withParent<OnCreateFromScratchRelationListener> {
+                    onCreateRelation(
+                        target = target,
+                        relation = command.relation
+                    )
+                }
             }
         }
     }
@@ -301,7 +302,24 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
     companion object {
         const val TARGET_KEY = "arg.rel-create-object-block.target"
         const val RELATION_NEW_RESULT_KEY = "arg.rel-create-object-block.result"
+
+        fun newInstance(
+            ctx: Id,
+            target: Id,
+            query: String
+        ) = RelationCreateFromScratchForObjectBlockFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                QUERY_KEY to query,
+                TARGET_KEY to target
+            )
+        }
     }
+}
+
+interface OnCreateFromScratchRelationListener {
+
+    fun onCreateRelation(target: Id, relation: Key)
 }
 
 data class RelationNewResult(val target: String, val relation: String) : Serializable

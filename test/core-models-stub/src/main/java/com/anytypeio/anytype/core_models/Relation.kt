@@ -11,7 +11,8 @@ fun StubRelationObject(
     isReadOnly: Boolean = false,
     objectTypes: List<Id> = emptyList(),
     relationOptionsDict: List<Id> = emptyList(),
-    sourceObject: Id = MockDataFactory.randomUuid()
+    sourceObject: Id = MockDataFactory.randomUuid(),
+    workspaceId: Id = MockDataFactory.randomString()
 ): ObjectWrapper.Relation = ObjectWrapper.Relation(
     map = mapOf(
         Relations.ID to id,
@@ -22,7 +23,8 @@ fun StubRelationObject(
         Relations.RELATION_FORMAT_OBJECT_TYPES to objectTypes,
         Relations.RELATION_FORMAT to format.code.toDouble(),
         Relations.RELATION_OPTION_DICT to relationOptionsDict,
-        Relations.SOURCE_OBJECT to sourceObject
+        Relations.SOURCE_OBJECT to sourceObject,
+        Relations.WORKSPACE_ID to workspaceId
     )
 )
 

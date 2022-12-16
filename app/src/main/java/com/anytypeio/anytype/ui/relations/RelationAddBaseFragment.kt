@@ -10,7 +10,6 @@ import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ext.statusBarHeight
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentRelationAddBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -37,12 +37,13 @@ import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewMod
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Command
+import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import java.io.Serializable
 import javax.inject.Inject
 
 
-abstract class RelationAddBaseFragment : BaseBottomSheetTextInputFragment<FragmentRelationAddBinding>() {
+abstract class RelationAddBaseFragment :
+    BaseBottomSheetTextInputFragment<FragmentRelationAddBinding>() {
 
     abstract val vm: RelationAddViewModelBase
 
@@ -100,7 +101,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetTextInputFragment<Fragme
                 if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
             }
             subscribe(vm.command) { command ->
-                when(command) {
+                when (command) {
                     is Command.DispatchSelectedRelation -> {
                         onRelationSelected(
                             ctx = command.ctx,
@@ -157,12 +158,11 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     }
 
     override fun onCreateFromScratchClicked() {
-        RelationCreateFromScratchForObjectFragment
-            .new(
-                ctx = ctx,
-                query = createFromScratchAdapter.query
-            )
-            .showChildFragment()
+        val fr = RelationCreateFromScratchForObjectFragment.new(
+            ctx = ctx,
+            query = createFromScratchAdapter.query
+        )
+        fr.showChildFragment()
     }
 
     override fun injectDependencies() {
@@ -200,13 +200,12 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     }
 
     override fun onCreateFromScratchClicked() {
-        RelationCreateFromScratchForDataViewFragment
-            .new(
-                ctx = ctx,
-                dv = dv,
-                query = createFromScratchAdapter.query
-            )
-            .showChildFragment()
+        val fr = RelationCreateFromScratchForDataViewFragment.new(
+            ctx = ctx,
+            dv = dv,
+            query = createFromScratchAdapter.query
+        )
+        fr.showChildFragment()
     }
 
     override fun injectDependencies() {
@@ -232,7 +231,8 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     }
 }
 
-class RelationAddToObjectBlockFragment : RelationAddBaseFragment() {
+class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
+    OnCreateFromScratchRelationListener {
 
     override val ctx get() = arg<Id>(CTX_KEY)
     private val target get() = arg<Id>(TARGET_KEY)
@@ -260,24 +260,34 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment() {
     private fun execute(command: RelationAddToObjectViewModel.Command) {
         when (command) {
             is RelationAddToObjectViewModel.Command.OnRelationAdd -> {
-                findNavController().run {
-                    val result = RelationAddResult(target = target, relation = command.relation)
-                    previousBackStackEntry?.savedStateHandle?.set(RELATION_ADD_RESULT_KEY, result)
-                    popBackStack()
+                withParent<OnFragmentInteractionListener> {
+                    onAddRelationToTarget(
+                        target = target,
+                        relationKey = command.relation
+                    )
                 }
+                dismiss()
             }
         }
     }
 
     override fun onCreateFromScratchClicked() {
-        findNavController().navigate(
-            R.id.action_relationAddToObjectBlockFragment_to_relationCreateFromScratchForObjectBlockFragment,
-            bundleOf(
-                RelationCreateFromScratchBaseFragment.CTX_KEY to ctx,
-                RelationCreateFromScratchBaseFragment.QUERY_KEY to createFromScratchAdapter.query,
-                RelationCreateFromScratchForObjectBlockFragment.TARGET_KEY to target
-            )
+        val fr = RelationCreateFromScratchForObjectBlockFragment.newInstance(
+            ctx = ctx,
+            target = target,
+            query = createFromScratchAdapter.query
         )
+        fr.showChildFragment()
+    }
+
+    override fun onCreateRelation(target: Id, relation: Key) {
+        withParent<OnFragmentInteractionListener> {
+            onAddRelationToTarget(
+                target = target,
+                relationKey = relation
+            )
+        }
+        dismiss()
     }
 
     override fun injectDependencies() {
@@ -290,8 +300,12 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment() {
 
     companion object {
         const val TARGET_KEY = "arg.relation-add-to-object-block.target"
-        const val RELATION_ADD_RESULT_KEY = "arg.relation-add-to-object-block.result"
+
+        fun newInstance(
+            ctx: Id,
+            target: Id
+        ): RelationAddToObjectBlockFragment = RelationAddToObjectBlockFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, TARGET_KEY to target)
+        }
     }
 }
-
-data class RelationAddResult(val target: String, val relation: String) : Serializable

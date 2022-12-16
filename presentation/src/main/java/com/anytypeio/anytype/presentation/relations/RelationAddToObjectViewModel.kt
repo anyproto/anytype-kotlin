@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
@@ -31,12 +32,14 @@ class RelationAddToObjectViewModel(
     val storeOfRelations: StoreOfRelations,
     appCoroutineDispatchers: AppCoroutineDispatchers,
     getRelations: GetRelations,
-    addObjectToWorkspace: AddObjectToWorkspace
+    addObjectToWorkspace: AddObjectToWorkspace,
+    workspaceManager: WorkspaceManager
 ) : RelationAddViewModelBase(
     relationsProvider = relationsProvider,
     appCoroutineDispatchers = appCoroutineDispatchers,
     getRelations = getRelations,
-    addObjectToWorkspace = addObjectToWorkspace
+    addObjectToWorkspace = addObjectToWorkspace,
+    workspaceManager = workspaceManager
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -89,7 +92,8 @@ class RelationAddToObjectViewModel(
         private val relationsProvider: ObjectRelationProvider,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val getRelations: GetRelations,
-        private val addObjectToWorkspace: AddObjectToWorkspace
+        private val addObjectToWorkspace: AddObjectToWorkspace,
+        private val workspaceManager: WorkspaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -101,7 +105,8 @@ class RelationAddToObjectViewModel(
                 analytics = analytics,
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 getRelations = getRelations,
-                addObjectToWorkspace = addObjectToWorkspace
+                addObjectToWorkspace = addObjectToWorkspace,
+                workspaceManager = workspaceManager
             ) as T
         }
     }

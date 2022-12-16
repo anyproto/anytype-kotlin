@@ -45,6 +45,12 @@ sealed class RelationBlockViewHolder(
     abstract val content: ViewGroup
     abstract val relationName: TextView
 
+    fun bindHolder(item: BlockView.Relation.Related) {
+        indentize(item = item)
+        applyBackground(item)
+        applySelection(item)
+    }
+
     fun indent(item: BlockView.Indentable, view: View) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             val indent = dimen(R.dimen.indent) * item.indent

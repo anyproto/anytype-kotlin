@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
-import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkUploadingBinding
@@ -1180,7 +1179,7 @@ class BlockAdapter(
                     is RelationBlockViewHolder -> {
                         when (holder) {
                             is RelationBlockViewHolder.Placeholder -> {
-                                bindViewHolder(holder, position)
+                                onBindViewHolder(holder, position)
                             }
                             else -> {
                                 holder.processChangePayload(
@@ -1482,50 +1481,32 @@ class BlockAdapter(
             is RelationBlockViewHolder.Default -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
-                holder.indentize(item = item)
-                holder.applyBackground(item)
-                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
-                container.isSelected = item.isSelected
+                holder.bindHolder(item)
             }
             is RelationBlockViewHolder.Status -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
-                holder.indentize(item = item)
-                holder.applyBackground(item)
-                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
-                container.isSelected = item.isSelected
+                holder.bindHolder(item)
             }
             is RelationBlockViewHolder.Tags -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
-                holder.indentize(item = item)
-                holder.applyBackground(item)
-                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
-                container.isSelected = item.isSelected
+                holder.bindHolder(item)
             }
             is RelationBlockViewHolder.Object -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
-                holder.indentize(item = item)
-                holder.applyBackground(item)
-                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
-                container.isSelected = item.isSelected
+                holder.bindHolder(item)
             }
             is RelationBlockViewHolder.File -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
-                holder.indentize(item = item)
-                holder.applyBackground(item)
-                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
-                container.isSelected = item.isSelected
+                holder.bindHolder(item)
             }
             is RelationBlockViewHolder.Checkbox -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
-                holder.indentize(item = item)
-                holder.applyBackground(item)
-                val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
-                container.isSelected = item.isSelected
+                holder.bindHolder(item)
             }
             is FeaturedRelationListViewHolder -> {
                 holder.bind(

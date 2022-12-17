@@ -867,7 +867,11 @@ class EditorViewModel(
 
     private fun onSendUpdateStyleOtherToolbarEvent(ids: List<Id>) {
         val selected = blocks.filter { ids.contains(it.id) }
-        val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
+        val state = when (mode) {
+            is EditorMode.Table ->
+                selected.map { it.content.asText() }.getStyleOtherStateForTableCells()
+            else -> selected.map { it.content.asText() }.getStyleOtherToolbarState()
+        }
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OtherToolbar.Update(state)
         )

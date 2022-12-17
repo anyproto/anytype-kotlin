@@ -10,14 +10,14 @@ sealed class SlashRelationView : DefaultObjectDiffIdentifier {
 
     sealed class Section : SlashRelationView() {
         object Subheader : Section() {
-            override val identifier: String get() = javaClass.name
+            override val identifier: String get() = javaClass.simpleName
         }
 
         object SubheaderWithBack : Section() {
-            override val identifier: String get() = javaClass.name
+            override val identifier: String get() = javaClass.simpleName
         }
     }
     object RelationNew : SlashRelationView() {
-        override val identifier: String get() = javaClass.name
+        override val identifier: String get() = javaClass.simpleName
     }
 }

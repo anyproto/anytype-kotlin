@@ -254,12 +254,19 @@ object SlashExtensions {
         filter: String,
         items: List<SlashRelationView.Item>
     ): List<SlashRelationView> {
-        val filtered = items.filter { item ->
-            searchBySubheadingOrName(
-                filter = filter,
-                subheading = SlashItem.Main.Relations.getSearchName(),
-                name = item.view.name
-            )
+        val filtered = mutableListOf<SlashRelationView>()
+        if (SlashRelationView.RelationNew.identifier.contains(filter, true)) {
+            filtered.add(SlashRelationView.RelationNew)
+        }
+        items.forEach { item ->
+            if (searchBySubheadingOrName(
+                    filter = filter,
+                    subheading = SlashItem.Main.Relations.getSearchName(),
+                    name = item.view.name
+                )
+            ) {
+                filtered.add(item)
+            }
         }
         return if (filtered.isEmpty()) {
             filtered

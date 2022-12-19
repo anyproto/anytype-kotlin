@@ -12,7 +12,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion config["compose_version"]
+        kotlinCompilerExtensionVersion libs.versions.androidxComposeVersion1.get()
     }
     
     buildFeatures {
@@ -31,37 +31,37 @@ dependencies {
     implementation project(':library-emojifier')
     implementation project(':library-syntax-highlighter')
 
-    implementation applicationDependencies.appcompat
-    implementation applicationDependencies.kotlin
+    implementation libs.appcompat
+    implementation libs.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation libs.androidxCore
     implementation applicationDependencies.lifecycleRuntime
 
-    implementation applicationDependencies.design
+    implementation libs.design
     implementation applicationDependencies.recyclerView
     implementation applicationDependencies.constraintLayout
-    implementation applicationDependencies.glide
+    implementation libs.glide
     implementation applicationDependencies.shimmerLayout
     implementation applicationDependencies.timber
     implementation applicationDependencies.betterLinkMovement
-    implementation applicationDependencies.exoPlayerCore
-    implementation applicationDependencies.exoPlayerUi
+    implementation libs.exoPlayerCore
+    implementation libs.exoPlayerUi
     implementation applicationDependencies.urlcleaner
     implementation applicationDependencies.katex
 
-    implementation applicationDependencies.compose
-    implementation applicationDependencies.composeFoundation
-    implementation applicationDependencies.composeMaterial
-    implementation applicationDependencies.composeToolingPreview
-    debugImplementation applicationDependencies.composeTooling
+    implementation libs.compose
+    implementation libs.composeFoundation
+    implementation libs.composeMaterial
+    implementation libs.composeToolingPreview
+    debugImplementation libs.composeTooling
 
-    testImplementation acceptanceTesting.fragmentTesting
+    testImplementation libs.fragmentTesting
     testImplementation project(':test:android-utils')
     testImplementation project(':test:utils')
     testImplementation project(":test:core-models-stub")
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
     testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.androidXTestCore
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation libs.mockitoKotlin
 }

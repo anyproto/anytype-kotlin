@@ -13,6 +13,6 @@ dependencies {
     implementation appDependencies.gson
     implementation appDependencies.coroutinesAndroid
 
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
 }

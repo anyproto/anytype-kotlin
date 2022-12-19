@@ -24,13 +24,13 @@ dependencies {
     implementation project(':data')
     implementation project(':core-models')
 
-    implementation applicationDependencies.kotlin
+    implementation libs.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.timber
 
     testImplementation project(":test:utils")
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
     testImplementation unitTestDependencies.androidXTestCore
     testImplementation unitTestDependencies.robolectricLatest
 }

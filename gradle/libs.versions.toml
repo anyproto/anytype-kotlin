@@ -1,11 +1,52 @@
 [versions]
-middleware_version = "v0.24.0"
-androidx_core_version = "1.7.0"
+middlewareVersion = "v0.24.0"
+kotlinVersion = '1.7.10'
+androidxCoreVersion = "1.9.0"
+androidxComposeVersion1 = '1.3.1'
+androidxComposeVersion2 = '1.3.2'
+appcompatVersion = '1.5.1'
+fragmentVersion = "1.5.5"
+exoplayerVersion = "2.18.2"
+wireVersion = "4.4.3"
+glideVersion = "4.14.2"
+mockitoKotlinVersion = "4.1.0"
+junitVersion = '4.13.2'
+androidJunitVersion = "1.1.4"
+runnerVersion = "1.5.0"
+mockitoAndroidVersion = '4.10.0'
 
 [libraries]
-middleware = { module = "io.anytype:android-mw", version.ref = "middleware_version" }
-androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidx_core_version" }
-agp = { module = "com.android.tools.build:gradle", version = "7.3.0" }
+middleware = { module = "io.anytype:android-mw", version.ref = "middlewareVersion" }
+androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCoreVersion" }
+agp = { module = "com.android.tools.build:gradle", version = "7.3.1" }
+kgp = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
+kserialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinVersion" }
+wire = { module = "com.squareup.wire:wire-gradle-plugin", version = "4.4.3" }
+kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinVersion" }
+kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinVersion" }
+compose = { module = "androidx.compose.ui:ui", version.ref = "androidxComposeVersion2" }
+composeTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidxComposeVersion2" }
+composeToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidxComposeVersion2" }
+composeFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidxComposeVersion1" }
+composeMaterial = { module = "androidx.compose.material:material", version.ref = "androidxComposeVersion1" }
+kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
+androidAnnotations = { module = "androidx.annotation:annotation", version.ref = "appcompatVersion" }
+design = { module = "com.google.android.material:material", version = "1.7.0" }
+fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentVersion" }
+fragmentTesting = { module = "androidx.fragment:fragment-testing", version.ref = "fragmentVersion" }
+exoPlayerCore = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayerVersion" }
+exoPlayerUi = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "exoplayerVersion" }
+wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVersion" }
+gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
+glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion" }
+mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
+junit = { module = "junit:junit", version.ref = "junitVersion" }
+androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunitVersion" }
+testRunner = { module = "androidx.test:runner", version.ref = "runnerVersion" }
+testRules = { module = "androidx.test:rules", version.ref = "runnerVersion" }
+mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroidVersion" }
 
 [bundles]
 

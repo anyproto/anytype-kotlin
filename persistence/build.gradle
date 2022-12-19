@@ -13,7 +13,7 @@ dependencies {
     def unitTestDependencies = rootProject.ext.unitTesting
     def databaseDependencies = rootProject.ext.db
 
-    implementation applicationDependencies.kotlin
+    implementation libs.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.gson
     implementation applicationDependencies.lifecycleLiveData
@@ -27,9 +27,9 @@ dependencies {
 
     testImplementation project(":test:utils")
     testImplementation databaseDependencies.roomTesting
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
     testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.archCoreTesting
 }

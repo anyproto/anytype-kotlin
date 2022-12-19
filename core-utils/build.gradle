@@ -22,9 +22,9 @@ dependencies {
 
     kapt applicationDependencies.daggerCompiler
 
-    implementation applicationDependencies.appcompat
+    implementation libs.appcompat
 
-    implementation applicationDependencies.kotlin
+    implementation libs.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.dagger
     implementation applicationDependencies.gson
@@ -36,16 +36,16 @@ dependencies {
     implementation applicationDependencies.recyclerView
 
 
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
 
     implementation applicationDependencies.navigation
     implementation applicationDependencies.navigationUi
 
     testImplementation unitTestDependencies.robolectricLatest
-    androidTestImplementation acceptanceTesting.androidJUnit
-    androidTestImplementation acceptanceTesting.testRules
+    androidTestImplementation libs.androidJUnit
+    androidTestImplementation libs.testRules
     testImplementation unitTestDependencies.archCoreTesting
     testImplementation unitTestDependencies.coroutineTesting
 }

@@ -97,7 +97,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion config.compose_version
+        kotlinCompilerExtensionVersion libs.versions.androidxComposeVersion1.get()
     }
 
     buildFeatures {
@@ -157,21 +157,21 @@ dependencies {
 
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
-    kapt applicationDependencies.glideCompiler
+    kapt libs.glideCompiler
     compileOnly applicationDependencies.javaxAnnotation
     compileOnly applicationDependencies.javaxInject
 
     //Application dependencies
-    implementation applicationDependencies.kotlin
+    implementation libs.kotlin
     implementation applicationDependencies.coroutinesAndroid
-    implementation applicationDependencies.fragment
+    implementation libs.fragment
     implementation applicationDependencies.navigation
     implementation applicationDependencies.navigationUi
-    implementation applicationDependencies.appcompat
-    implementation applicationDependencies.design
+    implementation libs.appcompat
+    implementation libs.design
     implementation applicationDependencies.recyclerView
     implementation applicationDependencies.constraintLayout
-    implementation applicationDependencies.glide
+    implementation libs.glide
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
     implementation applicationDependencies.gson
@@ -182,19 +182,19 @@ dependencies {
     implementation applicationDependencies.lifecycleRuntime
     implementation applicationDependencies.lifecycleLiveData
 
-    implementation applicationDependencies.compose
-    implementation applicationDependencies.composeFoundation
-    implementation applicationDependencies.composeMaterial
-    implementation applicationDependencies.composeToolingPreview
+    implementation libs.compose
+    implementation libs.composeFoundation
+    implementation libs.composeMaterial
+    implementation libs.composeToolingPreview
     implementation applicationDependencies.preference
-    debugImplementation applicationDependencies.composeTooling
+    debugImplementation libs.composeTooling
 
     implementation databaseDependencies.room
 
     implementation applicationDependencies.crashlytics
 
-    implementation applicationDependencies.exoPlayerCore
-    implementation applicationDependencies.exoPlayerUi
+    implementation libs.exoPlayerCore
+    implementation libs.exoPlayerUi
 
     implementation analyticsDependencies.amplitude
     implementation analyticsDependencies.okhttp
@@ -207,20 +207,20 @@ dependencies {
 
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.androidXTestCore
-    testImplementation unitTestDependencies.junit
+    testImplementation libs.junit
     testImplementation unitTestDependencies.robolectricLatest
-    testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
     testImplementation project(':test:utils')
 
     //Acceptance tests dependencies
     androidTestImplementation project(':test:android-utils')
-    androidTestImplementation acceptanceTesting.mockitoAndroid
-    androidTestImplementation unitTestDependencies.mockitoKotlin
+    androidTestImplementation libs.mockitoAndroid
+    androidTestImplementation libs.mockitoKotlin
     androidTestImplementation acceptanceTesting.espressoContrib
-    androidTestImplementation acceptanceTesting.androidJUnit
-    androidTestImplementation unitTestDependencies.kotlinTest
-    androidTestImplementation acceptanceTesting.testRules
+    androidTestImplementation libs.androidJUnit
+    androidTestImplementation libs.kotlinTest
+    androidTestImplementation libs.testRules
     androidTestImplementation acceptanceTesting.disableAnimation
     androidTestImplementation acceptanceTesting.navigationTesting
     androidTestImplementation project(":test:utils")
@@ -230,9 +230,9 @@ dependencies {
         exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
     }
 
-    debugImplementation acceptanceTesting.fragmentTesting
+    debugImplementation libs.fragmentTesting
 
-    implementation protobufDependencies.wireRuntime
+    implementation libs.wireRuntime
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion "32.0.0"
 
     defaultConfig {
@@ -46,22 +46,22 @@ dependencies {
     implementation project(':core-ui')
     implementation project(':presentation')
 
-    implementation applicationDependencies.kotlin
-    implementation applicationDependencies.appcompat
-    implementation applicationDependencies.glide
+    implementation libs.kotlin
+    implementation libs.appcompat
+    implementation libs.glide
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.constraintLayout
     implementation libs.androidxCore
     implementation applicationDependencies.timber
-    implementation applicationDependencies.fragment
-    implementation applicationDependencies.design
+    implementation libs.fragment
+    implementation libs.design
     implementation applicationDependencies.pickT
 
     //implementation 'com.github.gregcockroft:AndroidMath:ALPHA'
 
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
     testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.androidXTestCore
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation libs.mockitoKotlin
 }

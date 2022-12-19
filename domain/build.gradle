@@ -9,17 +9,16 @@ dependencies {
 
     def applicationDependencies = rootProject.ext.mainApplication
 
-    implementation applicationDependencies.kotlin
+    implementation libs.kotlin
     implementation applicationDependencies.coroutines
 
     def unitTestDependencies = rootProject.ext.unitTesting
 
     testImplementation project(":test:utils")
-    testImplementation unitTestDependencies.kotlinTest
+    testImplementation libs.kotlinTest
     testImplementation unitTestDependencies.turbine
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation libs.mockitoKotlin
 
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation unitTestDependencies.coroutineTesting
 
     testImplementation project(":test:core-models-stub")

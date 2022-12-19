@@ -3,16 +3,12 @@ import com.android.build.gradle.LibraryPlugin
 apply from: './dependencies.gradle'
 
 buildscript {
-    ext.kotlin_version = '1.7.10'
-    ext.gradle_tools = '3.1.3'
-    ext.build_tools = '32.0.0'
     ext.nav_version = '2.5.3'
     ext.dokka_version = '1.4.32'
 
-    ext.compile_sdk = 32
+    ext.compile_sdk = 33
     ext.target_sdk = 31
     ext.min_sdk = 26
-    ext.compose_version = '1.3.1'
 
     ext.application_id = 'com.anytypeio.anytype'
     ext.version_name = '1.0'
@@ -27,14 +23,14 @@ buildscript {
     dependencies {
         def libs = project.extensions.getByName("libs") as org.gradle.accessors.dm.LibrariesForLibs
         classpath(libs.agp)
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath(libs.kgp)
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath 'com.google.gms:google-services:4.3.14'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
         classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.3'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        classpath 'com.squareup.wire:wire-gradle-plugin:4.4.2'
+        classpath(libs.kserialization)
+        classpath(libs.wire)
     }
 }
 

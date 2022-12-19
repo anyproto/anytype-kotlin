@@ -5,8 +5,7 @@ plugins {
 }
 
 dependencies {
-    def applicationDependencies = rootProject.ext.mainApplication
-    implementation applicationDependencies.kotlin
+    implementation libs.kotlin
 }
 
 wire {

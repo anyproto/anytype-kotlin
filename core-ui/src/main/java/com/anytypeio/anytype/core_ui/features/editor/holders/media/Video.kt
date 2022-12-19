@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.google.android.exoplayer2.DefaultLoadControl
@@ -34,6 +35,8 @@ class Video(val binding: ItemBlockVideoBinding) : Media(binding.root), Lifecycle
     fun bind(item: BlockView.Media.Video, clicked: (ListenerType) -> Unit, lifecycle: Lifecycle) {
         super.bind(item, clicked)
         lifecycle.addObserver(this)
+        binding.playerView.findViewById<View>(R.id.exo_prev).invisible()
+        binding.playerView.findViewById<View>(R.id.exo_next).invisible()
         binding.playerView.visibility = View.VISIBLE
 
         val loadControl = DefaultLoadControl.Builder()

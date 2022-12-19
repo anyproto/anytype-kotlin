@@ -18,20 +18,20 @@ dependencies {
     implementation project(':presentation')
     implementation project(':library-emojifier')
 
-    implementation applicationDependencies.appcompat
-    implementation applicationDependencies.kotlin
+    implementation libs.appcompat
+    implementation libs.kotlin
     implementation applicationDependencies.coroutinesAndroid
     implementation libs.androidxCore
     implementation applicationDependencies.emojiCompat
 
-    implementation applicationDependencies.design
+    implementation libs.design
     implementation applicationDependencies.recyclerView
     implementation applicationDependencies.constraintLayout
     implementation applicationDependencies.timber
-    implementation applicationDependencies.glide
+    implementation libs.glide
 
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
     testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.androidXTestCore
 }

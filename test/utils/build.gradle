@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation mainApplication.kotlin
-    implementation unitTesting.mockitoKotlin
+    implementation libs.kotlin
+    implementation libs.mockitoKotlin
 }

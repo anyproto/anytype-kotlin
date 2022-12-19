@@ -1,23 +1,17 @@
 ext {
     // Kotlin
     kotlin_coroutines_version = '1.6.4'
-    kotlinx_serialization_json_version = '1.4.0'
 
     // AndroidX
-    androidx_core_ktx_version = '1.7.0'
     androidx_test_core_version = '1.4.0'
     androidx_core_testing_version = '2.1.0'
     androidx_security_crypto_version = '1.0.0'
-    androidx_compose_version = '1.2.1'
     androidx_preference_version = '1.2.0'
 
     // Other Android framework dependencies
-    appcompat_version = '1.3.0'
     constraintLayout_version = '2.1.4'
     recyclerview_version = '1.2.1'
     cardview_version = '1.0.0'
-    material_version = '1.3.0'
-    fragment_version = "1.4.1"
     emoji_compat_version = '1.1.0'
     view_pager_2_version = '1.0.0'
 
@@ -26,8 +20,6 @@ ext {
     navigation_version = '2.5.3'
 
     // Third party libraries
-    exoplayer_version = '2.17.1'
-    glide_version = '4.14.1'
     shimmer_layout_version = "0.5.0"
     photo_view_version = '2.3.0'
     dagger_version = '2.44'
@@ -36,7 +28,6 @@ ext {
     retrofit_version = '2.3.0'
     okhttp_logging_interceptor_version = '3.8.1'
     gson_version = '2.10'
-    gson_wire_version = '4.4.3'
     better_link_method_version = '2.2.0'
     table_view_version = '0.8.9.4'
     pickt_version = "2.0.2"
@@ -46,19 +37,14 @@ ext {
 
     // Unit Testing
     robolectric_latest_version = '4.7.3'
-    junit_version = '4.12'
     kluent_version = '1.14'
     timber_junit = '1.0.1'
     turbine_version = '0.7.0'
     coroutine_testing_version = '1.6.4'
     live_data_testing_version = '1.2.0'
-    mockito_kotlin_version = '4.0.0'
-    mockito_android_version = '4.8.0'
 
     // Acceptance Testing
-    runner_version = '1.4.0'
     espresso_version = '3.4.0'
-    android_junit_version = '1.1.3'
     disable_animation_version = '2.0.0'
 
     // Development
@@ -74,7 +60,6 @@ ext {
 
     protobuf_java_version = '3.9.2'
     protoc_version = '3.9.0'
-    wire_version = '4.4.2'
 
     // DBB
 
@@ -88,62 +73,43 @@ ext {
     // Anytype
 
     mainApplication = [
-            kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
             coroutinesAndroid:          "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version",
-            fragment:                   "androidx.fragment:fragment-ktx:$fragment_version",
+
             navigation:                 "androidx.navigation:navigation-fragment-ktx:$navigation_version",
             navigationUi:               "androidx.navigation:navigation-ui-ktx:$navigation_version",
             lifecycleViewModel:         "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version",
             lifecycleRuntime:           "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version",
             lifecycleCompiler:          "androidx.lifecycle:lifecycle-compiler:$lifecycle_version",
             lifecycleLiveData:          "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version",
-            appcompat:                  "androidx.appcompat:appcompat:$appcompat_version",
             constraintLayout:           "androidx.constraintlayout:constraintlayout:$constraintLayout_version",
             cardView:                   "androidx.cardview:cardview:$cardview_version",
             recyclerView:               "androidx.recyclerview:recyclerview:$recyclerview_version",
             viewPager:                  "androidx.viewpager2:viewpager2:$view_pager_2_version",
-            design:                     "com.google.android.material:material:$material_version",
-            androidAnnotations:         "androidx.annotation:annotation:$appcompat_version",
             betterLinkMovement:         "me.saket:better-link-movement-method:$better_link_method_version",
             emojiCompat:                "androidx.emoji:emoji-appcompat:$emoji_compat_version",
             photoView:                  "com.github.chrisbanes:PhotoView:$photo_view_version",
             katex:                      "com.github.judemanutd:katexview:$katex_version",
-            glide:                      "com.github.bumptech.glide:glide:$glide_version",
-            glideCompiler:              "com.github.bumptech.glide:compiler:$glide_version",
             daggerCompiler:             "com.google.dagger:dagger-compiler:$dagger_version",
             dagger:                     "com.google.dagger:dagger:$dagger_version",
             javaxAnnotation:            "javax.annotation:jsr250-api:$javaxAnnotations_version",
             javaxInject:                "javax.inject:javax.inject:$javaxInject_version",
             gson:                       "com.google.code.gson:gson:$gson_version",
-            gsonWire:                   "com.squareup.wire:wire-gson-support:$gson_wire_version",
             retrofit:                   "com.squareup.retrofit2:converter-gson:$retrofit_version",
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
             timber:                     "com.jakewharton.timber:timber:$timber_version",
             tableView:                  "com.github.evrencoskun:TableView:$table_view_version",
-            exoPlayerCore:              "com.google.android.exoplayer:exoplayer-core:$exoplayer_version",
-            exoPlayerUi:                "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version",
             pickT:                      "com.github.HBiSoft:PickiT:$pickt_version",
             zxing:                      "com.journeyapps:zxing-android-embedded:$zxing_version",
             urlcleaner:                 "com.shekhargulati.urlcleaner:urlcleaner:$urlcleaner_version",
-            kotlinxSerializationJson:   "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_json_version",
             crashlytics:                "com.google.firebase:firebase-crashlytics:$crashlytics_version",
             shimmerLayout:              "com.facebook.shimmer:shimmer:$shimmer_layout_version",
             androidxSecurityCrypto:     "androidx.security:security-crypto:$androidx_security_crypto_version",
-            compose:                    "androidx.compose.ui:ui:$androidx_compose_version",
-            composeTooling:             "androidx.compose.ui:ui-tooling:$androidx_compose_version",
-            composeToolingPreview:      "androidx.compose.ui:ui-tooling-preview:$androidx_compose_version",
-            composeFoundation:          "androidx.compose.foundation:foundation:$androidx_compose_version",
-            composeMaterial:            "androidx.compose.material:material:$androidx_compose_version",
             preference              : "androidx.preference:preference:$androidx_preference_version"
     ]
 
     unitTesting = [
-            kotlin           : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
-            kotlinTest       : "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version",
             robolectricLatest: "org.robolectric:robolectric:$robolectric_latest_version",
-            junit            : "junit:junit:$junit_version",
-            mockitoKotlin    : "org.mockito.kotlin:mockito-kotlin:$mockito_kotlin_version",
             kluent           : "org.amshove.kluent:kluent:$kluent_version",
             archCoreTesting  : "androidx.arch.core:core-testing:$androidx_core_testing_version",
             liveDataTesting  : "com.jraska.livedata:testing-ktx:$live_data_testing_version",
@@ -155,17 +121,10 @@ ext {
     ]
 
     acceptanceTesting = [
-            androidJUnit      : "androidx.test.ext:junit:$android_junit_version",
-            testRunner        : "androidx.test:runner:$runner_version",
-            testRules         : "androidx.test:rules:$runner_version",
             espressoCore      : "androidx.test.espresso:espresso-core:$espresso_version",
             espressoContrib   : "androidx.test.espresso:espresso-contrib:$espresso_version",
             espressoIntents   : "androidx.test.espresso:espresso-intents:$espresso_version",
-            androidAnnotations: "androidx.annotation:annotation:$appcompat_version",
-            mockitoKotlin     : "org.mockito.kotlin:mockito-kotlin:$mockito_kotlin_version",
-            mockitoAndroid    : "org.mockito:mockito-android:$mockito_android_version",
             disableAnimation  : "com.bartoszlipinski:disable-animations-rule:$disable_animation_version",
-            fragmentTesting   : "androidx.fragment:fragment-testing:$fragment_version",
             navigationTesting : "androidx.navigation:navigation-testing:$navigation_version"
     ]
 
@@ -179,7 +138,6 @@ ext {
             protobufJava:       "com.google.protobuf:protobuf-java:$protobuf_java_version",
             protobufJavaUtil:   "com.google.protobuf:protobuf-java-util:$protobuf_java_version",
             protoc:             "com.google.protobuf:protoc:$protoc_version",
-            wireRuntime:        "com.squareup.wire:wire-runtime:$wire_version"
     ]
 
     db = [

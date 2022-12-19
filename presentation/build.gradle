@@ -25,7 +25,7 @@ dependencies {
     def unitTestDependencies = rootProject.ext.unitTesting
     def analyticsDependencies = rootProject.ext.analytics
 
-    implementation applicationDependencies.kotlin
+    implementation libs.kotlin
     implementation applicationDependencies.coroutinesAndroid
 
     implementation applicationDependencies.lifecycleViewModel
@@ -39,9 +39,10 @@ dependencies {
 
     compileOnly applicationDependencies.javaxInject
 
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
+    testImplementation "net.bytebuddy:byte-buddy:1.12.20"
     testImplementation unitTestDependencies.coroutineTesting
     testImplementation unitTestDependencies.liveDataTesting
     testImplementation unitTestDependencies.archCoreTesting

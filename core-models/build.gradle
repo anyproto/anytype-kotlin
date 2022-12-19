@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation mainApplication.kotlin
+    implementation libs.kotlin
 
-    testImplementation unitTesting.kotlinTest
-    testImplementation unitTesting.mockitoKotlin
+    testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
 }

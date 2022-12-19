@@ -12,7 +12,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion config["compose_version"]
+        kotlinCompilerExtensionVersion libs.versions.androidxComposeVersion1.get()
     }
 }
 
@@ -31,16 +31,16 @@ dependencies {
     implementation applicationDependencies.lifecycleViewModel
     implementation applicationDependencies.lifecycleRuntime
 
-    implementation applicationDependencies.appcompat
-    implementation applicationDependencies.compose
-    implementation applicationDependencies.composeFoundation
-    implementation applicationDependencies.composeMaterial
-    implementation applicationDependencies.composeToolingPreview
+    implementation libs.appcompat
+    implementation libs.compose
+    implementation libs.composeFoundation
+    implementation libs.composeMaterial
+    implementation libs.composeToolingPreview
 
-    debugImplementation applicationDependencies.composeTooling
+    debugImplementation libs.composeTooling
 
     implementation applicationDependencies.timber
 
-    testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.kotlinTest
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
 }

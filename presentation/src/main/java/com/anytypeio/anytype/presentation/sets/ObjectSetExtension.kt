@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
+import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -57,12 +58,10 @@ private fun mapFeaturedRelations(
         Relations.TYPE -> {
             val objectTypeId = details.details[ctx]?.type?.firstOrNull()
             if (objectTypeId != null) {
-                DocumentRelationView.ObjectType(
-                    relationId = details.details[ctx]?.id.orEmpty(),
+                details.objectTypeRelation(
                     relationKey = key,
-                    name = details.details[objectTypeId]?.name.orEmpty(),
                     isFeatured = true,
-                    type = objectTypeId
+                    objectTypeId = objectTypeId
                 )
             } else {
                 null
@@ -71,21 +70,45 @@ private fun mapFeaturedRelations(
         Relations.SET_OF -> {
             val objectSet = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty())
             val sources = mutableListOf<ObjectView>()
-            objectSet.setOf.forEach { sourceId ->
-                val wrapper = ObjectWrapper.Basic(details.details[sourceId]?.map.orEmpty())
+            val source = objectSet.setOf.firstOrNull()
+            if (source != null) {
+                val wrapper = ObjectWrapper.Basic(details.details[source]?.map.orEmpty())
                 if (!wrapper.isEmpty()) {
-                    sources.add(
-                        wrapper.toObjectView(urlBuilder = urlBuilder)
+                    if (wrapper.isDeleted == true) {
+                        DocumentRelationView.Source.Deleted(
+                            relationId = details.details[ctx]?.id.orEmpty(),
+                            relationKey = key,
+                            name = Relations.RELATION_NAME_EMPTY,
+                            isFeatured = true
+                        )
+                    } else {
+                        sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
+                        DocumentRelationView.Source.Base(
+                            relationId = details.details[ctx]?.id.orEmpty(),
+                            relationKey = key,
+                            name = Relations.RELATION_NAME_EMPTY,
+                            isFeatured = true,
+                            sources = sources
+                        )
+                    }
+                } else {
+                    DocumentRelationView.Source.Base(
+                        relationId = details.details[ctx]?.id.orEmpty(),
+                        relationKey = key,
+                        name = Relations.RELATION_NAME_EMPTY,
+                        isFeatured = true,
+                        sources = sources
                     )
                 }
+            } else {
+                DocumentRelationView.Source.Base(
+                    relationId = details.details[ctx]?.id.orEmpty(),
+                    relationKey = key,
+                    name = Relations.RELATION_NAME_EMPTY,
+                    isFeatured = true,
+                    sources = sources
+                )
             }
-            DocumentRelationView.Source(
-                relationId = details.details[ctx]?.id.orEmpty(),
-                relationKey = key,
-                name = Relations.RELATION_NAME_EMPTY,
-                isFeatured = true,
-                sources = sources
-            )
         }
         else -> {
             val relation = relations.firstOrNull { it.key == key }

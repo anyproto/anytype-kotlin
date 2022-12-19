@@ -149,8 +149,7 @@ class ArchiveViewModel(
                     details = details,
                     relationLinks = emptyList(),
                     restrictions = emptyList(),
-                    selection = emptySet(),
-                    objectTypes = emptyList(),
+                    selection = emptySet()
                 )
             }
             .map { views -> views.filterNot { it is BlockView.LinkToObject } }

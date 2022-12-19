@@ -703,8 +703,7 @@ class EditorViewModel(
                     details = details,
                     relationLinks = orchestrator.stores.relationLinks.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
-                    selection = currentSelection(),
-                    objectTypes = orchestrator.stores.objectTypes.current()
+                    selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()

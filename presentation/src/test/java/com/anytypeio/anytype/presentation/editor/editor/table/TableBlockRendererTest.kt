@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -60,8 +61,7 @@ class TableBlockRendererTest {
             details = details,
             relationLinks = emptyList(),
             restrictions = restrictions,
-            selection = selections,
-            objectTypes = listOf()
+            selection = selections
         )
     }
 
@@ -88,6 +88,8 @@ class TableBlockRendererTest {
 
     private var storeOfRelations = DefaultStoreOfRelations()
 
+    private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -95,7 +97,8 @@ class TableBlockRendererTest {
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
             coverImageHashProvider = coverImageHashProvider,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 

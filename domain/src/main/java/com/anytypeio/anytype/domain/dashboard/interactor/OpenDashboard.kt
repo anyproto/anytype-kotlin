@@ -2,8 +2,7 @@ package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 
@@ -16,37 +15,14 @@ class OpenDashboard(
     private val repo: BlockRepository,
     private val auth: AuthRepository,
     private val provider: ConfigStorage
-) : BaseUseCase<Payload, OpenDashboard.Param?>() {
+) : ResultInteractor<Unit, Payload>() {
 
-    override suspend fun run(params: Param?) = try {
-        if (params != null)
-            repo.openDashboard(
-                contextId = params.contextId,
-                id = params.id
-            ).let {
-                Either.Right(it).also {
-                    auth.clearLastOpenedObject()
-                }
-            }
-        else {
-            provider.get().let { config ->
-                repo.openDashboard(
-                    contextId = config.home,
-                    id = config.home
-                ).let {
-                    Either.Right(it).also {
-                        auth.clearLastOpenedObject()
-                    }
-                }
-            }
-        }
-    } catch (t: Throwable) {
-        Either.Left(t)
+    override suspend fun doWork(params: Unit): Payload {
+        val config = provider.get()
+        val payload = repo.openDashboard(
+            contextId = config.home,
+            id = config.home
+        )
+        return payload.also { auth.clearLastOpenedObject() }
     }
-
-    /**
-     * @property id dashboard id
-     * @property contextId contextId id
-     */
-    class Param(val contextId: String, val id: String)
 }

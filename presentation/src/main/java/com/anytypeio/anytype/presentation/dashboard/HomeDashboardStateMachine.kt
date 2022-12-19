@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.dashboard
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.core_models.ext.set
@@ -62,7 +62,7 @@ sealed class HomeDashboardStateMachine {
         val error: String?,
         val blocks: List<DashboardView> = emptyList(),
         val childrenIdsList: List<String> = emptyList(),
-        val objectTypes: List<ObjectType> = emptyList(),
+        val objectTypes: List<ObjectWrapper.Type> = emptyList(),
         val details: Block.Details = Block.Details()
     ) : HomeDashboardStateMachine() {
         companion object {
@@ -83,7 +83,7 @@ sealed class HomeDashboardStateMachine {
             val blocks: List<Block>,
             val details: Block.Details,
             val builder: UrlBuilder,
-            val objectTypes: List<ObjectType>
+            val objectTypes: List<ObjectWrapper.Type>
         ) : Event()
 
         data class OnDetailsUpdated(
@@ -254,7 +254,7 @@ sealed class HomeDashboardStateMachine {
     }
 }
 
-fun State.findOTypeById(types: List<String>): ObjectType? {
+fun State.findOTypeById(types: List<String>): ObjectWrapper.Type? {
     val target = types.firstOrNull()
-    return objectTypes.find { oType -> oType.url == target }
+    return objectTypes.find { oType -> oType.id == target }
 }

@@ -172,11 +172,11 @@ object HomeDashboardModule {
     @PerScreen
     fun provideEventConverter(
         builder: UrlBuilder,
-        objectTypesProvider: ObjectTypesProvider
+        storeOfObjectTypes: StoreOfObjectTypes
     ): HomeDashboardEventConverter {
         return HomeDashboardEventConverter.DefaultConverter(
             builder = builder,
-            objectTypesProvider = objectTypesProvider
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 

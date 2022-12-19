@@ -219,7 +219,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(placeholder.id)
                     }
                 }
-                is DocumentRelationView.ObjectType -> {
+                is DocumentRelationView.ObjectType.Base -> {
                     val view = TextView(context).apply {
                         id = generateViewId()
                         if (relation.name.isEmpty()) {
@@ -251,7 +251,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     addView(view)
                     ids.add(view.id)
                 }
-                is DocumentRelationView.Source -> {
+                is DocumentRelationView.Source.Base -> {
                     if (relation.sources.isEmpty()) {
                         inflateEmptySourcePlaceholderTextView(
                             click = click,
@@ -272,6 +272,37 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             )
                         }
                     }
+                }
+                is DocumentRelationView.Source.Deleted -> {
+                    inflateDeletedSourceTextView(
+                        click = click,
+                        ids = ids
+                    )
+                }
+                is DocumentRelationView.ObjectType.Deleted -> {
+                    val view = TextView(context).apply {
+                        id = generateViewId()
+                        text = context.resources.getString(R.string.deleted_type)
+                        isSingleLine = true
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
+                        setTextColor(context.getColor(R.color.palette_dark_red))
+                        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                    }
+                    view.setOnClickListener {
+                        val popup = ObjectTypePopupMenu(
+                            context = context,
+                            view = it,
+                            onChangeTypeClicked = {
+                                click(ListenerType.Relation.ChangeObjectType(type = relation.relationId))
+                            },
+                            onOpenSetClicked = {},
+                            allowOnlyChangingType = true
+                        )
+                        popup.show()
+                    }
+                    addView(view)
+                    ids.add(view.id)
                 }
             }
 
@@ -306,7 +337,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     }
 
     private fun inflateDefaultSourceTextView(
-        relation: DocumentRelationView.Source,
+        relation: DocumentRelationView.Source.Base,
         click: (ListenerType.Relation) -> Unit,
         ids: MutableList<Int>
     ) {
@@ -345,7 +376,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     }
 
     private fun inflateSourceByRelationTextView(
-        relation: DocumentRelationView.Source,
+        relation: DocumentRelationView.Source.Base,
         click: (ListenerType.Relation) -> Unit,
         ids: MutableList<Int>
     ) {
@@ -376,6 +407,28 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         }
         addView(view)
         ids.add(view.id)
+    }
+
+    private fun inflateDeletedSourceTextView(
+        click: (ListenerType.Relation) -> Unit,
+        ids: MutableList<Int>
+    ) {
+            val view = ObjectIconTextWidget(context).apply {
+                id = generateViewId()
+                setTextColor(context.color(R.color.palette_dark_red))
+                setTextSize(context.dimen(R.dimen.featured_relations_text_size))
+                setup(
+                    name = context.getString(R.string.deleted_type),
+                    icon = ObjectIcon.None
+                )
+            }
+            view.setOnClickListener {
+                click(
+                    ListenerType.Relation.SetSource(sources = listOf())
+                )
+            }
+            addView(view)
+            ids.add(view.id)
     }
 
     private fun getPlaceholderHint(relation: DocumentRelationView.Default): String {

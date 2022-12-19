@@ -167,7 +167,7 @@ class HomeDashboardViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun processEvents(events: List<Event>) =
+    private suspend fun processEvents(events: List<Event>) =
         events.mapNotNull { convert(it) }.let { result -> machine.onEvents(result) }
 
     private fun proceedWithGettingConfig() {
@@ -227,12 +227,12 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
             var middleTime = 0L
-            openDashboard(params = null).either(
-                fnR = { payload ->
+            openDashboard.execute(Unit).fold(
+                onSuccess = { payload ->
                     middleTime = System.currentTimeMillis()
                     processEvents(payload.events)
                 },
-                fnL = { Timber.e(it, "Error while opening home dashboard") }
+                onFailure = { Timber.e(it, "Error while opening home dashboard") }
             )
             viewModelScope.sendEvent(
                 analytics = analytics,

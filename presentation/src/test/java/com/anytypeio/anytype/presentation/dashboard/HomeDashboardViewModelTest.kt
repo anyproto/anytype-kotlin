@@ -59,6 +59,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertContains
+import kotlin.test.assertEquals
 
 class HomeDashboardViewModelTest {
 
@@ -142,7 +143,7 @@ class HomeDashboardViewModelTest {
             interceptEvents = interceptEvents,
             eventConverter = HomeDashboardEventConverter.DefaultConverter(
                 builder = builder,
-                objectTypesProvider = objectTypesProvider
+                storeOfObjectTypes = storeOfObjectTypes
             ),
             getDebugSettings = getDebugSettings,
             analytics = analytics,
@@ -317,15 +318,17 @@ class HomeDashboardViewModelTest {
             )
         )
 
-        vm.state.test().assertValue(
-            HomeDashboardStateMachine.State(
-                isLoading = false,
-                isInitialzed = true,
-                blocks = views,
-                childrenIdsList = listOf(dashboard).getChildrenIdsList(dashboard.id),
-                error = null
-            )
+        val expected =  HomeDashboardStateMachine.State(
+            isLoading = false,
+            isInitialzed = true,
+            blocks = views,
+            childrenIdsList = listOf(dashboard).getChildrenIdsList(dashboard.id),
+            error = null
         )
+        val actual = vm.state.test().value()
+        assertEquals(expected = expected, actual = actual)
+
+        coroutineTestRule.advanceTime(200L)
     }
 
     @Test
@@ -344,7 +347,7 @@ class HomeDashboardViewModelTest {
         vm.onViewCreated()
 
         runBlockingTest {
-            verify(openDashboard, times(1)).invoke(eq(null))
+            verify(openDashboard, times(1)).execute(eq(Unit))
         }
     }
 
@@ -408,7 +411,7 @@ class HomeDashboardViewModelTest {
         )
     ) {
         openDashboard.stub {
-            onBlocking { invoke(params = null) } doReturn Either.Right(payload)
+            onBlocking { execute(params = Unit) } doReturn Resultat.success(payload)
         }
     }
 

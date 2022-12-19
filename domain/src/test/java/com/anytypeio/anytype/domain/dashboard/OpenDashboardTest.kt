@@ -50,21 +50,6 @@ class OpenDashboardTest {
     }
 
     @Test
-    fun `should open a dashboard based on the given params if these are present`() = runTest {
-
-            val params = OpenDashboard.Param(
-                contextId = MockDataFactory.randomUuid(),
-                id = MockDataFactory.randomUuid()
-            )
-
-            usecase.run(params)
-
-            verify(configStorage, never()).get()
-            verify(repo, times(1)).openDashboard(contextId = params.contextId, id = params.id)
-            verifyNoMoreInteractions(repo)
-        }
-
-    @Test
     fun `should open a home dashboard if there are no params`() = runBlockingTest {
 
         val config = StubConfig()
@@ -73,7 +58,7 @@ class OpenDashboardTest {
             onBlocking { get() } doReturn config
         }
 
-        usecase.run(null)
+        usecase.run(Unit)
 
         verify(configStorage, times(1)).get()
         verify(repo, times(1)).openDashboard(

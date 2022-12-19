@@ -145,7 +145,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
                 relations = listOf(
-                    DocumentRelationView.ObjectType(
+                    DocumentRelationView.ObjectType.Base(
                         relationId = objectType.id,
                         relationKey = Relations.TYPE,
                         name = objectTypeName,
@@ -261,7 +261,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
                 relations = listOf(
-                    DocumentRelationView.ObjectType(
+                    DocumentRelationView.ObjectType.Base(
                         relationId = objectTypeId,
                         relationKey = Relations.TYPE,
                         name = objectTypeName,

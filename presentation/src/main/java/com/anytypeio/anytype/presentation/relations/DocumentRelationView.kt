@@ -65,17 +65,27 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         val objects: List<ObjectView>
     ) : DocumentRelationView()
 
-    data class Source(
-        override val relationId: Id,
-        override val relationKey: Key,
-        override val name: String,
-        override val value: String? = null,
-        override val isFeatured: Boolean = false,
-        val sources: List<ObjectView>
-    ) : DocumentRelationView() {
-        val isSourceByRelation : Boolean get() = sources.any { s ->
-            s is ObjectView.Default && s.isRelation
+    sealed class Source : DocumentRelationView() {
+        data class Base(
+            override val relationId: Id,
+            override val relationKey: Key,
+            override val name: String,
+            override val value: String? = null,
+            override val isFeatured: Boolean = false,
+            val sources: List<ObjectView>
+        ) : Source() {
+            val isSourceByRelation : Boolean get() = sources.any { s ->
+                s is ObjectView.Default && s.isRelation
+            }
         }
+
+        data class Deleted(
+            override val relationId: Id,
+            override val relationKey: Key,
+            override val name: String,
+            override val value: String? = null,
+            override val isFeatured: Boolean = false
+        ) : Source()
     }
 
     data class File(
@@ -87,16 +97,22 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         val files: List<FileView>
     ) : DocumentRelationView()
 
-    /**
-     * @property [type] object type id
-     * @property [relationId] id of the relation
-     */
-    data class ObjectType(
-        override val relationId: Id,
-        override val relationKey: Key,
-        override val name: String,
-        override val value: String? = null,
-        override val isFeatured: Boolean = false,
-        val type: Id
-    ) : DocumentRelationView()
+    sealed class ObjectType : DocumentRelationView() {
+        data class Base(
+            override val relationId: Id,
+            override val relationKey: Key,
+            override val name: String,
+            override val value: String? = null,
+            override val isFeatured: Boolean = false,
+            val type: Id
+        ) : ObjectType()
+
+        data class Deleted(
+            override val relationId: Id,
+            override val relationKey: Key,
+            override val name: String = "",
+            override val value: String? = null,
+            override val isFeatured: Boolean = false,
+        ) : ObjectType()
+    }
 }

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
+import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,7 +48,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val toggleStateHolder: ToggleStateHolder,
     private val coverImageHashProvider: CoverImageHashProvider,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
@@ -60,7 +63,6 @@ class DefaultBlockViewRenderer @Inject constructor(
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
         count: Int,
-        objectTypes: List<ObjectType>,
         parentScheme: NestedDecorationData,
         onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit,
     ): List<BlockView> {
@@ -135,7 +137,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -181,7 +182,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -220,8 +220,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        objectTypes = objectTypes
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -260,7 +259,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -301,7 +299,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -342,7 +339,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -390,7 +386,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = if (NESTED_DECORATION_ENABLED)
                                             (normalized + current)
@@ -430,7 +425,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -483,7 +477,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -523,7 +516,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -568,7 +560,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relationLinks = relationLinks,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
                                         parentScheme = blockDecorationScheme
                                     )
@@ -636,7 +627,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                         mode = mode,
                         selection = selection,
                         isPreviousBlockMedia = isPreviousBlockMedia,
-                        objectTypes = objectTypes,
                         parentSchema = parentScheme
                     )
                     result.add(link)
@@ -690,7 +680,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                             restrictions = restrictions,
                             selection = selection,
                             count = mCounter,
-                            objectTypes = objectTypes,
                             onRenderFlag = onRenderFlag,
                         )
                     )
@@ -1566,7 +1555,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
     }
 
-    private fun toLinks(
+    private suspend fun toLinks(
         block: Block,
         content: Content.Link,
         indent: Int,
@@ -1574,7 +1563,6 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
-        objectTypes: List<ObjectType>,
         parentSchema: NestedDecorationData
     ): BlockView.LinkToObject {
         if (obj.isEmpty()) {
@@ -1612,14 +1600,13 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = mode,
                     selection = selection,
                     isPreviousBlockMedia = isPreviousBlockMedia,
-                    objectTypes = objectTypes,
                     parentSchema = parentSchema
                 )
             }
         }
     }
 
-    private fun link(
+    private suspend fun link(
         mode: Editor.Mode,
         block: Block,
         content: Content.Link,
@@ -1627,7 +1614,6 @@ class DefaultBlockViewRenderer @Inject constructor(
         obj: ObjectWrapper.Basic,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
-        objectTypes: List<ObjectType>,
         parentSchema: NestedDecorationData
     ): BlockView.LinkToObject.Default {
         val factory = LinkAppearanceFactory(content, obj.layout)
@@ -1653,7 +1639,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 
         val objectTypeName = if (inEditorAppearance.showType) {
             val typeUrl = obj.type.firstOrNull()
-            objectTypes.find { it.url == typeUrl }?.name
+            if (typeUrl != null) storeOfObjectTypes.get(typeUrl)?.name else null
         } else {
             null
         }
@@ -2106,12 +2092,10 @@ class DefaultBlockViewRenderer @Inject constructor(
             Relations.TYPE -> {
                 val objectTypeId = details.details[ctx]?.type?.firstOrNull()
                 if (objectTypeId != null) {
-                    DocumentRelationView.ObjectType(
-                        relationId = objectTypeId,
+                    details.objectTypeRelation(
                         relationKey = key,
-                        name = details.details[objectTypeId]?.name.orEmpty(),
                         isFeatured = true,
-                        type = objectTypeId
+                        objectTypeId = objectTypeId
                     )
                 } else {
                     null

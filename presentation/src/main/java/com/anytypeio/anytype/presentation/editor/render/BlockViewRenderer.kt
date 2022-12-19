@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.editor.render
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
@@ -32,7 +31,6 @@ interface BlockViewRenderer {
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
         count: Int = 0,
-        objectTypes: List<ObjectType>,
         parentScheme: NestedDecorationData = emptyList(),
         onRenderFlag: (RenderFlag) -> Unit = {},
     ): List<BlockView>

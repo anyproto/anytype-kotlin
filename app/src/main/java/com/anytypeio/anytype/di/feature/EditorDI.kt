@@ -4,7 +4,6 @@ import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -116,7 +115,6 @@ import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelat
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
@@ -322,12 +320,14 @@ object EditorSessionModule {
         urlBuilder: UrlBuilder,
         toggleStateHolder: ToggleStateHolder,
         coverImageHashProvider: CoverImageHashProvider,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         coverImageHashProvider = coverImageHashProvider,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 
     @JvmStatic
@@ -840,15 +840,6 @@ object EditorUseCaseModule {
     fun provideDefaultObjectValueProvider(
         storage: Editor.Storage
     ): ObjectValueProvider = DefaultObjectValueProvider(storage.details)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideObjectTypeProvider(
-        storage: Editor.Storage
-    ): ObjectTypeProvider = object : ObjectTypeProvider {
-        override fun provide(): List<ObjectType> = storage.objectTypes.current()
-    }
 
     @JvmStatic
     @Provides

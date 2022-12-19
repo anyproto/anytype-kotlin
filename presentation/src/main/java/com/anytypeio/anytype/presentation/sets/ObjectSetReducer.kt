@@ -59,9 +59,7 @@ class ObjectSetReducer {
                 state.copy(
                     blocks = event.blocks,
                     details = state.details.updateFields(event.details.details),
-                    objectTypes = event.objectTypes,
                     restrictions = event.dataViewRestrictions,
-                    relations = event.relations,
                     objectRestrictions = event.objectRestrictions
                 )
             }

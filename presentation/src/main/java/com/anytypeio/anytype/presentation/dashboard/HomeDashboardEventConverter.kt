@@ -4,18 +4,19 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import timber.log.Timber
 
 interface HomeDashboardEventConverter {
 
-    fun convert(event: Event): HomeDashboardStateMachine.Event?
+    suspend fun convert(event: Event): HomeDashboardStateMachine.Event?
 
     class DefaultConverter(
         private val builder: UrlBuilder,
-        private val objectTypesProvider: ObjectTypesProvider
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : HomeDashboardEventConverter {
 
-        override fun convert(event: Event) = when (event) {
+        override suspend fun convert(event: Event) = when (event) {
             is Event.Command.UpdateStructure -> HomeDashboardStateMachine.Event.OnStructureUpdated(
                 event.children
             )
@@ -31,7 +32,7 @@ interface HomeDashboardEventConverter {
                         context = event.context,
                         details = event.details,
                         builder = builder,
-                        objectTypes = objectTypesProvider.get()
+                        objectTypes = storeOfObjectTypes.getAll()
                     )
                 }
                 else -> {

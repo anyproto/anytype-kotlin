@@ -10,13 +10,18 @@ class ObjectTypePopupMenu(
     view: View,
     onChangeTypeClicked: () -> Unit,
     onOpenSetClicked: () -> Unit,
-    allowChangingObjectType: Boolean = false
+    allowChangingObjectType: Boolean = false,
+    allowOnlyChangingType: Boolean = false
 ) : PopupMenu(context, view) {
     init {
-        if (allowChangingObjectType) {
-            menuInflater.inflate(R.menu.menu_object_type, menu)
+        if (allowOnlyChangingType) {
+            menuInflater.inflate(R.menu.menu_object_type_only, menu)
         } else {
-            menuInflater.inflate(R.menu.menu_object_type_change_disabled, menu)
+            if (allowChangingObjectType) {
+                menuInflater.inflate(R.menu.menu_object_type, menu)
+            } else {
+                menuInflater.inflate(R.menu.menu_object_type_change_disabled, menu)
+            }
         }
         setOnMenuItemClickListener { item ->
             when(item.itemId) {

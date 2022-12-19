@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.const.DetailsKeys
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
@@ -75,7 +76,6 @@ class DefaultBlockViewRendererTest {
             relationLinks = emptyList(),
             restrictions = restrictions,
             selection = emptySet(),
-            objectTypes = emptyList(),
             parentScheme = schema
         )
     }
@@ -103,6 +103,7 @@ class DefaultBlockViewRendererTest {
 
     private var storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
 
+    private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
     @Before
     fun setup() {
@@ -111,7 +112,8 @@ class DefaultBlockViewRendererTest {
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
             coverImageHashProvider = coverImageHashProvider,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 

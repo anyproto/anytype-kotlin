@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
@@ -56,7 +55,6 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRela
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -319,15 +317,6 @@ object ObjectSetModule {
     ) : ObjectValueProvider = DataViewObjectValueProvider(
         db = db
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideObjectTypeProvider(
-        state: StateFlow<ObjectSet>,
-    ): ObjectTypeProvider = object : ObjectTypeProvider {
-        override fun provide(): List<ObjectType> = state.value.objectTypes
-    }
 
     @JvmStatic
     @Provides

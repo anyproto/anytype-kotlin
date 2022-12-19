@@ -39,6 +39,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -51,6 +52,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_OBJECT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_SOURCE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TABLE
@@ -1275,8 +1277,10 @@ sealed class BlockView : ViewType {
                 is DocumentRelationView.Tags -> HOLDER_RELATION_TAGS
                 is DocumentRelationView.Object -> HOLDER_RELATION_OBJECT
                 is DocumentRelationView.File -> HOLDER_RELATION_FILE
-                is DocumentRelationView.ObjectType -> HOLDER_OBJECT_TYPE
-                is DocumentRelationView.Source -> HOLDER_RELATION_SOURCE
+                is DocumentRelationView.ObjectType.Base -> HOLDER_OBJECT_TYPE
+                is DocumentRelationView.Source.Base -> HOLDER_RELATION_SOURCE
+                is DocumentRelationView.Source.Deleted -> HOLDER_RELATION_SOURCE_DELETED
+                is DocumentRelationView.ObjectType.Deleted -> HOLDER_OBJECT_TYPE_DELETED
             }
         }
     }

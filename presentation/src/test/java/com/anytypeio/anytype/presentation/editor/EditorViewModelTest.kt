@@ -3955,7 +3955,8 @@ open class EditorViewModelTest {
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider,
-                storeOfRelations = storeOfRelations
+                storeOfRelations = storeOfRelations,
+                storeOfObjectTypes = storeOfObjectTypes
             ),
             orchestrator = Orchestrator(
                 createBlock = createBlock,

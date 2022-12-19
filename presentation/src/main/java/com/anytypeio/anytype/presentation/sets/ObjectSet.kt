@@ -4,8 +4,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -13,8 +11,6 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 data class ObjectSet(
     val blocks: List<Block> = emptyList(),
     val details: Map<Id, Block.Fields> = emptyMap(),
-    val objectTypes: List<ObjectType> = emptyList(),
-    val relations: List<Relation> = emptyList(),
     val objectRestrictions: List<ObjectRestriction> = emptyList(),
     val restrictions: List<DataViewRestrictions> = emptyList()
 ) {

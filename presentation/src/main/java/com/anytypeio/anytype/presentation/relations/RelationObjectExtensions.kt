@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.const.DateConst
@@ -206,6 +207,34 @@ fun tagRelation(
         isFeatured = isFeatured,
         tags = tagViews
     )
+}
+
+fun Block.Details.objectTypeRelation(
+    relationKey: Key,
+    isFeatured: Boolean,
+    objectTypeId: Id
+): DocumentRelationView {
+    val typeDetails = details[objectTypeId]?.map
+    val objectType = if (typeDetails != null) {
+        ObjectWrapper.Type(typeDetails)
+    } else {
+        null
+    }
+    return if (objectType == null || objectType.isDeleted == true) {
+        DocumentRelationView.ObjectType.Deleted(
+            relationId = objectTypeId,
+            relationKey = relationKey,
+            isFeatured = isFeatured
+        )
+    } else {
+        DocumentRelationView.ObjectType.Base(
+            relationId = objectTypeId,
+            relationKey = relationKey,
+            name = details[objectTypeId]?.name.orEmpty(),
+            isFeatured = isFeatured,
+            type = objectTypeId
+        )
+    }
 }
 
 object StatusParser {

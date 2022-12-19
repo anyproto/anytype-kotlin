@@ -439,8 +439,7 @@ class DisplayRelationObjectValueTest {
                         "iconEmoji" to "👤"
                     )
                 )
-            ),
-            objectTypes = listOf(objectType1, objectType2)
+            )
         )
 
         // TESTING
@@ -570,8 +569,7 @@ class DisplayRelationObjectValueTest {
                         "iconEmoji" to "👤"
                     )
                 )
-            ),
-            objectTypes = listOf()
+            )
         )
 
         // TESTING
@@ -689,8 +687,7 @@ class DisplayRelationObjectValueTest {
                         Block.Fields.TYPE_KEY to objectType2.url
                     )
                 )
-            ),
-            objectTypes = listOf(objectType1, objectType2)
+            )
         )
 
         // TESTING

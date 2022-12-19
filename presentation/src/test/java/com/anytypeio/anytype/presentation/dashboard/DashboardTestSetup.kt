@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.DebugSettings
@@ -128,7 +129,7 @@ open class DashboardTestSetup {
             interceptEvents = interceptEvents,
             eventConverter = HomeDashboardEventConverter.DefaultConverter(
                 builder = builder,
-                objectTypesProvider = objectTypesProvider
+                storeOfObjectTypes = storeOfObjectTypes
             ),
             getDebugSettings = getDebugSettings,
             analytics = analytics,
@@ -178,7 +179,7 @@ open class DashboardTestSetup {
         )
     ) {
         openDashboard.stub {
-            onBlocking { invoke(params = null) } doReturn Either.Right(payload)
+            onBlocking { execute(params = Unit) } doReturn Resultat.success(payload)
         }
     }
 

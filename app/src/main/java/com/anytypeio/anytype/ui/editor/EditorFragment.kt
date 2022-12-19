@@ -945,7 +945,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectMenuBaseFragment.IS_ARCHIVED_KEY to false,
                             ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
                             ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
-                            ObjectMenuBaseFragment.IS_PROFILE_KEY to true
+                            ObjectMenuBaseFragment.IS_PROFILE_KEY to true,
+                            ObjectMenuBaseFragment.FROM_NAME to getFrom(),
                         )
                     )
                 }

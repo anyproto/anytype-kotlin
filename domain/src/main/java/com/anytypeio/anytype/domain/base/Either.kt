@@ -1,5 +1,9 @@
 package com.anytypeio.anytype.domain.base
 
+@Deprecated(
+    message = "Either is deprecated",
+    replaceWith = ReplaceWith("Resultat", "com.anytypeio.anytype.domain.base")
+)
 sealed class Either<out L, out R> {
     /** * Represents the left side of [Either] class which by convention is a "Failure". */
     data class Left<out L>(val a: L) : Either<L, Nothing>()

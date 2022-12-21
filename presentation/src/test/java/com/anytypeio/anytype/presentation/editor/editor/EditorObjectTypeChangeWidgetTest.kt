@@ -101,6 +101,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
             document = doc,
             details = detailsList
         )
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
 
@@ -239,6 +240,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
             document = doc,
             details = detailsList
         )
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
 

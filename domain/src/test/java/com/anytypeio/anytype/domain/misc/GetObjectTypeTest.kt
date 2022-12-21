@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.misc
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -63,17 +64,17 @@ class GetObjectTypeTest {
         runBlocking {
             stubGetObjectTypes(types = listOf(type1, type2, type3))
 
-            val firstTimeResult = usecase.invoke(params = defaultParams)
-            firstTimeResult.either(
-                { Assert.fail() },
-                { results ->
+            val firstTimeResult = usecase.execute(params = defaultParams)
+            firstTimeResult.fold(
+                onFailure = { Assert.fail() },
+                onSuccess = { results ->
                     assertEquals(
                         expected = listOf(type1, type2, type3),
                         actual = results
                     )
                 }
             )
-            val secondTimeResult = usecase.invoke(params = defaultParams)
+            val secondTimeResult = usecase.execute(params = defaultParams)
             assertEquals(firstTimeResult, secondTimeResult)
 
             verify(repo, times(2)).searchObjects(

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.toRelationObjectValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -33,7 +34,8 @@ class AddObjectRelationViewModel(
     private val values: ObjectValueProvider,
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val workspaceManager: WorkspaceManager
 ) : ViewModel() {
 
     private val _views = MutableStateFlow<List<RelationValueView.Object>>(listOf())
@@ -153,7 +155,11 @@ class AddObjectRelationViewModel(
     ) {
         viewModelScope.launch {
             val filters = mutableListOf<DVFilter>()
-            filters.addAll(ObjectSearchConstants.filterAddObjectToRelation)
+            filters.addAll(
+                ObjectSearchConstants.filterAddObjectToRelation(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                )
+            )
             if (targetTypes.isEmpty()) {
                 filters.add(
                     DVFilter(
@@ -202,7 +208,8 @@ class AddObjectRelationViewModel(
         private val values: ObjectValueProvider,
         private val searchObjects: SearchObjects,
         private val urlBuilder: UrlBuilder,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val workspaceManager: WorkspaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -211,7 +218,8 @@ class AddObjectRelationViewModel(
                 values = values,
                 searchObjects = searchObjects,
                 urlBuilder = urlBuilder,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                workspaceManager = workspaceManager
             ) as T
         }
     }

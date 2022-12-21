@@ -298,7 +298,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(document = doc)
-        storeOfObjectTypes.merge(listOf(type2, type1, type3))
+        stubGetObjectTypes((listOf(type2, type1, type3)))
 //        stubSearchObjects(
 //            objects = listOf(type1, type2, type3)
 //        )

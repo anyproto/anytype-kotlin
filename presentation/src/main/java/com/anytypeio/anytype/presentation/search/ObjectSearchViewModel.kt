@@ -10,13 +10,14 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
-import com.anytypeio.anytype.presentation.moving.MoveToView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -39,7 +40,8 @@ open class ObjectSearchViewModel(
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val workspaceManager: WorkspaceManager
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -104,12 +106,14 @@ open class ObjectSearchViewModel(
         jobs += viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = ObjectSearchConstants.filterObjectType,
+                filters = ObjectSearchConstants.filterObjectTypeLibrary(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
-            getObjectTypes.invoke(params).process(
-                failure = { Timber.e(it, "Error while getting object types") },
-                success = { types.emit(Resultat.success(it)) }
+            getObjectTypes.execute(params).fold(
+                onFailure = { Timber.e(it, "Error while getting object types") },
+                onSuccess = { types.emit(Resultat.success(it)) }
             )
         }
     }
@@ -180,9 +184,11 @@ open class ObjectSearchViewModel(
         }
     }
 
-    open fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
+    open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterSearchObjects,
+        filters = ObjectSearchConstants.filterSearchObjects(
+            workspaceId = workspaceManager.getCurrentWorkspace()
+        ),
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,
         keys = ObjectSearchConstants.defaultKeys

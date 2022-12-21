@@ -34,10 +34,12 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.kotlin.any
@@ -118,8 +120,15 @@ open class DashboardTestSetup {
 
     protected val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
+    lateinit var workspaceManager: WorkspaceManager
+    val workspaceId = MockDataFactory.randomString()
+
     fun buildViewModel() : HomeDashboardViewModel {
         objectStore = DefaultObjectStore()
+        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
+        runBlocking {
+            workspaceManager.setCurrentWorkspace(workspaceId)
+        }
         return HomeDashboardViewModel(
             getProfile = getProfile,
             openDashboard = openDashboard,
@@ -151,7 +160,8 @@ open class DashboardTestSetup {
             ),
             createObject = createObject,
             featureToggles = mock(),
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            workspaceManager = workspaceManager
         )
     }
 

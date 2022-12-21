@@ -9,8 +9,11 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OB
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,11 +28,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ObjectTypeChangeViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val addObjectToWorkspace: AddObjectToWorkspace,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val workspaceManager: WorkspaceManager,
+    private val getDefaultEditorType: GetDefaultEditorType
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -44,7 +50,6 @@ class ObjectTypeChangeViewModel(
 
     private val pipeline = combine(searchQuery, setup) { query, setup ->
         val myTypes = proceedWithGettingMyTypes(
-            setup = setup,
             query = query
         )
         val marketplaceTypes = proceedWithGettingMarketplaceTypes(
@@ -52,14 +57,23 @@ class ObjectTypeChangeViewModel(
             setup = setup,
             query = query
         )
+        val filteredLibraryTypes = filterLibraryTypesByExcluded(
+            libraryTypes = myTypes,
+            excludeTypes = setup.excludeTypes
+        )
         proceedWithBuildingViews(
-            myTypes = myTypes,
+            myTypes = filteredLibraryTypes,
             marketplaceTypes = marketplaceTypes,
             setup = setup
         )
     }.catch {
         sendToast("Error occurred: $it. Please try again later.")
     }
+
+    private fun filterLibraryTypesByExcluded(
+        libraryTypes: List<ObjectWrapper.Type>,
+        excludeTypes: List<Id>
+    ) = libraryTypes.filter { !excludeTypes.contains(it.id) }
 
     init {
         viewModelScope.launch {
@@ -88,6 +102,31 @@ class ObjectTypeChangeViewModel(
         }
     }
 
+    fun onStart(
+        isWithSet: Boolean,
+        isWithBookmark: Boolean,
+        isSetSource: Boolean
+    ) {
+        viewModelScope.launch {
+            getDefaultEditorType.execute(Unit).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while getting user settings")
+                },
+                onSuccess = {
+                    setup.emit(
+                        Setup(
+                            isWithSet = isWithSet,
+                            isWithBookmark = isWithBookmark,
+                            excludeTypes = listOf(it.type.orEmpty()),
+                            selectedTypes = emptyList(),
+                            isSetSource = isSetSource
+                        )
+                    )
+                }
+            )
+        }
+    }
+
     fun onQueryChanged(input: String) {
         userInput.value = input
     }
@@ -95,9 +134,11 @@ class ObjectTypeChangeViewModel(
     fun onItemClicked(id: String, name: String) {
         viewModelScope.launch {
             if (id.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
-                addObjectToWorkspace(AddObjectToWorkspace.Params(listOf(id))).process(
+                val params = AddObjectToWorkspace.Params(listOf(id))
+                addObjectToWorkspace(params = params).process(
                     success = { objects ->
                         if (objects.isNotEmpty()) {
+                            commands.emit(Command.TypeAdded(type = name))
                             proceedWithDispatchingType(objects.first(), name)
                         }
                     },
@@ -164,7 +205,7 @@ class ObjectTypeChangeViewModel(
                 add(MarketplaceObjectTypeIds.BOOKMARK)
             }
         }
-        val marketplaceTypes = getObjectTypes.execute(
+        val marketplaceTypes = getObjectTypes.run(
             GetObjectTypes.Params(
                 filters = buildList {
                     addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
@@ -187,21 +228,15 @@ class ObjectTypeChangeViewModel(
     }
 
     private suspend fun proceedWithGettingMyTypes(
-        setup: Setup,
         query: String
-    ) = getObjectTypes.execute(
+    ) = getObjectTypes.run(
         GetObjectTypes.Params(
             filters = buildList {
-                addAll(ObjectSearchConstants.filterObjectType)
-                if (setup.excludeTypes.isNotEmpty()) {
-                    add(
-                        DVFilter(
-                            relationKey = Relations.ID,
-                            condition = DVFilterCondition.NOT_IN,
-                            value = setup.excludeTypes
-                        )
+                addAll(
+                    ObjectSearchConstants.filterObjectTypeLibrary(
+                        workspaceId = workspaceManager.getCurrentWorkspace()
                     )
-                }
+                )
             },
             sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
             query = query,
@@ -227,5 +262,7 @@ class ObjectTypeChangeViewModel(
             val id: Id,
             val name: String
         ) : Command()
+
+        data class TypeAdded(val type: String) : Command()
     }
 }

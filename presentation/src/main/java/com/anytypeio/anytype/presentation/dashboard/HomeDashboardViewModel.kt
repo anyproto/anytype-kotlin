@@ -43,6 +43,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Reducer
@@ -91,7 +92,8 @@ class HomeDashboardViewModel(
     private val objectStore: ObjectStore,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val createObject: CreateObject,
-    featureToggles: FeatureToggles
+    private val workspaceManager: WorkspaceManager,
+    private val featureToggles: FeatureToggles,
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -518,7 +520,9 @@ class HomeDashboardViewModel(
             objectSearchSubscriptionContainer.observe(
                 subscription = Subscriptions.SUBSCRIPTION_RECENT,
                 keys = DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
-                filters = ObjectSearchConstants.filterTabRecent,
+                filters = ObjectSearchConstants.filterTabRecent(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
                 sorts = ObjectSearchConstants.sortTabRecent,
                 limit = ObjectSearchConstants.limitTabRecent,
                 offset = 0
@@ -574,7 +578,9 @@ class HomeDashboardViewModel(
             objectSearchSubscriptionContainer.observe(
                 subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
                 keys = DEFAULT_KEYS,
-                filters = ObjectSearchConstants.filterTabArchive,
+                filters = ObjectSearchConstants.filterTabArchive(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
                 sorts = ObjectSearchConstants.sortTabArchive,
                 limit = 0,
                 offset = 0
@@ -614,7 +620,9 @@ class HomeDashboardViewModel(
             objectSearchSubscriptionContainer.observe(
                 subscription = Subscriptions.SUBSCRIPTION_SETS,
                 keys = DEFAULT_KEYS,
-                filters = ObjectSearchConstants.filterTabSets,
+                filters = ObjectSearchConstants.filterTabSets(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
                 sorts = ObjectSearchConstants.sortTabSets,
                 limit = 0,
                 offset = 0

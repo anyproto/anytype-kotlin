@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -69,6 +71,9 @@ class FilterViewModelInputFieldValueCreateTest {
     private val dataViewId = MockDataFactory.randomString()
     private val session = ObjectSetSession()
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
+
+    lateinit var workspaceManager: WorkspaceManager
+    val workspaceId = MockDataFactory.randomString()
 
 
     //LONG TEXT
@@ -176,6 +181,10 @@ class FilterViewModelInputFieldValueCreateTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
+        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
+        runBlocking {
+            workspaceManager.setCurrentWorkspace(workspaceId)
+        }
         viewModel = FilterViewModel(
             objectSetState = state,
             session = session,
@@ -187,7 +196,8 @@ class FilterViewModelInputFieldValueCreateTest {
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
-            getOptions = getOptions
+            getOptions = getOptions,
+            workspaceManager = workspaceManager
         )
     }
 

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -52,7 +53,8 @@ object ModifyFilterModule {
         analytics: Analytics,
         objectSetDatabase: ObjectSetDatabase,
         getOptions: GetOptions,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        workspaceManager: WorkspaceManager
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectSetState = state,
         session = session,
@@ -64,6 +66,7 @@ object ModifyFilterModule {
         objectSetDatabase = objectSetDatabase,
         storeOfRelations = storeOfRelations,
         analytics = analytics,
-        getOptions = getOptions
+        getOptions = getOptions,
+        workspaceManager = workspaceManager
     )
 }

@@ -5,9 +5,6 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.app.DefaultAppActionManager
-import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.data.auth.config.DefaultFeaturesConfigProvider
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore

@@ -585,5 +585,6 @@
     <string name="marketplace">Marketplace</string>
     <string name="my_types">My types</string>
     <string name="my_relations">My relations</string>
+    <string name="type_added">Type \"%1$s\" added to your library</string>
 
 </resources>

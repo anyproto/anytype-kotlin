@@ -58,6 +58,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.clipboard.Paste.Companion.DEFAULT_RANGE
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.editor.Editor
@@ -78,6 +79,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -268,7 +270,9 @@ class EditorViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val featureToggles: FeatureToggles,
-    private val tableDelegate: EditorTableDelegate
+    private val tableDelegate: EditorTableDelegate,
+    private val workspaceManager: WorkspaceManager,
+    private val getObjectTypes: GetObjectTypes
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -4302,7 +4306,7 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                getObjectTypes { objectTypes ->
+                proceedWithGettingObjectTypes { objectTypes ->
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -4382,7 +4386,7 @@ class EditorViewModel(
                 getRelations { proceedWithRelations(it) }
             }
             is SlashItem.Main.Objects -> {
-                getObjectTypes {
+                proceedWithGettingObjectTypes {
                     proceedWithObjectTypes(it)
                 }
             }
@@ -4640,17 +4644,29 @@ class EditorViewModel(
         }
     }
 
-    private fun getObjectTypes(
+    private fun proceedWithGettingObjectTypes(
         action: (List<ObjectTypeView>) -> Unit
     ) {
         viewModelScope.launch {
-            val views = storeOfObjectTypes.getAll().getObjectTypeViewsForSBPage(
-                isWithSet = true,
-                isWithBookmark = false,
-                selectedTypes = emptyList(),
-                excludeTypes = emptyList()
+            val params = GetObjectTypes.Params(
+                sorts = emptyList(),
+                filters = ObjectSearchConstants.filterObjectTypeLibrary(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
+                keys = ObjectSearchConstants.defaultKeysObjectType
             )
-            action.invoke(views)
+            getObjectTypes.execute(params).fold(
+                onFailure = { Timber.e(it, "Error while getting library object types") },
+                onSuccess = { types ->
+                    val views = types.getObjectTypeViewsForSBPage(
+                        isWithSet = true,
+                        isWithBookmark = false,
+                        selectedTypes = emptyList(),
+                        excludeTypes = emptyList()
+                    )
+                    action.invoke(views)
+                }
+            )
         }
     }
 
@@ -5594,7 +5610,10 @@ class EditorViewModel(
             val fullText = filter.removePrefix(MENTION_PREFIX)
             val params = SearchObjects.Params(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
-                filters = ObjectSearchConstants.getFilterLinkTo(context),
+                filters = ObjectSearchConstants.getFilterLinkTo(
+                    ignore = context,
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
                 keys = ObjectSearchConstants.defaultKeys
@@ -5748,13 +5767,25 @@ class EditorViewModel(
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
         viewModelScope.launch {
             val excludeTypes = orchestrator.stores.details.current().details[context]?.type
-            val views = storeOfObjectTypes.getAll().getObjectTypeViewsForSBPage(
-                isWithSet = true,
-                isWithBookmark = false,
-                selectedTypes = emptyList(),
-                excludeTypes = excludeTypes ?: emptyList()
+            val params = GetObjectTypes.Params(
+                sorts = emptyList(),
+                filters = ObjectSearchConstants.filterObjectTypeLibrary(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
+                keys = ObjectSearchConstants.defaultKeysObjectType
             )
-            proceedWithSortingObjectTypesForObjectTypeWidget(views = views)
+            getObjectTypes.execute(params).fold(
+                onFailure = { Timber.e(it, "Error while getting library object types") },
+                onSuccess = { types ->
+                    val views = types.getObjectTypeViewsForSBPage(
+                        isWithSet = true,
+                        isWithBookmark = false,
+                        selectedTypes = emptyList(),
+                        excludeTypes = excludeTypes ?: emptyList()
+                    )
+                    proceedWithSortingObjectTypesForObjectTypeWidget(views = views)
+                }
+            )
         }
     }
 

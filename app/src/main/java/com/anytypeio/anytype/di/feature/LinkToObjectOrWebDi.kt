@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
@@ -40,13 +41,15 @@ object LinkToObjectOrWebModule {
         searchObjects: SearchObjects,
         analytics: Analytics,
         stores: Editor.Storage,
-        urlValidator: UrlValidator
+        urlValidator: UrlValidator,
+        workspaceManager: WorkspaceManager
     ): LinkToObjectOrWebViewModelFactory = LinkToObjectOrWebViewModelFactory(
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
         searchObjects = searchObjects,
         analytics = analytics,
         stores = stores,
-        urlValidator = urlValidator
+        urlValidator = urlValidator,
+        workspaceManager = workspaceManager
     )
 }

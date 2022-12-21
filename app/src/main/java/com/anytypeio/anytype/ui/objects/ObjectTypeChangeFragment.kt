@@ -8,11 +8,13 @@ import android.widget.EditText
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
@@ -63,12 +65,15 @@ abstract class BaseObjectTypeChangeFragment :
                 vm.onQueryChanged(it.toString())
             }
             jobs += subscribe(vm.commands) { command ->
-                when(command) {
+                when (command) {
                     is Command.DispatchType -> {
-                       onItemClicked(
-                           id = command.id,
-                           name = command.name
-                       )
+                        onItemClicked(
+                            id = command.id,
+                            name = command.name
+                        )
+                    }
+                    is Command.TypeAdded -> {
+                        toast(getString(R.string.type_added, command.type))
                     }
                 }
             }

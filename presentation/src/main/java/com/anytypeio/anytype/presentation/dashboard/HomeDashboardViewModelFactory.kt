@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 class HomeDashboardViewModelFactory(
     private val getProfile: GetProfile,
@@ -40,7 +41,8 @@ class HomeDashboardViewModelFactory(
     private val objectStore: ObjectStore,
     private val featureToggles: FeatureToggles,
     private val createObject: CreateObject,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val workspaceManager: WorkspaceManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -64,7 +66,8 @@ class HomeDashboardViewModelFactory(
             objectStore = objectStore,
             createObject = createObject,
             featureToggles = featureToggles,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            workspaceManager = workspaceManager
         ) as T
     }
 }

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -21,19 +22,24 @@ class LinkToObjectViewModel(
     urlBuilder: UrlBuilder,
     searchObjects: SearchObjects,
     getObjectTypes: GetObjectTypes,
-    analytics: Analytics
+    analytics: Analytics,
+    private val workspaceManager: WorkspaceManager
 ) : ObjectSearchViewModel(
     urlBuilder = urlBuilder,
     getObjectTypes = getObjectTypes,
     searchObjects = searchObjects,
-    analytics = analytics
+    analytics = analytics,
+    workspaceManager = workspaceManager
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    override fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
+    override suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.getFilterLinkTo(ignore),
+        filters = ObjectSearchConstants.getFilterLinkTo(
+            ignore = ignore,
+            workspaceId = workspaceManager.getCurrentWorkspace()
+        ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = EMPTY_QUERY,
         keys = ObjectSearchConstants.defaultKeys

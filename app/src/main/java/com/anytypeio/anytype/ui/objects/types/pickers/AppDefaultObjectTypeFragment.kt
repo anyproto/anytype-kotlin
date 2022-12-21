@@ -17,8 +17,6 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         vm.onStart(
             isWithSet = false,
             isWithBookmark = false,
-            excludeTypes = excludeTypes,
-            selectedTypes = emptyList(),
             isSetSource = false
         )
     }

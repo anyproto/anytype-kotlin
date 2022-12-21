@@ -10,13 +10,17 @@ import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -36,11 +40,18 @@ class ObjectTypeChangeViewModelTest {
     @Mock
     lateinit var repo: BlockRepository
 
+    @Mock
+    lateinit var userSettingsRepository: UserSettingsRepository
+
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
     private lateinit var getObjectTypes: GetObjectTypes
     private lateinit var addObjectToWorkspace: AddObjectToWorkspace
+    private lateinit var getDefaultEditorType: GetDefaultEditorType
+
+    lateinit var workspaceManager: WorkspaceManager
+    val workspaceId = MockDataFactory.randomString()
 
     private val dispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.testDispatcher,
@@ -56,6 +67,11 @@ class ObjectTypeChangeViewModelTest {
             repo = repo,
             dispatchers = dispatchers
         )
+        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
+        runBlocking {
+            workspaceManager.setCurrentWorkspace(workspaceId)
+        }
+        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
     }
 
     @Test
@@ -82,7 +98,7 @@ class ObjectTypeChangeViewModelTest {
 
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectType
+        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId)
 
         // TESTING
 
@@ -120,7 +136,7 @@ class ObjectTypeChangeViewModelTest {
 
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectType
+        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
@@ -205,7 +221,7 @@ class ObjectTypeChangeViewModelTest {
 
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectType
+        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
@@ -366,7 +382,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedInstalledTypeId = ObjectTypeIds.PAGE
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectType
+        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
@@ -464,6 +480,11 @@ class ObjectTypeChangeViewModelTest {
             )
             delay(100)
             assertEquals(
+                expected =
+                ObjectTypeChangeViewModel.Command.TypeAdded(type = marketplaceType3.name.orEmpty()),
+                actual = awaitItem()
+            )
+            assertEquals(
                 expected = ObjectTypeChangeViewModel.Command.DispatchType(
                     id = expectedInstalledTypeId,
                     name = marketplaceType3.name.orEmpty()
@@ -489,7 +510,7 @@ class ObjectTypeChangeViewModelTest {
 
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectType
+        val expectedMyTypesFilters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         repo.stub {
@@ -539,6 +560,8 @@ class ObjectTypeChangeViewModelTest {
     private fun givenViewModel() = ObjectTypeChangeViewModel(
         getObjectTypes = getObjectTypes,
         addObjectToWorkspace = addObjectToWorkspace,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        workspaceManager = workspaceManager,
+        getDefaultEditorType = getDefaultEditorType
     )
 }

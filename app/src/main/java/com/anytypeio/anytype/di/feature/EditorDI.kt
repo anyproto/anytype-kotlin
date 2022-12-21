@@ -93,6 +93,7 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -236,7 +237,9 @@ object EditorSessionModule {
         storeOfObjectTypes: StoreOfObjectTypes,
         objectToSet: ConvertObjectToSet,
         featureToggles: FeatureToggles,
-        tableDelegate: EditorTableDelegate
+        tableDelegate: EditorTableDelegate,
+        workspaceManager: WorkspaceManager,
+        getObjectTypes: GetObjectTypes
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -269,7 +272,9 @@ object EditorSessionModule {
         storeOfObjectTypes = storeOfObjectTypes,
         objectToSet = objectToSet,
         featureToggles = featureToggles,
-        tableDelegate = tableDelegate
+        tableDelegate = tableDelegate,
+        workspaceManager = workspaceManager,
+        getObjectTypes = getObjectTypes
     )
 
     @JvmStatic

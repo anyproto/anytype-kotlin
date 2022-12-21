@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import dagger.Module
@@ -47,11 +48,13 @@ object MoveToModule {
         urlBuilder: UrlBuilder,
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
-        analytics: Analytics
+        analytics: Analytics,
+        workspaceManager: WorkspaceManager
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         urlBuilder = urlBuilder,
         getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
-        analytics = analytics
+        analytics = analytics,
+        workspaceManager = workspaceManager
     )
 }

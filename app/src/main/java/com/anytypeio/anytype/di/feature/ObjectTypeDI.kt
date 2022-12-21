@@ -4,7 +4,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
@@ -51,12 +54,16 @@ object ObjectTypeChangeModule {
     fun provideObjectTypeViewModelFactory(
         getObjectTypes: GetObjectTypes,
         addObjectToWorkspace: AddObjectToWorkspace,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        workspaceManager: WorkspaceManager,
+        getDefaultEditorType: GetDefaultEditorType
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
             getObjectTypes = getObjectTypes,
             addObjectToWorkspace = addObjectToWorkspace,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            workspaceManager = workspaceManager,
+            getDefaultEditorType = getDefaultEditorType
         )
     }
 
@@ -77,4 +84,10 @@ object ObjectTypeChangeModule {
         repo = repo,
         dispatchers = dispatchers
     )
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
+        GetDefaultEditorType(repo)
 }

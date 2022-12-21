@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -40,6 +41,7 @@ import com.jraska.livedata.test
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -128,12 +130,20 @@ class HomeDashboardViewModelTest {
 
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
+    lateinit var workspaceManager: WorkspaceManager
+    val workspaceId = MockDataFactory.randomString()
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
     }
 
     private fun givenViewModel(): HomeDashboardViewModel {
+        val workspaceId = MockDataFactory.randomString()
+        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
+        runBlocking {
+            workspaceManager.setCurrentWorkspace(workspaceId)
+        }
         return HomeDashboardViewModel(
             getProfile = getProfile,
             openDashboard = openDashboard,
@@ -156,7 +166,8 @@ class HomeDashboardViewModelTest {
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             createObject = createObject,
             featureToggles = mock(),
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            workspaceManager = workspaceManager
         )
     }
 

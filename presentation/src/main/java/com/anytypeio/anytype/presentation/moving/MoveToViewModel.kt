@@ -8,11 +8,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -37,7 +39,8 @@ class MoveToViewModel(
     urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val workspaceManager: WorkspaceManager
 ) : ViewModel() {
 
     private val _viewState: MutableStateFlow<MoveToView> = MutableStateFlow(MoveToView.Init)
@@ -130,12 +133,14 @@ class MoveToViewModel(
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = ObjectSearchConstants.filterObjectType,
+                filters = ObjectSearchConstants.filterObjectTypeLibrary(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
-            getObjectTypes.invoke(params).process(
-                failure = { Timber.e(it, "Error while getting object types") },
-                success = {
+            getObjectTypes.execute(params).fold(
+                onFailure = { Timber.e(it, "Error while getting object types") },
+                onSuccess = {
                     types.value = Resultat.success(it)
                     startProcessingSearchQuery(ctx)
                 }
@@ -143,7 +148,7 @@ class MoveToViewModel(
         }
     }
 
-    private fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
+    private suspend fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
 
         val filteredTypes = types.value.getOrDefault(emptyList())
             .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
@@ -151,7 +156,11 @@ class MoveToViewModel(
 
         return SearchObjects.Params(
             limit = SEARCH_LIMIT,
-            filters = ObjectSearchConstants.filterMoveTo(ctx, filteredTypes),
+            filters = ObjectSearchConstants.filterMoveTo(
+                ctx = ctx,
+                types = filteredTypes,
+                workspaceId = workspaceManager.getCurrentWorkspace()
+            ),
             sorts = ObjectSearchConstants.sortMoveTo,
             fulltext = EMPTY_QUERY,
             keys = ObjectSearchConstants.defaultKeys

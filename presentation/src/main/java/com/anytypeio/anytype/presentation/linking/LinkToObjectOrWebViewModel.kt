@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
@@ -38,7 +39,8 @@ class LinkToObjectOrWebViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val analytics: Analytics,
     private val stores: Editor.Storage,
-    private val urlValidator: UrlValidator
+    private val urlValidator: UrlValidator,
+    private val workspaceManager: WorkspaceManager
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
@@ -220,11 +222,15 @@ class LinkToObjectOrWebViewModel(
         )
     }
 
-    fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
+    suspend fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
-        filters = ObjectSearchConstants.getFilterLinkTo(ignore = ignore),
+        filters = ObjectSearchConstants.getFilterLinkTo(
+            ignore = ignore,
+            workspaceId = workspaceManager.getCurrentWorkspace()
+        ),
         sorts = ObjectSearchConstants.sortLinkTo,
-        fulltext = ObjectSearchViewModel.EMPTY_QUERY
+        fulltext = ObjectSearchViewModel.EMPTY_QUERY,
+        keys = ObjectSearchConstants.defaultKeys
     )
 
     fun onSearchTextChanged(searchText: String) {

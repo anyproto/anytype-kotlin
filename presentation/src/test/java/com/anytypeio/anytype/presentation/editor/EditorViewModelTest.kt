@@ -51,6 +51,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.block.interactor.UploadBlock
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
@@ -85,6 +86,7 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.common.Action
@@ -127,6 +129,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -368,6 +371,9 @@ open class EditorViewModelTest {
 
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
+
+    lateinit var workspaceManager: WorkspaceManager
+    val workspaceId = MockDataFactory.randomString()
 
     @Before
     fun setup() {
@@ -3925,6 +3931,8 @@ open class EditorViewModelTest {
         }
     }
 
+    lateinit var getObjectTypes: GetObjectTypes
+
     fun givenViewModel(urlBuilder: UrlBuilder = builder) {
 
         val storage = Editor.Storage()
@@ -3939,6 +3947,12 @@ open class EditorViewModelTest {
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         clearBlockContent = ClearBlockContent(repo)
         clearBlockStyle = ClearBlockStyle(repo)
+
+        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
+        runBlocking {
+            workspaceManager.setCurrentWorkspace(workspaceId)
+        }
+        getObjectTypes = GetObjectTypes(repo)
 
         vm = EditorViewModel(
             openPage = openPage,
@@ -4021,7 +4035,9 @@ open class EditorViewModelTest {
             objectToSet = objectToSet,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
-            tableDelegate = tableDelegate
+            tableDelegate = tableDelegate,
+            workspaceManager = workspaceManager,
+            getObjectTypes = getObjectTypes
         )
     }
 

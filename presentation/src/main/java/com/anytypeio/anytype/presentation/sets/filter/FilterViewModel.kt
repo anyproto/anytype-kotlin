@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.checkboxFilter
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.extension.index
@@ -66,7 +67,8 @@ open class FilterViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val objectSetDatabase: ObjectSetDatabase,
     private val analytics: Analytics,
-    private val getOptions: GetOptions
+    private val getOptions: GetOptions,
+    private val workspaceManager: WorkspaceManager
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -356,7 +358,9 @@ open class FilterViewModel(
             searchObjects(
                 SearchObjects.Params(
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
-                    filters = ObjectSearchConstants.filterAddObjectToFilter,
+                    filters = ObjectSearchConstants.filterAddObjectToFilter(
+                        workspaceId = workspaceManager.getCurrentWorkspace()
+                    ),
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
                     limit = SearchObjects.LIMIT
@@ -855,7 +859,8 @@ open class FilterViewModel(
         private val storeOfRelations: StoreOfRelations,
         private val objectSetDatabase: ObjectSetDatabase,
         private val getOptions: GetOptions,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val workspaceManager: WorkspaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -870,7 +875,8 @@ open class FilterViewModel(
                 storeOfRelations = storeOfRelations,
                 objectSetDatabase = objectSetDatabase,
                 getOptions = getOptions,
-                analytics = analytics
+                analytics = analytics,
+                workspaceManager = workspaceManager
             ) as T
         }
     }

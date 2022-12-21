@@ -46,6 +46,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.block.interactor.UploadBlock
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -84,6 +85,7 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -107,6 +109,7 @@ import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownl
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -135,6 +138,7 @@ open class EditorTestSetup {
     lateinit var updateDetail: UpdateDetail
 
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
+    lateinit var workspaceManager: WorkspaceManager
 
     @Mock
     lateinit var documentFileShareDownloader: DocumentFileShareDownloader
@@ -206,6 +210,7 @@ open class EditorTestSetup {
 
     private lateinit var findObjectSetForType: FindObjectSetForType
     private lateinit var createObjectSet: CreateObjectSet
+    lateinit var getObjectTypes: GetObjectTypes
 
     lateinit var downloadUnsplashImage: DownloadUnsplashImage
 
@@ -257,6 +262,7 @@ open class EditorTestSetup {
     lateinit var tableDelegate: EditorTableDelegate
 
     val root: String = "rootId123"
+    val workspaceId = MockDataFactory.randomString()
 
     private val urlBuilder by lazy {
         UrlBuilder(
@@ -318,6 +324,7 @@ open class EditorTestSetup {
             matcher = uriMatcher
         )
         move = Move(repo)
+        getObjectTypes = GetObjectTypes(repo)
 
         updateBackgroundColor = UpdateBackgroundColor(repo)
 
@@ -346,6 +353,11 @@ open class EditorTestSetup {
 
         featureToggles = mock<DefaultFeatureToggles>()
 
+
+        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
+        runBlocking {
+            workspaceManager.setCurrentWorkspace(workspaceId)
+        }
 
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
@@ -430,7 +442,9 @@ open class EditorTestSetup {
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = featureToggles,
-            tableDelegate = tableDelegate
+            tableDelegate = tableDelegate,
+            workspaceManager = workspaceManager,
+            getObjectTypes = getObjectTypes
         )
     }
 
@@ -513,7 +527,7 @@ open class EditorTestSetup {
         repo.stub {
             onBlocking {
                 searchObjects(
-                    filters = ObjectSearchConstants.filterObjectType,
+                    filters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId),
                     keys = ObjectSearchConstants.defaultKeysObjectType,
                     sorts = emptyList(),
                     limit = 0,

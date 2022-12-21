@@ -81,7 +81,7 @@ class DashboardBinTest : DashboardTestSetup() {
                 searchObjectsWithSubscription(
                     subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
                     keys = DEFAULT_KEYS,
-                    filters = ObjectSearchConstants.filterTabArchive,
+                    filters = ObjectSearchConstants.filterTabArchive(workspaceId),
                     sorts = ObjectSearchConstants.sortTabArchive,
                     limit = 0,
                     offset = 0,
@@ -207,7 +207,7 @@ class DashboardBinTest : DashboardTestSetup() {
                 searchObjectsWithSubscription(
                     subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
                     keys = DEFAULT_KEYS,
-                    filters = ObjectSearchConstants.filterTabArchive,
+                    filters = ObjectSearchConstants.filterTabArchive(workspaceId),
                     sorts = ObjectSearchConstants.sortTabArchive,
                     limit = 0,
                     offset = 0,
@@ -354,7 +354,7 @@ class DashboardBinTest : DashboardTestSetup() {
                 searchObjectsWithSubscription(
                     subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
                     keys = DEFAULT_KEYS,
-                    filters = ObjectSearchConstants.filterTabArchive,
+                    filters = ObjectSearchConstants.filterTabArchive(workspaceId),
                     sorts = ObjectSearchConstants.sortTabArchive,
                     limit = 0,
                     offset = 0,

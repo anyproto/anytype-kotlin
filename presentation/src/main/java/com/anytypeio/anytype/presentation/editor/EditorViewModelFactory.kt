@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -71,7 +73,9 @@ open class  EditorViewModelFactory(
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val featureToggles: FeatureToggles,
-    private val tableDelegate: EditorTableDelegate
+    private val tableDelegate: EditorTableDelegate,
+    private val workspaceManager: WorkspaceManager,
+    private val getObjectTypes: GetObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -108,7 +112,9 @@ open class  EditorViewModelFactory(
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = featureToggles,
-            tableDelegate = tableDelegate
+            tableDelegate = tableDelegate,
+            workspaceManager = workspaceManager,
+            getObjectTypes = getObjectTypes
         ) as T
     }
 }

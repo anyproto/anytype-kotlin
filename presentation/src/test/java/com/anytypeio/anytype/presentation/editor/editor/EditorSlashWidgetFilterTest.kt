@@ -250,7 +250,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -310,7 +310,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -360,7 +360,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -416,7 +416,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -449,9 +449,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val customDetails = Block.Details(mapOf(root to fields))
 
         stubInterceptEvents()
-        storeOfObjectTypes.merge(
-            listOf(type1, type2, type3)
-        )
+        stubGetObjectTypes(listOf(type1, type2, type3))
 
         stubOpenDocument(
             document = doc,
@@ -526,7 +524,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -568,6 +566,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                 RelationLink(key = it.key, format = it.relationFormat)
             }
         )
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
@@ -639,7 +638,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -689,7 +688,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -743,7 +742,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -793,7 +792,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -847,7 +846,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -897,7 +896,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -951,7 +950,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1001,7 +1000,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1069,7 +1068,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1119,7 +1118,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1187,7 +1186,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1239,7 +1238,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1294,7 +1293,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1346,7 +1345,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1395,7 +1394,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
         vm.onStart(root)
         vm.apply {
             onBlockFocusChanged(a.id, true)
@@ -1442,7 +1441,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1489,7 +1488,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1533,9 +1532,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
         stubOpenDocument(doc, customDetails)
 
-        storeOfObjectTypes.merge(
-            listOf(type1, type2, type3)
-        )
+        stubGetObjectTypes(listOf(type1, type2, type3))
 
         val vm = buildViewModel()
 
@@ -1616,7 +1613,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         // TESTING
 
@@ -1684,7 +1681,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1737,7 +1734,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1795,7 +1792,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1837,7 +1834,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        storeOfObjectTypes.merge(objectTypes)
+        stubGetObjectTypes(objectTypes)
 
         vm.onStart(root)
         vm.apply {
@@ -1872,6 +1869,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubSearchObjects()
         stubOpenDocument(doc, customDetails)
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -1909,6 +1907,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubSearchObjects()
         stubOpenDocument(doc, customDetails)
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -1946,6 +1945,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubSearchObjects()
         stubOpenDocument(doc, customDetails)
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -1983,6 +1983,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubSearchObjects()
         stubOpenDocument(doc, customDetails)
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -2020,6 +2021,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubSearchObjects()
         stubOpenDocument(doc, customDetails)
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
         vm.onStart(root)

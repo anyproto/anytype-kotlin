@@ -55,6 +55,7 @@ message Event {
             Block.Set.Latex blockSetLatex = 25;
             Block.Set.VerticalAlign blockSetVerticalAlign = 36;
             Block.Set.TableRow blockSetTableRow = 37;
+            Block.Set.Widget blockSetWidget = 40;
 
             Block.Dataview.ViewSet blockDataviewViewSet = 19;
             Block.Dataview.ViewDelete blockDataviewViewDelete = 20;
@@ -476,6 +477,15 @@ message Event {
 
                 message IsHeader {
                     bool value = 1;
+                }
+            }
+
+            message Widget {
+                string id = 1;
+                Layout layout = 2;
+
+                message Layout {
+                    anytype.model.Block.Content.Widget.Layout value = 1;
                 }
             }
         }

@@ -12,6 +12,7 @@ message SmartBlockSnapshotBase {
     repeated Relation extraRelations = 4;
     repeated string objectTypes = 5;
     google.protobuf.Struct collections = 6;
+    repeated string removedCollectionKeys = 8;
     repeated RelationLink relationLinks = 7;
 }
 
@@ -26,6 +27,7 @@ enum SmartBlockType {
     Database = 0x40;
     Set = 0x41; // only have dataview simpleblock
     STObjectType = 0x60; // have relations list
+    Widget = 0x70;
 
     File = 0x100;
 
@@ -72,6 +74,7 @@ message Block {
         Content.Table table = 26;
         Content.TableColumn tableColumn = 27;
         Content.TableRow tableRow = 28;
+        Content.Widget widget = 29;
     }
 
     message Restrictions {
@@ -489,6 +492,15 @@ message Block {
 		    message TableRow {
             bool isHeader = 1;
         }
+
+        message Widget {
+            Layout layout = 1;
+
+            enum Layout {
+                Link = 0;
+                Tree = 1;
+            }
+        }
     }
 }
 
@@ -553,11 +565,14 @@ message Account {
         string homeObjectId = 2; // home dashboard block id
         string archiveObjectId = 3; // archive block id
         string profileObjectId = 4; // profile block id
-        string marketplaceTypeObjectId = 5; // marketplace type id
-        string marketplaceRelationObjectId = 6; // marketplace relation id
-        string marketplaceTemplateObjectId = 7; // marketplace template id
+        string marketplaceTypeObjectId = 5; // deprecated, to be removed
+        string marketplaceRelationObjectId = 6; // deprecated, to be removed
+        string marketplaceTemplateObjectId = 7; // deprecated, to be removed
+        string marketplaceWorkspaceId = 11; // marketplace workspace id
+
         string deviceId = 8;
         string accountSpaceId = 9; // marketplace template id
+        string widgetsId = 10;
 
         string gatewayUrl = 101; // gateway url for fetching static files
         string localStoragePath = 103; // path to local storage

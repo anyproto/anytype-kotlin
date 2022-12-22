@@ -672,6 +672,7 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.Workspace -> SmartBlockType.WORKSPACE
     MSmartBlockType.WorkspaceOld -> SmartBlockType.WORKSPACE_OLD
     MSmartBlockType.AccountOld -> SmartBlockType.ACCOUNT_OLD
+    MSmartBlockType.Widget -> SmartBlockType.WIDGET
 }
 
 // ---------------------- RESTRICTIONS ------------------------

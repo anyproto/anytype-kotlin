@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/itemContainer"
     android:layout_width="match_parent"
     android:layout_height="48dp"
@@ -10,6 +11,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/icSystem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingEnd="@dimen/dp_4"
+            android:visibility="gone"
+            android:src="@drawable/ic_system_relation"
+            tools:visibility="visible" />
 
         <FrameLayout
             android:id="@+id/actionsLeftContainer"

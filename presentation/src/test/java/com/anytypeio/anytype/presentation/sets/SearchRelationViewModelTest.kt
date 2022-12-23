@@ -129,7 +129,7 @@ class SearchRelationViewModelTest {
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,
-                isDefault = false
+                isDefault = true
             ),
             SimpleRelationView(
                 key = relationCustomNumber.key,

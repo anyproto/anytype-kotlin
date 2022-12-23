@@ -138,7 +138,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                         relationKey = relation.key,
                         name = relation.name.orEmpty(),
                         value = value,
-                        format = relation.format
+                        format = relation.format,
+                        isSystem = false
                     ),
                     decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                         listOf(
@@ -394,7 +395,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     name = r2.name.orEmpty(),
                     value = value2,
                     isFeatured = false,
-                    format = r2.format
+                    format = r2.format,
+                    isSystem = false
                 ),
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(

@@ -504,7 +504,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     relationKey = relation1.key,
                     name = relation1.name.orEmpty(),
                     value = value1,
-                    format = relation1.format
+                    format = relation1.format,
+                    isSystem = false
                 )
             ),
             SlashRelationView.Item(
@@ -513,7 +514,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     relationKey = relation2.key,
                     name = relation2.name.orEmpty(),
                     value = NumberParser.parse(value2),
-                    format = relation2.format
+                    format = relation2.format,
+                    isSystem = false
                 )
             ),
             SlashRelationView.Item(
@@ -522,7 +524,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     relationKey = relation3.key,
                     name = relation3.name.orEmpty(),
                     value = value3,
-                    format = relation3.format
+                    format = relation3.format,
+                    isSystem = false
                 )
             )
         )

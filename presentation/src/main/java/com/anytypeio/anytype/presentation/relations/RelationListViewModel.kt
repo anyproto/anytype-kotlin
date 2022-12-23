@@ -80,7 +80,7 @@ class RelationListViewModel(
                 ).map { view ->
                     Model.Item(
                         view = view,
-                        isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.relationId)
+                        isRemoveable = isPossibleToRemoveRelation(relationKey = view.relationKey)
                     )
                 }
             }.map { views ->
@@ -199,14 +199,16 @@ class RelationListViewModel(
             isEditMode.value = !isEditMode.value
             views.value = views.value.map { view ->
                 if (view is Model.Item) {
-                    view.copy(
-                        isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.view.relationKey)
-                    )
+                    view.copy(isRemoveable = isPossibleToRemoveRelation(relationKey = view.view.relationKey))
                 } else {
                     view
                 }
             }
         }
+    }
+
+    private fun isPossibleToRemoveRelation(relationKey: Key): Boolean {
+        return isEditMode.value && !Relations.systemRelationKeys.contains(relationKey)
     }
 
     private fun onRelationClickedAddMode(

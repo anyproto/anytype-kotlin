@@ -30,6 +30,7 @@ sealed class ListRelationViewHolder(
 
         private val tvTitle = binding.content.tvRelationTitle
         private val tvValue = binding.content.tvRelationValue
+        private val systemIcon = binding.icSystem
 
         fun bind(item: DocumentRelationView) {
             tvTitle.text = item.name
@@ -48,6 +49,7 @@ sealed class ListRelationViewHolder(
                     }
                 }
             }
+            setSystemIcon(systemIcon, item.isSystem)
         }
     }
 
@@ -56,10 +58,12 @@ sealed class ListRelationViewHolder(
 
         private val tvTitle = binding.content.tvRelationTitle
         private val ivCheckbox = binding.content.ivRelationCheckbox
+        private val systemIcon = binding.icSystem
 
         fun bind(item: DocumentRelationView.Checkbox) = with(itemView) {
             tvTitle.text = item.name
             ivCheckbox.isSelected = item.isChecked
+            setSystemIcon(systemIcon, item.isSystem)
         }
     }
 
@@ -68,6 +72,7 @@ sealed class ListRelationViewHolder(
 
         private val tvTitle = binding.content.tvRelationTitle
         private val tvValue = binding.content.tvRelationValue
+        private val systemIcon = binding.icSystem
 
         fun bind(item: DocumentRelationView.Status) {
             tvTitle.text = item.name
@@ -86,6 +91,7 @@ sealed class ListRelationViewHolder(
                     text = null
                 }
             }
+            setSystemIcon(systemIcon, item.isSystem)
         }
     }
 
@@ -94,6 +100,7 @@ sealed class ListRelationViewHolder(
         private val placeholder = binding.content.tvPlaceholder
         private val content = binding.content
         private val tvTitle = binding.content.tvRelationTitle
+        private val systemIcon = binding.icSystem
 
         fun bind(item: DocumentRelationView.Tags) = with(itemView) {
             tvTitle.text = item.name
@@ -102,6 +109,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
+            setSystemIcon(systemIcon, item.isSystem)
             for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
             item.tags.forEachIndexed { index, tagView ->
                 when (index) {
@@ -134,6 +142,7 @@ sealed class ListRelationViewHolder(
 
         private val placeholder = binding.content.tvPlaceholder
         private val content = binding.content
+        private val systemIcon = binding.icSystem
 
         fun bind(item: DocumentRelationView.Object) {
             content.tvRelationTitle.text = item.name
@@ -142,6 +151,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
+            setSystemIcon(systemIcon, item.isSystem)
             for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
             item.objects.forEachIndexed { index, objectView ->
                 when (index) {
@@ -179,6 +189,7 @@ sealed class ListRelationViewHolder(
         private val placeholder = binding.content.tvPlaceholder
         private val content = binding.content
         private val tvTitle = binding.content.tvRelationTitle
+        private val systemIcon = binding.icSystem
 
         fun bind(item: DocumentRelationView.File) = with(itemView) {
             tvTitle.text = item.name
@@ -187,6 +198,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
+            setSystemIcon(systemIcon, item.isSystem)
             item.files.forEachIndexed { index, fileView ->
                 when (index) {
                     in 0..MAX_VISIBLE_FILES_INDEX -> {
@@ -225,5 +237,13 @@ sealed class ListRelationViewHolder(
 
     fun setBackgroundColor(color: String? = null) {
         itemView.setBlockBackgroundColor(color)
+    }
+
+    fun setSystemIcon(view: View, isSystem: Boolean) {
+        if (isSystem) {
+            view.visible()
+        } else {
+            view.gone()
+        }
     }
 }

@@ -151,7 +151,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         relationKey = Relations.TYPE,
                         name = objectTypeName,
                         isFeatured = true,
-                        type = objectTypeId
+                        type = objectTypeId,
+                        isSystem = true
                     ),
                     DocumentRelationView.Default(
                         relationId = r3.id,
@@ -159,7 +160,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         name = r3.name.orEmpty(),
                         value = value3,
                         isFeatured = true,
-                        format = Relation.Format.SHORT_TEXT
+                        format = Relation.Format.SHORT_TEXT,
+                        isSystem = false
                     )
                 )
             ),
@@ -497,7 +499,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             relationKey = Relations.TYPE,
                             name = objectTypeName,
                             isFeatured = true,
-                            type = objectTypeId
+                            type = objectTypeId,
+                            isSystem = true
                         )
                     )
                 ),
@@ -627,7 +630,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             relationKey = Relations.TYPE,
                             name = objectTypeName,
                             isFeatured = true,
-                            type = objectTypeId
+                            type = objectTypeId,
+                            isSystem = true
                         ),
                         DocumentRelationView.Default(
                             relationId = r1.id,
@@ -635,7 +639,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             name = r1.name.orEmpty(),
                             value = value1,
                             isFeatured = true,
-                            format = Relation.Format.SHORT_TEXT
+                            format = Relation.Format.SHORT_TEXT,
+                            isSystem = false
                         )
                     )
                 ),
@@ -747,7 +752,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         DocumentRelationView.ObjectType.Deleted(
                             relationId = objectTypeId,
                             relationKey = Relations.TYPE,
-                            isFeatured = true
+                            isFeatured = true,
+                            isSystem = true
                         ),
                         DocumentRelationView.Default(
                             relationId = r3.id,
@@ -755,7 +761,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             name = r3.name.orEmpty(),
                             value = value3,
                             isFeatured = true,
-                            format = Relation.Format.SHORT_TEXT
+                            format = Relation.Format.SHORT_TEXT,
+                            isSystem = false
                         )
                     )
                 ),
@@ -873,7 +880,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     DocumentRelationView.ObjectType.Deleted(
                         relationId = objectTypeId,
                         relationKey = Relations.TYPE,
-                        isFeatured = true
+                        isFeatured = true,
+                        isSystem = true
                     ),
                     DocumentRelationView.Default(
                         relationId = r3.id,
@@ -881,7 +889,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         name = r3.name.orEmpty(),
                         value = value3,
                         isFeatured = true,
-                        format = Relation.Format.SHORT_TEXT
+                        format = Relation.Format.SHORT_TEXT,
+                        isSystem = false
                     )
                 )
             ),

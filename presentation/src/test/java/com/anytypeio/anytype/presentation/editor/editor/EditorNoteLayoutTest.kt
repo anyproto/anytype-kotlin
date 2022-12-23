@@ -151,7 +151,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                         name = objectTypeName,
                         value = null,
                         isFeatured = true,
-                        type = objectTypeId
+                        type = objectTypeId,
+                        isSystem = true
                     )
                 )
             )
@@ -267,7 +268,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                         name = objectTypeName,
                         value = null,
                         isFeatured = true,
-                        type = objectTypeId
+                        type = objectTypeId,
+                        isSystem = true
                     )
                 )
             )

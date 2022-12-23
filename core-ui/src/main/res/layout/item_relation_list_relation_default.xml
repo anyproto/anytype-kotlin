@@ -11,6 +11,16 @@
         android:layout_gravity="center_vertical"
         android:orientation="horizontal">
 
+        <ImageView
+            android:id="@+id/ic_system"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingEnd="@dimen/dp_4"
+            android:visibility="gone"
+            android:src="@drawable/ic_system_relation"
+            tools:visibility="visible" />
+
         <FrameLayout
             android:id="@+id/actionsLeftContainer"
             android:layout_width="24dp"

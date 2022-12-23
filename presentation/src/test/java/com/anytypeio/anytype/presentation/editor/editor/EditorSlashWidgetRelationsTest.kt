@@ -125,7 +125,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         name = r2.name.orEmpty(),
                         value = value2,
                         isFeatured = true,
-                        format = Relation.Format.SHORT_TEXT
+                        format = Relation.Format.SHORT_TEXT,
+                        isSystem = false
                     )
                 )
             )
@@ -242,7 +243,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         name = r3.name.orEmpty(),
                         value = value3,
                         isFeatured = true,
-                        format = Relation.Format.SHORT_TEXT
+                        format = Relation.Format.SHORT_TEXT,
+                        isSystem = false
                     )
                 )
             )
@@ -356,7 +358,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         name = r3.name.orEmpty(),
                         value = value3,
                         isFeatured = true,
-                        format = Relation.Format.SHORT_TEXT
+                        format = Relation.Format.SHORT_TEXT,
+                        isSystem = false
                     )
                 )
             )
@@ -436,7 +439,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         name = r2.name.orEmpty(),
                         value = value2,
                         isFeatured = true,
-                        format = Relation.Format.SHORT_TEXT
+                        format = Relation.Format.SHORT_TEXT,
+                        isSystem = false
                     )
                 )
             )

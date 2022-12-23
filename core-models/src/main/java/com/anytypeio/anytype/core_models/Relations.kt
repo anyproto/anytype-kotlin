@@ -48,23 +48,56 @@ object Relations {
 
     const val PAGE_COVER = "pageCover"
 
-    val defaultRelations = listOf(
-        ID,
-        NAME,
-        DESCRIPTION,
-        ICON_EMOJI,
-        ICON_IMAGE,
-        RELATION_FORMAT,
-        TYPE,
-        LAYOUT,
-        IS_HIDDEN,
-        IS_ARCHIVED,
-        IS_READ_ONLY,
-        DONE,
-        FILE_EXT,
-        FILE_MIME_TYPE
-    )
-
     const val NUMBER_DEFAULT_VALUE = "0"
     const val RELATION_NAME_EMPTY = "Untitled"
+
+    val systemRelationKeys = listOf(
+        "id",
+        "name",
+        "description",
+        "snippet",
+        "type",
+        "featuredRelations",
+        "workspaceId",
+        "sourceObject",
+        "done",
+        "links",
+        "internalFlags",
+        "restrictions",
+        "setOf",
+        "smartblockTypes",
+        "targetObjectType",
+        "recommendedRelations",
+        "recommendedLayout",
+        "templateIsBundled",
+        "layout",
+        "layoutAlign",
+        "creator",
+        "createdDate",
+        "lastOpenedDate",
+        "lastModifiedBy",
+        "lastModifiedDate",
+        "addedDate",
+        "iconEmoji",
+        "iconImage",
+        "coverId",
+        "coverType",
+        "coverScale",
+        "coverX",
+        "coverY",
+        "fileExt",
+        "fileMimeType",
+        "sizeInBytes",
+        "isHidden",
+        "isArchived",
+        "isFavorite",
+        "isReadonly",
+        "relationKey",
+        "relationFormat",
+        "relationMaxCount",
+        "relationReadonlyValue",
+        "relationDefaultValue",
+        "relationFormatObjectTypes",
+        "relationOptionColor"
+    )
 }

@@ -592,7 +592,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     relationKey = r1.key,
                     name = r1.name.orEmpty(),
                     value = value1,
-                    format = Relation.Format.SHORT_TEXT
+                    format = Relation.Format.SHORT_TEXT,
+                    isSystem = false
                 )
             ),
             SlashRelationView.Item(
@@ -601,7 +602,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     relationKey = r2.key,
                     name = r2.name.orEmpty(),
                     value = value2,
-                    format = Relation.Format.SHORT_TEXT
+                    format = Relation.Format.SHORT_TEXT,
+                    isSystem = false
                 )
             ),
         )
@@ -1637,7 +1639,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     relationKey = r1.key,
                     name = r1.name.orEmpty(),
                     value = value1,
-                    format = Relation.Format.SHORT_TEXT
+                    format = Relation.Format.SHORT_TEXT,
+                    isSystem = false
                 )
             ),
             SlashRelationView.Item(
@@ -1646,7 +1649,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     relationKey = r2.key,
                     name = r2.name.orEmpty(),
                     value = value2,
-                    format = Relation.Format.SHORT_TEXT
+                    format = Relation.Format.SHORT_TEXT,
+                    isSystem = false
                 )
             ),
             SlashRelationView.Item(
@@ -1655,7 +1659,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     relationKey = r3.key,
                     name = r3.name.orEmpty(),
                     value = value3,
-                    format = Relation.Format.SHORT_TEXT
+                    format = Relation.Format.SHORT_TEXT,
+                    isSystem = false
                 )
             )
         )

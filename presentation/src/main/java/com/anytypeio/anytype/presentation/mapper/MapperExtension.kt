@@ -730,31 +730,6 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
     return columns
 }
 
-@Deprecated("To be deleted")
-fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelations(
-    relations: List<Relation>
-): ArrayList<SimpleRelationView> {
-    val result = arrayListOf<SimpleRelationView>()
-    this.forEach { viewerRelation ->
-        relations
-            .firstOrNull { it.key == viewerRelation.key }
-            ?.let { relation ->
-                result.add(
-                    SimpleRelationView(
-                        key = relation.key,
-                        title = relation.name,
-                        format = relation.format.toView(),
-                        isVisible = viewerRelation.isVisible,
-                        isHidden = relation.isHidden,
-                        isReadonly = relation.isReadOnly,
-                        isDefault = Relations.defaultRelations.contains(relation.key)
-                    )
-                )
-            }
-    }
-    return result
-}
-
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(
     relations: List<ObjectWrapper.Relation>
 ): ArrayList<SimpleRelationView> {
@@ -771,7 +746,7 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(
                         isVisible = viewerRelation.isVisible,
                         isHidden = relation.isHidden ?: false,
                         isReadonly = relation.isReadonlyValue,
-                        isDefault = Relations.defaultRelations.contains(viewerRelation.key)
+                        isDefault = Relations.systemRelationKeys.contains(viewerRelation.key)
                     )
                 )
             }

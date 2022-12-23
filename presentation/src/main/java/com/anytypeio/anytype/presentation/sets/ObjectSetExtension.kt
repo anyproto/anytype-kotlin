@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
+import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -79,7 +80,8 @@ private fun mapFeaturedRelations(
                             relationId = details.details[ctx]?.id.orEmpty(),
                             relationKey = key,
                             name = Relations.RELATION_NAME_EMPTY,
-                            isFeatured = true
+                            isFeatured = true,
+                            isSystem = key.isSystemKey()
                         )
                     } else {
                         sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
@@ -88,7 +90,8 @@ private fun mapFeaturedRelations(
                             relationKey = key,
                             name = Relations.RELATION_NAME_EMPTY,
                             isFeatured = true,
-                            sources = sources
+                            sources = sources,
+                            isSystem = key.isSystemKey()
                         )
                     }
                 } else {
@@ -97,7 +100,8 @@ private fun mapFeaturedRelations(
                         relationKey = key,
                         name = Relations.RELATION_NAME_EMPTY,
                         isFeatured = true,
-                        sources = sources
+                        sources = sources,
+                        isSystem = key.isSystemKey()
                     )
                 }
             } else {
@@ -106,7 +110,8 @@ private fun mapFeaturedRelations(
                     relationKey = key,
                     name = Relations.RELATION_NAME_EMPTY,
                     isFeatured = true,
-                    sources = sources
+                    sources = sources,
+                    isSystem = key.isSystemKey()
                 )
             }
         }

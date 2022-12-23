@@ -28,6 +28,8 @@ fun List<ObjectWrapper.Relation>.views(
     )
 }
 
+fun Key.isSystemKey() : Boolean = Relations.systemRelationKeys.contains(this)
+
 fun ObjectWrapper.Relation.view(
     details: Block.Details,
     values: Map<String, Any?>,
@@ -48,7 +50,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 objects = objects,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         relation.format == RelationFormat.FILE -> {
@@ -61,7 +64,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 files = files,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         relation.format == RelationFormat.DATE -> {
@@ -83,7 +87,8 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = formattedDate,
                 isFeatured = isFeatured,
-                format = relation.format
+                format = relation.format,
+                isSystem = relation.key.isSystemKey()
             )
         }
         relation.format == RelationFormat.STATUS -> {
@@ -118,7 +123,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 status = status,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         relation.format == RelationFormat.TAG -> {
@@ -153,7 +159,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 tags = tags,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         relation.format == RelationFormat.CHECKBOX -> {
@@ -162,7 +169,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 isChecked = values[relation.key] as? Boolean ?: false,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         relation.format == RelationFormat.NUMBER -> {
@@ -173,7 +181,8 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = NumberParser.parse(value),
                 isFeatured = isFeatured,
-                format = relation.format
+                format = relation.format,
+                isSystem = relation.key.isSystemKey()
             )
         }
         else -> {
@@ -184,7 +193,8 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = value as? String,
                 isFeatured = isFeatured,
-                format = relation.format
+                format = relation.format,
+                isSystem = relation.key.isSystemKey()
             )
         }
     }

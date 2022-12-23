@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -58,7 +59,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 objects = objects,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         RelationFormat.FILE -> {
@@ -71,7 +73,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 files = files,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         RelationFormat.DATE -> {
@@ -93,7 +96,8 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = formattedDate,
                 isFeatured = isFeatured,
-                format = relationFormat
+                format = relationFormat,
+                isSystem = relation.key.isSystemKey()
             )
         }
         RelationFormat.STATUS -> {
@@ -118,7 +122,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 name = relation.name.orEmpty(),
                 isChecked = values[relation.key] as? Boolean ?: false,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                isSystem = relation.key.isSystemKey()
             )
         }
         RelationFormat.NUMBER -> {
@@ -129,7 +134,8 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = NumberParser.parse(value),
                 isFeatured = isFeatured,
-                format = relationFormat
+                format = relationFormat,
+                isSystem = relation.key.isSystemKey()
             )
         }
         RelationFormat.LONG_TEXT,
@@ -144,7 +150,8 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = value as? String,
                 isFeatured = isFeatured,
-                format = relationFormat
+                format = relationFormat,
+                isSystem = relation.key.isSystemKey()
             )
         }
         else -> null
@@ -177,7 +184,8 @@ fun statusRelation(
         relationKey = relationDetails.key,
         name = relationDetails.name.orEmpty(),
         isFeatured = isFeatured,
-        status = statuses
+        status = statuses,
+        isSystem = relationDetails.key.isSystemKey()
     )
 }
 
@@ -205,7 +213,8 @@ fun tagRelation(
         relationKey = relationDetails.key,
         name = relationDetails.name.orEmpty(),
         isFeatured = isFeatured,
-        tags = tagViews
+        tags = tagViews,
+        isSystem = relationDetails.key.isSystemKey()
     )
 }
 
@@ -224,7 +233,8 @@ fun Block.Details.objectTypeRelation(
         DocumentRelationView.ObjectType.Deleted(
             relationId = objectTypeId,
             relationKey = relationKey,
-            isFeatured = isFeatured
+            isFeatured = isFeatured,
+            isSystem = relationKey.isSystemKey()
         )
     } else {
         DocumentRelationView.ObjectType.Base(
@@ -232,7 +242,8 @@ fun Block.Details.objectTypeRelation(
             relationKey = relationKey,
             name = details[objectTypeId]?.name.orEmpty(),
             isFeatured = isFeatured,
-            type = objectTypeId
+            type = objectTypeId,
+            isSystem = relationKey.isSystemKey()
         )
     }
 }

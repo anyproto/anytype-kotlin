@@ -61,9 +61,6 @@ class KeychainLoginViewModel(
     }
 
     private fun proceedWithRecoveringWallet(chain: String) {
-
-        val startTime = System.currentTimeMillis()
-
         state.postValue(ViewState.Loading)
 
         recoverWallet.invoke(
@@ -73,7 +70,6 @@ class KeychainLoginViewModel(
                 mnemonic = chain
             )
         ) { result ->
-            val middleTime = System.currentTimeMillis()
             result.either(
                 fnR = {
                     state.postValue(ViewState.Success(true))

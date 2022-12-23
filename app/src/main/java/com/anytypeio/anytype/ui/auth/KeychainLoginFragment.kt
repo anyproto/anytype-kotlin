@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
@@ -87,6 +88,9 @@ class KeychainLoginFragment :
     }
 
     private fun setupButtons() {
+        binding.keychainInputField.addTextChangedListener { text ->
+            binding.loginButton.isEnabled = text?.trim()?.isNotEmpty() == true
+        }
         binding.loginButton.setOnClickListener {
             vm.onLoginClicked(
                 chain = binding.keychainInputField.text.trim().toString()
@@ -113,6 +117,7 @@ class KeychainLoginFragment :
             .initiateScan()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null && result.contents != null) {

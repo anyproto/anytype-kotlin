@@ -15,10 +15,24 @@ buildscript {
     ext.version_code = 1
     ext.test_runner = 'androidx.test.runner.AndroidJUnitRunner'
 
+    def githubProperties = new Properties()
+    def githubPropertiesFile = file("$rootDir${File.separator}github.properties")
+    githubProperties.load(new FileInputStream(githubPropertiesFile))
+
     repositories {
         mavenLocal()
         google()
         mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/anytypeio/go-anytype-middleware")
+            credentials {
+                username = githubProperties['gpr.usr']
+                password = githubProperties['gpr.key']
+            }
+        }
+
     }
     dependencies {
         def libs = project.extensions.getByName("libs") as org.gradle.accessors.dm.LibrariesForLibs

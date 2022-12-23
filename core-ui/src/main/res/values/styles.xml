@@ -765,7 +765,7 @@
         <item name="android:textSize">17sp</item>
         <item name="android:gravity">center</item>
         <item name="android:stateListAnimator">@animator/scale_shrink</item>
-        <item name="android:background">@drawable/rectangle_default_button</item>
+        <item name="android:background">@drawable/rectangle_default_button_selector</item>
     </style>
 
     <style name="DefaultRedButtonStyle">

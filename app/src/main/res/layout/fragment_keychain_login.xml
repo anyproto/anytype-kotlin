@@ -92,7 +92,7 @@
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginStart="6dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
-                android:text="@string/confirm"
+                android:text="@string/login"
                 app:layout_constraintBottom_toBottomOf="@+id/backButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

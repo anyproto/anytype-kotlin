@@ -6,16 +6,13 @@ dependencies {
     implementation project(':domain')
     implementation project(':core-models')
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-
     implementation libs.kotlin
-    implementation applicationDependencies.coroutines
+    implementation libs.coroutines
 
     testImplementation project(":test:utils")
     testImplementation project(":test:core-models-stub")
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
-    testImplementation unitTestDependencies.coroutineTesting
+    testImplementation libs.coroutineTesting
 }

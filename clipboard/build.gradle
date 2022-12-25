@@ -18,19 +18,17 @@ android {
 }
 
 dependencies {
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation project(':data')
     implementation project(':core-models')
 
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
-    implementation applicationDependencies.timber
+    implementation libs.coroutinesAndroid
+    implementation libs.timber
 
     testImplementation project(":test:utils")
     testImplementation libs.junit
     testImplementation libs.kotlinTest
-    testImplementation unitTestDependencies.androidXTestCore
-    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation libs.androidXTestCore
+    testImplementation libs.robolectric
 }

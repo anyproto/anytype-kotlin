@@ -54,7 +54,7 @@ Or [download](https://download.anytype.io/) an apk for your device architecture 
 
 [Our tech change log](https://github.com/anytypeio/android-anytype/blob/develop/CHANGELOG.md).
 
-[Anytype Android app dependencies](https://github.com/anytypeio/android-anytype/blob/develop/dependencies.gradle).
+[Anytype Android app dependencies](https://github.com/anytypeio/android-anytype/blob/develop/gradle/libs.versions.toml).
 
 ### Conventions
 

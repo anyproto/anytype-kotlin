@@ -1,7 +1,9 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-android-extensions"
+    id "kotlin-kapt"
+}
 
 android {
     compileSdkVersion 33
@@ -39,9 +41,6 @@ android {
 
 dependencies {
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-
     implementation project(':core-utils')
     implementation project(':core-ui')
     implementation project(':presentation')
@@ -49,19 +48,19 @@ dependencies {
     implementation libs.kotlin
     implementation libs.appcompat
     implementation libs.glide
-    implementation applicationDependencies.coroutinesAndroid
-    implementation applicationDependencies.constraintLayout
+    implementation libs.coroutinesAndroid
+    implementation libs.constraintLayout
     implementation libs.androidxCore
-    implementation applicationDependencies.timber
+    implementation libs.timber
     implementation libs.fragment
     implementation libs.design
-    implementation applicationDependencies.pickT
+    implementation libs.pickT
 
     //implementation 'com.github.gregcockroft:AndroidMath:ALPHA'
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest
-    testImplementation unitTestDependencies.robolectricLatest
-    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation libs.robolectric
+    testImplementation libs.androidXTestCore
     testImplementation libs.mockitoKotlin
 }

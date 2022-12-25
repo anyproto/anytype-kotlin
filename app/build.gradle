@@ -147,68 +147,60 @@ dependencies {
     implementation project(':analytics')
     implementation project(':ui-settings')
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-    def acceptanceTesting = rootProject.ext.acceptanceTesting
-    def databaseDependencies = rootProject.ext.db
-    def analyticsDependencies = rootProject.ext.analytics
-    def protobufDependencies = rootProject.ext.protobuf
-
-
     //Compile time dependencies
-    kapt applicationDependencies.daggerCompiler
+    kapt libs.daggerCompiler
     kapt libs.glideCompiler
-    compileOnly applicationDependencies.javaxAnnotation
-    compileOnly applicationDependencies.javaxInject
+    compileOnly libs.javaxAnnotation
+    compileOnly libs.javaxInject
 
     //Application dependencies
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
+    implementation libs.coroutinesAndroid
     implementation libs.fragment
-    implementation applicationDependencies.navigation
-    implementation applicationDependencies.navigationUi
+    implementation libs.navigation
+    implementation libs.navigationUi
     implementation libs.appcompat
     implementation libs.design
-    implementation applicationDependencies.recyclerView
-    implementation applicationDependencies.constraintLayout
+    implementation libs.recyclerView
+    implementation libs.constraintLayout
     implementation libs.glide
-    implementation applicationDependencies.dagger
-    implementation applicationDependencies.timber
-    implementation applicationDependencies.gson
-    implementation applicationDependencies.pickT
-    implementation applicationDependencies.emojiCompat
+    implementation libs.dagger
+    implementation libs.timber
+    implementation libs.gson
+    implementation libs.pickT
+    implementation libs.emojiCompat
 
-    implementation applicationDependencies.lifecycleViewModel
-    implementation applicationDependencies.lifecycleRuntime
-    implementation applicationDependencies.lifecycleLiveData
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleRuntime
+    implementation libs.lifecycleLiveData
 
     implementation libs.compose
     implementation libs.composeFoundation
     implementation libs.composeMaterial
     implementation libs.composeToolingPreview
-    implementation applicationDependencies.preference
+    implementation libs.preference
     debugImplementation libs.composeTooling
 
-    implementation databaseDependencies.room
+    implementation libs.room
 
-    implementation applicationDependencies.crashlytics
+    implementation libs.crashlytics
 
     implementation libs.exoPlayerCore
     implementation libs.exoPlayerUi
 
-    implementation analyticsDependencies.amplitude
-    implementation analyticsDependencies.okhttp
+    implementation libs.amplitude
+    implementation libs.okhttp
 
-    implementation applicationDependencies.shimmerLayout
-    implementation applicationDependencies.photoView
-    implementation applicationDependencies.zxing
+    implementation libs.shimmerLayout
+    implementation libs.photoView
+    implementation libs.zxing
 
-    implementation applicationDependencies.androidxSecurityCrypto
+    implementation libs.androidxSecurityCrypto
 
     //Unit/Integration tests dependencies
-    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation libs.androidXTestCore
     testImplementation libs.junit
-    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation libs.robolectric
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
     testImplementation project(':test:utils')
@@ -217,16 +209,16 @@ dependencies {
     androidTestImplementation project(':test:android-utils')
     androidTestImplementation libs.mockitoAndroid
     androidTestImplementation libs.mockitoKotlin
-    androidTestImplementation acceptanceTesting.espressoContrib
+    androidTestImplementation libs.espressoContrib
     androidTestImplementation libs.androidJUnit
     androidTestImplementation libs.kotlinTest
     androidTestImplementation libs.testRules
-    androidTestImplementation acceptanceTesting.disableAnimation
-    androidTestImplementation acceptanceTesting.navigationTesting
+    androidTestImplementation libs.disableAnimation
+    androidTestImplementation libs.navigationTesting
     androidTestImplementation project(":test:utils")
     androidTestImplementation project(":test:core-models-stub")
 
-    androidTestImplementation(unitTestDependencies.coroutineTesting) {
+    androidTestImplementation(libs.coroutineTesting) {
         exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
     }
 

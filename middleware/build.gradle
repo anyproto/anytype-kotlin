@@ -11,15 +11,12 @@ dependencies {
     implementation project(':data')
     implementation project(':core-utils')
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-
     implementation libs.kotlin
-    implementation applicationDependencies.timber
-    implementation applicationDependencies.coroutinesAndroid
+    implementation libs.timber
+    implementation libs.coroutinesAndroid
     implementation libs.gsonWire
-    implementation applicationDependencies.gson
-    implementation applicationDependencies.javaxInject
+    implementation libs.gson
+    implementation libs.javaxInject
     implementation libs.middleware
 
     testImplementation project(":test:utils")

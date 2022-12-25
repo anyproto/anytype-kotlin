@@ -4,12 +4,12 @@ plugins {
 }
 
 dependencies {
-    api acceptanceTesting.espressoCore
+    api libs.espressoCore
 
     implementation libs.appcompat
     implementation libs.kotlin
-    implementation mainApplication.coroutinesAndroid
+    implementation libs.coroutinesAndroid
     implementation libs.androidxCore
     implementation libs.design
-    implementation mainApplication.recyclerView
+    implementation libs.recyclerView
 }

@@ -21,35 +21,31 @@ dependencies {
     implementation project(':analytics')
     implementation project(':core-models')
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-    def analyticsDependencies = rootProject.ext.analytics
-
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
+    implementation libs.coroutinesAndroid
 
-    implementation applicationDependencies.lifecycleViewModel
-    implementation applicationDependencies.lifecycleLiveData
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleLiveData
 
-    implementation applicationDependencies.timber
+    implementation libs.timber
 
-    implementation applicationDependencies.urlcleaner
+    implementation libs.urlcleaner
 
-    implementation analyticsDependencies.amplitude
+    implementation libs.amplitude
 
-    compileOnly applicationDependencies.javaxInject
+    compileOnly libs.javaxInject
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
     testImplementation "net.bytebuddy:byte-buddy:1.12.20"
-    testImplementation unitTestDependencies.coroutineTesting
-    testImplementation unitTestDependencies.liveDataTesting
-    testImplementation unitTestDependencies.archCoreTesting
-    testImplementation unitTestDependencies.androidXTestCore
-    testImplementation unitTestDependencies.robolectricLatest
-    testImplementation unitTestDependencies.timberJUnit
-    testImplementation unitTestDependencies.turbine
+    testImplementation libs.coroutineTesting
+    testImplementation libs.liveDataTesting
+    testImplementation libs.archCoreTesting
+    testImplementation libs.androidXTestCore
+    testImplementation libs.robolectric
+    testImplementation libs.timberJUnit
+    testImplementation libs.turbine
     testImplementation project(":test:utils")
     testImplementation project(":test:core-models-stub")
 }

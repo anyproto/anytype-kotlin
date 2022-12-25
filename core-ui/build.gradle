@@ -22,8 +22,6 @@ android {
 }
 
 dependencies {
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation project(':core-utils')
     implementation project(':core-models')
@@ -33,21 +31,21 @@ dependencies {
 
     implementation libs.appcompat
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
+    implementation libs.coroutinesAndroid
     implementation libs.androidxCore
-    implementation applicationDependencies.lifecycleRuntime
+    implementation libs.lifecycleRuntime
 
     implementation libs.design
-    implementation applicationDependencies.recyclerView
-    implementation applicationDependencies.constraintLayout
+    implementation libs.recyclerView
+    implementation libs.constraintLayout
     implementation libs.glide
-    implementation applicationDependencies.shimmerLayout
-    implementation applicationDependencies.timber
-    implementation applicationDependencies.betterLinkMovement
+    implementation libs.shimmerLayout
+    implementation libs.timber
+    implementation libs.betterLinkMovement
     implementation libs.exoPlayerCore
     implementation libs.exoPlayerUi
-    implementation applicationDependencies.urlcleaner
-    implementation applicationDependencies.katex
+    implementation libs.urlcleaner
+    implementation libs.katex
 
     implementation libs.compose
     implementation libs.composeFoundation
@@ -61,7 +59,7 @@ dependencies {
     testImplementation project(":test:core-models-stub")
     testImplementation libs.junit
     testImplementation libs.kotlinTest
-    testImplementation unitTestDependencies.robolectricLatest
-    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation libs.robolectric
+    testImplementation libs.androidXTestCore
     testImplementation libs.mockitoKotlin
 }

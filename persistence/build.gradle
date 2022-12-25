@@ -9,27 +9,23 @@ dependencies {
     implementation project(':data')
     implementation project(':core-models')
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-    def databaseDependencies = rootProject.ext.db
-
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
-    implementation applicationDependencies.gson
-    implementation applicationDependencies.lifecycleLiveData
+    implementation libs.coroutinesAndroid
+    implementation libs.gson
+    implementation libs.lifecycleLiveData
 
-    implementation databaseDependencies.room
-    implementation databaseDependencies.roomKtx
+    implementation libs.room
+    implementation libs.roomKtx
 
-    kapt databaseDependencies.annotations
+    kapt libs.annotations
 
-    implementation applicationDependencies.timber
+    implementation libs.timber
 
     testImplementation project(":test:utils")
-    testImplementation databaseDependencies.roomTesting
+    testImplementation libs.roomTesting
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
-    testImplementation unitTestDependencies.robolectricLatest
-    testImplementation unitTestDependencies.archCoreTesting
+    testImplementation libs.robolectric
+    testImplementation libs.archCoreTesting
 }

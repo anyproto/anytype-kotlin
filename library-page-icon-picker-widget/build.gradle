@@ -10,8 +10,6 @@ android {
 }
 
 dependencies {
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation project(':core-utils')
     implementation project(':core-ui')
@@ -20,18 +18,18 @@ dependencies {
 
     implementation libs.appcompat
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
+    implementation libs.coroutinesAndroid
     implementation libs.androidxCore
-    implementation applicationDependencies.emojiCompat
+    implementation libs.emojiCompat
 
     implementation libs.design
-    implementation applicationDependencies.recyclerView
-    implementation applicationDependencies.constraintLayout
-    implementation applicationDependencies.timber
+    implementation libs.recyclerView
+    implementation libs.constraintLayout
+    implementation libs.timber
     implementation libs.glide
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest
-    testImplementation unitTestDependencies.robolectricLatest
-    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation libs.robolectric
+    testImplementation libs.androidXTestCore
 }

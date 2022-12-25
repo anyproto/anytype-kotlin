@@ -4,19 +4,17 @@ plugins {
 }
 
 dependencies {
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation project(':data')
 
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
+    implementation libs.coroutinesAndroid
     implementation libs.androidxCore
 
-    implementation applicationDependencies.timber
+    implementation libs.timber
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest
-    testImplementation unitTestDependencies.androidXTestCore
-    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation libs.androidXTestCore
+    testImplementation libs.robolectric
 }

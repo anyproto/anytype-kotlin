@@ -16,36 +16,32 @@ android {
 
 dependencies {
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-    def acceptanceTesting = rootProject.ext.acceptanceTesting
-
-    kapt applicationDependencies.daggerCompiler
+    kapt libs.daggerCompiler
 
     implementation libs.appcompat
 
     implementation libs.kotlin
-    implementation applicationDependencies.coroutinesAndroid
-    implementation applicationDependencies.dagger
-    implementation applicationDependencies.gson
+    implementation libs.coroutinesAndroid
+    implementation libs.dagger
+    implementation libs.gson
 
-    implementation applicationDependencies.timber
-    implementation applicationDependencies.crashlytics
+    implementation libs.timber
+    implementation libs.crashlytics
 
-    implementation applicationDependencies.constraintLayout
-    implementation applicationDependencies.recyclerView
+    implementation libs.constraintLayout
+    implementation libs.recyclerView
 
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
 
-    implementation applicationDependencies.navigation
-    implementation applicationDependencies.navigationUi
+    implementation libs.navigation
+    implementation libs.navigationUi
 
-    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation libs.robolectric
     androidTestImplementation libs.androidJUnit
     androidTestImplementation libs.testRules
-    testImplementation unitTestDependencies.archCoreTesting
-    testImplementation unitTestDependencies.coroutineTesting
+    testImplementation libs.archCoreTesting
+    testImplementation libs.coroutineTesting
 }

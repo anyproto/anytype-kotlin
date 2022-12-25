@@ -16,12 +16,10 @@ android {
 }
 
 dependencies {
-    def app = rootProject.ext.mainApplication
-    def analytics = rootProject.ext.analytics
     implementation libs.kotlin
-    implementation app.coroutinesAndroid
-    implementation app.timber
-    implementation analytics.amplitude
+    implementation libs.coroutinesAndroid
+    implementation libs.timber
+    implementation libs.amplitude
 }
 
 tasks.register("enableAnalyticsForDebugBuilds") {

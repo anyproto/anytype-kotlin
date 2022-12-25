@@ -14,14 +14,53 @@ junitVersion = '4.13.2'
 androidJunitVersion = "1.1.4"
 runnerVersion = "1.5.0"
 mockitoAndroidVersion = '4.10.0'
+kotlinCoroutinesVersion = '1.6.4'
+androidxTestCoreVersion = '1.4.0'
+androidxCoreTestingVersion = '2.1.0'
+androidxSecurityCryptoVersion = '1.0.0'
+androidxPreferenceVersion = '1.2.0'
+constraintLayoutVersion = '2.1.4'
+recyclerviewVersion = '1.2.1'
+cardviewVersion = '1.0.0'
+emojiCompatVersion = '1.1.0'
+viewPager2Version = '1.0.0'
+lifecycleVersion = '2.5.1'
+navigationVersion = '2.5.3'
+shimmerLayoutVersion = '0.5.0'
+photoViewVersion = '2.3.0'
+daggerVersion = '2.44'
+javaxAnnotationsVersion = '1.0'
+javaxInjectVersion = '1'
+retrofitVersion = '2.3.0'
+okhttpLoggingInterceptorVersion = '3.8.1'
+gsonVersion = '2.10'
+betterLinkMethodVersion = '2.2.0'
+tableViewVersion = '0.8.9.4'
+picktVersion = '2.0.2'
+zxingVersion = '4.1.0'
+urlcleanerVersion = '0.4.0'
+katexVersion = '1.0.2'
+robolectricLatestVersion = '4.7.3'
+kluentVersion = '1.14'
+timberJunitVersion = '1.0.1'
+turbineVersion = '0.7.0'
+coroutineTestingVersion = '1.6.4'
+liveDataTestingVersion = '1.2.0'
+espressoVersion = '3.4.0'
+disableAnimationVersion = '2.0.0'
+leakCanaryVersion = '1.5'
+stethoVersion = '1.5.1'
+timberVersion = '5.0.1'
+crashlyticsVersion = '18.3.1'
+protobufJavaVersion = '3.9.2'
+protocVersion = '3.9.0'
+roomVersion = '2.4.3'
+amplitudeVersion = '2.36.1'
+okhttpVersion = '4.2.2'
 
 [libraries]
 middleware = { module = "io.anytype:android-mw", version.ref = "middlewareVersion" }
 androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCoreVersion" }
-agp = { module = "com.android.tools.build:gradle", version = "7.3.1" }
-kgp = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
-kserialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinVersion" }
-wire = { module = "com.squareup.wire:wire-gradle-plugin", version = "4.4.3" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinVersion" }
 kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinVersion" }
 compose = { module = "androidx.compose.ui:ui", version.ref = "androidxComposeVersion2" }
@@ -47,7 +86,77 @@ androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunit
 testRunner = { module = "androidx.test:runner", version.ref = "runnerVersion" }
 testRules = { module = "androidx.test:rules", version.ref = "runnerVersion" }
 mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroidVersion" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutinesVersion" }
+coroutineTesting = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTestingVersion" }
+coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinCoroutinesVersion" }
+navigation = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationVersion" }
+navigationUi = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationVersion" }
+lifecycleViewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleVersion" }
+lifecycleRuntime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleVersion" }
+lifecycleCompiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "lifecycleVersion" }
+lifecycleLiveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleVersion" }
+constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayoutVersion" }
+cardView = { module = "androidx.cardview:cardview", version.ref = "cardviewVersion" }
+recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerviewVersion" }
+viewPager = { module = "androidx.viewpager2:viewpager2", version.ref = "viewPager2Version" }
+betterLinkMovement = { module = "me.saket:better-link-movement-method", version.ref = "betterLinkMethodVersion" }
+emojiCompat = { module = "androidx.emoji:emoji-appcompat", version.ref = "emojiCompatVersion" }
+photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoViewVersion" }
+katex = { module = "com.github.judemanutd:katexview", version.ref = "katexVersion" }
+daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
+dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
+javaxAnnotation = { module = "javax.annotation:jsr250-api", version.ref = "javaxAnnotationsVersion" }
+javaxInject = { module = "javax.inject:javax.inject", version.ref = "javaxInjectVersion" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
+retrofit = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofitVersion" }
+okhttpLoggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttpLoggingInterceptorVersion" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
+tableView = { module = "com.github.evrencoskun:TableView", version.ref = "tableViewVersion" }
+pickT = { module = "com.github.HBiSoft:PickiT", version.ref = "picktVersion" }
+zxing = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingVersion" }
+urlcleaner = { module = "com.shekhargulati.urlcleaner:urlcleaner", version.ref = "urlcleanerVersion" }
+crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "crashlyticsVersion" }
+shimmerLayout = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmerLayoutVersion" }
+archCoreTesting = { module = "androidx.arch.core:core-testing", version.ref = "androidxCoreTestingVersion" }
+liveDataTesting = { module = "com.jraska.livedata:testing-ktx", version.ref = "liveDataTestingVersion" }
+androidXTestCore = { module = "androidx.test:core", version.ref = "androidxTestCoreVersion" }
+androidxSecurityCrypto = { module = "androidx.security:security-crypto", version.ref = "androidxSecurityCryptoVersion" }
+preference = { module = "androidx.preference:preference", version.ref = "androidxPreferenceVersion" }
+leakCanaryAndroid = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanaryVersion" }
+stetho = { module = "com.facebook.stetho:stetho", version.ref = "stethoVersion" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectricLatestVersion" }
+kluent = { module = "org.amshove.kluent:kluent-android", version.ref = "kluentVersion" }
+timberJUnit = { module = "net.lachlanmckee:timber-junit-rule", version.ref = "timberJunitVersion" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbineVersion" }
+espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoVersion" }
+espressoContrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espressoVersion" }
+espressoIntents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoVersion" }
+disableAnimation = { module = "com.bartoszlipinski:disable-animations-rule", version.ref = "disableAnimationVersion" }
+navigationTesting = { module = "androidx.navigation:navigation-testing", version.ref = "navigationVersion" }
+leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanaryVersion" }
+leakCanaryNoop = { module = "com.squareup.leakcanary:leakcanary-android-no-op", version.ref = "leakCanaryVersion" }
+protobufJava = { module = "com.google.protobuf:protobuf-java", version.ref = "protobufJavaVersion" }
+protobufJavaUtil = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobufJavaVersion" }
+protoc = { module = "com.google.protobuf:protoc", version.ref = "protocVersion" }
+room = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+roomKtx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+annotations = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+roomTesting = { module = "androidx.room:room-testing", version.ref = "roomVersion" }
+amplitude = { module = "com.amplitude:android-sdk", version.ref = "amplitudeVersion" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttpVersion" }
 
 [bundles]
 
 [plugins]
+application = { id = "com.android.application", version = "7.3.1" }
+library = { id = "com.android.library", version = "7.3.1" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
+kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
+wire = { id = "com.squareup.wire", version = "4.4.3" }
+firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "3.1.1" }
+crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.2" }
+navigation = { id = "androidx.navigation.safeargs", version.ref = "navigationVersion" }
+navigationKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationVersion" }
+kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinVersion" }
+gms = { id = "com.google.gms.google-services", version = "4.3.14" }

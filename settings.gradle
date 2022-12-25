@@ -1,26 +1,12 @@
-include ':app',
-        ':core-utils',
-        ':middleware',
-        ':persistence',
-        ':domain',
-        ':data',
-        ':device',
-        ':presentation',
-        ':core-ui',
-        ':library-page-icon-picker-widget',
-        ':library-emojifier',
-        ':library-syntax-highlighter',
-        ':sample',
-        ':clipboard',
-        ':analytics',
-        ':protocol',
-        ':core-models',
-        ':test:android-utils',
-        ':test:utils',
-        ':test:core-models-stub',
-        ':libs'
+pluginManagement {
 
-include ':ui-settings'
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
 
 dependencyResolutionManagement {
     /**
@@ -46,3 +32,27 @@ dependencyResolutionManagement {
         }
     }
 }
+
+include ':app',
+        ':core-utils',
+        ':middleware',
+        ':persistence',
+        ':domain',
+        ':data',
+        ':device',
+        ':presentation',
+        ':core-ui',
+        ':library-page-icon-picker-widget',
+        ':library-emojifier',
+        ':library-syntax-highlighter',
+        ':sample',
+        ':clipboard',
+        ':analytics',
+        ':protocol',
+        ':core-models',
+        ':test:android-utils',
+        ':test:utils',
+        ':test:core-models-stub',
+        ':libs'
+
+include ':ui-settings'

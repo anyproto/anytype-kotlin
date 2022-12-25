@@ -23,13 +23,10 @@ dependencies {
     implementation project(':core-models')
     implementation project(':core-utils')
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
+    compileOnly libs.javaxInject
 
-    compileOnly applicationDependencies.javaxInject
-
-    implementation applicationDependencies.lifecycleViewModel
-    implementation applicationDependencies.lifecycleRuntime
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleRuntime
 
     implementation libs.appcompat
     implementation libs.compose
@@ -39,7 +36,7 @@ dependencies {
 
     debugImplementation libs.composeTooling
 
-    implementation applicationDependencies.timber
+    implementation libs.timber
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest

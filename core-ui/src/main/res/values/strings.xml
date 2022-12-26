@@ -328,6 +328,7 @@
     <string name="relation_format_short_text">Short text</string>
     <string name="relation_format_long_text">Long text</string>
     <string name="set_new_relation">Set new relation</string>
+    <string name="relation_deleted">Deleted relation</string>
 
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>

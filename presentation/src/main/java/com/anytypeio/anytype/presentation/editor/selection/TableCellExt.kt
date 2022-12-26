@@ -347,6 +347,7 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.FeaturedRelation -> view
             is BlockView.Unsupported -> view.copy(isSelected = false)
             is BlockView.Upload.Bookmark -> view.copy(isSelected = false)
+            is BlockView.Relation.Deleted -> view.copy(isSelected = false)
         }
     }
 }

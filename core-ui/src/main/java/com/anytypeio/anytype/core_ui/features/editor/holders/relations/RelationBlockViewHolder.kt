@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDeletedBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
@@ -452,6 +453,33 @@ sealed class RelationBlockViewHolder(
 
         companion object {
             const val MAX_VISIBLE_FILES_INDEX = 2
+        }
+    }
+
+    class Deleted(binding: ItemBlockRelationDeletedBinding) :
+        RelationBlockViewHolder(binding.root) {
+
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = binding.tvTitle
+
+
+        override fun applyRelationValue(item: DocumentRelationView) {}
+
+        fun bind(item: BlockView.Relation.Deleted) {
+            indentize(item)
+            applySelection(item)
+            applyBackground(item)
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            indent(item, itemView)
+        }
+
+        override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
+
+        override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+            super.applyContentDecorations(itemView, decorations)
         }
     }
 }

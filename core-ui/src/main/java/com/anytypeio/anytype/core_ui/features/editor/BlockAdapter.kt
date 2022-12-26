@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDefaultBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDeletedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
@@ -165,6 +166,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PROFILE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_FILE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_OBJECT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
@@ -740,6 +742,10 @@ class BlockAdapter(
                     ItemBlockRelationPlaceholderBinding.inflate(inflater, parent, false)
                 ).setupPlaceholder(this)
             }
+            HOLDER_RELATION_DELETED -> {
+                val binding = ItemBlockRelationDeletedBinding.inflate(inflater, parent, false)
+                RelationBlockViewHolder.Deleted(binding).setup(this)
+            }
             HOLDER_RELATION_STATUS -> {
                 val binding = ItemBlockRelationStatusBinding.inflate(inflater, parent, false)
                 RelationBlockViewHolder.Status(binding).setup(this)
@@ -1181,6 +1187,9 @@ class BlockAdapter(
                             is RelationBlockViewHolder.Placeholder -> {
                                 onBindViewHolder(holder, position)
                             }
+                            is RelationBlockViewHolder.Deleted -> {
+                                onBindViewHolder(holder, position)
+                            }
                             else -> {
                                 holder.processChangePayload(
                                     payloads = payloads.typeOf(),
@@ -1476,6 +1485,10 @@ class BlockAdapter(
             }
             is RelationBlockViewHolder.Placeholder -> {
                 val item = (blocks[position] as BlockView.Relation.Placeholder)
+                holder.bind(item = item)
+            }
+            is RelationBlockViewHolder.Deleted -> {
+                val item = (blocks[position] as BlockView.Relation.Deleted)
                 holder.bind(item = item)
             }
             is RelationBlockViewHolder.Default -> {

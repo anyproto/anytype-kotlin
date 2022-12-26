@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PROFILE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_FILE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_OBJECT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
@@ -1282,6 +1283,16 @@ sealed class BlockView : ViewType {
                 is DocumentRelationView.Source.Deleted -> HOLDER_RELATION_SOURCE_DELETED
                 is DocumentRelationView.ObjectType.Deleted -> HOLDER_OBJECT_TYPE_DELETED
             }
+        }
+
+        data class Deleted(
+            override val id: String,
+            override val indent: Int = 0,
+            override val isSelected: Boolean = false,
+            override val decorations: List<Decoration>,
+            override val background: ThemeColor = ThemeColor.DEFAULT
+        ) : Relation() {
+            override fun getViewType(): Int = HOLDER_RELATION_DELETED
         }
     }
 

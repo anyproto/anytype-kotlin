@@ -3682,6 +3682,9 @@ class EditorViewModel(
                                     relationView = relationView
                                 )
                             }
+                            is BlockView.Relation.Deleted -> {
+                                Timber.d("Clicked in BlockView.Relation.Deleted")
+                            }
                         }
                     }
                     else -> onBlockMultiSelectClicked(clicked.value.id)

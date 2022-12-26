@@ -2046,7 +2046,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         decorations = schema.toBlockViewDecoration(block)
                     )
                 } else {
-                    BlockView.Relation.Placeholder(
+                    BlockView.Relation.Deleted(
                         id = block.id,
                         indent = indent,
                         decorations = schema.toBlockViewDecoration(block),
@@ -2054,7 +2054,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     )
                 }
             } else {
-                return BlockView.Relation.Placeholder(
+                return BlockView.Relation.Deleted(
                     id = block.id,
                     indent = indent,
                     decorations = schema.toBlockViewDecoration(block),

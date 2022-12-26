@@ -220,7 +220,7 @@ class RelationListViewModel(
             commands.emit(
                 Command.SetRelationKey(
                     blockId = target,
-                    key = view.relationId
+                    key = view.relationKey
                 )
             )
         }

@@ -58,6 +58,7 @@ object Types {
     const val HOLDER_RELATION_CHECKBOX = 45
     const val HOLDER_RELATION_SOURCE = 58
     const val HOLDER_RELATION_SOURCE_DELETED = 159
+    const val HOLDER_RELATION_DELETED = 160
 
     const val HOLDER_DESCRIPTION = 46
     const val HOLDER_FEATURED_RELATION = 47

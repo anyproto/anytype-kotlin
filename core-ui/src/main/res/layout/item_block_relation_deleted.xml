@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/default_document_content_padding_start"
+        android:paddingEnd="@dimen/default_document_content_padding_end">
+
+        <ImageView
+            android:id="@+id/relationIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/content_description_checkbox_pic"
+            android:duplicateParentState="false"
+            android:src="@drawable/ic_relation_deleted" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/RelationBlockTitleStyle"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/relation_deleted"
+            android:textColor="@color/palette_dark_grey" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
+
+</FrameLayout>

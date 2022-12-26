@@ -23,22 +23,12 @@ class ObjectTypesSubscriptionManager(
         job?.cancel()
         job = scope.launch {
             val params = ObjectTypesSubscriptionContainer.Params(
-                subscription = RelationsSubscriptionContainer.SUBSCRIPTION_ID,
+                subscription = ObjectTypesSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(
                         relationKey = Relations.TYPE,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectTypeIds.OBJECT_TYPE
-                    ),
-                    DVFilter(
-                        relationKey = Relations.IS_DELETED,
-                        condition = DVFilterCondition.EQUAL,
-                        value = false
-                    ),
-                    DVFilter(
-                        relationKey = Relations.IS_ARCHIVED,
-                        condition = DVFilterCondition.EQUAL,
-                        value = false
                     ),
                     DVFilter(
                         relationKey = Relations.WORKSPACE_ID,
@@ -59,7 +49,9 @@ class ObjectTypesSubscriptionManager(
                     Relations.SMARTBLOCKTYPES,
                     Relations.LAYOUT,
                     Relations.DESCRIPTION,
-                    Relations.ICON_EMOJI
+                    Relations.ICON_EMOJI,
+                    Relations.SOURCE_OBJECT,
+                    Relations.IS_READ_ONLY
                 ),
                 ignoreWorkspace = true
             )

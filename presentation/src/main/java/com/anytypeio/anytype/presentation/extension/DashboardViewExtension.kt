@@ -1,8 +1,12 @@
 package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -25,11 +29,11 @@ fun List<DashboardView>.sortByIds(
 fun List<DashboardView>.filterByNotArchivedPages(): List<DashboardView> =
     this.filterNot { it.isArchived }
 
-fun List<DashboardView>.updateDetails(
+suspend fun List<DashboardView>.updateDetails(
     target: String,
     details: Block.Fields,
     builder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<DashboardView> {
     return mapNotNull { view ->
         when (view) {
@@ -62,7 +66,7 @@ fun List<DashboardView>.updateDetails(
                         ),
                         layout = obj.layout,
                         type = obj.type.firstOrNull(),
-                        typeName = objectTypes.find { it.id == obj.type.firstOrNull() }?.name
+                        typeName = obj.getTypeName(storeOfObjectTypes = storeOfObjectTypes)
                     )
                 } else {
                     view
@@ -95,6 +99,54 @@ fun List<DashboardView>.updateDetails(
                 } else {
                     view
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Considering type of Object, get name for this type by ObjectStore.
+ * Could be type name, or deleted type name or unknown type name {see [DashboardView.TypeName]}
+ */
+suspend fun ObjectWrapper.Basic.getTypeName(objectStore: ObjectStore): DashboardView.TypeName {
+    val type = type.firstOrNull()
+    return if (type == null) {
+        DashboardView.TypeName.Unknown
+    } else {
+        val typeObj = objectStore.get(type)
+        val isDeleted = typeObj?.isDeleted ?: false
+        if (isDeleted) {
+            DashboardView.TypeName.Deleted
+        } else {
+            val name = typeObj?.name
+            if (name.isNullOrBlank()) {
+                DashboardView.TypeName.Unknown
+            } else {
+                DashboardView.TypeName.Basic(name = name)
+            }
+        }
+    }
+}
+
+/**
+ * Considering type of Object, get name for this type by StoreOfObjectTypes.
+ * Could be type name, or deleted type name or unknown type name {see [DashboardView.TypeName]}
+ */
+suspend fun ObjectWrapper.Basic.getTypeName(storeOfObjectTypes: StoreOfObjectTypes): DashboardView.TypeName {
+    val type = type.firstOrNull()
+    return if (type == null) {
+        DashboardView.TypeName.Unknown
+    } else {
+        val typeObj = storeOfObjectTypes.get(type)
+        val isDeleted = typeObj?.isDeleted ?: false
+        if (isDeleted) {
+            DashboardView.TypeName.Deleted
+        } else {
+            val name = typeObj?.name
+            if (name.isNullOrBlank()) {
+                DashboardView.TypeName.Unknown
+            } else {
+                DashboardView.TypeName.Basic(name = name)
             }
         }
     }

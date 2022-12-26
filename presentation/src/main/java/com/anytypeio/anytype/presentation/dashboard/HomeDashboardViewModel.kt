@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Reducer
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
+import com.anytypeio.anytype.presentation.extension.getTypeName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveObjects
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRestoreFromBin
 import com.anytypeio.anytype.presentation.mapper.toView
@@ -462,59 +463,6 @@ class HomeDashboardViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
 
-    @Deprecated("Will be removed in favour of search with subscriptions")
-    private fun proceedWithSharedObjectsSearch() {
-        viewModelScope.launch {
-            val params = SearchObjects.Params(
-                filters = ObjectSearchConstants.filterTabShared,
-                sorts = ObjectSearchConstants.sortTabShared
-            )
-            searchObjects(params).process(
-                success = { objects ->
-                    shared.value = objects
-                        .map { obj ->
-                            val oType = stateData.value?.findOTypeById(obj.type)
-                            val layout = obj.layout
-                            if (layout == ObjectType.Layout.SET) {
-                                DashboardView.ObjectSet(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.getProperName(),
-                                    isArchived = obj.isArchived ?: false,
-                                    isLoading = false,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = obj.layout,
-                                        builder = urlBuilder
-                                    )
-                                )
-                            } else {
-                                DashboardView.Document(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.getProperName(),
-                                    isArchived = obj.isArchived ?: false,
-                                    isLoading = false,
-                                    emoji = obj.iconEmoji,
-                                    image = obj.iconImage,
-                                    type = obj.type.firstOrNull(),
-                                    typeName = oType?.name,
-                                    layout = obj.layout,
-                                    done = obj.done,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = obj.layout,
-                                        builder = urlBuilder
-                                    )
-                                )
-                            }
-                        }
-                },
-                failure = { Timber.e(it, "Error while searching for recent objects") }
-            )
-        }
-    }
-
     private fun proceedWithObjectSearchWithSubscriptions() {
         subscriptions += viewModelScope.launch {
             objectSearchSubscriptionContainer.observe(
@@ -533,7 +481,6 @@ class HomeDashboardViewModel(
                         .mapNotNull { target ->
                             val obj = objectStore.get(target)
                             if (obj != null) {
-                                val oType = objectStore.get(obj.type.firstOrNull() ?: "")
                                 val layout = obj.layout
                                 if (layout == ObjectType.Layout.SET) {
                                     DashboardView.ObjectSet(
@@ -558,7 +505,7 @@ class HomeDashboardViewModel(
                                         emoji = obj.iconEmoji,
                                         image = obj.iconImage?.let { urlBuilder.thumbnail(it) },
                                         type = obj.type.firstOrNull(),
-                                        typeName = oType?.name,
+                                        typeName = obj.getTypeName(objectStore),
                                         layout = obj.layout,
                                         done = obj.done,
                                         icon = ObjectIcon.from(
@@ -590,7 +537,6 @@ class HomeDashboardViewModel(
                         .mapNotNull { target ->
                             val obj = objectStore.get(target)
                             if (obj != null) {
-                                val oType = objectStore.get(obj.type.firstOrNull() ?: "")
                                 val layout = obj.layout
                                 DashboardView.Document(
                                     id = obj.id,
@@ -601,7 +547,7 @@ class HomeDashboardViewModel(
                                     emoji = obj.iconEmoji,
                                     image = obj.iconImage?.let { urlBuilder.thumbnail(it) },
                                     type = obj.type.firstOrNull(),
-                                    typeName = oType?.name,
+                                    typeName = obj.getTypeName(objectStore),
                                     layout = obj.layout,
                                     done = obj.done,
                                     icon = ObjectIcon.from(

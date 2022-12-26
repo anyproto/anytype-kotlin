@@ -3,15 +3,20 @@ package com.anytypeio.anytype.presentation.extension
 import FakeGateWay
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class DashboardViewExtensionKtTest {
 
+    protected val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
+
     @Test
-    fun `should update emoji`() {
+    fun `should update emoji`() = runTest {
 
         val id1 = MockDataFactory.randomUuid()
         val target1 = MockDataFactory.randomUuid()
@@ -52,7 +57,7 @@ class DashboardViewExtensionKtTest {
             target = views[1].target,
             details = Block.Fields(mapOf("iconEmoji" to "emoji777")),
             builder = builder,
-            objectTypes = emptyList()
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         val expected = listOf<DashboardView.Document>(

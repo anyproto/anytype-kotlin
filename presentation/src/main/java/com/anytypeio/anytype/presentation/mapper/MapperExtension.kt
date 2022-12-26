@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMar
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.extension.getTypeName
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
@@ -328,8 +329,6 @@ suspend fun List<Block>.toDashboardViews(
     when (val content = block.content) {
         is Block.Content.Link -> {
             val targetDetails = details.details[content.target]
-            val typeUrl = targetDetails?.map?.type
-            val type = if (typeUrl != null) storeOfObjectTypes.get(typeUrl) else null
             val layoutCode = targetDetails?.layout?.toInt()
             val layout = layoutCode?.let { code ->
                 ObjectType.Layout.values().find { layout ->
@@ -341,9 +340,7 @@ suspend fun List<Block>.toDashboardViews(
                     id = block.id,
                     details = details,
                     builder = builder,
-                    type = type?.id,
-                    typeName = type?.name,
-                    layout = layout
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
                 ObjectType.Layout.SET -> content.toSetView(block.id, details, builder)
                 else -> {
@@ -352,9 +349,7 @@ suspend fun List<Block>.toDashboardViews(
                             id = block.id,
                             details = details,
                             builder = builder,
-                            type = type?.id,
-                            typeName = type?.name,
-                            layout = layout
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                         Block.Content.Link.Type.DATA_VIEW -> content.toSetView(
                             block.id,
@@ -382,13 +377,11 @@ fun Block.Content.Link.toArchiveView(
     )
 }
 
-fun Block.Content.Link.toPageView(
+suspend fun Block.Content.Link.toPageView(
     id: String,
     details: Block.Details,
     builder: UrlBuilder,
-    layout: ObjectType.Layout?,
-    typeName: String?,
-    type: String?
+    storeOfObjectTypes: StoreOfObjectTypes
 ): DashboardView.Document {
 
     val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
@@ -397,21 +390,19 @@ fun Block.Content.Link.toPageView(
         id = id,
         target = target,
         title = obj.getProperName(),
-        emoji = details.details[target]?.iconEmoji?.let { unicode ->
-            if (unicode.isNotEmpty()) unicode else null
-        },
-        image = details.details[target]?.iconImage?.let { hash ->
+        emoji = obj.iconEmoji?.let { unicode -> unicode.ifEmpty { null } },
+        image = obj.iconImage?.let { hash ->
             if (hash.isNotEmpty()) builder.image(hash) else null
         },
-        isArchived = details.details[target]?.isArchived ?: false,
+        isArchived = obj.isArchived ?: false,
         isLoading = !details.details.containsKey(target),
-        typeName = typeName,
-        type = type,
-        layout = layout,
-        done = details.details[target]?.done,
+        type = obj.type.firstOrNull(),
+        typeName = obj.getTypeName(storeOfObjectTypes),
+        layout = obj.layout,
+        done = obj.done,
         icon = ObjectIcon.from(
             obj = obj,
-            layout = layout,
+            layout = obj.layout,
             builder = builder
         )
     )

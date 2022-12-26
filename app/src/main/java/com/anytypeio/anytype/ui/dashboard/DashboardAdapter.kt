@@ -407,6 +407,20 @@ class DashboardAdapter(
 
         abstract fun bindSelection(isSelected: Boolean)
 
+        fun bindSubtitle(textView: TextView, typeName: DashboardView.TypeName) {
+            when (typeName) {
+                is DashboardView.TypeName.Basic -> {
+                    textView.text = typeName.name
+                }
+                is DashboardView.TypeName.Deleted -> {
+                    textView.text = itemView.context.getString(R.string.deleted_type)
+                }
+                DashboardView.TypeName.Unknown -> {
+                    textView.text = null
+                }
+            }
+        }
+
         class ArchiveHolder(val binding: ItemDesktopArchiveBinding) : ViewHolder(binding.root) {
 
             private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
@@ -436,8 +450,8 @@ class DashboardAdapter(
                     tvTitle.text = title
             }
 
-            fun bindSubtitle(subtitle: String?) {
-                tvSubtitle.text = subtitle
+            fun bindSubtitle(subtitle: DashboardView.TypeName) {
+                bindSubtitle(tvSubtitle, subtitle)
             }
 
             fun bindIcon(icon: ObjectIcon) {
@@ -478,8 +492,8 @@ class DashboardAdapter(
                 tvTitle.text = title
             }
 
-            fun bindSubtitle(type: String?) {
-                tvSubtitle.text = type
+            fun bindSubtitle(subtitle: DashboardView.TypeName) {
+                bindSubtitle(tvSubtitle, subtitle)
             }
 
             fun bindLoading(isLoading: Boolean) {
@@ -518,8 +532,8 @@ class DashboardAdapter(
                 tvTitle.text = title
             }
 
-            fun bindSubtitle(type: String?) {
-                tvSubtitle.text = type
+            fun bindSubtitle(subtitle: DashboardView.TypeName) {
+                bindSubtitle(tvSubtitle, subtitle)
             }
 
             fun bindLoading(isLoading: Boolean) {
@@ -559,8 +573,8 @@ class DashboardAdapter(
                 tvTitle.text = title
             }
 
-            fun bindSubtitle(type: String?) {
-                tvSubtitle.text = type
+            fun bindSubtitle(subtitle: DashboardView.TypeName) {
+                bindSubtitle(tvSubtitle, subtitle)
             }
 
             fun bindLoading(isLoading: Boolean) {
@@ -614,8 +628,8 @@ class DashboardAdapter(
                 tvTitle.text = title
             }
 
-            fun bindSubtitle(type: String?) {
-                tvSubtitle.text = type
+            fun bindSubtitle(subtitle: DashboardView.TypeName) {
+                bindSubtitle(tvSubtitle, subtitle)
             }
 
             fun bindLoading(isLoading: Boolean) {
@@ -712,8 +726,7 @@ class DashboardAdapter(
 
     fun update(views: List<DashboardView>) {
         try {
-            val old = ArrayList(data)
-            val callback = DesktopDiffUtil(old = old, new = views)
+            val callback = DesktopDiffUtil(old = data, new = views)
             val result = DiffUtil.calculateDiff(callback)
             data = views
             result.dispatchUpdatesTo(this)
@@ -729,5 +742,5 @@ class DashboardAdapter(
         return true
     }
 
-    fun provideAdapterData(): List<DashboardView> = data.toList()
+    fun provideAdapterData(): List<DashboardView> = data
 }

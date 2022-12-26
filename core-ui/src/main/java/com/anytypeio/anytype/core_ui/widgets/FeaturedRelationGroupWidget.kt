@@ -418,7 +418,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 setTextColor(context.color(R.color.palette_dark_red))
                 setTextSize(context.dimen(R.dimen.featured_relations_text_size))
                 setup(
-                    name = context.getString(R.string.deleted_type),
+                    name = context.getString(R.string.deleted_type_in_set),
                     icon = ObjectIcon.None
                 )
             }

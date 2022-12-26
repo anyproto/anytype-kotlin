@@ -5,9 +5,10 @@ import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -31,29 +32,27 @@ class CreateAccountTest {
     @Mock
     lateinit var configStorage: ConfigStorage
 
-    lateinit var createAccount: CreateAccount
+    @Mock
+    lateinit var workspaceManager: WorkspaceManager
+
+    private lateinit var createAccount: CreateAccount
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
         createAccount = CreateAccount(
             repository = repo,
-            configStorage = configStorage
+            configStorage = configStorage,
+            workspaceManager = workspaceManager
         )
     }
 
     @Test
-    fun `should create account and save it and set as current user account and save config in storage`() =
-        runBlocking {
-
+    fun `should create account and save it and set as current user account and save config in storage`() = runTest {
             val name = MockDataFactory.randomString()
-
             val path = null
-
             val code = "code"
-
             val setup = StubAccountSetup()
-
             val param = CreateAccount.Params(
                 name = name,
                 avatarPath = path,
@@ -71,5 +70,30 @@ class CreateAccountTest {
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
             verifyNoMoreInteractions(repo)
             verify(configStorage, times(1)).set(setup.config)
+    }
+
+    @Test
+    fun `should set current workspace id after creating account`() = runTest {
+
+        val name = MockDataFactory.randomString()
+        val path = null
+        val code = "code"
+        val setup = StubAccountSetup()
+
+        val param = CreateAccount.Params(
+            name = name,
+            avatarPath = path,
+            invitationCode = code
+        )
+
+        repo.stub {
+            onBlocking { createAccount(name, path, code) } doReturn setup
         }
+
+        createAccount.run(param)
+
+        verify(workspaceManager, times(1)).setCurrentWorkspace(
+            setup.config.workspace
+        )
+    }
 }

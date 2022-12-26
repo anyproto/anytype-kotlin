@@ -224,10 +224,12 @@ object SetupNewAccountModule {
     @PerScreen
     fun provideCreateAccountUseCase(
         repository: AuthRepository,
-        configStorage: ConfigStorage
+        configStorage: ConfigStorage,
+        workspaceManager: WorkspaceManager
     ): CreateAccount = CreateAccount(
-            repository = repository,
-            configStorage = configStorage
+        repository = repository,
+        configStorage = configStorage,
+        workspaceManager = workspaceManager
     )
 }
 

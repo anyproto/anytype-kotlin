@@ -3,8 +3,8 @@ package com.anytypeio.anytype.domain.auth.interactor
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 /**
  * Creates an account, then stores it and sets as current user account.
@@ -12,7 +12,8 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 open class CreateAccount(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
-    ) : BaseUseCase<Account, CreateAccount.Params>() {
+    private val workspaceManager: WorkspaceManager
+) : BaseUseCase<Account, CreateAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
         val setup = repository.createAccount(
@@ -25,6 +26,7 @@ open class CreateAccount(
             setCurrentAccount(setup.account.id)
         }
         configStorage.set(setup.config)
+        workspaceManager.setCurrentWorkspace(setup.config.workspace)
         setup.account
     }
 

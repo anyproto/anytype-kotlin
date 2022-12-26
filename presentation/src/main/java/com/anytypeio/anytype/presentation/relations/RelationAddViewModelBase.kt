@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
@@ -95,7 +94,7 @@ abstract class RelationAddViewModelBase(
         objectRelationKeys: List<Key>,
     ) = buildList {
         val my = myRelations.filter {
-            !objectRelationKeys.contains(it.key)
+            !objectRelationKeys.contains(it.key) && it.isHidden == false
         }.map { wrapper ->
             RelationView.Existing(
                 id = wrapper.id,
@@ -106,7 +105,7 @@ abstract class RelationAddViewModelBase(
             )
         }
         val marketplace = marketplaceRelations.filter {
-            !objectRelationKeys.contains(it.key)
+            !objectRelationKeys.contains(it.key) && it.isHidden == false
         }.map { wrapper ->
             RelationView.Existing(
                 id = wrapper.id,
@@ -157,13 +156,19 @@ abstract class RelationAddViewModelBase(
                         value = MARKETPLACE_ID
                     )
                 )
+                add(
+                    DVFilter(
+                        relationKey = Relations.RELATION_KEY,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = Relations.systemRelationKeys
+                    )
+                )
             },
             query = query
         )
-        val result = getRelations.execute(
+        return getRelations.execute(
             params = params
         )
-        return result
     }
 
     private suspend fun proceedWithGettingMyRelations(
@@ -187,13 +192,19 @@ abstract class RelationAddViewModelBase(
                         value = workspaceManager.getCurrentWorkspace()
                     )
                 )
+                add(
+                    DVFilter(
+                        relationKey = Relations.RELATION_KEY,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = Relations.systemRelationKeys
+                    )
+                )
             },
             query = query
         )
-        val result = getRelations.execute(
+        return getRelations.execute(
             params = params
         )
-        return result
     }
 
     abstract fun sendAnalyticsEvent(length: Int)

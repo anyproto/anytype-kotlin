@@ -91,6 +91,13 @@ class RelationAddViewModelBaseTest {
                                 value = workspaceId
                             )
                         )
+                        add(
+                            DVFilter(
+                                relationKey = Relations.RELATION_KEY,
+                                condition = DVFilterCondition.NOT_IN,
+                                value = Relations.systemRelationKeys
+                            )
+                        )
                     },
                     limit = 0,
                     offset = 0,
@@ -124,6 +131,13 @@ class RelationAddViewModelBaseTest {
                                 relationKey = Relations.WORKSPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
                                 value = MARKETPLACE_ID
+                            )
+                        )
+                        add(
+                            DVFilter(
+                                relationKey = Relations.RELATION_KEY,
+                                condition = DVFilterCondition.NOT_IN,
+                                value = Relations.systemRelationKeys
                             )
                         )
                     },
@@ -216,6 +230,13 @@ class RelationAddViewModelBaseTest {
                                     value = workspaceId
                                 )
                             )
+                            add(
+                                DVFilter(
+                                    relationKey = Relations.RELATION_KEY,
+                                    condition = DVFilterCondition.NOT_IN,
+                                    value = Relations.systemRelationKeys
+                                )
+                            )
                         },
                         limit = 0,
                         offset = 0,
@@ -249,6 +270,13 @@ class RelationAddViewModelBaseTest {
                                     relationKey = Relations.WORKSPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
                                     value = MARKETPLACE_ID
+                                )
+                            )
+                            add(
+                                DVFilter(
+                                    relationKey = Relations.RELATION_KEY,
+                                    condition = DVFilterCondition.NOT_IN,
+                                    value = Relations.systemRelationKeys
                                 )
                             )
                         },

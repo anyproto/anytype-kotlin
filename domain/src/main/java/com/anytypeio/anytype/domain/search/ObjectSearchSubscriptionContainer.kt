@@ -1,11 +1,19 @@
 package com.anytypeio.anytype.domain.search
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Subscription
+import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.scan
 
 class ObjectSearchSubscriptionContainer(
     private val repo: BlockRepository,
@@ -16,14 +24,13 @@ class ObjectSearchSubscriptionContainer(
 
     private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
 
-    // TODO refact: replace parameters with one param class
     fun observe(
         subscription: Id,
         sorts: List<DVSort> = emptyList(),
         filters: List<DVFilter> = emptyList(),
         source: List<String> = emptyList(),
-        offset: Long,
-        limit: Int,
+        offset: Long = 0,
+        limit: Int = 0,
         keys: List<String>
     ): Flow<Subscription> {
         return flow {

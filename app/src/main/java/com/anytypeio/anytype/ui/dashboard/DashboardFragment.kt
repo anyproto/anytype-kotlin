@@ -28,12 +28,10 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentDashboardBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.dashboard.DashboardView
-import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel.TAB
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
-import com.anytypeio.anytype.ui.base.ViewStateFragment
+import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -42,7 +40,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class DashboardFragment :
-    ViewStateFragment<State, FragmentDashboardBinding>(R.layout.fragment_dashboard) {
+    NavigationFragment<FragmentDashboardBinding>(R.layout.fragment_dashboard) {
 
     private val isMnemonicReminderDialogNeeded: Boolean?
         get() = argOrNull(
@@ -219,7 +217,6 @@ class DashboardFragment :
         binding.dashboardRoot.progress = motionProgress
         binding.dashboardRoot.addTransitionListener(motionListener)
         with(vm) {
-            state.observe(viewLifecycleOwner, this@DashboardFragment)
             navigation.observe(viewLifecycleOwner, navObserver)
         }
         parseIntent()
@@ -231,6 +228,9 @@ class DashboardFragment :
                 }
                 launch {
                     vm.recent.collect { dashboardRecentAdapter.update(it) }
+                }
+                launch {
+                    vm.favorites.collect { dashboardDefaultAdapter.update(it) }
                 }
                 launch {
                     vm.shared.collect { dashboardSharedAdapter.update(it) }
@@ -404,19 +404,6 @@ class DashboardFragment :
         if (deepLinkPage != null) {
             arguments?.remove(EditorFragment.ID_KEY)
             vm.onNavigationDeepLink(deepLinkPage)
-        } else {
-            vm.onViewCreated()
-        }
-    }
-
-    override fun render(state: State) {
-        when {
-            state.error != null -> toast("Error: ${state.error}")
-            state.isInitialzed -> {
-                val links =
-                    state.blocks.filter { it !is DashboardView.Archive }.groupBy { it.isArchived }
-                dashboardDefaultAdapter.update(links[false] ?: emptyList())
-            }
         }
     }
 

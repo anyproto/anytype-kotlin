@@ -249,6 +249,56 @@ object ObjectSearchConstants {
     )
     //endregion
 
+    //region TAB FAVORITES
+    fun filterTabFavorites(workspaceId: String) = listOf(
+        DVFilter(
+            relationKey = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.IS_DELETED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO,
+                DASHBOARD,
+                RELATION_OPTION,
+                DASHBOARD,
+                DATE
+            )
+        ),
+        DVFilter(
+            relationKey = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = workspaceId
+        ),
+        DVFilter(
+            relationKey = Relations.IS_FAVORITE,
+            condition = DVFilterCondition.EQUAL,
+            value = true
+        )
+    )
+
+    const val limitTabFavorites = 100
+
+    //endregion
+
     //region TAB RECENT
     fun filterTabRecent(workspaceId: String) = listOf(
         DVFilter(

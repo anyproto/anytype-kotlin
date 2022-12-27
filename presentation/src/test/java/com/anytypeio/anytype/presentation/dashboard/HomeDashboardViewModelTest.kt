@@ -2,15 +2,12 @@ package com.anytypeio.anytype.presentation.dashboard
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubConfig
-import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
@@ -32,17 +29,17 @@ import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
-import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -54,14 +51,12 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertContains
-import kotlin.test.assertEquals
 
 class HomeDashboardViewModelTest {
 
@@ -108,9 +103,6 @@ class HomeDashboardViewModelTest {
     lateinit var analytics: Analytics
 
     @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
     lateinit var cancelSearchSubscription: CancelSearchSubscription
 
     @Mock
@@ -122,6 +114,12 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var createObject: CreateObject
 
+    @Mock
+    lateinit var featureToggles: FeatureToggles
+
+    @Mock
+    lateinit var workspaceManager: WorkspaceManager
+
     private lateinit var vm: HomeDashboardViewModel
 
     private val config = StubConfig()
@@ -130,7 +128,6 @@ class HomeDashboardViewModelTest {
 
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
-    lateinit var workspaceManager: WorkspaceManager
     val workspaceId = MockDataFactory.randomString()
 
     @Before
@@ -139,11 +136,6 @@ class HomeDashboardViewModelTest {
     }
 
     private fun givenViewModel(): HomeDashboardViewModel {
-        val workspaceId = MockDataFactory.randomString()
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
-        }
         return HomeDashboardViewModel(
             getProfile = getProfile,
             openDashboard = openDashboard,
@@ -157,7 +149,6 @@ class HomeDashboardViewModelTest {
             ),
             getDebugSettings = getDebugSettings,
             analytics = analytics,
-            searchObjects = searchObjects,
             deleteObjects = deleteObjects,
             setObjectListIsArchived = setObjectListIsArchived,
             urlBuilder = builder,
@@ -165,16 +156,17 @@ class HomeDashboardViewModelTest {
             objectStore = objectStore,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             createObject = createObject,
-            featureToggles = mock(),
-            storeOfObjectTypes = storeOfObjectTypes,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            favoriteObjectStateMachine = HomeDashboardStateMachine.Interactor(
+                featureToggles = featureToggles
+            )
         )
     }
 
     @Test
     fun `key set for search subscription should contain done relation - when request`() {
+        stubWorkspaceManager()
         givenViewModel().onStart()
-
         captureObserveKeys(objectSearchSubscriptionContainer).allValues.forEach { keys ->
             assertContains(keys, Relations.DONE, "Should contain done relation for tasks!")
         }
@@ -253,97 +245,7 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
-    fun `should emit loading state when home dashboard loading started`() {
-
-        // SETUP
-
-        stubGetConfig(Either.Right(config))
-        stubObserveEvents(params = InterceptEvents.Params(context = config.home))
-        stubOpenDashboard()
-
-        // TESTING
-
-        vm = givenViewModel()
-
-        vm.onViewCreated()
-
-        val expected = HomeDashboardStateMachine.State(
-            isLoading = true,
-            isInitialzed = true,
-            blocks = emptyList(),
-            childrenIdsList = emptyList(),
-            error = null
-        )
-
-        vm.state.test().assertValue(expected)
-    }
-
-    @Test
-    fun `should emit view state with dashboard when home dashboard loading started`() {
-
-        // SETUP
-
-        val targetId = MockDataFactory.randomUuid()
-
-        val page = link(
-            content = StubLinkContent(target = targetId)
-        )
-
-        val dashboard = Block(
-            id = config.home,
-            content = Block.Content.Smart(SmartBlockType.HOME),
-            children = listOf(page.id),
-            fields = Block.Fields.empty()
-        )
-
-        stubGetConfig(Either.Right(config))
-
-        stubObserveEvents(params = InterceptEvents.Params(context = config.home))
-
-        stubOpenDashboard(
-            payload = Payload(
-                context = config.home,
-                events = listOf(
-                    Event.Command.ShowObject(
-                        root = config.home,
-                        context = config.home,
-                        blocks = listOf(dashboard, page),
-                        type = SmartBlockType.HOME
-                    )
-                )
-            )
-        )
-
-        // TESTING
-
-        vm = givenViewModel()
-
-        vm.onViewCreated()
-
-        val views = listOf<DashboardView>(
-            DashboardView.Document(
-                id = page.id,
-                target = targetId,
-                isArchived = false,
-                isLoading = true
-            )
-        )
-
-        val expected =  HomeDashboardStateMachine.State(
-            isLoading = false,
-            isInitialzed = true,
-            blocks = views,
-            childrenIdsList = listOf(dashboard).getChildrenIdsList(dashboard.id),
-            error = null
-        )
-        val actual = vm.state.test().value()
-        assertEquals(expected = expected, actual = actual)
-
-        coroutineTestRule.advanceTime(200L)
-    }
-
-    @Test
-    fun `should proceed opening dashboard when view is created`() {
+    fun `should proceed opening dashboard when fragment is started`() = runTest {
 
         // SETUP
 
@@ -352,13 +254,34 @@ class HomeDashboardViewModelTest {
         stubOpenDashboard()
         stubObserveProfile()
 
-        // TESTING
+        workspaceManager.stub {
+            onBlocking {
+                getCurrentWorkspace()
+            } doReturn workspaceId
+        }
+
+        objectSearchSubscriptionContainer.stub {
+            on {
+                observe(
+                    subscription = Subscriptions.SUBSCRIPTION_FAVORITES,
+                    keys = DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
+                    filters = ObjectSearchConstants.filterTabFavorites(
+                        workspaceId = workspaceId
+                    )
+                )
+            } doReturn emptyFlow()
+        }
 
         vm = givenViewModel()
-        vm.onViewCreated()
 
-        runBlockingTest {
-            verify(openDashboard, times(1)).execute(eq(Unit))
+        // TESTING
+
+        vm.onStart()
+
+        delay(1)
+
+        verifyBlocking(openDashboard, times(1)) {
+            execute(Unit)
         }
     }
 
@@ -449,6 +372,14 @@ class HomeDashboardViewModelTest {
                     dispatcher = any()
                 )
             } doReturn emptyFlow()
+        }
+    }
+
+    private fun stubWorkspaceManager() {
+        workspaceManager.stub {
+            onBlocking {
+                getCurrentWorkspace()
+            } doReturn workspaceId
         }
     }
 }

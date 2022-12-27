@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.dashboard
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
@@ -23,9 +24,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.ViewState
-import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -38,17 +37,14 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
-import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Reducer
-import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
 import com.anytypeio.anytype.presentation.extension.getTypeName
+import com.anytypeio.anytype.presentation.extension.mapToFavorites
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveObjects
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRestoreFromBin
 import com.anytypeio.anytype.presentation.mapper.toView
@@ -66,7 +62,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -84,34 +82,22 @@ class HomeDashboardViewModel(
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
-    private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val deleteObjects: DeleteObjects,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
-    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val createObject: CreateObject,
     private val workspaceManager: WorkspaceManager,
-    private val featureToggles: FeatureToggles,
-) : ViewStateViewModel<State>(),
+    private val favoriteObjectStateMachine: Interactor
+) : ViewModel(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val subscriptions = mutableListOf<Job>()
 
     val toasts = MutableSharedFlow<String>()
-
-    private val machine = Interactor(
-        scope = viewModelScope,
-        reducer = Reducer(
-            storeOfObjectTypes = storeOfObjectTypes,
-            featureToggles = featureToggles
-        ),
-        storeOfObjectTypes = storeOfObjectTypes,
-        featureToggles = featureToggles
-    )
 
     private val movementChannel = Channel<Movement>()
     private val movementChanges = movementChannel.consumeAsFlow()
@@ -126,7 +112,7 @@ class HomeDashboardViewModel(
 
     val archived = MutableStateFlow(emptyList<DashboardView.Document>())
     val recent = MutableStateFlow(emptyList<DashboardView>())
-    val inbox = MutableStateFlow(emptyList<DashboardView>())
+    val favorites = MutableStateFlow(emptyList<DashboardView>())
     val sets = MutableStateFlow(emptyList<DashboardView>())
     val shared = MutableStateFlow(emptyList<DashboardView>())
 
@@ -137,14 +123,13 @@ class HomeDashboardViewModel(
 
     val isDeletionInProgress = MutableStateFlow(false)
 
-    private val views: List<DashboardView>
-        get() = stateData.value?.blocks ?: emptyList()
-
     val profile = MutableStateFlow<ViewState<ObjectWrapper.Basic>>(ViewState.Init)
 
+    private val onFavoriteDataSetChanged = MutableSharedFlow<Unit>()
+
     init {
-        startProcessingState()
         proceedWithGettingConfig()
+        proceedWithFavoriteTabPipeline()
         viewModelScope.launch {
             getProfile.observe(
                 subscription = Subscriptions.SUBSCRIPTION_PROFILE,
@@ -158,8 +143,21 @@ class HomeDashboardViewModel(
         }
     }
 
-    private fun startProcessingState() {
-        viewModelScope.launch { machine.state().collect { stateData.postValue(it) } }
+    private fun proceedWithFavoriteTabPipeline() {
+        viewModelScope.launch {
+            combine(
+                favoriteObjectStateMachine.state().distinctUntilChanged(),
+                onFavoriteDataSetChanged
+            ) { state, _ ->
+                state.childrenIdsList.mapToFavorites(
+                    blocks = state.blocks,
+                    objectStore = objectStore,
+                    urlBuilder = urlBuilder
+                )
+            }.collectLatest {
+                favorites.value = it
+            }
+        }
     }
 
     private fun startInterceptingEvents(context: String) {
@@ -171,7 +169,7 @@ class HomeDashboardViewModel(
     }
 
     private suspend fun processEvents(events: List<Event>) =
-        events.mapNotNull { convert(it) }.let { result -> machine.onEvents(result) }
+        events.mapNotNull { convert(it) }.let { result -> favoriteObjectStateMachine.onEvents(result) }
 
     private fun proceedWithGettingConfig() {
         getConfig(viewModelScope, Unit) { result ->
@@ -222,12 +220,19 @@ class HomeDashboardViewModel(
     }
 
     private fun proceedWithOpeningHomeDashboard() {
-
-        machine.onEvents(listOf(Machine.Event.OnDashboardLoadingStarted))
-
-        Timber.d("Opening home dashboard")
-
+        subscriptions += viewModelScope.launch {
+            objectSearchSubscriptionContainer.observe(
+                subscription = Subscriptions.SUBSCRIPTION_FAVORITES,
+                keys = DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
+                filters = ObjectSearchConstants.filterTabFavorites(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                )
+            ).collect {
+                onFavoriteDataSetChanged.emit(Unit)
+            }
+        }
         viewModelScope.launch {
+            favoriteObjectStateMachine.onEvents(listOf(Machine.Event.OnDashboardLoadingStarted))
             val startTime = System.currentTimeMillis()
             var middleTime = 0L
             openDashboard.execute(Unit).fold(
@@ -237,7 +242,7 @@ class HomeDashboardViewModel(
                 },
                 onFailure = { Timber.e(it, "Error while opening home dashboard") }
             )
-            viewModelScope.sendEvent(
+            sendEvent(
                 analytics = analytics,
                 eventName = showHome,
                 startTime = startTime,
@@ -248,11 +253,8 @@ class HomeDashboardViewModel(
         }
     }
 
-    fun onViewCreated() {
-        proceedWithOpeningHomeDashboard()
-    }
-
     fun onStart() {
+        proceedWithOpeningHomeDashboard()
         proceedWithObjectSearchWithSubscriptions()
     }
 
@@ -262,6 +264,7 @@ class HomeDashboardViewModel(
             cancelSearchSubscription(
                 CancelSearchSubscription.Params(
                     subscriptions = listOf(
+                        Subscriptions.SUBSCRIPTION_FAVORITES,
                         Subscriptions.SUBSCRIPTION_ARCHIVED,
                         Subscriptions.SUBSCRIPTION_RECENT,
                         Subscriptions.SUBSCRIPTION_SETS
@@ -279,7 +282,6 @@ class HomeDashboardViewModel(
         subscriptions += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null)).fold(
                 onSuccess = { result ->
-                    machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
                     proceedWithOpeningDocument(result.objectId)
                 },
                 onFailure = { e -> Timber.e(e, "Error while creating a new object") }
@@ -398,7 +400,7 @@ class HomeDashboardViewModel(
                 proceedWithClickInArchiveTab(target)
             } else {
                 val view = when (tab) {
-                    TAB.FAVOURITE -> views.find { it is DashboardView.Document && it.target == target }
+                    TAB.FAVOURITE -> favorites.value.find { it is DashboardView.Document && it.target == target }
                     TAB.RECENT -> recent.value.find { it is DashboardView.Document && it.target == target }
                     else -> null
                 }
@@ -710,6 +712,20 @@ class HomeDashboardViewModel(
 
     //endregion
 
+    //region SUBSCRIPTION FAVORITES
+    private fun subscribeToFavoriteObjects() {
+        subscriptions += viewModelScope.launch {
+            objectSearchSubscriptionContainer.observe(
+                subscription = Subscriptions.SUBSCRIPTION_FAVORITES,
+                keys = DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
+                filters = ObjectSearchConstants.filterTabFavorites(
+                    workspaceId = workspaceManager.getCurrentWorkspace()
+                )
+            ).collect { onFavoriteDataSetChanged.emit(Unit) }
+        }
+    }
+    //endregion
+
     /**
      * Represents movements of blocks during block dragging action.
      * @param subject id of the block being dragged
@@ -732,4 +748,4 @@ class HomeDashboardViewModel(
     }
 }
 
-private val DEFAULT_KEYS = ObjectSearchConstants.defaultKeys + Relations.DONE
+val DEFAULT_KEYS = ObjectSearchConstants.defaultKeys + Relations.DONE

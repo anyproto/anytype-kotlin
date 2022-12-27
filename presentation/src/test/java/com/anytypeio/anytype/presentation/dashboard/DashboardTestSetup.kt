@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.StubConfig
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
@@ -33,7 +33,6 @@ import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -45,7 +44,6 @@ import org.mockito.Mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 open class DashboardTestSetup {
@@ -93,9 +91,6 @@ open class DashboardTestSetup {
     lateinit var analytics: Analytics
 
     @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
     lateinit var cancelSearchSubscription: CancelSearchSubscription
 
     @Mock
@@ -105,10 +100,10 @@ open class DashboardTestSetup {
     lateinit var subscriptionEventChannel: SubscriptionEventChannel
 
     @Mock
-    lateinit var getTemplates: GetTemplates
+    lateinit var createObject: CreateObject
 
     @Mock
-    lateinit var createObject: CreateObject
+    lateinit var featureToggles: FeatureToggles
 
     private lateinit var objectStore: ObjectStore
 
@@ -142,7 +137,6 @@ open class DashboardTestSetup {
             ),
             getDebugSettings = getDebugSettings,
             analytics = analytics,
-            searchObjects = searchObjects,
             urlBuilder = builder,
             setObjectListIsArchived = setObjectListIsArchived,
             deleteObjects = deleteObjects,
@@ -159,9 +153,10 @@ open class DashboardTestSetup {
                 )
             ),
             createObject = createObject,
-            featureToggles = mock(),
-            storeOfObjectTypes = storeOfObjectTypes,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            favoriteObjectStateMachine = HomeDashboardStateMachine.Interactor(
+                featureToggles = featureToggles
+            )
         )
     }
 

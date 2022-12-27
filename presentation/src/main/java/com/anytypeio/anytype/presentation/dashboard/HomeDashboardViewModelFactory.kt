@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -15,11 +14,9 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 class HomeDashboardViewModelFactory(
@@ -32,17 +29,15 @@ class HomeDashboardViewModelFactory(
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
-    private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val deleteObjects: DeleteObjects,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
-    private val featureToggles: FeatureToggles,
     private val createObject: CreateObject,
-    private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val workspaceManager: WorkspaceManager
+    private val workspaceManager: WorkspaceManager,
+    private val machine: HomeDashboardStateMachine.Interactor
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -57,7 +52,6 @@ class HomeDashboardViewModelFactory(
             eventConverter = eventConverter,
             getDebugSettings = getDebugSettings,
             analytics = analytics,
-            searchObjects = searchObjects,
             urlBuilder = urlBuilder,
             deleteObjects = deleteObjects,
             setObjectListIsArchived = setObjectListIsArchived,
@@ -65,9 +59,8 @@ class HomeDashboardViewModelFactory(
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
             createObject = createObject,
-            featureToggles = featureToggles,
-            storeOfObjectTypes = storeOfObjectTypes,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            favoriteObjectStateMachine = machine
         ) as T
     }
 }

@@ -3,29 +3,20 @@ package com.anytypeio.anytype.presentation.dashboard
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
-import com.anytypeio.anytype.core_models.ext.set
-import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Event
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Reducer
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
-import com.anytypeio.anytype.presentation.extension.addAndSortByIds
 import com.anytypeio.anytype.presentation.extension.sortByIds
-import com.anytypeio.anytype.presentation.extension.updateDetails
-import com.anytypeio.anytype.presentation.mapper.toDashboardViews
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -36,39 +27,29 @@ import timber.log.Timber
 sealed class HomeDashboardStateMachine {
 
     class Interactor(
-        private val scope: CoroutineScope,
-        private val channel: Channel<List<Event>> = Channel(),
-        private val events: Flow<List<Event>> = channel.consumeAsFlow(),
-        private val storeOfObjectTypes: StoreOfObjectTypes,
         private val featureToggles: FeatureToggles,
-        private val reducer: Reducer = Reducer(
-            storeOfObjectTypes = storeOfObjectTypes,
-            featureToggles = featureToggles
-        ),
+        private val reducer: Reducer = Reducer(featureToggles = featureToggles),
     ) {
-        fun onEvents(events: List<Event>) = scope.launch { channel.send(events) }
+        private val channel: Channel<List<Event>> = Channel()
+        private val events: Flow<List<Event>> = channel.consumeAsFlow()
+        suspend fun onEvents(events: List<Event>) = channel.send(events)
         fun state(): Flow<State> = events.scan(State.init(), reducer.function)
     }
 
     /**
      * @property isInitialized whether this state is initialized
-     * @property isLoading whether the data is being loaded to prepare a new state
      * @property error if present, represents an error occurred in this state machine
-     * @property blocks current dashboard data state that should be rendered
+     * @property blocks current dashboard object blocks
      */
     data class State(
-        val isInitialzed: Boolean,
-        val isLoading: Boolean,
+        val isInitialized: Boolean,
         val error: String?,
-        val blocks: List<DashboardView> = emptyList(),
-        val childrenIdsList: List<String> = emptyList(),
-        val objectTypes: List<ObjectWrapper.Type> = emptyList(),
-        val details: Block.Details = Block.Details()
+        val blocks: List<Block> = emptyList(),
+        val childrenIdsList: List<Id> = emptyList()
     ) : HomeDashboardStateMachine() {
         companion object {
             fun init() = State(
-                isInitialzed = false,
-                isLoading = false,
+                isInitialized = false,
                 error = null,
                 blocks = emptyList(),
                 childrenIdsList = emptyList()
@@ -86,27 +67,6 @@ sealed class HomeDashboardStateMachine {
             val objectTypes: List<ObjectWrapper.Type>
         ) : Event()
 
-        data class OnDetailsUpdated(
-            val context: String,
-            val target: String,
-            val details: Block.Fields,
-            val builder: UrlBuilder
-        ) : Event()
-
-        data class OnDetailsAmended(
-            val context: String,
-            val target: String,
-            val slice: Map<Id, Any?>,
-            val builder: UrlBuilder
-        ) : Event()
-
-        data class OnDetailsUnset(
-            val context: String,
-            val target: String,
-            val keys: List<Id>,
-            val builder: UrlBuilder
-        ) : Event()
-
         data class OnBlocksAdded(
             val blocks: List<Block>,
             val details: Block.Details,
@@ -118,16 +78,11 @@ sealed class HomeDashboardStateMachine {
         ) : Event()
 
         object OnDashboardLoadingStarted : Event()
-
-        object OnStartedCreatingPage : Event()
-
-        object OnFinishedCreatingPage : Event()
     }
 
     class Reducer(
-        private val storeOfObjectTypes: StoreOfObjectTypes,
         private val featureToggles: FeatureToggles
-        ) : StateReducer<State, List<Event>> {
+    ) : StateReducer<State, List<Event>> {
 
         override val function: suspend (State, List<Event>) -> State
             get() = { state, events ->
@@ -144,117 +99,39 @@ sealed class HomeDashboardStateMachine {
             }
 
         override suspend fun reduce(
-            state: State, events: List<Event>
+            state: State, event: List<Event>
         ): State {
             var update: State = state
-            events.forEach { event ->
-                update = reduceEvent(update, event)
-            }
+            event.forEach { update = reduceEvent(update, it) }
             return update
         }
 
-        private suspend fun reduceEvent(
+        private fun reduceEvent(
             state: State, event: Event
         ): State {
             return when (event) {
                 is Event.OnDashboardLoadingStarted -> state.copy(
-                    isInitialzed = true,
-                    isLoading = true,
+                    isInitialized = true,
                     error = null
                 )
                 is Event.OnShowDashboard -> {
-                    val new = event.blocks.toDashboardViews(
-                            details = event.details,
-                            builder = event.builder,
-                            storeOfObjectTypes = storeOfObjectTypes
-                    )
-
                     val childrenIdsList = event.blocks.getChildrenIdsList(parent = event.context)
-
                     state.copy(
-                        isInitialzed = true,
-                        isLoading = false,
+                        isInitialized = true,
                         error = null,
-                        blocks = new,
-                        childrenIdsList = childrenIdsList,
-                        objectTypes = event.objectTypes,
-                        details = event.details
+                        blocks = event.blocks,
+                        childrenIdsList = childrenIdsList
                     )
                 }
-                is Event.OnStartedCreatingPage -> state.copy(
-                    isLoading = true
-                )
-                is Event.OnFinishedCreatingPage -> state.copy(
-                    isLoading = false
-                )
                 is Event.OnStructureUpdated -> state.copy(
-                    isInitialzed = true,
-                    isLoading = false,
+                    isInitialized = true,
                     blocks = state.blocks.sortByIds(event.children),
                     childrenIdsList = event.children
                 )
                 is Event.OnBlocksAdded -> {
-                    val new = event.blocks.toDashboardViews(
-                        details = event.details,
-                        builder = event.builder,
-                        storeOfObjectTypes = storeOfObjectTypes
-                    )
-                    state.copy(
-                        isInitialzed = true,
-                        isLoading = false,
-                        blocks = state.blocks.addAndSortByIds(state.childrenIdsList, new)
-                    )
-                }
-                is Event.OnDetailsUpdated -> {
-                    state.copy(
-                        blocks = state.blocks.updateDetails(
-                            event.target,
-                            event.details,
-                            event.builder,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        ),
-                        details = state.details.set(
-                            target = event.target,
-                            fields = event.details
-                        )
-                    )
-                }
-                is Event.OnDetailsAmended -> {
-                    val updated = state.details.amend(
-                        target = event.target,
-                        slice = event.slice
-                    )
-                    state.copy(
-                        details = updated,
-                        blocks = state.blocks.updateDetails(
-                            target = event.target,
-                            details = updated.details[event.target] ?: Block.Fields.empty(),
-                            builder = event.builder,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                    )
-                }
-                is Event.OnDetailsUnset -> {
-                    val updated = state.details.unset(
-                        target = event.target,
-                        keys = event.keys
-                    )
-                    state.copy(
-                        details = updated,
-                        blocks = state.blocks.updateDetails(
-                            target = event.target,
-                            details = updated.details[event.target] ?: Block.Fields.empty(),
-                            builder = event.builder,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                    )
+                    state.copy(blocks = state.blocks + event.blocks)
                 }
             }
         }
     }
-}
-
-fun State.findOTypeById(types: List<String>): ObjectWrapper.Type? {
-    val target = types.firstOrNull()
-    return objectTypes.find { oType -> oType.id == target }
 }

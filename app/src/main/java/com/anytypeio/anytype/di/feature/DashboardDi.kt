@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -32,6 +31,7 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardEventConverter
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
 import com.anytypeio.anytype.ui.dashboard.DashboardFragment
 import dagger.Module
@@ -71,17 +71,15 @@ object HomeDashboardModule {
         eventConverter: HomeDashboardEventConverter,
         getDebugSettings: GetDebugSettings,
         analytics: Analytics,
-        searchObjects: SearchObjects,
         urlBuilder: UrlBuilder,
         setObjectListIsArchived: SetObjectListIsArchived,
         deleteObjects: DeleteObjects,
         objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
         objectStore: ObjectStore,
-        featureToggles: FeatureToggles,
         createObject: CreateObject,
-        storeOfObjectTypes: StoreOfObjectTypes,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        machine: HomeDashboardStateMachine.Interactor
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -91,7 +89,6 @@ object HomeDashboardModule {
         interceptEvents = interceptEvents,
         eventConverter = eventConverter,
         getDebugSettings = getDebugSettings,
-        searchObjects = searchObjects,
         analytics = analytics,
         urlBuilder = urlBuilder,
         setObjectListIsArchived = setObjectListIsArchived,
@@ -100,9 +97,8 @@ object HomeDashboardModule {
         cancelSearchSubscription = cancelSearchSubscription,
         objectStore = objectStore,
         createObject = createObject,
-        featureToggles = featureToggles,
-        storeOfObjectTypes = storeOfObjectTypes,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        machine = machine
     )
 
     @JvmStatic
@@ -280,4 +276,16 @@ object HomeDashboardModule {
         getTemplates = getTemplates,
         getDefaultEditorType = getDefaultEditorType
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideInteractor(featureToggles: FeatureToggles): HomeDashboardStateMachine.Interactor {
+        return HomeDashboardStateMachine.Interactor(
+            reducer = HomeDashboardStateMachine.Reducer(
+                featureToggles = featureToggles
+            ),
+            featureToggles = featureToggles
+        )
+    }
 }

@@ -26,7 +26,7 @@ import javax.inject.Inject
 class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSortBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
-    private val relation: String get() = arg(RELATION_KEY)
+    private val relationKey: String get() = arg(RELATION_KEY)
 
     @Inject
     lateinit var factory: ModifyViewerSortViewModel.Factory
@@ -36,8 +36,8 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(lifecycleScope) {
-            subscribe(binding.tvSortAsc.clicks()) { vm.onSortAscSelected(ctx, relation) }
-            subscribe(binding.tvSortDesc.clicks()) { vm.onSortDescSelected(ctx, relation) }
+            subscribe(binding.tvSortAsc.clicks()) { vm.onSortAscSelected(ctx, relationKey) }
+            subscribe(binding.tvSortDesc.clicks()) { vm.onSortDescSelected(ctx, relationKey) }
         }
     }
 
@@ -68,7 +68,7 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(relation)
+        vm.onStart(relationKey)
     }
 
     override fun onStop() {

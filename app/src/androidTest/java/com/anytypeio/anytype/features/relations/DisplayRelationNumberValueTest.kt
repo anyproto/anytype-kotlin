@@ -146,7 +146,7 @@ class DisplayRelationNumberValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relationKey,
+                RelationTextValueFragment.RELATION_KEY to relationKey,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW,
                 RelationTextValueFragment.LOCKED_KEY to DEFAULT_IS_LOCKED
@@ -219,7 +219,7 @@ class DisplayRelationNumberValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relationKey,
+                RelationTextValueFragment.RELATION_KEY to relationKey,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW,
                 RelationTextValueFragment.LOCKED_KEY to DEFAULT_IS_LOCKED
@@ -292,7 +292,7 @@ class DisplayRelationNumberValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relationKey,
+                RelationTextValueFragment.RELATION_KEY to relationKey,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW,
                 RelationTextValueFragment.LOCKED_KEY to DEFAULT_IS_LOCKED

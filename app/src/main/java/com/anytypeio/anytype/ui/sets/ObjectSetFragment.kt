@@ -586,10 +586,8 @@ open class ObjectSetFragment :
                 )
             }
             is ObjectSetCommand.Modal.EditGridTextCell -> {
-                //todo Relation as object, fix relationKey
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,
-                    relationId = "",
                     objectId = command.recordId,
                     flow = RelationTextValueFragment.FLOW_DATAVIEW,
                     relationKey = command.relationKey
@@ -597,13 +595,11 @@ open class ObjectSetFragment :
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditGridDateCell -> {
-                //todo Relation as object, fix relationKey
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
-                    relationId = command.relationKey,
                     objectId = command.objectId,
                     flow = RelationDateValueFragment.FLOW_DATAVIEW,
-                    relationKey = ""
+                    relationKey = command.relationKey
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
@@ -616,7 +612,6 @@ open class ObjectSetFragment :
                         RelationValueBaseFragment.TARGET_KEY to command.target,
                         RelationValueBaseFragment.DATAVIEW_KEY to command.dataview,
                         RelationValueBaseFragment.RELATION_KEY to command.relationKey,
-                        RelationValueBaseFragment.RELATION_ID to "",
                         RelationValueBaseFragment.VIEWER_KEY to command.viewer,
                         RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
                         RelationValueBaseFragment.IS_LOCKED_KEY to false
@@ -882,11 +877,11 @@ open class ObjectSetFragment :
         ctx: Id,
         number: Double?,
         objectId: Id,
-        relationId: Id
+        relationKey: Key
     ) = vm.onRelationTextValueChanged(
         value = number,
         objectId = objectId,
-        relationKey = relationId
+        relationKey = relationKey
     )
 
     override fun onDateValueChanged(

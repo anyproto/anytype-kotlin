@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.relations.add
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.presentation.relations.MultiValueParser
@@ -20,10 +21,10 @@ class AddOptionsRelationProvider {
         options: List<ObjectWrapper.Option>,
         relation: ObjectWrapper.Relation,
         record: Map<String, Any?>,
-        relationId: Id
+        relationKey: Key
     ): Options {
 
-        val selectedIds = MultiValueParser.parse<Id>(record[relationId])
+        val selectedIds = MultiValueParser.parse<Id>(record[relationKey])
         val views = mutableListOf<RelationValueView.Option>()
 
         when (relation.format) {

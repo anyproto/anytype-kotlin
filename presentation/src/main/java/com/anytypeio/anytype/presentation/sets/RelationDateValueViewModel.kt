@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
@@ -34,14 +34,14 @@ class RelationDateValueViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(relationId: Id, objectId: String) {
+    fun onStart(relationKey: Key, objectId: String) {
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.observe(relationId),
+                relations.observe(relationKey),
                 values.subscribe(objectId)
             ) { relation, value ->
                 setName(relation.name)
-                setDate(timeInSeconds = DateParser.parse(value[relationId]))
+                setDate(timeInSeconds = DateParser.parse(value[relationKey]))
             }
             pipeline.collect()
         }

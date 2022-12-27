@@ -3717,7 +3717,6 @@ class EditorViewModel(
                                                 ctx = context,
                                                 target = context,
                                                 relationKey = relationId,
-                                                relationId = relationId,
                                                 isLocked = mode == EditorMode.Locked
                                             )
                                         )
@@ -3737,7 +3736,6 @@ class EditorViewModel(
                                             Command.OpenObjectRelationScreen.Value.Date(
                                                 ctx = context,
                                                 target = context,
-                                                relationId = relationId,
                                                 relationKey = relationId
                                             )
                                         )
@@ -3747,7 +3745,6 @@ class EditorViewModel(
                                             Command.OpenObjectRelationScreen.Value.Default(
                                                 ctx = context,
                                                 target = context,
-                                                relationId = relationId,
                                                 relationKey = relationId,
                                                 targetObjectTypes = relation.relationFormatObjectTypes,
                                                 isLocked = mode == EditorMode.Locked
@@ -6679,7 +6676,6 @@ class EditorViewModel(
                         Command.OpenObjectRelationScreen.Value.Text(
                             ctx = context,
                             target = context,
-                            relationId = relationId,
                             relationKey = relation.key,
                             isLocked = mode == EditorMode.Locked
                         )
@@ -6698,7 +6694,6 @@ class EditorViewModel(
                         Command.OpenObjectRelationScreen.Value.Date(
                             ctx = context,
                             target = context,
-                            relationId = relationId,
                             relationKey = relation.key
                         )
                     )
@@ -6708,7 +6703,6 @@ class EditorViewModel(
                         Command.OpenObjectRelationScreen.Value.Default(
                             ctx = context,
                             target = context,
-                            relationId = relationId,
                             relationKey = relation.key,
                             targetObjectTypes = relation.relationFormatObjectTypes,
                             isLocked = mode == EditorMode.Locked

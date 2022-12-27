@@ -1016,7 +1016,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = RelationValueFragment.new(
                         ctx = command.ctx,
                         target = command.target,
-                        relationId = command.relationId,
                         relationKey = command.relationKey,
                         targetObjectTypes = command.targetObjectTypes,
                         isLocked = command.isLocked
@@ -1027,7 +1026,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideKeyboard()
                     val fr = RelationTextValueFragment.new(
                         ctx = command.ctx,
-                        relationId = command.relationId,
                         relationKey = command.relationKey,
                         objectId = command.target,
                         isLocked = command.isLocked
@@ -1039,7 +1037,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = RelationDateValueFragment.new(
                         ctx = command.ctx,
                         objectId = command.target,
-                        relationId = command.relationId,
                         relationKey = command.relationKey
                     )
                     fr.showChildFragment()

@@ -74,7 +74,6 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
     PickiTCallbacks {
 
     protected val ctx get() = argString(CTX_KEY)
-    protected val relationId get() = argString(RELATION_ID)
     protected val relationKey get() = argString(RELATION_KEY)
     protected val target get() = argString(TARGET_KEY)
     protected val dataview get() = argString(DATAVIEW_KEY)
@@ -456,7 +455,6 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
     companion object {
         const val CTX_KEY = "arg.edit-cell-tag.ctx"
         const val IS_LOCKED_KEY = "arg.edit-cell-tag.locked"
-        const val RELATION_ID = "arg.edit-cell-tag.relation.id"
         const val RELATION_KEY = "arg.edit-cell-tag.relation.key"
         const val TARGET_KEY = "arg.edit-cell-tag.target"
         const val DATAVIEW_KEY = "arg.edit-cell-tag.dataview"
@@ -498,7 +496,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
                 val fragmentFlow = AddObjectRelationFragment.FLOW_DATAVIEW
                 val fr = AddObjectRelationFragment.new(
                     ctx = ctx,
-                    relationId = relationId,
                     relationKey = relationKey,
                     objectId = target,
                     types = types,
@@ -510,7 +507,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
                 val fr = AddOptionsRelationDVFragment.new(
                     ctx = ctx,
                     target = target,
-                    relationId = relationId,
                     relationKey = relationKey,
                     dataview = dataview,
                     viewer = viewer
@@ -520,7 +516,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 val fr = AddFileRelationFragment.new(
                     ctx = ctx,
-                    relationId = relationId,
                     objectId = target,
                     flow = AddFileRelationFragment.FLOW_DATAVIEW,
                     relationKey = relationKey
@@ -624,7 +619,6 @@ class RelationValueFragment : RelationValueBaseFragment() {
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddObjectScreen -> {
                 val fr = AddObjectRelationFragment.new(
                     ctx = ctx,
-                    relationId = relationId,
                     relationKey = relationKey,
                     objectId = target,
                     types = types
@@ -635,7 +629,6 @@ class RelationValueFragment : RelationValueBaseFragment() {
                 val fr = AddOptionsRelationFragment.new(
                     ctx = ctx,
                     objectId = target,
-                    relationId = relationId,
                     relationKey = relationKey
                 )
                 fr.showChildFragment()
@@ -643,7 +636,6 @@ class RelationValueFragment : RelationValueBaseFragment() {
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 val fr = AddFileRelationFragment.new(
                     ctx = ctx,
-                    relationId = relationId,
                     relationKey = relationKey,
                     objectId = target,
                     flow = AddFileRelationFragment.FLOW_DEFAULT
@@ -700,7 +692,6 @@ class RelationValueFragment : RelationValueBaseFragment() {
         fun new(
             ctx: Id,
             target: Id,
-            relationId: Id,
             relationKey: Key,
             targetObjectTypes: List<Id>,
             isLocked: Boolean = false
@@ -708,7 +699,6 @@ class RelationValueFragment : RelationValueBaseFragment() {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
-                RELATION_ID to relationId,
                 RELATION_KEY to relationKey,
                 TARGET_TYPES_KEY to targetObjectTypes,
                 IS_LOCKED_KEY to isLocked

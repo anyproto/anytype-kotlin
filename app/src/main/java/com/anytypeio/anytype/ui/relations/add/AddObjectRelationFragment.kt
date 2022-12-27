@@ -43,7 +43,6 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
 
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
-    private val relationId get() = argString(RELATION_ID)
     private val relationKey get() = argString(RELATION_KEY)
     private val types get() = arg<List<String>>(TARGET_TYPES)
     private val flow get() = arg<Int>(FLOW_KEY)
@@ -188,7 +187,6 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         fun new(
             ctx: Id,
             objectId: Id,
-            relationId: Id,
             relationKey: Key,
             types: List<Id>,
             flow: Int = FLOW_DEFAULT
@@ -196,7 +194,6 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,
-                RELATION_ID to relationId,
                 RELATION_KEY to relationKey,
                 TARGET_TYPES to types,
                 FLOW_KEY to flow
@@ -204,7 +201,6 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         }
 
         const val CONTEXT_ID = "arg.relation.add.object.context"
-        const val RELATION_ID = "arg.relation.add.object.relation.id"
         const val RELATION_KEY = "arg.relation.add.object.relation.key"
         const val OBJECT_ID = "arg.relation.add.object.object.id"
         const val TARGET_TYPES = "arg.relation.add.object.target_types"

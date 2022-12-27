@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -44,11 +45,11 @@ class AddFileRelationViewModel(
     val commands = MutableSharedFlow<FileValueAddCommand>(0)
     val viewsFiltered: StateFlow<FileValueAddView> = _viewsFiltered
 
-    fun onStart(relationId: Id, objectId: String) {
+    fun onStart(relationKey: Key, objectId: String) {
         processingViewsSelectionsAndFilter()
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.observe(relationId),
+                relations.observe(relationKey),
                 values.subscribe(objectId)
             ) { relation, value ->
                 when (val ids = value[relation.key]) {

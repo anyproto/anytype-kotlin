@@ -37,7 +37,6 @@ class AddFileRelationFragment :
 
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
-    private val relationId get() = argString(RELATION_ID)
     private val relationKey get() = argString(RELATION_KEY)
     private val flow get() = arg<Int>(FLOW_KEY)
 
@@ -80,7 +79,7 @@ class AddFileRelationFragment :
             vm.onFilterTextChanged(it.toString())
         }
         super.onStart()
-        vm.onStart(objectId = objectId, relationId = relationId)
+        vm.onStart(objectId = objectId, relationKey = relationKey)
     }
 
     override fun onStop() {
@@ -145,21 +144,18 @@ class AddFileRelationFragment :
         fun new(
             ctx: Id,
             objectId: Id,
-            relationId: Id,
             relationKey: Key,
             flow: Int = FLOW_DEFAULT
         ) = AddFileRelationFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,
-                RELATION_ID to relationId,
                 RELATION_KEY to relationKey,
                 FLOW_KEY to flow
             )
         }
 
         const val CONTEXT_ID = "arg.relation.add.file.context"
-        const val RELATION_ID = "arg.relation.add.file.relation.id"
         const val RELATION_KEY = "arg.relation.add.file.relation.key"
         const val OBJECT_ID = "arg.relation.add.file.object.id"
         const val FLOW_KEY = "arg.relation.add.file.flow"

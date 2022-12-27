@@ -50,13 +50,11 @@ class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
         fun new(
             ctx: Id,
             objectId: Id,
-            relationId: Id,
             relationKey: Key
         ) = AddOptionsRelationFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to objectId,
-                RELATION_ID to relationId,
                 RELATION_KEY to relationKey
             )
         }

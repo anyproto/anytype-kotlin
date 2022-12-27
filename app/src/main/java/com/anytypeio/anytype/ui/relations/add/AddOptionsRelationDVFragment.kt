@@ -50,7 +50,6 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
         fun new(
             ctx: Id,
             target: Id,
-            relationId: Id,
             relationKey: Key,
             dataview: Id,
             viewer: Id
@@ -58,7 +57,6 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
-                RELATION_ID to relationId,
                 RELATION_KEY to relationKey,
                 DATAVIEW_KEY to dataview,
                 VIEWER_KEY to viewer

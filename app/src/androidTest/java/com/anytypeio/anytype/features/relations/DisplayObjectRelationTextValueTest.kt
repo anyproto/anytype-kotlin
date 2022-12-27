@@ -136,7 +136,7 @@ class DisplayObjectRelationTextValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.RELATION_KEY to relation.key,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
@@ -216,7 +216,7 @@ class DisplayObjectRelationTextValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.RELATION_KEY to relation.key,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
@@ -296,7 +296,7 @@ class DisplayObjectRelationTextValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.RELATION_KEY to relation.key,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
@@ -374,7 +374,7 @@ class DisplayObjectRelationTextValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.RELATION_KEY to relation.key,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
@@ -452,7 +452,7 @@ class DisplayObjectRelationTextValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.RELATION_KEY to relation.key,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )
@@ -531,7 +531,7 @@ class DisplayObjectRelationTextValueTest {
         launchFragment(
             bundleOf(
                 RelationTextValueFragment.CONTEXT_ID to root,
-                RelationTextValueFragment.RELATION_ID to relation.key,
+                RelationTextValueFragment.RELATION_KEY to relation.key,
                 RelationTextValueFragment.OBJECT_ID to target,
                 RelationTextValueFragment.FLOW_KEY to RelationTextValueFragment.FLOW_DATAVIEW
             )

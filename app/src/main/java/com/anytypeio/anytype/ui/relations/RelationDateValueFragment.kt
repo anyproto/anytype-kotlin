@@ -28,7 +28,6 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
 
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
-    private val relationId get() = argString(RELATION_ID)
     private val relationKey get() = argString(RELATION_KEY)
     private val flow get() = arg<Int>(FLOW_KEY)
 
@@ -54,7 +53,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
         jobs += lifecycleScope.subscribe(vm.views) { observeState(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         super.onStart()
-        vm.onStart(objectId = objectId, relationId = relationId)
+        vm.onStart(objectId = objectId, relationKey = relationKey)
     }
 
     override fun onStop() {
@@ -149,14 +148,12 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
 
         fun new(
             ctx: Id,
-            relationId: Id,
             relationKey: Key,
             objectId: Id,
             flow: Int = FLOW_DEFAULT
         ) = RelationDateValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
-                RELATION_ID to relationId,
                 RELATION_KEY to relationKey,
                 OBJECT_ID to objectId,
                 FLOW_KEY to flow
@@ -164,7 +161,6 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
         }
 
         const val CONTEXT_ID = "arg.relation.date.context"
-        const val RELATION_ID = "arg.relation.date.relation.id"
         const val RELATION_KEY = "arg.relation.date.relation.key"
         const val OBJECT_ID = "arg.relation.date.object.id"
 

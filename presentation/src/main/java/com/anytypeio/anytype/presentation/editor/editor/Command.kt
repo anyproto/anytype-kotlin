@@ -90,7 +90,6 @@ sealed class Command {
             data class Default(
                 val ctx: Id,
                 val target: Id,
-                val relationId: Id,
                 val relationKey: Key,
                 val targetObjectTypes: List<Id>,
                 val isLocked: Boolean
@@ -99,7 +98,6 @@ sealed class Command {
             data class Text(
                 val ctx: Id,
                 val target: Id,
-                val relationId: Id,
                 val relationKey: Key,
                 val isLocked: Boolean = false
             ) : OpenObjectRelationScreen.Value()
@@ -107,7 +105,6 @@ sealed class Command {
             data class Date(
                 val ctx: Id,
                 val target: Id,
-                val relationId: Id,
                 val relationKey: Key,
             ) : OpenObjectRelationScreen.Value()
         }

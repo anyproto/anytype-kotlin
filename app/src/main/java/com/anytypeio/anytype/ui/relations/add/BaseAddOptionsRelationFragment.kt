@@ -37,7 +37,6 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
     private val behavior get() = BottomSheetBehavior.from(binding.sheet)
 
     val ctx get() = argString(CTX_KEY)
-    val relationId get() = argString(RELATION_ID)
     val relationKey get() = argString(RELATION_KEY)
     val target get() = argString(TARGET_KEY)
     val flow get() = arg<Int>(FLOW_KEY)
@@ -206,7 +205,6 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
 
     companion object {
         const val CTX_KEY = "arg.add-object-relation-value.ctx"
-        const val RELATION_ID = "arg.add-object-relation-value.relation.id"
         const val RELATION_KEY = "arg.add-object-relation-value.relation.key"
         const val TARGET_KEY = "arg.add-object-relation-value.target"
         const val FLOW_KEY = "arg.add-object-relation-value.flow"

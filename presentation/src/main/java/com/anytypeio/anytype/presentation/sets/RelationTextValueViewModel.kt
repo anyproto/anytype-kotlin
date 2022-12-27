@@ -58,7 +58,6 @@ class RelationTextValueViewModel(
     }
 
     fun onStart(
-        relationId: Id,
         relationKey: Key,
         recordId: String,
         isLocked: Boolean = false

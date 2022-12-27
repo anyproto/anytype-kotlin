@@ -104,7 +104,6 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
             is Command.EditTextRelationValue -> {
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,
-                    relationId = command.relationId,
                     relationKey = command.relationKey,
                     objectId = command.target,
                     isLocked = command.isLocked
@@ -114,7 +113,6 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
             is Command.EditDateRelationValue -> {
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
-                    relationId = command.relationId,
                     relationKey = command.relationKey,
                     objectId = command.target
                 )
@@ -124,7 +122,6 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
                 val fr = RelationValueFragment.new(
                     ctx = ctx,
                     target = command.target,
-                    relationId = command.relationId,
                     relationKey = command.relationKey,
                     targetObjectTypes = command.targetObjectTypes,
                     isLocked = command.isLocked

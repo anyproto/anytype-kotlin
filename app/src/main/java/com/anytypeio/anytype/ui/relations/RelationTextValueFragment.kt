@@ -44,7 +44,6 @@ open class RelationTextValueFragment :
     private val vm: RelationTextValueViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CONTEXT_ID)
-    private val relationId get() = arg<String>(RELATION_ID)
     private val relationKey get() = arg<Key>(RELATION_KEY)
     private val objectId get() = arg<String>(OBJECT_ID)
     private val flow get() = arg<Int>(FLOW_KEY)
@@ -133,12 +132,10 @@ open class RelationTextValueFragment :
 
         if (flow == FLOW_CHANGE_DATE) {
             vm.onDateStart(
-                name = name,
-                value = value
+                name = name, value = value
             )
         } else {
             vm.onStart(
-                relationId = relationId,
                 relationKey = relationKey,
                 recordId = objectId,
                 isLocked = isLocked,
@@ -155,10 +152,7 @@ open class RelationTextValueFragment :
         binding.recycler.hideKeyboard()
         withParent<TextValueEditReceiver> {
             onTextValueChanged(
-                ctx = ctx,
-                relationKey = relationKey,
-                objectId = objectId,
-                text = txt
+                ctx = ctx, relationKey = relationKey, objectId = objectId, text = txt
             )
         }
         dismiss()
@@ -168,10 +162,7 @@ open class RelationTextValueFragment :
         binding.recycler.hideKeyboard()
         withParent<TextValueEditReceiver> {
             onNumberValueChanged(
-                ctx = ctx,
-                relationKey = relationKey,
-                objectId = objectId,
-                number = number
+                ctx = ctx, relationKey = relationKey, objectId = objectId, number = number
             )
         }
         dismiss()
@@ -212,8 +203,7 @@ open class RelationTextValueFragment :
     }
 
     override fun inflateBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
+        inflater: LayoutInflater, container: ViewGroup?
     ): FragmentRelationTextValueBinding = FragmentRelationTextValueBinding.inflate(
         inflater, container, false
     )
@@ -222,7 +212,6 @@ open class RelationTextValueFragment :
 
         fun new(
             ctx: Id,
-            relationId: Id,
             relationKey: Key,
             objectId: Id,
             flow: Int = FLOW_DEFAULT,
@@ -230,7 +219,6 @@ open class RelationTextValueFragment :
         ) = RelationTextValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
-                RELATION_ID to relationId,
                 RELATION_KEY to relationKey,
                 OBJECT_ID to objectId,
                 FLOW_KEY to flow,
@@ -239,19 +227,15 @@ open class RelationTextValueFragment :
         }
 
         fun new(
-            ctx: Id,
-            name: String = "",
-            value: Long? = null
-        ) = new(ctx, "", "", "", FLOW_CHANGE_DATE)
-            .apply {
-                arguments?.apply {
-                    putString(KEY_NAME, name)
-                    value?.let { putLong(KEY_VALUE, it) }
-                }
+            ctx: Id, name: String = "", value: Long? = null
+        ) = new(ctx = ctx, relationKey = "", objectId = "", flow = FLOW_CHANGE_DATE).apply {
+            arguments?.apply {
+                putString(KEY_NAME, name)
+                value?.let { putLong(KEY_VALUE, it) }
             }
+        }
 
         const val CONTEXT_ID = "arg.edit-relation-value.context"
-        const val RELATION_ID = "arg.edit-relation-value.relation.id"
         const val RELATION_KEY = "arg.edit-relation-value.relation.key"
         const val OBJECT_ID = "arg.edit-relation-value.object.id"
         const val FLOW_KEY = "arg.edit-relation-value.flow"
@@ -266,17 +250,11 @@ open class RelationTextValueFragment :
 
     interface TextValueEditReceiver {
         fun onTextValueChanged(
-            ctx: Id,
-            text: String,
-            objectId: Id,
-            relationKey: Key
+            ctx: Id, text: String, objectId: Id, relationKey: Key
         )
 
         fun onNumberValueChanged(
-            ctx: Id,
-            number: Double?,
-            objectId: Id,
-            relationKey: Key
+            ctx: Id, number: Double?, objectId: Id, relationKey: Key
         )
     }
 }

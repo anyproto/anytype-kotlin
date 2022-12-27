@@ -31,13 +31,13 @@ class ModifyViewerSortViewModel(
     val viewState = MutableStateFlow<ViewState?>(null)
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(relationId: Id) {
+    fun onStart(relationKey: Id) {
         jobs += viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { state ->
                 val dv = state.dataview.content as DV
                 val viewer = state.viewerById(session.currentViewerId.value)
-                val sort = viewer.sorts.first { it.relationKey == relationId }
-                val relation = dv.relations.first { it.key == relationId }
+                val sort = viewer.sorts.first { it.relationKey == relationKey }
+                val relation = dv.relations.first { it.key == relationKey }
                 viewState.value = ViewState(
                     format = relation.format,
                     type = sort.type,

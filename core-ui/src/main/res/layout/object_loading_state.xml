@@ -2,6 +2,14 @@
 <com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/shimmerLayout"
+    app:shimmer_duration="1000"
+    app:shimmer_repeat_delay="100"
+    app:shimmer_tilt="0"
+    app:shimmer_colored="false"
+    app:shimmer_base_alpha="0"
+    app:shimmer_highlight_alpha="0.8"
+    app:shimmer_base_color="@color/object_loading_state_gradient_start_color"
+    app:shimmer_highlight_color="@color/object_loading_state_gradient_end_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 

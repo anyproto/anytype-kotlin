@@ -184,7 +184,7 @@
     <color name="amber_80">#FFC532</color>
     <color name="amber_100">#FFB522</color>
     <color name="table_row_header_background">#1A50491C</color>
-    <color name="object_loading_state_gradient_start_color">@color/shape_tertiary</color>
+    <color name="object_loading_state_gradient_start_color">#F6F5F3</color>
     <color name="object_loading_state_gradient_end_color">#F1F0ED</color>
 
 </resources>

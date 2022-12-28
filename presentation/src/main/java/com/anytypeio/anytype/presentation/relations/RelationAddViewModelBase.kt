@@ -93,9 +93,7 @@ abstract class RelationAddViewModelBase(
         marketplaceRelations: List<ObjectWrapper.Relation>,
         objectRelationKeys: List<Key>,
     ) = buildList {
-        val my = myRelations.filter {
-            !objectRelationKeys.contains(it.key) && it.isHidden == false
-        }.map { wrapper ->
+        val my = myRelations.filter { !objectRelationKeys.contains(it.key) }.map { wrapper ->
             RelationView.Existing(
                 id = wrapper.id,
                 key = wrapper.key,
@@ -104,9 +102,7 @@ abstract class RelationAddViewModelBase(
                 workspace = wrapper.workspaceId
             )
         }
-        val marketplace = marketplaceRelations.filter {
-            !objectRelationKeys.contains(it.key) && it.isHidden == false
-        }.map { wrapper ->
+        val marketplace = marketplaceRelations.filter { !objectRelationKeys.contains(it.key) }.map { wrapper ->
             RelationView.Existing(
                 id = wrapper.id,
                 key = wrapper.key,

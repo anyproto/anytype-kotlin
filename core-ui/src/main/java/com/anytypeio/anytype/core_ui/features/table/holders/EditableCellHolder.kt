@@ -42,6 +42,9 @@ class EditableCellHolder(
     override fun bind(item: BlockView.Text.Paragraph) {
         super.bind(item)
         applyBackground(item)
+        item.alignment?.let { alignment ->
+            super.setAlignment(alignment)
+        }
     }
 
     fun bindEmptyCell() {

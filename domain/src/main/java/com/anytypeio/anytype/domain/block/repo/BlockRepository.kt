@@ -11,14 +11,13 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
@@ -90,12 +89,14 @@ interface BlockRepository {
 
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload
 
+    suspend fun openObject(id: Id) : ObjectView
+    @Deprecated("To be deleted")
     suspend fun openObjectPreview(id: Id): Result<Payload>
-
+    @Deprecated("To be deleted")
     suspend fun openPage(id: String): Result<Payload>
-
+    @Deprecated("To be deleted")
     suspend fun openProfile(id: String): Payload
-
+    @Deprecated("To be deleted")
     suspend fun openObjectSet(id: String): Result<Payload>
 
     suspend fun closePage(id: String)

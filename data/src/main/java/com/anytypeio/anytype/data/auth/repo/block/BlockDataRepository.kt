@@ -11,10 +11,10 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
@@ -36,6 +36,8 @@ import com.anytypeio.anytype.domain.page.Undo
 class BlockDataRepository(
     private val remote: BlockDataStore
 ) : BlockRepository {
+
+    override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
 
     override suspend fun openDashboard(
         contextId: String,

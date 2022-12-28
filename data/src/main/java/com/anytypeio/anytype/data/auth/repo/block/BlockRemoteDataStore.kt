@@ -10,14 +10,13 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
@@ -39,6 +38,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
+    override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
     override suspend fun openPage(id: String): Payload = remote.openPage(id)
     override suspend fun openProfile(id: String): Payload = remote.openProfile(id)
     override suspend fun openObjectSet(id: String): Payload = remote.openObjectSet(id)

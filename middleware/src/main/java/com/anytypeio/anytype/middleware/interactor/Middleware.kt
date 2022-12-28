@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
@@ -30,10 +31,10 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
-import com.anytypeio.anytype.middleware.mappers.MRelation
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.parse
+import com.anytypeio.anytype.middleware.mappers.toCore
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
@@ -1039,7 +1040,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectOpen(id: String): Payload {
+    fun objectOpenOld(id: String): Payload {
         val request = Rpc.Object.Open.Request(objectId = id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectOpen(request)
@@ -1047,6 +1048,15 @@ class Middleware(
 
         return response.objectView?.toPayload()
             ?: throw IllegalStateException("Object view was null")
+    }
+
+    @Throws(Exception::class)
+    fun objectOpen(id: String): ObjectView {
+        val request = Rpc.Object.Open.Request(objectId = id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectOpen(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.objectView?.toCore() ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)

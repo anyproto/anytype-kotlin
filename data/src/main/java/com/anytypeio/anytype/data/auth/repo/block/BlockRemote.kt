@@ -13,10 +13,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
@@ -49,6 +49,7 @@ interface BlockRemote {
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult
 
+    suspend fun openObject(id: Id) : ObjectView
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String): Payload
     suspend fun openObjectSet(id: String): Payload

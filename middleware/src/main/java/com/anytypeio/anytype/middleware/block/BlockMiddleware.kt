@@ -14,10 +14,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
@@ -26,7 +26,6 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
-import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 
 class BlockMiddleware(
@@ -42,9 +41,10 @@ class BlockMiddleware(
         middleware.objectClose(id)
     }
 
-    override suspend fun openPage(id: String): Payload = middleware.objectOpen(id)
-    override suspend fun openProfile(id: String): Payload = middleware.objectOpen(id)
-    override suspend fun openObjectSet(id: String): Payload = middleware.objectOpen(id)
+    override suspend fun openObject(id: Id): ObjectView = middleware.objectOpen(id = id)
+    override suspend fun openPage(id: String): Payload = middleware.objectOpenOld(id)
+    override suspend fun openProfile(id: String): Payload = middleware.objectOpenOld(id)
+    override suspend fun openObjectSet(id: String): Payload = middleware.objectOpenOld(id)
     override suspend fun openObjectPreview(id: Id): Payload = middleware.objectShow(id)
 
     override suspend fun closePage(id: String) {

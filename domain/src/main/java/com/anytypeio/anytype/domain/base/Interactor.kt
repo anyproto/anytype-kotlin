@@ -4,11 +4,9 @@ import com.anytypeio.anytype.domain.base.Interactor.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
@@ -53,6 +51,19 @@ abstract class Interactor<in P>(
          */
         data class Error(val throwable: Throwable) : Status()
     }
+}
+
+abstract class ResultatInteractor<in P, out R>() {
+    operator fun invoke(params: P): Flow<Resultat<R>> {
+        return flow {
+            emit(Resultat.Loading())
+            val r = execute(params)
+            emit(Resultat.Success(r))
+        }.catch { t ->
+            emit(Resultat.Failure(t))
+        }
+    }
+    protected abstract suspend fun execute(params: P) : R
 }
 
 abstract class ResultInteractor<in P, R>(

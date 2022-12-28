@@ -41,10 +41,23 @@ fun MObjectView.toPayload() : Payload {
                 ),
                 type = type,
                 relationLinks = relationLinks.map { it.toCoreModels() },
-                objectRestrictions = restrictions?.object_?.mapNotNull { it.toCoreModel() }.orEmpty(),
+                objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
                 dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
             )
         )
+    )
+}
+
+fun MObjectView.toCore() : ObjectView {
+    val type = type.toCoreModel()
+    return ObjectView(
+        root = rootId,
+        blocks = blocks.toCoreModels(types = mapOf(rootId to type)),
+        details = details.associate { d -> d.id to d.details.orEmpty() },
+        relations = relationLinks.map { it.toCoreModels() },
+        objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
+        dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty(),
+        type = type
     )
 }
 

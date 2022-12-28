@@ -19,10 +19,9 @@ import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.toIMECode
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
-import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
-import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher
+import com.anytypeio.anytype.core_ui.tools.TextInputTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.anytypeio.anytype.core_utils.ext.multilineIme
@@ -69,13 +68,7 @@ class TextInputWidget : AppCompatEditText {
         )
     }
 
-    private lateinit var _watchers: MutableList<TextWatcher>
-    private fun watchers(): MutableList<TextWatcher> {
-        if (!::_watchers.isInitialized) {
-            _watchers = mutableListOf()
-        }
-        return _watchers
-    }
+    private val watchers: MutableList<TextInputTextWatcher> = mutableListOf()
 
     private var highlightDrawer: HighlightDrawer? = null
 
@@ -147,17 +140,21 @@ class TextInputWidget : AppCompatEditText {
     }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
-        watchers().add(watcher)
+        if (watcher is TextInputTextWatcher) {
+            watchers.add(watcher)
+        }
         super.addTextChangedListener(watcher)
     }
 
     override fun removeTextChangedListener(watcher: TextWatcher) {
-        watchers().remove(watcher)
+        if (watcher is TextInputTextWatcher) {
+            watchers.remove(watcher)
+        }
         super.removeTextChangedListener(watcher)
     }
 
     fun dismissMentionWatchers() {
-        watchers().filterIsInstance(MentionTextWatcher::class.java).forEach { it.onDismiss() }
+        watchers.filterIsInstance(MentionTextWatcher::class.java).forEach { it.onDismiss() }
     }
 
     fun pauseTextWatchers(block: () -> Unit) = synchronized(this) {
@@ -184,19 +181,11 @@ class TextInputWidget : AppCompatEditText {
     }
 
     private fun lockTextWatchers() {
-        watchers().forEach { watcher ->
-            if (watcher is DefaultTextWatcher) watcher.lock()
-            if (watcher is SlashTextWatcher) watcher.lock()
-            if (watcher is MentionTextWatcher) watcher.lock()
-        }
+        watchers.forEach { it.lock() }
     }
 
     private fun unlockTextWatchers() {
-        watchers().forEach { watcher ->
-            if (watcher is DefaultTextWatcher) watcher.unlock()
-            if (watcher is SlashTextWatcher) watcher.unlock()
-            if (watcher is MentionTextWatcher) watcher.unlock()
-        }
+        watchers.forEach { it.unlock() }
     }
 
     /**

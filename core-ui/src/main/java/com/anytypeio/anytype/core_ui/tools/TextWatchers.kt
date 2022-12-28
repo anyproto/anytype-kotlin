@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_ui.tools.MentionHelper.isMentionSuggestTrigger
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import timber.log.Timber
 
-class DefaultTextWatcher(val onTextChanged: (Editable) -> Unit) : TextWatcher {
+class DefaultTextWatcher(val onTextChanged: (Editable) -> Unit) : TextInputTextWatcher {
 
     private var locked: Boolean = false
 
@@ -21,26 +21,26 @@ class DefaultTextWatcher(val onTextChanged: (Editable) -> Unit) : TextWatcher {
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-    fun lock() {
+    override fun lock() {
         locked = true
     }
 
-    fun unlock() {
+    override fun unlock() {
         locked = false
     }
 }
 
 class MentionTextWatcher(
     private val onMentionEvent: (MentionTextWatcherState) -> Unit
-) : TextWatcher {
+) : TextInputTextWatcher {
 
     private var locked: Boolean = false
 
-    fun lock() {
+    override fun lock() {
         locked = true
     }
 
-    fun unlock() {
+    override fun unlock() {
         locked = false
     }
 

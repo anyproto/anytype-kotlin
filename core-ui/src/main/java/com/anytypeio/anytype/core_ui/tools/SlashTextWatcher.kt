@@ -1,21 +1,20 @@
 package com.anytypeio.anytype.core_ui.tools
 
 import android.text.Editable
-import android.text.TextWatcher
 import timber.log.Timber
 
 
 class SlashTextWatcher(
     private val onSlashEvent: (SlashTextWatcherState) -> Unit
-) : TextWatcher {
+) : TextInputTextWatcher {
 
     private var locked: Boolean = false
 
-    fun lock() {
+    override fun lock() {
         locked = true
     }
 
-    fun unlock() {
+    override fun unlock() {
         locked = false
     }
 

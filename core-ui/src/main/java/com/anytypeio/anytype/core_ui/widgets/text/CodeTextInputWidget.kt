@@ -12,7 +12,7 @@ import android.view.DragEvent
 import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatEditText
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
-import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.tools.TextInputTextWatcher
 import com.anytypeio.anytype.library_syntax_highlighter.Syntax
 import com.anytypeio.anytype.library_syntax_highlighter.SyntaxHighlighter
 import com.anytypeio.anytype.library_syntax_highlighter.SyntaxTextWatcher
@@ -28,7 +28,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
 
     private val syntaxTextWatcher = SyntaxTextWatcher { highlight() }
 
-    private val watchers: MutableList<TextWatcher> = mutableListOf()
+    private val watchers: MutableList<TextInputTextWatcher> = mutableListOf()
 
     var selectionWatcher: ((IntRange) -> Unit)? = null
 
@@ -81,12 +81,16 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
-        watchers.add(watcher)
+        if (watcher is TextInputTextWatcher) {
+            watchers.add(watcher)
+        }
         super.addTextChangedListener(watcher)
     }
 
     override fun removeTextChangedListener(watcher: TextWatcher) {
-        watchers.remove(watcher)
+        if (watcher is TextInputTextWatcher) {
+            watchers.remove(watcher)
+        }
         super.removeTextChangedListener(watcher)
     }
 
@@ -103,13 +107,13 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
 
     private fun lockTextWatchers() {
         watchers.forEach { watcher ->
-            if (watcher is DefaultTextWatcher) watcher.lock()
+            watcher.lock()
         }
     }
 
     private fun unlockTextWatchers() {
         watchers.forEach { watcher ->
-            if (watcher is DefaultTextWatcher) watcher.unlock()
+            watcher.unlock()
         }
     }
 

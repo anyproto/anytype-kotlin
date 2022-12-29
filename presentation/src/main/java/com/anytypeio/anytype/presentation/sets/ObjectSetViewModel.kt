@@ -746,7 +746,7 @@ class ObjectSetViewModel(
                 val viewer = currentState.viewerById(session.currentViewerId.value)
                 val sourceId = setObject.setOf.singleOrNull()
                 if (sourceId == null) {
-                    toast("Unabled to define source for new object")
+                    toast("Unable to define a source for a new object.")
                 } else {
                     val sourceDetails = currentState.details[sourceId]
                     if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
@@ -777,7 +777,7 @@ class ObjectSetViewModel(
                             }
                         }
                     } else {
-                        toast("Unabled to define source for new object")
+                        toast("Unable to define a source for a new object.")
                     }
                 }
             }

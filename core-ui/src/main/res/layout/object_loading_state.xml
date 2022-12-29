@@ -6,10 +6,8 @@
     app:shimmer_repeat_delay="100"
     app:shimmer_tilt="0"
     app:shimmer_colored="false"
-    app:shimmer_base_alpha="0"
-    app:shimmer_highlight_alpha="0.8"
-    app:shimmer_base_color="@color/object_loading_state_gradient_start_color"
-    app:shimmer_highlight_color="@color/object_loading_state_gradient_end_color"
+    app:shimmer_base_alpha="0.5"
+    app:shimmer_highlight_alpha="0.9"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 

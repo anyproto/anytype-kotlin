@@ -1810,6 +1810,26 @@ class Middleware(
         return response.objectIds
     }
 
+    @Throws(Exception::class)
+    fun createWidgetBlock(
+        ctx: Id,
+        source: Id
+    ): Payload {
+        val request = Rpc.Block.CreateWidget.Request(
+            contextId = ctx,
+            widgetLayout = Block.Content.Widget.Layout.Tree,
+            block = Block(
+                link = Block.Content.Link(
+                    targetBlockId = source
+                )
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockCreateWidget(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any)
     }

@@ -695,4 +695,9 @@ class BlockDataRepository(
             objects = objects
         )
     }
+
+    override suspend fun createWidget(ctx: Id, source: Id): Payload = remote.createWidget(
+        ctx = ctx,
+        source = source
+    )
 }

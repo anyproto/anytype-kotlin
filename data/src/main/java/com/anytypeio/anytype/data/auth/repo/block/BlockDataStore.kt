@@ -300,4 +300,6 @@ interface BlockDataStore {
     suspend fun createBlockLinkWithObject(
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult
+
+    suspend fun createWidget(ctx: Id, source: Id): Payload
 }

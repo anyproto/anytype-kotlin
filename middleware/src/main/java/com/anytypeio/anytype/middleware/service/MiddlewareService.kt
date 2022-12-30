@@ -370,6 +370,13 @@ interface MiddlewareService {
 
     //endregion
 
+    //region WIDGETS commands
+
+    @Throws(Exception::class)
+    fun blockCreateWidget(request: Rpc.Block.CreateWidget.Request): Rpc.Block.CreateWidget.Response
+
+    //endregion
+
     //region WORKSPACE
 
     @Throws(Exception::class)

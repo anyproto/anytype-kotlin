@@ -63,6 +63,7 @@ import com.anytypeio.anytype.di.feature.ViewerSortByModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
+import com.anytypeio.anytype.di.feature.home.HomescreenModule
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
@@ -174,6 +175,10 @@ class ComponentManager(
             .homeDashboardComponentBuilder()
             .homeDashboardModule(HomeDashboardModule)
             .build()
+    }
+
+    val homescreenComponent = Component {
+        main.homescreenComponentBuilder().module(HomescreenModule).build()
     }
 
     val wallpaperSelectComponent = Component {

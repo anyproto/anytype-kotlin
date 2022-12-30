@@ -149,6 +149,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun blockCreateWidget(request: Rpc.Block.CreateWidget.Request): Rpc.Block.CreateWidget.Response {
+        val encoded = Service.blockCreateWidget(
+            Rpc.Block.CreateWidget.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Block.CreateWidget.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Block.CreateWidget.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockDataViewActiveSet(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response {
         val encoded = Service.blockDataviewViewSetActive(
             Rpc.BlockDataview.View.SetActive.Request.ADAPTER.encode(request)

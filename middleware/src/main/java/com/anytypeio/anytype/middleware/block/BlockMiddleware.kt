@@ -663,4 +663,9 @@ class BlockMiddleware(
     override suspend fun createBlockLinkWithObject(
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult = middleware.blockLinkCreateWithObject(command)
+
+    override suspend fun createWidget(ctx: Id, source: Id): Payload = middleware.createWidgetBlock(
+        ctx = ctx,
+        source = source
+    )
 }

@@ -350,4 +350,9 @@ interface BlockRepository {
     ): Payload
 
     suspend fun addObjectToWorkspace(objects: List<Id>) : List<Id>
+
+    suspend fun createWidget(
+        ctx: Id,
+        source: Id
+    ): Payload
 }

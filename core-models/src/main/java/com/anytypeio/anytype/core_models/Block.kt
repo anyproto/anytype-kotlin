@@ -368,6 +368,14 @@ data class Block(
         object Table : Content()
         data class TableRow(val isHeader: Boolean) : Content()
         object TableColumn : Content()
+
+        data class Widget(
+            val layout: Layout
+        ) : Content() {
+            enum class Layout {
+                TREE, LINK
+            }
+        }
     }
 
     /**

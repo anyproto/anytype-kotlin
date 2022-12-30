@@ -3,6 +3,8 @@ package com.anytypeio.anytype.domain.search
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Subscription
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.`object`.move
@@ -34,7 +36,6 @@ class ObjectSearchSubscriptionContainer(
         keys: List<String>
     ): Flow<Subscription> {
         return flow {
-
             val initial = repo.searchObjectsWithSubscription(
                 subscription = subscription,
                 sorts = sorts,
@@ -139,7 +140,19 @@ class ObjectSearchSubscriptionContainer(
                     result
                 }
             )
-        }
-            .flowOn(dispatchers.io)
+        }.flowOn(dispatchers.io)
+    }
+
+    fun observe(
+        subscription: Id,
+        targets: List<Id>,
+        keys: List<Key>
+    ): Flow<List<ObjectWrapper.Basic>> = flow {
+        val initial = repo.searchObjectsByIdWithSubscription(
+            subscription = subscription,
+            ids = targets,
+            keys = keys
+        )
+        emit(initial.results)
     }
 }

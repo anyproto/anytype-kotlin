@@ -300,4 +300,6 @@ interface BlockRemote {
     suspend fun addObjectToWorkspace(objects: List<Id>): List<Id>
 
     suspend fun createObject(command: Command.CreateObject): CreateObjectResult
+
+    suspend fun createWidget(ctx: Id, source: Id): Payload
 }

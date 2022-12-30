@@ -11,5 +11,6 @@ data class Config(
     val home: Id,
     val profile: Id,
     val gateway: Url,
-    val workspace: Id
+    val workspace: Id,
+    val widgets: Id
 )

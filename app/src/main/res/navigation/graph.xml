@@ -147,6 +147,13 @@
             app:destination="@id/createSetScreen" />
     </fragment>
 
+    <fragment
+        android:id="@+id/homeScreen"
+        android:name="com.anytypeio.anytype.ui.home.HomeFragment"
+        android:label="Home screen"
+        tools:layout="@layout/fragment_home">
+    </fragment>
+
     <dialog
         android:id="@+id/settingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"

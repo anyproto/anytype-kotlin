@@ -23,7 +23,7 @@ fun ResponseEvent?.toPayload(): Payload {
     )
 }
 
-fun MObjectView.toPayload() : Payload {
+fun MObjectView.toPayload(): Payload {
     val type = type.toCoreModel()
     return Payload(
         context = rootId,
@@ -48,7 +48,7 @@ fun MObjectView.toPayload() : Payload {
     )
 }
 
-fun MObjectView.toCore() : ObjectView {
+fun MObjectView.toCore(): ObjectView {
     val type = type.toCoreModel()
     return ObjectView(
         root = rootId,
@@ -211,6 +211,15 @@ fun List<MBlock>.toCoreModels(
                 backgroundColor = block.backgroundColor
             )
         }
+        block.widget != null -> {
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = block.toCoreWidget(),
+                backgroundColor = block.backgroundColor
+            )
+        }
         else -> {
             Block(
                 id = block.id,
@@ -330,7 +339,7 @@ fun MBlock.toCoreModelsBookmark(): Block.Content.Bookmark {
     )
 }
 
-fun MBookmarkState.toCoreModelsBookmarkState() : Block.Content.Bookmark.State {
+fun MBookmarkState.toCoreModelsBookmarkState(): Block.Content.Bookmark.State {
     return when (this) {
         MBookmarkState.Empty -> Block.Content.Bookmark.State.EMPTY
         MBookmarkState.Fetching -> Block.Content.Bookmark.State.FETCHING
@@ -360,6 +369,16 @@ fun MBlock.toCoreModelsTableRowBlock(): Block.Content.TableRow {
     val content = checkNotNull(tableRow)
     return Block.Content.TableRow(
         isHeader = content.isHeader
+    )
+}
+
+fun MBlock.toCoreWidget(): Block.Content.Widget {
+    val content = checkNotNull(widget)
+    return Block.Content.Widget(
+        layout = when (content.layout) {
+            MWidgetLayout.Link -> Block.Content.Widget.Layout.LINK
+            MWidgetLayout.Tree -> Block.Content.Widget.Layout.TREE
+        }
     )
 }
 

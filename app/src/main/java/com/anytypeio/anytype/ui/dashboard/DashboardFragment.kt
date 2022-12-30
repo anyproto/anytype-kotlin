@@ -346,6 +346,17 @@ class DashboardFragment :
 
     override fun onStart() {
         super.onStart()
+
+        click(binding.btnAddDoc) { vm.onAddNewDocumentClicked() }
+        click(binding.btnSearch) { vm.onPageSearchClicked() }
+        click(binding.btnMarketplace) { toast(getString(R.string.coming_soon)) }
+        click(binding.ivSettings) { vm.onSettingsClicked() }
+        click(binding.avatarContainer) { vm.onAvatarClicked() }
+        click(binding.tvCancel) { vm.onCancelSelectionClicked() }
+        click(binding.tvSelectAll) { vm.onSelectAllClicked() }
+        click(binding.tvRestore) { vm.onPutBackClicked() }
+        click(binding.tvDelete) { vm.onDeleteObjectsClicked() }
+
         vm.onStart()
     }
 
@@ -408,11 +419,9 @@ class DashboardFragment :
     }
 
     private fun setup() {
-
         binding.tabsLayout.apply {
             tabMode = TabLayout.MODE_SCROLLABLE
         }
-
         binding.dashboardPager.apply {
             adapter = dashboardPagerAdapter
             TabLayoutMediator(binding.tabsLayout, binding.dashboardPager) { tab, position ->
@@ -425,16 +434,6 @@ class DashboardFragment :
                     }
                 })
         }
-
-        click(binding.btnAddDoc) { vm.onAddNewDocumentClicked() }
-        click(binding.btnSearch) { vm.onPageSearchClicked() }
-        click(binding.btnMarketplace) { toast(getString(R.string.coming_soon)) }
-        click(binding.ivSettings) { vm.onSettingsClicked() }
-        click(binding.avatarContainer) { vm.onAvatarClicked() }
-        click(binding.tvCancel) { vm.onCancelSelectionClicked() }
-        click(binding.tvSelectAll) { vm.onSelectAllClicked() }
-        click(binding.tvRestore) { vm.onPutBackClicked() }
-        click(binding.tvDelete) { vm.onDeleteObjectsClicked() }
     }
 
     override fun inflateBinding(

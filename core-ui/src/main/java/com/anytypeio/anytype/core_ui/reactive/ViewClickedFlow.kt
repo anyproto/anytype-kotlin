@@ -1,21 +1,16 @@
 package com.anytypeio.anytype.core_ui.reactive
 
 import android.os.Looper
-import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -109,6 +104,9 @@ fun checkMainThread() = check(Looper.myLooper() == Looper.getMainLooper()) {
     "Expected to be called on the main thread but was " + Thread.currentThread().name
 }
 
+/**
+ * Should be called from [BaseFragment.onStart]
+ */
 fun BaseFragment<*>.click(
     view: View,
     action: () -> Unit
@@ -119,6 +117,10 @@ fun BaseFragment<*>.click(
         .launchIn(lifecycleScope)
 }
 
+
+/**
+ * Should be called from [BaseBottomSheetFragment.onStart]
+ */
 fun BaseBottomSheetFragment<*>.click(
     view: View,
     action: () -> Unit

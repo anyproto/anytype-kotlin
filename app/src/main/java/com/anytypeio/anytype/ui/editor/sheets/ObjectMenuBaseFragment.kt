@@ -52,14 +52,6 @@ abstract class ObjectMenuBaseFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx) }
-        click(binding.optionHistory) { vm.onHistoryClicked() }
-        click(binding.optionLayout) { vm.onLayoutClicked(ctx) }
-        click(binding.optionIcon) { vm.onIconClicked(ctx) }
-        click(binding.optionRelations) { vm.onRelationsClicked() }
-        click(binding.optionCover) { vm.onCoverClicked(ctx) }
-
         binding.rvActions.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = actionAdapter
@@ -73,6 +65,13 @@ abstract class ObjectMenuBaseFragment :
     }
 
     override fun onStart() {
+        click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx) }
+        click(binding.optionHistory) { vm.onHistoryClicked() }
+        click(binding.optionLayout) { vm.onLayoutClicked(ctx) }
+        click(binding.optionIcon) { vm.onIconClicked(ctx) }
+        click(binding.optionRelations) { vm.onRelationsClicked() }
+        click(binding.optionCover) { vm.onCoverClicked(ctx) }
+
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }
         proceed(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }

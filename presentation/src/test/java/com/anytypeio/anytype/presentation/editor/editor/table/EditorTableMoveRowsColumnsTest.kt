@@ -389,7 +389,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     cells = expectedCells,
                     isSelected = false,
                     selectedCellsIds = listOf(cellR3C2, cellR3C0, cellR3C1, cellR3C3),
-                    tab = BlockView.Table.Tab.ROW
+                    tab = BlockView.Table.Tab.ROW,
+                    decorations = listOf(BlockView.Decoration())
                 )
             )
         )
@@ -689,7 +690,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     cells = expectedCells,
                     isSelected = false,
                     selectedCellsIds = listOf(cellR3C2, cellR3C0, cellR3C1, cellR3C3),
-                    tab = BlockView.Table.Tab.ROW
+                    tab = BlockView.Table.Tab.ROW,
+                    decorations = listOf(BlockView.Decoration())
                 )
             )
         )
@@ -988,7 +990,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     cells = expectedCells,
                     isSelected = false,
                     selectedCellsIds = listOf(cellR3C2, cellR3C0, cellR3C1, cellR3C3),
-                    tab = BlockView.Table.Tab.ROW
+                    tab = BlockView.Table.Tab.ROW,
+                    decorations = listOf(BlockView.Decoration())
                 )
             )
         )
@@ -1280,7 +1283,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     cells = expectedCells,
                     isSelected = false,
                     selectedCellsIds = listOf(cellR3C2, cellR3C0, cellR3C1, cellR3C3),
-                    tab = BlockView.Table.Tab.ROW
+                    tab = BlockView.Table.Tab.ROW,
+                    decorations = listOf(BlockView.Decoration())
                 )
             )
         )
@@ -1659,7 +1663,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     cells = expectedCells,
                     isSelected = false,
                     selectedCellsIds = listOf(cellR0C0, cellR1C0, cellR2C0),
-                    tab = BlockView.Table.Tab.COLUMN
+                    tab = BlockView.Table.Tab.COLUMN,
+                    decorations = listOf(BlockView.Decoration())
                 )
             )
         )
@@ -1915,7 +1920,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     cells = expectedCells,
                     isSelected = false,
                     selectedCellsIds = listOf(cellR0C0, cellR1C0, cellR2C0),
-                    tab = BlockView.Table.Tab.COLUMN
+                    tab = BlockView.Table.Tab.COLUMN,
+                    decorations = listOf(BlockView.Decoration())
                 )
             )
         )
@@ -2163,7 +2169,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     cells = expectedCells,
                     isSelected = false,
                     selectedCellsIds = listOf(cellR0C0, cellR1C0, cellR2C0),
-                    tab = BlockView.Table.Tab.COLUMN
+                    tab = BlockView.Table.Tab.COLUMN,
+                    decorations = listOf(BlockView.Decoration())
                 )
             )
         )

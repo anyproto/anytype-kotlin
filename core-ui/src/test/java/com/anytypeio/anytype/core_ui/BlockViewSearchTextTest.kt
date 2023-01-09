@@ -1237,7 +1237,8 @@ class BlockViewSearchTextTest {
                 rows = rows,
                 isSelected = false,
                 selectedCellsIds = emptyList(),
-                tab = null
+                tab = null,
+                decorations = listOf()
             )
         )
 
@@ -1403,7 +1404,8 @@ class BlockViewSearchTextTest {
                 rows = rows,
                 isSelected = false,
                 selectedCellsIds = emptyList(),
-                tab = null
+                tab = null,
+                decorations = listOf()
             )
         )
 
@@ -1565,7 +1567,8 @@ class BlockViewSearchTextTest {
                 isSelected = false,
                 selectedCellsIds = emptyList(),
                 rows = rows,
-                tab = null
+                tab = null,
+                decorations = listOf()
             )
         )
 
@@ -1691,7 +1694,8 @@ class BlockViewSearchTextTest {
                 rows = rows,
                 isSelected = false,
                 selectedCellsIds = emptyList(),
-                tab = null
+                tab = null,
+                decorations = listOf()
             )
         )
 

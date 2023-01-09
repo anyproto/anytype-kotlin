@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cellRoot"
     android:layout_width="140dp"
     android:layout_height="wrap_content"
     android:minWidth="@dimen/item_block_table_cell_width"
@@ -14,6 +15,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:focusable="true"
+        app:ignoreDragAndDrop="true"
         android:textIsSelectable="true"
         tools:text="@string/default_text_placeholder" />
 

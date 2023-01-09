@@ -807,7 +807,8 @@ class BlockAdapter(
                 onMentionEvent = onMentionEvent,
                 onSelectionChanged = onSelectionChanged,
                 onFocusChanged = onFocusChanged,
-                clipboardInterceptor = clipboardInterceptor
+                clipboardInterceptor = clipboardInterceptor,
+                onDragAndDropTrigger = onDragAndDropTrigger
             )
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }

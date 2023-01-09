@@ -1339,8 +1339,9 @@ sealed class BlockView : ViewType {
         val rows: List<Row>,
         val cells: List<Cell>,
         val selectedCellsIds: List<Id>,
-        val tab: Tab?
-    ) : BlockView(), Selectable {
+        val tab: Tab?,
+        override val decorations: List<Decoration>
+    ) : BlockView(), Selectable, Decoratable {
         override fun getViewType(): Int = HOLDER_TABLE
 
         data class Cell(

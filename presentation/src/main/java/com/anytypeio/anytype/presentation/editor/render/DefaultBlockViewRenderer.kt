@@ -756,6 +756,14 @@ class DefaultBlockViewRenderer @Inject constructor(
                 is Content.Table -> {
                     isPreviousBlockMedia = false
                     mCounter = 0
+                    val decorations = buildNestedDecorationData(
+                        block = block,
+                        parentScheme = parentScheme,
+                        currentDecoration = DecorationData(
+                            style = DecorationData.Style.None,
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    ).toBlockViewDecoration(block)
                     result.add(
                         table(
                             mode = mode,
@@ -764,7 +772,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             indent = indent,
                             details = details,
                             selection = selection,
-                            blocks = this
+                            blocks = this,
+                            decorations = decorations
                         )
                     )
                 }
@@ -1905,7 +1914,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>,
-        blocks: Map<String, List<Block>>
+        blocks: Map<String, List<Block>>,
+        decorations: List<BlockView.Decoration>
     ): BlockView.Table {
 
         var cells: List<BlockView.Table.Cell> = emptyList()
@@ -1956,7 +1966,8 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             background = block.parseThemeBackgroundColor(),
             selectedCellsIds = selection.toList(),
-            tab = (mode as? EditorMode.Table)?.tab
+            tab = (mode as? EditorMode.Table)?.tab,
+            decorations = decorations
         )
     }
 

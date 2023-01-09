@@ -267,7 +267,8 @@ class TableBlockRendererTest {
                 rows = rowViews,
                 isSelected = false,
                 selectedCellsIds = emptyList(),
-                tab = null
+                tab = null,
+                decorations = listOf(BlockView.Decoration())
             )
         ) + blocksDown.mapIndexed { idx, block ->
             BlockView.Text.Numbered(
@@ -437,7 +438,8 @@ class TableBlockRendererTest {
                 rows = rowViews,
                 isSelected = false,
                 selectedCellsIds = emptyList(),
-                tab = null
+                tab = null,
+                decorations = listOf(BlockView.Decoration())
             )
         ) + blocksDown.mapIndexed { idx, block ->
             BlockView.Text.Numbered(
@@ -780,7 +782,8 @@ class TableBlockRendererTest {
                 rows = rowViews,
                 isSelected = false,
                 selectedCellsIds = listOf("$rowId2-$columnId1"),
-                tab = null
+                tab = null,
+                decorations = listOf(BlockView.Decoration())
             )
         ) + blocksDown.mapIndexed { idx, block ->
             BlockView.Text.Numbered(

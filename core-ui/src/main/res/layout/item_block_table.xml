@@ -2,15 +2,19 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
-    style="@style/DefaultTableBlockRootStyle"
+    android:id="@+id/tableRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/container"
-        style="@style/DefaultTableBlockContainerStyle"
         android:clipToPadding="false"
+        style="@style/DefaultTableBlockRootStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

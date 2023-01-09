@@ -986,9 +986,10 @@
 
     <!-- Editor, table block style, {root {container {recycler}} selected}-->
     <style name="DefaultTableBlockRootStyle">
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
+        <item name="android:layout_marginTop">@dimen/item_block_table_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/item_block_table_margin_bottom</item>
+        <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
     </style>
 
     <style name="DefaultTableBlockContainerStyle">

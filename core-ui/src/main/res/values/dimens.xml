@@ -295,6 +295,8 @@
     <dimen name="item_block_table_cell_padding_start">12dp</dimen>
     <dimen name="item_block_table_cell_padding_top">9dp</dimen>
     <dimen name="item_block_table_space_end_width">20dp</dimen>
+    <dimen name="item_block_table_margin_top">10dp</dimen>
+    <dimen name="item_block_table_margin_bottom">10dp</dimen>
 
     <!-- Relations in lists(document relations, slash menu relations -->
     <dimen name="object_settings_relations_item_height">48dp</dimen>

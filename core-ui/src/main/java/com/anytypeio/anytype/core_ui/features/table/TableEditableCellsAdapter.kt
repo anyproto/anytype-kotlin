@@ -1,6 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.table
 
+import android.graphics.Rect
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.TouchDelegate
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +15,7 @@ import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.features.editor.withBlock
 import com.anytypeio.anytype.core_ui.features.table.holders.EditableCellHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -24,7 +29,8 @@ class TableEditableCellsAdapter(
     private val onMentionEvent: (MentionEvent) -> Unit,
     private val onSelectionChanged: (Id, IntRange) -> Unit,
     private val onFocusChanged: (Id, Boolean) -> Unit,
-    private val clipboardInterceptor: ClipboardInterceptor
+    private val clipboardInterceptor: ClipboardInterceptor,
+    private val onDragAndDropTrigger: (RecyclerView.ViewHolder, event: MotionEvent?) -> Boolean
 ) : RecyclerView.Adapter<EditableCellHolder>(),
     ItemProviderAdapter<BlockView.Text.Paragraph?> {
 
@@ -54,6 +60,9 @@ class TableEditableCellsAdapter(
                     clicked(ListenerType.CellLongClick(tableId = items[pos].tableId))
                 }
             }
+            content.editorTouchProcessor.onDragAndDropTrigger = {
+                onDragAndDropTrigger(this, it)
+            }
             content.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
@@ -75,17 +84,19 @@ class TableEditableCellsAdapter(
                     }
                 }
             }
-            content.setOnFocusChangeListener { _, hasFocus ->
+            content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val block = items[pos].block
                     if (block != null) {
+                        block.isFocused = hasFocus
                         cellSelection(hasFocus)
                         onFocusChanged(block.id, hasFocus)
                     }
                 }
             }
             content.clipboardInterceptor = clipboardInterceptor
+            content.expandCellHitArea(root)
             this.setupViewHolder(
                 onTextChanged = { editable ->
                     this.withBlock<BlockView.Text> { item ->
@@ -137,4 +148,18 @@ class TableEditableCellsAdapter(
 
     override fun getItemCount(): Int = items.size
 
+}
+
+fun View.expandCellHitArea(parent: View) {
+    parent.post {
+        val parentRect = Rect()
+        val childRect = Rect()
+        parent.getHitRect(parentRect)
+        this.getHitRect(childRect)
+        childRect.left = 0
+        childRect.top = 0
+        childRect.right = parentRect.width()
+        childRect.bottom = 2000
+        parent.touchDelegate = TouchDelegate(childRect, this)
+    }
 }

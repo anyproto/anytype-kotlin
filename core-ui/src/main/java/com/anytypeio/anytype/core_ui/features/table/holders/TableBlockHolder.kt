@@ -1,6 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.table.holders
 
+import android.view.MotionEvent
 import android.widget.FrameLayout
+import androidx.core.view.marginBottom
+import androidx.core.view.marginEnd
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.CustomGridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,12 +18,15 @@ import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.layout.TableHorizontalItemDivider
 import com.anytypeio.anytype.core_ui.layout.TableVerticalItemDivider
 import com.anytypeio.anytype.core_ui.features.table.TableEditableCellsAdapter
 import com.anytypeio.anytype.core_ui.layout.TableCellSelectionDecoration
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -29,12 +39,17 @@ class TableBlockHolder(
     onMentionEvent: (MentionEvent) -> Unit,
     onSelectionChanged: (Id, IntRange) -> Unit,
     onFocusChanged: (Id, Boolean) -> Unit,
-    clipboardInterceptor: ClipboardInterceptor
-) : BlockViewHolder(binding.root) {
+    clipboardInterceptor: ClipboardInterceptor,
+    onDragAndDropTrigger: (RecyclerView.ViewHolder, event: MotionEvent?) -> Boolean
+) : BlockViewHolder(binding.root),
+    BlockViewHolder.DragAndDropHolder,
+    DecoratableViewHolder {
 
     private val root: FrameLayout = binding.root
     private val recycler: RecyclerView = binding.recyclerTable
+    private val container: NestedScrollView = binding.container
     private val selectView = binding.selected
+    override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
     private val cellsSelectionState = TableCellsSelectionState()
 
@@ -50,7 +65,8 @@ class TableBlockHolder(
         onMentionEvent = onMentionEvent,
         onSelectionChanged = onSelectionChanged,
         onFocusChanged = onFocusChanged,
-        clipboardInterceptor = clipboardInterceptor
+        clipboardInterceptor = clipboardInterceptor,
+        onDragAndDropTrigger = { _, event -> onDragAndDropTrigger(this, event) }
     )
 
     private val lm =
@@ -131,6 +147,22 @@ class TableBlockHolder(
                 }
             } else {
                 recycler.removeItemDecoration(cellSelectionDecoration)
+            }
+        }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        decoratableContainer.decorate(decorations) { rect ->
+            container.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom + dimen(R.dimen.item_block_table_margin_bottom)
+            }
+            selectView.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = container.marginStart
+                marginEnd = container.marginEnd
+                topMargin = container.marginTop
+                bottomMargin = container.marginBottom
             }
         }
     }

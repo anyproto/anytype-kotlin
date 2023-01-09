@@ -331,7 +331,8 @@ fun StubTwoRowsThreeColumnsSimpleTable(
     textR2C2: String = MockDataFactory.randomString(),
     textR2C3: String = MockDataFactory.randomString(),
     tab: BlockView.Table.Tab = BlockView.Table.Tab.CELL,
-    selectedCellsIds: List<Id> = emptyList()
+    selectedCellsIds: List<Id> = emptyList(),
+    decorations: List<BlockView.Decoration> = emptyList()
 ): BlockView.Table {
 
     val row1Block1 = StubParagraph(id = "$rowId1-$columnId1", text = textR1C1)
@@ -475,7 +476,8 @@ fun StubTwoRowsThreeColumnsSimpleTable(
         rows = rows,
         isSelected = false,
         selectedCellsIds = selectedCellsIds,
-        tab = tab
+        tab = tab,
+        decorations = decorations
     )
 }
 
@@ -484,7 +486,8 @@ fun StubTableView(
     rowSize: Int,
     columnSize: Int,
     tab: BlockView.Table.Tab = BlockView.Table.Tab.CELL,
-    selectedCellsIds: List<Id> = emptyList()
+    selectedCellsIds: List<Id> = emptyList(),
+    decorations: List<BlockView.Decoration> = emptyList()
 ): BlockView.Table {
 
     val columns = mutableListOf<BlockView.Table.Column>()
@@ -525,7 +528,8 @@ fun StubTableView(
         rows = rows,
         isSelected = false,
         selectedCellsIds = selectedCellsIds,
-        tab = tab
+        tab = tab,
+        decorations = decorations
     )
 }
 

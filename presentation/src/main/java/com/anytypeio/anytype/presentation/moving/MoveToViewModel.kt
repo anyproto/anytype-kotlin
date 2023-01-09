@@ -21,7 +21,6 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -46,7 +45,7 @@ class MoveToViewModel(
     private val _viewState: MutableStateFlow<MoveToView> = MutableStateFlow(MoveToView.Init)
     val viewState: StateFlow<MoveToView> get() = _viewState
 
-    val commands = MutableSharedFlow<Command>(replay = 0)
+    val commands = MutableStateFlow<Command>(Command.Init)
     private val userInput = MutableStateFlow(EMPTY_QUERY)
     private val searchQuery = userInput.take(1).onCompletion {
         emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
@@ -85,6 +84,7 @@ class MoveToViewModel(
     }
 
     fun onStart(ctx: Id) {
+        Timber.d("onStart, ctx:[$ctx]")
         getObjectTypes(ctx)
     }
 
@@ -168,23 +168,21 @@ class MoveToViewModel(
     }
 
     fun onObjectClicked(view: DefaultObjectView) {
-        viewModelScope.launch {
-            commands.emit(Command.Move(view = view))
-        }
+        Timber.d("onObjectClicked, view:[$view]")
+        commands.value = Command.Move(view = view)
         sendSearchResultEvent(view.id)
     }
 
     fun onDialogCancelled() {
-        viewModelScope.launch {
-            commands.emit(Command.Exit)
-        }
+        commands.value = Command.Exit
     }
 
     fun onSearchTextChanged(searchText: String) {
+        Timber.d("onSearchTextChanged, searchText:[$searchText]")
         userInput.value = searchText
     }
 
-    fun setObjects(ctx: Id, data: List<ObjectWrapper.Basic>) {
+    private fun setObjects(ctx: Id, data: List<ObjectWrapper.Basic>) {
         objects.value = Resultat.success(data
             .filter {
                 SupportedLayouts.layouts.contains(it.layout) && it.id != ctx
@@ -192,6 +190,7 @@ class MoveToViewModel(
     }
 
     sealed class Command {
+        object Init : Command()
         object Exit : Command()
         data class Move(val view: DefaultObjectView) : Command()
     }

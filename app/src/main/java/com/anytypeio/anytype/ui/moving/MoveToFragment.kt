@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.moving
 
-import android.content.DialogInterface
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
@@ -43,7 +42,6 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
     override val textInput: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
 
     private lateinit var clearSearchText: View
-    private lateinit var filterInputField: EditText
 
     private val blocks get() = arg<List<Id>>(ARG_BLOCKS)
     private val ctx get() = arg<Id>(ARG_CTX)
@@ -65,22 +63,12 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
             skipCollapsed = true
-            addBottomSheetCallback(
-                object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            vm.onDialogCancelled()
-                        }
-                    }
-                }
-            )
         }
+        closeKeyboardOnDismiss()
         clearSearchText = binding.searchView.root.findViewById(R.id.clearSearchText)
-        filterInputField = binding.searchView.root.findViewById(R.id.filterInputField)
-        filterInputField.setHint(R.string.search)
-        filterInputField.imeOptions = EditorInfo.IME_ACTION_DONE
-        filterInputField.setOnEditorActionListener { _, actionId, _ ->
+        textInput.setHint(R.string.search)
+        textInput.imeOptions = EditorInfo.IME_ACTION_DONE
+        textInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 return@setOnEditorActionListener false
             }
@@ -99,9 +87,20 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
         expand()
     }
 
-    override fun onCancel(dialog: DialogInterface) {
-        super.onCancel(dialog)
-        vm.onDialogCancelled()
+    private fun closeKeyboardOnDismiss() {
+        sheet?.let {
+            BottomSheetBehavior.from(it).apply {
+                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        if (slideOffset == -1F) {
+                            vm.onDialogCancelled()
+                        }
+                    }
+
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {}
+                })
+            }
+        }
     }
 
     private fun observe(state: MoveToView) {
@@ -173,13 +172,10 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
                         restoreBlock = restoreBlock
                     )
                 }
-                hideSoftInput()
+                sheet?.hideKeyboard()
                 dismiss()
             }
             is MoveToViewModel.Command.Move -> {
-                if (restorePosition == null && restoreBlock == null) {
-                    hideSoftInput()
-                }
                 withParent<OnMoveToAction> {
                     onMoveTo(
                         target = command.view.id,
@@ -189,18 +185,19 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
                         isSet = command.view.layout == ObjectType.Layout.SET
                     )
                 }
-                hideSoftInput()
+                textInput.hideKeyboard()
                 dismiss()
             }
+            MoveToViewModel.Command.Init -> {}
         }
     }
 
     private fun initialize() {
         with(binding.tvScreenTitle) {
-            if (title != null) {
-                text = title
+            text = if (title != null) {
+                title
             } else {
-                text = getString(R.string.move_to)
+                getString(R.string.move_to)
             }
             visible()
         }
@@ -208,10 +205,10 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
         binding.tvScreenStateMessage.invisible()
         binding.hideProgress()
         clearSearchText.setOnClickListener {
-            filterInputField.setText(EMPTY_FILTER_TEXT)
+            textInput.setText(EMPTY_FILTER_TEXT)
             clearSearchText.invisible()
         }
-        filterInputField.doAfterTextChanged { newText ->
+        textInput.doAfterTextChanged { newText ->
             if (newText != null) {
                 vm.onSearchTextChanged(newText.toString())
             }

@@ -81,6 +81,7 @@ abstract class ObjectMenuViewModelBase(
         isProfile: Boolean,
         isLocked: Boolean
     ) {
+        Timber.d("onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
@@ -102,6 +103,7 @@ abstract class ObjectMenuViewModelBase(
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
+        Timber.d("proceedWithRemovingFromFavorites, cts:[$ctx]")
         jobs += viewModelScope.launch {
             removeFromFavorite(
                 RemoveFromFavorite.Params(
@@ -121,6 +123,7 @@ abstract class ObjectMenuViewModelBase(
     }
 
     protected fun proceedWithAddingToFavorites(ctx: Id) {
+        Timber.d("proceedWithAddingToFavorites, ctx:[$ctx]")
         jobs += viewModelScope.launch {
             addToFavorite(
                 AddToFavorite.Params(
@@ -140,6 +143,7 @@ abstract class ObjectMenuViewModelBase(
     }
 
     fun proceedWithUpdatingArchivedStatus(ctx: Id, isArchived: Boolean) {
+        Timber.d("proceedWithUpdatingArchivedStatus, cts:[$ctx], isArchived:[$isArchived]")
         jobs += viewModelScope.launch {
             setObjectIsArchived(
                 SetObjectIsArchived.Params(
@@ -165,6 +169,7 @@ abstract class ObjectMenuViewModelBase(
     }
 
     fun onLinkedMyselfTo(myself: Id, addTo: Id, fromName: String?) {
+        Timber.d("onLinkedMyselfTo, myself:[$myself], addTo:[$addTo], fromName:[$fromName]")
         jobs += viewModelScope.launch {
             addBackLinkToObject.execute(
                 AddBackLinkToObject.Params(objectToLink = myself, objectToPlaceLink = addTo)
@@ -192,12 +197,14 @@ abstract class ObjectMenuViewModelBase(
     }
 
     fun proceedWithOpeningPage(id: Id) {
+        Timber.d("proceedWithOpeningPage, id:[$id]")
         viewModelScope.launch {
             delegator.delegate(Action.OpenObject(id))
         }
     }
 
     fun proceedWithDuplication(ctx: Id) {
+        Timber.d("proceedWithDuplication, ctx:[$ctx]")
         viewModelScope.launch {
             duplicateObject(ctx).process(
                 failure = {

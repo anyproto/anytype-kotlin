@@ -36,7 +36,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="98dp"
         android:layout_marginEnd="16dp"
-        android:hint="@string/unknown_type"
         tools:text="Task" />
 
     <com.facebook.shimmer.ShimmerFrameLayout

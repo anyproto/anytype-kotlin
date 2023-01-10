@@ -50,7 +50,7 @@ sealed class DashboardView {
     ) : DashboardView()
 
     sealed class TypeName {
-        data class Basic(val name: String) : TypeName()
+        data class Basic(val name: String?) : TypeName()
         object Deleted : TypeName()
         object Unknown : TypeName()
     }

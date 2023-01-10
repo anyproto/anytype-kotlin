@@ -118,11 +118,12 @@ suspend fun ObjectWrapper.Basic.getTypeName(objectStore: ObjectStore): Dashboard
         if (isDeleted) {
             DashboardView.TypeName.Deleted
         } else {
-            val name = typeObj?.name
-            if (name.isNullOrBlank()) {
-                DashboardView.TypeName.Unknown
+            //todo Temporary workaround: type is considered deleted
+            //if details are missing for this type or flag isDeleted equals to true
+            if (typeObj?.id == null) {
+                DashboardView.TypeName.Deleted
             } else {
-                DashboardView.TypeName.Basic(name = name)
+                DashboardView.TypeName.Basic(name = typeObj.name)
             }
         }
     }
@@ -142,11 +143,12 @@ suspend fun ObjectWrapper.Basic.getTypeName(storeOfObjectTypes: StoreOfObjectTyp
         if (isDeleted) {
             DashboardView.TypeName.Deleted
         } else {
-            val name = typeObj?.name
-            if (name.isNullOrBlank()) {
-                DashboardView.TypeName.Unknown
+            //todo Temporary workaround: type is considered deleted
+            //if details are missing for this type or flag isDeleted equals to true
+            if (typeObj?.id == null) {
+                DashboardView.TypeName.Deleted
             } else {
-                DashboardView.TypeName.Basic(name = name)
+                DashboardView.TypeName.Basic(name = typeObj.name)
             }
         }
     }

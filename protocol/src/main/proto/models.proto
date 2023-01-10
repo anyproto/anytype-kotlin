@@ -406,8 +406,8 @@ message Block {
                     LessOrEqual = 6;
                     Like = 7;
                     NotLike = 8;
-                    In = 9;
-                    NotIn = 10;
+                    In = 9; // "at least one value(from the provided list) is IN"
+                    NotIn = 10; // "none of provided values are IN"
                     Empty = 11;
                     NotEmpty = 12;
                     AllIn = 13;

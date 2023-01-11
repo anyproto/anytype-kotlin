@@ -16,6 +16,7 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -1335,6 +1336,81 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         assertEquals(
             expected = expectedSimpleTableWidget,
             actual = vm.controlPanelViewState.value?.simpleTableWidget
+        )
+    }
+
+    @Test
+    fun `when mention widget is closed with mention stop event , should be main menu for cells is visible`() {
+
+        //SETUP
+        val columns = StubTableColumns(size = 2)
+        val rows = StubTableRows(size = 1)
+        val cells = StubTableCells(columns = columns, rows = rows)
+        val columnLayout = StubLayoutColumns(children = columns.map { it.id })
+        val rowLayout = StubLayoutRows(children = rows.map { it.id })
+        val table = StubTable(id = tableId, children = listOf(columnLayout.id, rowLayout.id))
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val page = StubSmartBlock(id = root, children = listOf(header.id, table.id))
+        val document =
+            listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+        stubInterceptEvents()
+        stubOpenDocument(document)
+        stubUpdateText()
+
+        //TESTING Focus Cell[0] - Add @ - Mention widget is visible - delete @
+        // - main toolbar for cells is visible
+        val vm = buildViewModel()
+        vm.apply {
+            onStart(root)
+
+            onBlockFocusChanged(
+                id = cells[0].id,
+                hasFocus = true
+            )
+
+            onMentionEvent(
+                mentionEvent = MentionEvent.MentionSuggestStart(
+                    cursorCoordinate = 0,
+                    mentionStart = 0
+                )
+            )
+
+            onMentionEvent(
+                mentionEvent = MentionEvent.MentionSuggestText(
+                    text = "@"
+                )
+            )
+
+            val blockView = BlockView.Text.Paragraph(id = cells[0].id, text = "@")
+            onTextBlockTextChanged(
+                view = blockView
+            )
+
+            onSelectionChanged(
+                id = blockView.id,
+                selection = IntRange(1, 1)
+            )
+
+            onMentionEvent(mentionEvent = MentionEvent.MentionSuggestStopCell)
+        }
+
+        //EXPECTED
+        val expectedMode = Editor.Mode.Edit
+
+        val expectedMainToolbar = ControlPanelState.Toolbar.Main(
+            isVisible = true,
+            targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+        )
+
+        //ASSERT
+        assertEquals(
+            expected = expectedMode,
+            actual = vm.mode as Editor.Mode.Edit
+        )
+        assertEquals(
+            expected = expectedMainToolbar,
+            actual = vm.controlPanelViewState.value?.mainToolbar
         )
     }
 

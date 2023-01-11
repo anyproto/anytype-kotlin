@@ -110,7 +110,14 @@ class TableEditableCellsAdapter(
                 onEmptyBlockBackspaceClicked = {},
                 onSplitLineEnterClicked = { _, _, _ -> },
                 onNonEmptyBlockBackspaceClicked = { _, _ -> },
-                onMentionEvent = onMentionEvent,
+                onMentionEvent = { mentionEvent ->
+                    onMentionEvent(
+                        when (mentionEvent) {
+                            MentionEvent.MentionSuggestStop -> MentionEvent.MentionSuggestStopCell
+                            else -> mentionEvent
+                        }
+                    )
+                },
                 onSlashEvent = {},
                 onBackPressedCallback = null
             )

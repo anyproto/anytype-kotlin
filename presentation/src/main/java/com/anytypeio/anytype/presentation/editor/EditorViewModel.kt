@@ -5476,6 +5476,12 @@ class EditorViewModel(
                 mentionFilter.value = ""
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnStop)
             }
+            MentionEvent.MentionSuggestStopCell -> {
+                mentionFrom = -1
+                jobMentionFilter?.cancel()
+                mentionFilter.value = ""
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnStopCell)
+            }
         }
     }
 

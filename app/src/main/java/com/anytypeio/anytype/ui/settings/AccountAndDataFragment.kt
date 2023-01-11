@@ -79,7 +79,7 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
         vm.onClearCacheButtonClicked()
         val dialog = ClearCacheAlertFragment.new()
         dialog.onClearAccepted = { vm.onClearFileCacheAccepted() }
-        dialog.showChildFragment()
+        dialog.show(childFragmentManager, null)
     }
 
     private fun proceedWithAccountDeletion() {
@@ -88,7 +88,7 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
             dialog.dismiss()
             vm.onDeleteAccountClicked()
         }
-        dialog.showChildFragment()
+        dialog.show(childFragmentManager, null)
     }
 
     override fun injectDependencies() {

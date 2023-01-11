@@ -218,6 +218,7 @@ sealed class ControlPanelMachine {
 
             object OnMentionClicked : Mentions()
             object OnStop : Mentions()
+            object OnStopCell : Mentions()
         }
 
         sealed class Slash : Event() {
@@ -787,6 +788,20 @@ sealed class ControlPanelMachine {
                     mentions = emptyList()
                 ),
                 mainToolbar = Toolbar.Main(isVisible = true)
+            )
+            is Event.Mentions.OnStopCell -> state.copy(
+                mentionToolbar = state.mentionToolbar.copy(
+                    isVisible = false,
+                    cursorCoordinate = null,
+                    updateList = false,
+                    mentionFrom = null,
+                    mentionFilter = null,
+                    mentions = emptyList()
+                ),
+                mainToolbar = state.mainToolbar.copy(
+                    isVisible = true,
+                    targetBlockType = Toolbar.Main.TargetBlockType.Cell
+                )
             )
             is Event.Mentions.OnResult -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(

@@ -65,7 +65,8 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
             onDragAndDropTrigger = { _, _ -> false },
             onDragListener = this,
             lifecycle = lifecycle,
-            dragAndDropSelector = DragAndDropAdapterDelegate()
+            dragAndDropSelector = DragAndDropAdapterDelegate(),
+            onCellSelectionChanged = { _, _ ->  }
         )
     }
 

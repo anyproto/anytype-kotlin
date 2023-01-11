@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.addMention
@@ -1239,10 +1240,35 @@ class EditorViewModel(
             orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
         }
         blocks.find { it.id == id }?.let { target ->
+            val content = target.content
+            val targetBlockType =
+                if (content is TextBlock && content.style == Content.Text.Style.TITLE) {
+                    ControlPanelState.Toolbar.Main.TargetBlockType.Title
+                } else {
+                    ControlPanelState.Toolbar.Main.TargetBlockType.Any
+                }
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnSelectionChanged(
                     target = target,
-                    selection = selection
+                    selection = selection,
+                    targetBlockType = targetBlockType
+                )
+            )
+        }
+    }
+
+    fun onCellSelectionChanged(id: Id, selection: IntRange) {
+        if (mode != EditorMode.Edit) return
+        Timber.d("onCellSelectionChanged, id:[$id] selection:[$selection]")
+        viewModelScope.launch {
+            orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
+        }
+        blocks.find { it.id == id }?.let { target ->
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.OnSelectionChanged(
+                    target = target,
+                    selection = selection,
+                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
                 )
             )
         }

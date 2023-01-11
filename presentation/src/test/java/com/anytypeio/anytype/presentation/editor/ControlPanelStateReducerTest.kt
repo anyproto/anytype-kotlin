@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.presentation.editor
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -94,7 +96,8 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnSelectionChanged(
             selection = IntRange(9, 9),
-            target = paragraph
+            target = paragraph,
+            targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val actual = runBlocking {
@@ -136,7 +139,8 @@ class ControlPanelStateReducerTest {
 
         val event = ControlPanelMachine.Event.OnSelectionChanged(
             selection = IntRange(11, 11),
-            target = paragraph
+            target = paragraph,
+            targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val actual = runBlocking {
@@ -226,7 +230,8 @@ class ControlPanelStateReducerTest {
                     marks = emptyList()
                 ),
                 fields = Block.Fields.empty()
-            )
+            ),
+            targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
         )
 
         val actual = runBlocking {
@@ -450,7 +455,8 @@ class ControlPanelStateReducerTest {
                     state = given,
                     event = ControlPanelMachine.Event.OnSelectionChanged(
                         selection = selectionSecond,
-                        target = block
+                        target = block,
+                        targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                     )
                 )
             }
@@ -551,7 +557,8 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 3),
-                    target = paragraph
+                    target = paragraph,
+                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
         }
@@ -627,7 +634,8 @@ class ControlPanelStateReducerTest {
                 state = ControlPanelState.init(),
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(1, 1),
-                    target = paragraph
+                    target = paragraph,
+                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
         }
@@ -704,7 +712,8 @@ class ControlPanelStateReducerTest {
                 state = stateAfterFocus,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(3, 3),
-                    target = paragraph
+                    target = paragraph,
+                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
 
@@ -713,7 +722,8 @@ class ControlPanelStateReducerTest {
                 state = stateSelectedFirst,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 3),
-                    target = paragraph
+                    target = paragraph,
+                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
 
@@ -721,7 +731,8 @@ class ControlPanelStateReducerTest {
                 state = stateSelectedSecond,
                 event = ControlPanelMachine.Event.OnSelectionChanged(
                     selection = IntRange(0, 7),
-                    target = paragraph
+                    target = paragraph,
+                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
                 )
             )
 
@@ -856,6 +867,160 @@ class ControlPanelStateReducerTest {
         assertEquals(
             expected = stateAfterExitMultiSelectExpected,
             actual = stateAfterExitMultiSelect
+        )
+    }
+
+    @Test
+    fun `should nothing changed for title when selection changed in title block`() {
+
+        val given = ControlPanelState.init()
+        val title = StubTitle()
+
+        val event = ControlPanelMachine.Event.OnSelectionChanged(
+            selection = IntRange(9, 9),
+            target = title,
+            targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Title
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should show main toolbar when selection changed in cell block`() {
+
+        val given = ControlPanelState.init()
+        val cell = StubParagraph()
+
+        val event = ControlPanelMachine.Event.OnSelectionChanged(
+            selection = IntRange(9, 9),
+            target = cell,
+            targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            navigationToolbar = ControlPanelState.Toolbar.Navigation.reset(),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
+                targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should show main toolbar with title type when focus changed in title block`() {
+
+        val given = ControlPanelState.init()
+        val title = StubTitle()
+
+        val event = ControlPanelMachine.Event.OnFocusChanged(
+            id = title.id,
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Title
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
+                targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Title
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation.reset()
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should show main toolbar with any type when focus changed in paragraph block`() {
+
+        val given = ControlPanelState.init()
+
+        val event = ControlPanelMachine.Event.OnFocusChanged(
+            id = paragraph.id,
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Any
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
+                targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Any
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation.reset()
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
+        )
+    }
+
+    @Test
+    fun `should show main toolbar when focus changed in cell block`() {
+
+        val given = ControlPanelState.init()
+        val cell = StubParagraph()
+        val event = ControlPanelMachine.Event.OnFocusChanged(
+            id = cell.id,
+            type = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+        )
+
+        val actual = runBlocking {
+            reducer.reduce(
+                state = given,
+                event = event
+            )
+        }
+
+        val expected = given.copy(
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = true,
+                targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+            ),
+            navigationToolbar = ControlPanelState.Toolbar.Navigation.reset()
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = actual
         )
     }
 }

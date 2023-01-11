@@ -27,7 +27,7 @@ class TableEditableCellsAdapter(
     private val clicked: (ListenerType) -> Unit,
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
     private val onMentionEvent: (MentionEvent) -> Unit,
-    private val onSelectionChanged: (Id, IntRange) -> Unit,
+    private val onCellSelectionChanged: (Id, IntRange) -> Unit,
     private val onFocusChanged: (Id, Boolean) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
     private val onDragAndDropTrigger: (RecyclerView.ViewHolder, event: MotionEvent?) -> Boolean
@@ -80,7 +80,7 @@ class TableEditableCellsAdapter(
                     val block = items[pos].block
                     if (block != null) {
                         block.cursor = selection.last
-                        onSelectionChanged(block.id, selection)
+                        onCellSelectionChanged(block.id, selection)
                     }
                 }
             }

@@ -33,6 +33,7 @@ class AccountAndDataViewModel(
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
 
     fun onClearFileCacheAccepted() {
+        Timber.d("onClearFileCacheAccepted, ")
         jobs += viewModelScope.launch {
             clearFileCache(BaseUseCase.None).collect { status ->
                 when (status) {
@@ -64,6 +65,7 @@ class AccountAndDataViewModel(
     }
 
     fun onDeleteAccountClicked() {
+        Timber.d("onDeleteAccountClicked, ")
         jobs += viewModelScope.launch {
             deleteAccount(BaseUseCase.None).process(
                 success = {
@@ -81,6 +83,7 @@ class AccountAndDataViewModel(
     }
 
     fun onDebugSyncReportClicked() {
+        Timber.d("onDebugSyncReportClicked, ")
         jobs += viewModelScope.launch {
             debugSyncShareDownloader.stream(Unit).collect { result ->
                 result.fold(

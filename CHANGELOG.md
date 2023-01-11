@@ -1,5 +1,36 @@
 # Change log for Android @Anytype app.
 
+## Version 0.13.0
+
+### New features & enhancements 🚀
+
+* Decluttering | Introduce marketplace relations vs. user library relations (#2722, #2750, #2764)
+* Decluttering | Introduce marketplace types vs. user library types (#2721, #2748, #2771)
+* Editor | Simple tables 2.0: cell value can now be edited directly; @-mentions can be used in cells; introduced cell menu allowing user to clear content and style; introduced select-mode for cells;  introduced row menu allowing user to move, highlight, delete or duplicate rows; introduced column menu allowing user to move, highlight, delete or duplicate columns; drag-and-drop is enabled for simple table block (#2681, #2696, #2700, #2702, #2710, #2712, #2716, #2739, #2736)
+* Editor | Style your link-to-object block as a card or as a text link (#2630, #2643) [ENABLED IN THIS RELEASE]
+* Editor | Enable checking / unchecking link-to-object blocks referencing task objects (#2708)
+* Editor | Showing object pre-loading state (#2791) 
+* Sets | Enhancement | Support sets of objects aggregated by relations (#2727, #2731, #2740)
+* Sets | Allow possibility to change data view source after its initial setup (#2692, #2698)
+* Sets | Allow creating a set of sets (#2698) 
+* Sets | Enabled 'duplicate' action for currently open set (#2697)
+
+### Fixes & tech 🚒
+
+* Editor | Enable ENTER key for external keyboards (#2747) 
+* Editor | Mention widget are not always shown reliently when typing '/' character (#2703) 
+* Editor | Enabled search-on-page functionality for simple tables (#2664, #2669, #2670)
+* App | Fix | Rapid double clicks sometimes would case redundant navigation or even application crash (#2762) 
+* Objects | Adding link to currently open object from object or set via object's three-dots menu (#2668)
+* Sets | Covers of objects with images picked from Unsplash wouldn't be displayed correctly in gallery view (#2713)
+
+### Design & UX 🔳
+
+* Editor | Make bold font more bold (#2755) 
+* Editor | Remove useless forward/backward buttons from video block (#2769)
+* Editor | Fixed margins for video block in uploading state (#2724)
+* App | Disable login button on an empty field (#2777)
+
 ## Version 0.12.0
 
 ### New features & enhancements 🚀

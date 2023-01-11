@@ -3466,7 +3466,8 @@ class BlockAdapterTest {
             ),
             onDragAndDropTrigger = { _, _ -> false },
             dragAndDropSelector = DragAndDropAdapterDelegate(),
-            lifecycle = lifecycle
+            lifecycle = lifecycle,
+            onCellSelectionChanged = { _, _ -> }
         )
     }
 

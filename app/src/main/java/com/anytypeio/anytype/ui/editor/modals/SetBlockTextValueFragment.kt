@@ -80,7 +80,8 @@ class SetBlockTextValueFragment :
             lifecycle = lifecycle,
             dragAndDropSelector = DragAndDropAdapterDelegate(),
             clipboardInterceptor = this,
-            onDragListener = this
+            onDragListener = this,
+            onCellSelectionChanged = { _, _ ->  }
         )
     }
 

@@ -72,7 +72,8 @@ sealed class ControlPanelMachine {
          */
         data class OnSelectionChanged(
             val target: Block,
-            val selection: IntRange
+            val selection: IntRange,
+            val targetBlockType: Toolbar.Main.TargetBlockType
         ) : Event()
 
 
@@ -324,7 +325,8 @@ sealed class ControlPanelMachine {
                                 if (event.selection.isEmpty() || event.selection.first == event.selection.last) {
                                     state.copy(
                                         mainToolbar = state.mainToolbar.copy(
-                                            isVisible = true
+                                            isVisible = true,
+                                            targetBlockType = event.targetBlockType
                                         ),
                                         markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
                                         markupColorToolbar = state.markupColorToolbar.copy(
@@ -354,7 +356,8 @@ sealed class ControlPanelMachine {
                                 state.copy(
                                     mentionToolbar = newMentionToolbarState,
                                     mainToolbar = state.mainToolbar.copy(
-                                        isVisible = !newMentionToolbarState.isVisible
+                                        isVisible = !newMentionToolbarState.isVisible,
+                                        targetBlockType = event.targetBlockType
                                     )
                                 )
                             }
@@ -362,6 +365,7 @@ sealed class ControlPanelMachine {
                                 state.copy(
                                     mainToolbar = state.mainToolbar.copy(
                                         isVisible = true,
+                                        targetBlockType = event.targetBlockType
                                     ),
                                     navigationToolbar = state.navigationToolbar.copy(
                                         isVisible = false

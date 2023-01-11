@@ -37,7 +37,7 @@ class TableBlockHolder(
     clickListener: (ListenerType) -> Unit,
     onTextBlockTextChanged: (BlockView.Text) -> Unit,
     onMentionEvent: (MentionEvent) -> Unit,
-    onSelectionChanged: (Id, IntRange) -> Unit,
+    onCellSelectionChanged: (Id, IntRange) -> Unit,
     onFocusChanged: (Id, Boolean) -> Unit,
     clipboardInterceptor: ClipboardInterceptor,
     onDragAndDropTrigger: (RecyclerView.ViewHolder, event: MotionEvent?) -> Boolean
@@ -63,7 +63,7 @@ class TableBlockHolder(
         clicked = clickListener,
         onTextBlockTextChanged = onTextBlockTextChanged,
         onMentionEvent = onMentionEvent,
-        onSelectionChanged = onSelectionChanged,
+        onCellSelectionChanged = onCellSelectionChanged,
         onFocusChanged = onFocusChanged,
         clipboardInterceptor = clipboardInterceptor,
         onDragAndDropTrigger = { _, event -> onDragAndDropTrigger(this, event) }

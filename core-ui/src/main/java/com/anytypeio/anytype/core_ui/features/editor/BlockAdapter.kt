@@ -203,6 +203,7 @@ class BlockAdapter(
     private val onTitleBlockTextChanged: (Id, String) -> Unit,
     private val onTitleTextInputClicked: () -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
+    private val onCellSelectionChanged: (Id, IntRange) -> Unit,
     private val onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
     private val onTitleCheckboxClicked: (BlockView.Title.Todo) -> Unit = {},
     private val onFocusChanged: (Id, Boolean) -> Unit,
@@ -805,7 +806,7 @@ class BlockAdapter(
                 clickListener = onClickListener,
                 onTextBlockTextChanged = onTextBlockTextChanged,
                 onMentionEvent = onMentionEvent,
-                onSelectionChanged = onSelectionChanged,
+                onCellSelectionChanged = onCellSelectionChanged,
                 onFocusChanged = onFocusChanged,
                 clipboardInterceptor = clipboardInterceptor,
                 onDragAndDropTrigger = onDragAndDropTrigger

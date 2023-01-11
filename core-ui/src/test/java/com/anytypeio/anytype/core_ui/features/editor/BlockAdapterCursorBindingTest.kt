@@ -415,7 +415,8 @@ class BlockAdapterCursorBindingTest {
                 override fun addObserver(observer: LifecycleObserver) {}
                 override fun removeObserver(observer: LifecycleObserver) {}
                 override fun getCurrentState() = State.DESTROYED
-            }
+            },
+            onCellSelectionChanged = { _, _ ->  }
         )
     }
 }

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVViewer
@@ -14,7 +13,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -47,6 +45,7 @@ import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -75,7 +74,7 @@ open class FilterViewModel(
     val isCompleted = MutableSharedFlow<Boolean>(0)
 
     private var filterIndex: Int? = null
-    private var relationKey: Id? = null
+    private var relationKey: Key? = null
     private var relation: ObjectWrapper.Relation? = null
     private val jobs = mutableListOf<Job>()
 
@@ -85,12 +84,8 @@ open class FilterViewModel(
     val filterValueListState = MutableStateFlow<List<CreateFilterView>>(emptyList())
     val optionCountState = MutableStateFlow(0)
 
-    init {
-        startObservingCondition()
-    }
-
     private fun startObservingCondition() {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             conditionState.collect { condition ->
                 setValueStates(
                     objectSet = objectSetState.value,
@@ -102,21 +97,22 @@ open class FilterViewModel(
     }
 
     fun onStart(relationKey: Key, filterIndex: Int?) {
+        Timber.d("onStart, relationKey:[$relationKey], filterIndex:[$filterIndex]")
         this.filterIndex = filterIndex
         this.relationKey = relationKey
+        startObservingCondition()
         initStates()
     }
 
     fun onStop() {
-        jobs.cancel()
+        jobs.forEach { it.cancel() }
+        jobs.clear()
     }
 
     private fun initStates() {
         jobs += viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { state ->
-                val dv = state.dataview.content as DV
-                val viewer =
-                    dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+                val viewer = state.viewerById(session.currentViewerId.value)
                 val key = relationKey
                 if (key != null) {
                     val relation = storeOfRelations.getByKey(key)
@@ -132,6 +128,8 @@ open class FilterViewModel(
                             condition = conditionState.value?.condition,
                             index = filterIndex
                         )
+                    } else {
+                        Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
                     }
                 }
             }
@@ -224,9 +222,7 @@ open class FilterViewModel(
             return
         }
 
-        val block = objectSet.dataview
-        val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+        val viewer = objectSet.viewerById(session.currentViewerId.value)
         val key = relationKey
         if (key != null) {
             val relation = storeOfRelations.getByKey(key) ?: return
@@ -600,8 +596,7 @@ open class FilterViewModel(
         )
         viewModelScope.launch {
             val block = objectSetState.value.dataview
-            val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
             proceedWithUpdatingFilter(
                 ctx = ctx,
                 target = block.id,
@@ -629,8 +624,7 @@ open class FilterViewModel(
         checkNotNull(idx)
         viewModelScope.launch {
             val block = objectSetState.value.dataview
-            val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
             val format = relationState.value?.format
             if (format != null) {
                 when (format) {
@@ -777,8 +771,7 @@ open class FilterViewModel(
 
     private suspend fun proceedWithCreatingFilter(ctx: Id, filter: DVFilter) {
         val block = objectSetState.value.dataview
-        val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+        val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
         updateDataViewViewer(
             UpdateDataViewViewer.Params(
                 context = ctx,

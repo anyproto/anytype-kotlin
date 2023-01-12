@@ -90,6 +90,12 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
             jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
         }
         super.onStart()
+        vm.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     private fun render(state: ScreenState) {

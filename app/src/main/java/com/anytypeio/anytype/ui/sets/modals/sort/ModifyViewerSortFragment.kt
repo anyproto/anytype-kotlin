@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.text
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -25,8 +26,8 @@ import javax.inject.Inject
 
 class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSortBinding>() {
 
-    private val ctx: String get() = arg(CTX_KEY)
-    private val relationKey: String get() = arg(RELATION_KEY)
+    private val ctx: Id get() = arg(CTX_KEY)
+    private val relationKey: Key get() = arg(RELATION_KEY)
 
     @Inject
     lateinit var factory: ModifyViewerSortViewModel.Factory
@@ -41,11 +42,10 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
         with(lifecycleScope) {
-            subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
-            subscribe(vm.viewState.filterNotNull()) { state ->
+            jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+            jobs += subscribe(vm.viewState.filterNotNull()) { state ->
                 with(binding) {
                     tvSortAsc.setText(DVSortType.ASC.text(state.format))
                     tvSortDesc.setText(DVSortType.DESC.text(state.format))
@@ -64,9 +64,6 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
                 }
             }
         }
-    }
-
-    override fun onStart() {
         super.onStart()
         vm.onStart(relationKey)
     }

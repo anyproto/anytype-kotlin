@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeSortValueEvent
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -23,7 +23,8 @@ class ModifyViewerSortViewModel(
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeOfRelations: StoreOfRelations
 ) : BaseViewModel() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
@@ -31,27 +32,37 @@ class ModifyViewerSortViewModel(
     val viewState = MutableStateFlow<ViewState?>(null)
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(relationKey: Id) {
+    fun onStart(relationKey: Key) {
+        Timber.d("onStart, relationKey:[$relationKey]")
         jobs += viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { state ->
-                val dv = state.dataview.content as DV
                 val viewer = state.viewerById(session.currentViewerId.value)
-                val sort = viewer.sorts.first { it.relationKey == relationKey }
-                val relation = dv.relations.first { it.key == relationKey }
-                viewState.value = ViewState(
-                    format = relation.format,
-                    type = sort.type,
-                    name = relation.name
-                )
+                val sort = viewer.sorts.find { it.relationKey == relationKey }
+                if (sort != null) {
+                    val relation = storeOfRelations.getByKey(relationKey)
+                    if (relation != null) {
+                        viewState.value = ViewState(
+                            format = relation.format,
+                            type = sort.type,
+                            name = relation.name.orEmpty()
+                        )
+                    } else {
+                        Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
+                    }
+                } else {
+                    Timber.e("Couldn't find sort in view:[$viewer] by relation:[$relationKey]")
+                }
             }
         }
     }
 
     fun onStop() {
-        jobs.cancel()
+        jobs.forEach { it.cancel() }
+        jobs.clear()
     }
 
     fun onSortDescSelected(ctx: Id, relation: Id) {
+        Timber.d("onSortDescSelected, ctx:[$ctx], relationKek")
         proceedWithUpdatingSortType(ctx, relation, DVSortType.DESC)
     }
 
@@ -61,7 +72,7 @@ class ModifyViewerSortViewModel(
 
     private fun proceedWithUpdatingSortType(
         ctx: Id,
-        relation: Id,
+        relation: Key,
         type: Block.Content.DataView.Sort.Type
     ) {
         val state = objectSetState.value
@@ -105,7 +116,8 @@ class ModifyViewerSortViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -114,7 +126,8 @@ class ModifyViewerSortViewModel(
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
-                analytics = analytics
+                analytics = analytics,
+                storeOfRelations = storeOfRelations
             ) as T
         }
     }

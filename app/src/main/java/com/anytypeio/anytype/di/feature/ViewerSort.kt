@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
@@ -36,12 +37,14 @@ object ViewerSortModule {
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
         dispatcher: Dispatcher<Payload>,
-        analytics: Analytics
+        analytics: Analytics,
+        storeOfRelations: StoreOfRelations
     ): ViewerSortViewModel.Factory = ViewerSortViewModel.Factory(
         state = state,
         session = session,
         updateDataViewViewer = updateDataViewViewer,
         dispatcher = dispatcher,
-        analytics = analytics
+        analytics = analytics,
+        storeOfRelations = storeOfRelations
     )
 }

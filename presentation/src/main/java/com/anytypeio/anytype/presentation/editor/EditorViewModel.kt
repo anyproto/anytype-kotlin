@@ -4211,6 +4211,10 @@ class EditorViewModel(
                     context = analyticsContext
                 )
             }
+            if (isObjectTypesWidgetVisible) {
+                dispatchObjectCreateEvent()
+                proceedWithHidingObjectTypeWidget()
+            }
             if (isObjectDraft) {
                 proceedWithTemplateSelection(type)
             }

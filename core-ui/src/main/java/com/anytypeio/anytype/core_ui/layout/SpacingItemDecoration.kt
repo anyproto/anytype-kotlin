@@ -14,7 +14,8 @@ class SpacingItemDecoration(
     private val spacingBottom: Int = 0,
     private val firstItemSpacingStart: Int? = null,
     private val lastItemSpacingEnd: Int? = null,
-    private val firstItemSpacingTop: Int? = null
+    private val firstItemSpacingTop: Int? = null,
+    private val lastItemSpacingBottom: Int? = null
 ) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
@@ -41,6 +42,10 @@ class SpacingItemDecoration(
 
         if (firstItemSpacingTop != null && position == 0) {
             outRect.top = firstItemSpacingTop
+        }
+
+        if (lastItemSpacingBottom != null && position == parent.adapter?.itemCount?.dec()) {
+            outRect.bottom = lastItemSpacingBottom
         }
     }
 }

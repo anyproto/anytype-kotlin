@@ -49,10 +49,10 @@ class ObjectTypesWidget @JvmOverloads constructor(
                 setOpenState()
             }
         }
-        iconArrowUp.setOnClickListener {
+        iconArrowDown.setOnClickListener {
             setHiddenState()
         }
-        iconArrowDown.setOnClickListener {
+        iconArrowUp.setOnClickListener {
             setOpenState()
         }
         tvDone.setOnClickListener {
@@ -77,16 +77,16 @@ class ObjectTypesWidget @JvmOverloads constructor(
 
     private fun setOpenState() = with(binding) {
         isOpenState = true
-        iconArrowUp.visible()
-        iconArrowDown.gone()
+        iconArrowUp.gone()
+        iconArrowDown.visible()
         objectTypesRecycler.visible()
     }
 
     private fun setHiddenState() = with(binding) {
         isOpenState = false
         objectTypesRecycler.gone()
-        iconArrowUp.gone()
-        iconArrowDown.visible()
+        iconArrowUp.visible()
+        iconArrowDown.gone()
     }
 
     private fun onItemClicked(id: Id, name: String) {

@@ -26,7 +26,7 @@
         android:paddingBottom="@dimen/dp_12"
         android:text="@string/change_type"
         app:layout_goneMarginStart="@dimen/dp_16"
-        app:layout_constraintStart_toEndOf="@id/iconArrowUp"
+        app:layout_constraintStart_toEndOf="@id/iconArrowDown"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -44,7 +44,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/iconArrowUp"
+        android:id="@+id/iconArrowDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -53,7 +53,7 @@
         app:layout_constraintEnd_toStartOf="@+id/tvChangeType"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvChangeType"
-        app:srcCompat="@drawable/ic_arrow_up" />
+        app:srcCompat="@drawable/ic_arrow_down" />
 
     <include
         android:id="@+id/divider"
@@ -67,12 +67,12 @@
         app:layout_constraintTop_toBottomOf="@id/tvDone" />
 
     <ImageView
-        android:id="@+id/iconArrowDown"
+        android:id="@+id/iconArrowUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="@dimen/dp_6"
         app:layout_constraintBottom_toBottomOf="@+id/tvChangeType"
         app:layout_constraintStart_toEndOf="@+id/tvChangeType"
         app:layout_constraintTop_toTopOf="@+id/tvChangeType"
-        app:srcCompat="@drawable/ic_arrow_down" />
+        app:srcCompat="@drawable/ic_arrow_up" />
 </androidx.constraintlayout.widget.ConstraintLayout>

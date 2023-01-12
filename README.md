@@ -13,7 +13,7 @@ gpr.usr=GITHUB_USER_ID
 gpr.key=GITHUB_PERSONAL_ACCESS_TOKEN
 ```
 
-Your Github ID can be found [here](https://caius.github.io/github_id/). As to your personal Github access token, you can generate it in `Developer settings` in your profile settings on Github.
+Your Github ID (starting with '#' character) can be found [here](https://caius.github.io/github_id/). As to your personal Github access token, you can generate it in `Developer settings` in your profile settings on Github. 
 
 - Create `apikeys.properties` file in root project folder:
 
@@ -60,7 +60,7 @@ Or [download](https://download.anytype.io/) an apk for your device architecture 
 
 ##### PR naming: 
 ```
-{APP AREA} | {NATURE OF CHANGE: Fix, Enhancement, Feature, Design, Documentation} | {CONCISE DESCRIPTION OF WHAT HAS BEEN DONE}
+{TASK-ID} {APP AREA} | {NATURE OF CHANGE: Fix, Enhancement, Feature, Design, Documentation} | {CONCISE DESCRIPTION OF WHAT HAS BEEN DONE}
 ```
 App area can be `App`, `Editor`, `Sets`, `Relations`, `Auth`, `Settings`, `Analytics`, `Tech` (CI, DI, scripting, etc.), etc.
 

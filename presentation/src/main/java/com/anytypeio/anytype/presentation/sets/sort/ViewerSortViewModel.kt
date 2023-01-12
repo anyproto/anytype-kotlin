@@ -7,12 +7,15 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveSortEvent
+import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,19 +25,18 @@ class ViewerSortViewModel(
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeOfRelations: StoreOfRelations
 ) : BaseListViewModel<ViewerSortViewModel.ViewerSortView>() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
-
     val screenState = MutableStateFlow(ScreenState.READ)
+    private val jobs = mutableListOf<Job>()
 
-    init {
-        viewModelScope.launch {
+    fun onStart() {
+        jobs += viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { state ->
-                val dv = state.dataview.content as DV
-                val viewer = dv.viewers.find { it.id == session.currentViewerId.value }
-                    ?: dv.viewers.first()
+                val viewer = state.viewerById(session.currentViewerId.value)
                 val sorts = viewer.sorts
                 if (sorts.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
@@ -48,14 +50,19 @@ class ViewerSortViewModel(
                 try {
                     _views.value = buildViews(
                         sorts = sorts,
-                        dv = dv,
-                        screenState = screenState.value
+                        screenState = screenState.value,
+                        storeOfRelations = storeOfRelations
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while building views")
                 }
             }
         }
+    }
+
+    fun onStop() {
+        jobs.forEach { it.cancel() }
+        jobs.clear()
     }
 
     fun onEditClicked() {
@@ -95,21 +102,17 @@ class ViewerSortViewModel(
         }
     }
 
-    private fun buildViews(
+    private suspend fun buildViews(
         sorts: List<DVSort>,
-        dv: DV,
-        screenState: ScreenState
-    ): List<ViewerSortView> = sorts
-        .associateWith { sort -> dv.relations.first { it.key == sort.relationKey } }
-        .map { (sort, relation) ->
-            ViewerSortView(
-                relation = sort.relationKey,
-                name = relation.name,
-                type = sort.type,
-                format = relation.format,
-                mode = screenState
-            )
-        }
+        screenState: ScreenState,
+        storeOfRelations: StoreOfRelations
+    ): List<ViewerSortView> {
+        Timber.d("Build Viewer Sorting Views, sorts:[$sorts], screenState:[$screenState]")
+        return sorts.toView(
+            storeOfRelations = storeOfRelations,
+            screenState = screenState
+        )
+    }
 
     /**
      * @property [relation] id of the relation, to which this sort is applied.
@@ -134,7 +137,8 @@ class ViewerSortViewModel(
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -143,7 +147,8 @@ class ViewerSortViewModel(
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 dispatcher = dispatcher,
-                analytics = analytics
+                analytics = analytics,
+                storeOfRelations = storeOfRelations
             ) as T
         }
     }

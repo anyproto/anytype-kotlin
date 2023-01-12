@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.extension
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -12,7 +13,9 @@ import com.anytypeio.anytype.presentation.relations.toView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
+import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
 import timber.log.Timber
 
 fun Viewer.Filter.Condition.hasValue(): Boolean = when (this) {
@@ -69,7 +72,7 @@ suspend fun List<DVFilter>.toView(
     details: Map<Id, Block.Fields>,
     screenState: ViewerFilterViewModel.ScreenState,
     urlBuilder: UrlBuilder
-) = mapNotNull { filter ->
+): List<FilterView.Expression> = mapNotNull { filter ->
     val relation = storeOfRelations.getByKey(filter.relationKey)
     if (relation != null) {
         filter.toView(
@@ -81,6 +84,25 @@ suspend fun List<DVFilter>.toView(
         )
     } else {
         Timber.w("Could not found relation: ${filter.relationKey} for filter: $filter")
+        null
+    }
+}
+
+suspend fun List<DVSort>.toView(
+    storeOfRelations: StoreOfRelations,
+    screenState: ViewerSortViewModel.ScreenState
+): List<ViewerSortViewModel.ViewerSortView> = mapNotNull { sort ->
+    val relation = storeOfRelations.getByKey(sort.relationKey)
+    if (relation != null) {
+        ViewerSortViewModel.ViewerSortView(
+            relation = sort.relationKey,
+            name = relation.name.orEmpty(),
+            type = sort.type,
+            format = relation.format,
+            mode = screenState
+        )
+    } else {
+        Timber.w("Could not found relation: ${sort.relationKey} in StoreOfRelations for sort: $sort")
         null
     }
 }

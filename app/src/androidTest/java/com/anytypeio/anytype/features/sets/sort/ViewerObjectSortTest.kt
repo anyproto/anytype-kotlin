@@ -17,7 +17,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
@@ -51,6 +51,9 @@ class ViewerObjectSortTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var storeOfRelations: StoreOfRelations
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     private val root = MockDataFactory.randomUuid()
@@ -67,7 +70,8 @@ class ViewerObjectSortTest {
             session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
-            analytics = analytics
+            analytics = analytics,
+            storeOfRelations = storeOfRelations
         )
     }
 

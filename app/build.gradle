@@ -68,7 +68,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            debuggable true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'])
             if (useReleaseKeystore) {

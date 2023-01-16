@@ -91,7 +91,10 @@ class DeletedAccountFragment : BaseComposeFragment() {
                     vm.commands.collect { command ->
                         when (command) {
                             DeletedAccountViewModel.Command.Resume -> {
-                                findNavController().navigate(R.id.main_navigation)
+                                findNavController().apply {
+                                    popBackStack()
+                                    navigate(R.id.main_navigation)
+                                }
                             }
                             DeletedAccountViewModel.Command.Logout -> {
                                 findNavController().navigate(R.id.main_navigation)

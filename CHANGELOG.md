@@ -2,7 +2,7 @@
 
 ## Version 0.13.0
 
-### New features & enhancements 🚀
+### New features & enhancements 🚀
 
 * Decluttering | Introduce marketplace relations vs. user library relations (#2722, #2750, #2764)
 * Decluttering | Introduce marketplace types vs. user library types (#2721, #2748, #2771)
@@ -15,20 +15,24 @@
 * Sets | Allow creating a set of sets (#2698) 
 * Sets | Enabled 'duplicate' action for currently open set (#2697)
 
-### Fixes & tech 🚒
+### Fixes & tech 🚒
 
 * Editor | Enable ENTER key for external keyboards (#2747) 
-* Editor | Mention widget are not always shown reliently when typing '/' character (#2703) 
+* Editor | Mention widget are not always shown reliantly when typing '/' character (#2703) 
 * Editor | Enabled search-on-page functionality for simple tables (#2664, #2669, #2670)
+* Editor | Horizontal type panel should not be visible when type is selected from type picker (#2807)
 * App | Fix | Rapid double clicks sometimes would case redundant navigation or even application crash (#2762) 
 * Objects | Adding link to currently open object from object or set via object's three-dots menu (#2668)
 * Sets | Covers of objects with images picked from Unsplash wouldn't be displayed correctly in gallery view (#2713)
+* Search | Last search result might not be always visible (#2808)
+* Account | Delete-account screen should be removed from navigation stack when user cancels deletion (#2815)
 
-### Design & UX 🔳
+### Design & UX 🔳
 
 * Editor | Make bold font more bold (#2755) 
 * Editor | Remove useless forward/backward buttons from video block (#2769)
 * Editor | Fixed margins for video block in uploading state (#2724)
+* Editor | Fixed incorrect expand-and-collapse arrow direction in horizontal type panel (#2810)
 * App | Disable login button on an empty field (#2777)
 
 ## Version 0.12.0

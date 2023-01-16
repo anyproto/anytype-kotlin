@@ -171,6 +171,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="delete">Delete</string>
     <string name="view_relations">View relations</string>
     <string name="edit">Edit</string>
+    <string name="clear">Clear</string>
     <string name="views">Views</string>
     <string name="create">Create</string>
     <string name="new_view">New view</string>

@@ -271,7 +271,18 @@ class RelationListViewModel(
                         )
                     )
                 }
-                RelationFormat.STATUS,
+                RelationFormat.STATUS -> {
+                    commands.emit(
+                        Command.EditStatusRelationValue(
+                            ctx = ctx,
+                            relationId = relation.id,
+                            relationKey = relation.key,
+                            target = ctx,
+                            targetObjectTypes = relation.relationFormatObjectTypes,
+                            isLocked = resolveIsLockedState(ctx)
+                        )
+                    )
+                }
                 RelationFormat.TAG,
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
@@ -400,6 +411,15 @@ class RelationListViewModel(
         ) : Command()
 
         data class EditRelationValue(
+            val ctx: Id,
+            val relationId: Id,
+            val relationKey: Key,
+            val target: Id,
+            val targetObjectTypes: List<Id>,
+            val isLocked: Boolean = false
+        ) : Command()
+
+        data class EditStatusRelationValue(
             val ctx: Id,
             val relationId: Id,
             val relationKey: Key,

@@ -428,6 +428,13 @@
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
+    <style name="DefaultListPlaceholderTextStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/editor_default_hint_text_color</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
     <style name="ViewerModalStateButtonsStyle">
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">17sp</item>

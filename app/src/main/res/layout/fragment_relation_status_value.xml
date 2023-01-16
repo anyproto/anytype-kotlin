@@ -33,7 +33,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvRelationHeader"
@@ -69,6 +69,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
+        <TextView
+            android:id="@+id/btnClear"
+            style="@style/DefaultCellInteractionTextButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/dp_12"
+            android:paddingBottom="@dimen/dp_12"
+            android:text="@string/clear"
+            android:layout_marginEnd="@dimen/dp_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
         <ProgressBar
             android:id="@+id/refresh"
             android:layout_width="24dp"
@@ -92,5 +107,16 @@
         android:layout_marginEnd="@dimen/dp_20"
         android:layout_marginBottom="@dimen/dp_20"
         tools:listitem="@layout/item_edit_cell_tag" />
+
+    <TextView
+        android:id="@+id/tvEmptyPlaceholder"
+        style="@style/DefaultListPlaceholderTextStyle"
+        android:layout_marginTop="@dimen/dp_12"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/relation_status_value_empty_state"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_32" />
 
 </LinearLayout>

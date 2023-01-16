@@ -137,6 +137,16 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
                 }
                 dismiss()
             }
+            is Command.EditStatusRelationValue -> {
+                val fr = RelationStatusValueFragment.new(
+                    ctx = ctx,
+                    target = command.target,
+                    relationKey = command.relationKey,
+                    targetObjectTypes = command.targetObjectTypes,
+                    isLocked = command.isLocked
+                )
+                fr.showChildFragment()
+            }
         }
     }
 

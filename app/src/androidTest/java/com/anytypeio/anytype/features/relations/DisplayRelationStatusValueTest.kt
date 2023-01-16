@@ -257,7 +257,7 @@ class DisplayRelationStatusValueTest {
 
         // Checking that the name is set
 
-        onView(withId(R.id.tvTagOrStatusRelationHeader)).apply {
+        onView(withId(R.id.tvRelationHeader)).apply {
             check(matches(withText(name)))
         }
     }

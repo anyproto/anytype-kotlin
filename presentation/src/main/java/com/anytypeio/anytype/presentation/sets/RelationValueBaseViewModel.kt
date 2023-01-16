@@ -320,11 +320,14 @@ abstract class RelationValueBaseViewModel(
     fun onRemoveStatusFromObjectClicked(
         target: Id,
         relationKey: Key,
-        status: Id
+        status: Id? = null
     ) {
         viewModelScope.launch {
+            val statusId = status ?: ((views.value.first {
+                it is RelationValueView.Option.Status
+            }) as? RelationValueView.Option.Status)?.id ?: return@launch
             val obj = values.get(target)
-            val remaining = obj[relationKey].filterIdsById(status)
+            val remaining = obj[relationKey].filterIdsById(statusId)
             setObjectDetails(
                 UpdateDetail.Params(
                     ctx = target,

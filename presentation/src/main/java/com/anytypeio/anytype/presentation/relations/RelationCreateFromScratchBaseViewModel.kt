@@ -190,6 +190,7 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                 )
             ).process(
                 success = { relation ->
+                    sendToast("Relation `${relation.name}` added to your library")
                     proceedWithAddingRelationToObject(
                         ctx = ctx,
                         relationKey = relation.key

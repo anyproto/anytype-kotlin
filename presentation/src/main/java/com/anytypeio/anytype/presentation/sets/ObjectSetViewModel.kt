@@ -1020,6 +1020,7 @@ class ObjectSetViewModel(
     //region NAVIGATION
 
     private fun proceedWithOpeningObject(target: Id) {
+        isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
             closeBlock.execute(context).fold(
                 onSuccess = {

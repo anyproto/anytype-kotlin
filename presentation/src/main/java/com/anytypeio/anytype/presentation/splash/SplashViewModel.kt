@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -210,7 +211,7 @@ class SplashViewModel(
             getLastOpenedObject(BaseUseCase.None).process(
                 failure = {
                     Timber.e(it, "Error while getting last opened object")
-                    commands.emit(Command.NavigateToDashboard)
+                    proceedWithDashboardNavigation()
                 },
                 success = { response ->
                     when (response) {
@@ -224,13 +225,21 @@ class SplashViewModel(
                                         commands.emit(Command.NavigateToObject(id))
                                 }
                             } else {
-                                commands.emit(Command.NavigateToDashboard)
+                                proceedWithDashboardNavigation()
                             }
                         }
-                        else -> commands.emit(Command.NavigateToDashboard)
+                        else -> proceedWithDashboardNavigation()
                     }
                 }
             )
+        }
+    }
+
+    private suspend fun proceedWithDashboardNavigation() {
+        if (BuildConfig.ENABLE_WIDGETS) {
+            commands.emit(Command.NavigateToWidgets)
+        } else {
+            commands.emit(Command.NavigateToDashboard)
         }
     }
 
@@ -255,6 +264,7 @@ class SplashViewModel(
     sealed class Command {
         object CheckFirstInstall : Command()
         object NavigateToDashboard : Command()
+        object NavigateToWidgets : Command()
         object NavigateToLogin : Command()
         object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id) : Command()

@@ -75,6 +75,16 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     toast("Error while navigating to desktop: ${e.message}")
                 }
             }
+            SplashViewModel.Command.NavigateToWidgets -> {
+                try {
+                    findNavController().navigate(
+                        R.id.action_splashScreen_to_widgets
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while opening widgets from splash screen")
+                    toast("Error while navigating to widgets: ${e.message}")
+                }
+            }
             is SplashViewModel.Command.NavigateToObject -> {
                 findNavController().navigate(
                     R.id.action_splashScreen_to_objectScreen,

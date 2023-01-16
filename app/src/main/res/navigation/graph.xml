@@ -142,9 +142,6 @@
         <action
             android:id="@+id/action_desktopScreen_to_archiveFragment"
             app:destination="@id/archiveFragment" />
-        <action
-            android:id="@+id/from_desktop_to_create_sets"
-            app:destination="@id/createSetScreen" />
     </fragment>
 
     <fragment
@@ -236,6 +233,15 @@
         <action
             android:id="@+id/action_splashScreen_to_desktopScreen"
             app:destination="@id/desktopScreen"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashScreen"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashScreen_to_widgets"
+            app:destination="@id/homeScreen"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -461,11 +467,6 @@
         android:id="@+id/fullScreenImageFragment"
         android:name="com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment"
         android:label="FullScreenImageFragment" />
-    <fragment
-        android:id="@+id/createSetScreen"
-        android:name="com.anytypeio.anytype.ui.sets.CreateObjectSetFragment"
-        android:label="CreateSetScreen"
-        tools:layout="@layout/fragment_create_set" />
     <dialog
         android:id="@+id/personalizationScreen"
         android:name="com.anytypeio.anytype.ui.settings.OtherSettingsFragment"
@@ -481,11 +482,6 @@
         android:name="com.anytypeio.anytype.ui.settings.AppearanceFragment"
         android:label="fragment_wallpaper_set"
         tools:layout="@layout/fragment_wallpaper_select"/>
-    <dialog
-        android:id="@+id/objectTypeChangeScreen"
-        android:name="com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment"
-        android:label="ObjectTypeChangeFragment"
-        tools:layout="@layout/fragment_object_type_change"/>
     <dialog
         android:id="@+id/alertUpdateAppFragment"
         android:name="com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment"

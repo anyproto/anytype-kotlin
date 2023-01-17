@@ -14,8 +14,10 @@ import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.ObjectView
+import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 
 @Deprecated("LEGACY SUSPECT")
 class PageLinksAdapter(
@@ -74,28 +76,46 @@ class PageLinksAdapter(
 }
 
 class DefaultObjectViewAdapter(
-    private val onClick: (DefaultObjectView) -> Unit
-) : ListAdapter<DefaultObjectView, DefaultObjectViewAdapter.ObjectViewHolder>(Differ) {
+    private val onClick: (DefaultObjectView) -> Unit,
+) : ListAdapter<DefaultSearchItem, DefaultObjectViewAdapter.ObjectViewHolder>(Differ) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ObjectViewHolder = ObjectViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_list_object, parent, false)
-    ).apply {
-        itemView.setOnClickListener {
-            val pos = bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                onClick(getItem(pos))
-            }
+    ): ObjectViewHolder {
+        return when (viewType) {
+            TYPE_ITEM -> ObjectItemViewHolder(inflate(parent, R.layout.item_list_object), onClick)
+            TYPE_SECTION_RECENTLY_OPENED -> RecentlyOpenedHolder(inflate(parent, R.layout.item_search_section_recently_opened))
+            else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
 
-    override fun onBindViewHolder(holderLink: ObjectViewHolder, position: Int) {
-        holderLink.bind(getItem(position))
+    override fun onBindViewHolder(holder: ObjectViewHolder, position: Int) {
+        val item = getItem(position)
+        when (holder) {
+            is ObjectItemViewHolder -> {
+                check(item is DefaultObjectView)
+                holder.bind(item)
+            }
+            else -> {}
+        }
     }
 
-    class ObjectViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    override fun getItemViewType(position: Int): Int {
+        return when (val item = getItem(position)) {
+            is DefaultObjectView -> TYPE_ITEM
+            is ObjectSearchSection.RecentlyOpened -> TYPE_SECTION_RECENTLY_OPENED
+            else -> throw IllegalStateException("Unexpected item type: ${item.javaClass.name}")
+        }
+    }
+
+    open class ObjectViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+    inner class RecentlyOpenedHolder(view: View) : ObjectViewHolder(view)
+
+    inner class ObjectItemViewHolder(
+        view: View,
+        private val onClick: (DefaultObjectView) -> Unit
+    ) : ObjectViewHolder(view) {
 
         private val title = itemView.findViewById<TextView>(R.id.tvTitle)
         private val subtitle = itemView.findViewById<TextView>(R.id.tvSubtitle)
@@ -105,18 +125,37 @@ class DefaultObjectViewAdapter(
             title.text = link.name
             subtitle.text = link.typeName
             icon.setIcon(link.icon)
+            itemView.setOnClickListener {
+                onClick.invoke(link)
+            }
         }
     }
 
-    object Differ : DiffUtil.ItemCallback<DefaultObjectView>() {
+    private fun inflate(
+        parent: ViewGroup,
+        res: Int,
+        attachToRoot: Boolean = false
+    ): View = LayoutInflater.from(parent.context).inflate(
+        res,
+        parent,
+        attachToRoot
+    )
+
+    object Differ : DiffUtil.ItemCallback<DefaultSearchItem>() {
+
         override fun areItemsTheSame(
-            oldItem: DefaultObjectView,
-            newItem: DefaultObjectView
-        ): Boolean = oldItem.id == newItem.id
+            oldItem: DefaultSearchItem,
+            newItem: DefaultSearchItem
+        ): Boolean = (oldItem as? DefaultObjectView)?.id == (newItem as? DefaultObjectView)?.id
 
         override fun areContentsTheSame(
-            oldItem: DefaultObjectView,
-            newItem: DefaultObjectView
-        ): Boolean = oldItem == newItem
+            oldItem: DefaultSearchItem,
+            newItem: DefaultSearchItem
+        ): Boolean = (oldItem as? DefaultObjectView) == (newItem as? DefaultObjectView)
+
     }
+
 }
+
+private const val TYPE_ITEM = 0
+private const val TYPE_SECTION_RECENTLY_OPENED = 1

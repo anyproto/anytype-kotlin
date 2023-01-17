@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -82,7 +83,13 @@ open class ObjectSearchViewModel(
                         if (this.isEmpty()) {
                             stateData.postValue(ObjectSearchView.NoResults(userInput.value))
                         } else {
-                            stateData.postValue(ObjectSearchView.Success(this))
+                            if (userInput.value.isEmpty()) {
+                                val items = mutableListOf<DefaultSearchItem>(ObjectSearchSection.RecentlyOpened)
+                                items.addAll(this)
+                                stateData.postValue(ObjectSearchView.Success(items))
+                            } else {
+                                stateData.postValue(ObjectSearchView.Success(this))
+                            }
                         }
                     }
                 } else {
@@ -173,7 +180,7 @@ open class ObjectSearchViewModel(
     protected fun sendSearchResultEvent(id: String) {
         val value = state.value
         if (value is ObjectSearchView.Success) {
-            val index = value.objects.indexOfFirst { it.id == id }
+            val index = value.objects.indexOfFirst { (it as? DefaultObjectView)?.id == id }
             if (index != -1) {
                 viewModelScope.sendAnalyticsSearchResultEvent(
                     analytics = analytics,

@@ -70,7 +70,7 @@ class MentionAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is DefaultObjectViewAdapter.ObjectViewHolder) {
+        if (holder is DefaultObjectViewAdapter.ObjectItemViewHolder) {
             holder.bind(data[position])
         }
         if (holder is NewPageViewHolder) {

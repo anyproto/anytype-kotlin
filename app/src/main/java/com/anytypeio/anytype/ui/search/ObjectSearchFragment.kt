@@ -19,8 +19,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
+import com.anytypeio.anytype.core_ui.features.search.ObjectSearchDividerItemDecoration
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
-import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -199,9 +199,11 @@ class ObjectSearchFragment :
             layoutManager = LinearLayoutManager(requireContext())
             adapter = searchAdapter
             addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(context.drawable(R.drawable.divider_search))
-                }
+                ObjectSearchDividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL,
+                    context.drawable(R.drawable.divider_search)
+                )
             )
             addItemDecoration(
                 SpacingItemDecoration(

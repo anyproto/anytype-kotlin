@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
+interface DefaultSearchItem
+
 data class DefaultObjectView(
     val id: Id,
     val name: String,
@@ -11,7 +13,7 @@ data class DefaultObjectView(
     val typeName: String? = null,
     val layout: ObjectType.Layout? = null,
     val icon: ObjectIcon = ObjectIcon.None
-)
+): DefaultSearchItem
 
 data class ObjectView(
     val id: String,

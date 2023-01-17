@@ -590,4 +590,6 @@
     <string name="my_relations">My relations</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
 
+    <string name="object_search_recently_opened_section_title">Recently opened</string>
+
 </resources>

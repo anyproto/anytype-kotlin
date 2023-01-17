@@ -6,11 +6,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemGridColumnHeaderBinding
+import com.anytypeio.anytype.core_ui.extensions.clearDrawable
+import com.anytypeio.anytype.core_ui.extensions.setDrawable
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 
-class ViewerGridHeaderAdapter() :
-    ListAdapter<ColumnView, ViewerGridHeaderAdapter.HeaderViewHolder>(ColumnHeaderDiffCallback) {
+class ViewerGridHeaderAdapter : ListAdapter<ColumnView, ViewerGridHeaderAdapter.HeaderViewHolder>(
+    ColumnHeaderDiffCallback
+) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -23,10 +27,23 @@ class ViewerGridHeaderAdapter() :
     override fun onBindViewHolder(holder: HeaderViewHolder, position: Int) {
         if (holder is HeaderViewHolder.DefaultHolder) holder.bind(getItem(position))
     }
+
     sealed class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class DefaultHolder(val binding: ItemGridColumnHeaderBinding) : HeaderViewHolder(binding.root) {
+        class DefaultHolder(val binding: ItemGridColumnHeaderBinding) :
+            HeaderViewHolder(binding.root) {
             fun bind(item: ColumnView) {
-                binding.cellText.text = item.text
+
+                with(binding.cellText) {
+                    text = item.text
+                    if (item.isReadOnly) {
+                        setDrawable(
+                            left = itemView.context.getDrawable(R.drawable.ic_object_locked)
+                        )
+                    } else {
+                        clearDrawable()
+                    }
+                }
+
             }
 
             companion object {

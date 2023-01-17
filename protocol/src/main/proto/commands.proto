@@ -1088,31 +1088,6 @@ message Rpc {
             }
         }
 
-        message ImportMarkdown {
-            message Request {
-                string contextId = 1;
-                string importPath = 2;
-            }
-
-            message Response {
-                Error error = 1;
-                repeated string rootLinkIds = 2;
-                ResponseEvent event = 3;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-
         message ShareByLink {
             message Request {
                 string objectId = 1;
@@ -1808,6 +1783,31 @@ message Rpc {
                         INTERNAL_ERROR = 1;
                         UNKNOWN_ERROR = 2;
                         BAD_INPUT = 3;
+                    }
+                }
+            }
+
+            message Notion {
+                message ValidateToken {
+                    message Request {
+                        string token = 1;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                INTERNAL_ERROR = 1;
+                                UNAUTHORIZED = 2;
+                                UNKNOWN_ERROR = 3;
+                                BAD_INPUT = 4;
+                            }
+                        }
                     }
                 }
             }

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -69,12 +70,14 @@ object MainEntryModule {
         authRepository: AuthRepository,
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
-        featuresConfigProvider: FeaturesConfigProvider
+        featuresConfigProvider: FeaturesConfigProvider,
+        workspaceManager: WorkspaceManager
     ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
-        featuresConfigProvider = featuresConfigProvider
+        featuresConfigProvider = featuresConfigProvider,
+        workspaceManager = workspaceManager
     )
 
     @JvmStatic

@@ -5,6 +5,8 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.FeaturesConfig
+import com.anytypeio.anytype.core_models.StubAccount
+import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -15,6 +17,7 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +27,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoMoreInteractions
 import kotlin.test.assertTrue
 
@@ -51,7 +55,7 @@ class StartAccountTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
             repository = repo,
             configStorage = configStorage,
@@ -253,5 +257,45 @@ class StartAccountTest {
         )
 
         assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
+    }
+
+    @Test
+    fun `should set workspace id after resuming account`() = runTest {
+
+        // SETUP
+
+        val givenAccount = StubAccount()
+        val givenAccountSetup = StubAccountSetup(account = givenAccount)
+        val givenPath = MockDataFactory.randomString()
+
+        repo.stub {
+            onBlocking {
+                startAccount(
+                    id = givenAccount.id,
+                    path = givenPath
+                )
+            } doReturn givenAccountSetup
+        }
+
+        repo.stub {
+            onBlocking {
+                getCurrentAccountId()
+            } doReturn givenAccount.id
+        }
+
+        val givenParams = StartAccount.Params(
+            id = givenAccount.id,
+            path = givenPath
+        )
+
+        // TESTING
+
+        startAccount.run(givenParams)
+
+        verifyBlocking(workspaceManager, times(1)) {
+            setCurrentWorkspace(
+                givenAccountSetup.config.workspace
+            )
+        }
     }
 }

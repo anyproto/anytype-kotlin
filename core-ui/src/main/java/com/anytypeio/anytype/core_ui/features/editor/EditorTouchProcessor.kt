@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.core_ui.features.editor
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import timber.log.Timber
 import kotlin.math.abs
 
@@ -52,7 +56,7 @@ class EditorTouchProcessor(
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     Timber.d("ACTION DOWN")
-                    actionUpStartInMillis = System.currentTimeMillis()
+                    actionUpStartInMillis = SystemClock.elapsedRealtime()
                     actionHandler.postDelayed(
                         dragAndDropTimeoutRunnable,
                         DND_TIMEOUT
@@ -69,6 +73,9 @@ class EditorTouchProcessor(
                     }
                 }
                 MotionEvent.ACTION_CANCEL -> {
+                    if (moves.isEmpty() && event.elapsed() > DND_TIMEOUT) {
+                        v.emulateHapticFeedback()
+                    }
                     Timber.d("ACTION CANCEL")
                     actionHandler.removeCallbacksAndMessages(null)
                     moves.clear()
@@ -77,10 +84,10 @@ class EditorTouchProcessor(
                     moves.clear()
                     Timber.d("ACTION UP")
                     actionHandler.removeCallbacksAndMessages(null)
-                    return when (System.currentTimeMillis() - actionUpStartInMillis) {
+                    return when (actionUpStartInMillis.untilNow()) {
                         in LONG_PRESS_TIMEOUT..DND_TIMEOUT -> {
                             onLongClick()
-                            v.performLongClick()
+                            v.performLongClickWithHaptic()
                             true
                         }
                         else -> {
@@ -97,7 +104,25 @@ class EditorTouchProcessor(
     }
 
     companion object {
-        const val DND_TIMEOUT: Long = 800
-        val LONG_PRESS_TIMEOUT = ViewConfiguration.getLongPressTimeout()
+        val LONG_PRESS_TIMEOUT: Long = ViewConfiguration.getLongPressTimeout().toLong()
+        val DND_TIMEOUT: Long = 2 * LONG_PRESS_TIMEOUT
+    }
+
+    private fun View.emulateHapticFeedback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (this !is TextInputWidget) {
+                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            }
+        }
     }
 }
+
+private fun View.performLongClickWithHaptic() {
+    if (this !is TextInputWidget && !performLongClick()) {
+        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+    }
+}
+
+private fun Long.untilNow() = SystemClock.elapsedRealtime() - this
+
+private fun MotionEvent.elapsed() = eventTime - downTime

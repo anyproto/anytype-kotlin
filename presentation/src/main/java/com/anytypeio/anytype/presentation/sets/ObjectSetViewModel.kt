@@ -8,8 +8,10 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Condition
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -199,15 +201,20 @@ class ObjectSetViewModel(
                     DataViewSubscriptionContainer.Params(
                         subscription = context,
                         sorts = view.sorts,
-                        filters = view.filters.map { f: DVFilter ->
-                            val r = storeOfRelations.getByKey(f.relationKey)
-                            if (r != null && r.relationFormat == RelationFormat.DATE) {
-                                f.copy(
-                                    relationFormat = r.relationFormat
-                                )
-                            } else {
-                                f
-                            }
+                        filters = buildList {
+                            addAll(
+                                view.filters.map { f: DVFilter ->
+                                    val r = storeOfRelations.getByKey(f.relationKey)
+                                    if (r != null && r.relationFormat == RelationFormat.DATE) {
+                                        f.copy(
+                                            relationFormat = r.relationFormat
+                                        )
+                                    } else {
+                                        f
+                                    }
+                                }
+                            )
+                            addAll(ObjectSearchConstants.defaultDataViewFilters())
                         },
                         sources = dv.sources,
                         keys = defaultKeys + dataViewKeys,
@@ -218,6 +225,7 @@ class ObjectSetViewModel(
                     null
                 }
             }.distinctUntilChanged().flatMapLatest { params ->
+                Timber.d("Data view subscription params:\n$params")
                 if (params != null) {
                     dataViewSubscriptionContainer.observe(params)
                 } else {

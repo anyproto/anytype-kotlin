@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -129,7 +130,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionEventChannel()
         stubSearchWithSubscription(
             subscription = root,
-            filters = dv.content<DV>().viewers.first().filters,
+            filters = dv.content<DV>().viewers.first().filters + defaultDataViewFilters(),
             sorts = dv.content<DV>().viewers.first().sorts,
             afterId = null,
             beforeId = null,
@@ -254,7 +255,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionEventChannel()
             stubSearchWithSubscription(
                 subscription = root,
-                filters = dv.content<DV>().viewers.first().filters,
+                filters = dv.content<DV>().viewers.first().filters + defaultDataViewFilters(),
                 sorts = dv.content<DV>().viewers.first().sorts,
                 afterId = null,
                 beforeId = null,
@@ -376,7 +377,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionEventChannel()
         stubSearchWithSubscription(
             subscription = root,
-            filters = dv.content<DV>().viewers.first().filters,
+            filters = dv.content<DV>().viewers.first().filters + defaultDataViewFilters(),
             sorts = dv.content<DV>().viewers.first().sorts,
             afterId = null,
             beforeId = null,
@@ -493,7 +494,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionEventChannel()
             stubSearchWithSubscription(
                 subscription = root,
-                filters = dv.content<DV>().viewers.first().filters,
+                filters = dv.content<DV>().viewers.first().filters + defaultDataViewFilters(),
                 sorts = dv.content<DV>().viewers.first().sorts,
                 afterId = null,
                 beforeId = null,

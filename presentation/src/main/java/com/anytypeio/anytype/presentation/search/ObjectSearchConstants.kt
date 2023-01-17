@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.search
 
+import com.anytypeio.anytype.core_models.Condition
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
@@ -461,6 +462,7 @@ object ObjectSearchConstants {
         Relations.LAYOUT,
         Relations.IS_ARCHIVED,
         Relations.IS_DELETED,
+        Relations.IS_HIDDEN,
         Relations.SNIPPET,
         Relations.DONE
     )
@@ -500,6 +502,24 @@ object ObjectSearchConstants {
             relationKey = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
+        )
+    )
+
+    fun defaultDataViewFilters() = listOf(
+        DVFilter(
+            relationKey = Relations.IS_HIDDEN,
+            condition = Condition.NOT_EQUAL,
+            value = true,
+        ),
+        DVFilter(
+            relationKey = Relations.IS_DELETED,
+            condition = Condition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relationKey = Relations.IS_ARCHIVED,
+            condition = Condition.NOT_EQUAL,
+            value = true
         )
     )
 

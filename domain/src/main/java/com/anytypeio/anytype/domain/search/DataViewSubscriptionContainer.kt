@@ -38,8 +38,8 @@ class DataViewSubscriptionContainer(
         return flow {
             val initial = repo.searchObjectsWithSubscription(
                 subscription = params.subscription,
-                sorts = params.sorts,
-                filters = params.filters,
+                sorts = params.sorts.distinct(),
+                filters = params.filters.distinct(),
                 offset = params.offset,
                 limit = params.limit,
                 keys = params.keys.distinct(),

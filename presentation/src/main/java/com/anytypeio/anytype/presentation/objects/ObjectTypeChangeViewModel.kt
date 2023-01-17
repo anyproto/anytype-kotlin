@@ -167,30 +167,32 @@ class ObjectTypeChangeViewModel(
         marketplaceTypes: List<ObjectWrapper.Type>
     ) = buildList {
         if (myTypes.isNotEmpty()) {
-            add(ObjectTypeItemView.Section.Library)
-            addAll(
-                myTypes.getObjectTypeViewsForSBPage(
-                    isWithSet = setup.isWithSet,
-                    isWithBookmark = setup.isWithBookmark,
-                    excludeTypes = setup.excludeTypes,
-                    selectedTypes = setup.selectedTypes
-                ).map {
-                    ObjectTypeItemView.Type(it)
-                }
-            )
+            val views = myTypes.getObjectTypeViewsForSBPage(
+                isWithSet = setup.isWithSet,
+                isWithBookmark = setup.isWithBookmark,
+                excludeTypes = setup.excludeTypes,
+                selectedTypes = setup.selectedTypes
+            ).map {
+                ObjectTypeItemView.Type(it)
+            }
+            if (views.isNotEmpty()) {
+                add(ObjectTypeItemView.Section.Library)
+            }
+            addAll(views)
         }
         if (marketplaceTypes.isNotEmpty()) {
-            add(ObjectTypeItemView.Section.Marketplace)
-            addAll(
-                marketplaceTypes.getObjectTypeViewsForSBPage(
-                    isWithSet = setup.isWithSet,
-                    isWithBookmark = setup.isWithBookmark,
-                    excludeTypes = setup.excludeTypes,
-                    selectedTypes = setup.selectedTypes
-                ).map {
-                    ObjectTypeItemView.Type(it)
-                }
-            )
+            val views = marketplaceTypes.getObjectTypeViewsForSBPage(
+                isWithSet = setup.isWithSet,
+                isWithBookmark = setup.isWithBookmark,
+                excludeTypes = setup.excludeTypes,
+                selectedTypes = setup.selectedTypes
+            ).map {
+                ObjectTypeItemView.Type(it)
+            }
+            if (views.isNotEmpty()) {
+                add(ObjectTypeItemView.Section.Marketplace)
+            }
+            addAll(views)
         }
     }
 

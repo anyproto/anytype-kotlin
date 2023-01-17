@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.TypicalTwoRecordObjectSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -67,7 +68,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
 
         stubSearchWithSubscription(
             subscription = root,
-            filters = doc.dv.content<DV>().viewers.first().filters,
+            filters = doc.dv.content<DV>().viewers.first().filters + defaultDataViewFilters(),
             sorts = doc.dv.content<DV>().viewers.first().sorts,
             afterId = null,
             beforeId = null,

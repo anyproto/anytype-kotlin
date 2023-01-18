@@ -12,7 +12,7 @@
 * Editor | Showing object pre-loading state (#2791) 
 * Sets | Enhancement | Support sets of objects aggregated by relations (#2727, #2731, #2740)
 * Sets | Allow possibility to change data view source after its initial setup (#2692, #2698)
-* Sets | Allow creating a set of sets (#2698) 
+* Sets | Allow creating a set of sets (#2698) [DISABLED IN THIS RELEASE]
 * Sets | Enabled 'duplicate' action for currently open set (#2697)
 
 ### Fixes & tech 🚒

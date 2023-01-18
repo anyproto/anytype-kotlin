@@ -15,7 +15,7 @@ class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
 
     override fun startWithParams() {
         vm.onStart(
-            isWithSet = true,
+            isWithSet = false,
             isWithBookmark = true,
             excludeTypes = emptyList(),
             selectedTypes = selectedTypes,

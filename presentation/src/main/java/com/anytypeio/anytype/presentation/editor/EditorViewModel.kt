@@ -1119,6 +1119,10 @@ class EditorViewModel(
         exitBack()
     }
 
+    fun onMovedToBin() {
+        navigate(EventWrapper(AppNavigation.Command.Exit))
+    }
+
     private fun exitBack() {
         when (session.value) {
             Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit))
@@ -1126,8 +1130,11 @@ class EditorViewModel(
             Session.OPEN -> {
                 viewModelScope.launch {
                     closePage.execute(context).fold(
-                        onSuccess = { navigation.postValue(EventWrapper(AppNavigation.Command.Exit)) },
-                        onFailure = { Timber.e(it, "Error while closing document: $context") }
+                        onSuccess = { navigate(EventWrapper(AppNavigation.Command.Exit)) },
+                        onFailure = {
+                            Timber.e(it, "Error while closing document: $context")
+                            navigate(EventWrapper(AppNavigation.Command.Exit))
+                        }
                     )
                 }
             }
@@ -1142,7 +1149,10 @@ class EditorViewModel(
         viewModelScope.launch {
             closePage.execute(context).fold(
                 onSuccess = { navigateToDesktop() },
-                onFailure = { Timber.e(it, "Error while closing this page: $context") }
+                onFailure = {
+                    Timber.e(it, "Error while closing this page: $context")
+                    navigateToDesktop()
+                }
             )
         }
     }
@@ -6752,6 +6762,7 @@ class EditorViewModel(
             }
         }
     }
+
     //endregion
 }
 

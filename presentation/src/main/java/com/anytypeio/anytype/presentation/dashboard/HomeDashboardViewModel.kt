@@ -586,7 +586,7 @@ class HomeDashboardViewModel(
                                     title = obj.getProperName(),
                                     isArchived = obj.isArchived ?: false,
                                     isLoading = false,
-                                    icon = ObjectIcon.from(
+                                    icon = ObjectIcon.getEditorLinkToObjectIcon(
                                         obj = obj,
                                         layout = obj.layout,
                                         builder = urlBuilder

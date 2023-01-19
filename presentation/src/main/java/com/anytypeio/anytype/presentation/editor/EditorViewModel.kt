@@ -52,8 +52,6 @@ import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -69,12 +67,14 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -100,13 +100,13 @@ import com.anytypeio.anytype.presentation.editor.editor.SideEffect
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.editor.editor.ext.getOnFocusChangedEvent
 import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlights
 import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
 import com.anytypeio.anytype.presentation.editor.editor.ext.fillTableOfContents
 import com.anytypeio.anytype.presentation.editor.editor.ext.findSearchResultPosition
 import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
+import com.anytypeio.anytype.presentation.editor.editor.ext.getOnFocusChangedEvent
 import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
 import com.anytypeio.anytype.presentation.editor.editor.ext.isStyleClearable
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
@@ -1436,6 +1436,10 @@ class EditorViewModel(
     }
 
     private fun proceedWithOpeningObjectMenu() {
+        if (context.isEmpty()) {
+            sendToast("Your object is not initialized. Please, try again later.")
+            return
+        }
         blocks.find { it.id == context }?.let { root ->
             val content = root.content
             check(content is Content.Smart)

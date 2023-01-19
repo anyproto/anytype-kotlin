@@ -8,11 +8,18 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubRelation
+import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewKeys
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -43,48 +50,19 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         .onlyLogWhenTestFails(true)
         .build()
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            style = Block.Content.Text.Style.TITLE,
-            text = MockDataFactory.randomString(),
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
-
-    private val header = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Layout(
-            type = Block.Content.Layout.Type.HEADER
-        ),
-        fields = Block.Fields.empty(),
-        children = listOf(title.id)
-    )
+    private val title = StubTitle()
+    private val header = StubHeader(children = listOf(title.id))
 
     private val relations = listOf(
-        Relation(
-            key = MockDataFactory.randomString(),
-            name = MockDataFactory.randomString(),
-            source = Relation.Source.DETAILS,
-            defaultValue = null,
+        StubRelationObject(
+            key = MockDataFactory.randomUuid(),
             format = Relation.Format.LONG_TEXT,
-            isHidden = false,
-            isMulti = false,
-            isReadOnly = false,
-            selections = emptyList()
+            isReadOnlyValue = false
         ),
-        Relation(
-            key = MockDataFactory.randomString(),
-            name = MockDataFactory.randomString(),
-            source = Relation.Source.DETAILS,
-            defaultValue = null,
+        StubRelationObject(
+            key = MockDataFactory.randomUuid(),
             format = Relation.Format.LONG_TEXT,
-            isHidden = false,
-            isMulti = false,
-            isReadOnly = true,
-            selections = emptyList()
+            isReadOnlyValue = true
         )
     )
 
@@ -151,8 +129,14 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         id = MockDataFactory.randomUuid(),
         content = DV(
             sources = listOf(MockDataFactory.randomString()),
-            relations = relations,
-            viewers = listOf(viewer1, viewer2)
+            relationsIndex = relations.map {
+                RelationLink(
+                    key = it.key,
+                    format = it.format
+                )
+            },
+            viewers = listOf(viewer1, viewer2),
+            relations = emptyList()
         ),
         children = emptyList(),
         fields = Block.Fields.empty()
@@ -188,7 +172,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             afterId = null,
             beforeId = null,
             sources = dv.content<DV>().sources,
-            keys = dv.content<DV>().relations.map { it.key },
+            keys = dv.content<DV>().relationsIndex.map { it.key } + defaultDataViewKeys,
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
             result = SearchResult(
@@ -213,6 +197,13 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
+
+        relations.forEach {
+            storeOfRelations.set(
+                target = it.id,
+                data = it.map
+            )
+        }
 
         val vm = givenViewModel()
 

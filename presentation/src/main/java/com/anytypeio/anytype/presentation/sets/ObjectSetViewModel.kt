@@ -510,96 +510,92 @@ class ObjectSetViewModel(
 
     fun onGridCellClicked(cell: CellView) {
         Timber.d("onGridCellClicked, cell:[$cell]")
-
         if (cell.relationKey == Relations.NAME) return
+        viewModelScope.launch {
+            val state = reducer.state.value
 
-        val state = reducer.state.value
-
-        if (!state.isInitialized) {
-            Timber.e("State was not initialized or cleared when cell is clicked")
-            return
-        }
-
-        val block = state.dataview
-        val dv = block.content as DV
-        val viewer =
-            dv.viewers.find { it.id == session.currentViewerId.value }?.id ?: dv.viewers.first().id
-
-        if (dv.isRelationReadOnly(relationKey = cell.relationKey)) {
-            val relation = dv.relations.first { it.key == cell.relationKey }
-            if (relation.format == Relation.Format.OBJECT) {
-                // TODO terrible workaround, which must be removed in the future!
-                if (cell is CellView.Object && cell.objects.isNotEmpty()) {
-                    val obj = cell.objects.first()
-                    onRelationObjectClicked(target = obj.id)
-                    return
-                } else {
-                    toast(NOT_ALLOWED_CELL)
-                    return
-                }
-            } else {
-                Timber.d("onGridCellClicked, relation is ReadOnly")
-                toast(NOT_ALLOWED_CELL)
-                return
+            if (!state.isInitialized) {
+                Timber.e("State was not initialized or cleared when cell is clicked")
+                return@launch
             }
-        }
 
-        when (cell) {
-            is CellView.Description,
-            is CellView.Number,
-            is CellView.Email,
-            is CellView.Url,
-            is CellView.Phone -> {
-                dispatch(
-                    ObjectSetCommand.Modal.EditGridTextCell(
-                        ctx = context,
-                        relationKey = cell.relationKey,
-                        recordId = cell.id
-                    )
-                )
+            val block = state.dataview
+            val viewer = state.viewerById(session.currentViewerId.value)
+            val relation = storeOfRelations.getByKey(cell.relationKey)
+
+            if (relation == null) {
+                toast("Could not found this relation. Please, try again later.")
+                return@launch
             }
-            is CellView.Date -> {
-                dispatch(
-                    ObjectSetCommand.Modal.EditGridDateCell(
-                        ctx = context,
-                        objectId = cell.id,
-                        relationKey = cell.relationKey
-                    )
-                )
-            }
-            is CellView.Tag, is CellView.Status, is CellView.File -> {
-                dispatch(
-                    ObjectSetCommand.Modal.EditRelationCell(
-                        ctx = context,
-                        target = cell.id,
-                        dataview = block.id,
-                        relationKey = cell.relationKey,
-                        viewer = viewer,
-                        targetObjectTypes = emptyList()
-                    )
-                )
-            }
-            is CellView.Object -> {
-                viewModelScope.launch {
-                    val targetObjectTypes = mutableListOf<String>()
-                    val relation = storeOfRelations.getByKey(cell.relationKey)
-                    if (relation != null) {
-                        targetObjectTypes.addAll(relation.relationFormatObjectTypes)
+
+            if (relation.isReadonlyValue) {
+                if (relation.format == Relation.Format.OBJECT) {
+                    // TODO terrible workaround, which must be removed in the future!
+                    if (cell is CellView.Object && cell.objects.isNotEmpty()) {
+                        val obj = cell.objects.first()
+                        onRelationObjectClicked(target = obj.id)
+                        return@launch
+                    } else {
+                        toast(NOT_ALLOWED_CELL)
+                        return@launch
                     }
+                } else {
+                    Timber.d("onGridCellClicked, relation is ReadOnly")
+                    toast(NOT_ALLOWED_CELL)
+                    return@launch
+                }
+            }
+
+            when (cell) {
+                is CellView.Description,
+                is CellView.Number,
+                is CellView.Email,
+                is CellView.Url,
+                is CellView.Phone -> {
+                    dispatch(
+                        ObjectSetCommand.Modal.EditGridTextCell(
+                            ctx = context,
+                            relationKey = cell.relationKey,
+                            recordId = cell.id
+                        )
+                    )
+                }
+                is CellView.Date -> {
+                    dispatch(
+                        ObjectSetCommand.Modal.EditGridDateCell(
+                            ctx = context,
+                            objectId = cell.id,
+                            relationKey = cell.relationKey
+                        )
+                    )
+                }
+                is CellView.Tag, is CellView.Status, is CellView.File -> {
                     dispatch(
                         ObjectSetCommand.Modal.EditRelationCell(
                             ctx = context,
                             target = cell.id,
                             dataview = block.id,
                             relationKey = cell.relationKey,
-                            viewer = viewer,
+                            viewer = viewer.id,
+                            targetObjectTypes = emptyList()
+                        )
+                    )
+                }
+                is CellView.Object -> {
+                    val targetObjectTypes = mutableListOf<String>()
+                    targetObjectTypes.addAll(relation.relationFormatObjectTypes)
+                    dispatch(
+                        ObjectSetCommand.Modal.EditRelationCell(
+                            ctx = context,
+                            target = cell.id,
+                            dataview = block.id,
+                            relationKey = cell.relationKey,
+                            viewer = viewer.id,
                             targetObjectTypes = targetObjectTypes
                         )
                     )
                 }
-            }
-            is CellView.Checkbox -> {
-                viewModelScope.launch {
+                is CellView.Checkbox -> {
                     setObjectDetails(
                         UpdateDetail.Params(
                             ctx = cell.id,

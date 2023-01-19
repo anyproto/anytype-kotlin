@@ -810,7 +810,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     binding.blockActionToolbar.bind(it)
                     delay(DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR)
                     handler.post {
-                        binding.blockActionToolbar.scrollToPosition(0, smooth = true)
+                        if (hasBinding) {
+                            binding.blockActionToolbar.scrollToPosition(0, smooth = true)
+                        }
                     }
                 }
             }

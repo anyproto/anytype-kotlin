@@ -631,6 +631,10 @@ fun List<BlockView>.highlight(
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
             view.copy(searchFields = highlighter(fields))
         }
+        is BlockView.Text.Callout -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text)
+            view.copy(searchFields = highlighter(fields))
+        }
         is BlockView.Title.Basic -> {
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
@@ -683,7 +687,13 @@ fun List<BlockView>.highlight(
             val updatedCells = view.cells.map { it.addHighlight(highlighter) }
             view.copy(cells = updatedCells)
         }
-        else -> view.also { check(view !is BlockView.Searchable) }
+        else -> {
+            view.also { v ->
+                if (v is BlockView.Searchable) {
+                    Timber.e("Ignoring search field for block type: ${v.getViewType()}")
+                }
+            }
+        }
     }
 }
 

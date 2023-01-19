@@ -685,7 +685,16 @@ class DashboardAdapter(
             }
 
             fun bindIcon(icon: ObjectIcon) {
-                binding.iconWidget.bind(icon)
+                when (icon) {
+                    is ObjectIcon.None -> {
+                        binding.iconWidget.gone()
+                    }
+                    else -> {
+                        binding.iconWidget.visible()
+                        binding.iconWidget.bind(icon)
+                    }
+
+                }
             }
 
             override fun bindSelection(isSelected: Boolean) {

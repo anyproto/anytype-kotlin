@@ -398,7 +398,7 @@ object ObjectSearchConstants {
     fun filterTabArchive(workspaceId: String) = listOf(
         DVFilter(
             relationKey = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
+            condition = DVFilterCondition.EQUAL,
             value = true
         ),
         DVFilter(

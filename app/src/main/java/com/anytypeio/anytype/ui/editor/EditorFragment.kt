@@ -1953,7 +1953,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onMoveToBinSuccess() {
-        vm.proceedWithExitingBack()
+        vm.onMovedToBin()
     }
 
     override fun onSearchOnPageClicked() {

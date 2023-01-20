@@ -28,13 +28,11 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val relations get() = itemView.findViewById<ListViewItemRelationGroupWidget>(R.id.relationsContainer)
 
         fun bind(item: Viewer.ListView.Item) {
-            when {
-                item.hideIcon -> icon.gone()
-                item.icon is ObjectIcon.Basic -> {
-                    icon.visible()
-                    icon.setIcon(item.icon)
-                }
-                else -> icon.gone()
+            if (item.hideIcon || item.icon is ObjectIcon.None) {
+                icon.gone()
+            } else {
+                icon.visible()
+                icon.setIcon(item.icon)
             }
             tvPrimary.text = item.name
             if (item.description.isNullOrBlank()) {

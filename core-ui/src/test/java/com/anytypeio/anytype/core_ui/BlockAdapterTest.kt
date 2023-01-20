@@ -28,11 +28,13 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
+import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
@@ -1602,15 +1604,7 @@ class BlockAdapterTest {
 
         check(holder is Paragraph)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -1683,7 +1677,7 @@ class BlockAdapterTest {
         check(holder is Paragraph)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -1727,7 +1721,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -1748,15 +1742,7 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -1787,15 +1773,7 @@ class BlockAdapterTest {
 
         check(holder is Document)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
 
         assertNotNull(holder.content.selectionWatcher)
     }
@@ -1829,7 +1807,7 @@ class BlockAdapterTest {
         check(holder is Document)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -1872,7 +1850,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -1890,15 +1868,7 @@ class BlockAdapterTest {
             )
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -1949,35 +1919,11 @@ class BlockAdapterTest {
         check(h2Holder is HeaderTwo)
         check(h3Holder is HeaderThree)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = h1Holder.content.inputType
-        )
+        assertTrue { h1Holder.inReadMode() }
 
-        assertEquals(
-            expected = false,
-            actual = h1Holder.content.isTextSelectable
-        )
+        assertTrue { h2Holder.inReadMode() }
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = h2Holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = h2Holder.content.isTextSelectable
-        )
-
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = h3Holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = h3Holder.content.isTextSelectable
-        )
+        assertTrue { h3Holder.inReadMode() }
     }
 
     @Test
@@ -2134,7 +2080,7 @@ class BlockAdapterTest {
         check(h3Holder is HeaderThree)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = h1Holder.content.inputType
         )
 
@@ -2144,7 +2090,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = h2Holder.content.inputType
         )
 
@@ -2154,7 +2100,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = h3Holder.content.inputType
         )
 
@@ -2227,7 +2173,7 @@ class BlockAdapterTest {
         // H1
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = h1Holder.content.inputType
         )
 
@@ -2246,20 +2192,12 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = h1Holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = h1Holder.content.isTextSelectable
-        )
+        assertTrue { h1Holder.inReadMode() }
 
         // H2
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = h2Holder.content.inputType
         )
 
@@ -2278,20 +2216,12 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = h2Holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = h2Holder.content.isTextSelectable
-        )
+        assertTrue { h2Holder.inReadMode() }
 
         // H3
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = h3Holder.content.inputType
         )
 
@@ -2310,15 +2240,7 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = h3Holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = h3Holder.content.isTextSelectable
-        )
+        assertTrue { h3Holder.inReadMode() }
     }
 
     @Test
@@ -2349,15 +2271,7 @@ class BlockAdapterTest {
 
         check(holder is Highlight)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2440,7 +2354,7 @@ class BlockAdapterTest {
         check(holder is Highlight)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2482,7 +2396,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2501,15 +2415,7 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2540,15 +2446,7 @@ class BlockAdapterTest {
 
         check(holder is Bulleted)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2580,7 +2478,7 @@ class BlockAdapterTest {
         check(holder is Bulleted)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2623,7 +2521,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2642,15 +2540,7 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2681,15 +2571,7 @@ class BlockAdapterTest {
 
         check(holder is Checkbox)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2721,7 +2603,7 @@ class BlockAdapterTest {
         check(holder is Checkbox)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2764,7 +2646,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2783,15 +2665,7 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2823,15 +2697,7 @@ class BlockAdapterTest {
 
         check(holder is Numbered)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2864,7 +2730,7 @@ class BlockAdapterTest {
         check(holder is Numbered)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2908,7 +2774,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -2927,15 +2793,7 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -2968,15 +2826,7 @@ class BlockAdapterTest {
 
         check(holder is Toggle)
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -3010,7 +2860,7 @@ class BlockAdapterTest {
         check(holder is Toggle)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -3055,7 +2905,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = getTextWriteParams(),
             actual = holder.content.inputType
         )
 
@@ -3074,15 +2924,7 @@ class BlockAdapterTest {
             clicked = {},
         )
 
-        assertEquals(
-            expected = InputType.TYPE_NULL,
-            actual = holder.content.inputType
-        )
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.isTextSelectable
-        )
+        assertTrue { holder.inReadMode() }
     }
 
     @Test
@@ -3489,6 +3331,16 @@ class BlockAdapterTest {
         override fun getCurrentState() = State.DESTROYED
     }
 }
+
+private fun TextHolder.inReadMode() = content.javaClass.declaredFields.filterNotNull()
+    .first { field -> field.name == "inReadMode" }
+    .apply {
+        isAccessible = true
+    }.getBoolean(content)
+
+private fun getTextWriteParams() = InputType.TYPE_TEXT_FLAG_MULTI_LINE or
+        InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
+        InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
 
 private const val TEST_RUNS = 40000
 private const val WARMUP_RUNS = 1000

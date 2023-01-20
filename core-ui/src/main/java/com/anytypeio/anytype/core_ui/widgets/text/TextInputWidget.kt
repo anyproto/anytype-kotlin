@@ -4,7 +4,7 @@ import android.R.id.copy
 import android.R.id.paste
 import android.content.Context
 import android.graphics.Canvas
-import android.text.InputType
+import android.os.Parcelable
 import android.text.Spanned
 import android.text.TextWatcher
 import android.text.util.Linkify
@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_utils.ext.multilineIme
 import com.anytypeio.anytype.core_utils.ext.showKeyboard
 import com.anytypeio.anytype.core_utils.text.OnEnterActionListener
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 
 class TextInputWidget : AppCompatEditText {
@@ -61,6 +62,7 @@ class TextInputWidget : AppCompatEditText {
 
     private var ignoreDragAndDrop = false
     private var pasteAsPlainTextOnly = false
+    private var inReadMode = false
 
     val editorTouchProcessor by lazy {
         EditorTouchProcessor(
@@ -98,6 +100,15 @@ class TextInputWidget : AppCompatEditText {
     fun enableEditMode() {
         multilineIme(action = inputAction.toIMECode())
         setTextIsSelectable(true)
+        inReadMode = false
+    }
+
+    fun enableReadMode() {
+        pauseTextWatchers {
+            inReadMode = true
+            setHorizontallyScrolling(false)
+            setTextIsSelectable(false)
+        }
     }
 
     override fun dispatchDragEvent(event: DragEvent?): Boolean {
@@ -113,16 +124,6 @@ class TextInputWidget : AppCompatEditText {
             true
         } else {
             super.onKeyPreIme(keyCode, event)
-        }
-    }
-
-    fun enableReadMode() {
-        pauseTextWatchers {
-            inputType = InputType.TYPE_NULL
-            setRawInputType(InputType.TYPE_NULL)
-            maxLines = Integer.MAX_VALUE
-            setHorizontallyScrolling(false)
-            setTextIsSelectable(false)
         }
     }
 
@@ -272,7 +273,7 @@ class TextInputWidget : AppCompatEditText {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (hasFocus()) return super.onTouchEvent(event)
+        if (hasFocus() && !inReadMode) return super.onTouchEvent(event)
         return editorTouchProcessor.process(this, event)
     }
 
@@ -291,7 +292,25 @@ class TextInputWidget : AppCompatEditText {
         movementMethod = CustomBetterLinkMovementMethod
     }
 
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
+        return WidgetState(superState, inReadMode)
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        val restoredState = state as? WidgetState ?: return super.onRestoreInstanceState(state)
+
+        super.onRestoreInstanceState(restoredState.superSavedState ?: restoredState)
+        inReadMode = restoredState.isInReadMode
+    }
+
     companion object {
         val DEFAULT_INPUT_WIDGET_ACTION = BlockView.InputAction.NewLine
     }
 }
+
+@Parcelize
+private class WidgetState(
+    val superSavedState: Parcelable?,
+    val isInReadMode: Boolean,
+) : Parcelable

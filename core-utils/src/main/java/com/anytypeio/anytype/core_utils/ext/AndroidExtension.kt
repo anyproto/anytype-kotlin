@@ -178,13 +178,12 @@ fun String.getFileName(mime: String?): String =
 fun Int.addDot(): String = "$this."
 
 fun EditText.multilineIme(action: Int) {
-    imeOptions = action
-    inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
     setRawInputType(
-        InputType.TYPE_CLASS_TEXT
+        InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
                 or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
     )
+    imeOptions = action
     setHorizontallyScrolling(false)
     maxLines = Integer.MAX_VALUE
 }

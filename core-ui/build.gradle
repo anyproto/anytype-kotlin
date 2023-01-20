@@ -1,10 +1,10 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    id "kotlin-parcelize"
 }
 
 android {
-    def config = rootProject.extensions.getByName("ext")
 
     defaultConfig {
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"

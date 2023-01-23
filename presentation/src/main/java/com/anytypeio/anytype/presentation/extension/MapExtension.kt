@@ -49,7 +49,7 @@ suspend fun List<Id>.mapToFavorites(
         val content = block?.content
         if (content != null && content is Block.Content.Link) {
             val obj = objectStore.get(content.target)
-            if (obj != null) {
+            if (obj != null && obj.isArchived != true) {
                 val layout = obj.layout
                 if (layout == ObjectType.Layout.SET) {
                     DashboardView.ObjectSet(

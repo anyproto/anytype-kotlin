@@ -585,7 +585,7 @@
     <string name="set_by_relation">Relation: %1$s</string>
     <string name="set_by_relations">Relations: %1$s</string>
     <string name="set_by_type">Type: %1$s</string>
-    <string name="marketplace">Marketplace</string>
+    <string name="library">Library</string>
     <string name="my_types">My types</string>
     <string name="my_relations">My relations</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>

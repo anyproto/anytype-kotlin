@@ -47,7 +47,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/background_dashboard_button"
-        app:layout_constraintEnd_toStartOf="@+id/btnMarketplace"
+        app:layout_constraintEnd_toStartOf="@+id/btnLibrary"
         app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
 
         <ImageView
@@ -59,7 +59,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/btnMarketplace"
+        android:id="@+id/btnLibrary"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginTop="50dp"
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_dashboard_marketplace" />
+            android:src="@drawable/ic_dashboard_library" />
 
     </FrameLayout>
 
@@ -83,7 +83,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/background_dashboard_button"
-        app:layout_constraintStart_toEndOf="@+id/btnMarketplace"
+        app:layout_constraintStart_toEndOf="@+id/btnLibrary"
         app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
 
         <ImageView
@@ -104,7 +104,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnMarketplace">
+        app:layout_constraintTop_toBottomOf="@+id/btnLibrary">
 
         <FrameLayout
             android:id="@+id/topToolbarContainer"

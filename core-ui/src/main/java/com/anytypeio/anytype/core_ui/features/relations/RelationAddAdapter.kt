@@ -78,7 +78,7 @@ class RelationAddAdapter(
                 check(item is Section)
                 when(item) {
                     Section.Marketplace -> {
-                        holder.bind(holder.itemView.resources.getString(R.string.marketplace))
+                        holder.bind(holder.itemView.resources.getString(R.string.library))
                     }
                     Section.Library -> {
                         holder.bind(holder.itemView.resources.getString(R.string.my_relations))

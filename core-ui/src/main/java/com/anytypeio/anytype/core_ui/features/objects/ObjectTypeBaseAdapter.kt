@@ -67,7 +67,7 @@ class ObjectTypeVerticalAdapter(
                 when(item) {
                     ObjectTypeItemView.Section.Marketplace -> {
                         holder.bind(
-                            root.resources.getString(R.string.marketplace)
+                            root.resources.getString(R.string.library)
                         )
                     }
                     ObjectTypeItemView.Section.Library -> {

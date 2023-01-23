@@ -8,10 +8,8 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Condition
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -27,7 +25,6 @@ import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
@@ -38,6 +35,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -582,18 +580,22 @@ class ObjectSetViewModel(
                     )
                 }
                 is CellView.Object -> {
-                    val targetObjectTypes = mutableListOf<String>()
-                    targetObjectTypes.addAll(relation.relationFormatObjectTypes)
-                    dispatch(
-                        ObjectSetCommand.Modal.EditRelationCell(
-                            ctx = context,
-                            target = cell.id,
-                            dataview = block.id,
-                            relationKey = cell.relationKey,
-                            viewer = viewer.id,
-                            targetObjectTypes = targetObjectTypes
+                    if (cell.relationKey != Relations.TYPE) {
+                        val targetObjectTypes = mutableListOf<String>()
+                        targetObjectTypes.addAll(relation.relationFormatObjectTypes)
+                        dispatch(
+                            ObjectSetCommand.Modal.EditRelationCell(
+                                ctx = context,
+                                target = cell.id,
+                                dataview = block.id,
+                                relationKey = cell.relationKey,
+                                viewer = viewer.id,
+                                targetObjectTypes = targetObjectTypes
+                            )
                         )
-                    )
+                    } else {
+                        toast("You cannot change type from here.")
+                    }
                 }
                 is CellView.Checkbox -> {
                     setObjectDetails(
@@ -619,10 +621,14 @@ class ObjectSetViewModel(
         val set = reducer.state.value
         if (set.isInitialized) {
             val obj = ObjectWrapper.Basic(set.details[target]?.map ?: emptyMap())
-            proceedWithNavigation(
-                target = target,
-                layout = obj.layout
-            )
+            if (obj.type.contains(ObjectTypeIds.OBJECT_TYPE)) {
+                toast("You cannot change type from here.")
+            } else {
+                proceedWithNavigation(
+                    target = target,
+                    layout = obj.layout
+                )
+            }
         }
     }
 

@@ -15,8 +15,8 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -540,7 +540,7 @@ abstract class RelationValueBaseViewModel(
 
     companion object {
         const val ALREADY_HERE_MSG = "Already here."
-        const val CANNOT_OPEN_OBJECT_WITH_THIS_LAYOUT = "Cannot open object witht this layout."
+        const val CANNOT_OPEN_OBJECT_WITH_THIS_LAYOUT = "Cannot open object with this layout."
     }
 }
 

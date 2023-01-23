@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
@@ -28,7 +29,8 @@ class MainViewModel(
     private val analytics: Analytics,
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager
+    private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -75,6 +77,7 @@ class MainViewModel(
                     }
                     is Interactor.Status.Success -> {
                         relationsSubscriptionManager.onStop()
+                        objectTypesSubscriptionManager.onStop()
                         commands.emit(Command.LogoutDueToAccountDeletion)
                     }
                 }
@@ -94,6 +97,8 @@ class MainViewModel(
         runBlocking {
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = { id ->
+                    relationsSubscriptionManager.onStart()
+                    objectTypesSubscriptionManager.onStart()
                     updateUserProperties(
                         analytics = analytics,
                         userProperty = UserProperty.AccountId(id)

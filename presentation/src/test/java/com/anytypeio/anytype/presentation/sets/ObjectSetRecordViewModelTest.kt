@@ -5,10 +5,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.objects.DefaultObjectStore
-import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.test.runTest
@@ -43,38 +41,11 @@ class ObjectSetRecordViewModelTest {
     }
 
     @Test
-    fun `should not crash if store does not contain relevant data`() {
-
-        // SETUP
-
-        val store = DefaultObjectStore()
-
-        val vm = buildViewModel(store = store)
-
-        // TESTING
-
-        vm.onActionDone(
-            target = obj.id,
-            input = MockDataFactory.randomString()
-        )
-
-        verifyNoInteractions(setObjectDetails)
-    }
-
-    @Test
     fun `should proceed with updating record name based on user input on action done`() = runTest {
 
         // SETUP
 
-        val store = DefaultObjectStore().apply {
-            merge(
-                objects = listOf(obj),
-                dependencies = emptyList(),
-                subscriptions = listOf(ctx)
-            )
-        }
-
-        val vm = buildViewModel(store = store)
+        val vm = buildViewModel()
 
         val input = MockDataFactory.randomString()
 
@@ -103,14 +74,6 @@ class ObjectSetRecordViewModelTest {
 
         // SETUP
 
-        val store = DefaultObjectStore().apply {
-            merge(
-                objects = listOf(obj),
-                dependencies = emptyList(),
-                subscriptions = listOf(ctx)
-            )
-        }
-
         val input = MockDataFactory.randomString()
 
         val params = UpdateDetail.Params(
@@ -121,7 +84,7 @@ class ObjectSetRecordViewModelTest {
 
         stubSetObjectDetails(params)
 
-        val vm = buildViewModel(store = store)
+        val vm = buildViewModel()
 
         // TESTING
 
@@ -148,14 +111,6 @@ class ObjectSetRecordViewModelTest {
 
         // SETUP
 
-        val store = DefaultObjectStore().apply {
-            merge(
-                objects = listOf(obj),
-                dependencies = emptyList(),
-                subscriptions = listOf(ctx)
-            )
-        }
-
         val emptyInput = ""
 
         val params = UpdateDetail.Params(
@@ -166,7 +121,7 @@ class ObjectSetRecordViewModelTest {
 
         stubSetObjectDetails(params)
 
-        val vm = buildViewModel(store = store)
+        val vm = buildViewModel()
 
         // TESTING
 
@@ -186,11 +141,8 @@ class ObjectSetRecordViewModelTest {
         verifyNoInteractions(setObjectDetails)
     }
 
-    fun buildViewModel(
-        store: ObjectStore
-    ) : ObjectSetRecordViewModel = ObjectSetRecordViewModel(
-        setObjectDetails = setObjectDetails,
-        objectStore = store
+    fun buildViewModel() : ObjectSetRecordViewModel = ObjectSetRecordViewModel(
+        setObjectDetails = setObjectDetails
     )
 
     private fun stubSetObjectDetails(

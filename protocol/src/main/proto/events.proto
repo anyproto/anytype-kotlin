@@ -65,6 +65,8 @@ message Event {
             Block.Dataview.ObjectOrderUpdate blockDataViewObjectOrderUpdate = 39;
             Block.Dataview.RelationDelete blockDataviewRelationDelete = 124;
             Block.Dataview.RelationSet blockDataviewRelationSet = 123;
+            Block.Dataview.ViewUpdate blockDataviewViewUpdate = 125;
+            Block.Dataview.TargetObjectIdSet blockDataviewTargetObjectIdSet = 126;
 
             // deprecated
             Block.Dataview.OldRelationDelete blockDataviewOldRelationDelete = 24;
@@ -682,6 +684,102 @@ message Event {
                 anytype.model.Block.Content.Dataview.View view = 3;
             }
 
+            message ViewUpdate {
+                string id = 1;
+                string viewId = 2;
+                repeated Filter filter = 3;
+                repeated Relation relation = 4;
+                repeated Sort sort = 5;
+                Fields fields = 6;
+
+                message Fields {
+                    anytype.model.Block.Content.Dataview.View.Type type = 1;
+                    string name = 2;
+                    string coverRelationKey = 3; // Relation used for cover in gallery
+                    bool hideIcon = 4; // Hide icon near name
+                    anytype.model.Block.Content.Dataview.View.Size cardSize = 5; // Gallery card size
+                    bool coverFit = 6; // Image fits container
+                    string groupRelationKey = 7; // Group view by this relationKey
+                    bool groupBackgroundColors = 8; // Enable backgrounds in groups
+                    int32 pageLimit = 9;
+                }
+
+                message Filter {
+                    oneof operation {
+                        Add add = 1;
+                        Remove remove = 2;
+                        Update update = 3;
+                        Move move = 4;
+                    }
+
+                    message Add {
+                        string afterId = 1;
+                        repeated anytype.model.Block.Content.Dataview.Filter items = 2;
+                    }
+                    message Remove {
+                        repeated string ids = 1;
+                    }
+                    message Update {
+                        string id = 1;
+                        anytype.model.Block.Content.Dataview.Filter item = 2;
+                    }
+                    message Move {
+                        string afterId = 1;
+                        repeated string ids = 2;
+                    }
+                }
+
+                message Relation {
+                    oneof operation {
+                        Add add = 1;
+                        Remove remove = 2;
+                        Update update = 3;
+                        Move move = 4;
+                    }
+
+                    message Add {
+                        string afterId = 1;
+                        repeated anytype.model.Block.Content.Dataview.Relation items = 2;
+                    }
+                    message Remove {
+                        repeated string ids = 1;
+                    }
+                    message Update {
+                        string id = 1;
+                        anytype.model.Block.Content.Dataview.Relation item = 2;
+                    }
+                    message Move {
+                        string afterId = 1;
+                        repeated string ids = 2;
+                    }
+                }
+
+                message Sort {
+                    oneof operation {
+                        Add add = 1;
+                        Remove remove = 2;
+                        Update update = 3;
+                        Move move = 4;
+                    }
+
+                    message Add {
+                        string afterId = 1;
+                        repeated anytype.model.Block.Content.Dataview.Sort items = 2;
+                    }
+                    message Remove {
+                        repeated string ids = 1;
+                    }
+                    message Update {
+                        string id = 1;
+                        anytype.model.Block.Content.Dataview.Sort item = 2;
+                    }
+                    message Move {
+                        string afterId = 1;
+                        repeated string ids = 2;
+                    }
+                }
+            }
+
             message ViewDelete {
                 string id = 1; // dataview block's id
                 string viewId = 2; // view id to remove
@@ -745,6 +843,11 @@ message Event {
                 SliceOperationMove = 2;
                 SliceOperationRemove = 3;
                 SliceOperationReplace = 4;
+            }
+
+            message TargetObjectIdSet {
+                string id = 1; // dataview block's id
+                string targetObjectId = 2;
             }
         }
     }

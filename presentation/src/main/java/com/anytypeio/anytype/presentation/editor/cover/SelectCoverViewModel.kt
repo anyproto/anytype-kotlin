@@ -57,10 +57,6 @@ abstract class SelectCoverViewModel(
     }
 
     fun onImagePicked(ctx: Id, path: String) {
-        if (path.endsWith(EditorViewModel.FORMAT_WEBP, true)) {
-            Timber.d("onDocCoverImagePicked, not allowed to add WEBP format")
-            return
-        }
         viewModelScope.launch {
             isLoading.emit(true)
             setCoverImage(

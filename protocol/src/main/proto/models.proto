@@ -316,6 +316,7 @@ message Block {
             repeated GroupOrder groupOrders = 12;
             repeated ObjectOrder objectOrders = 13;
             repeated anytype.model.RelationLink relationLinks = 5;
+            string TargetObjectId = 6;
 
             message View {
                 string id = 1;
@@ -324,12 +325,13 @@ message Block {
                 repeated Sort sorts = 4;
                 repeated Filter filters = 5;
                 repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
-				string coverRelationKey = 7; // Relation used for cover in gallery
+				        string coverRelationKey = 7; // Relation used for cover in gallery
                 bool hideIcon = 8; // Hide icon near name
                 Size cardSize = 9; // Gallery card size
                 bool coverFit = 10; // Image fits container
                 string groupRelationKey = 11; // Group view by this relationKey
-				bool groupBackgroundColors = 12; // Enable backgrounds in groups
+				        bool groupBackgroundColors = 12; // Enable backgrounds in groups
+                int32 pageLimit = 13;
 
                 enum Type {
                     Table = 0;
@@ -373,6 +375,8 @@ message Block {
                 string RelationKey = 1;
                 Type type = 2;
                 repeated google.protobuf.Value customOrder = 3;
+                RelationFormat format = 4;
+                bool includeTime = 5;
 
                 enum Type {
                     Asc = 0;
@@ -382,6 +386,7 @@ message Block {
             }
 
             message Filter {
+                string id = 9;
                 Operator operator = 1; // looks not applicable?
                 string RelationKey = 2;
                 string relationProperty = 5;

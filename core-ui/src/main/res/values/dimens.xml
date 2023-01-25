@@ -306,4 +306,6 @@
 
     <dimen name="featured_relations_text_size">13sp</dimen>
 
+    <dimen name="block_data_view_height">96dp</dimen>
+
 </resources>

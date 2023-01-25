@@ -473,7 +473,8 @@ class ObjectSetReducerTest {
                         filters = listOf()
                     )
                 ),
-                relations = listOf()
+                relations = listOf(),
+                targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()
@@ -573,7 +574,8 @@ class ObjectSetReducerTest {
                         filters = expectedFilters
                     )
                 ),
-                relations = listOf()
+                relations = listOf(),
+                targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()
@@ -673,7 +675,8 @@ class ObjectSetReducerTest {
                         filters = viewer1.filters
                     )
                 ),
-                relations = listOf()
+                relations = listOf(),
+                targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()

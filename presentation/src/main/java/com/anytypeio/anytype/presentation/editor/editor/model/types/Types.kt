@@ -70,4 +70,8 @@ object Types {
     const val HOLDER_TOC = 54
     const val HOLDER_CALLOUT = 55
     const val HOLDER_TABLE = 56
+
+    const val HOLDER_DATA_VIEW_DEFAULT = 300
+    const val HOLDER_DATA_VIEW_EMPTY_SOURCE = 301
+    const val HOLDER_DATA_VIEW_EMPTY_DATA = 302
 }

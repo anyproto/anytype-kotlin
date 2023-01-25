@@ -78,4 +78,6 @@ sealed interface ListenerType {
     data class TableOfContents(val target: Id) : ListenerType
     data class TableEmptyCell(val cell: BlockView.Table.Cell) : ListenerType
     data class TableTextCell(val cell: BlockView.Table.Cell) : ListenerType
+
+    data class DataViewClick(val target: Id) : ListenerType
 }

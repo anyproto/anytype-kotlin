@@ -174,6 +174,7 @@
 
 
     <string name="untitled">Untitled</string>
+    <string name="untitled_set">Untitled set</string>
     <string name="archived">Archived</string>
 
 
@@ -487,6 +488,8 @@
     <string name="name_type_page_icon">📄</string>
     <string name="name_type_page_subtitle">Proto type to start with</string>
     <string name="non_existent_object">Non-existent object</string>
+    <string name="no_data">No data</string>
+    <string name="no_source">No source</string>
     <string name="deleted_object">Deleted object</string>
     <string name="open_set">Open set</string>
     <string name="deleted">Deleted</string>
@@ -519,6 +522,8 @@
     <string name="visible">Visible</string>
     <string name="card">Card</string>
     <string name="inline">Inline</string>
+    <string name="set_view">Set View</string>
+    <string name="inline_set">Inline set</string>
     <string name="fit_image">Fit image</string>
     <string name="image_preview">Image preview</string>
     <string name="cover">Cover</string>
@@ -563,6 +568,7 @@
     <string name="simple_tables_widget_tab_row">Row</string>
     <string name="simple_tables_widget_tab_column">Column</string>
     <string name="open_object">Open object</string>
+    <string name="open_source">Open source</string>
     <string name="reload_object_content">Reload object content</string>
     <string name="open_link">Open link</string>
     <string name="copy_email">Copy email</string>
@@ -589,6 +595,9 @@
     <string name="my_types">My types</string>
     <string name="my_relations">My relations</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
+    <string name="block_data_view_content_description_title">The name of the source set of the inline set</string>
+    <string name="block_data_view_content_description_no_source">The inline set has no source</string>
+    <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
 
     <string name="object_search_recently_opened_section_title">Recently opened</string>
 

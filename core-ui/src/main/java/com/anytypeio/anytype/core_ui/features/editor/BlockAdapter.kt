@@ -21,6 +21,9 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockDataViewDefaultBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockDataViewEmptyDataBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockDataViewEmptySourceBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerDotsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerLineBinding
@@ -67,6 +70,9 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoUploadingBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockDefaultHolder
+import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockEmptyDataHolder
+import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockEmptySourceHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -136,6 +142,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CALLOUT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_DATA
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_SOURCE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_DOTS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_LINE
@@ -811,6 +820,21 @@ class BlockAdapter(
                 clipboardInterceptor = clipboardInterceptor,
                 onDragAndDropTrigger = onDragAndDropTrigger
             )
+            HOLDER_DATA_VIEW_EMPTY_SOURCE -> {
+                DataViewBlockEmptySourceHolder(
+                    ItemBlockDataViewEmptySourceBinding.inflate(inflater, parent, false)
+                )
+            }
+            HOLDER_DATA_VIEW_EMPTY_DATA -> {
+                DataViewBlockEmptyDataHolder(
+                    ItemBlockDataViewEmptyDataBinding.inflate(inflater, parent, false)
+                )
+            }
+            HOLDER_DATA_VIEW_DEFAULT -> {
+                DataViewBlockDefaultHolder(
+                    ItemBlockDataViewDefaultBinding.inflate(inflater, parent, false)
+                )
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
 
@@ -1224,6 +1248,24 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.Table
                         )
                     }
+                    is DataViewBlockDefaultHolder -> {
+                        holder.processChangePayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.DataView.Default
+                        )
+                    }
+                    is DataViewBlockEmptySourceHolder -> {
+                        holder.processChangePayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.DataView.EmptySource
+                        )
+                    }
+                    is DataViewBlockEmptyDataHolder -> {
+                        holder.processChangePayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.DataView.EmptyData
+                        )
+                    }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
                 checkIfDecorationChanged(holder, payloads.typeOf(), position)
@@ -1543,6 +1585,24 @@ class BlockAdapter(
             }
             is TableBlockHolder -> {
                 holder.bind(item = blocks[position] as BlockView.Table)
+            }
+            is DataViewBlockEmptySourceHolder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.DataView.EmptySource,
+                    clicked = onClickListener
+                )
+            }
+            is DataViewBlockEmptyDataHolder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.DataView.EmptyData,
+                    clicked = onClickListener
+                )
+            }
+            is DataViewBlockDefaultHolder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.DataView.Default,
+                    clicked = onClickListener
+                )
             }
         }
 

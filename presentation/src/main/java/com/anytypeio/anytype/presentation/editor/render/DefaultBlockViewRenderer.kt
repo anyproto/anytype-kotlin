@@ -777,6 +777,20 @@ class DefaultBlockViewRenderer @Inject constructor(
                         )
                     )
                 }
+                is Content.DataView -> {
+                    isPreviousBlockMedia = false
+                    mCounter = 0
+                    result.add(
+                        dataView(
+                            mode = mode,
+                            block = block,
+                            content = content,
+                            details = details,
+                            selection = selection,
+                            schema = parentScheme
+                        )
+                    )
+                }
                 else -> {}
             }
         }
@@ -2143,6 +2157,69 @@ class DefaultBlockViewRenderer @Inject constructor(
             is Cursor.Start -> 0
             is Cursor.End -> content.text.length
             is Cursor.Range -> cursor.range.first
+        }
+    }
+
+    private fun dataView(
+        mode: EditorMode,
+        block: Block,
+        content: Content.DataView,
+        details: Block.Details,
+        selection: Set<Id>,
+        schema: NestedDecorationData
+    ): BlockView.DataView {
+        val targetObjectId = content.targetObjectId
+        val isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
+        val background = block.parseThemeBackgroundColor()
+        val decorations = buildNestedDecorationData(
+            block = block,
+            parentScheme = schema,
+            currentDecoration = DecorationData(
+                style = DecorationData.Style.Card,
+                background = background
+            )
+        ).toBlockViewDecoration(block)
+        if (targetObjectId.isBlank()) {
+            return BlockView.DataView.EmptySource(
+                id = block.id,
+                decorations = decorations,
+                isSelected = isSelected,
+                background = background,
+                icon = ObjectIcon.None,
+                title = null
+            )
+        } else {
+            val targetSet = ObjectWrapper.Basic(
+                map = details.details[content.targetObjectId]?.map ?: emptyMap()
+            )
+            val icon = ObjectIcon.getEditorLinkToObjectIcon(
+                obj = targetSet,
+                layout = targetSet.layout,
+                builder = urlBuilder
+            )
+            if (targetSet.setOf.isEmpty()) {
+                return BlockView.DataView.EmptyData(
+                    id = block.id,
+                    decorations = decorations,
+                    isSelected = isSelected,
+                    title = targetSet.name,
+                    background = background,
+                    icon = icon
+                )
+            } else {
+                return BlockView.DataView.Default(
+                    id = block.id,
+                    decorations = decorations,
+                    isSelected = isSelected,
+                    title = targetSet.name,
+                    background = background,
+                    icon = icon
+                )
+            }
         }
     }
 }

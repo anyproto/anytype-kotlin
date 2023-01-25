@@ -359,6 +359,15 @@ fun List<BlockView>.enterSAM(
             isSelected = isSelected,
             cells = view.cells.updateCellsMode(mode = BlockView.Mode.READ),
         )
+        is BlockView.DataView.Default -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.DataView.EmptyData -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.DataView.EmptySource -> view.copy(
+            isSelected = isSelected
+        )
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }
@@ -587,6 +596,9 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.LinkToObject.Default.Card.MediumIconCover -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Archived -> view.copy(searchFields = emptyList())
         is BlockView.Table -> view.copy(cells = view.cells.map { cell -> cell.clearHighlight() })
+        is BlockView.DataView.Default -> view.copy(searchFields = emptyList())
+        is BlockView.DataView.EmptyData -> view.copy(searchFields = emptyList())
+        is BlockView.DataView.EmptySource -> view.copy(searchFields = emptyList())
         else -> view.also { check(view !is BlockView.Searchable) }
     }
 }
@@ -687,6 +699,18 @@ fun List<BlockView>.highlight(
             val updatedCells = view.cells.map { it.addHighlight(highlighter) }
             view.copy(cells = updatedCells)
         }
+        is BlockView.DataView.EmptySource -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.title.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.DataView.EmptyData -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.title.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.DataView.Default -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.title.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
         else -> {
             view.also { v ->
                 if (v is BlockView.Searchable) {
@@ -742,6 +766,9 @@ fun BlockView.setHighlight(
     is BlockView.LinkToObject.Default.Card.SmallIconCover -> copy(searchFields = highlights)
     is BlockView.LinkToObject.Default.Card.MediumIconCover -> copy(searchFields = highlights)
     is BlockView.LinkToObject.Archived -> copy(searchFields = highlights)
+    is BlockView.DataView.EmptySource -> copy(searchFields = highlights)
+    is BlockView.DataView.EmptyData -> copy(searchFields = highlights)
+    is BlockView.DataView.Default -> copy(searchFields = highlights)
     else -> this.also { check(this !is BlockView.Searchable) }
 }
 
@@ -1034,6 +1061,9 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Latex -> copy(isSelected = newSelection)
     is BlockView.TableOfContents -> copy(isSelected = newSelection)
     is BlockView.Table -> copy(isSelected = newSelection)
+    is BlockView.DataView.EmptyData -> copy(isSelected = newSelection)
+    is BlockView.DataView.EmptySource -> copy(isSelected = newSelection)
+    is BlockView.DataView.Default -> copy(isSelected = newSelection)
     else -> this.also {
         if (this is BlockView.Selectable)
             Timber.e("Error when change selection for Selectable BlockView $this")

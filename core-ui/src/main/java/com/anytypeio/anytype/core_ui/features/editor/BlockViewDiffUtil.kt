@@ -259,6 +259,18 @@ class BlockViewDiffUtil(
             }
         }
 
+        if (newBlock is BlockView.DataView && oldBlock is BlockView.DataView) {
+            if (newBlock.title != oldBlock.title) {
+                changes.add(DATA_VIEW_TITLE_CHANGED)
+            }
+            if (newBlock.icon != oldBlock.icon) {
+                changes.add(DATA_VIEW_ICON_CHANGED)
+            }
+            if (newBlock.background != oldBlock.background) {
+                changes.add(BACKGROUND_COLOR_CHANGED)
+            }
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -300,6 +312,10 @@ class BlockViewDiffUtil(
         val isDecorationChanged: Boolean get() = changes.contains(DECORATION_CHANGED)
 
         val isCalloutIconChanged: Boolean get() = changes.contains(CALLOUT_ICON_CHANGED)
+
+        val isDataViewTitleChanged : Boolean get() = changes.contains(DATA_VIEW_TITLE_CHANGED)
+        val isDataViewIconChanged : Boolean get() = changes.contains(DATA_VIEW_ICON_CHANGED)
+        val isDataViewBackgroundChanged : Boolean get() = changes.contains(DATA_VIEW_BACKGROUND_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
@@ -351,5 +367,9 @@ class BlockViewDiffUtil(
 
         const val TABLE_CELLS_SELECTION_CHANGED = 340
         const val TABLE_CELLS_CHANGED = 341
+
+        const val DATA_VIEW_TITLE_CHANGED = 350
+        const val DATA_VIEW_ICON_CHANGED = 351
+        const val DATA_VIEW_BACKGROUND_CHANGED = 352
     }
 }

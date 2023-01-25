@@ -6,14 +6,16 @@ fun StubDataView(
     id : Id = MockDataFactory.randomUuid(),
     views: List<DVViewer> = emptyList(),
     relations: List<RelationLink> = emptyList(),
-    sources: List<Id> = emptyList()
+    sources: List<Id> = emptyList(),
+    targetObjectId: Id = MockDataFactory.randomUuid()
 ) : Block = Block(
     id = id,
     content = DV(
         sources = sources,
         relations = emptyList(),
         relationsIndex=  relations,
-        viewers = views
+        viewers = views,
+        targetObjectId = targetObjectId
     ),
     children = emptyList(),
     fields = Block.Fields.empty()

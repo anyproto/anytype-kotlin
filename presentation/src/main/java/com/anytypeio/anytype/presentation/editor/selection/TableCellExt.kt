@@ -348,6 +348,9 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.Unsupported -> view.copy(isSelected = false)
             is BlockView.Upload.Bookmark -> view.copy(isSelected = false)
             is BlockView.Relation.Deleted -> view.copy(isSelected = false)
+            is BlockView.DataView.Default -> view.copy(isSelected = false)
+            is BlockView.DataView.EmptyData -> view.copy(isSelected = false)
+            is BlockView.DataView.EmptySource -> view.copy(isSelected = false)
         }
     }
 }

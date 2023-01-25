@@ -354,7 +354,8 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
         sources = content.source,
         viewers = content.views.map { it.toCoreModels() },
         relations = content.relations.map { it.toCoreModels() },
-        relationsIndex = content.relationLinks.map { it.toCoreModels() }
+        relationsIndex = content.relationLinks.map { it.toCoreModels() },
+        targetObjectId = content.TargetObjectId
     )
 }
 

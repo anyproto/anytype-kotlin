@@ -16,6 +16,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CALLOUT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_DATA
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_SOURCE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_DOTS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_LINE
@@ -1378,5 +1381,57 @@ sealed class BlockView : ViewType {
         data class Column(val id: ColumnId, val index: ColumnIndex)
 
         enum class Tab { CELL, COLUMN, ROW }
+    }
+
+    sealed class DataView : BlockView(), Selectable, Decoratable, Searchable {
+
+        abstract val title: String?
+        abstract val icon: ObjectIcon
+        abstract val background: ThemeColor
+
+        /**
+         * UI-model for a data view block. There is no master set.
+         */
+        data class EmptySource(
+            override val id: String,
+            override val isSelected: Boolean,
+            override val decorations: List<Decoration>,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val title: String?,
+            override val icon: ObjectIcon,
+            override val background: ThemeColor
+        ) : DataView() {
+            override fun getViewType(): Int = HOLDER_DATA_VIEW_EMPTY_SOURCE
+        }
+
+        /**
+         * UI-model for a data view block. There is a master set but no source for the set
+         */
+        data class EmptyData(
+            override val id: String,
+            override val isSelected: Boolean,
+            override val decorations: List<Decoration>,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val title: String?,
+            override val icon: ObjectIcon,
+            override val background: ThemeColor
+        ) : DataView() {
+            override fun getViewType(): Int = HOLDER_DATA_VIEW_EMPTY_DATA
+        }
+
+        /**
+         * UI-model for a data view block. There is a master set and source for the set
+         */
+        data class Default(
+            override val id: String,
+            override val isSelected: Boolean,
+            override val decorations: List<Decoration>,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val title: String?,
+            override val icon: ObjectIcon,
+            override val background: ThemeColor
+        ) : DataView() {
+            override fun getViewType(): Int = HOLDER_DATA_VIEW_DEFAULT
+        }
     }
 }

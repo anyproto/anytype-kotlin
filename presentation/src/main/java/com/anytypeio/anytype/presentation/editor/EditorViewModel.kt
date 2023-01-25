@@ -3022,9 +3022,24 @@ class EditorViewModel(
                     sendToast("Couldn't find the target of the link")
                 }
             }
+            is Content.DataView -> {
+                proceedWithOpeningInlineSetTarget(target = content.targetObjectId)
+            }
             else -> {
                 sendToast("Couldn't find the target of the link")
             }
+        }
+    }
+
+    private fun proceedWithOpeningInlineSetTarget(target: Id) {
+        if (target.isNotEmpty()) {
+            proceedWithOpeningSet(target)
+            viewModelScope.sendAnalyticsOpenAsObject(
+                analytics = analytics,
+                type = EventsDictionary.Type.dataView
+            )
+        } else {
+            sendToast("This inline set doesn’t have a source.")
         }
     }
 
@@ -3904,6 +3919,14 @@ class EditorViewModel(
                             Timber.e("Cell is from the different table, amend click")
                         }
                     }
+                    else -> Unit
+                }
+            }
+            is ListenerType.DataViewClick -> {
+                when (mode) {
+                    EditorMode.Edit -> onPageClicked(blockLinkId = clicked.target)
+                    EditorMode.Locked -> onPageClicked(blockLinkId = clicked.target)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
             }
@@ -5277,15 +5300,7 @@ class EditorViewModel(
                 onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.paste)
             }
             ActionItemType.OpenObject -> {
-                val selected = blocks.firstOrNull { currentSelection().contains(it.id) }
-                proceedWithExitingMultiSelectMode()
-                if (selected != null) {
-                    proceedWithMultiSelectOpenObjectAction(
-                        selected = selected
-                    )
-                } else {
-                    sendToast("No blocks were selected. Please, try again.")
-                }
+                proceedWithOpeningTargetForCurrentSelection()
                 onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.openObject)
             }
             else -> {
@@ -5294,19 +5309,27 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithMultiSelectOpenObjectAction(selected: Block) {
-        when (val content = selected.content) {
-            is Content.Bookmark -> {
-                val target = content.targetObjectId
-                if (target != null) {
-                    proceedWithOpeningObject(target)
-                    viewModelScope.sendAnalyticsOpenAsObject(
-                        analytics = analytics,
-                        type = EventsDictionary.Type.bookmark
-                    )
+    private fun proceedWithOpeningTargetForCurrentSelection() {
+        val selected = blocks.firstOrNull { currentSelection().contains(it.id) }
+        proceedWithExitingMultiSelectMode()
+        if (selected != null) {
+            when (val content = selected.content) {
+                is Content.Bookmark -> {
+                    val target = content.targetObjectId
+                    if (target != null) {
+                        proceedWithOpeningObject(target)
+                        viewModelScope.sendAnalyticsOpenAsObject(
+                            analytics = analytics,
+                            type = EventsDictionary.Type.bookmark
+                        )
+                    } else {
+                        sendToast("This bookmark doesn’t have a source.")
+                    }
                 }
+                else -> sendToast("Unexpected object")
             }
-            else -> sendToast("Unexpected object")
+        } else {
+            sendToast("No blocks were selected. Please, try again.")
         }
     }
 

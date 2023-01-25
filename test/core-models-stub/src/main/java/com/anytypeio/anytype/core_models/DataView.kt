@@ -42,3 +42,28 @@ fun StubDataViewViewRelation(
     key = key,
     isVisible = isVisible
 )
+
+fun StubSort(
+    relationKey: Key = MockDataFactory.randomUuid(),
+    type: DVSortType = DVSortType.ASC
+): DVSort = DVSort(
+    relationKey = relationKey,
+    type = type
+)
+
+fun StubFilter(
+    relationKey: Key = MockDataFactory.randomUuid(),
+    relationFormat: RelationFormat = RelationFormat.LONG_TEXT,
+    operator: DVFilterOperator = DVFilterOperator.AND,
+    condition: DVFilterCondition = DVFilterCondition.EQUAL,
+    quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
+    value: Any? = null
+
+): DVFilter = DVFilter(
+    relationKey = relationKey,
+    relationFormat = relationFormat,
+    operator = operator,
+    condition = condition,
+    quickOption = quickOption,
+    value = value
+)

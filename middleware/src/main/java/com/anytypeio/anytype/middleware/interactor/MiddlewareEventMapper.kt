@@ -225,5 +225,23 @@ fun anytype.Event.Message.toCoreModels(
             keys = event.relationKeys
         )
     }
+    blockDataviewViewUpdate != null -> {
+        val event = blockDataviewViewUpdate
+        checkNotNull(event)
+        Event.Command.DataView.UpdateView(
+            context = context,
+            block = event.id,
+            viewerId = event.viewId,
+            filterUpdates = event.filter.mapNotNull { filter ->
+                filter.toCoreModels()
+            },
+            sortUpdates = event.sort.mapNotNull { sort ->
+                sort.toCoreModels()
+            },
+            relationUpdates = event.relation.mapNotNull { relation ->
+                relation.toCoreModels()
+            }
+        )
+    }
     else -> null
 }

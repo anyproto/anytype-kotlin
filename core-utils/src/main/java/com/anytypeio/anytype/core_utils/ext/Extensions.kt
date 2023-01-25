@@ -78,3 +78,36 @@ inline fun <reified T> Fragment.withParent(action: T.() -> Unit) {
 }
 
 fun MatchResult?.parseMatchedInt(index: Int): Int? = this?.groups?.get(index)?.value?.toIntOrNull()
+
+/**
+ * Adds items after the index meeting a [predicateIndex]
+ */
+fun <T> MutableList<T>.addAfterIndexInLine(
+    predicateIndex: (T) -> Boolean,
+    items: List<T>
+) {
+    val newIndex = indexOfFirst(predicateIndex)
+    if (newIndex in 0 until size) {
+        addAll(newIndex + 1, items)
+    } else {
+        addAll(size, items)
+    }
+}
+
+/**
+ * Moves all items meeting a [predicateMove] after the index meeting a [predicateIndex]
+ */
+fun <T> MutableList<T>.moveAfterIndexInLine(
+    predicateIndex: (T) -> Boolean,
+    predicateMove: (T) -> Boolean
+) {
+    val split = partition(predicateMove)
+    clear()
+    addAll(split.second)
+    val newIndex = indexOfFirst(predicateIndex)
+    if (newIndex in 0 until size) {
+        addAll(newIndex + 1, split.first)
+    } else {
+        addAll(size, split.first)
+    }
+}

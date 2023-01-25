@@ -260,6 +260,41 @@ sealed class Event {
                 val dv: Id,
                 val sources: List<Id>
             ) : DataView()
+
+            data class UpdateView(
+                override val context: Id,
+                val block: Id,
+                val viewerId: Id,
+                val filterUpdates: List<DVFilterUpdate>,
+                val sortUpdates: List<DVSortUpdate>,
+                val relationUpdates: List<DVViewerRelationUpdate>
+            ) : DataView() {
+
+                sealed class DVFilterUpdate {
+                    data class Add(val afterId: Id, val filters: List<DVFilter>) :
+                        DVFilterUpdate()
+
+                    data class Move(val afterId: Id, val ids: List<Id>) : DVFilterUpdate()
+                    data class Remove(val ids: List<Id>) : DVFilterUpdate()
+                    data class Update(val id: Id, val filter: DVFilter) : DVFilterUpdate()
+                }
+
+                sealed class DVSortUpdate {
+                    data class Add(val afterId: Id, val sorts: List<DVSort>) : DVSortUpdate()
+                    data class Move(val afterId: Id, val ids: List<Id>) : DVSortUpdate()
+                    data class Remove(val ids: List<Id>) : DVSortUpdate()
+                    data class Update(val id: Id, val sort: DVSort) : DVSortUpdate()
+                }
+
+                sealed class DVViewerRelationUpdate {
+                    data class Add(val afterId: Id, val relations: List<DVViewerRelation>) :
+                        DVViewerRelationUpdate()
+                    data class Move(val afterId: Id, val ids: List<Id>) : DVViewerRelationUpdate()
+                    data class Remove(val ids: List<Id>) : DVViewerRelationUpdate()
+                    data class Update(val id: Id, val relation: DVViewerRelation) :
+                        DVViewerRelationUpdate()
+                }
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Event.Command
@@ -145,6 +146,53 @@ class ObjectSetReducer {
                         }
                     }
                 )
+            }
+            is Command.DataView.UpdateView -> {
+                val updatedBlocks = state.blocks.map { block: Block ->
+                    val content = block.content
+                    if (block.id == event.block && content is DV) {
+                        block.copy(
+                            content = content.copy(
+                                viewers = content.viewers.map { viewer ->
+                                    if (viewer.id == event.viewerId) {
+                                        val filters = if (event.filterUpdates.isNotEmpty()) {
+                                            viewer.filters.updateFilters(
+                                                updates = event.filterUpdates
+                                            )
+                                        } else {
+                                            viewer.filters
+                                        }
+                                        val sorts = if (event.sortUpdates.isNotEmpty()) {
+                                            viewer.sorts.updateSorts(
+                                                updates = event.sortUpdates
+                                            )
+                                        } else {
+                                            viewer.sorts
+                                        }
+                                        val viewerRelations =
+                                            if (event.relationUpdates.isNotEmpty()) {
+                                                viewer.viewerRelations.updateViewerRelations(
+                                                    updates = event.relationUpdates
+                                                )
+                                            } else {
+                                                viewer.viewerRelations
+                                            }
+                                        viewer.copy(
+                                            filters = filters,
+                                            sorts = sorts,
+                                            viewerRelations = viewerRelations
+                                        )
+                                    } else {
+                                        viewer
+                                    }
+                                }
+                            )
+                        )
+                    } else {
+                        block
+                    }
+                }
+                state.copy(blocks = updatedBlocks)
             }
             is Command.Details.Set -> {
                 state.copy(

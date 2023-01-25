@@ -43,7 +43,9 @@ typealias MDVFilterOperator = anytype.model.Block.Content.Dataview.Filter.Operat
 typealias MDVRelation = anytype.model.Block.Content.Dataview.Relation
 typealias MDVDateFormat = anytype.model.Block.Content.Dataview.Relation.DateFormat
 typealias MDVTimeFormat = anytype.model.Block.Content.Dataview.Relation.TimeFormat
-
+typealias MDVFilterUpdate = anytype.Event.Block.Dataview.ViewUpdate.Filter
+typealias MDVSortUpdate = anytype.Event.Block.Dataview.ViewUpdate.Sort
+typealias MDVRelationUpdate = anytype.Event.Block.Dataview.ViewUpdate.Relation
 
 typealias MObjectType = anytype.model.ObjectType
 typealias MSmartBlockType = anytype.model.SmartBlockType

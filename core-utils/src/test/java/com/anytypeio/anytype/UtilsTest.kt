@@ -1,5 +1,7 @@
 package com.anytypeio.anytype
 
+import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
+import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.swap
 import org.junit.Assert.assertEquals
@@ -40,5 +42,70 @@ class UtilsTest {
             .shift(9, 6)
             .shift(4, 0)
         assertEquals(testList2, shiftList3)
+    }
+
+    @Test
+    fun `when predicate index is true, should move all elements after this index`() {
+
+        list.moveAfterIndexInLine(
+            predicateIndex = { it == 9 },
+            predicateMove = { i -> listOf(0, 1, 4, 36, 81).contains(i) }
+        )
+
+        val expected = mutableListOf(9, 0, 1, 4, 36, 81, 16, 25, 49, 64)
+
+        assertEquals(expected, list)
+    }
+
+    @Test
+    fun `when predicate index is false, should move all elements at the and`() {
+
+        list.moveAfterIndexInLine(
+            predicateIndex = { it == 91 },
+            predicateMove = { i -> listOf(0, 1, 4, 36, 81).contains(i) }
+        )
+
+        val expected = mutableListOf(9, 16, 25, 49, 64, 0, 1, 4, 36, 81)
+
+        assertEquals(expected, list)
+    }
+
+    @Test
+    fun `when predicate index is true and predicateMove is false, should not change the list`() {
+
+        list.moveAfterIndexInLine(
+            predicateIndex = { it == 9 },
+            predicateMove = { i -> listOf(10, 11, 14, 181).contains(i) }
+        )
+
+        val expected = mutableListOf(0, 1, 4, 9, 16, 25, 36, 49, 64, 81)
+
+        assertEquals(expected, list)
+    }
+
+    @Test
+    fun `when predicate index is true, should add elements after this index`() {
+
+        list.addAfterIndexInLine(
+            predicateIndex = { it == 9 },
+            items = listOf(10, 11, 120),
+        )
+
+        val expected = mutableListOf(0, 1, 4, 9, 10, 11, 120, 16, 25, 36, 49, 64, 81)
+
+        assertEquals(expected, list)
+    }
+
+    @Test
+    fun `when predicate index is false, should add all items at the end`() {
+
+        list.addAfterIndexInLine(
+            predicateIndex = { it == 19 },
+            items = listOf(10, 11, 120),
+        )
+
+        val expected = mutableListOf(0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 10, 11, 120)
+
+        assertEquals(expected, list)
     }
 }

@@ -29,14 +29,12 @@ class MiddlewareEventChannel(
             msg.blockSetAlign,
             msg.blockSetDiv,
             msg.blockSetRelation,
-            //msg.blockDataviewRecordsSet,
             msg.blockDataviewRelationSet,
-            //msg.blockDataviewRecordsUpdate,
             msg.blockDataviewViewDelete,
             msg.blockDataviewViewSet,
             msg.objectRelationsAmend,
             msg.objectRelationsRemove,
-            //msg.objectRelationsSet
+            msg.blockDataviewViewUpdate
         )
         return events.any { it != null }
     }

@@ -372,6 +372,7 @@ message Block {
             }
 
             message Sort {
+                string id = 6;
                 string RelationKey = 1;
                 Type type = 2;
                 repeated google.protobuf.Value customOrder = 3;

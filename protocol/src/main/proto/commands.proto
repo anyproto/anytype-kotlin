@@ -4599,7 +4599,7 @@ message Rpc {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update
                     string viewId = 3; // id of view to update
-                    repeated string filterIds = 4;
+                    repeated string ids = 4;
                 }
 
                 message Response {
@@ -4624,7 +4624,7 @@ message Rpc {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update
                     string viewId = 3; // id of view to update
-                    string filterId = 4;
+                    string id = 4;
                     anytype.model.Block.Content.Dataview.Filter filter = 5;
                 }
 
@@ -4650,7 +4650,7 @@ message Rpc {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update
                     string viewId = 3; // id of view to update
-                    repeated string filterIds = 4; // new order of filters
+                    repeated string ids = 4; // new order of filters
                 }
 
                 message Response {
@@ -4670,7 +4670,7 @@ message Rpc {
                 }
             }
         }
-        message SSort {
+        message Sort {
             message Add {
                 message Request {
                     string contextId = 1;
@@ -4701,7 +4701,7 @@ message Rpc {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update
                     string viewId = 3; // id of view to update
-                    repeated string relationKeys = 4;
+                    repeated string ids = 4;
                 }
 
                 message Response {
@@ -4726,7 +4726,7 @@ message Rpc {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update
                     string viewId = 3; // id of view to update
-                    string relationKey = 4;
+                    string id = 4;
                     anytype.model.Block.Content.Dataview.Sort sort = 5;
                 }
 
@@ -4747,12 +4747,12 @@ message Rpc {
                 }
             }
 
-            message Sort {
+            message SSort {
                 message Request {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update
                     string viewId = 3; // id of view to update
-                    repeated string relationKeys = 4; // new order of sorts
+                    repeated string ids = 4; // new order of sorts
                 }
 
                 message Response {

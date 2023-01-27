@@ -159,7 +159,8 @@ class HomeDashboardViewModelTest {
             workspaceManager = workspaceManager,
             favoriteObjectStateMachine = HomeDashboardStateMachine.Interactor(
                 featureToggles = featureToggles
-            )
+            ),
+            featureToggles = featureToggles
         )
     }
 

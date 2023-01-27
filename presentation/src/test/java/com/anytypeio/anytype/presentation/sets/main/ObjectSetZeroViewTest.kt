@@ -1,25 +1,14 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
 
 class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
-
-    @get:Rule
-    internal val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    internal val coroutineTestRule = CoroutinesTestRule()
 
     val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -65,7 +54,6 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(MockDataFactory.randomString()),
                 relations = emptyList(),
                 viewers = emptyList()
             ),

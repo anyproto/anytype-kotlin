@@ -83,7 +83,6 @@ class ObjectSetReducer {
                             }
                             block.copy(
                                 content = content.copy(
-                                    sources = content.sources,
                                     relations = content.relations,
                                     viewers = result
                                 )
@@ -130,20 +129,22 @@ class ObjectSetReducer {
                     }
                 )
             }
-            is Command.DataView.SetSource -> {
+            is Command.DataView.SetTargetObjectId -> {
                 state.copy(
                     blocks = state.blocks.map { block ->
                         if (block.id == event.dv) {
                             val content = block.content
-                            check(content is DV)
-                            block.copy(
-                                content = content.copy(
-                                    sources = event.sources
+                            if (content is DV) {
+                                block.copy(
+                                    content = content.copy(
+                                        targetObjectId = event.targetObjectId
+                                    )
                                 )
-                            )
-                        } else {
+                            } else {
+                                block
+                            }
+                        } else
                             block
-                        }
                     }
                 )
             }

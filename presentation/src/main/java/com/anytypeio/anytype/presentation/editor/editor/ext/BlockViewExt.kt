@@ -365,6 +365,9 @@ fun List<BlockView>.enterSAM(
         is BlockView.DataView.EmptyData -> view.copy(
             isSelected = isSelected
         )
+        is BlockView.DataView.Deleted -> view.copy(
+            isSelected = isSelected
+        )
         is BlockView.DataView.EmptySource -> view.copy(
             isSelected = isSelected
         )
@@ -599,6 +602,7 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.DataView.Default -> view.copy(searchFields = emptyList())
         is BlockView.DataView.EmptyData -> view.copy(searchFields = emptyList())
         is BlockView.DataView.EmptySource -> view.copy(searchFields = emptyList())
+        is BlockView.DataView.Deleted -> view.copy(searchFields = emptyList())
         else -> view.also { check(view !is BlockView.Searchable) }
     }
 }
@@ -711,6 +715,10 @@ fun List<BlockView>.highlight(
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.title.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
+        is BlockView.DataView.Deleted -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.title.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
         else -> {
             view.also { v ->
                 if (v is BlockView.Searchable) {
@@ -769,6 +777,7 @@ fun BlockView.setHighlight(
     is BlockView.DataView.EmptySource -> copy(searchFields = highlights)
     is BlockView.DataView.EmptyData -> copy(searchFields = highlights)
     is BlockView.DataView.Default -> copy(searchFields = highlights)
+    is BlockView.DataView.Deleted -> copy(searchFields = highlights)
     else -> this.also { check(this !is BlockView.Searchable) }
 }
 
@@ -1063,6 +1072,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Table -> copy(isSelected = newSelection)
     is BlockView.DataView.EmptyData -> copy(isSelected = newSelection)
     is BlockView.DataView.EmptySource -> copy(isSelected = newSelection)
+    is BlockView.DataView.Deleted -> copy(isSelected = newSelection)
     is BlockView.DataView.Default -> copy(isSelected = newSelection)
     else -> this.also {
         if (this is BlockView.Selectable)

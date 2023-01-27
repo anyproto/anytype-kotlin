@@ -283,3 +283,7 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
     }
     return relations
 }
+
+fun ObjectSet.getSetOf(ctx: Id): List<Id> {
+    return ObjectWrapper.Basic(details[ctx]?.map.orEmpty()).setOf
+}

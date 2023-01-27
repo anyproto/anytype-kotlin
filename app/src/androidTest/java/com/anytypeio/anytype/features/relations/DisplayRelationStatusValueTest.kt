@@ -156,9 +156,7 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -231,9 +229,7 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -326,9 +322,7 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -407,9 +401,7 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -498,9 +490,7 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),

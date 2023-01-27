@@ -17,6 +17,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_DATA
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_SOURCE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
@@ -1432,6 +1433,18 @@ sealed class BlockView : ViewType {
             override val background: ThemeColor
         ) : DataView() {
             override fun getViewType(): Int = HOLDER_DATA_VIEW_DEFAULT
+        }
+
+        data class Deleted(
+            override val id: String,
+            override val isSelected: Boolean,
+            override val decorations: List<Decoration>,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val title: String?,
+            override val icon: ObjectIcon,
+            override val background: ThemeColor
+        ) : DataView() {
+            override fun getViewType(): Int = HOLDER_DATA_VIEW_SOURCE_DELETED
         }
     }
 }

@@ -34,7 +34,8 @@ class MiddlewareEventChannel(
             msg.blockDataviewViewSet,
             msg.objectRelationsAmend,
             msg.objectRelationsRemove,
-            msg.blockDataviewViewUpdate
+            msg.blockDataviewViewUpdate,
+            msg.blockDataviewTargetObjectIdSet
         )
         return events.any { it != null }
     }

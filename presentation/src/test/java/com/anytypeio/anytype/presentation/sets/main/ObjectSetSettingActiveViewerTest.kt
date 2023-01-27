@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
@@ -13,13 +13,12 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDa
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
@@ -29,12 +28,6 @@ import kotlin.test.assertTrue
 class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
 
     val doc = TypicalTwoRecordObjectSet()
-
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
 
     @Before
     fun setup() {
@@ -64,6 +57,8 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 )
             }
         )
+
+        val setOf = listOf(MockDataFactory.randomString())
         val keys = (ObjectSearchConstants.defaultDataViewKeys + doc.dv.content<DV>().relationsIndex.map { it.key }).distinct()
 
         stubSearchWithSubscription(
@@ -72,7 +67,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
             sorts = doc.dv.content<DV>().viewers.first().sorts,
             afterId = null,
             beforeId = null,
-            sources = doc.dv.content<DV>().sources,
+            sources = setOf,
             keys = keys,
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
@@ -86,12 +81,22 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 )
             )
         )
+
+        val details = Block.Details(
+            details = mapOf(
+                root to Block.Fields(
+                    mapOf("setOf" to setOf)
+                )
+            )
+        )
+
         stubOpenObjectSet(
             doc = listOf(
                 doc.header,
                 doc.title,
                 doc.dv
-            )
+            ),
+            details = details
         )
 
         println(storeOfRelations.getAll().toString())

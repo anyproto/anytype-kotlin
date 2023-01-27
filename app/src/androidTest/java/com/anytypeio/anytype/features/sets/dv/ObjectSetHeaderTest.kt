@@ -63,9 +63,7 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = emptyList(),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 

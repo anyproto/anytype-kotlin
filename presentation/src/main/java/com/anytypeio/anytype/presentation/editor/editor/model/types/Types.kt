@@ -74,4 +74,5 @@ object Types {
     const val HOLDER_DATA_VIEW_DEFAULT = 300
     const val HOLDER_DATA_VIEW_EMPTY_SOURCE = 301
     const val HOLDER_DATA_VIEW_EMPTY_DATA = 302
+    const val HOLDER_DATA_VIEW_SOURCE_DELETED = 303
 }

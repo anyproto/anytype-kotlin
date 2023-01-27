@@ -108,9 +108,7 @@ class ObjectRelationDateValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -179,9 +177,7 @@ class ObjectRelationDateValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -251,9 +247,7 @@ class ObjectRelationDateValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -323,9 +317,7 @@ class ObjectRelationDateValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -395,9 +387,7 @@ class ObjectRelationDateValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -468,9 +458,7 @@ class ObjectRelationDateValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -554,9 +542,7 @@ class ObjectRelationDateValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),

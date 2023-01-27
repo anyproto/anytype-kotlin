@@ -71,6 +71,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoUploadingBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockDefaultHolder
+import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockDeleteHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockEmptyDataHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockEmptySourceHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
@@ -143,6 +144,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_DATA
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_SOURCE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
@@ -835,6 +837,11 @@ class BlockAdapter(
                     ItemBlockDataViewDefaultBinding.inflate(inflater, parent, false)
                 )
             }
+            HOLDER_DATA_VIEW_SOURCE_DELETED -> {
+                DataViewBlockDeleteHolder(
+                    ItemBlockDataViewEmptyDataBinding.inflate(inflater, parent, false)
+                )
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
 
@@ -1266,6 +1273,12 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.DataView.EmptyData
                         )
                     }
+                    is DataViewBlockDeleteHolder -> {
+                        holder.processChangePayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.DataView.Deleted
+                        )
+                    }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
                 checkIfDecorationChanged(holder, payloads.typeOf(), position)
@@ -1601,6 +1614,12 @@ class BlockAdapter(
             is DataViewBlockDefaultHolder -> {
                 holder.bind(
                     item = blocks[position] as BlockView.DataView.Default,
+                    clicked = onClickListener
+                )
+            }
+            is DataViewBlockDeleteHolder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.DataView.Deleted,
                     clicked = onClickListener
                 )
             }

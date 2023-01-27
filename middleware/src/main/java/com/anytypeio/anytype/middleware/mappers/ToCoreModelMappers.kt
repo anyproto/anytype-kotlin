@@ -351,7 +351,6 @@ fun MBookmarkState.toCoreModelsBookmarkState(): Block.Content.Bookmark.State {
 fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
     val content = checkNotNull(dataview)
     return Block.Content.DataView(
-        sources = content.source,
         viewers = content.views.map { it.toCoreModels() },
         relations = content.relations.map { it.toCoreModels() },
         relationsIndex = content.relationLinks.map { it.toCoreModels() },

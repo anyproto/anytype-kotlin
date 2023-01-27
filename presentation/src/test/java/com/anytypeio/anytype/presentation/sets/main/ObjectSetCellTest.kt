@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import android.util.Log
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
@@ -9,10 +8,8 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubHeader
-import com.anytypeio.anytype.core_models.StubRelation
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
@@ -22,8 +19,8 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewKeys
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.CellView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -32,15 +29,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
 
 class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
-
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -128,7 +118,6 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
     private val dv = Block(
         id = MockDataFactory.randomUuid(),
         content = DV(
-            sources = listOf(MockDataFactory.randomString()),
             relationsIndex = relations.map {
                 RelationLink(
                     key = it.key,
@@ -171,7 +160,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             sorts = dv.content<DV>().viewers.first().sorts,
             afterId = null,
             beforeId = null,
-            sources = dv.content<DV>().sources,
+            sources = listOf(MockDataFactory.randomUuid()),
             keys = dv.content<DV>().relationsIndex.map { it.key } + defaultDataViewKeys,
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,

@@ -243,6 +243,12 @@ sealed class Event {
                 val viewer: String
             ) : DataView()
 
+            data class SetTargetObjectId(
+                override val context: String,
+                val dv: String,
+                val targetObjectId: String
+            ) : DataView()
+
             /**
              * Sent when a data-view's relation has been changed or added.
              * @property [dv] data view's block id
@@ -252,13 +258,6 @@ sealed class Event {
                 override val context: Id,
                 val dv: Id,
                 val links: List<RelationLink>
-            ) : DataView()
-
-
-            data class SetSource(
-                override val context: Id,
-                val dv: Id,
-                val sources: List<Id>
             ) : DataView()
 
             data class UpdateView(

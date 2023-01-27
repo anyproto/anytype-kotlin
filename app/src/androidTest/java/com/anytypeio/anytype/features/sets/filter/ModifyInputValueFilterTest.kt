@@ -174,9 +174,6 @@ class ModifyInputValueFilterTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
             )
         )
 
@@ -298,9 +295,6 @@ class ModifyInputValueFilterTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
             )
         )
 

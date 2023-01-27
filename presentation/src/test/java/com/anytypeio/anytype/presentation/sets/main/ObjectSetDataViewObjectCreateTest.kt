@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
@@ -16,22 +15,14 @@ import com.anytypeio.anytype.core_models.StubDataViewView
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
 class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
-
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
 
     private val title = StubTitle()
     private val header = StubHeader(children = listOf(title.id))
@@ -53,8 +44,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         val dv = StubDataView(
             id = MockDataFactory.randomUuid(),
-            views = listOf(viewer),
-            sources = listOf(MockDataFactory.randomString())
+            views = listOf(viewer)
         )
 
         val givenType = MockDataFactory.randomUuid()
@@ -120,8 +110,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         val dv = StubDataView(
             id = MockDataFactory.randomUuid(),
-            views = listOf(viewer),
-            sources = listOf(MockDataFactory.randomString())
+            views = listOf(viewer)
         )
 
         val newObjectId = MockDataFactory.randomUuid()
@@ -193,7 +182,6 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(MockDataFactory.randomString()),
                 relations = emptyList(),
                 viewers = listOf(viewer)
             ),
@@ -317,7 +305,6 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(givenType),
                 relations = listOf(relationStakeHolders),
                 viewers = listOf(viewer)
             ),

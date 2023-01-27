@@ -145,7 +145,6 @@ class TypicalTwoRecordObjectSet {
     val dv = Block(
         id = MockDataFactory.randomUuid(),
         content = DV(
-            sources = listOf(MockDataFactory.randomString()),
             relations = relations,
             relationsIndex = relations.map {
                 RelationLink(

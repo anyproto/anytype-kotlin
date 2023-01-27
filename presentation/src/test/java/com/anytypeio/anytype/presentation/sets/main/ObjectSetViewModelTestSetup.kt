@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.main
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
@@ -51,12 +52,13 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
+import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -65,6 +67,12 @@ import org.mockito.kotlin.stub
 open class ObjectSetViewModelTestSetup {
 
     val root: Id = MockDataFactory.randomString()
+
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
     lateinit var openObjectSet: OpenObjectSet
@@ -133,7 +141,7 @@ open class ObjectSetViewModelTestSetup {
     protected val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val database = ObjectSetDatabase(store)
 
-    private lateinit var container: DataViewSubscriptionContainer
+    lateinit var container: DataViewSubscriptionContainer
 
     val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -143,9 +151,9 @@ open class ObjectSetViewModelTestSetup {
             store = store,
             channel = subscriptionEventChannel,
             dispatchers = AppCoroutineDispatchers(
-                io = StandardTestDispatcher(),
-                computation = StandardTestDispatcher(),
-                main = StandardTestDispatcher()
+                io = coroutineTestRule.testDispatcher,
+                computation = coroutineTestRule.testDispatcher,
+                main = coroutineTestRule.testDispatcher
             )
         )
     }

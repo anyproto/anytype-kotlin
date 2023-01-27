@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
@@ -27,13 +26,11 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDa
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
@@ -45,12 +42,6 @@ import kotlin.test.assertIs
 import kotlin.time.ExperimentalTime
 
 class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
-
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
 
     @Before
     fun setup() {
@@ -95,7 +86,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     private val dv = Block(
         id = MockDataFactory.randomUuid(),
         content = DV(
-            sources = listOf(MockDataFactory.randomString()),
             relations = emptyList(),
             viewers = listOf(viewer),
             relationsIndex = objectRelations.map {
@@ -125,6 +115,8 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         val obj = ObjectWrapper.Basic(record)
 
+        val setOf = listOf(MockDataFactory.randomString())
+
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubSubscriptionEventChannel()
@@ -134,7 +126,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             sorts = dv.content<DV>().viewers.first().sorts,
             afterId = null,
             beforeId = null,
-            sources = dv.content<DV>().sources,
+            sources = setOf,
             keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
@@ -154,7 +146,14 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 title,
                 dv
             ),
-            dataViewRestrictions = emptyList()
+            dataViewRestrictions = emptyList(),
+            details = Block.Details(
+                mapOf(
+                    root to Block.Fields(
+                        mapOf("setOf" to setOf)
+                    )
+                )
+            )
         )
 
         storeOfRelations.merge(listOf(linkedProjectRelation))
@@ -238,6 +237,8 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 )
             )
 
+            val setOf = listOf(MockDataFactory.randomString())
+
             val details = Block.Details(
                 details = mapOf(
                     linkedProjectTargetId to Block.Fields(
@@ -245,6 +246,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                             Relations.ID to linkedProjectTargetId,
                             Relations.LAYOUT to supportedObjectLayouts.random().code.toDouble()
                         )
+                    ),
+                    root to Block.Fields(
+                        mapOf("setOf" to setOf)
                     )
                 )
             )
@@ -259,7 +263,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 sorts = dv.content<DV>().viewers.first().sorts,
                 afterId = null,
                 beforeId = null,
-                sources = dv.content<DV>().sources,
+                sources = setOf,
                 keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
                 limit = ObjectSetConfig.DEFAULT_LIMIT,
                 offset = 0,
@@ -360,6 +364,8 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             )
         )
 
+        val setOf = listOf(MockDataFactory.randomString())
+
         val details = Block.Details(
             details = mapOf(
                 linkedProjectTargetId to Block.Fields(
@@ -367,6 +373,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                         Relations.ID to linkedProjectTargetId,
                         Relations.LAYOUT to SupportedLayouts.layouts.random().code.toDouble()
                     )
+                ),
+                root to Block.Fields(
+                    mapOf("setOf" to setOf)
                 )
             )
         )
@@ -381,7 +390,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             sorts = dv.content<DV>().viewers.first().sorts,
             afterId = null,
             beforeId = null,
-            sources = dv.content<DV>().sources,
+            sources = setOf,
             keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = 0,
@@ -477,6 +486,8 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 )
             )
 
+            val setOf = listOf(MockDataFactory.randomString())
+
             val details = Block.Details(
                 details = mapOf(
                     linkedProjectTargetId to Block.Fields(
@@ -484,6 +495,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                             Relations.ID to linkedProjectTargetId,
                             Relations.LAYOUT to unsupportedLayouis.random().code.toDouble()
                         )
+                    ),
+                    root to Block.Fields(
+                        mapOf("setOf" to setOf)
                     )
                 )
             )
@@ -498,7 +512,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 sorts = dv.content<DV>().viewers.first().sorts,
                 afterId = null,
                 beforeId = null,
-                sources = dv.content<DV>().sources,
+                sources = setOf,
                 keys = (ObjectSearchConstants.defaultDataViewKeys + dv.content<DV>().relationsIndex.map { it.key }).distinct(),
                 limit = ObjectSetConfig.DEFAULT_LIMIT,
                 offset = 0,

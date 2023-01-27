@@ -133,9 +133,7 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = listOf(relation1, relation2, relation3, relation4, relation5),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 

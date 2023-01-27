@@ -108,9 +108,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 
@@ -207,9 +205,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 
@@ -306,9 +302,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 
@@ -405,9 +399,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 
@@ -504,9 +496,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 
@@ -603,9 +593,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 

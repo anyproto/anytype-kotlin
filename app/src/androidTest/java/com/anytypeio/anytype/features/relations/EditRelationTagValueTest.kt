@@ -183,9 +183,7 @@ class EditRelationTagValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -301,9 +299,7 @@ class EditRelationTagValueTest {
                     )
                 ),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 

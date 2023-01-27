@@ -154,9 +154,7 @@ class DisplayRelationTagValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -229,9 +227,7 @@ class DisplayRelationTagValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -324,9 +320,7 @@ class DisplayRelationTagValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -414,9 +408,7 @@ class DisplayRelationTagValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -505,9 +497,7 @@ class DisplayRelationTagValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),

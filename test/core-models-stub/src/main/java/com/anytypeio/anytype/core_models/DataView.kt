@@ -6,12 +6,10 @@ fun StubDataView(
     id : Id = MockDataFactory.randomUuid(),
     views: List<DVViewer> = emptyList(),
     relations: List<RelationLink> = emptyList(),
-    sources: List<Id> = emptyList(),
     targetObjectId: Id = MockDataFactory.randomUuid()
 ) : Block = Block(
     id = id,
     content = DV(
-        sources = sources,
         relations = emptyList(),
         relationsIndex=  relations,
         viewers = views,
@@ -43,6 +41,14 @@ fun StubDataViewViewRelation(
 ) : DVViewerRelation = DVViewerRelation(
     key = key,
     isVisible = isVisible
+)
+
+fun StubRelationLink(
+    key: Key = MockDataFactory.randomUuid(),
+    format: RelationFormat = RelationFormat.LONG_TEXT,
+): RelationLink = RelationLink(
+    key = key,
+    format = format
 )
 
 fun StubSort(

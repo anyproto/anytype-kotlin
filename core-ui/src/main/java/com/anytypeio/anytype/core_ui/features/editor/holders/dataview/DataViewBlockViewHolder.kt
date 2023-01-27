@@ -132,6 +132,50 @@ data class DataViewBlockDefaultHolder(
     }
 }
 
+data class DataViewBlockDeleteHolder(
+    val binding: ItemBlockDataViewEmptyDataBinding
+) : DataViewBlockViewHolder(binding.root) {
+
+    override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
+    override val rootView: View = binding.root
+    override val containerView: ConstraintLayout = binding.containerWithBackground
+    override val objectIconView: ObjectIconWidget = binding.cardIcon
+    override val titleView: TextView = binding.cardName
+    override val descriptionView: TextView = binding.cardDescription
+    override val selectedView: View = binding.selected
+    override val decoratableCard: CardView = binding.card
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
+
+    fun bind(
+        item: BlockView.DataView.Deleted,
+        clicked: (ListenerType) -> Unit
+    ) {
+        super.bind(item = updateTitle(item), clicked = clicked)
+    }
+
+    fun processChangePayloads(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView.DataView.Deleted
+    ) {
+        payloads.forEach { payload ->
+            if (payload.isDataViewTitleChanged) {
+                processChangeBasePayloads(payload, updateTitle(item))
+            } else {
+                processChangeBasePayloads(payload, item)
+            }
+        }
+    }
+
+    private fun updateTitle(item: BlockView.DataView.Deleted): BlockView.DataView {
+        return item.copy(
+            title = itemView.resources.getString(R.string.non_existent_object),
+        )
+    }
+}
+
 sealed class DataViewBlockViewHolder(
     view: View
 ) : BlockViewHolder(view),

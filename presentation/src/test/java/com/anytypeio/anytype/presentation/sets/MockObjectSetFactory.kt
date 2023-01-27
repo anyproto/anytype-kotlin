@@ -111,7 +111,6 @@ object MockObjectSetFactory {
         val dataView = Block(
             id = dataViewId ?: MockDataFactory.randomString(),
             content = Block.Content.DataView(
-                sources = listOf("source://1"),
                 viewers = listOf(viewerGrid),
                 relations = emptyList(),
                 relationsIndex = relations.map {

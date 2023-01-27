@@ -161,9 +161,7 @@ class DisplayRelationObjectValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -238,9 +236,7 @@ class DisplayRelationObjectValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -310,9 +306,7 @@ class DisplayRelationObjectValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -412,9 +406,7 @@ class DisplayRelationObjectValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -542,9 +534,7 @@ class DisplayRelationObjectValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),
@@ -662,9 +652,7 @@ class DisplayRelationObjectValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),

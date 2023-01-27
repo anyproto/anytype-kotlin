@@ -49,9 +49,6 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         }
     )
 
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
-
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)

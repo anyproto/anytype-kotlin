@@ -21,12 +21,6 @@ import kotlin.test.assertEquals
 
 class ObjectSetViewerFilterTest : ObjectSetViewModelTestSetup() {
 
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
-
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)

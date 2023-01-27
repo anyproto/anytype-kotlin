@@ -34,12 +34,6 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
         children = listOf(title.id)
     )
 
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
-
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -63,7 +57,6 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(MockDataFactory.randomString()),
                 relations = emptyList(),
                 viewers = listOf(viewer)
             ),
@@ -119,7 +112,6 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
         val dv = Block(
                 id = MockDataFactory.randomUuid(),
                 content = DV(
-                        sources = listOf(MockDataFactory.randomString()),
                         relations = emptyList(),
                         viewers = listOf(viewer)
                 ),

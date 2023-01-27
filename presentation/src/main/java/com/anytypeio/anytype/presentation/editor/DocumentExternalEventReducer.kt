@@ -142,7 +142,19 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
             },
             target = { block -> block.id == event.id }
         )
-
+        is Event.Command.DataView.SetTargetObjectId -> {
+            state.replace(
+                replacement = { block ->
+                    val content = block.content<Block.Content.DataView>()
+                    block.copy(
+                        content = content.copy(
+                            targetObjectId = event.targetObjectId
+                        )
+                    )
+                },
+                target = { block -> block.id == event.dv }
+            )
+        }
         else -> state.also {
             Timber.d("Ignoring event: ${event::class.java.canonicalName}:\n${event.toPrettyString()}")
         }

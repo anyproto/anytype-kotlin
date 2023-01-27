@@ -167,9 +167,7 @@ class CreateSelectedFilterTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 
@@ -262,9 +260,7 @@ class CreateSelectedFilterTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                sources = listOf(
-                    MockDataFactory.randomUuid()
-                )
+                
             )
         )
 

@@ -2196,6 +2196,16 @@ class DefaultBlockViewRenderer @Inject constructor(
             val targetSet = ObjectWrapper.Basic(
                 map = details.details[content.targetObjectId]?.map ?: emptyMap()
             )
+            if (targetSet.isDeleted == true) {
+                return BlockView.DataView.Deleted(
+                    id = block.id,
+                    decorations = decorations,
+                    isSelected = isSelected,
+                    background = background,
+                    icon = ObjectIcon.None,
+                    title = null
+                )
+            }
             val icon = ObjectIcon.getEditorLinkToObjectIcon(
                 obj = targetSet,
                 layout = targetSet.layout,

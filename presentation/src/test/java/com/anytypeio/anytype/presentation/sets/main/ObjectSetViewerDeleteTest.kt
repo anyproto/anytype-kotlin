@@ -100,7 +100,6 @@ class ObjectSetViewerDeleteTest {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(MockDataFactory.randomString()),
                 relations = emptyList(),
                 viewers = listOf(firstViewer, secondViewer, thirdViewer)
             ),
@@ -174,7 +173,6 @@ class ObjectSetViewerDeleteTest {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(MockDataFactory.randomString()),
                 relations = emptyList(),
                 viewers = listOf(firstViewer, secondViewer, thirdViewer)
             ),
@@ -258,7 +256,6 @@ class ObjectSetViewerDeleteTest {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                sources = listOf(MockDataFactory.randomString()),
                 relations = emptyList(),
                 viewers = listOf(firstViewer, secondViewer, thirdViewer)
             ),

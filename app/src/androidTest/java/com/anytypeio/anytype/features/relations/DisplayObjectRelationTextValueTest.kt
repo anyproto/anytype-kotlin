@@ -118,10 +118,7 @@ class DisplayObjectRelationTextValueTest {
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
                         relations = listOf(relation),
-                        viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+                        viewers = listOf(viewer)
                     )
                 )
             ),
@@ -196,10 +193,7 @@ class DisplayObjectRelationTextValueTest {
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
                         relations = listOf(relation),
-                        viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+                        viewers = listOf(viewer)
                     )
                 )
             ),
@@ -276,10 +270,7 @@ class DisplayObjectRelationTextValueTest {
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
                         relations = listOf(relation),
-                        viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+                        viewers = listOf(viewer)
                     )
                 )
             ),
@@ -356,10 +347,7 @@ class DisplayObjectRelationTextValueTest {
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
                         relations = listOf(relation),
-                        viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+                        viewers = listOf(viewer)
                     )
                 )
             ),
@@ -434,10 +422,7 @@ class DisplayObjectRelationTextValueTest {
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
                         relations = listOf(relation),
-                        viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+                        viewers = listOf(viewer)
                     )
                 )
             ),
@@ -514,9 +499,7 @@ class DisplayObjectRelationTextValueTest {
                     content = Block.Content.DataView(
                         relations = listOf(relation),
                         viewers = listOf(viewer),
-                        sources = listOf(
-                            MockDataFactory.randomUuid()
-                        )
+
                     )
                 )
             ),

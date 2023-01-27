@@ -14,12 +14,6 @@ import kotlin.test.assertEquals
 
 class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
 
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
-
     val title = Block(
         id = MockDataFactory.randomUuid(),
         content = Block.Content.Text(

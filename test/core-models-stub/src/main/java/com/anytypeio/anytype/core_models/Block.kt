@@ -316,3 +316,25 @@ fun StubTableCells(columns: List<Block>, rows: List<Block>): List<Block> {
     }
     return cells.toList()
 }
+
+fun StubDataViewBlock(
+    id: Id = MockDataFactory.randomUuid(),
+    children: List<Id> = emptyList(),
+    fields: Block.Fields = Block.Fields.empty(),
+    backgroundColor: String? = null,
+    targetObjectId: Id = "",
+    viewers: List<Block.Content.DataView.Viewer> = emptyList(),
+    relations: List<Relation> = emptyList(),
+    relationsIndex: List<RelationLink> = emptyList(),
+): Block = Block(
+    id = id,
+    content = Block.Content.DataView(
+        targetObjectId = targetObjectId,
+        relationsIndex = relationsIndex,
+        viewers = viewers,
+        relations = relations
+    ),
+    children = children,
+    fields = fields,
+    backgroundColor = backgroundColor
+)

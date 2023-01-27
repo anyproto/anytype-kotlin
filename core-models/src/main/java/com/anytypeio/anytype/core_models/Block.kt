@@ -284,7 +284,6 @@ data class Block(
         data class RelationBlock(val key: Id?) : Content()
 
         data class DataView(
-            val sources: List<String>,
             val viewers: List<Viewer>,
             @Deprecated("To be deleted")
             val relations: List<Relation>,

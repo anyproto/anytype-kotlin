@@ -214,7 +214,7 @@ class ObjectSetViewModel(
                             )
                             addAll(ObjectSearchConstants.defaultDataViewFilters())
                         },
-                        sources = dv.sources,
+                        sources = s.getSetOf(ctx = context),
                         keys = defaultKeys + dataViewKeys,
                         limit = DEFAULT_LIMIT,
                         offset = o

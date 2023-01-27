@@ -189,13 +189,13 @@ fun anytype.Event.Message.toCoreModels(
             viewer = event.viewId
         )
     }
-    blockDataviewSourceSet != null -> {
-        val event = blockDataviewSourceSet
+    blockDataviewTargetObjectIdSet != null -> {
+        val event = blockDataviewTargetObjectIdSet
         checkNotNull(event)
-        Event.Command.DataView.SetSource(
+        Event.Command.DataView.SetTargetObjectId(
             context = context,
             dv = event.id,
-            sources = event.source
+            targetObjectId = event.targetObjectId
         )
     }
     blockSetRelation != null -> {

@@ -84,6 +84,7 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
                 type = command.type,
                 templates = command.templates
             )
+            is Command.OpenLibrary -> navigation.openLibrary()
             else -> Timber.d("Nav command ignored: $command")
         }
     }

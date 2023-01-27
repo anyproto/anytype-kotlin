@@ -22,4 +22,6 @@
 
     <color name="default_dashboard_background_color">#0066C3</color>
 
+    <color name="library_action_btn_text_color">#000000</color>
+
 </resources>

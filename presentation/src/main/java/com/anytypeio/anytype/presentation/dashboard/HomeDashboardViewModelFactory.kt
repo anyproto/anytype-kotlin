@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -37,7 +38,8 @@ class HomeDashboardViewModelFactory(
     private val objectStore: ObjectStore,
     private val createObject: CreateObject,
     private val workspaceManager: WorkspaceManager,
-    private val machine: HomeDashboardStateMachine.Interactor
+    private val machine: HomeDashboardStateMachine.Interactor,
+    private val featureToggles: FeatureToggles
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -60,7 +62,8 @@ class HomeDashboardViewModelFactory(
             objectStore = objectStore,
             createObject = createObject,
             workspaceManager = workspaceManager,
-            favoriteObjectStateMachine = machine
+            favoriteObjectStateMachine = machine,
+            featureToggles = featureToggles
         ) as T
     }
 }

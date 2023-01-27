@@ -271,4 +271,9 @@ class Navigator : AppNavigation {
             )
         )
     }
+
+    override fun openLibrary() {
+        navController?.navigate(R.id.libraryFragment)
+    }
+
 }

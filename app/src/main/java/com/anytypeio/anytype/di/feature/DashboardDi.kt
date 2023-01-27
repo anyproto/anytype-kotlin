@@ -79,7 +79,8 @@ object HomeDashboardModule {
         objectStore: ObjectStore,
         createObject: CreateObject,
         workspaceManager: WorkspaceManager,
-        machine: HomeDashboardStateMachine.Interactor
+        machine: HomeDashboardStateMachine.Interactor,
+        featureToggles: FeatureToggles
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -98,7 +99,8 @@ object HomeDashboardModule {
         objectStore = objectStore,
         createObject = createObject,
         workspaceManager = workspaceManager,
-        machine = machine
+        machine = machine,
+        featureToggles = featureToggles
     )
 
     @JvmStatic

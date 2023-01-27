@@ -180,6 +180,8 @@
     <color name="palette_very_light_grey">#F1F0ED</color>
     <color name="palette_system_red">#F55522</color>
 
+    <color name="library_action_btn_text_color">#FFFFFF</color>
+
     <color name="dashboard_tab_color">#CC0066C3</color>
     <color name="amber_80">#FFC532</color>
     <color name="amber_100">#FFB522</color>

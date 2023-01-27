@@ -32,4 +32,7 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isDebug: Boolean
         get() = prefs.getBoolean(context.getString(R.string.debug_mode), BuildConfig.DEBUG)
+
+    override val isLibraryEnabled: Boolean = isDebug
+
 }

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
 import com.anytypeio.anytype.di.feature.SplashSubComponent
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.home.HomescreenSubComponent
+import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
@@ -54,7 +55,7 @@ import javax.inject.Singleton
         SubscriptionsModule::class
     ]
 )
-interface MainComponent : AppearanceDependencies {
+interface MainComponent : AppearanceDependencies, LibraryDependencies {
     fun inject(app: AndroidApplication)
 
     fun splashComponentBuilder(): SplashSubComponent.Builder
@@ -102,4 +103,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(AppearanceDependencies::class)
     abstract fun provideAppearanceDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(LibraryDependencies::class)
+    abstract fun provideLibraryDependencies(component: MainComponent): ComponentDependencies
+
 }

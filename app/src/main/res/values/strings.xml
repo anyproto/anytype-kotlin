@@ -301,4 +301,15 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="snack_link_to">linked to</string>
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Recovery phrase copied</string>
+
+    <string name="library_title_types">Types</string>
+    <string name="library_title_relations">Relations</string>
+    <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
+    <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
+    <string name="library_button_create_type">Create a type</string>
+    <string name="library_button_create_relation">Create a relation</string>
+    <string name="library_subtitle_types">My types</string>
+    <string name="library_subtitle_relations">My relations</string>
+    <string name="library_subtitle_library">Library</string>
+
 </resources>

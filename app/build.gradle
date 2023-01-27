@@ -178,6 +178,8 @@ dependencies {
     implementation libs.composeFoundation
     implementation libs.composeMaterial
     implementation libs.composeToolingPreview
+    implementation libs.composeAccompanistPager
+    implementation libs.composeAccompanistPagerIndicators
     implementation libs.preference
     debugImplementation libs.composeTooling
 

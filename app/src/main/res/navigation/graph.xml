@@ -460,6 +460,10 @@
         android:label="PageSearchFragment"
         tools:layout="@layout/fragment_object_search" />
     <fragment
+        android:id="@+id/libraryFragment"
+        android:name="com.anytypeio.anytype.ui.library.LibraryFragment"
+        android:label="LibraryFragment"/>
+    <fragment
         android:id="@+id/archiveFragment"
         android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"
         android:label="ArchiveFragment" />

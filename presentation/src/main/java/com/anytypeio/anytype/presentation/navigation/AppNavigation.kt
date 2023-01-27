@@ -55,6 +55,8 @@ interface AppNavigation {
         templates: List<Id>
     )
 
+    fun openLibrary()
+
     fun logout()
 
     sealed class Command {
@@ -117,6 +119,8 @@ interface AppNavigation {
             val type: String,
             val templates: List<Id>
         ) : Command()
+
+        object OpenLibrary: Command()
     }
 
     interface Provider {

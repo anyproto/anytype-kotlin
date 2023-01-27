@@ -4,6 +4,7 @@ kotlinVersion = '1.7.10'
 androidxCoreVersion = "1.9.0"
 androidxComposeVersion1 = '1.3.1'
 androidxComposeVersion2 = '1.3.2'
+accompanistPagerVersion = "0.28.0"
 appcompatVersion = '1.5.1'
 fragmentVersion = "1.5.5"
 exoplayerVersion = "2.18.2"
@@ -68,6 +69,8 @@ composeTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "and
 composeToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidxComposeVersion2" }
 composeFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidxComposeVersion1" }
 composeMaterial = { module = "androidx.compose.material:material", version.ref = "androidxComposeVersion1" }
+composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerVersion" }
+composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerVersion" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidAnnotations = { module = "androidx.annotation:annotation", version.ref = "appcompatVersion" }

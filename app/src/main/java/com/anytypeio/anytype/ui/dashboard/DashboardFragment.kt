@@ -349,7 +349,7 @@ class DashboardFragment :
 
         click(binding.btnAddDoc) { vm.onAddNewDocumentClicked() }
         click(binding.btnSearch) { vm.onPageSearchClicked() }
-        click(binding.btnLibrary) { toast(getString(R.string.coming_soon)) }
+        click(binding.btnLibrary) { vm.onLibraryClicked() }
         click(binding.ivSettings) { vm.onSettingsClicked() }
         click(binding.avatarContainer) { vm.onAvatarClicked() }
         click(binding.tvCancel) { vm.onCancelSelectionClicked() }

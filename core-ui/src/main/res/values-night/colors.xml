@@ -65,4 +65,6 @@
     <color name="object_loading_state_gradient_start_color">#161615</color>
     <color name="object_loading_state_gradient_end_color">#1F1E1D</color>
 
+    <color name="library_action_btn_text_color">#000000</color>
+
 </resources>

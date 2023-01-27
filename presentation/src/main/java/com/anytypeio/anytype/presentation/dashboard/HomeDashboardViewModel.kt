@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.fold
@@ -90,7 +91,8 @@ class HomeDashboardViewModel(
     private val objectStore: ObjectStore,
     private val createObject: CreateObject,
     private val workspaceManager: WorkspaceManager,
-    private val favoriteObjectStateMachine: Interactor
+    private val favoriteObjectStateMachine: Interactor,
+    private val featureToggles: FeatureToggles
 ) : ViewModel(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -286,6 +288,15 @@ class HomeDashboardViewModel(
                 },
                 onFailure = { e -> Timber.e(e, "Error while creating a new object") }
             )
+        }
+    }
+
+    fun onLibraryClicked() {
+        Timber.d("onLibraryClicked")
+        if (featureToggles.isLibraryEnabled) {
+            navigation.postValue(EventWrapper(AppNavigation.Command.OpenLibrary))
+        } else {
+            toast("Coming soon")
         }
     }
 

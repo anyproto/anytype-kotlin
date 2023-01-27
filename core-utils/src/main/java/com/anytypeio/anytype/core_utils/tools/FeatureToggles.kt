@@ -15,4 +15,7 @@ interface FeatureToggles {
     val isDebug: Boolean
 
     val isTroubleshootingMode: Boolean
+
+    val isLibraryEnabled: Boolean
+
 }

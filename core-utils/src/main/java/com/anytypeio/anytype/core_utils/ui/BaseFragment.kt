@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_utils.BuildConfig
-import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import kotlinx.coroutines.Job
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 abstract class BaseFragment<T : ViewBinding>(
@@ -33,7 +31,7 @@ abstract class BaseFragment<T : ViewBinding>(
     private val fragmentScope: Boolean = true
 ) : Fragment(layout) {
 
-    var applyWindowRootInsets: Boolean = true
+    private var applyWindowRootInsets: Boolean = true
     protected val handler = Handler(Looper.getMainLooper())
 
     private var _binding: T? = null
@@ -53,7 +51,7 @@ abstract class BaseFragment<T : ViewBinding>(
 
     override fun onStart() {
         super.onStart()
-        proceed(throttleFlow.throttleFirst(LONG_THROTTLE_DURATION)) { it() }
+        proceed(throttleFlow.throttleFirst(THROTTLE_DURATION)) { it() }
     }
 
     protected fun throttle(task: () -> Unit) {
@@ -118,3 +116,5 @@ abstract class BaseFragment<T : ViewBinding>(
 fun <T> BaseFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
     jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
 }
+
+const val THROTTLE_DURATION = 300L

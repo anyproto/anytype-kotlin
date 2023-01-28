@@ -62,11 +62,6 @@ sealed class ObjectSetCommand {
             val viewer: Id
         ) : Modal()
 
-        data class ViewerCustomizeScreen(
-            val ctx: Id,
-            val viewer: Id
-        ) : Modal()
-
         data class SetNameForCreatedObject(val ctx: Id, val target: Id) : Modal()
 
         data class CreateBookmark(val ctx: Id) : Modal()

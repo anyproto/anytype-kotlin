@@ -88,7 +88,6 @@ import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
-import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.flow.filterNotNull
@@ -618,13 +617,6 @@ open class ObjectSetFragment :
                     )
                 )
             }
-            is ObjectSetCommand.Modal.ViewerCustomizeScreen -> {
-                val fr = ViewerBottomSheetRootFragment.new(
-                    ctx = command.ctx,
-                    viewer = command.viewer
-                )
-                fr.showChildFragment(EMPTY_TAG)
-            }
             is ObjectSetCommand.Modal.CreateViewer -> {
                 val fr = CreateDataViewViewerFragment.new(
                     ctx = command.ctx,
@@ -852,14 +844,6 @@ open class ObjectSetFragment :
                 vm.onSystemBackPressed()
             }
         }
-    }
-
-    fun onViewerNewSortsRequest(sorts: List<SortingExpression>) {
-        vm.onUpdateViewerSorting(sorts)
-    }
-
-    fun onViewerNewFiltersRequest(filters: List<FilterExpression>) {
-        vm.onUpdateViewerFilters(filters)
     }
 
     override fun onTextValueChanged(

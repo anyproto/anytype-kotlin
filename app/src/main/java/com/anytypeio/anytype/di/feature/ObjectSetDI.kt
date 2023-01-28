@@ -87,8 +87,6 @@ interface ObjectSetSubComponent {
 
     fun objectSetRecordComponent(): ObjectSetRecordSubComponent.Builder
     fun objectSetCreateBookmarkRecordComponent(): ObjectSetCreateBookmarkRecordSubComponent.Builder
-    fun viewerCustomizeSubComponent(): ViewerCustomizeSubComponent.Builder
-    fun viewerSortBySubComponent(): ViewerSortBySubComponent.Builder
     fun viewerFilterBySubComponent(): ViewerFilterSubComponent.Builder
     fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
     fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
@@ -99,7 +97,6 @@ interface ObjectSetSubComponent {
     fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder
     fun relationAddToDataViewComponent(): RelationAddToDataViewSubComponent.Builder
     fun relationCreateFromScratchForDataViewComponent(): RelationCreateFromScratchForDataViewSubComponent.Builder
-    fun dataviewViewerActionComponent(): DataViewViewerActionSubComponent.Builder
     fun selectSortRelationComponent(): SelectSortRelationSubComponent.Builder
     fun selectFilterRelationComponent(): SelectFilterRelationSubComponent.Builder
     fun createFilterComponent(): CreateFilterSubComponent.Builder

@@ -10,7 +10,6 @@ import com.anytypeio.anytype.di.feature.CreateAccountModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
-import com.anytypeio.anytype.di.feature.DataViewViewerActionModule
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.DocumentRelationModule
 import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
@@ -57,9 +56,7 @@ import com.anytypeio.anytype.di.feature.SetupSelectedAccountModule
 import com.anytypeio.anytype.di.feature.SplashModule
 import com.anytypeio.anytype.di.feature.StartLoginModule
 import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
-import com.anytypeio.anytype.di.feature.ViewerCustomizeModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
-import com.anytypeio.anytype.di.feature.ViewerSortByModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
@@ -357,14 +354,6 @@ class ComponentManager(
             .build()
     }
 
-    val viewerSortByComponent = DependentComponentMap { ctx ->
-        objectSetComponent
-            .get(ctx)
-            .viewerSortBySubComponent()
-            .module(ViewerSortByModule)
-            .build()
-    }
-
     val relationTextValueDVComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
@@ -402,14 +391,6 @@ class ComponentManager(
             .get(ctx)
             .viewerFilterBySubComponent()
             .module(ViewerFilterModule)
-            .build()
-    }
-
-    val viewerCustomizeComponent = DependentComponentMap { ctx ->
-        objectSetComponent
-            .get(ctx)
-            .viewerCustomizeSubComponent()
-            .module(ViewerCustomizeModule)
             .build()
     }
 
@@ -538,15 +519,6 @@ class ComponentManager(
             .get(ctx)
             .viewerImagePreviewSelectComponent()
             .module(ViewerImagePreviewSelectModule)
-            .build()
-    }
-
-    @Deprecated("Legacy")
-    val dataviewViewerActionComponent = DependentComponentMap { ctx ->
-        objectSetComponent
-            .get(ctx)
-            .dataviewViewerActionComponent()
-            .module(DataViewViewerActionModule)
             .build()
     }
 

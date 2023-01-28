@@ -14,7 +14,6 @@ import com.anytypeio.anytype.databinding.FragmentViewerBottomSheetRootBinding
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterFlowViewModel
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterFlowViewModel.Step
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
-import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 
 class CreateFilterFlowRootFragment :
     BaseBottomSheetFragment<FragmentViewerBottomSheetRootBinding>(), CreateFilterFlow {
@@ -69,7 +68,7 @@ class CreateFilterFlowRootFragment :
         childFragmentManager
             .beginTransaction()
             .add(R.id.container, fr)
-            .addToBackStack(ViewerBottomSheetRootFragment.TAG_ROOT)
+            .addToBackStack(TAG_ROOT)
             .commit()
     }
 
@@ -88,6 +87,7 @@ class CreateFilterFlowRootFragment :
             arguments = bundleOf(CTX_KEY to ctx)
         }
 
+        const val TAG_ROOT = "tag.root"
         private const val CTX_KEY = "arg.create-filter-flow-root.ctx"
     }
 }

@@ -19,13 +19,11 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
-import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFlowRootFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.ModifyFilterFromInputFieldValueFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.ModifyFilterFromSelectedValueFragment
@@ -115,8 +113,6 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
                 val fr = CreateFilterFlowRootFragment.new(ctx)
                 fr.show(parentFragmentManager, null)
             }
-            is ViewerFilterCommand.Apply -> dispatchResultAndDismiss(command)
-            is ViewerFilterCommand.BackToCustomize -> exitToCustomizeScreen()
             is ViewerFilterCommand.Modal.UpdateInputValueFilter -> {
                 val fr = ModifyFilterFromInputFieldValueFragment.new(
                     ctx = ctx,
@@ -134,14 +130,6 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
                 fr.showChildFragment(fr.javaClass.canonicalName)
             }
         }
-    }
-
-    private fun exitToCustomizeScreen() {
-        withParent<ViewerBottomSheetRootFragment> { transitToCustomize() }
-    }
-
-    private fun dispatchResultAndDismiss(command: ViewerFilterCommand.Apply) {
-        withParent<ViewerBottomSheetRootFragment> { dispatchResultFiltersAndDismiss(command.filters) }
     }
 
     override fun injectDependencies() {

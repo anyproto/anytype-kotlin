@@ -699,50 +699,6 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onUpdateViewerSorting(sorts: List<SortingExpression>) {
-        Timber.d("onUpdateViewerSorting, sorts:[$sorts]")
-        viewModelScope.launch {
-            val block = reducer.state.value.dataview
-            val dv = block.content as DV
-            val viewer =
-                dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = context,
-                    target = block.id,
-                    viewer = viewer.copy(sorts = sorts.map { it.toDomain() })
-                )
-            ).process(
-                success = { payload ->
-                    defaultPayloadConsumer(payload)
-                },
-                failure = { Timber.e(it, "Error while updating data view's viewer") }
-            )
-        }
-    }
-
-    fun onUpdateViewerFilters(filters: List<FilterExpression>) {
-        Timber.d("onUpdateViewerFilters, filters:[$filters]")
-        viewModelScope.launch {
-            val block = reducer.state.value.dataview
-            val dv = block.content as DV
-            val viewer =
-                dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = context,
-                    target = block.id,
-                    viewer = viewer.copy(filters = filters.map { it.toDomain() })
-                )
-            ).process(
-                success = { payload ->
-                    defaultPayloadConsumer(payload)
-                },
-                failure = { Timber.e(it, "Error while updating data view's viewer") }
-            )
-        }
-    }
-
     fun onCreateNewDataViewObject() {
         Timber.d("onCreateNewRecord, ")
         val currentState = reducer.state.value
@@ -824,23 +780,6 @@ class ObjectSetViewModel(
     fun onHideViewerCustomizeSwiped() {
         Timber.d("onHideViewerCustomizeSwiped, ")
         isCustomizeViewPanelVisible.value = false
-    }
-
-    fun onViewerCustomizeClicked() {
-        Timber.d("onViewerCustomizeClicked, ")
-        val set = reducer.state.value
-        if (set.isInitialized) {
-            val block = set.dataview
-            val dv = block.content as DV
-            val viewer =
-                dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
-            dispatch(
-                ObjectSetCommand.Modal.ViewerCustomizeScreen(
-                    ctx = context,
-                    viewer = viewer.id
-                )
-            )
-        }
     }
 
     fun onExpandViewerMenuClicked() {

@@ -66,9 +66,6 @@ class ViewerFilterViewModel(
 
     fun onFilterClicked(ctx: Id, click: FilterClick) {
         when (click) {
-            FilterClick.Apply -> {
-                onApplyFiltersClicked()
-            }
             is FilterClick.Remove -> {
                 onRemoveFilterClicked(ctx, click.index)
             }
@@ -113,10 +110,6 @@ class ViewerFilterViewModel(
             is FilterView.Expression.Checkbox ->
                 filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
         }
-
-    private fun onApplyFiltersClicked() {
-        emitCommand(ViewerFilterCommand.Apply(data.value.filters))
-    }
 
     fun onAddNewFilterClicked() {
         emitCommand(Modal.ShowRelationList)

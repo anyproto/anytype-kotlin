@@ -21,7 +21,7 @@ import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
 import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
 import com.anytypeio.anytype.di.feature.SplashSubComponent
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
-import com.anytypeio.anytype.di.feature.home.HomescreenSubComponent
+import com.anytypeio.anytype.di.feature.home.HomeScreenSubComponent
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
@@ -60,7 +60,7 @@ interface MainComponent : AppearanceDependencies, LibraryDependencies {
 
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
-    fun homescreenComponentBuilder(): HomescreenSubComponent.Builder
+    fun homeScreenComponentBuilder(): HomeScreenSubComponent.Builder
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder

@@ -56,6 +56,13 @@ sealed class ObjectWrapper {
                 else -> null
             }
 
+        val links: List<Id>
+            get() = when (val value = map[Relations.LINKS]) {
+                is Id -> listOf(value)
+                is List<*> -> value.typeOf()
+                else -> emptyList()
+            }
+
         val id: Id by default
 
         val done: Boolean? by default

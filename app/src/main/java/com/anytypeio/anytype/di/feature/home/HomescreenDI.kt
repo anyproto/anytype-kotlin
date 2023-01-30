@@ -1,38 +1,38 @@
 package com.anytypeio.anytype.di.feature.home
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.widgets.CreateWidget
-import com.anytypeio.anytype.presentation.home.HomeViewModel
-import com.anytypeio.anytype.ui.home.HomeFragment
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(
-    modules = [HomescreenModule::class]
+    modules = [HomeScreenModule::class]
 )
 @PerScreen
-interface HomescreenSubComponent {
+interface HomeScreenSubComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: HomescreenModule): Builder
-        fun build(): HomescreenSubComponent
+        fun module(module: HomeScreenModule): Builder
+        fun build(): HomeScreenSubComponent
     }
 
-    fun inject(fragment: HomeFragment)
+    fun inject(fragment: HomeScreenFragment)
 }
 
 @Module
-object HomescreenModule {
+object HomeScreenModule {
 
     @JvmStatic
     @Provides
@@ -41,12 +41,14 @@ object HomescreenModule {
         openObject: OpenObject,
         createWidget: CreateWidget,
         configStorage: ConfigStorage,
-        objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
-    ): HomeViewModel.Factory = HomeViewModel.Factory(
+        objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
+        dispatchers: AppCoroutineDispatchers
+    ): HomeScreenViewModel.Factory = HomeScreenViewModel.Factory(
         openObject = openObject,
         createWidget = createWidget,
         configStorage = configStorage,
-        objectSearchSubscriptionContainer = objectSearchSubscriptionContainer
+        objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

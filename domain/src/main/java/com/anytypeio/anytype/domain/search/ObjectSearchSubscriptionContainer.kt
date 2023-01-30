@@ -155,4 +155,14 @@ class ObjectSearchSubscriptionContainer(
         )
         emit(initial.results)
     }
+
+    suspend fun get(
+        subscription: Id,
+        targets: List<Id>,
+        keys: List<Key>
+    ): List<ObjectWrapper.Basic> = repo.searchObjectsByIdWithSubscription(
+        subscription = subscription,
+        ids = targets,
+        keys = keys
+    ).results
 }

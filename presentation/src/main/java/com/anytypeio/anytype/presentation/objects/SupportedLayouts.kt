@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.ObjectType
 
 object SupportedLayouts {
-
     val layouts = listOf(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.FILE,
@@ -14,4 +13,7 @@ object SupportedLayouts {
         ObjectType.Layout.NOTE,
         ObjectType.Layout.BOOKMARK
     )
+    fun isSupported(layout: ObjectType.Layout?) : Boolean {
+        return layouts.contains(layout)
+    }
 }

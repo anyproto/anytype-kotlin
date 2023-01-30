@@ -146,7 +146,7 @@
 
     <fragment
         android:id="@+id/homeScreen"
-        android:name="com.anytypeio.anytype.ui.home.HomeFragment"
+        android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"
         android:label="Home screen"
         tools:layout="@layout/fragment_home">
     </fragment>

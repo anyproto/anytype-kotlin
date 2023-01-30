@@ -8,12 +8,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import com.google.accompanist.pager.ExperimentalPagerApi
 import javax.inject.Inject
+import kotlinx.coroutines.FlowPreview
 
 class LibraryFragment : BaseComposeFragment() {
 
@@ -22,11 +24,11 @@ class LibraryFragment : BaseComposeFragment() {
 
     private val vm by viewModels<LibraryViewModel> { factory }
 
-    @OptIn(ExperimentalPagerApi::class)
+    @FlowPreview
+    @ExperimentalLifecycleComposeApi
+    @ExperimentalPagerApi
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -36,7 +38,7 @@ class LibraryFragment : BaseComposeFragment() {
                         listOf(
                             LibraryScreenConfig.Types(),
                             LibraryScreenConfig.Relations()
-                        )
+                        ), vm
                     )
                 }
             }

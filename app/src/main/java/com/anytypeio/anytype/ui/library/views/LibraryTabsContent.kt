@@ -22,29 +22,51 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.presentation.library.LibraryEvent
+import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.views.list.LibraryListView
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
 @ExperimentalPagerApi
 @Composable
 fun LibraryTabsContent(
     modifier: Modifier,
     pagerState: PagerState,
-    configuration: List<LibraryScreenConfig>
+    configuration: List<LibraryScreenConfig>,
+    state: LibraryScreenState,
+    vmEventStream: (LibraryEvent) -> Unit,
 ) {
     HorizontalPager(modifier = modifier, state = pagerState, count = configuration.size) { page ->
-        TabContentScreen(modifier = modifier, config = configuration[page])
+        val dataTabs = when (configuration[page]) {
+            is LibraryScreenConfig.Types -> {
+                state.types
+            }
+            is LibraryScreenConfig.Relations -> {
+                state.relations
+            }
+        }
+        TabContentScreen(
+            modifier = modifier,
+            config = configuration[page],
+            tabs = dataTabs,
+            vmEventStream = vmEventStream
+        )
     }
 }
 
+@FlowPreview
 @ExperimentalPagerApi
 @Composable
 fun TabContentScreen(
     modifier: Modifier,
     config: LibraryScreenConfig,
+    tabs: LibraryScreenState.Tabs,
+    vmEventStream: (LibraryEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -82,7 +104,11 @@ fun TabContentScreen(
             )
         )
         Box(Modifier.height(48.dp))
-        LibraryListView(libraryListConfig = config.listConfig)
+        LibraryListView(
+            libraryListConfig = config.listConfig,
+            tabs = tabs,
+            vmEventStream = vmEventStream
+        )
     }
 
 }

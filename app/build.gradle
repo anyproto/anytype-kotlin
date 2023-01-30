@@ -173,6 +173,7 @@ dependencies {
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime
     implementation libs.lifecycleLiveData
+    implementation libs.lifecycleCompose
 
     implementation libs.compose
     implementation libs.composeFoundation

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.library.views.list
 
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
@@ -37,7 +38,7 @@ fun LibraryListTabs(
         indicator = {},
         divider = {},
         edgePadding = 0.dp,
-        modifier = modifier,
+        modifier = modifier.padding(start = 4.dp),
         tabs = {
             CompositionLocalProvider(LocalRippleTheme provides LibraryTabsTheme) {
                 configuration.forEachIndexed { index, it ->

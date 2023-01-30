@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.moving
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SmartBlockType
@@ -15,7 +14,6 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -92,7 +90,6 @@ class MoveToViewModel(
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 objects.value = Resultat.Loading()
-                sendSearchQueryEvent()
                 val params = getSearchObjectsParams(ctx).copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects ->
@@ -105,14 +102,6 @@ class MoveToViewModel(
                 )
             }
         }
-    }
-
-    private fun sendSearchQueryEvent() {
-        viewModelScope.sendAnalyticsSearchQueryEvent(
-            analytics = analytics,
-            route = EventsDictionary.Routes.searchMenu,
-            length = userInput.value.length
-        )
     }
 
     private fun sendSearchResultEvent(id: String) {

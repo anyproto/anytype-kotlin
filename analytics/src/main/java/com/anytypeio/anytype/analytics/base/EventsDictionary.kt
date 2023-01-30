@@ -48,7 +48,6 @@ object EventsDictionary {
 
     // Object events
     const val objectListDelete = "RemoveCompletely"
-    const val searchQuery = "SearchQuery"
     const val searchResult = "SearchResult"
     const val searchWords = "SearchWords"
     const val objectTypeChanged = "ChangeObjectType"

@@ -17,7 +17,6 @@ import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -74,14 +73,6 @@ class RelationAddToObjectViewModel(
                 }
             )
         }
-    }
-
-    override fun sendAnalyticsEvent(length: Int) {
-        viewModelScope.sendAnalyticsSearchQueryEvent(
-            analytics = analytics,
-            route = EventsDictionary.Routes.searchMenu,
-            length = length
-        )
     }
 
     class Factory(

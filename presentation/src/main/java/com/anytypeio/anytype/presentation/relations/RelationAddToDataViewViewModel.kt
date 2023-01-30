@@ -81,9 +81,7 @@ class RelationAddToDataViewViewModel(
             )
         }
     }
-
-    override fun sendAnalyticsEvent(length: Int) {}
-
+    
     private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relation: Id) {
         val state = state.value
         val block = state.dataview

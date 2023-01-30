@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.linking
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -15,7 +14,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -76,7 +74,6 @@ class LinkToObjectOrWebViewModel(
     private fun startObservingViewState(ignore: Id) {
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
-                sendSearchQueryEvent(query.length)
                 val params = getSearchObjectsParams(ignore).copy(fulltext = query)
                 searchObjects(params).process(
                     success = { searchResponse ->
@@ -235,14 +232,6 @@ class LinkToObjectOrWebViewModel(
 
     fun onSearchTextChanged(searchText: String) {
         userInput.value = searchText
-    }
-
-    private fun sendSearchQueryEvent(length: Int) {
-        viewModelScope.sendAnalyticsSearchQueryEvent(
-            analytics = analytics,
-            route = EventsDictionary.Routes.searchMenu,
-            length = length
-        )
     }
 
     sealed class Command {

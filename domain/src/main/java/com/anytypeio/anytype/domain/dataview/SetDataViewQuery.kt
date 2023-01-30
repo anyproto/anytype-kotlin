@@ -6,8 +6,8 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class SetDataViewSource(private val repo: BlockRepository) :
-    BaseUseCase<Payload, SetDataViewSource.Params>() {
+class SetDataViewQuery(private val repo: BlockRepository) :
+    BaseUseCase<Payload, SetDataViewQuery.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Payload> = safe {
         repo.blockDataViewSetSource(

@@ -21,7 +21,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.SetDataViewSource
+import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -148,7 +148,7 @@ object ObjectSetModule {
         setDocCoverImage: SetDocCoverImage,
         dataViewSubscriptionContainer: DataViewSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
-        setDataViewSource: SetDataViewSource,
+        setDataViewQuery: SetDataViewQuery,
         database: ObjectSetDatabase,
         paginator: ObjectSetPaginator,
         storeOfRelations: StoreOfRelations
@@ -173,7 +173,7 @@ object ObjectSetModule {
         createObject = createObject,
         dataViewSubscriptionContainer = dataViewSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
-        setDataViewSource = setDataViewSource,
+        setDataViewQuery = setDataViewQuery,
         database = database,
         paginator = paginator,
         storeOfRelations = storeOfRelations
@@ -197,7 +197,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideSetDataViewSource(
         repo: BlockRepository
-    ): SetDataViewSource = SetDataViewSource(repo)
+    ): SetDataViewQuery = SetDataViewQuery(repo)
 
     @JvmStatic
     @Provides

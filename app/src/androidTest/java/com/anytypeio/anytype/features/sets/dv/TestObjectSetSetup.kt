@@ -22,7 +22,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.SetDataViewSource
+import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -74,7 +74,7 @@ abstract class TestObjectSetSetup {
     private lateinit var interceptThreadStatus: InterceptThreadStatus
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
-    private lateinit var setDataViewSource: SetDataViewSource
+    private lateinit var setDataViewQuery: SetDataViewQuery
 
     lateinit var urlBuilder: UrlBuilder
 
@@ -150,7 +150,7 @@ abstract class TestObjectSetSetup {
     open fun setup() {
         MockitoAnnotations.openMocks(this)
 
-        setDataViewSource = SetDataViewSource(repo)
+        setDataViewQuery = SetDataViewQuery(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
         getDefaultEditorType = GetDefaultEditorType(
@@ -207,7 +207,7 @@ abstract class TestObjectSetSetup {
             setDocCoverImage = setDocCoverImage,
             delegator = delegator,
             createObject = createObject,
-            setDataViewSource = setDataViewSource,
+            setDataViewQuery = setDataViewQuery,
             cancelSearchSubscription = cancelSearchSubscription,
             paginator = paginator,
             database = database,

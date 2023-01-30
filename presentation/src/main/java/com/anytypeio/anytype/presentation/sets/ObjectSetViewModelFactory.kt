@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.SetDataViewSource
+import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -46,7 +46,7 @@ class ObjectSetViewModelFactory(
     private val createObject: CreateObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
-    private val setDataViewSource: SetDataViewSource,
+    private val setDataViewQuery: SetDataViewQuery,
     private val database: ObjectSetDatabase,
     private val paginator: ObjectSetPaginator,
     private val storeOfRelations: StoreOfRelations
@@ -74,7 +74,7 @@ class ObjectSetViewModelFactory(
             createObject = createObject,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,
-            setDataViewSource = setDataViewSource,
+            setDataViewQuery = setDataViewQuery,
             database = database,
             paginator = paginator,
             storeOfRelations = storeOfRelations

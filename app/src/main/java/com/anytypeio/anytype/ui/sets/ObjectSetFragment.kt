@@ -266,7 +266,7 @@ open class ObjectSetFragment :
         setFragmentResultListener(BaseObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val source = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
             if (source != null) {
-                vm.onDataViewSourcePicked(source = source)
+                vm.onDataViewQueryPicked(source = source)
             } else {
                 toast("Error while setting Set source. Source is empty")
             }
@@ -716,13 +716,13 @@ open class ObjectSetFragment :
                     R.id.setUrlForNewBookmark,
                     bundleOf(SetObjectCreateRecordFragmentBase.CONTEXT_KEY to command.ctx))
             }
-            is ObjectSetCommand.Modal.OpenDataViewSelectSourceScreen -> {
+            is ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen -> {
                 val fr = DataViewSelectSourceFragment.newInstance(
                     selectedTypes = command.selectedTypes
                 )
                 fr.showChildFragment()
             }
-            is ObjectSetCommand.Modal.OpenEmptyDataViewSelectSourceScreen -> {
+            is ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen -> {
                 val fr = EmptyDataViewSelectSourceFragment()
                 fr.showChildFragment()
             }
@@ -880,7 +880,7 @@ open class ObjectSetFragment :
     }
 
     override fun onProceedWithSelectSource(id: Id) {
-        vm.onDataViewSourcePicked(source = id)
+        vm.onDataViewQueryPicked(source = id)
     }
 
     override fun injectDependencies() {

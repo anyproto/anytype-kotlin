@@ -31,7 +31,7 @@ class EmptyDataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
     }
 
     override fun setTitle() {
-        binding.tvTitle.text = getString(R.string.select_source)
+        binding.tvTitle.text = getString(R.string.select_query)
     }
 
     override fun injectDependencies() {

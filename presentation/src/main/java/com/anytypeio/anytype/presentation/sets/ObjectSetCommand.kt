@@ -72,11 +72,11 @@ sealed class ObjectSetCommand {
             val ctx: Id
         ) : Modal()
 
-        data class OpenDataViewSelectSourceScreen(
+        data class OpenDataViewSelectQueryScreen(
             val selectedTypes: List<Id>
         ) : Modal()
 
-        object OpenEmptyDataViewSelectSourceScreen: Modal()
+        object OpenEmptyDataViewSelectQueryScreen: Modal()
     }
 
     sealed class Intent : ObjectSetCommand() {

@@ -325,10 +325,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         ids: MutableList<Int>
     ) {
         val placeholder =
-            buildPlaceholderView(resources.getString(R.string.source)).apply {
+            buildPlaceholderView(resources.getString(R.string.query)).apply {
                 setOnClickListener {
                     click(
-                        ListenerType.Relation.SetSource(sources = emptyList())
+                        ListenerType.Relation.SetQuery(queries = emptyList())
                     )
                 }
             }
@@ -367,7 +367,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             }
             view.setOnClickListener {
                 click(
-                    ListenerType.Relation.SetSource(sources = relation.sources)
+                    ListenerType.Relation.SetQuery(queries = relation.sources)
                 )
             }
             addView(view)
@@ -403,7 +403,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             )
         }
         view.setOnClickListener {
-            click(ListenerType.Relation.ChangeSourceByRelation)
+            click(ListenerType.Relation.ChangeQueryByRelation)
         }
         addView(view)
         ids.add(view.id)
@@ -424,7 +424,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             }
             view.setOnClickListener {
                 click(
-                    ListenerType.Relation.SetSource(sources = listOf())
+                    ListenerType.Relation.SetQuery(queries = listOf())
                 )
             }
             addView(view)

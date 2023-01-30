@@ -55,7 +55,7 @@ class MyTypesDelegate @Inject constructor(
                 addAll(ObjectSearchConstants.filterTypes())
                 add(
                     DVFilter(
-                        relationKey = Relations.WORKSPACE_ID,
+                        relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = workspaceId
                     )

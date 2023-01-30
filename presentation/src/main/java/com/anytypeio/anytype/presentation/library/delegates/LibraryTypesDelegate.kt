@@ -44,7 +44,7 @@ class LibraryTypesDelegate @Inject constructor(
                 ObjectSearchConstants.filterTypes()
                 add(
                     DVFilter(
-                        relationKey = Relations.WORKSPACE_ID,
+                        relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = MARKETPLACE_ID
                     )

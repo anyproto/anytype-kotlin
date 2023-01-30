@@ -56,14 +56,14 @@ class MyRelationsDelegate @Inject constructor(
                 addAll(ObjectSearchConstants.filterMyRelations())
                 add(
                     DVFilter(
-                        relationKey = Relations.WORKSPACE_ID,
+                        relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = workspaceId
                     )
                 )
                 add(
                     DVFilter(
-                        relationKey = Relations.RELATION_KEY,
+                        relation = Relations.RELATION_KEY,
                         condition = DVFilterCondition.NOT_IN,
                         value = Relations.systemRelationKeys
                     )

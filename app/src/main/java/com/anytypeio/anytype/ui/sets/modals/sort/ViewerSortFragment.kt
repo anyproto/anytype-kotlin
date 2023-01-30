@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.sets.ViewerSortAdapter
 import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
@@ -39,9 +40,16 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     private val viewerSortAdapter by lazy {
         ViewerSortAdapter(
             onViewerSortClicked = { view ->
-                if (view.mode == ScreenState.READ) navigateToChangeSort(view.relation)
+                if (view.mode == ScreenState.READ) navigateToChangeSort(
+                    sortId = view.sortId,
+                    relation = view.relation
+                )
             },
-            onRemoveViewerSortClicked = { vm.onRemoveViewerSortClicked(ctx, it) }
+            onRemoveViewerSortClicked = {
+                vm.onRemoveViewerSortClicked(
+                    ctx = ctx, view = it
+                )
+            }
         )
     }
 
@@ -53,8 +61,8 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
         fr.show(parentFragmentManager, null)
     }
 
-    private fun navigateToChangeSort(relation: Id) {
-        val fr = ModifyViewerSortFragment.new(ctx = ctx, relation = relation)
+    private fun navigateToChangeSort(sortId: Id, relation: Key) {
+        val fr = ModifyViewerSortFragment.new(ctx = ctx, sortId = sortId, relation = relation)
         fr.show(parentFragmentManager, null)
     }
 

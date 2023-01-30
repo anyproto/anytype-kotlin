@@ -91,16 +91,13 @@ class RelationAddToDataViewViewModel(
         val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
 
         updateDataViewViewer(
-            UpdateDataViewViewer.Params(
-                context = ctx,
-                target = block.id,
-                viewer = viewer.copy(
-                    viewerRelations = viewer.viewerRelations + listOf(
-                        DVViewerRelation(
-                            key = relation,
-                            isVisible = true
-                        )
-                    )
+            UpdateDataViewViewer.Params.ViewerRelation.Add(
+                ctx = ctx,
+                dv = block.id,
+                view = viewer.id,
+                relation = DVViewerRelation(
+                    key = relation,
+                    isVisible = true
                 )
             )
         ).process(

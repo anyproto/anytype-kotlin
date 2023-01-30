@@ -49,7 +49,7 @@ interface BlockRemote {
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult
 
-    suspend fun openObject(id: Id) : ObjectView
+    suspend fun openObject(id: Id): ObjectView
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String): Payload
     suspend fun openObjectSet(id: String): Payload
@@ -302,4 +302,17 @@ interface BlockRemote {
     suspend fun createObject(command: Command.CreateObject): CreateObjectResult
 
     suspend fun createWidget(ctx: Id, source: Id): Payload
+
+    suspend fun addDataViewFilter(command: Command.AddFilter): Payload
+    suspend fun removeDataViewFilter(command: Command.RemoveFilter): Payload
+    suspend fun replaceDataViewFilter(command: Command.ReplaceFilter): Payload
+
+    suspend fun addDataViewSort(command: Command.AddSort): Payload
+    suspend fun removeDataViewSort(command: Command.RemoveSort): Payload
+    suspend fun replaceDataViewSort(command: Command.ReplaceSort): Payload
+
+    suspend fun addDataViewViewRelation(command: Command.AddRelation): Payload
+    suspend fun removeDataViewViewRelation(command: Command.DeleteRelation): Payload
+    suspend fun replaceDataViewViewRelation(command: Command.UpdateRelation): Payload
+    suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
 }

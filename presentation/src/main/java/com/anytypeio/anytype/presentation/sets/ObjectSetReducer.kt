@@ -178,11 +178,20 @@ class ObjectSetReducer {
                                             } else {
                                                 viewer.viewerRelations
                                             }
-                                        viewer.copy(
-                                            filters = filters,
-                                            sorts = sorts,
-                                            viewerRelations = viewerRelations
-                                        )
+                                        val fields = event.fields
+                                        if (fields != null) {
+                                            viewer.updateFields(fields).copy(
+                                                filters = filters,
+                                                sorts = sorts,
+                                                viewerRelations = viewerRelations
+                                            )
+                                        } else {
+                                            viewer.copy(
+                                                filters = filters,
+                                                sorts = sorts,
+                                                viewerRelations = viewerRelations
+                                            )
+                                        }
                                     } else {
                                         viewer
                                     }

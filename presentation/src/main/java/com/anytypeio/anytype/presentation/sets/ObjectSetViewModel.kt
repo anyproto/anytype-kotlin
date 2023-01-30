@@ -52,7 +52,6 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowSetEvent
-import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
@@ -61,8 +60,6 @@ import com.anytypeio.anytype.presentation.relations.tabs
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
-import com.anytypeio.anytype.presentation.sets.model.FilterExpression
-import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -202,7 +199,7 @@ class ObjectSetViewModel(
                         filters = buildList {
                             addAll(
                                 view.filters.map { f: DVFilter ->
-                                    val r = storeOfRelations.getByKey(f.relationKey)
+                                    val r = storeOfRelations.getByKey(f.relation)
                                     if (r != null && r.relationFormat == RelationFormat.DATE) {
                                         f.copy(
                                             relationFormat = r.relationFormat
@@ -454,21 +451,6 @@ class ObjectSetViewModel(
                 }
             }
         )
-    }
-
-    fun onCreateNewViewerClicked() {
-        Timber.d("onCreateNewViewerClicked, ")
-        dispatch(
-            ObjectSetCommand.Modal.CreateViewer(
-                ctx = context,
-                target = reducer.state.value.dataview.id
-            )
-        )
-    }
-
-    fun onViewerTabClicked(viewer: Id) {
-        Timber.d("onViewerTabClicked, viewer:[$viewer]")
-        session.currentViewerId.value = viewer
     }
 
     fun onTitleChanged(txt: String) {
@@ -812,9 +794,7 @@ class ObjectSetViewModel(
             dispatch(
                 ObjectSetCommand.Modal.EditDataViewViewer(
                     ctx = context,
-                    dataview = block.id,
-                    viewer = viewer.id,
-                    name = viewer.name
+                    viewer = viewer.id
                 )
             )
         }

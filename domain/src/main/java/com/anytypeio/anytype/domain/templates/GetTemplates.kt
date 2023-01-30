@@ -26,22 +26,22 @@ class GetTemplates(
                 repo.searchObjects(
                     filters = listOf(
                         DVFilter(
-                            relationKey = Relations.IS_ARCHIVED,
+                            relation = Relations.IS_ARCHIVED,
                             condition = DVFilterCondition.EQUAL,
                             value = false
                         ),
                         DVFilter(
-                            relationKey = Relations.IS_DELETED,
+                            relation = Relations.IS_DELETED,
                             condition = DVFilterCondition.EQUAL,
                             value = false
                         ),
                         DVFilter(
-                            relationKey = Relations.TYPE,
+                            relation = Relations.TYPE,
                             condition = DVFilterCondition.EQUAL,
                             value = ObjectTypeIds.TEMPLATE
                         ),
                         DVFilter(
-                            relationKey = Relations.TARGET_OBJECT_TYPE,
+                            relation = Relations.TARGET_OBJECT_TYPE,
                             condition = DVFilterCondition.EQUAL,
                             value = params.type
                         )

@@ -240,7 +240,8 @@ fun anytype.Event.Message.toCoreModels(
             },
             relationUpdates = event.relation.mapNotNull { relation ->
                 relation.toCoreModels()
-            }
+            },
+            fields = event.fields?.toCoreModels()
         )
     }
     else -> null

@@ -67,8 +67,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
-import com.anytypeio.anytype.presentation.sets.model.FilterExpression
-import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -12,7 +13,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
-import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSortUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
+import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 
@@ -197,24 +198,24 @@ fun List<DVFilter>.updateFilters(updates: List<DVFilterUpdate>): List<DVFilter> 
         when (update) {
             is DVFilterUpdate.Add -> {
                 filters.addAfterIndexInLine(
-                    predicateIndex = { it.relationKey == update.afterId },
+                    predicateIndex = { it.id == update.afterId },
                     items = update.filters
                 )
             }
             is DVFilterUpdate.Move -> {
                 filters.moveAfterIndexInLine(
-                    predicateIndex = { filter -> filter.relationKey == update.afterId },
-                    predicateMove = { filter -> update.ids.contains(filter.relationKey) }
+                    predicateIndex = { filter -> filter.id == update.afterId },
+                    predicateMove = { filter -> update.ids.contains(filter.id) }
                 )
             }
             is DVFilterUpdate.Remove -> {
                 filters.retainAll {
-                    !update.ids.contains(it.relationKey)
+                    !update.ids.contains(it.id)
                 }
             }
             is DVFilterUpdate.Update -> {
                 filters.mapInPlace { filter ->
-                    if (filter.relationKey == update.id) update.filter else filter
+                    if (filter.id == update.id) update.filter else filter
                 }
             }
         }
@@ -228,24 +229,24 @@ fun List<DVSort>.updateSorts(updates: List<DVSortUpdate>): List<DVSort> {
         when (update) {
             is DVSortUpdate.Add -> {
                 sorts.addAfterIndexInLine(
-                    predicateIndex = { it.relationKey == update.afterId },
+                    predicateIndex = { it.id == update.afterId },
                     items = update.sorts
                 )
             }
             is DVSortUpdate.Move -> {
                 sorts.moveAfterIndexInLine(
-                    predicateIndex = { sort -> sort.relationKey == update.afterId },
-                    predicateMove = { sort -> update.ids.contains(sort.relationKey) }
+                    predicateIndex = { sort -> sort.id == update.afterId },
+                    predicateMove = { sort -> update.ids.contains(sort.id) }
                 )
             }
             is DVSortUpdate.Remove -> {
                 sorts.retainAll {
-                    !update.ids.contains(it.relationKey)
+                    !update.ids.contains(it.id)
                 }
             }
             is DVSortUpdate.Update -> {
                 sorts.mapInPlace { sort ->
-                    if (sort.relationKey == update.id) update.sort else sort
+                    if (sort.id == update.id) update.sort else sort
                 }
             }
         }
@@ -286,4 +287,15 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
 
 fun ObjectSet.getSetOf(ctx: Id): List<Id> {
     return ObjectWrapper.Basic(details[ctx]?.map.orEmpty()).setOf
+}
+
+fun DVViewer.updateFields(fields: DVViewerFields): DVViewer {
+    return copy(
+        name = fields.name,
+        type = fields.type,
+        coverRelationKey = fields.coverRelationKey,
+        hideIcon = fields.hideIcon,
+        cardSize = fields.cardSize,
+        coverFit = fields.coverFit
+    )
 }

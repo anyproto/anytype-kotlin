@@ -63,10 +63,10 @@ class CreateDataViewObject(
     ): Struct =
         buildMap {
             filters.forEach { filter ->
-                val relation = storeOfRelations.getByKey(filter.relationKey)
+                val relation = storeOfRelations.getByKey(filter.relation)
                 if (relation != null && relation.isReadOnly == false) {
                     if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
-                        filter.value?.let { put(filter.relationKey, it) }
+                        filter.value?.let { put(filter.relation, it) }
                     }
                 }
             }
@@ -89,12 +89,12 @@ class CreateDataViewObject(
     ): Struct = try {
         buildMap {
             filters.forEach { filter ->
-                val relation = storeOfRelations.getByKey(filter.relationKey)
+                val relation = storeOfRelations.getByKey(filter.relation)
                 if (relation != null && !relation.isReadonlyValue) {
                     if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
                         val value = filter.value
                         if (value != null) {
-                            put(filter.relationKey, value)
+                            put(filter.relation, value)
                         }
                     } else {
                         put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))

@@ -29,7 +29,7 @@ class GetLastOpenedObject(
                 sorts = emptyList(),
                 filters = listOf(
                     Block.Content.DataView.Filter(
-                        relationKey = Relations.ID,
+                        relation = Relations.ID,
                         condition = Block.Content.DataView.Filter.Condition.EQUAL,
                         operator = Block.Content.DataView.Filter.Operator.AND,
                         value = lastOpenObjectId

@@ -27,17 +27,17 @@ class RelationsSubscriptionManager(
                 subscription = RelationsSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(
-                        relationKey = Relations.TYPE,
+                        relation = Relations.TYPE,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectTypeIds.RELATION
                     ),
                     DVFilter(
-                        relationKey = Relations.IS_DELETED,
+                        relation = Relations.IS_DELETED,
                         condition = DVFilterCondition.EQUAL,
                         value = false
                     ),
                     DVFilter(
-                        relationKey = Relations.WORKSPACE_ID,
+                        relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = workspaceManager.getCurrentWorkspace()
                     )

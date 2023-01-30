@@ -50,7 +50,6 @@ import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
-import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -405,23 +404,6 @@ fun ObjectSet.columns(
     return ArrayList(columns)
 }
 
-fun ObjectSet.sortingExpression(viewerId: Id): ArrayList<SortingExpression> {
-
-    val block = blocks.first { it.content is DV }
-
-    val dv = block.content as DV
-
-    val viewer = dv.viewers.first { it.id == viewerId }
-
-    val list = arrayListOf<SortingExpression>()
-    viewer.sorts.forEach { sort ->
-        list.add(
-            SortingExpression(key = sort.relationKey, type = sort.type.toView())
-        )
-    }
-    return list
-}
-
 fun ObjectSet.filterExpression(viewerId: Id?): List<DVFilter> {
 
     val block = blocks.first { it.content is DV }
@@ -539,7 +521,8 @@ suspend fun DVFilter.toView(
 ): FilterView.Expression = when (relation.format) {
     Relation.Format.SHORT_TEXT -> {
         FilterView.Expression.TextShort(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
@@ -551,7 +534,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.LONG_TEXT -> {
         FilterView.Expression.Text(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
@@ -563,7 +547,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.URL -> {
         FilterView.Expression.Url(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
@@ -575,7 +560,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.EMAIL -> {
         FilterView.Expression.Email(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
@@ -587,7 +573,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.PHONE -> {
         FilterView.Expression.Phone(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toTextView(),
@@ -599,7 +586,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.NUMBER -> {
         FilterView.Expression.Number(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toNumberView(),
@@ -611,7 +599,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.DATE -> {
         FilterView.Expression.Date(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toDateView(),
@@ -624,7 +613,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.STATUS -> {
         FilterView.Expression.Status(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
@@ -641,7 +631,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.TAG -> {
         FilterView.Expression.Tag(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
@@ -658,7 +649,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.OBJECT -> {
         FilterView.Expression.Object(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
@@ -670,7 +662,8 @@ suspend fun DVFilter.toView(
     }
     Relation.Format.CHECKBOX -> {
         FilterView.Expression.Checkbox(
-            key = relationKey,
+            id = id,
+            relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toCheckboxView(),

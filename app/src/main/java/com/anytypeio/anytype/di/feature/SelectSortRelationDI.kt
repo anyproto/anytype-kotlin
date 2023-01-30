@@ -3,8 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -37,22 +36,15 @@ object SelectSortRelationModule {
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
-        addDataViewViewerSort: AddDataViewViewerSort,
+        updateDataViewViewer: UpdateDataViewViewer,
         storeOfRelations: StoreOfRelations,
         analytics: Analytics
     ): SelectSortRelationViewModel.Factory = SelectSortRelationViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,
-        addDataViewViewerSort = addDataViewViewerSort,
+        updateDataViewViewer = updateDataViewViewer,
         storeOfRelations = storeOfRelations,
         analytics = analytics
     )
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideAddDataViewViewerSort(
-        repo: BlockRepository
-    ): AddDataViewViewerSort = AddDataViewViewerSort(repo = repo)
 }

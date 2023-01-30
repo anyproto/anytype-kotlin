@@ -330,6 +330,7 @@ data class Block(
             enum class TimeFormat { H12, H24 }
 
             data class Sort(
+                val id: Id = "",
                 val relationKey: String,
                 val type: Type
             ) {
@@ -340,7 +341,8 @@ data class Block(
              * [relationFormat] optional relation format, which should be specified for date-related filtering.
              */
             data class Filter(
-                val relationKey: String,
+                val id: Id = "",
+                val relation: Key,
                 val relationFormat: RelationFormat? = null,
                 val operator: Operator = Operator.AND,
                 val condition: Condition,

@@ -94,21 +94,5 @@ sealed class FilterValue {
     }
 }
 
-data class FilterExpression(
-    val key: String,
-    val operator: Viewer.FilterOperator,
-    val condition: Viewer.Filter.Condition,
-    val value: FilterValue?
-)
-
-data class FilterScreenData(
-    val relations: List<SimpleRelationView>,
-    val filters: List<FilterExpression>
-) {
-    companion object {
-        fun empty() = FilterScreenData(emptyList(), emptyList())
-    }
-}
-
 @Parcelize
 data class TagValue(val id: String, val text: String, val color: String): Parcelable

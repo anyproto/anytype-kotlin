@@ -377,11 +377,16 @@ class ObjectSetReducerTest {
         val relationKey3 = MockDataFactory.randomUuid()
         val relationKey4 = MockDataFactory.randomUuid()
         val relationKey5 = MockDataFactory.randomUuid()
-        val sort1 = StubSort(relationKey = relationKey1)
-        val sort2 = StubSort(relationKey = relationKey2)
-        val sort3 = StubSort(relationKey = relationKey3)
-        val sort4 = StubSort(relationKey = relationKey4)
-        val sort5 = StubSort(relationKey = relationKey5)
+        val sortId1 = MockDataFactory.randomUuid()
+        val sortId2 = MockDataFactory.randomUuid()
+        val sortId3 = MockDataFactory.randomUuid()
+        val sortId4 = MockDataFactory.randomUuid()
+        val sortId5 = MockDataFactory.randomUuid()
+        val sort1 = StubSort(relationKey = relationKey1, id = sortId1)
+        val sort2 = StubSort(relationKey = relationKey2, id = sortId2)
+        val sort3 = StubSort(relationKey = relationKey3, id = sortId3)
+        val sort4 = StubSort(relationKey = relationKey4, id = sortId4)
+        val sort5 = StubSort(relationKey = relationKey5, id = sortId5)
 
         val viewer1 = StubDataViewView(
             type = Block.Content.DataView.Viewer.Type.BOARD,
@@ -408,41 +413,46 @@ class ObjectSetReducerTest {
             viewerId = viewer1.id,
             sortUpdates = listOf(
                 Event.Command.DataView.UpdateView.DVSortUpdate.Move(
-                    afterId = relationKey3,
-                    ids = listOf(relationKey1, relationKey2)
+                    afterId = sortId3,
+                    ids = listOf(sortId1, sortId2)
                 ),
                 Event.Command.DataView.UpdateView.DVSortUpdate.Add(
-                    afterId = relationKey3,
+                    afterId = sortId3,
                     sorts = listOf(sort5)
                 ),
                 Event.Command.DataView.UpdateView.DVSortUpdate.Update(
-                    id = relationKey2,
-                    sort = DVSort(relationKey2, Block.Content.DataView.Sort.Type.DESC)
+                    id = sortId2,
+                    sort = DVSort(sort2.id, relationKey2, Block.Content.DataView.Sort.Type.DESC)
                 ),
                 Event.Command.DataView.UpdateView.DVSortUpdate.Remove(
-                    ids = listOf(relationKey1)
+                    ids = listOf(sortId1)
                 )
             ),
             filterUpdates = listOf(),
-            relationUpdates = listOf()
+            relationUpdates = listOf(),
+            fields = null
         )
 
         val result = reducer.reduce(state = objectSet, events = listOf(event))
 
         val expectedSorts = listOf(
             DVSort(
+                id = sortId3,
                 relationKey = relationKey3,
                 type = Block.Content.DataView.Sort.Type.ASC
             ),
             DVSort(
+                id = sortId5,
                 relationKey = relationKey5,
                 type = Block.Content.DataView.Sort.Type.ASC
             ),
             DVSort(
+                id = sortId2,
                 relationKey = relationKey2,
                 type = Block.Content.DataView.Sort.Type.DESC
             ),
             DVSort(
+                id = sortId4,
                 relationKey = relationKey4,
                 type = Block.Content.DataView.Sort.Type.ASC
             )
@@ -489,16 +499,21 @@ class ObjectSetReducerTest {
         val context = MockDataFactory.randomUuid()
         val title = StubTitle()
 
+        val filterId1 = MockDataFactory.randomUuid()
+        val filterId2 = MockDataFactory.randomUuid()
+        val filterId3 = MockDataFactory.randomUuid()
+        val filterId4 = MockDataFactory.randomUuid()
+        val filterId5 = MockDataFactory.randomUuid()
         val relationKey1 = MockDataFactory.randomUuid()
         val relationKey2 = MockDataFactory.randomUuid()
         val relationKey3 = MockDataFactory.randomUuid()
         val relationKey4 = MockDataFactory.randomUuid()
         val relationKey5 = MockDataFactory.randomUuid()
-        val filter1 = StubFilter(relationKey = relationKey1)
-        val filter2 = StubFilter(relationKey = relationKey2)
-        val filter3 = StubFilter(relationKey = relationKey3)
-        val filter4 = StubFilter(relationKey = relationKey4)
-        val filter5 = StubFilter(relationKey = relationKey5)
+        val filter1 = StubFilter(relationKey = relationKey1, id = filterId1)
+        val filter2 = StubFilter(relationKey = relationKey2, id = filterId2)
+        val filter3 = StubFilter(relationKey = relationKey3, id = filterId3)
+        val filter4 = StubFilter(relationKey = relationKey4, id = filterId4)
+        val filter5 = StubFilter(relationKey = relationKey5, id = filterId5)
 
         val viewer1 = StubDataViewView(
             type = Block.Content.DataView.Viewer.Type.BOARD,
@@ -523,24 +538,25 @@ class ObjectSetReducerTest {
             sortUpdates = listOf(),
             filterUpdates = listOf(
                 Event.Command.DataView.UpdateView.DVFilterUpdate.Move(
-                    afterId = relationKey3,
-                    ids = listOf(relationKey1, relationKey2)
+                    afterId = filterId3,
+                    ids = listOf(filterId1, filterId2)
                 ),
                 Event.Command.DataView.UpdateView.DVFilterUpdate.Add(
-                    afterId = relationKey3,
+                    afterId = filterId3,
                     filters = listOf(filter5)
                 ),
                 Event.Command.DataView.UpdateView.DVFilterUpdate.Update(
-                    id = relationKey2,
+                    id = filterId2,
                     filter = filter2.copy(
                         value = filter2Value
                     )
                 ),
                 Event.Command.DataView.UpdateView.DVFilterUpdate.Remove(
-                    ids = listOf(relationKey1)
+                    ids = listOf(filterId1)
                 )
             ),
-            relationUpdates = listOf()
+            relationUpdates = listOf(),
+            fields = null
         )
 
         val result = reducer.reduce(state = objectSet, events = listOf(event))
@@ -639,7 +655,8 @@ class ObjectSetReducerTest {
                 Event.Command.DataView.UpdateView.DVViewerRelationUpdate.Remove(
                     ids = listOf(relationKey1)
                 )
-            )
+            ),
+            fields = null
         )
 
         val result = reducer.reduce(state = objectSet, events = listOf(event))
@@ -664,6 +681,97 @@ class ObjectSetReducerTest {
                         viewerRelations = expectedRelations,
                         sorts = viewer1.sorts,
                         filters = viewer1.filters
+                    )
+                ),
+                relations = listOf(),
+                targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf()
+        )
+
+        val expected = ObjectSetReducer.Transformation(
+            state = ObjectSet(blocks = listOf(title, expectedDataView)),
+            effects = emptyList()
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should update fields for viewer, with new fields`() {
+        val context = MockDataFactory.randomUuid()
+        val title = StubTitle()
+
+        val relationKey1 = MockDataFactory.randomUuid()
+        val relationKey2 = MockDataFactory.randomUuid()
+        val relation1 = StubDataViewViewRelation(key = relationKey1)
+        val relation2 = StubDataViewViewRelation(key = relationKey2)
+        val filter1 = StubFilter(relationKey = relationKey1)
+        val filter2 = StubFilter(relationKey = relationKey2)
+        val sort1 = StubSort(relationKey = relationKey1)
+        val sort2 = StubSort(relationKey = relationKey2)
+
+        val viewer = StubDataViewView(
+            type = Block.Content.DataView.Viewer.Type.GRID,
+            viewerRelations = listOf(relation1, relation2),
+            filters = listOf(filter1, filter2),
+            sorts = listOf(sort1, sort2),
+            name = MockDataFactory.randomString(),
+            cardSize = Block.Content.DataView.Viewer.Size.MEDIUM,
+            coverFit = true,
+            coverRelationKey = relationKey1,
+            hideIcon = false
+        )
+
+        val dataView = StubDataView(
+            id = MockDataFactory.randomUuid(),
+            views = listOf(viewer),
+        )
+
+        val blocks = listOf(title, dataView)
+
+        val objectSet = ObjectSet(blocks = blocks)
+
+        // TESTING
+
+        val newViewerName = MockDataFactory.randomString()
+        val newCardSize = Block.Content.DataView.Viewer.Size.SMALL
+        val newCoverFit = false
+
+        val event = Event.Command.DataView.UpdateView(
+            context = context,
+            block = dataView.id,
+            viewerId = viewer.id,
+            sortUpdates = listOf(),
+            filterUpdates = listOf(),
+            relationUpdates = listOf(),
+            fields = Event.Command.DataView.UpdateView.DVViewerFields(
+                name = newViewerName,
+                cardSize = newCardSize,
+                coverFit = newCoverFit,
+                coverRelationKey = relationKey1,
+                hideIcon = false,
+                type = Block.Content.DataView.Viewer.Type.GRID
+            )
+        )
+
+        val result = reducer.reduce(state = objectSet, events = listOf(event))
+
+        val expectedDataView = Block(
+            id = dataView.id,
+            content = Block.Content.DataView(
+                viewers = listOf(
+                    Block.Content.DataView.Viewer(
+                        id = viewer.id,
+                        type = viewer.type,
+                        viewerRelations = viewer.viewerRelations,
+                        sorts = viewer.sorts,
+                        filters = viewer.filters,
+                        name = newViewerName,
+                        cardSize = newCardSize,
+                        coverFit = newCoverFit,
+                        coverRelationKey = relationKey1
                     )
                 ),
                 relations = listOf(),

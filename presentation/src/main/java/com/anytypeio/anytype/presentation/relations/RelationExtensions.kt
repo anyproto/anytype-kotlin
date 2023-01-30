@@ -206,7 +206,7 @@ fun Relation.searchObjectsFilter(): List<DVFilter> {
     if (objectTypes.isNotEmpty()) {
         filter.add(
             DVFilter(
-                relationKey = ObjectSetConfig.TYPE_KEY,
+                relation = ObjectSetConfig.TYPE_KEY,
                 operator = DVFilterOperator.AND,
                 condition = DVFilterCondition.IN,
                 value = objectTypes
@@ -221,7 +221,7 @@ fun ObjectWrapper.Relation.searchObjectsFilter(): List<DVFilter> {
     if (relationFormatObjectTypes.isNotEmpty()) {
         filter.add(
             DVFilter(
-                relationKey = ObjectSetConfig.TYPE_KEY,
+                relation = ObjectSetConfig.TYPE_KEY,
                 operator = DVFilterOperator.AND,
                 condition = DVFilterCondition.IN,
                 value = relationFormatObjectTypes
@@ -235,7 +235,7 @@ fun List<DVFilter>.addIsHiddenFilter(): List<DVFilter> =
     this.toMutableList().apply {
         add(
             DVFilter(
-                relationKey = Relations.IS_HIDDEN,
+                relation = Relations.IS_HIDDEN,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
             )

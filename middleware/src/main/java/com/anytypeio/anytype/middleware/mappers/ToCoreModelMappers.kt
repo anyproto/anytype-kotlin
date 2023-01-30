@@ -518,7 +518,8 @@ fun MDVViewType.toCoreModels(): DVViewerType = when (this) {
 }
 
 fun MDVFilter.toCoreModels(): DVFilter = DVFilter(
-    relationKey = RelationKey,
+    id = id,
+    relation = RelationKey,
     operator = operator_.toCoreModels(),
     condition = condition.toCoreModels(),
     quickOption = quickOption.toCoreModels(),
@@ -566,6 +567,7 @@ fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {
 }
 
 fun MDVSort.toCoreModels(): Block.Content.DataView.Sort = DVSort(
+    id = id,
     relationKey = RelationKey,
     type = type.toCoreModels()
 )
@@ -757,4 +759,10 @@ fun Rpc.BlockLink.CreateWithObject.Response.toCoreModel(): CreateBlockLinkWithOb
         objectId = targetId,
         event = event.toPayload()
     )
+}
+
+fun MDVViewCardSize.toCodeModels(): DVViewerCardSize = when (this) {
+    MDVViewCardSize.Small -> DVViewerCardSize.SMALL
+    MDVViewCardSize.Medium -> DVViewerCardSize.MEDIUM
+    MDVViewCardSize.Large -> DVViewerCardSize.LARGE
 }

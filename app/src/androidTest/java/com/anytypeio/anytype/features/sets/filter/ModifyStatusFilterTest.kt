@@ -151,7 +151,7 @@ class ModifyStatusFilterTest {
         // Defining viewer containing one filter
 
         val filter = DVFilter(
-            relationKey = relationKey,
+            relation = relationKey,
             value = listOf(option1.id),
             condition = DVFilterCondition.EQUAL
         )

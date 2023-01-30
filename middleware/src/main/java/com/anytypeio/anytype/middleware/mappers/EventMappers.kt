@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSortUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
+import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
 
 fun Event.Object.Subscription.Counters.parse(): SearchResult.Counter = SearchResult.Counter(
     total = total.toInt(),
@@ -127,4 +128,15 @@ fun MDVRelationUpdate.toCoreModels(): DVViewerRelationUpdate? {
         }
     }
     return null
+}
+
+fun MDVViewFields.toCoreModels(): DVViewerFields {
+    return DVViewerFields(
+        name = name,
+        type = type.toCoreModels(),
+        coverRelationKey = coverRelationKey,
+        hideIcon = hideIcon,
+        cardSize = cardSize.toCodeModels(),
+        coverFit = coverFit
+    )
 }

@@ -283,6 +283,42 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response
 
+    @Throws(Exception::class)
+    fun blockDataViewAddFilter(request: Rpc.BlockDataview.Filter.Add.Request): Rpc.BlockDataview.Filter.Add.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRemoveFilter(request: Rpc.BlockDataview.Filter.Remove.Request): Rpc.BlockDataview.Filter.Remove.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewReplaceFilter(request: Rpc.BlockDataview.Filter.Replace.Request): Rpc.BlockDataview.Filter.Replace.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewSortFilter(request: Rpc.BlockDataview.Filter.Sort.Request): Rpc.BlockDataview.Filter.Sort.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewAddSort(request: Rpc.BlockDataview.Sort.Add.Request): Rpc.BlockDataview.Sort.Add.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRemoveSort(request: Rpc.BlockDataview.Sort.Remove.Request): Rpc.BlockDataview.Sort.Remove.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewReplaceSort(request: Rpc.BlockDataview.Sort.Replace.Request): Rpc.BlockDataview.Sort.Replace.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewSortSort(request: Rpc.BlockDataview.Sort.SSort.Request): Rpc.BlockDataview.Sort.SSort.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewAddViewRelation(request: Rpc.BlockDataview.ViewRelation.Add.Request): Rpc.BlockDataview.ViewRelation.Add.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRemoveViewRelation(request: Rpc.BlockDataview.ViewRelation.Remove.Request): Rpc.BlockDataview.ViewRelation.Remove.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewReplaceViewRelation(request: Rpc.BlockDataview.ViewRelation.Replace.Request): Rpc.BlockDataview.ViewRelation.Replace.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewSortViewRelation(request: Rpc.BlockDataview.ViewRelation.Sort.Request): Rpc.BlockDataview.ViewRelation.Sort.Response
+
     //endregion
 
     //region TEXT BLOCK commands

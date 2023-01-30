@@ -163,7 +163,7 @@ class AddObjectRelationViewModel(
             if (targetTypes.isEmpty()) {
                 filters.add(
                     DVFilter(
-                        relationKey = Relations.TYPE,
+                        relation = Relations.TYPE,
                         condition = DVFilterCondition.NOT_IN,
                         value = listOf(
                             ObjectTypeIds.OBJECT_TYPE,
@@ -175,7 +175,7 @@ class AddObjectRelationViewModel(
             } else {
                 filters.add(
                     DVFilter(
-                        relationKey = Relations.TYPE,
+                        relation = Relations.TYPE,
                         condition = DVFilterCondition.IN,
                         value = targetTypes
                     )

@@ -17,28 +17,28 @@ class GetOptions(
         val filters = buildList {
             add(
                 DVFilter(
-                    relationKey = Relations.TYPE,
+                    relation = Relations.TYPE,
                     condition = DVFilterCondition.EQUAL,
                     value = ObjectTypeIds.RELATION_OPTION
                 )
             )
             add(
                 DVFilter(
-                    relationKey = Relations.IS_DELETED,
+                    relation = Relations.IS_DELETED,
                     condition = DVFilterCondition.EQUAL,
                     value = false
                 )
             )
             add(
                 DVFilter(
-                    relationKey = Relations.IS_ARCHIVED,
+                    relation = Relations.IS_ARCHIVED,
                     condition = DVFilterCondition.EQUAL,
                     value = false
                 )
             )
             add(
                 DVFilter(
-                    relationKey = Relations.RELATION_KEY,
+                    relation = Relations.RELATION_KEY,
                     condition = DVFilterCondition.EQUAL,
                     value = params.relation
                 )

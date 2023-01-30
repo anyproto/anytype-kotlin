@@ -20,9 +20,7 @@ sealed class ObjectSetCommand {
 
         data class EditDataViewViewer(
             val ctx: Id,
-            val dataview: Id,
-            val viewer: Id,
-            val name: String
+            val viewer: Id
         ) : Modal()
 
         data class ManageViewer(val ctx: Id, val dataview: Id) : Modal()

@@ -340,6 +340,7 @@ fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (
 
 fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort =
     MDVSort(
+        id = id,
         RelationKey = relationKey,
         type = type.toMiddlewareModel()
     )
@@ -352,7 +353,8 @@ fun Block.Content.DataView.Sort.Type.toMiddlewareModel(): MDVSortType = when (th
 
 fun Block.Content.DataView.Filter.toMiddlewareModel(): MDVFilter =
     MDVFilter(
-        RelationKey = relationKey,
+        id = id,
+        RelationKey = relation,
         operator_ = operator.toMiddlewareModel(),
         condition = condition.toMiddlewareModel(),
         quickOption = quickOption.toMiddlewareModel(),

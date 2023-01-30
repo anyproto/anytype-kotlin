@@ -156,7 +156,7 @@ class ModifyTagFilterTest {
             name = MockDataFactory.randomString(),
             filters = listOf(
                 DVFilter(
-                    relationKey = relationKey,
+                    relation = relationKey,
                     value = listOf(option1.id),
                     condition = DVFilterCondition.ALL_IN
                 )

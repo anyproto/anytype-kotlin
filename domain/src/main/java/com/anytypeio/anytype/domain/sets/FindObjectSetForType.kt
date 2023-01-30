@@ -20,12 +20,12 @@ class FindObjectSetForType(
             limit = 1,
             filters = listOf(
                 DVFilter(
-                    relationKey = Relations.TYPE,
+                    relation = Relations.TYPE,
                     condition = DVFilterCondition.EQUAL,
                     value = ObjectTypeIds.SET
                 ),
                 DVFilter(
-                    relationKey = Relations.SET_OF,
+                    relation = Relations.SET_OF,
                     condition = DVFilterCondition.IN,
                     value = listOf(params.type)
                 )

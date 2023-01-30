@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.relations.toView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
@@ -52,18 +51,10 @@ fun DVFilterCondition.isValueRequired(): Boolean = when (this) {
     else -> true
 }
 
-fun List<CreateFilterView>.checkboxFilter(
-    relationKey: Id,
-    condition: Viewer.Filter.Condition
-): DVFilter {
+fun List<CreateFilterView>.checkboxFilterValue(): Boolean? {
     val checkboxes = filterIsInstance<CreateFilterView.Checkbox>()
     val selected = checkboxes.firstOrNull { it.isSelected }
-    val value = selected?.isChecked
-    return DVFilter(
-        relationKey = relationKey,
-        condition = condition.toDomain(),
-        value = value
-    )
+    return selected?.isChecked
 }
 
 suspend fun List<DVFilter>.toView(
@@ -73,7 +64,7 @@ suspend fun List<DVFilter>.toView(
     screenState: ViewerFilterViewModel.ScreenState,
     urlBuilder: UrlBuilder
 ): List<FilterView.Expression> = mapNotNull { filter ->
-    val relation = storeOfRelations.getByKey(filter.relationKey)
+    val relation = storeOfRelations.getByKey(filter.relation)
     if (relation != null) {
         filter.toView(
             relation = relation,
@@ -83,7 +74,7 @@ suspend fun List<DVFilter>.toView(
             store = storeOfObjects
         )
     } else {
-        Timber.w("Could not found relation: ${filter.relationKey} for filter: $filter")
+        Timber.w("Could not found relation: ${filter.relation} for filter: $filter")
         null
     }
 }
@@ -95,6 +86,7 @@ suspend fun List<DVSort>.toView(
     val relation = storeOfRelations.getByKey(sort.relationKey)
     if (relation != null) {
         ViewerSortViewModel.ViewerSortView(
+            sortId = sort.id,
             relation = sort.relationKey,
             name = relation.name.orEmpty(),
             type = sort.type,

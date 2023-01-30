@@ -61,7 +61,7 @@ class ViewerImagePreviewSelectViewModel(
             val currObjectSetState = objectSetState.value
             if (currObjectSetState.isInitialized) {
                 updateDataViewViewer(
-                    UpdateDataViewViewer.Params(
+                    UpdateDataViewViewer.Params.Fields(
                         context = ctx,
                         target = currObjectSetState.dataview.id,
                         viewer = currObjectSetState.viewerById(session.currentViewerId.value).copy(

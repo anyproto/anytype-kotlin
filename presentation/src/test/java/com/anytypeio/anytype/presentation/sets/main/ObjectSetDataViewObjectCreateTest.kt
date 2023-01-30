@@ -277,7 +277,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         val givenType = MockDataFactory.randomString()
 
         val filter = DVFilter(
-            relationKey = relationStakeholderKey,
+            relation = relationStakeholderKey,
             operator = DVFilterOperator.AND,
             condition = condition,
             value = relationStakeholderValue,

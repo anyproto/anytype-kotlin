@@ -148,6 +148,9 @@ open class ModifyFilterFromSelectedValueFragment :
                     ctx = ctx,
                 )
             }
+            is FilterViewModel.Commands.Toast -> {
+                this.toast(commands.message)
+            }
             else -> {}
         }
     }

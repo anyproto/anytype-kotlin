@@ -87,14 +87,13 @@ class ViewerSortViewModel(
         viewModelScope.launch {
             val state = objectSetState.value
             val viewer = state.viewerById(session.currentViewerId.value)
-            val sorts = viewer.sorts.filter { it.relationKey != view.relation }
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = ctx,
-                    target = state.dataview.id,
-                    viewer = viewer.copy(sorts = sorts)
-                )
-            ).process(
+            val params = UpdateDataViewViewer.Params.Sort.Remove(
+                ctx = ctx,
+                dv = state.dataview.id,
+                view = viewer.id,
+                ids = listOf(view.sortId)
+            )
+            updateDataViewViewer(params).process(
                 failure = { Timber.e(it, "Error while removing a sort") },
                 success = { dispatcher.send(it) }
             )
@@ -115,13 +114,15 @@ class ViewerSortViewModel(
     }
 
     /**
-     * @property [relation] id of the relation, to which this sort is applied.
+     * @property [sortId] sort id
+     * @property [relation] key of the relation, to which this sort is applied.
      * @property [name] relation name
      * @property [format] relation format
      * @property [type] sort type
      */
     data class ViewerSortView(
-        val relation: Id,
+        val sortId: Id,
+        val relation: Key,
         val name: String,
         val format: Relation.Format,
         val type: DVSortType,

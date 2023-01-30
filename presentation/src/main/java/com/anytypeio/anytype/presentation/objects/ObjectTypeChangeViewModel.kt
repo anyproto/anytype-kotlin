@@ -214,7 +214,7 @@ class ObjectTypeChangeViewModel(
                     if (excludedMarketplaceTypes.isNotEmpty()) {
                         add(
                             DVFilter(
-                                relationKey = Relations.ID,
+                                relation = Relations.ID,
                                 condition = DVFilterCondition.NOT_IN,
                                 value = excludedMarketplaceTypes
                             )

@@ -32,12 +32,12 @@ class ModifyViewerSortViewModel(
     val viewState = MutableStateFlow<ViewState?>(null)
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(relationKey: Key) {
-        Timber.d("onStart, relationKey:[$relationKey]")
+    fun onStart(sortId: Id, relationKey: Key) {
+        Timber.d("onStart, sortId: [$sortId], relationKey:[$relationKey]")
         jobs += viewModelScope.launch {
             objectSetState.filter { it.isInitialized }.collect { state ->
                 val viewer = state.viewerById(session.currentViewerId.value)
-                val sort = viewer.sorts.find { it.relationKey == relationKey }
+                val sort = viewer.sorts.find { it.id == sortId }
                 if (sort != null) {
                     val relation = storeOfRelations.getByKey(relationKey)
                     if (relation != null) {
@@ -61,39 +61,44 @@ class ModifyViewerSortViewModel(
         jobs.clear()
     }
 
-    fun onSortDescSelected(ctx: Id, relation: Id) {
-        Timber.d("onSortDescSelected, ctx:[$ctx], relationKek")
-        proceedWithUpdatingSortType(ctx, relation, DVSortType.DESC)
+    fun onSortDescSelected(ctx: Id, sortId: Id) {
+        Timber.d("onSortDescSelected, ctx:[$ctx], sortId:[$sortId]")
+        proceedWithUpdatingSortType(
+            ctx = ctx,
+            sortId = sortId,
+            type = DVSortType.DESC
+        )
     }
 
-    fun onSortAscSelected(ctx: Id, relation: Id) {
-        proceedWithUpdatingSortType(ctx, relation, DVSortType.ASC)
+    fun onSortAscSelected(ctx: Id, sortId: Id) {
+        Timber.d("onSortDescSelected, ctx:[$ctx], sortId:[$sortId]")
+        proceedWithUpdatingSortType(
+            ctx = ctx,
+            sortId = sortId,
+            type = DVSortType.ASC
+        )
     }
 
     private fun proceedWithUpdatingSortType(
         ctx: Id,
-        relation: Key,
+        sortId: Id,
         type: Block.Content.DataView.Sort.Type
     ) {
         val state = objectSetState.value
         val viewer = state.viewerById(session.currentViewerId.value)
+        val sort = viewer.sorts.find { it.id == sortId }
+        if (sort == null) {
+            Timber.e("Couldn't find sort in view:[$viewer] by sortId:[$sortId]")
+            return
+        }
         viewModelScope.launch {
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = ctx,
-                    target = state.dataview.id,
-                    viewer = viewer.copy(
-                        sorts = viewer.sorts.map { sort ->
-                            if (sort.relationKey == relation)
-                                sort.copy(
-                                    type = type
-                                )
-                            else
-                                sort
-                        }
-                    )
-                )
-            ).process(
+            val params = UpdateDataViewViewer.Params.Sort.Replace(
+                ctx = ctx,
+                dv = state.dataview.id,
+                view = viewer.id,
+                sort = sort.copy(type = type)
+            )
+            updateDataViewViewer(params).process(
                 success = {
                     dispatcher.send(it).also {
                         sendAnalyticsChangeSortValueEvent(analytics)

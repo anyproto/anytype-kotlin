@@ -128,7 +128,7 @@ class CreateSelectedFilterTest {
         // Defining viewer containing one filter
 
         val filter = DVFilter(
-            relationKey = relationKey,
+            relation = relationKey,
             value = true,
             operator = Block.Content.DataView.Filter.Operator.AND,
             condition = DVFilterCondition.EQUAL
@@ -221,7 +221,7 @@ class CreateSelectedFilterTest {
         // Defining viewer containing one filter
 
         val filter = DVFilter(
-            relationKey = relationKey,
+            relation = relationKey,
             value = true,
             operator = Block.Content.DataView.Filter.Operator.AND,
             condition = DVFilterCondition.EQUAL

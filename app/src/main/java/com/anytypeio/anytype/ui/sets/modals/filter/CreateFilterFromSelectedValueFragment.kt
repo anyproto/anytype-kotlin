@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
@@ -170,6 +171,9 @@ open class CreateFilterFromSelectedValueFragment :
                     command = commands,
                     ctx = ctx
                 )
+            }
+            is FilterViewModel.Commands.Toast -> {
+                toast(commands.message)
             }
         }
     }

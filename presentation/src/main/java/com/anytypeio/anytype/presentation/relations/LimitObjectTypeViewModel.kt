@@ -36,17 +36,17 @@ class LimitObjectTypeViewModel(
                 SearchObjects.Params(
                     filters = listOf(
                         DVFilter(
-                            relationKey = Relations.TYPE,
+                            relation = Relations.TYPE,
                             condition = DVFilterCondition.EQUAL,
                             value = ObjectTypeIds.OBJECT_TYPE
                         ),
                         DVFilter(
-                            relationKey = Relations.IS_ARCHIVED,
+                            relation = Relations.IS_ARCHIVED,
                             condition = DVFilterCondition.EQUAL,
                             value = false
                         ),
                         DVFilter(
-                            relationKey = Relations.IS_HIDDEN,
+                            relation = Relations.IS_HIDDEN,
                             condition = DVFilterCondition.NOT_EQUAL,
                             value = true
                         )

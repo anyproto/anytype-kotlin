@@ -132,7 +132,7 @@ abstract class RelationAddViewModelBase(
                 if (excluded.isNotEmpty()) {
                     add(
                         DVFilter(
-                            relationKey = Relations.ID,
+                            relation = Relations.ID,
                             condition = DVFilterCondition.NOT_IN,
                             value = excluded
                         )
@@ -140,21 +140,21 @@ abstract class RelationAddViewModelBase(
                 }
                 add(
                     DVFilter(
-                        relationKey = Relations.IS_HIDDEN,
+                        relation = Relations.IS_HIDDEN,
                         condition = DVFilterCondition.EQUAL,
                         value = false
                     )
                 )
                 add(
                     DVFilter(
-                        relationKey = Relations.WORKSPACE_ID,
+                        relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = MARKETPLACE_ID
                     )
                 )
                 add(
                     DVFilter(
-                        relationKey = Relations.RELATION_KEY,
+                        relation = Relations.RELATION_KEY,
                         condition = DVFilterCondition.NOT_IN,
                         value = Relations.systemRelationKeys
                     )
@@ -176,21 +176,21 @@ abstract class RelationAddViewModelBase(
                 addAll(filterMyRelations())
                 add(
                     DVFilter(
-                        relationKey = Relations.IS_HIDDEN,
+                        relation = Relations.IS_HIDDEN,
                         condition = DVFilterCondition.EQUAL,
                         value = false
                     )
                 )
                 add(
                     DVFilter(
-                        relationKey = Relations.WORKSPACE_ID,
+                        relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = workspaceManager.getCurrentWorkspace()
                     )
                 )
                 add(
                     DVFilter(
-                        relationKey = Relations.RELATION_KEY,
+                        relation = Relations.RELATION_KEY,
                         condition = DVFilterCondition.NOT_IN,
                         value = Relations.systemRelationKeys
                     )

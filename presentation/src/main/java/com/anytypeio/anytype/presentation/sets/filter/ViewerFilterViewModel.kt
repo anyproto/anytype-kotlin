@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand.Modal
-import com.anytypeio.anytype.presentation.sets.model.FilterScreenData
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -37,7 +36,6 @@ class ViewerFilterViewModel(
 
     val screenState = MutableStateFlow(ScreenState.LIST)
 
-    val data: MutableStateFlow<FilterScreenData> = MutableStateFlow(FilterScreenData.empty())
     val commands = MutableSharedFlow<ViewerFilterCommand>()
 
     init {
@@ -123,37 +121,37 @@ class ViewerFilterViewModel(
     private fun proceedToFilterValueScreen(filterIndex: Int) {
         when (val filter = _views.value[filterIndex]) {
             is FilterView.Expression.Text -> {
-                emitCommand(Modal.UpdateInputValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateInputValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Number -> {
-                emitCommand(Modal.UpdateInputValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateInputValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Tag -> {
-                emitCommand(Modal.UpdateSelectValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateSelectValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Status -> {
-                emitCommand(Modal.UpdateSelectValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateSelectValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Date -> {
-                emitCommand(Modal.UpdateSelectValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateSelectValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Email -> {
-                emitCommand(Modal.UpdateInputValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateInputValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Object -> {
-                emitCommand(Modal.UpdateSelectValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateSelectValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Phone -> {
-                emitCommand(Modal.UpdateInputValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateInputValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.TextShort -> {
-                emitCommand(Modal.UpdateInputValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateInputValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Url -> {
-                emitCommand(Modal.UpdateInputValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateInputValueFilter(filter.relation, filterIndex))
             }
             is FilterView.Expression.Checkbox -> {
-                emitCommand(Modal.UpdateSelectValueFilter(filter.key, filterIndex))
+                emitCommand(Modal.UpdateSelectValueFilter(filter.relation, filterIndex))
             }
         }
     }
@@ -161,24 +159,19 @@ class ViewerFilterViewModel(
     private fun onRemoveFilterClicked(ctx: Id, filterIndex: Int) {
         val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
         val block = objectSetState.value.blocks.first { it.content is DV }
-        val filters = viewer.filters.mapIndexedNotNull { index, filter ->
-            if (index != filterIndex) {
-                filter
-            } else {
-                null
-            }
+        val filter = viewer.filters.getOrNull(filterIndex)
+        if (filter == null) {
+            Timber.e("Filter with index $filterIndex not found")
+            return
         }
-        val updated = viewer.copy(
-            filters = filters
-        )
         viewModelScope.launch {
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = ctx,
-                    target = block.id,
-                    viewer = updated
-                )
-            ).process(
+            val params = UpdateDataViewViewer.Params.Filter.Remove(
+                ctx = ctx,
+                dv = block.id,
+                view = viewer.id,
+                ids = listOf(filter.id),
+            )
+            updateDataViewViewer(params).process(
                 success = { dispatcher.send(it) },
                 failure = { Timber.e("Error while reset all filters") }
             )

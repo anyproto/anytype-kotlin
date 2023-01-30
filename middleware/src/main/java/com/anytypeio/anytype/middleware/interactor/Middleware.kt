@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
+import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.parse
@@ -1826,6 +1827,181 @@ class Middleware(
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockCreateWidget(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun addDataViewFilter(
+        command: Command.AddFilter
+    ): Payload {
+        val filter = MDVFilter(
+            RelationKey = command.relationKey,
+            operator_ = command.operator.toMiddlewareModel(),
+            condition = command.condition.toMiddlewareModel(),
+            quickOption = command.quickOption.toMiddlewareModel(),
+            value_ = command.value,
+            format = command.relationFormat?.toMiddlewareModel()
+                ?: anytype.model.RelationFormat.longtext
+        )
+        val request = Rpc.BlockDataview.Filter.Add.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            filter = filter
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewAddFilter(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun replaceDataViewFilter(
+        command: Command.ReplaceFilter
+    ): Payload {
+        val request = Rpc.BlockDataview.Filter.Replace.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            id = command.id,
+            filter = command.filter.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewReplaceFilter(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun removeDataViewFilter(
+        command: Command.RemoveFilter
+    ): Payload {
+        val request = Rpc.BlockDataview.Filter.Remove.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            ids = command.ids
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRemoveFilter(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun addDataViewSort(command: Command.AddSort): Payload {
+        val request = Rpc.BlockDataview.Sort.Add.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            sort = Block.Content.Dataview.Sort(
+                RelationKey = command.relationKey,
+                type = command.type.toMiddlewareModel(),
+                customOrder = command.customOrder,
+                format = command.relationFormat?.toMiddlewareModel()
+                    ?: anytype.model.RelationFormat.longtext,
+                includeTime = command.includeTime ?: false
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewAddSort(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun replaceDataViewSort(command: Command.ReplaceSort): Payload {
+        val request = Rpc.BlockDataview.Sort.Replace.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            id = command.sort.id,
+            sort = command.sort.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewReplaceSort(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun removeDataViewSort(
+        command: Command.RemoveSort
+    ): Payload {
+        val request = Rpc.BlockDataview.Sort.Remove.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            ids = command.ids
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRemoveSort(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun addDataViewViewRelation(
+        command: Command.AddRelation
+    ): Payload {
+        val request = Rpc.BlockDataview.ViewRelation.Add.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            relation = command.relation.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewAddViewRelation(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun replaceDataViewViewRelation(
+        command: Command.UpdateRelation
+    ): Payload {
+        val request = Rpc.BlockDataview.ViewRelation.Replace.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            relationKey = command.relation.key,
+            relation = command.relation.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewReplaceViewRelation(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun removeDataViewViewRelation(
+        command: Command.DeleteRelation
+    ): Payload {
+        val request = Rpc.BlockDataview.ViewRelation.Remove.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            relationKeys = command.keys
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRemoveViewRelation(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun sortDataViewViewRelation(
+        command: Command.SortRelations
+    ): Payload {
+        val request = Rpc.BlockDataview.ViewRelation.Sort.Request(
+            contextId = command.ctx,
+            blockId = command.dv,
+            viewId = command.view,
+            relationKeys = command.keys
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewSortViewRelation(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }

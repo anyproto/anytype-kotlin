@@ -266,7 +266,8 @@ sealed class Event {
                 val viewerId: Id,
                 val filterUpdates: List<DVFilterUpdate>,
                 val sortUpdates: List<DVSortUpdate>,
-                val relationUpdates: List<DVViewerRelationUpdate>
+                val relationUpdates: List<DVViewerRelationUpdate>,
+                val fields: DVViewerFields?
             ) : DataView() {
 
                 sealed class DVFilterUpdate {
@@ -293,6 +294,15 @@ sealed class Event {
                     data class Update(val id: Id, val relation: DVViewerRelation) :
                         DVViewerRelationUpdate()
                 }
+
+                data class DVViewerFields(
+                    val name: String,
+                    val type: DVViewerType,
+                    val coverRelationKey: String,
+                    val hideIcon: Boolean,
+                    val cardSize: DVViewerCardSize,
+                    val coverFit: Boolean
+                )
             }
         }
     }

@@ -5,7 +5,7 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.MockRelationFactory
@@ -47,7 +47,7 @@ class SearchRelationViewModelTest {
     private val session = ObjectSetSession()
 
     @Mock
-    lateinit var addDataViewViewerSort: AddDataViewViewerSort
+    lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     @Mock
     lateinit var analytics: Analytics
@@ -273,7 +273,7 @@ class SearchRelationViewModelTest {
         return SelectSortRelationViewModel(
             objectSetState = state,
             session = session,
-            addDataViewViewerSort = addDataViewViewerSort,
+            updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             analytics = analytics,
             storeOfRelations = storeOfRelations

@@ -144,7 +144,7 @@ class ObjectTypeChangeViewModelTest {
             addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
             add(
                 DVFilter(
-                    relationKey = Relations.ID,
+                    relation = Relations.ID,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(
                         marketplaceType1.id,
@@ -229,7 +229,7 @@ class ObjectTypeChangeViewModelTest {
             addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
             add(
                 DVFilter(
-                    relationKey = Relations.ID,
+                    relation = Relations.ID,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(
                         marketplaceType1.id,
@@ -390,7 +390,7 @@ class ObjectTypeChangeViewModelTest {
             addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
             add(
                 DVFilter(
-                    relationKey = Relations.ID,
+                    relation = Relations.ID,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(
                         marketplaceType1.id,

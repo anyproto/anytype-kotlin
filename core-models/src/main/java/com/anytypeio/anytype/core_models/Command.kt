@@ -384,4 +384,38 @@ sealed class Command {
         val blockId: String,
         val content: Block.Content.Link
     )
+
+    data class AddFilter(
+        val ctx: Id,
+        val dv: Id,
+        val view: Id,
+        val relationKey: String,
+        val relationFormat: RelationFormat?,
+        val operator: Block.Content.DataView.Filter.Operator,
+        val condition: Block.Content.DataView.Filter.Condition,
+        val quickOption: Block.Content.DataView.Filter.QuickOption,
+        val value: Any? = null
+    )
+
+    data class ReplaceFilter(val ctx: Id, val dv: Id, val view: Id, val id: Id, val filter: DVFilter)
+    data class RemoveFilter(val ctx: Id, val dv: Id, val view: Id, val ids: List<Id>)
+
+    data class AddSort(
+        val ctx: Id,
+        val dv: Id,
+        val view: Id,
+        val relationKey: String,
+        val relationFormat: RelationFormat? = null,
+        val type: DVSortType,
+        val customOrder: List<Any> = emptyList(),
+        val includeTime: Boolean? = null
+    )
+
+    data class ReplaceSort(val ctx: Id, val dv: Id, val view: Id, val sort: DVSort)
+    data class RemoveSort(val ctx: Id, val dv: Id, val view: Id, val ids: List<Id>)
+
+    data class AddRelation(val ctx: Id, val dv: Id, val view: Id, val relation: DVViewerRelation)
+    data class UpdateRelation(val ctx: Id, val dv: Id, val view: Id, val relation: DVViewerRelation)
+    data class DeleteRelation(val ctx: Id, val dv: Id, val view: Id, val keys: List<Key>)
+    data class SortRelations(val ctx: Id, val dv: Id, val view: Id, val keys: List<Key>)
 }

@@ -26,12 +26,12 @@ class ObjectTypesSubscriptionManager(
                 subscription = ObjectTypesSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(
-                        relationKey = Relations.TYPE,
+                        relation = Relations.TYPE,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectTypeIds.OBJECT_TYPE
                     ),
                     DVFilter(
-                        relationKey = Relations.WORKSPACE_ID,
+                        relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = workspaceManager.getCurrentWorkspace()
                     )

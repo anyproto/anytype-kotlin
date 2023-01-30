@@ -170,7 +170,7 @@ class FilterViewModelInputFieldValueModifyTest {
             ),
             filters = listOf(
                 Block.Content.DataView.Filter(
-                    relationKey = relation1.key,
+                    relation = relation1.key,
                     operator = Block.Content.DataView.Filter.Operator.AND,
                     condition = Block.Content.DataView.Filter.Condition.LIKE,
                     value = MockDataFactory.randomString()
@@ -210,7 +210,7 @@ class FilterViewModelInputFieldValueModifyTest {
 
     //region LONG TEXT
     @Test
-    fun `should empty string value, long text 1`() = runTest{
+    fun `should empty string value, long text 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -339,18 +339,15 @@ class FilterViewModelInputFieldValueModifyTest {
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
-                UpdateDataViewViewer.Params(
-                    context = root,
-                    target = dataViewId,
-                    viewer = viewer.copy(
-                        filters = listOf(
-                            DVFilter(
-                                relationKey = relationKey,
-                                operator = DEFAULT_OPERATOR,
-                                condition = condition.toDomain(),
-                                value = null
-                            )
-                        )
+                UpdateDataViewViewer.Params.Filter.Replace(
+                    ctx = root,
+                    dv = dataViewId,
+                    view = viewer.id,
+                    filter = DVFilter(
+                        relation = relationKey,
+                        operator = DEFAULT_OPERATOR,
+                        condition = condition.toDomain(),
+                        value = null
                     )
                 )
             )
@@ -382,18 +379,15 @@ class FilterViewModelInputFieldValueModifyTest {
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
-                UpdateDataViewViewer.Params(
-                    context = root,
-                    target = dataViewId,
-                    viewer = viewer.copy(
-                        filters = listOf(
-                            DVFilter(
-                                relationKey = relationKey,
-                                operator = DEFAULT_OPERATOR,
-                                condition = condition.toDomain(),
-                                value = textInput
-                            )
-                        )
+                UpdateDataViewViewer.Params.Filter.Replace(
+                    ctx = root,
+                    dv = dataViewId,
+                    view = viewer.id,
+                    filter = DVFilter(
+                        relation = relationKey,
+                        operator = DEFAULT_OPERATOR,
+                        condition = condition.toDomain(),
+                        value = textInput
                     )
                 )
             )

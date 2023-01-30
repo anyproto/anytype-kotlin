@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.presentation.sets.model
 
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ui.ViewType
 
 sealed class FilterView : ViewType {
 
     sealed class Expression : FilterView() {
-        abstract val key: String
+        abstract val id: Id
+        abstract val relation: Key
         abstract val title: String
         abstract val operator: Viewer.FilterOperator
         abstract val condition: Viewer.Filter.Condition
@@ -17,7 +20,8 @@ sealed class FilterView : ViewType {
         abstract val isInEditMode:Boolean
 
         data class Text(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
@@ -30,7 +34,8 @@ sealed class FilterView : ViewType {
         }
 
         data class TextShort(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
@@ -43,7 +48,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Url(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
@@ -56,7 +62,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Email(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
@@ -69,7 +76,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Phone(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
@@ -82,7 +90,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Number(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Number,
@@ -95,7 +104,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Status(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Selected,
@@ -108,7 +118,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Tag(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Selected,
@@ -121,7 +132,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Date(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Date,
@@ -135,7 +147,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Object(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Selected,
@@ -148,7 +161,8 @@ sealed class FilterView : ViewType {
         }
 
         data class Checkbox(
-            override val key: String,
+            override val id: Id,
+            override val relation: Key,
             override val title: String,
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Checkbox,

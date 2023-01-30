@@ -1,11 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.presentation.extension.checkboxFilter
-import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.presentation.extension.checkboxFilterValue
 import org.junit.Assert
 import org.junit.Test
 
@@ -14,9 +9,6 @@ class FilterExtensionsTest {
     @Test
     fun shouldReturnCheckedTrue() {
 
-        val relationKey = MockDataFactory.randomUuid()
-        val condition = Viewer.Filter.Condition.Checkbox.Equal()
-
         val views = listOf(
             CreateFilterView.Checkbox(
                 isChecked = true,
@@ -28,14 +20,9 @@ class FilterExtensionsTest {
             )
         )
 
-        val result = views.checkboxFilter(relationKey, condition)
+        val result = views.checkboxFilterValue()
 
-        val expected = DVFilter(
-            relationKey = relationKey,
-            operator = Block.Content.DataView.Filter.Operator.AND,
-            condition = DVFilterCondition.EQUAL,
-            value = true
-        )
+        val expected = true
 
         Assert.assertEquals(expected, result)
     }
@@ -43,19 +30,11 @@ class FilterExtensionsTest {
     @Test
     fun shouldReturnNullValueOnCheckboxNoneCondition() {
 
-        val relationKey = MockDataFactory.randomUuid()
-        val condition = Viewer.Filter.Condition.Checkbox.None()
-
         val views = listOf<CreateFilterView>()
 
-        val result = views.checkboxFilter(relationKey, condition)
+        val result = views.checkboxFilterValue()
 
-        val expected = DVFilter(
-            relationKey = relationKey,
-            operator = Block.Content.DataView.Filter.Operator.AND,
-            condition = DVFilterCondition.NONE,
-            value = null
-        )
+        val expected = null
 
         Assert.assertEquals(expected, result)
     }
@@ -63,9 +42,6 @@ class FilterExtensionsTest {
     @Test
     fun shouldReturnNotCheckedTrue() {
 
-        val relationKey = MockDataFactory.randomUuid()
-        val condition = Viewer.Filter.Condition.Checkbox.Equal()
-
         val views = listOf(
             CreateFilterView.Checkbox(
                 isChecked = true,
@@ -77,14 +53,9 @@ class FilterExtensionsTest {
             )
         )
 
-        val result = views.checkboxFilter(relationKey, condition)
+        val result = views.checkboxFilterValue()
 
-        val expected = DVFilter(
-            relationKey = relationKey,
-            operator = Block.Content.DataView.Filter.Operator.AND,
-            condition = DVFilterCondition.EQUAL,
-            value = false
-        )
+        val expected = false
 
         Assert.assertEquals(expected, result)
     }
@@ -92,9 +63,6 @@ class FilterExtensionsTest {
     @Test
     fun shouldReturnNotEqualNotCheckedTrue() {
 
-        val relationKey = MockDataFactory.randomUuid()
-        val condition = Viewer.Filter.Condition.Checkbox.NotEqual()
-
         val views = listOf(
             CreateFilterView.Checkbox(
                 isChecked = true,
@@ -106,14 +74,9 @@ class FilterExtensionsTest {
             )
         )
 
-        val result = views.checkboxFilter(relationKey, condition)
+        val result = views.checkboxFilterValue()
 
-        val expected = DVFilter(
-            relationKey = relationKey,
-            operator = Block.Content.DataView.Filter.Operator.AND,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = false
-        )
+        val expected = false
 
         Assert.assertEquals(expected, result)
     }

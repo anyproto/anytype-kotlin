@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.sets.filter
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -203,7 +202,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region LONG TEXT
     @Test
-    fun `should null string value, long text 1`() = runTest{
+    fun `should null string value, long text 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -216,7 +215,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, long text 2`() = runTest{
+    fun `should null string value, long text 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -229,7 +228,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, long text 3`() = runTest{
+    fun `should null string value, long text 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -242,7 +241,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, long text 4`() = runTest{
+    fun `should null string value, long text 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -255,7 +254,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, long text 1`() = runTest{
+    fun `should not empty string value, long text 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -268,7 +267,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, long text 2`() = runTest{
+    fun `should not empty string value, long text 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -281,7 +280,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, long text 3`() = runTest{
+    fun `should not empty string value, long text 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -294,7 +293,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, long text 4`() = runTest{
+    fun `should not empty string value, long text 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -310,7 +309,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region SHORT TEXT
     @Test
-    fun `should null string value, short text 1`() = runTest{
+    fun `should null string value, short text 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -323,7 +322,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, short text 2`() = runTest{
+    fun `should null string value, short text 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -336,7 +335,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, short text 3`() = runTest{
+    fun `should null string value, short text 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -349,7 +348,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, short text 4`() = runTest{
+    fun `should null string value, short text 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -362,7 +361,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, short text 1`() = runTest{
+    fun `should not empty string value, short text 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -375,7 +374,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, short text 2`() = runTest{
+    fun `should not empty string value, short text 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -388,7 +387,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, short text 3`() = runTest{
+    fun `should not empty string value, short text 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -401,7 +400,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, short text 4`() = runTest{
+    fun `should not empty string value, short text 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -416,7 +415,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region NUMBER
     @Test
-    fun `should null string value, number 1`() = runTest{
+    fun `should null string value, number 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -429,7 +428,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, number 2`() = runTest{
+    fun `should null string value, number 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -442,7 +441,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, number 3`() = runTest{
+    fun `should null string value, number 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -455,7 +454,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, number 4`() = runTest{
+    fun `should null string value, number 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -468,7 +467,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should send default number value, number 1`() = runTest{
+    fun `should send default number value, number 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -484,11 +483,12 @@ class FilterViewModelInputFieldValueCreateTest {
             condition = condition,
             textInput = textInput,
             value = value,
-            filterIndex = filterIndex)
+            filterIndex = filterIndex
+        )
     }
 
     @Test
-    fun `should send default number value, number 2`() = runTest{
+    fun `should send default number value, number 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -504,11 +504,12 @@ class FilterViewModelInputFieldValueCreateTest {
             condition = condition,
             textInput = textInput,
             value = value,
-            filterIndex = filterIndex)
+            filterIndex = filterIndex
+        )
     }
 
     @Test
-    fun `should send double, number 2`() = runTest{
+    fun `should send double, number 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -524,11 +525,12 @@ class FilterViewModelInputFieldValueCreateTest {
             condition = condition,
             textInput = textInput,
             value = value,
-            filterIndex = filterIndex)
+            filterIndex = filterIndex
+        )
     }
 
     @Test
-    fun `should send negative double, number 3`() = runTest{
+    fun `should send negative double, number 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -544,11 +546,12 @@ class FilterViewModelInputFieldValueCreateTest {
             condition = condition,
             textInput = textInput,
             value = value,
-            filterIndex = filterIndex)
+            filterIndex = filterIndex
+        )
     }
 
     @Test
-    fun `should send negative double, number 4`() = runTest{
+    fun `should send negative double, number 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -564,11 +567,12 @@ class FilterViewModelInputFieldValueCreateTest {
             condition = condition,
             textInput = textInput,
             value = value,
-            filterIndex = filterIndex)
+            filterIndex = filterIndex
+        )
     }
 
     @Test
-    fun `should send default number value, number 3`() = runTest{
+    fun `should send default number value, number 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -584,7 +588,8 @@ class FilterViewModelInputFieldValueCreateTest {
             condition = condition,
             textInput = textInput,
             value = value,
-            filterIndex = filterIndex)
+            filterIndex = filterIndex
+        )
     }
 
 
@@ -592,7 +597,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region URL
     @Test
-    fun `should null string value, url 1`() = runTest{
+    fun `should null string value, url 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -605,7 +610,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, url 2`() = runTest{
+    fun `should null string value, url 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -618,7 +623,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, url 3`() = runTest{
+    fun `should null string value, url 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -631,7 +636,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, url 4`() = runTest{
+    fun `should null string value, url 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -644,7 +649,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, url 1`() = runTest{
+    fun `should not empty string value, url 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -657,7 +662,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, url 2`() = runTest{
+    fun `should not empty string value, url 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -670,7 +675,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, url 3`() = runTest{
+    fun `should not empty string value, url 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -683,7 +688,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, url 4`() = runTest{
+    fun `should not empty string value, url 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -698,7 +703,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region EMAIL
     @Test
-    fun `should null string value, email 1`() = runTest{
+    fun `should null string value, email 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -711,7 +716,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, email 2`() = runTest{
+    fun `should null string value, email 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -724,7 +729,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, email 3`() = runTest{
+    fun `should null string value, email 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -737,7 +742,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, email 4`() = runTest{
+    fun `should null string value, email 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -750,7 +755,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, email 1`() = runTest{
+    fun `should not empty string value, email 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -763,7 +768,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, email 2`() = runTest{
+    fun `should not empty string value, email 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -776,7 +781,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, email 3`() = runTest{
+    fun `should not empty string value, email 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -789,7 +794,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, email 4`() = runTest{
+    fun `should not empty string value, email 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -804,7 +809,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     //region PHONE
     @Test
-    fun `should null string value, phone 1`() = runTest{
+    fun `should null string value, phone 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -817,7 +822,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, phone 2`() = runTest{
+    fun `should null string value, phone 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -830,7 +835,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, phone 3`() = runTest{
+    fun `should null string value, phone 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -843,7 +848,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should null string value, phone 4`() = runTest{
+    fun `should null string value, phone 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -856,7 +861,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, phone 1`() = runTest{
+    fun `should not empty string value, phone 1`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -869,7 +874,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, phone 2`() = runTest{
+    fun `should not empty string value, phone 2`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -882,7 +887,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, phone 3`() = runTest{
+    fun `should not empty string value, phone 3`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -895,7 +900,7 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should not empty string value, phone 4`() = runTest{
+    fun `should not empty string value, phone 4`() = runTest {
 
         storeOfRelations.merge(relations)
 
@@ -933,19 +938,14 @@ class FilterViewModelInputFieldValueCreateTest {
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
-                UpdateDataViewViewer.Params(
-                    context = root,
-                    target = dataViewId,
-                    viewer = viewer.copy(
-                        filters = listOf(
-                            DVFilter(
-                                relationKey = relationKey,
-                                operator = DEFAULT_OPERATOR,
-                                condition = condition.toDomain(),
-                                value = null
-                            )
-                        )
-                    )
+                UpdateDataViewViewer.Params.Filter.Add(
+                    ctx = root,
+                    dv = dataViewId,
+                    view = viewer.id,
+                    relationKey = relationKey,
+                    operator = DEFAULT_OPERATOR,
+                    condition = condition.toDomain(),
+                    value = null
                 )
             )
         }
@@ -976,19 +976,14 @@ class FilterViewModelInputFieldValueCreateTest {
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
-                UpdateDataViewViewer.Params(
-                    context = root,
-                    target = dataViewId,
-                    viewer = viewer.copy(
-                        filters = listOf(
-                            DVFilter(
-                                relationKey = relationKey,
-                                operator = DEFAULT_OPERATOR,
-                                condition = condition.toDomain(),
-                                value = textInput
-                            )
-                        )
-                    )
+                UpdateDataViewViewer.Params.Filter.Add(
+                    ctx = root,
+                    dv = dataViewId,
+                    view = viewer.id,
+                    relationKey = relationKey,
+                    operator = DEFAULT_OPERATOR,
+                    condition = condition.toDomain(),
+                    value = textInput
                 )
             )
         }
@@ -1020,19 +1015,14 @@ class FilterViewModelInputFieldValueCreateTest {
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
-                UpdateDataViewViewer.Params(
-                    context = root,
-                    target = dataViewId,
-                    viewer = viewer.copy(
-                        filters = listOf(
-                            DVFilter(
-                                relationKey = relationKey,
-                                operator = DEFAULT_OPERATOR,
-                                condition = condition.toDomain(),
-                                value = value
-                            )
-                        )
-                    )
+                UpdateDataViewViewer.Params.Filter.Add(
+                    ctx = root,
+                    dv = dataViewId,
+                    view = viewer.id,
+                    relationKey = relationKey,
+                    operator = DEFAULT_OPERATOR,
+                    condition = condition.toDomain(),
+                    value = value
                 )
             )
         }

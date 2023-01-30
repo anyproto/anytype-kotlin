@@ -184,7 +184,7 @@ class EditDataViewViewerViewModel(
         viewModelScope.launch {
             isLoading.value = true
             updateDataViewViewer(
-                UpdateDataViewViewer.Params(
+                UpdateDataViewViewer.Params.Fields(
                     context = ctx,
                     target = state.dataview.id,
                     viewer = viewer.copy(type = type, name = name)

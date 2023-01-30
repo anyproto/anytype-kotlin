@@ -49,7 +49,7 @@ class RelationExtensionsTest {
 
         val expected = listOf(
             DVFilter(
-                relationKey = ObjectSetConfig.TYPE_KEY,
+                relation = ObjectSetConfig.TYPE_KEY,
                 operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.IN,
                 value = listOf("_image", "_video", "_file")
@@ -80,13 +80,13 @@ class RelationExtensionsTest {
 
         val expected = listOf(
             DVFilter(
-                relationKey = ObjectSetConfig.TYPE_KEY,
+                relation = ObjectSetConfig.TYPE_KEY,
                 operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.IN,
                 value = listOf("_image", "_video", "_file")
             ),
             DVFilter(
-                relationKey = Relations.IS_HIDDEN,
+                relation = Relations.IS_HIDDEN,
                 operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.NOT_EQUAL,
                 value = true

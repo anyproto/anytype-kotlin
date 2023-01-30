@@ -1,15 +1,12 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
-import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -29,13 +26,9 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
-import com.anytypeio.anytype.presentation.sets.model.FilterExpression
-import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
-import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import timber.log.Timber
@@ -590,35 +583,6 @@ fun DVFilterCondition.toCheckboxView(): Viewer.Filter.Condition.Checkbox = when 
     DVFilterCondition.NONE -> Viewer.Filter.Condition.Checkbox.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Checkbox relations")
 }
-
-fun SortingExpression.toDomain(): DVSort = DVSort(
-    relationKey = key,
-    type = when (type) {
-        Viewer.SortType.ASC -> Block.Content.DataView.Sort.Type.ASC
-        Viewer.SortType.DESC -> Block.Content.DataView.Sort.Type.DESC
-        Viewer.SortType.CUSTOM -> Block.Content.DataView.Sort.Type.CUSTOM
-    }
-)
-
-fun FilterExpression.toDomain(): DVFilter = DVFilter(
-    relationKey = key,
-    operator = operator.toDomain(),
-    condition = condition.toDomain(),
-    value = when (value) {
-        is FilterValue.Number -> value.value
-        is FilterValue.Status -> value.value
-        is FilterValue.Tag -> value.value
-        is FilterValue.Text -> value.value
-        is FilterValue.Url -> value.value
-        is FilterValue.Email -> value.value
-        is FilterValue.Phone -> value.value
-        is FilterValue.Date -> value.value
-        is FilterValue.TextShort -> value.value
-        is FilterValue.Check -> value.value
-        is FilterValue.Object -> value.value
-        null -> null
-    }
-)
 
 fun Viewer.FilterOperator.toDomain(): DVFilterOperator = when (this) {
     Viewer.FilterOperator.And -> DVFilterOperator.AND

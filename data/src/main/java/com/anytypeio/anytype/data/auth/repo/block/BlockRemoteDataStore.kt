@@ -631,4 +631,44 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         ctx = ctx,
         source = source
     )
+
+    override suspend fun addDataViewFilter(command: Command.AddFilter): Payload {
+        return remote.addDataViewFilter(command)
+    }
+
+    override suspend fun removeDataViewFilter(command: Command.RemoveFilter): Payload {
+        return remote.removeDataViewFilter(command)
+    }
+
+    override suspend fun replaceDataViewFilter(command: Command.ReplaceFilter): Payload {
+        return remote.replaceDataViewFilter(command)
+    }
+
+    override suspend fun addDataViewSort(command: Command.AddSort): Payload {
+        return remote.addDataViewSort(command)
+    }
+
+    override suspend fun removeDataViewSort(command: Command.RemoveSort): Payload {
+        return remote.removeDataViewSort(command)
+    }
+
+    override suspend fun replaceDataViewSort(command: Command.ReplaceSort): Payload {
+        return remote.replaceDataViewSort(command)
+    }
+
+    override suspend fun addDataViewViewRelation(command: Command.AddRelation): Payload {
+        return remote.addDataViewViewRelation(command)
+    }
+
+    override suspend fun removeDataViewViewRelation(command: Command.DeleteRelation): Payload {
+        return remote.removeDataViewViewRelation(command)
+    }
+
+    override suspend fun replaceDataViewViewRelation(command: Command.UpdateRelation): Payload {
+        return remote.replaceDataViewViewRelation(command)
+    }
+
+    override suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload {
+        return remote.sortDataViewViewRelation(command)
+    }
 }

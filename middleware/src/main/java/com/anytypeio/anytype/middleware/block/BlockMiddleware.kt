@@ -668,4 +668,44 @@ class BlockMiddleware(
         ctx = ctx,
         source = source
     )
+
+    override suspend fun addDataViewFilter(command: Command.AddFilter): Payload {
+        return middleware.addDataViewFilter(command)
+    }
+
+    override suspend fun removeDataViewFilter(command: Command.RemoveFilter): Payload {
+        return middleware.removeDataViewFilter(command)
+    }
+
+    override suspend fun replaceDataViewFilter(command: Command.ReplaceFilter): Payload {
+        return middleware.replaceDataViewFilter(command)
+    }
+
+    override suspend fun addDataViewSort(command: Command.AddSort): Payload {
+        return middleware.addDataViewSort(command)
+    }
+
+    override suspend fun removeDataViewSort(command: Command.RemoveSort): Payload {
+        return middleware.removeDataViewSort(command)
+    }
+
+    override suspend fun replaceDataViewSort(command: Command.ReplaceSort): Payload {
+        return middleware.replaceDataViewSort(command)
+    }
+
+    override suspend fun addDataViewViewRelation(command: Command.AddRelation): Payload {
+        return middleware.addDataViewViewRelation(command)
+    }
+
+    override suspend fun removeDataViewViewRelation(command: Command.DeleteRelation): Payload {
+        return middleware.removeDataViewViewRelation(command)
+    }
+
+    override suspend fun replaceDataViewViewRelation(command: Command.UpdateRelation): Payload {
+        return middleware.replaceDataViewViewRelation(command)
+    }
+
+    override suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload {
+        return middleware.sortDataViewViewRelation(command)
+    }
 }

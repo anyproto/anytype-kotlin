@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
@@ -21,7 +23,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.extension.checkboxFilter
+import com.anytypeio.anytype.presentation.extension.checkboxFilterValue
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.extension.index
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddFilterEvent
@@ -206,7 +208,7 @@ open class FilterViewModel(
             relation.toConditionView(condition = null)
         } else {
             val filter = viewer.filters[index]
-            check(filter.relationKey == relation.key) { "Incorrect filter state" }
+            check(filter.relation == relation.key) { "Incorrect filter state" }
             relation.toConditionView(condition = filter.condition)
         }
     }
@@ -240,7 +242,7 @@ open class FilterViewModel(
                 )
             } else {
                 val filter = viewer.filters[index]
-                check(filter.relationKey == relation.key) { "Incorrect filter state" }
+                check(filter.relation == relation.key) { "Incorrect filter state" }
                 filterValueState.value = relation.toFilterValue(
                     value = filter.value,
                     details = objectSet.details,
@@ -260,7 +262,7 @@ open class FilterViewModel(
         relation: ObjectWrapper.Relation,
         filter: DVFilter?,
         condition: Viewer.Filter.Condition
-    ) : Unit = when (relation.format) {
+    ): Unit = when (relation.format) {
         Relation.Format.DATE -> {
             val value = (filter?.value as? Double)?.toLong() ?: 0L
             filterValueListState.value = relation.toCreateFilterDateView(
@@ -459,18 +461,17 @@ open class FilterViewModel(
             condition = condition,
             format = format
         )
+
         viewModelScope.launch {
             proceedWithCreatingFilter(
                 ctx = ctx,
-                filter = DVFilter(
-                    relationKey = relation,
-                    value = value,
-                    condition = condition.toDomain(),
-                    relationFormat = if (format == ColumnView.Format.DATE)
-                        RelationFormat.DATE
-                    else
-                        null
-                )
+                relationKey = relation,
+                value = value,
+                condition = condition.toDomain(),
+                relationFormat = if (format == ColumnView.Format.DATE)
+                    RelationFormat.DATE
+                else
+                    null
             )
         }
     }
@@ -513,11 +514,9 @@ open class FilterViewModel(
                         val selected = tags.filter { it.isSelected }.map { tag -> tag.id }
                         proceedWithCreatingFilter(
                             ctx = ctx,
-                            filter = DVFilter(
-                                relationKey = relation,
-                                value = selected,
-                                condition = condition.toDomain()
-                            )
+                            relationKey = relation,
+                            value = selected,
+                            condition = condition.toDomain(),
                         )
                     }
                     ColumnView.Format.STATUS -> {
@@ -526,11 +525,9 @@ open class FilterViewModel(
                         val selected = statuses.filter { it.isSelected }.map { status -> status.id }
                         proceedWithCreatingFilter(
                             ctx = ctx,
-                            filter = DVFilter(
-                                relationKey = relation,
-                                value = selected,
-                                condition = condition.toDomain()
-                            )
+                            relationKey = relation,
+                            value = selected,
+                            condition = condition.toDomain()
                         )
                     }
                     ColumnView.Format.DATE -> {
@@ -539,12 +536,10 @@ open class FilterViewModel(
                         val selected = dates.firstOrNull { it.isSelected }
                         proceedWithCreatingFilter(
                             ctx = ctx,
-                            filter = DVFilter(
-                                relationKey = relation,
-                                value = selected?.value?.toDouble(),
-                                quickOption = selected?.type ?: DVFilterQuickOption.EXACT_DATE,
-                                condition = condition.toDomain()
-                            )
+                            relationKey = relation,
+                            value = selected?.value?.toDouble(),
+                            quickOption = selected?.type ?: DVFilterQuickOption.EXACT_DATE,
+                            condition = condition.toDomain()
                         )
                     }
                     ColumnView.Format.OBJECT -> {
@@ -555,21 +550,18 @@ open class FilterViewModel(
                             .map { obj -> obj.id }
                         proceedWithCreatingFilter(
                             ctx = ctx,
-                            filter = DVFilter(
-                                relationKey = relation,
-                                value = selected,
-                                condition = condition.toDomain()
-                            )
+                            relationKey = relation,
+                            value = selected,
+                            condition = condition.toDomain(),
                         )
                     }
                     ColumnView.Format.CHECKBOX -> {
-                        val filter = filterValueListState.value.checkboxFilter(
-                            relationKey = relation,
-                            condition = condition
-                        )
+                        val value = filterValueListState.value.checkboxFilterValue()
                         proceedWithCreatingFilter(
                             ctx = ctx,
-                            filter = filter
+                            relationKey = relation,
+                            value = value,
+                            condition = condition.toDomain()
                         )
                     }
                     else -> {
@@ -597,13 +589,19 @@ open class FilterViewModel(
         viewModelScope.launch {
             val block = objectSetState.value.dataview
             val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
+            val filterId = viewer.filters.getOrNull(idx)?.id
+            if (filterId == null) {
+                commands.emit(Commands.Toast("Filter with index $idx not found"))
+                Timber.e("Filter with index $idx not found")
+                return@launch
+            }
             proceedWithUpdatingFilter(
                 ctx = ctx,
                 target = block.id,
-                idx = idx,
                 viewer = viewer,
                 updatedFilter = DVFilter(
-                    relationKey = relation,
+                    id = filterId,
+                    relation = relation,
                     condition = condition.toDomain(),
                     value = value
                 )
@@ -625,6 +623,12 @@ open class FilterViewModel(
         viewModelScope.launch {
             val block = objectSetState.value.dataview
             val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
+            val filterId = viewer.filters.getOrNull(idx)?.id
+            if (filterId == null) {
+                commands.emit(Commands.Toast("Filter with index $idx not found"))
+                Timber.e("Filter with index $idx not found")
+                return@launch
+            }
             val format = relationState.value?.format
             if (format != null) {
                 when (format) {
@@ -638,10 +642,10 @@ open class FilterViewModel(
                         proceedWithUpdatingFilter(
                             ctx = ctx,
                             target = block.id,
-                            idx = idx,
                             viewer = viewer,
                             updatedFilter = DVFilter(
-                                relationKey = relation,
+                                id = filterId,
+                                relation = relation,
                                 condition = condition.toDomain(),
                                 value = value
                             )
@@ -661,10 +665,10 @@ open class FilterViewModel(
                         proceedWithUpdatingFilter(
                             ctx = ctx,
                             target = block.id,
-                            idx = idx,
                             viewer = viewer,
                             updatedFilter = DVFilter(
-                                relationKey = relation,
+                                id = filterId,
+                                relation = relation,
                                 condition = condition.toDomain(),
                                 value = value
                             )
@@ -681,10 +685,10 @@ open class FilterViewModel(
                         proceedWithUpdatingFilter(
                             ctx = ctx,
                             target = block.id,
-                            idx = idx,
                             viewer = viewer,
                             updatedFilter = DVFilter(
-                                relationKey = relation,
+                                id = filterId,
+                                relation = relation,
                                 condition = condition.toDomain(),
                                 quickOption = date?.type ?: DVFilterQuickOption.EXACT_DATE,
                                 value = date?.value?.toDouble()
@@ -705,10 +709,10 @@ open class FilterViewModel(
                         proceedWithUpdatingFilter(
                             ctx = ctx,
                             target = block.id,
-                            idx = idx,
                             viewer = viewer,
                             updatedFilter = DVFilter(
-                                relationKey = relation,
+                                id = filterId,
+                                relation = relation,
                                 condition = condition.toDomain(),
                                 value = value
                             )
@@ -719,16 +723,17 @@ open class FilterViewModel(
                         )
                     }
                     ColumnView.Format.CHECKBOX -> {
-                        val filter = filterValueListState.value.checkboxFilter(
-                            relationKey = relation,
-                            condition = condition
-                        )
+                        val value = filterValueListState.value.checkboxFilterValue()
                         proceedWithUpdatingFilter(
                             ctx = ctx,
                             target = block.id,
-                            idx = idx,
                             viewer = viewer,
-                            updatedFilter = filter
+                            updatedFilter = DVFilter(
+                                id = filterId,
+                                relation = relation,
+                                condition = condition.toDomain(),
+                                value = value
+                            )
                         )
                         sendAnalyticsChangeFilterValueEvent(
                             analytics = analytics,
@@ -746,45 +751,50 @@ open class FilterViewModel(
     private suspend fun proceedWithUpdatingFilter(
         ctx: Id,
         target: Id,
-        idx: Int,
         viewer: DVViewer,
         updatedFilter: DVFilter
     ) {
-        updateDataViewViewer(
-            UpdateDataViewViewer.Params(
-                context = ctx,
-                target = target,
-                viewer = viewer.copy(
-                    filters = viewer.filters.mapIndexed { index, filter ->
-                        if (index == idx)
-                            updatedFilter
-                        else
-                            filter
-                    }
-                )
-            )
-        ).process(
+        val params = UpdateDataViewViewer.Params.Filter.Replace(
+            ctx = ctx,
+            dv = target,
+            view = viewer.id,
+            filter = updatedFilter
+        )
+        updateDataViewViewer(params).process(
             failure = { Timber.e(it, "Error while creating filter") },
             success = { dispatcher.send(it).also { isCompleted.emit(true) } }
         )
     }
 
-    private suspend fun proceedWithCreatingFilter(ctx: Id, filter: DVFilter) {
+    private suspend fun proceedWithCreatingFilter(
+        ctx: Id,
+        relationKey: String,
+        relationFormat: RelationFormat? = null,
+        operator: DVFilterOperator = DVFilterOperator.AND,
+        condition: DVFilterCondition,
+        quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
+        value: Any? = null
+    ) {
         val block = objectSetState.value.dataview
         val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
-        updateDataViewViewer(
-            UpdateDataViewViewer.Params(
-                context = ctx,
-                target = block.id,
-                viewer = viewer.copy(filters = viewer.filters + listOf(filter))
-            )
-        ).process(
+        val params = UpdateDataViewViewer.Params.Filter.Add(
+            ctx = ctx,
+            dv = block.id,
+            view = viewer.id,
+            relationKey = relationKey,
+            relationFormat = relationFormat,
+            operator = operator,
+            condition = condition,
+            quickOption = quickOption,
+            value = value
+        )
+        updateDataViewViewer(params).process(
             failure = { Timber.e(it, "Error while creating filter") },
             success = {
                 dispatcher.send(it).also {
                     viewModelScope.sendAnalyticsAddFilterEvent(
                         analytics = analytics,
-                        condition = filter.condition
+                        condition = condition
                     )
                     isCompleted.emit(true)
                 }
@@ -887,5 +897,6 @@ open class FilterViewModel(
         object TagDivider : Commands()
         object ObjectDivider : Commands()
         object DateDivider : Commands()
+        data class Toast(val message: String) : Commands()
     }
 }

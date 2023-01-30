@@ -722,7 +722,8 @@ class MiddlewareServiceImplementation @Inject constructor(
     }
 
     override fun objectCreateRelation(request: Rpc.Object.CreateRelation.Request): Rpc.Object.CreateRelation.Response {
-        val encoded = Service.objectCreateRelation(Rpc.Object.CreateRelation.Request.ADAPTER.encode(request))
+        val encoded =
+            Service.objectCreateRelation(Rpc.Object.CreateRelation.Request.ADAPTER.encode(request))
         val response = Rpc.Object.CreateRelation.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.CreateRelation.Response.Error.Code.NULL) {
@@ -733,7 +734,9 @@ class MiddlewareServiceImplementation @Inject constructor(
     }
 
     override fun objectCreateRelationOption(request: Rpc.Object.CreateRelationOption.Request): Rpc.Object.CreateRelationOption.Response {
-        val encoded = Service.objectCreateRelationOption(Rpc.Object.CreateRelationOption.Request.ADAPTER.encode(request))
+        val encoded = Service.objectCreateRelationOption(
+            Rpc.Object.CreateRelationOption.Request.ADAPTER.encode(request)
+        )
         val response = Rpc.Object.CreateRelationOption.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.CreateRelationOption.Response.Error.Code.NULL) {
@@ -1341,6 +1344,162 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Workspace.Object.ListAdd.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Workspace.Object.ListAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewAddFilter(request: Rpc.BlockDataview.Filter.Add.Request): Rpc.BlockDataview.Filter.Add.Response {
+        val encoded = Service.blockDataviewFilterAdd(
+            Rpc.BlockDataview.Filter.Add.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Filter.Add.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Filter.Add.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewRemoveFilter(request: Rpc.BlockDataview.Filter.Remove.Request): Rpc.BlockDataview.Filter.Remove.Response {
+        val encoded = Service.blockDataviewFilterRemove(
+            Rpc.BlockDataview.Filter.Remove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Filter.Remove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Filter.Remove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewReplaceFilter(request: Rpc.BlockDataview.Filter.Replace.Request): Rpc.BlockDataview.Filter.Replace.Response {
+        val encoded = Service.blockDataviewFilterReplace(
+            Rpc.BlockDataview.Filter.Replace.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Filter.Replace.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Filter.Replace.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewSortFilter(request: Rpc.BlockDataview.Filter.Sort.Request): Rpc.BlockDataview.Filter.Sort.Response {
+        val encoded = Service.blockDataviewFilterSort(
+            Rpc.BlockDataview.Filter.Sort.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Filter.Sort.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Filter.Sort.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewAddSort(request: Rpc.BlockDataview.Sort.Add.Request): Rpc.BlockDataview.Sort.Add.Response {
+        val encoded = Service.blockDataviewSortAdd(
+            Rpc.BlockDataview.Sort.Add.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Sort.Add.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Sort.Add.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewRemoveSort(request: Rpc.BlockDataview.Sort.Remove.Request): Rpc.BlockDataview.Sort.Remove.Response {
+        val encoded = Service.blockDataviewSortRemove(
+            Rpc.BlockDataview.Sort.Remove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Sort.Remove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Sort.Remove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewReplaceSort(request: Rpc.BlockDataview.Sort.Replace.Request): Rpc.BlockDataview.Sort.Replace.Response {
+        val encoded = Service.blockDataviewSortReplace(
+            Rpc.BlockDataview.Sort.Replace.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Sort.Replace.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Sort.Replace.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewSortSort(request: Rpc.BlockDataview.Sort.SSort.Request): Rpc.BlockDataview.Sort.SSort.Response {
+        val encoded = Service.blockDataviewSortSort(
+            Rpc.BlockDataview.Sort.SSort.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Sort.SSort.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Sort.SSort.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewAddViewRelation(request: Rpc.BlockDataview.ViewRelation.Add.Request): Rpc.BlockDataview.ViewRelation.Add.Response {
+        val encoded = Service.blockDataviewViewRelationAdd(
+            Rpc.BlockDataview.ViewRelation.Add.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.ViewRelation.Add.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.ViewRelation.Add.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewRemoveViewRelation(request: Rpc.BlockDataview.ViewRelation.Remove.Request): Rpc.BlockDataview.ViewRelation.Remove.Response {
+        val encoded = Service.blockDataviewViewRelationRemove(
+            Rpc.BlockDataview.ViewRelation.Remove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.ViewRelation.Remove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.ViewRelation.Remove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewReplaceViewRelation(request: Rpc.BlockDataview.ViewRelation.Replace.Request): Rpc.BlockDataview.ViewRelation.Replace.Response {
+        val encoded = Service.blockDataviewViewRelationReplace(
+            Rpc.BlockDataview.ViewRelation.Replace.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.ViewRelation.Replace.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.ViewRelation.Replace.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewSortViewRelation(request: Rpc.BlockDataview.ViewRelation.Sort.Request): Rpc.BlockDataview.ViewRelation.Sort.Response {
+        val encoded = Service.blockDataviewViewRelationSort(
+            Rpc.BlockDataview.ViewRelation.Sort.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.ViewRelation.Sort.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.ViewRelation.Sort.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

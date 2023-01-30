@@ -27,6 +27,7 @@ import javax.inject.Inject
 class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSortBinding>() {
 
     private val ctx: Id get() = arg(CTX_KEY)
+    private val sortId: Id get() = arg(SORT_ID_KEY)
     private val relationKey: Key get() = arg(RELATION_KEY)
 
     @Inject
@@ -37,8 +38,12 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(lifecycleScope) {
-            subscribe(binding.tvSortAsc.clicks()) { vm.onSortAscSelected(ctx, relationKey) }
-            subscribe(binding.tvSortDesc.clicks()) { vm.onSortDescSelected(ctx, relationKey) }
+            subscribe(binding.tvSortAsc.clicks()) {
+                vm.onSortAscSelected(ctx = ctx, sortId = sortId)
+            }
+            subscribe(binding.tvSortDesc.clicks()) {
+                vm.onSortDescSelected(ctx = ctx, sortId = sortId)
+            }
         }
     }
 
@@ -65,7 +70,7 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
             }
         }
         super.onStart()
-        vm.onStart(relationKey)
+        vm.onStart(sortId = sortId, relationKey = relationKey)
     }
 
     override fun onStop() {
@@ -89,12 +94,14 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     )
 
     companion object {
-        fun new(ctx: Id, relation: Id): ModifyViewerSortFragment =
+        fun new(ctx: Id, sortId: Id, relation: Key): ModifyViewerSortFragment =
             ModifyViewerSortFragment().apply {
-                arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation)
+                arguments =
+                    bundleOf(CTX_KEY to ctx, SORT_ID_KEY to sortId, RELATION_KEY to relation)
             }
 
         private const val CTX_KEY = "arg.modify-viewer-sort.ctx"
+        private const val SORT_ID_KEY = "arg.modify-viewer-sort.sort-id"
         private const val RELATION_KEY = "arg.modify-viewer-sort.relation"
     }
 }

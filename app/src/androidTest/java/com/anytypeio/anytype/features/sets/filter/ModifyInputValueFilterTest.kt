@@ -136,7 +136,7 @@ class ModifyInputValueFilterTest {
         val textToType = "Bar"
 
         val filter = DVFilter(
-            relationKey = relationKey,
+            relation = relationKey,
             value = initialFilterText,
             condition = DVFilterCondition.EQUAL
         )
@@ -257,7 +257,7 @@ class ModifyInputValueFilterTest {
         val textToType = "2"
 
         val filter = DVFilter(
-            relationKey = relationKey,
+            relation = relationKey,
             value = initialFilterText,
             condition = DVFilterCondition.EQUAL
         )

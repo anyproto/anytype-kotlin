@@ -29,22 +29,22 @@ object ObjectSearchConstants {
     //region SEARCH OBJECTS
     fun filterSearchObjects(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
                 OBJECT_TYPE,
@@ -60,7 +60,7 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -77,22 +77,22 @@ object ObjectSearchConstants {
     //region LINK TO
     fun getFilterLinkTo(ignore: Id?, workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
                 OBJECT_TYPE,
@@ -108,12 +108,12 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relationKey = Relations.ID,
+            relation = Relations.ID,
             condition = DVFilterCondition.NOT_EQUAL,
             value = ignore
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -130,37 +130,37 @@ object ObjectSearchConstants {
     //region MOVE TO
     fun filterMoveTo(ctx: Id, types: List<String>, workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_READ_ONLY,
+            relation = Relations.IS_READ_ONLY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.IN,
             value = types
         ),
         DVFilter(
-            relationKey = Relations.ID,
+            relation = Relations.ID,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(ctx)
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -177,22 +177,22 @@ object ObjectSearchConstants {
     //region ADD OBJECT TO RELATION VALUE
     fun filterAddObjectToRelation(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -209,22 +209,22 @@ object ObjectSearchConstants {
     //region ADD OBJECT TO FILTER
     fun filterAddObjectToFilter(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
                 OBJECT_TYPE,
@@ -236,7 +236,7 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -253,22 +253,22 @@ object ObjectSearchConstants {
     //region TAB FAVORITES
     fun filterTabFavorites(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL ,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
                 OBJECT_TYPE,
@@ -285,12 +285,12 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         ),
         DVFilter(
-            relationKey = Relations.IS_FAVORITE,
+            relation = Relations.IS_FAVORITE,
             condition = DVFilterCondition.EQUAL,
             value = true
         )
@@ -303,27 +303,27 @@ object ObjectSearchConstants {
     //region TAB RECENT
     fun filterTabRecent(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.LAST_OPENED_DATE,
+            relation = Relations.LAST_OPENED_DATE,
             condition = DVFilterCondition.NOT_EQUAL,
             value = null
         ),
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
                 OBJECT_TYPE,
@@ -340,7 +340,7 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -360,27 +360,27 @@ object ObjectSearchConstants {
     //region TAB SETS
     fun filterTabSets(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.EQUAL,
             value = ObjectTypeIds.SET
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -397,22 +397,22 @@ object ObjectSearchConstants {
     //region TAB ARCHIVE
     fun filterTabArchive(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -452,27 +452,27 @@ object ObjectSearchConstants {
     //region OBJECT TYPES
     fun filterObjectTypeLibrary(workspaceId: String) = listOf(
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.EQUAL,
             value = OBJECT_TYPE
         ),
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
@@ -480,17 +480,17 @@ object ObjectSearchConstants {
 
     fun defaultDataViewFilters() = listOf(
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = Condition.NOT_EQUAL,
             value = true,
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = Condition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = Condition.NOT_EQUAL,
             value = true
         )
@@ -498,27 +498,27 @@ object ObjectSearchConstants {
 
     val filterObjectTypeMarketplace = listOf(
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.EQUAL,
             value = MarketplaceObjectTypeIds.OBJECT_TYPE
         ),
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.WORKSPACE_ID,
+            relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = MARKETPLACE_ID
         )
@@ -549,22 +549,22 @@ object ObjectSearchConstants {
 
     fun filterMyRelations() : List<DVFilter> = listOf(
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.EQUAL,
             value = RELATION
         ),
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         )
@@ -572,22 +572,22 @@ object ObjectSearchConstants {
 
     fun filterMarketplaceRelations() : List<DVFilter> = listOf(
         DVFilter(
-            relationKey = Relations.TYPE,
+            relation = Relations.TYPE,
             condition = DVFilterCondition.EQUAL,
             value = MarketplaceObjectTypeIds.RELATION
         ),
         DVFilter(
-            relationKey = Relations.IS_ARCHIVED,
+            relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_DELETED,
+            relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
         DVFilter(
-            relationKey = Relations.IS_HIDDEN,
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         )

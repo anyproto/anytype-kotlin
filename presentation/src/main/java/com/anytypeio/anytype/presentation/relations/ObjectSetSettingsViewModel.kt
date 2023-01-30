@@ -10,10 +10,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
@@ -34,9 +32,7 @@ class ObjectSetSettingsViewModel(
     private val objectSetState: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
-    private val modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val deleteRelationFromDataView: DeleteRelationFromDataView,
     private val storeOfRelations: StoreOfRelations,
     private val analytics: Analytics
 ) : BaseListViewModel<ViewerRelationListView>() {
@@ -159,7 +155,7 @@ class ObjectSetSettingsViewModel(
                 }
 
                 updateDataViewViewer(
-                    UpdateDataViewViewer.Params(
+                    UpdateDataViewViewer.Params.Fields(
                         context = ctx,
                         target = block.id,
                         viewer = updated
@@ -175,13 +171,13 @@ class ObjectSetSettingsViewModel(
     fun onDeleteClicked(ctx: Id, item: SimpleRelationView) {
         viewModelScope.launch {
             val state = objectSetState.value
-            deleteRelationFromDataView(
-                DeleteRelationFromDataView.Params(
-                    ctx = ctx,
-                    relation = item.key,
-                    dv = state.dataview.id
-                )
-            ).process(
+            val params = UpdateDataViewViewer.Params.ViewerRelation.Remove(
+                ctx = ctx,
+                dv = state.dataview.id,
+                view = state.viewerById(session.currentViewerId.value).id,
+                keys = listOf(item.key)
+            )
+            updateDataViewViewer(params).process(
                 failure = { e -> Timber.e(e, "Error while deleting relation from dv") },
                 success = { payload ->
                     dispatcher.send(payload)
@@ -201,16 +197,15 @@ class ObjectSetSettingsViewModel(
             val block = objectSetState.value.blocks.first { it.content is DV }
             val updated = viewer.copy(
                 viewerRelations = viewer.viewerRelations.filter { it.key != relation },
-                filters = viewer.filters.filter { it.relationKey != relation },
+                filters = viewer.filters.filter { it.relation != relation },
                 sorts = viewer.sorts.filter { it.relationKey != relation }
             )
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = ctx,
-                    target = block.id,
-                    viewer = updated
-                )
-            ).process(
+            val params = UpdateDataViewViewer.Params.Fields(
+                context = ctx,
+                target = block.id,
+                viewer = updated
+            )
+            updateDataViewViewer(params).process(
                 success = { dispatcher.send(it) },
                 failure = { Timber.e("Error while updating") }
             )
@@ -230,16 +225,13 @@ class ObjectSetSettingsViewModel(
     private fun proceedWithChangeOrderUpdate(ctx: Id, order: List<String>) {
         viewModelScope.launch {
             val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
-            val relations = viewer.viewerRelations.toMutableList().apply {
-                sortBy { order.indexOf(it.key) }
-            }
-            modifyViewerRelationOrder(
-                params = ModifyDataViewViewerRelationOrder.Params(
-                    context = ctx,
-                    target = objectSetState.value.dataview.id,
-                    viewer = viewer.copy(viewerRelations = relations)
-                )
-            ).process(
+            val params = UpdateDataViewViewer.Params.ViewerRelation.Sort(
+                ctx = ctx,
+                dv = objectSetState.value.dataview.id,
+                view = viewer.id,
+                keys = order
+            )
+            updateDataViewViewer(params).process(
                 success = { dispatcher.send(it) },
                 failure = {
                     Timber.e(it, DND_ERROR_MSG)
@@ -252,23 +244,19 @@ class ObjectSetSettingsViewModel(
     private fun proceedWithVisibilityUpdate(ctx: Id, item: SimpleRelationView) {
         val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
         val block = objectSetState.value.blocks.first { it.content is DV }
-        val updated = viewer.copy(
-            viewerRelations = viewer.viewerRelations.map {
-                if (it.key == item.key) {
-                    it.copy(isVisible = item.isVisible)
-                } else {
-                    it
-                }
-            }
+        val viewerRelation = viewer.viewerRelations
+            .find { it.key == item.key }
+            ?.copy(isVisible = item.isVisible)
+            ?: return
+        val params = UpdateDataViewViewer.Params.ViewerRelation.Replace(
+            ctx = ctx,
+            dv = block.id,
+            view = viewer.id,
+            key = item.key,
+            relation = viewerRelation
         )
         viewModelScope.launch {
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = ctx,
-                    target = block.id,
-                    viewer = updated
-                )
-            ).process(
+            updateDataViewViewer(params).process(
                 success = { dispatcher.send(it) },
                 failure = { Timber.e("Error while updating") }
             )
@@ -279,9 +267,7 @@ class ObjectSetSettingsViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
-        private val modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val deleteRelationFromDataView: DeleteRelationFromDataView,
         private val store: StoreOfRelations,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
@@ -291,9 +277,7 @@ class ObjectSetSettingsViewModel(
                 objectSetState = state,
                 session = session,
                 dispatcher = dispatcher,
-                modifyViewerRelationOrder = modifyViewerRelationOrder,
                 updateDataViewViewer = updateDataViewViewer,
-                deleteRelationFromDataView = deleteRelationFromDataView,
                 storeOfRelations = store,
                 analytics = analytics
             ) as T

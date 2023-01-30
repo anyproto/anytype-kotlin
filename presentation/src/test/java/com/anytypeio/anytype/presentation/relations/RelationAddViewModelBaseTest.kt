@@ -79,21 +79,21 @@ class RelationAddViewModelBaseTest {
                         addAll(ObjectSearchConstants.filterMyRelations())
                         add(
                             DVFilter(
-                                relationKey = Relations.IS_HIDDEN,
+                                relation = Relations.IS_HIDDEN,
                                 condition = DVFilterCondition.EQUAL,
                                 value = false
                             )
                         )
                         add(
                             DVFilter(
-                                relationKey = Relations.WORKSPACE_ID,
+                                relation = Relations.WORKSPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
                                 value = workspaceId
                             )
                         )
                         add(
                             DVFilter(
-                                relationKey = Relations.RELATION_KEY,
+                                relation = Relations.RELATION_KEY,
                                 condition = DVFilterCondition.NOT_IN,
                                 value = Relations.systemRelationKeys
                             )
@@ -114,28 +114,28 @@ class RelationAddViewModelBaseTest {
                         addAll(ObjectSearchConstants.filterMarketplaceRelations())
                         add(
                             DVFilter(
-                                relationKey = Relations.ID,
+                                relation = Relations.ID,
                                 condition = DVFilterCondition.NOT_IN,
                                 value = listOf(relation.sourceObject)
                             )
                         )
                         add(
                             DVFilter(
-                                relationKey = Relations.IS_HIDDEN,
+                                relation = Relations.IS_HIDDEN,
                                 condition = DVFilterCondition.EQUAL,
                                 value = false
                             )
                         )
                         add(
                             DVFilter(
-                                relationKey = Relations.WORKSPACE_ID,
+                                relation = Relations.WORKSPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
                                 value = MARKETPLACE_ID
                             )
                         )
                         add(
                             DVFilter(
-                                relationKey = Relations.RELATION_KEY,
+                                relation = Relations.RELATION_KEY,
                                 condition = DVFilterCondition.NOT_IN,
                                 value = Relations.systemRelationKeys
                             )
@@ -218,21 +218,21 @@ class RelationAddViewModelBaseTest {
                             addAll(ObjectSearchConstants.filterMyRelations())
                             add(
                                 DVFilter(
-                                    relationKey = Relations.IS_HIDDEN,
+                                    relation = Relations.IS_HIDDEN,
                                     condition = DVFilterCondition.EQUAL,
                                     value = false
                                 )
                             )
                             add(
                                 DVFilter(
-                                    relationKey = Relations.WORKSPACE_ID,
+                                    relation = Relations.WORKSPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
                                     value = workspaceId
                                 )
                             )
                             add(
                                 DVFilter(
-                                    relationKey = Relations.RELATION_KEY,
+                                    relation = Relations.RELATION_KEY,
                                     condition = DVFilterCondition.NOT_IN,
                                     value = Relations.systemRelationKeys
                                 )
@@ -253,28 +253,28 @@ class RelationAddViewModelBaseTest {
                             addAll(ObjectSearchConstants.filterMarketplaceRelations())
                             add(
                                 DVFilter(
-                                    relationKey = Relations.ID,
+                                    relation = Relations.ID,
                                     condition = DVFilterCondition.NOT_IN,
                                     value = library.mapNotNull { it.sourceObject }
                                 )
                             )
                             add(
                                 DVFilter(
-                                    relationKey = Relations.IS_HIDDEN,
+                                    relation = Relations.IS_HIDDEN,
                                     condition = DVFilterCondition.EQUAL,
                                     value = false
                                 )
                             )
                             add(
                                 DVFilter(
-                                    relationKey = Relations.WORKSPACE_ID,
+                                    relation = Relations.WORKSPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
                                     value = MARKETPLACE_ID
                                 )
                             )
                             add(
                                 DVFilter(
-                                    relationKey = Relations.RELATION_KEY,
+                                    relation = Relations.RELATION_KEY,
                                     condition = DVFilterCondition.NOT_IN,
                                     value = Relations.systemRelationKeys
                                 )

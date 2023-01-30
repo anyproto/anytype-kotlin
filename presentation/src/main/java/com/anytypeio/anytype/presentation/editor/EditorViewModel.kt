@@ -192,7 +192,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
@@ -5659,15 +5658,6 @@ class EditorViewModel(
         proceedWithOpeningObjectByLayout(target)
     }
 
-    private fun sendSearchQueryEvent(query: String) {
-        viewModelScope.sendAnalyticsSearchQueryEvent(
-            analytics = analytics,
-            route = EventsDictionary.Routes.mention,
-            length = query.length,
-            context = analyticsContext
-        )
-    }
-
     private suspend fun onMentionFilter(filter: String) {
         controlPanelViewState.value?.let { state ->
             if (!state.mentionToolbar.isVisible) {
@@ -5685,7 +5675,6 @@ class EditorViewModel(
                 fulltext = fullText,
                 keys = ObjectSearchConstants.defaultKeys
             )
-            sendSearchQueryEvent(fullText)
             viewModelScope.launch {
                 searchObjects(params).process(
                     success = { result ->

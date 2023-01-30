@@ -287,30 +287,6 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
     )
 }
 
-/**
- *  SearchQuery - event code
- *  route - ScreenSearch or MenuMention or MenuSearch
- *  length - the number of characters entered in the search string
- */
-fun CoroutineScope.sendAnalyticsSearchQueryEvent(
-    analytics: Analytics,
-    route: String,
-    length: Int,
-    context: String? = null
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.searchQuery,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.route to route,
-                EventsPropertiesKey.length to length,
-                EventsPropertiesKey.context to context
-            )
-        )
-    )
-}
-
 fun CoroutineScope.sendAnalyticsSearchWordsEvent(
     analytics: Analytics,
     length: Int,

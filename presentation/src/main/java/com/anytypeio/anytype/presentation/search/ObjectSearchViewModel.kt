@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
@@ -129,7 +128,6 @@ open class ObjectSearchViewModel(
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 objects.emit(Resultat.Loading())
-                sendSearchQueryEvent(query)
                 val params = getSearchObjectsParams(ignore).copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects -> setObjects(objects) },
@@ -137,14 +135,6 @@ open class ObjectSearchViewModel(
                 )
             }
         }
-    }
-
-    private fun sendSearchQueryEvent(query: String) {
-        viewModelScope.sendAnalyticsSearchQueryEvent(
-            analytics = analytics,
-            route = eventRoute,
-            length = query.length
-        )
     }
 
     open suspend fun setObjects(data: List<ObjectWrapper.Basic>) {

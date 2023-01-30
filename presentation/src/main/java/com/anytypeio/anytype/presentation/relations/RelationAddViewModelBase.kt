@@ -203,10 +203,7 @@ abstract class RelationAddViewModelBase(
         )
     }
 
-    abstract fun sendAnalyticsEvent(length: Int)
-
     fun onQueryChanged(input: String) {
-        sendAnalyticsEvent(input.length)
         userInput.value = input
     }
 

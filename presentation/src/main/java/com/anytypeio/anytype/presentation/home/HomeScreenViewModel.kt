@@ -113,7 +113,7 @@ class HomeScreenViewModel(
             createWidget(
                 CreateWidget.Params(
                     ctx = config.widgets,
-                    source = "bafybbsj5xhyf7yvaakfd5bdjqjowp7cjzi4cqxcunfy7ejf4apmowk6u"
+                    source = "bafybaeju6nieodoldknjnadcsjc4ii4vdayn3wkuxm74g2nwtfjiravm"
                 )
             ).collect { s ->
                 Timber.d("Status while creating widget: $s")

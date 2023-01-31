@@ -13,7 +13,8 @@ fun StubObject(
     description: String? = null,
     iconEmoji: String? = null,
     isReadOnly: Boolean? = null,
-    isHidden: Boolean? = null
+    isHidden: Boolean? = null,
+    links: List<Id> = emptyList()
 ): ObjectWrapper.Basic = ObjectWrapper.Basic(
     map = mapOf(
         Relations.ID to id,
@@ -26,7 +27,8 @@ fun StubObject(
         Relations.DESCRIPTION to description,
         Relations.ICON_EMOJI to iconEmoji,
         Relations.IS_READ_ONLY to isReadOnly,
-        Relations.IS_HIDDEN to isHidden
+        Relations.IS_HIDDEN to isHidden,
+        Relations.LINKS to links
     )
 )
 

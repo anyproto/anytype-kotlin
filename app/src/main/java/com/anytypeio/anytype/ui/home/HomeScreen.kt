@@ -18,6 +18,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -66,16 +67,27 @@ fun HomeScreen(
                                                 .width(20.dp)
                                                 .height(20.dp)
                                         ) {
-                                            if (element.hasChildren) {
-                                                Text(
-                                                    text = ">",
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = "*",
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
+                                            when(val icon = element.icon) {
+                                                is WidgetView.Tree.Icon.Branch -> {
+                                                    Text(
+                                                        text = ">",
+                                                        modifier = Modifier
+                                                            .align(Alignment.Center)
+                                                            .rotate(if (icon.isExpanded) 90f else 0f)
+                                                    )
+                                                }
+                                                is WidgetView.Tree.Icon.Leaf -> {
+                                                    Text(
+                                                        text = "•",
+                                                        modifier = Modifier.align(Alignment.Center)
+                                                    )
+                                                }
+                                                is WidgetView.Tree.Icon.Set -> {
+                                                    Text(
+                                                        text = "#",
+                                                        modifier = Modifier.align(Alignment.Center)
+                                                    )
+                                                }
                                             }
                                         }
                                         Text(

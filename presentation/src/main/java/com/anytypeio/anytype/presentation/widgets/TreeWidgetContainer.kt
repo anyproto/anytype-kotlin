@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
@@ -37,7 +38,7 @@ class TreeWidgetContainer(
                 links = widget.source.links,
                 level = ROOT_INDENT,
                 expanded = it,
-                path = widget.id + SEPARATOR + widget.source + SEPARATOR
+                path = widget.id + SEPARATOR + widget.source.id + SEPARATOR
             )
         )
     }
@@ -61,13 +62,15 @@ class TreeWidgetContainer(
                 val currentLinkPath = path + link
                 val isExpandable = level < MAX_INDENT
                 add(
-                    /**
-                     * // TODO Setup [WidgetView.Tree.Icon] here
-                     */
                     WidgetView.Tree.Element(
+                        icon = resolveObjectIcon(
+                            obj = obj,
+                            isExpandable = isExpandable,
+                            expanded = expanded,
+                            currentLinkPath = currentLinkPath
+                        ),
                         indent = level,
                         obj = obj,
-                        hasChildren = obj.links.isNotEmpty() && isExpandable,
                         path = path + link
                     )
                 )
@@ -85,12 +88,25 @@ class TreeWidgetContainer(
         }
     }
 
+    private fun resolveObjectIcon(
+        obj: ObjectWrapper.Basic,
+        isExpandable: Boolean,
+        expanded: List<TreePath>,
+        currentLinkPath: String
+    ) = when {
+        obj.type.contains(ObjectTypeIds.SET) -> WidgetView.Tree.Icon.Set
+        !isExpandable -> WidgetView.Tree.Icon.Leaf
+        obj.links.isEmpty() -> WidgetView.Tree.Icon.Leaf
+        else -> WidgetView.Tree.Icon.Branch(
+            isExpanded = expanded.contains(currentLinkPath)
+        )
+    }
+
     companion object {
         const val ROOT_INDENT = 0
         const val MAX_INDENT = 3
         const val SEPARATOR = "/"
-
-        private val keys = buildList {
+        val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)
         }

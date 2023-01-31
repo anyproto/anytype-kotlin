@@ -2,9 +2,10 @@ package com.anytypeio.anytype.ui.library.views.list
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -14,21 +15,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.ui.library.LibraryListConfig
+import com.anytypeio.anytype.ui.library.styles.SearchQueryTextStyle
+import com.anytypeio.anytype.ui.library.views.LibraryTextField
 
 @Composable
 fun LibraryListSearchWidget(
-    modifier: Modifier = Modifier,
     vmEventStream: (LibraryEvent) -> Unit,
     config: LibraryListConfig
 ) {
     val input = remember { mutableStateOf(String()) }
-    OutlinedTextField(
+    LibraryTextField(
         value = input.value,
         onValueChange = {
             input.value = it
@@ -39,26 +39,36 @@ fun LibraryListSearchWidget(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .height(36.dp)
             .padding(
-                start = 20.dp, end = 20.dp
+                start = 20.dp,
+                end = 20.dp
             ),
-        textStyle = TextStyle(
-            fontSize = 17.sp
-        ),
-        placeholder = { Text(text = "Search") },
+        textStyle = SearchQueryTextStyle,
+        placeholder = {
+            Text(
+                text = "Search"
+            )
+        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = colorResource(id = R.color.black),
+            textColor = colorResource(id = R.color.text_primary),
             backgroundColor = colorResource(id = R.color.light_grayish),
             disabledBorderColor = Color.Transparent,
             errorBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
+            unfocusedBorderColor = Color.Transparent,
+            placeholderColor = colorResource(id = R.color.text_tertiary),
+            cursorColor = colorResource(id = R.color.black)
         ),
         singleLine = true,
         maxLines = 1,
         leadingIcon = {
-            Image(painterResource(id = R.drawable.ic_search), "")
-        },
+            Image(
+                painterResource(id = R.drawable.ic_search),
+                "",
+                modifier = Modifier.offset(x = 8.dp)
+            )
+        }
     )
 }
 

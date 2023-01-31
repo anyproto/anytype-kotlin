@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.LibraryView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 
@@ -48,6 +49,24 @@ fun List<ObjectWrapper.Basic>.toViews(
             layout = layout,
             builder = urlBuilder
         )
+    )
+}
+
+fun List<ObjectWrapper.Basic>.toLibraryViews(
+    urlBuilder: UrlBuilder,
+): List<LibraryView> = map { obj ->
+    val typeUrl = obj.getProperType()
+    val layout = obj.getProperLayout()
+    LibraryView(
+        id = obj.id,
+        name = obj.getProperName(),
+        type = typeUrl,
+        layout = layout,
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = layout,
+            builder = urlBuilder
+        ),
     )
 }
 

@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.library
 
-import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.navigation.LibraryView
 
 class LibraryScreenState(
     val types: Tabs.Types,
@@ -11,17 +11,17 @@ class LibraryScreenState(
         val lib: TabData
     ) {
         class Types(
-            private val myTypes: TabData,
-            private val libTypes: TabData
+            myTypes: TabData,
+            libTypes: TabData
         ) : Tabs(myTypes, libTypes)
 
         class Relations(
-            private val myRelations: TabData,
-            private val libRelations: TabData
+            myRelations: TabData,
+            libRelations: TabData
         ) : Tabs(myRelations, libRelations)
 
         data class TabData(
-            val items: List<ObjectWrapper> = emptyList()
+            val items: List<LibraryView> = emptyList()
         )
 
     }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.library.LibraryInteractor
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
@@ -87,4 +88,5 @@ object LibraryModule {
 interface LibraryDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun workspaceManager(): WorkspaceManager
+    fun urlBuilder(): UrlBuilder
 }

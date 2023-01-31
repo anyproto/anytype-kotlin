@@ -25,3 +25,9 @@ val TabTitleStyle = TextStyle(
     fontSize = 15.sp,
     fontWeight = FontWeight.SemiBold
 )
+
+val SearchQueryTextStyle = TextStyle(
+    fontFamily = fonts,
+    fontSize = 17.sp,
+    fontWeight = FontWeight.Medium
+)

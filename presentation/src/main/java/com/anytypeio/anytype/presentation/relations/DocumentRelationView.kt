@@ -28,7 +28,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val value: String? = null,
         override val isFeatured: Boolean = false,
         override val isSystem: Boolean,
-        override val isReadOnly: Boolean,
+        override val isReadOnly: Boolean = false,
         val format: Relation.Format
     ) : DocumentRelationView()
 
@@ -38,7 +38,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val name: String,
         override val isFeatured: Boolean = false,
         override val isSystem: Boolean,
-        override val isReadOnly: Boolean,
+        override val isReadOnly: Boolean = false,
         val isChecked: Boolean
     ): DocumentRelationView() {
         override val value: String? = null
@@ -62,7 +62,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val value: String? = null,
         override val isFeatured: Boolean = false,
         override val isSystem: Boolean,
-        override val isReadOnly: Boolean,
+        override val isReadOnly: Boolean = false,
         val tags: List<TagView>,
     ) : DocumentRelationView()
 
@@ -73,7 +73,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val value: String? = null,
         override val isFeatured: Boolean = false,
         override val isSystem: Boolean,
-        override val isReadOnly: Boolean,
+        override val isReadOnly: Boolean = false,
         val objects: List<ObjectView>
     ) : DocumentRelationView()
 
@@ -85,7 +85,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
             override val value: String? = null,
             override val isFeatured: Boolean = false,
             override val isSystem: Boolean,
-            override val isReadOnly: Boolean,
+            override val isReadOnly: Boolean = false,
             val sources: List<ObjectView>
         ) : Source() {
             val isSourceByRelation : Boolean get() = sources.any { s ->
@@ -123,7 +123,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
             override val value: String? = null,
             override val isFeatured: Boolean = false,
             override val isSystem: Boolean,
-            override val isReadOnly: Boolean,
+            override val isReadOnly: Boolean = false,
             val type: Id
         ) : ObjectType()
 
@@ -134,7 +134,7 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
             override val value: String? = null,
             override val isFeatured: Boolean = false,
             override val isSystem: Boolean,
-            override val isReadOnly: Boolean
+            override val isReadOnly: Boolean = false
             ) : ObjectType()
     }
 }

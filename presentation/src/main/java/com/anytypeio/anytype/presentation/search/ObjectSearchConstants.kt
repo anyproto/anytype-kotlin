@@ -595,11 +595,6 @@ object ObjectSearchConstants {
 
     fun filterTypes() : List<DVFilter> = listOf(
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.EQUAL,
-            value = OBJECT_TYPE
-        ),
-        DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.library
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.navigation.LibraryView
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ interface LibraryListDelegate {
     val queryFlow: MutableStateFlow<String>
     val itemsFlow: Flow<LibraryScreenState.Tabs.TabData>
 
-    fun itemsFlow(): Flow<List<LibraryView>>
+    fun itemsFlow(): Flow<List<ObjectWrapper.Basic>>
 
     @FlowPreview
     fun queryFlow() = queryFlow

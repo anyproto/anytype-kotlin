@@ -76,7 +76,7 @@ fun TabContentScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         Text(
-            color = colorResource(id = R.color.black),
+            color = colorResource(id = R.color.text_primary),
             text = stringResource(config.description),
             style = MaterialTheme.typography.h1,
             textAlign = TextAlign.Center,
@@ -85,7 +85,9 @@ fun TabContentScreen(
         Box(Modifier.height(18.dp))
         Button(
             onClick = { /*TODO*/ },
-            colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.black)),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.glyph_selected)
+            ),
             shape = RoundedCornerShape(10.dp),
             contentPadding = PaddingValues(
                 28.dp, 10.dp, 28.dp, 10.dp
@@ -93,7 +95,7 @@ fun TabContentScreen(
             content = {
                 Text(
                     text = stringResource(config.mainBtnTitle),
-                    color = colorResource(id = R.color.library_action_btn_text_color),
+                    color = colorResource(id = R.color.text_white),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold
                 )

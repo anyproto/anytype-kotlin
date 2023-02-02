@@ -7,6 +7,7 @@ import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDele
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
+import com.anytypeio.anytype.presentation.navigation.LibraryView
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -55,10 +56,21 @@ class LibraryViewModel(
         myRelationsDelegate.itemsFlow,
         libraryRelationsDelegate.itemsFlow
     ) { myTypes, libTypes, myRel, libRel ->
-        LibraryScreenState(
-            types = LibraryScreenState.Tabs.Types(myTypes, libTypes),
-            relations = LibraryScreenState.Tabs.Relations(myRel, libRel)
+
+        val libTypesItems = updateInstalledValueForTypes(
+            libTypes,
+            myTypes
         )
+        val libRelItems = updateInstalledValueForRelations(
+            libRel,
+            myRel
+        )
+
+        LibraryScreenState(
+            types = LibraryScreenState.Tabs.Types(myTypes, libTypesItems),
+            relations = LibraryScreenState.Tabs.Relations(myRel, libRelItems)
+        )
+
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
@@ -73,6 +85,40 @@ class LibraryViewModel(
             )
         )
     )
+
+    private fun updateInstalledValueForTypes(
+        libTypes: LibraryScreenState.Tabs.TabData,
+        myTypes: LibraryScreenState.Tabs.TabData
+    ): LibraryScreenState.Tabs.TabData {
+        return libTypes.copy(
+            items = libTypes.items.map { libType ->
+                if (libType is LibraryView.LibraryTypeView) {
+                    libType.copy(installed = myTypes.items.find { myType ->
+                        (myType as LibraryView.MyTypeView).sourceObject == libType.id
+                    } != null)
+                } else {
+                    libType
+                }
+            }
+        )
+    }
+
+    private fun updateInstalledValueForRelations(
+        libRelations: LibraryScreenState.Tabs.TabData,
+        myRelations: LibraryScreenState.Tabs.TabData
+    ): LibraryScreenState.Tabs.TabData {
+        return libRelations.copy(
+            items = libRelations.items.map { libRelation ->
+                if (libRelation is LibraryView.LibraryRelationView) {
+                    libRelation.copy(installed = myRelations.items.find { myType ->
+                        (myType as LibraryView.MyRelationView).sourceObject == libRelation.id
+                    } != null)
+                } else {
+                    libRelation
+                }
+            }
+        )
+    }
 
     class Factory @Inject constructor(
         private val myTypesDelegate: MyTypesDelegate,

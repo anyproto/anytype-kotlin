@@ -10,6 +10,8 @@ dependencies {
     implementation libs.kotlin
     implementation libs.coroutines
 
+    compileOnly libs.javaxInject
+
     testImplementation project(":test:utils")
     testImplementation libs.kotlinTest
     testImplementation libs.turbine

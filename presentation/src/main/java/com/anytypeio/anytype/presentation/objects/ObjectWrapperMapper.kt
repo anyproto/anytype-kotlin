@@ -1,14 +1,18 @@
 package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.LibraryView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
+import timber.log.Timber
 
 @Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
@@ -22,7 +26,10 @@ fun List<ObjectWrapper.Basic>.toView(
             id = obj.id,
             name = obj.getProperName(),
             type = typeUrl,
-            typeName = getProperTypeName(id = typeUrl, types = objectTypes),
+            typeName = getProperTypeName(
+                id = typeUrl,
+                types = objectTypes
+            ),
             layout = layout,
             icon = ObjectIcon.from(
                 obj = obj,
@@ -55,19 +62,55 @@ fun List<ObjectWrapper.Basic>.toViews(
 fun List<ObjectWrapper.Basic>.toLibraryViews(
     urlBuilder: UrlBuilder,
 ): List<LibraryView> = map { obj ->
-    val typeUrl = obj.getProperType()
-    val layout = obj.getProperLayout()
-    LibraryView(
-        id = obj.id,
-        name = obj.getProperName(),
-        type = typeUrl,
-        layout = layout,
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = layout,
-            builder = urlBuilder
-        ),
-    )
+    when (obj.getProperType()) {
+        MarketplaceObjectTypeIds.OBJECT_TYPE -> {
+            LibraryView.LibraryTypeView(
+                id = obj.id,
+                name = obj.name ?: "",
+                icon = ObjectIcon.from(
+                    obj = obj,
+                    layout = obj.getProperLayout(),
+                    builder = urlBuilder
+                ),
+                installed = false,
+            )
+        }
+        ObjectTypeIds.OBJECT_TYPE -> {
+            LibraryView.MyTypeView(
+                id = obj.id,
+                name = obj.name ?: "",
+                icon = ObjectIcon.from(
+                    obj = obj,
+                    layout = obj.getProperLayout(),
+                    builder = urlBuilder
+                ),
+                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                readOnly = obj.relationReadonlyValue ?: false
+            )
+        }
+        ObjectTypeIds.RELATION -> {
+            val relation = ObjectWrapper.Relation(obj.map)
+            LibraryView.MyRelationView(
+                id = obj.id,
+                name = obj.name ?: "",
+                format = relation.format,
+                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                readOnly = relation.isReadonlyValue
+            )
+        }
+        MarketplaceObjectTypeIds.RELATION -> {
+            val relation = ObjectWrapper.Relation(obj.map)
+            LibraryView.LibraryRelationView(
+                id = obj.id,
+                name = obj.name ?: "",
+                format = relation.format
+            )
+        }
+        else -> {
+            Timber.e("Unknown type: ${obj.getProperType()}")
+            LibraryView.UnknownView()
+        }
+    }
 }
 
 fun List<ObjectWrapper.Basic>.toLinkToView(
@@ -198,7 +241,8 @@ private fun ObjectWrapper.Basic.getProperType() = type.firstOrNull()
 private fun ObjectWrapper.Basic.getProperFileExt() = fileExt.orEmpty()
 private fun ObjectWrapper.Basic.getProperFileMime() = fileMimeType.orEmpty()
 
-private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) = types.find { it.id == id }?.name.orEmpty()
+private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) =
+    types.find { it.id == id }?.name.orEmpty()
 
 private fun ObjectWrapper.Basic.getProperFileImage(urlBuilder: UrlBuilder): String? =
     iconImage?.let { if (it.isBlank()) null else urlBuilder.thumbnail(it) }

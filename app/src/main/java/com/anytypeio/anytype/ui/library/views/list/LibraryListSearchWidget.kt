@@ -52,13 +52,13 @@ fun LibraryListSearchWidget(
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = colorResource(id = R.color.text_primary),
-            backgroundColor = colorResource(id = R.color.light_grayish),
+            backgroundColor = colorResource(id = R.color.shape_transparent),
             disabledBorderColor = Color.Transparent,
             errorBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
-            placeholderColor = colorResource(id = R.color.text_tertiary),
-            cursorColor = colorResource(id = R.color.black)
+            placeholderColor = colorResource(id = R.color.glyph_active),
+            cursorColor = colorResource(id = R.color.text_primary)
         ),
         singleLine = true,
         maxLines = 1,

@@ -221,6 +221,22 @@ fun RelationFormat.icon(isMedium: Boolean = false): Int = when (this) {
     }
 }
 
+fun RelationFormat.simpleIcon(): Int? = when (this) {
+    RelationFormat.SHORT_TEXT -> R.drawable.ic_relation_format_text_small
+    RelationFormat.LONG_TEXT -> R.drawable.ic_relation_format_text_small
+    RelationFormat.NUMBER -> R.drawable.ic_relation_format_number_small
+    RelationFormat.STATUS -> R.drawable.ic_relation_format_status_small
+    RelationFormat.TAG -> R.drawable.ic_relation_format_tag_small
+    RelationFormat.DATE -> R.drawable.ic_relation_format_date_small
+    RelationFormat.FILE -> R.drawable.ic_relation_format_attachment_small
+    RelationFormat.CHECKBOX -> R.drawable.ic_relation_format_checkbox_small
+    RelationFormat.URL -> R.drawable.ic_relation_format_url_small
+    RelationFormat.EMAIL -> R.drawable.ic_relation_format_email_small
+    RelationFormat.PHONE -> R.drawable.ic_relation_format_phone_number_small
+    RelationFormat.OBJECT -> R.drawable.ic_relation_format_object_small
+    else -> null
+}
+
 fun DVSortType.text(format: RelationFormat): Int = when (format) {
     RelationFormat.TAG, RelationFormat.STATUS -> {
         if (this == DVSortType.ASC)

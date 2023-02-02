@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.library.views.list
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,17 +9,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE as MY_TYPE
-import com.anytypeio.anytype.core_models.ObjectTypeIds.RELATION as MY_RELATION
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.OBJECT_TYPE as LIB_TYPE
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.RELATION as LIB_RELATION
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
+import com.anytypeio.anytype.presentation.navigation.LibraryView
 import com.anytypeio.anytype.ui.library.LibraryListConfig
 import com.anytypeio.anytype.ui.library.views.list.items.ItemDefaults
 import com.anytypeio.anytype.ui.library.views.list.items.LibRelationItem
@@ -64,29 +61,59 @@ fun LibraryListTabsContent(
                     .fillMaxHeight(),
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
             ) {
-                items(data.items.size) { index ->
-                    val item = data.items[index]
-                    when (item.type) {
-                        LIB_TYPE -> {
-                            LibTypeItem(modifier = itemModifier, item = item)
+
+                items(
+                    count = data.items.size,
+                    key = { index ->
+                        data.items[index].id
+                    },
+                    itemContent = { ix ->
+                        when (val item = data.items[ix]) {
+                            is LibraryView.LibraryTypeView -> {
+                                LibTypeItem(
+                                    name = item.name,
+                                    icon = item.icon,
+                                    installed = item.installed,
+                                    modifier = itemModifier
+                                )
+                            }
+                            is LibraryView.MyTypeView -> {
+                                MyTypeItem(
+                                    name = item.name,
+                                    icon = item.icon,
+                                    readOnly = item.readOnly,
+                                    modifier = itemModifier
+                                )
+                            }
+                            is LibraryView.LibraryRelationView -> {
+                                LibRelationItem(
+                                    modifier = itemModifier,
+                                    name = item.name,
+                                    format = item.format,
+                                    installed = item.installed
+                                )
+                            }
+                            is LibraryView.MyRelationView -> {
+                                MyRelationItem(
+                                    modifier = itemModifier,
+                                    name = item.name,
+                                    readOnly = item.readOnly,
+                                    format = item.format
+                                )
+                            }
+                            is LibraryView.UnknownView -> {
+                                // do nothing
+                            }
                         }
-                        MY_TYPE -> {
-                            MyTypeItem(modifier = itemModifier, item = item)
-                        }
-                        LIB_RELATION -> {
-                            LibRelationItem(modifier = itemModifier, item = item)
-                        }
-                        MY_RELATION -> {
-                            MyRelationItem(modifier = itemModifier, item = item)
-                        }
-                        else -> {
-                            Timber.d("Unknown item type: ${item.type}")
+                        if (ix < data.items.lastIndex) {
+                            Divider(
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                                color = colorResource(id = R.color.shape_primary)
+                            )
                         }
                     }
-                    if (index < data.items.size.minus(1)) {
-                        Divider(thickness = 1.dp, modifier = Modifier.padding(start = 4.dp, end = 4.dp))
-                    }
-                }
+                )
             }
         }
     }

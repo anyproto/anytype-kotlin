@@ -3,10 +3,12 @@ package com.anytypeio.anytype.di.feature.library
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.library.LibraryInteractor
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
@@ -18,6 +20,7 @@ import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.Dispatchers
 
 @Component(
     dependencies = [LibraryDependencies::class],
@@ -43,32 +46,48 @@ object LibraryModule {
     @PerScreen
     @Provides
     fun provideMyTypesDelegate(
-        interactor: LibraryInteractor,
-        workspaceManager: WorkspaceManager
+        container: StorelessSubscriptionContainer,
+        workspaceManager: WorkspaceManager,
+        urlBuilder: UrlBuilder
     ): LibraryListDelegate {
-        return MyTypesDelegate(interactor, workspaceManager)
+        return MyTypesDelegate(container, workspaceManager, urlBuilder)
     }
 
     @PerScreen
     @Provides
-    fun provideLibTypesDelegate(interactor: LibraryInteractor): LibraryListDelegate {
-        return LibraryTypesDelegate(interactor)
+    fun provideLibTypesDelegate(
+        container: StorelessSubscriptionContainer,
+        urlBuilder: UrlBuilder
+    ): LibraryListDelegate {
+        return LibraryTypesDelegate(container, urlBuilder)
     }
 
     @PerScreen
     @Provides
     fun provideMyRelationsDelegate(
-        interactor: LibraryInteractor,
-        workspaceManager: WorkspaceManager
+        container: StorelessSubscriptionContainer,
+        workspaceManager: WorkspaceManager,
+        urlBuilder: UrlBuilder
     ): LibraryListDelegate {
-        return MyRelationsDelegate(interactor, workspaceManager)
+        return MyRelationsDelegate(container, workspaceManager, urlBuilder)
     }
 
     @PerScreen
     @Provides
-    fun provideLibRelationsDelegate(interactor: LibraryInteractor): LibraryListDelegate {
-        return LibraryRelationsDelegate(interactor)
+    fun provideLibRelationsDelegate(
+        container: StorelessSubscriptionContainer,
+        urlBuilder: UrlBuilder
+    ): LibraryListDelegate {
+        return LibraryRelationsDelegate(container, urlBuilder)
     }
+
+    @PerScreen
+    @Provides
+    fun provideAppCoroutineDispatchers() : AppCoroutineDispatchers = AppCoroutineDispatchers(
+        io = Dispatchers.IO,
+        computation = Dispatchers.Default,
+        main = Dispatchers.Main
+    )
 
     @Module
     interface Declarations {
@@ -79,7 +98,7 @@ object LibraryModule {
 
         @PerScreen
         @Binds
-        fun bindInteractor(interactor: LibraryInteractor.Impl): LibraryInteractor
+        fun bindContainer(container: StorelessSubscriptionContainer.Impl): StorelessSubscriptionContainer
 
     }
 
@@ -89,4 +108,5 @@ interface LibraryDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun workspaceManager(): WorkspaceManager
     fun urlBuilder(): UrlBuilder
+    fun channel(): SubscriptionEventChannel
 }

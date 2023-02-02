@@ -51,6 +51,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 objects = objects,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -65,6 +66,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 files = files,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -87,6 +89,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = formattedDate,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 format = relation.format,
                 isSystem = relation.key.isSystemKey()
             )
@@ -124,6 +127,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 status = status,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -160,6 +164,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 tags = tags,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -170,6 +175,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 isChecked = values[relation.key] as? Boolean ?: false,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -181,6 +187,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = NumberParser.parse(value),
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 format = relation.format,
                 isSystem = relation.key.isSystemKey()
             )
@@ -193,6 +200,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = value as? String,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 format = relation.format,
                 isSystem = relation.key.isSystemKey()
             )

@@ -60,6 +60,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 objects = objects,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -74,6 +75,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 files = files,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -97,6 +99,7 @@ fun ObjectWrapper.Relation.view(
                 value = formattedDate,
                 isFeatured = isFeatured,
                 format = relationFormat,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -123,6 +126,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 isChecked = values[relation.key] as? Boolean ?: false,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 isSystem = relation.key.isSystemKey()
             )
         }
@@ -134,6 +138,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = NumberParser.parse(value),
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 format = relationFormat,
                 isSystem = relation.key.isSystemKey()
             )
@@ -150,6 +155,7 @@ fun ObjectWrapper.Relation.view(
                 name = relation.name.orEmpty(),
                 value = value as? String,
                 isFeatured = isFeatured,
+                isReadOnly = relation.isReadonlyValue,
                 format = relationFormat,
                 isSystem = relation.key.isSystemKey()
             )
@@ -184,6 +190,7 @@ fun statusRelation(
         relationKey = relationDetails.key,
         name = relationDetails.name.orEmpty(),
         isFeatured = isFeatured,
+        isReadOnly = relationDetails.isReadonlyValue,
         status = statuses,
         isSystem = relationDetails.key.isSystemKey()
     )
@@ -213,6 +220,7 @@ fun tagRelation(
         relationKey = relationDetails.key,
         name = relationDetails.name.orEmpty(),
         isFeatured = isFeatured,
+        isReadOnly = relationDetails.isReadonlyValue,
         tags = tagViews,
         isSystem = relationDetails.key.isSystemKey()
     )
@@ -234,6 +242,7 @@ fun Block.Details.objectTypeRelation(
             relationId = objectTypeId,
             relationKey = relationKey,
             isFeatured = isFeatured,
+            isReadOnly = false,
             isSystem = relationKey.isSystemKey()
         )
     } else {
@@ -242,6 +251,7 @@ fun Block.Details.objectTypeRelation(
             relationKey = relationKey,
             name = details[objectTypeId]?.name.orEmpty(),
             isFeatured = isFeatured,
+            isReadOnly = false,
             type = objectTypeId,
             isSystem = relationKey.isSystemKey()
         )

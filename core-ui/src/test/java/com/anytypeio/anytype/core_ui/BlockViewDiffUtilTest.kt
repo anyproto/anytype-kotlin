@@ -1052,7 +1052,8 @@ class BlockViewDiffUtilTest {
             value = null,
             format = RelationFormat.values().random(),
             name = MockDataFactory.randomString(),
-            isSystem = false
+            isSystem = false,
+            isReadOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1098,7 +1099,8 @@ class BlockViewDiffUtilTest {
             value = null,
             format = RelationFormat.values().random(),
             name = MockDataFactory.randomString(),
-            isSystem = false
+            isSystem = false,
+            isReadOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1143,7 +1145,8 @@ class BlockViewDiffUtilTest {
             relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             isChecked = MockDataFactory.randomBoolean(),
-            isSystem = false
+            isSystem = false,
+            isReadOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1200,7 +1203,8 @@ class BlockViewDiffUtilTest {
             relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             status = listOf(oldStatus),
-            isSystem = false
+            isSystem = false,
+            isReadOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1257,7 +1261,8 @@ class BlockViewDiffUtilTest {
             relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             tags = listOf(oldTag),
-            isSystem = true
+            isSystem = true,
+            isReadOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1313,7 +1318,8 @@ class BlockViewDiffUtilTest {
             relationKey = Relations.TYPE,
             name = MockDataFactory.randomString(),
             objects = listOf(oldObject),
-            isSystem = true
+            isSystem = true,
+            isReadOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1369,7 +1375,8 @@ class BlockViewDiffUtilTest {
             relationId = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
             files = listOf(oldFile),
-            isSystem = false
+            isSystem = false,
+            isReadOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(

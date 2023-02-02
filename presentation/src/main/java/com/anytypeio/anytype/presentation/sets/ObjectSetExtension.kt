@@ -92,6 +92,7 @@ private fun mapFeaturedRelations(
                             relationKey = key,
                             name = Relations.RELATION_NAME_EMPTY,
                             isFeatured = true,
+                            isReadOnly = false,
                             isSystem = key.isSystemKey()
                         )
                     } else {
@@ -101,6 +102,7 @@ private fun mapFeaturedRelations(
                             relationKey = key,
                             name = Relations.RELATION_NAME_EMPTY,
                             isFeatured = true,
+                            isReadOnly = wrapper.relationReadonlyValue ?: false,
                             sources = sources,
                             isSystem = key.isSystemKey()
                         )
@@ -111,6 +113,7 @@ private fun mapFeaturedRelations(
                         relationKey = key,
                         name = Relations.RELATION_NAME_EMPTY,
                         isFeatured = true,
+                        isReadOnly = wrapper.relationReadonlyValue ?: false,
                         sources = sources,
                         isSystem = key.isSystemKey()
                     )
@@ -121,6 +124,7 @@ private fun mapFeaturedRelations(
                     relationKey = key,
                     name = Relations.RELATION_NAME_EMPTY,
                     isFeatured = true,
+                    isReadOnly = false,
                     sources = sources,
                     isSystem = key.isSystemKey()
                 )

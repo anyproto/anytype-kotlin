@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
 
     <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
         android:id="@+id/decorationContainer"
@@ -27,8 +27,12 @@
             style="@style/RelationBlockTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/dp_6"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:paddingTop="@dimen/dp_6"
             android:paddingBottom="@dimen/dp_6"
+            android:singleLine="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="parent"

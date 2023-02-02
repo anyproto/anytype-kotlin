@@ -30,6 +30,8 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDeletedBinding
+import com.anytypeio.anytype.core_ui.extensions.clearDrawable
+import com.anytypeio.anytype.core_ui.extensions.setDrawable
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
@@ -119,13 +121,14 @@ sealed class RelationBlockViewHolder(
                 applyRelationValue(block.view)
             }
             if (payload.relationNameChanged()) {
-                applyRelationName(block.view.name)
+                applyRelationName(block.view.name, block.view.isReadOnly)
             }
         }
     }
 
-    fun applyRelationName(name: String) {
+    fun applyRelationName(name: String, isReadOnly: Boolean) {
         relationName.text = name
+        relationName.setReadOnly(isReadOnly)
     }
 
     abstract fun applyRelationValue(item: DocumentRelationView)
@@ -172,7 +175,7 @@ sealed class RelationBlockViewHolder(
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
         fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name)
+            applyRelationName(item.name, item.isReadOnly)
             applyRelationValue(item)
         }
 
@@ -213,7 +216,7 @@ sealed class RelationBlockViewHolder(
         override val relationName: TextView = tvTitle
 
         fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name)
+            applyRelationName(item.name, item.isReadOnly)
             applyRelationValue(item)
         }
 
@@ -245,7 +248,7 @@ sealed class RelationBlockViewHolder(
         val c = binding.content
 
         fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name)
+            applyRelationName(item.name, item.isReadOnly)
             applyRelationValue(item)
         }
 
@@ -290,7 +293,7 @@ sealed class RelationBlockViewHolder(
         override val relationName: TextView = tvTitle
 
         fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name)
+            applyRelationName(item.name, item.isReadOnly)
             applyRelationValue(item)
         }
 
@@ -347,7 +350,7 @@ sealed class RelationBlockViewHolder(
         override val relationName: TextView = tvTitle
 
         fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name)
+            applyRelationName(item.name, item.isReadOnly)
             applyRelationValue(item)
         }
 
@@ -410,7 +413,7 @@ sealed class RelationBlockViewHolder(
         override val relationName: TextView = tvTitle
 
         fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name)
+            applyRelationName(item.name, item.isReadOnly)
             applyRelationValue(item)
         }
 
@@ -480,6 +483,15 @@ sealed class RelationBlockViewHolder(
 
         override fun applyDecorations(decorations: List<BlockView.Decoration>) {
             super.applyContentDecorations(itemView, decorations)
+        }
+    }
+
+
+    private fun TextView.setReadOnly(isReadOnly: Boolean) {
+        if (isReadOnly) {
+            this.setDrawable(left = this.context.getDrawable(R.drawable.ic_object_locked))
+        } else {
+            this.clearDrawable()
         }
     }
 }

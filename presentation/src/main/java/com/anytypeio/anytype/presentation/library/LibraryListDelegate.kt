@@ -23,7 +23,7 @@ interface LibraryListDelegate {
 }
 
 fun List<LibraryView>.filterByQuery(query: String): List<LibraryView> {
-    return filter { it.name.contains(query, true) }
+    return filter { it.name.contains(query.trim(), true) }
 }
 
 private const val DEBOUNCE_TIMEOUT = 100L

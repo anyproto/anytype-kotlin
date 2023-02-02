@@ -70,4 +70,9 @@ sealed interface LibraryView {
         override val name: String = "",
     ) : LibraryView
 
+    class CreateNewTypeView(
+        override val id: Id = "",
+        override val name: String = ""
+    ) : LibraryView
+
 }

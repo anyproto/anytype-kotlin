@@ -94,7 +94,7 @@ class LibraryViewModel(
             items = libTypes.items.map { libType ->
                 if (libType is LibraryView.LibraryTypeView) {
                     libType.copy(installed = myTypes.items.find { myType ->
-                        (myType as LibraryView.MyTypeView).sourceObject == libType.id
+                        (myType as? LibraryView.MyTypeView)?.sourceObject == libType.id
                     } != null)
                 } else {
                     libType

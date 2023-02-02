@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.QueryListenerMyTypes
 import com.anytypeio.anytype.presentation.library.filterByQuery
+import com.anytypeio.anytype.presentation.navigation.LibraryView
 import com.anytypeio.anytype.presentation.objects.toLibraryViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
@@ -44,6 +45,7 @@ class MyTypesDelegate @Inject constructor(
             items
                 .toLibraryViews(urlBuilder)
                 .filterByQuery(query)
+                .optAddCreateTypeView(query)
         )
     }
 
@@ -82,6 +84,18 @@ class MyTypesDelegate @Inject constructor(
         )
     }
 
+}
+
+private fun List<LibraryView>.optAddCreateTypeView(query: String): MutableList<LibraryView> {
+    val q = query.trim()
+    val result = this.toMutableList()
+    return if (q.isNotEmpty() && result.none { it.name.lowercase() == q.lowercase() }) {
+        result.apply {
+            add(0, LibraryView.CreateNewTypeView(name = q))
+        }
+    } else {
+        result
+    }
 }
 
 private const val SUB_LIBRARY_MY_TYPES = "subscription.library_my_types"

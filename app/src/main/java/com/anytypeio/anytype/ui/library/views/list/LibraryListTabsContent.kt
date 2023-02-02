@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.navigation.LibraryView
 import com.anytypeio.anytype.ui.library.LibraryListConfig
+import com.anytypeio.anytype.ui.library.views.list.items.CreateNewTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.ItemDefaults
 import com.anytypeio.anytype.ui.library.views.list.items.LibRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.LibTypeItem
@@ -99,6 +100,12 @@ fun LibraryListTabsContent(
                                     name = item.name,
                                     readOnly = item.readOnly,
                                     format = item.format
+                                )
+                            }
+                            is LibraryView.CreateNewTypeView -> {
+                                CreateNewTypeItem(
+                                    modifier = itemModifier,
+                                    name = item.name
                                 )
                             }
                             is LibraryView.UnknownView -> {

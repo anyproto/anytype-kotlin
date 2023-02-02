@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.anytypeio.anytype.R
@@ -143,6 +144,31 @@ fun LibRelationItem(
         Image(
             painter = painterResource(id = installedImageRes),
             contentDescription = installedImageRes.toString(),
+        )
+    }
+}
+
+@Composable
+fun CreateNewTypeItem(
+    modifier: Modifier,
+    name: String,
+) {
+    Row(
+        modifier,
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_default_plus),
+            contentDescription = "",
+        )
+        Text(
+            text = stringResource(
+                id = R.string.library_create_new_type,
+                formatArgs = arrayOf(name)
+            ),
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.padding(start = TEXT_PADDING_START)
         )
     }
 }

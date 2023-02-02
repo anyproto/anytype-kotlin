@@ -18,8 +18,8 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.toViews
 import kotlinx.coroutines.Job
@@ -108,7 +108,7 @@ open class ObjectSearchViewModel(
         jobs.cancel()
     }
 
-    private fun getObjectTypes() {
+    protected fun getObjectTypes() {
         jobs += viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
@@ -124,7 +124,7 @@ open class ObjectSearchViewModel(
         }
     }
 
-    private fun startProcessingSearchQuery(ignore: Id?) {
+    protected fun startProcessingSearchQuery(ignore: Id?) {
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 objects.emit(Resultat.Loading())

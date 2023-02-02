@@ -8,6 +8,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -29,7 +32,12 @@ class HomeScreenFragment : BaseComposeFragment() {
         setContent {
             HomeScreen(
                 widgets = vm.views.collectAsState().value,
-                onExpand = { path -> vm.onExpand(path) }
+                onExpand = { path -> vm.onExpand(path) },
+                onCreateWidget = {
+                    findNavController().navigate(R.id.selectWidgetSourceScreen)
+                },
+                onEditWidgets = { context.toast("Coming soon") },
+                onRefresh = vm::onRefresh
             )
         }
     }
@@ -40,10 +48,10 @@ class HomeScreenFragment : BaseComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().homescreenComponent.get().inject(this)
+        componentManager().homeScreenComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().homescreenComponent.release()
+        componentManager().homeScreenComponent.release()
     }
 }

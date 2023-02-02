@@ -21,7 +21,7 @@ import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
 import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
 import com.anytypeio.anytype.di.feature.SplashSubComponent
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
-import com.anytypeio.anytype.di.feature.home.HomeScreenSubComponent
+import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
@@ -55,12 +55,11 @@ import javax.inject.Singleton
         SubscriptionsModule::class
     ]
 )
-interface MainComponent : AppearanceDependencies, LibraryDependencies {
+interface MainComponent : AppearanceDependencies, LibraryDependencies, HomeScreenDependencies {
     fun inject(app: AndroidApplication)
 
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
-    fun homeScreenComponentBuilder(): HomeScreenSubComponent.Builder
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
@@ -109,4 +108,8 @@ private abstract class ComponentDependenciesModule private constructor() {
     @ComponentDependenciesKey(LibraryDependencies::class)
     abstract fun provideLibraryDependencies(component: MainComponent): ComponentDependencies
 
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(HomeScreenDependencies::class)
+    abstract fun provideHomeScreenDependencies(component: MainComponent): ComponentDependencies
 }

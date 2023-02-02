@@ -312,4 +312,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="library_subtitle_relations">My relations</string>
     <string name="library_subtitle_library">Library</string>
 
+    <string name="create_widget">Create a widget</string>
+    <string name="edit_widgets">Edit widgets</string>
+    <string name="widget_source">Widget source</string>
+
 </resources>

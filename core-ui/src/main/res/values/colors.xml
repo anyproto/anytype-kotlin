@@ -189,4 +189,6 @@
     <color name="object_loading_state_gradient_start_color">#F6F5F3</color>
     <color name="object_loading_state_gradient_end_color">#F1F0ED</color>
 
+    <color name="widget_button">#A6FFFFFF</color>
+
 </resources>

@@ -23,4 +23,11 @@ sealed class WidgetView {
             object Set : Icon()
         }
     }
+
+    sealed class Action : WidgetView() {
+        object EditWidgets : Action()
+        object CreateWidget: Action()
+        // Will be deleted. For testing only.
+        object Refresh: Action()
+    }
 }

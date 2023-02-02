@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,7 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import timber.log.Timber
@@ -27,13 +33,16 @@ import timber.log.Timber
 @Composable
 fun HomeScreen(
     widgets: List<WidgetView>,
-    onExpand: (TreePath) -> Unit
+    onExpand: (TreePath) -> Unit,
+    onCreateWidget: () -> Unit,
+    onEditWidgets: () -> Unit,
+    onRefresh: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(top = 12.dp)
     ) {
         Timber.d("Widgets:\n$widgets")
         items(
@@ -41,9 +50,10 @@ fun HomeScreen(
                 when (item) {
                     is WidgetView.Tree -> {
                         Card(
-                            Modifier
+                            modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(Modifier.padding(16.dp)) {
                                 Text(
@@ -98,8 +108,54 @@ fun HomeScreen(
                             }
                         }
                     }
+                    is WidgetView.Action.CreateWidget -> {
+                        Box(Modifier.fillMaxWidth()) {
+                            WidgetActionButton(
+                                label = stringResource(R.string.create_widget),
+                                onClick = onCreateWidget,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+                    is WidgetView.Action.EditWidgets -> {
+                        Box(Modifier.fillMaxWidth()) {
+                            WidgetActionButton(
+                                label = stringResource(R.string.edit_widgets),
+                                onClick = onEditWidgets,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+                    is WidgetView.Action.Refresh -> {
+                        Box(Modifier.fillMaxWidth()) {
+                            WidgetActionButton(
+                                label = "Refresh (for testing)",
+                                onClick = onRefresh,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
                 }
             }
         )
+    }
+}
+
+@Composable
+fun WidgetActionButton(
+    modifier: Modifier,
+    label: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(id = R.color.text_primary),
+            contentColor = colorResource(id = R.color.widget_button)
+        ),
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Text(text = label)
     }
 }

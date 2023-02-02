@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
@@ -11,12 +12,15 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -31,7 +35,8 @@ class HomeScreenViewModel(
     private val openObject: OpenObject,
     private val createWidget: CreateWidget,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val appCoroutineDispatchers: AppCoroutineDispatchers,
+    private val dispatcher: Dispatcher<WidgetDispatchEvent>
 ) : BaseViewModel() {
 
     val obj = MutableSharedFlow<ObjectView>()
@@ -80,15 +85,24 @@ class HomeScreenViewModel(
                 ) { array ->
                     array.toList()
                 }
-            }.flowOn(dispatchers.io).collect {
+            }.flowOn(appCoroutineDispatchers.io).collect {
                 Timber.d("Views update: $it")
-                views.value = it
+                views.value = it + listOf(
+                    WidgetView.Action.EditWidgets,
+                    WidgetView.Action.CreateWidget,
+                    WidgetView.Action.Refresh
+                )
             }
         }
 
+        proceedWithOpeningObject()
+        proceedWithDispatches()
+    }
+
+    private fun proceedWithOpeningObject() {
         viewModelScope.launch {
             val config = configStorage.get()
-            openObject(config.widgets).collect { result ->
+            openObject(config.widgets).flowOn(appCoroutineDispatchers.io).collect { result ->
                 when (result) {
                     is Resultat.Failure -> {
                         Timber.e(result.exception, "Error while opening object.")
@@ -103,22 +117,37 @@ class HomeScreenViewModel(
                 }
             }
         }
-
-//        proceedWithCreatingWidget()
     }
 
-    private fun proceedWithCreatingWidget() {
+    private fun proceedWithDispatches() {
+        viewModelScope.launch {
+            dispatcher.flow().collect { dispatch ->
+                when (dispatch) {
+                    is WidgetDispatchEvent.SourcePicked -> {
+                        proceedWithCreatingWidget(source = dispatch.source)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun proceedWithCreatingWidget(source: Id) {
         viewModelScope.launch {
             val config = configStorage.get()
             createWidget(
                 CreateWidget.Params(
                     ctx = config.widgets,
-                    source = "bafybaeju6nieodoldknjnadcsjc4ii4vdayn3wkuxm74g2nwtfjiravm"
+                    source = source
                 )
             ).collect { s ->
                 Timber.d("Status while creating widget: $s")
             }
         }
+    }
+
+    @Deprecated("For debugging only")
+    fun onRefresh() {
+        proceedWithOpeningObject()
     }
 
     fun onStart() {
@@ -129,12 +158,13 @@ class HomeScreenViewModel(
         expanded.onExpand(linkPath = path)
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val configStorage: ConfigStorage,
         private val openObject: OpenObject,
         private val createWidget: CreateWidget,
         private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
-        private val dispatchers: AppCoroutineDispatchers
+        private val appCoroutineDispatchers: AppCoroutineDispatchers,
+        private val dispatcher: Dispatcher<WidgetDispatchEvent>
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -142,7 +172,8 @@ class HomeScreenViewModel(
             openObject = openObject,
             createWidget = createWidget,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
-            dispatchers = dispatchers
+            appCoroutineDispatchers = appCoroutineDispatchers,
+            dispatcher = dispatcher
         ) as T
     }
 }

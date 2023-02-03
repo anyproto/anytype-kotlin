@@ -197,7 +197,8 @@ data class Block(
             val iconSize: IconSize,
             val cardStyle: CardStyle,
             val description: Description,
-            val relations: Set<Relation>,
+            @Deprecated("To be removed")
+            val relations: Set<Relation> = emptySet(),
         ) : Content() {
             sealed interface Relation {
                 object COVER : Relation

@@ -234,12 +234,13 @@ fun StubBookmark(
 
 fun StubSmartBlock(
     id: Id = MockDataFactory.randomString(),
-    children: List<Id> = emptyList()
+    children: List<Id> = emptyList(),
+    type: SmartBlockType = SmartBlockType.PAGE
 ): Block = Block(
     id = id,
     children = children,
     fields = Block.Fields.empty(),
-    content = Block.Content.Smart()
+    content = Block.Content.Smart(type = type)
 )
 
 fun StubTable(
@@ -337,4 +338,41 @@ fun StubDataViewBlock(
     children = children,
     fields = fields,
     backgroundColor = backgroundColor
+)
+
+fun StubLinkToObjectBlock(
+    id: Id = MockDataFactory.randomUuid(),
+    target: Id,
+    children: List<Id> = emptyList(),
+    fields: Block.Fields = Block.Fields.empty(),
+    backgroundColor: String? = null,
+) : Block = Block(
+    id = id,
+    content = Block.Content.Link(
+        target = target,
+        description = Block.Content.Link.Description.values().random(),
+        cardStyle = Block.Content.Link.CardStyle.values().random(),
+        iconSize = Block.Content.Link.IconSize.values().random(),
+        relations = emptySet(),
+        type = Block.Content.Link.Type.PAGE
+    ),
+    children = children,
+    fields = fields,
+    backgroundColor = backgroundColor
+)
+
+fun StubWidgetBlock(
+    id: Id = MockDataFactory.randomUuid(),
+    layout: Block.Content.Widget.Layout,
+    children: List<Id> = emptyList(),
+    fields: Block.Fields = Block.Fields.empty(),
+    backgroundColor: String? = null,
+) : Block = Block(
+    id = id,
+    children = children,
+    fields = fields,
+    backgroundColor = backgroundColor,
+    content = Block.Content.Widget(
+        layout = layout
+    )
 )

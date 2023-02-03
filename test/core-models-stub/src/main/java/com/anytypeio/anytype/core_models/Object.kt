@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubObject(
@@ -30,6 +32,24 @@ fun StubObject(
         Relations.IS_HIDDEN to isHidden,
         Relations.LINKS to links
     )
+)
+
+fun StubObjectView(
+    root: Id,
+    type: SmartBlockType,
+    blocks: List<Block> = emptyList(),
+    details: Map<Id, Struct> = emptyMap(),
+    relations: List<RelationLink> = emptyList(),
+    objectRestrictions: List<ObjectRestriction> = emptyList(),
+    dataViewRestrictions: List<DataViewRestrictions> = emptyList()
+): ObjectView = ObjectView(
+    root = root,
+    blocks = blocks,
+    details = details,
+    type = type,
+    relations = relations,
+    objectRestrictions = objectRestrictions,
+    dataViewRestrictions = dataViewRestrictions
 )
 
 fun StubObjectType(

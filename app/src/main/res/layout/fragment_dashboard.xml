@@ -7,6 +7,21 @@
     app:layoutDescription="@xml/fragment_dashboard_scene">
 
     <TextView
+        android:id="@+id/widgets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:visibility="visible"
+        android:text="[Go to Widgets]"
+        android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="10sp"
+        android:textColor="@color/white"
+        android:fontFamily="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/ivSettings"
+        app:layout_constraintEnd_toStartOf="@+id/ivSettings"
+        app:layout_constraintTop_toTopOf="@+id/ivSettings" />
+
+    <TextView
         android:id="@+id/tvGreeting"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -214,12 +229,12 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@drawable/default_ripple"
             android:fontFamily="@font/inter_regular"
             android:gravity="center"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@string/fragment_dashboard_restore"
-            android:background="@drawable/default_ripple"
             android:textColor="@color/text_primary"
             android:textSize="17sp" />
 

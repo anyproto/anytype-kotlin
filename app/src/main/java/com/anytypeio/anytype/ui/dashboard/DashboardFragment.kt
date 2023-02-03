@@ -15,6 +15,7 @@ import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import androidx.viewpager2.widget.ViewPager2
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.reactive.click
@@ -35,9 +36,9 @@ import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 class DashboardFragment :
     NavigationFragment<FragmentDashboardBinding>(R.layout.fragment_dashboard) {
@@ -315,6 +316,16 @@ class DashboardFragment :
                 launch {
                     vm.profile.collect { profile -> setProfile(profile) }
                 }
+            }
+        }
+
+        if (BuildConfig.DEBUG) {
+            // For debugging and testing widgets
+            binding.widgets.visible()
+            binding.widgets.setOnClickListener {
+                findNavController().navigate(
+                    R.id.homeScreen
+                )
             }
         }
     }

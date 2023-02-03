@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature.home
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceSubcomponent
@@ -9,6 +10,8 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.event.interactor.EventChannel
+import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -102,6 +105,19 @@ object HomeScreenModule {
     @PerScreen
     fun widgetEventDispatcher() : Dispatcher<WidgetDispatchEvent> = Dispatcher.Default()
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun objectPayloadDispatcher() : Dispatcher<Payload> = Dispatcher.Default()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun interceptEvents(channel: EventChannel) : InterceptEvents = InterceptEvents(
+        context = Dispatchers.IO,
+        channel = channel
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -119,4 +135,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun subscriptionEventChannel(): SubscriptionEventChannel
     fun workspaceManager(): WorkspaceManager
     fun analytics(): Analytics
+    fun eventChannel() : EventChannel
 }

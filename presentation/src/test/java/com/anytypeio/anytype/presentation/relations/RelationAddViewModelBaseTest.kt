@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -27,7 +28,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class RelationAddViewModelBaseTest {
@@ -350,8 +350,5 @@ class RelationAddViewModelBaseTest {
             dispatchers = appCoroutineDispatchers
         ),
         workspaceManager = workspaceManager
-    ) {
-        override fun sendAnalyticsEvent(length: Int) {}
-    }
-
+    ) {}
 }

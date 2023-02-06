@@ -23,6 +23,11 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
         LayoutInflater.from(context), this
     )
 
+    init {
+        // Preventing click-through.
+        binding.root.isClickable = true
+    }
+
     val styles = merge(
         binding.tvStyleTitle.clicks().map { UiBlock.HEADER_ONE },
         binding.tvStyleHeading.clicks().map { UiBlock.HEADER_TWO },

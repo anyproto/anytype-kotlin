@@ -21,6 +21,11 @@ class StyleToolbarExtraWidget @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
+    init {
+        // Preventing click-through.
+        binding.root.isClickable = true
+    }
+
     val actions: Flow<StylingEvent> = merge(
         binding.bold.clicks().map { StylingEvent.Markup.Bold },
         binding.italic.clicks().map { StylingEvent.Markup.Italic },

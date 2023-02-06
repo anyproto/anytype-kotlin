@@ -168,7 +168,16 @@ class AddObjectRelationViewModel(
                         value = listOf(
                             ObjectTypeIds.OBJECT_TYPE,
                             ObjectTypeIds.RELATION,
-                            ObjectTypeIds.TEMPLATE
+                            ObjectTypeIds.TEMPLATE,
+                            ObjectTypeIds.AUDIO,
+                            ObjectTypeIds.VIDEO,
+                            ObjectTypeIds.IMAGE,
+                            ObjectTypeIds.FILE,
+                            ObjectTypeIds.DATE,
+                            ObjectTypeIds.PROFILE,
+                            ObjectTypeIds.WORKSPACE,
+                            ObjectTypeIds.RELATION_OPTION,
+                            ObjectTypeIds.DASHBOARD
                         )
                     )
                 )

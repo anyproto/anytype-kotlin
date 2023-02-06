@@ -7,6 +7,7 @@ object Relations {
 
     const val ID = "id"
     const val COVER_TYPE = "coverType"
+    const val COVER_ID = "coverId"
     const val DESCRIPTION = "description"
     const val LAYOUT = "layout"
     const val NAME = "name"

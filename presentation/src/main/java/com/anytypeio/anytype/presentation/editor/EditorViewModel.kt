@@ -218,6 +218,8 @@ import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
+import java.util.*
+import java.util.regex.Pattern
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -234,8 +236,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
-import java.util.regex.Pattern
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
 class EditorViewModel(
@@ -3756,8 +3756,9 @@ class EditorViewModel(
                             val relationId = clicked.relation.relationId
                             val relation = storeOfRelations.getById(relationId)
                             if (relation != null) {
-                                if (relation.isReadOnly == true) {
+                                if (relation.isReadOnly == true || relation.isReadonlyValue) {
                                     sendToast(NOT_ALLOWED_FOR_RELATION)
+                                    return@launch
                                 }
                                 when (relation.format) {
                                     Relation.Format.SHORT_TEXT,

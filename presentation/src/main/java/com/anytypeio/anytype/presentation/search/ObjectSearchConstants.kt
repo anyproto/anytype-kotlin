@@ -445,7 +445,13 @@ object ObjectSearchConstants {
         Relations.RELATION_OPTION_COLOR
     )
 
-    val defaultDataViewKeys = defaultKeys + defaultOptionKeys
+    val objectCoverKeys = listOf(
+        Relations.COVER_TYPE,
+        Relations.COVER_ID,
+        Relations.PAGE_COVER
+    )
+
+    val defaultDataViewKeys = defaultKeys + objectCoverKeys + defaultOptionKeys
 
     //endregion
 

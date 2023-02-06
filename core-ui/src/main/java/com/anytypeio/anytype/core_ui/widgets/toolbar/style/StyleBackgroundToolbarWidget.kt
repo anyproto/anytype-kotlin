@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockStyleToolbarBackgroundBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +21,11 @@ class StyleBackgroundToolbarWidget @JvmOverloads constructor(
     val binding = WidgetBlockStyleToolbarBackgroundBinding.inflate(
         LayoutInflater.from(context), this, true
     )
+
+    init {
+        // Preventing click-through.
+        binding.root.isClickable = true
+    }
 
     val actions: Flow<StylingEvent> = merge(
         binding.flowColors.backgroundColorDefault.clicks()

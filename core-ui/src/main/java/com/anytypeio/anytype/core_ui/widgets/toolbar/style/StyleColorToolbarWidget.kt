@@ -34,7 +34,10 @@ class StyleColorToolbarWidget @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
+
+
     init {
+        binding.root.isClickable = true
         setup()
     }
 

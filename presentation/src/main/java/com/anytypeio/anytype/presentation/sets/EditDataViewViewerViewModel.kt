@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveViewEvent
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -131,9 +130,8 @@ class EditDataViewViewerViewModel(
                     )
                     if (nextViewerId != null) {
                         proceedWithSettingActiveView(ctx, state, nextViewerId)
-                    } else {
-                        isDismissed.emit(true)
                     }
+                    isDismissed.emit(true)
                 }
             )
         }
@@ -180,27 +178,31 @@ class EditDataViewViewerViewModel(
 
     private fun updateDVViewerType(ctx: Id, viewerId: Id, type: DVViewerType, name: String) {
         val state = objectSetState.value
-        val viewer = state.viewers.first { it.id == viewerId }
-        viewModelScope.launch {
-            isLoading.value = true
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params.Fields(
-                    context = ctx,
-                    target = state.dataview.id,
-                    viewer = viewer.copy(type = type, name = name)
+        val viewer = state.viewers.find { it.id == viewerId }
+        if (viewer != null) {
+            viewModelScope.launch {
+                isLoading.value = true
+                updateDataViewViewer(
+                    UpdateDataViewViewer.Params.Fields(
+                        context = ctx,
+                        target = state.dataview.id,
+                        viewer = viewer.copy(type = type, name = name)
+                    )
+                ).process(
+                    success = { payload ->
+                        dispatcher.send(payload)
+                        isLoading.value = false
+                        isDismissed.emit(true)
+                    },
+                    failure = {
+                        isLoading.value = false
+                        Timber.e(it, "Error while updating Viewer type")
+                        isDismissed.emit(true)
+                    }
                 )
-            ).process(
-                success = { payload ->
-                    dispatcher.send(payload)
-                    isLoading.value = false
-                    isDismissed.emit(true)
-                },
-                failure = {
-                    isLoading.value = false
-                    Timber.e(it, "Error while updating Viewer type")
-                    isDismissed.emit(true)
-                }
-            )
+            }
+        } else {
+            sendToast("View not found. Please, try again later.")
         }
     }
 

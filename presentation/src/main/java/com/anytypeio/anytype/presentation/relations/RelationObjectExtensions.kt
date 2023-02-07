@@ -252,7 +252,7 @@ object StatusParser {
     fun parse(value: Any?): Id? {
         val result: Id? = when (value) {
             is Id -> value
-            is List<*> -> value.firstOrNull().toString()
+            is List<*> -> value.typeOf<Id>().firstOrNull()
             else -> null
         }
         return result

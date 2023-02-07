@@ -199,6 +199,81 @@ class HomeViewModelTest {
         }
     }
 
+    @Test
+    fun `should emit link-widget and actions`() = runTest {
+
+        // SETUP
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = emptyList()
+        )
+
+        val sourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.LINK,
+            children = listOf(sourceLink.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+            type = SmartBlockType.WIDGET
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            type = SmartBlockType.WIDGET,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLink
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenObject(givenObjectView)
+        stubObjectSearchContainer(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = HomeScreenViewModel.actions
+            )
+            val secondTimeItem = awaitItem()
+            assertEquals(
+                expected = buildList {
+                    add(
+                        WidgetView.Link(
+                            id = widgetBlock.id,
+                            obj = sourceObject
+                        )
+                    )
+                    addAll(HomeScreenViewModel.actions)
+                },
+                actual = secondTimeItem
+            )
+            verify(openObject, times(1)).invoke(WIDGET_OBJECT_ID)
+        }
+    }
+
     private fun stubInterceptEvents(events: Flow<List<Event>>) {
         interceptEvents.stub {
             on { build(InterceptEvents.Params(WIDGET_OBJECT_ID)) } doReturn events

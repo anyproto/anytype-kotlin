@@ -24,6 +24,11 @@ sealed class WidgetView {
         }
     }
 
+    data class Link(
+        val id: Id,
+        val obj: ObjectWrapper.Basic,
+    ) : WidgetView()
+
     sealed class Action : WidgetView() {
         object EditWidgets : Action()
         object CreateWidget: Action()

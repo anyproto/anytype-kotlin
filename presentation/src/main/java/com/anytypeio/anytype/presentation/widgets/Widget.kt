@@ -56,9 +56,11 @@ fun List<Block>.parseWidgets(
                             )
                         }
                         Block.Content.Widget.Layout.LINK -> {
-                            Widget.Link(
-                                id = w.id,
-                                source = data
+                            add(
+                                Widget.Link(
+                                    id = w.id,
+                                    source = data
+                                )
                             )
                         }
                     }

@@ -56,11 +56,7 @@ fun HomeScreen(
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(Modifier.padding(16.dp)) {
-                                Text(
-                                    text = item.obj.name.orEmpty().trim(),
-                                    style = MaterialTheme.typography.h6,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
+                                TreeWidgetHeader(item)
                                 item.elements.forEach { element ->
                                     Row(
                                         modifier = Modifier
@@ -108,6 +104,25 @@ fun HomeScreen(
                             }
                         }
                     }
+                    is WidgetView.Link -> {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp)
+                                .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Box(Modifier.fillMaxHeight()) {
+                                Text(
+                                    text = item.obj.name.orEmpty().trim(),
+                                    style = MaterialTheme.typography.h6,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterStart)
+                                        .padding(start = 16.dp)
+                                )
+                            }
+                        }
+                    }
                     is WidgetView.Action.CreateWidget -> {
                         Box(Modifier.fillMaxWidth()) {
                             WidgetActionButton(
@@ -137,6 +152,23 @@ fun HomeScreen(
                     }
                 }
             }
+        )
+    }
+}
+
+@Composable
+private fun TreeWidgetHeader(item: WidgetView.Tree) {
+    Row() {
+        Text(
+            // TODO trimming should be a part of presentation module.
+            text = item.obj.name.orEmpty().trim(),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = ">",
+            modifier = Modifier.align(Alignment.CenterVertically).rotate(90f)
         )
     }
 }

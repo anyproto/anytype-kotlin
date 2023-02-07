@@ -15,11 +15,11 @@ class TreeWidgetContainer(
     private val widget: Widget.Tree,
     private val container: ObjectSearchSubscriptionContainer,
     private val expandedBranches: Flow<List<TreePath>>
-) {
+) : WidgetContainer {
 
     private val store = mutableMapOf<Id, ObjectWrapper.Basic>()
 
-    val view: Flow<WidgetView.Tree> = expandedBranches.mapLatest {
+    override val view: Flow<WidgetView.Tree> = expandedBranches.mapLatest {
         container.get(
             subscription = widget.id,
             keys = keys,

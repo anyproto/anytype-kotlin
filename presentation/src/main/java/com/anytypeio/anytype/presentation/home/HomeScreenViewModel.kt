@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
@@ -18,10 +19,12 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
@@ -52,7 +55,7 @@ class HomeScreenViewModel(
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())
-    private val containers = MutableStateFlow<List<TreeWidgetContainer>>(emptyList())
+    private val containers = MutableStateFlow<List<WidgetContainer>>(emptyList())
     private val expanded = TreeWidgetBranchStateHolder()
 
     init {
@@ -107,14 +110,14 @@ class HomeScreenViewModel(
             widgets.map {
                 it.map { w ->
                     when (w) {
-                        is Widget.Link -> TODO()
-                        is Widget.Tree -> {
-                            TreeWidgetContainer(
-                                widget = w,
-                                container = objectSearchSubscriptionContainer,
-                                expandedBranches = expanded.stream(w.id)
-                            )
-                        }
+                        is Widget.Link -> LinkWidgetContainer(
+                            widget = w
+                        )
+                        is Widget.Tree -> TreeWidgetContainer(
+                            widget = w,
+                            container = objectSearchSubscriptionContainer,
+                            expandedBranches = expanded.stream(w.id)
+                        )
                     }
                 }
             }.collect {
@@ -217,9 +220,7 @@ class HomeScreenViewModel(
         event.events.forEach { e ->
             when (e) {
                 is Event.Command.AddBlock -> {
-                    curr = curr.copy(
-                        blocks = curr.blocks + e.blocks
-                    )
+                    curr = curr.copy(blocks = curr.blocks + e.blocks)
                 }
                 is Event.Command.UpdateStructure -> {
                     curr = curr.copy(
@@ -230,6 +231,9 @@ class HomeScreenViewModel(
                             target = { block -> block.id == e.id }
                         )
                     )
+                }
+                is Event.Command.Details -> {
+                    curr = curr.copy(details = curr.details.process(e))
                 }
                 else -> {
                     Timber.d("Skipping event: $e")

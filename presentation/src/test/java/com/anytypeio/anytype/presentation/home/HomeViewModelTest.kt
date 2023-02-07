@@ -84,7 +84,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `should emit empty list if there is no block`() = runTest {
+    fun `should emit only widget actions if there is no block`() = runTest {
 
         // SETUP
 
@@ -114,7 +114,7 @@ class HomeViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = emptyList()
+                expected = HomeScreenViewModel.actions
             )
         }
 
@@ -179,7 +179,7 @@ class HomeViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = emptyList()
+                expected = HomeScreenViewModel.actions
             )
             val secondTimeItem = awaitItem()
             assertEquals(

@@ -48,7 +48,7 @@ class HomeScreenViewModel(
     private val interceptEvents: InterceptEvents
 ) : BaseViewModel(), Reducer<ObjectView, Payload> {
 
-    val views = MutableStateFlow<List<WidgetView>>(emptyList())
+    val views = MutableStateFlow<List<WidgetView>>(actions)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())

@@ -54,23 +54,34 @@ class EditDataViewViewerViewModel(
         viewerName = name
     }
 
-    fun onDuplicateClicked(ctx: Id, viewer: Id) {
+    fun onDuplicateClicked(ctx: Id, viewerId: Id) {
         viewModelScope.launch {
-            duplicateDataViewViewer(
-                DuplicateDataViewViewer.Params(
-                    context = ctx,
-                    target = objectSetState.value.dataview.id,
-                    viewer = objectSetState.value.viewers.first { it.id == viewer }
+            val state = objectSetState.value
+            val viewer = state.viewers.find { it.id == viewerId }
+            if (viewer != null) {
+                duplicateDataViewViewer(
+                    DuplicateDataViewViewer.Params(
+                        context = ctx,
+                        target = state.dataview.id,
+                        viewer = viewer,
+                        source = buildList {
+                            val detail = state.details[ctx]
+                            val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                            addAll(wrapper.setOf)
+                        }
+                    )
+                ).process(
+                    failure = { e ->
+                        Timber.e(e, "Error while duplicating viewer: $viewerId")
+                        _toasts.emit("Error while duplicating viewer: ${e.localizedMessage}")
+                    },
+                    success = {
+                        dispatcher.send(it).also { isDismissed.emit(true) }
+                    }
                 )
-            ).process(
-                failure = { e ->
-                    Timber.e(e, "Error while duplicating viewer: $viewer")
-                    _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
-                },
-                success = {
-                    dispatcher.send(it).also { isDismissed.emit(true) }
-                }
-            )
+            } else {
+                sendToast("View not found. Please, try again later")
+            }
         }
     }
 

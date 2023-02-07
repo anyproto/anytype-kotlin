@@ -251,7 +251,8 @@ class Middleware(
         ctx: String,
         target: String,
         name: String,
-        type: DVViewerType
+        type: DVViewerType,
+        source: List<Id>
     ): Payload {
         val request = Rpc.BlockDataview.View.Create.Request(
             contextId = ctx,
@@ -259,7 +260,8 @@ class Middleware(
             view = Block.Content.Dataview.View(
                 name = name,
                 type = type.toMiddlewareModel()
-            )
+            ),
+            source = source
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewViewCreate(request)
@@ -271,12 +273,14 @@ class Middleware(
     fun blockDataViewViewCreate(
         context: String,
         target: String,
-        viewer: DVViewer
+        viewer: DVViewer,
+        source: List<Id>
     ): Payload {
         val request = Rpc.BlockDataview.View.Create.Request(
             contextId = context,
             blockId = target,
-            view = viewer.toMiddlewareModel()
+            view = viewer.toMiddlewareModel(),
+            source = source
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewViewCreate(request)

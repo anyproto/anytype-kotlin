@@ -5,19 +5,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddViewEvent
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateDataViewViewerViewModel(
     private val addDataViewViewer: AddDataViewViewer,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val objectSetState: StateFlow<ObjectSet>
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<ViewState>(ViewState.Init)
@@ -34,7 +37,12 @@ class CreateDataViewViewerViewModel(
                     ctx = ctx,
                     target = target,
                     name = name.ifEmpty { "Untitled" },
-                    type = dvType
+                    type = dvType,
+                    source = buildList {
+                        val detail = objectSetState.value.details[ctx]
+                        val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                        addAll(wrapper.setOf)
+                    }
                 )
             ).process(
                 failure = { error ->
@@ -71,14 +79,16 @@ class CreateDataViewViewerViewModel(
     class Factory(
         private val addDataViewViewer: AddDataViewViewer,
         private val dispatcher: Dispatcher<Payload>,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val objectSetState: StateFlow<ObjectSet>
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return CreateDataViewViewerViewModel(
                 addDataViewViewer = addDataViewViewer,
                 dispatcher = dispatcher,
-                analytics = analytics
+                analytics = analytics,
+                objectSetState = objectSetState
             ) as T
         }
     }

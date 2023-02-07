@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.domain.dataview.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer.Params
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer.Params
 
 /**
  * Use-case for duplicating data view's view.
@@ -19,7 +19,8 @@ class DuplicateDataViewViewer(
         repo.duplicateDataViewViewer(
             context = params.context,
             target = params.target,
-            viewer = params.viewer
+            viewer = params.viewer,
+            source = params.source
         )
     }
 
@@ -31,6 +32,7 @@ class DuplicateDataViewViewer(
     data class Params(
         val context: Id,
         val target: Id,
-        val viewer: DVViewer
+        val viewer: DVViewer,
+        val source: List<Id>
     )
 }

@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.domain.dataview.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for adding a new viewer to DV.
@@ -18,7 +18,8 @@ class AddDataViewViewer(
             ctx = params.ctx,
             target = params.target,
             name = params.name,
-            type = params.type
+            type = params.type,
+            source = params.source
         )
     }
 
@@ -32,6 +33,7 @@ class AddDataViewViewer(
         val ctx: Id,
         val target: Id,
         val name: String,
-        val type: DVViewerType
+        val type: DVViewerType,
+        val source: List<Id>
     )
 }

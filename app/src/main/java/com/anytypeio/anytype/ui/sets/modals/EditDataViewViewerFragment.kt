@@ -12,7 +12,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.menu.DataViewEditViewPopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentEditDataViewViewerBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -68,7 +74,7 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewV
                 ).apply {
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
-                            R.id.duplicate -> vm.onDuplicateClicked(ctx = ctx, viewer = viewer)
+                            R.id.duplicate -> vm.onDuplicateClicked(ctx = ctx, viewerId = viewer)
                             R.id.delete -> vm.onDeleteClicked(ctx = ctx, viewer = viewer)
                         }
                         true

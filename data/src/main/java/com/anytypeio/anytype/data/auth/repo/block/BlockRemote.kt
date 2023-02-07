@@ -118,14 +118,16 @@ interface BlockRemote {
     suspend fun duplicateDataViewViewer(
         context: String,
         target: String,
-        viewer: DVViewer
+        viewer: DVViewer,
+        source: List<Id>
     ): Payload
 
     suspend fun addDataViewViewer(
         ctx: String,
         target: String,
         name: String,
-        type: DVViewerType
+        type: DVViewerType,
+        source: List<Id>
     ): Payload
 
     suspend fun removeDataViewViewer(

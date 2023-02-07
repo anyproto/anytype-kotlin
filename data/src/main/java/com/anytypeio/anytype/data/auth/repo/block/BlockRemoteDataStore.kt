@@ -259,23 +259,27 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun duplicateDataViewViewer(
         context: String,
         target: String,
-        viewer: DVViewer
+        viewer: DVViewer,
+        source: List<Id>
     ): Payload = remote.duplicateDataViewViewer(
         context = context,
         target = target,
-        viewer = viewer
+        viewer = viewer,
+        source = source
     )
 
     override suspend fun addDataViewViewer(
         ctx: String,
         target: String,
         name: String,
-        type: DVViewerType
+        type: DVViewerType,
+        source: List<Id>
     ): Payload = remote.addDataViewViewer(
         ctx = ctx,
         target = target,
         name = name,
-        type = type
+        type = type,
+        source = source
     )
 
     override suspend fun removeDataViewViewer(

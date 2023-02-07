@@ -19,7 +19,15 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.statusBarHeight
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -28,9 +36,9 @@ import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>() {
 
@@ -163,32 +171,38 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
     }
 
     private fun execute(command: MoveToViewModel.Command) {
-        when (command) {
-            MoveToViewModel.Command.Exit -> {
-                withParent<OnMoveToAction> {
-                    onMoveToClose(
-                        blocks = blocks,
-                        restorePosition = restorePosition,
-                        restoreBlock = restoreBlock
-                    )
+        try {
+            when (command) {
+                MoveToViewModel.Command.Exit -> {
+                    withParent<OnMoveToAction> {
+                        onMoveToClose(
+                            blocks = blocks,
+                            restorePosition = restorePosition,
+                            restoreBlock = restoreBlock
+                        )
+                    }
+                    textInput.hideKeyboard()
+                    dismiss()
                 }
-                sheet?.hideKeyboard()
-                dismiss()
-            }
-            is MoveToViewModel.Command.Move -> {
-                withParent<OnMoveToAction> {
-                    onMoveTo(
-                        target = command.view.id,
-                        text = command.view.name,
-                        icon = command.view.icon,
-                        blocks = blocks,
-                        isSet = command.view.layout == ObjectType.Layout.SET
-                    )
+                is MoveToViewModel.Command.Move -> {
+                    withParent<OnMoveToAction> {
+                        onMoveTo(
+                            target = command.view.id,
+                            text = command.view.name,
+                            icon = command.view.icon,
+                            blocks = blocks,
+                            isSet = command.view.layout == ObjectType.Layout.SET
+                        )
+                    }
+                    textInput.hideKeyboard()
+                    dismiss()
                 }
-                textInput.hideKeyboard()
-                dismiss()
+                MoveToViewModel.Command.Init -> {}
             }
-            MoveToViewModel.Command.Init -> {}
+        } catch (e: Exception) {
+            Timber.e(e, "Error while executing command: $command")
+            // TODO find out how to fix this issue:
+            // https://issuetracker.google.com/issues/244910446?pli=1
         }
     }
 

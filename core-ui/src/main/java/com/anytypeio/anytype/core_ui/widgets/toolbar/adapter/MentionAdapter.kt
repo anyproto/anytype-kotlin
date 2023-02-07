@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemMentionNewPageBinding
-import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
+import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter.ObjectItemViewHolder
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 
@@ -49,8 +49,8 @@ class MentionAdapter(
                 }
             }
             TYPE_MENTION ->
-                DefaultObjectViewAdapter.ObjectViewHolder(
-                    inflater.inflate(R.layout.item_list_object_small, parent, false)
+                ObjectItemViewHolder(
+                    view = inflater.inflate(R.layout.item_list_object_small, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -70,7 +70,7 @@ class MentionAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is DefaultObjectViewAdapter.ObjectItemViewHolder) {
+        if (holder is ObjectItemViewHolder) {
             holder.bind(data[position])
         }
         if (holder is NewPageViewHolder) {

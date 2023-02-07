@@ -14,8 +14,8 @@ import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 
@@ -84,7 +84,17 @@ class DefaultObjectViewAdapter(
         viewType: Int
     ): ObjectViewHolder {
         return when (viewType) {
-            TYPE_ITEM -> ObjectItemViewHolder(inflate(parent, R.layout.item_list_object), onClick)
+            TYPE_ITEM -> ObjectItemViewHolder(inflate(parent, R.layout.item_list_object)).apply {
+                itemView.setOnClickListener {
+                    val pos = bindingAdapterPosition
+                    if (pos != RecyclerView.NO_POSITION) {
+                        val item = getItem(pos)
+                        if (item is DefaultObjectView) {
+                            onClick(item)
+                        }
+                    }
+                }
+            }
             TYPE_SECTION_RECENTLY_OPENED -> RecentlyOpenedHolder(inflate(parent, R.layout.item_search_section_recently_opened))
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
@@ -112,10 +122,7 @@ class DefaultObjectViewAdapter(
     open class ObjectViewHolder(val view: View) : RecyclerView.ViewHolder(view)
     inner class RecentlyOpenedHolder(view: View) : ObjectViewHolder(view)
 
-    inner class ObjectItemViewHolder(
-        view: View,
-        private val onClick: (DefaultObjectView) -> Unit
-    ) : ObjectViewHolder(view) {
+class ObjectItemViewHolder(view: View) : ObjectViewHolder(view) {
 
         private val title = itemView.findViewById<TextView>(R.id.tvTitle)
         private val subtitle = itemView.findViewById<TextView>(R.id.tvSubtitle)
@@ -125,9 +132,6 @@ class DefaultObjectViewAdapter(
             title.text = link.name
             subtitle.text = link.typeName
             icon.setIcon(link.icon)
-            itemView.setOnClickListener {
-                onClick.invoke(link)
-            }
         }
     }
 

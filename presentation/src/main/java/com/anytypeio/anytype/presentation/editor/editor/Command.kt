@@ -36,7 +36,8 @@ sealed class Command {
 
     data class OpenObjectSnackbar(
         val id: Id,
-        val text: String,
+        val fromText: String,
+        val toText: String,
         val icon: ObjectIcon,
         val isSet: Boolean,
     ) : Command()

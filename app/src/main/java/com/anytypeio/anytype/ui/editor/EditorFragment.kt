@@ -145,6 +145,8 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
+import kotlin.math.abs
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -157,8 +159,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import kotlin.math.abs
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
     OnFragmentInteractionListener,
@@ -1076,9 +1076,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectSnackbar -> {
                     binding.root.showActionableSnackBar(
-                        getFrom(),
-                        command.text,
-                        command.icon,
+                        from = command.fromText,
+                        to = command.toText,
+                        icon = command.icon,
                         middleString = R.string.snack_move_to
                     ) {
                         if (command.isSet) {

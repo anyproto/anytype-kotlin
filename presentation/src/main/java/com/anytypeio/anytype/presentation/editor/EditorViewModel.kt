@@ -5069,7 +5069,15 @@ class EditorViewModel(
                     blocks = blocks,
                     position = Position.BOTTOM,
                     onSuccess = {
-                        dispatch(Command.OpenObjectSnackbar(id = target, text, icon, isSet))
+                        dispatch(
+                            Command.OpenObjectSnackbar(
+                                id = target,
+                                fromText = "${blocks.size} block${if (blocks.size > 1) "s" else ""} ",
+                                toText = text,
+                                icon,
+                                isSet
+                            )
+                        )
                     }
                 )
             )

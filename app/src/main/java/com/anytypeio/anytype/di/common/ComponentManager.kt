@@ -81,6 +81,7 @@ import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
+import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 
 class ComponentManager(
@@ -187,6 +188,14 @@ class ComponentManager(
             .get()
             .selectWidgetSourceBuilder()
             .module(SelectWidgetSourceModule)
+            .build()
+    }
+
+    val selectWidgetTypeSubcomponent = Component {
+        homeScreenComponent
+            .get()
+            .selectWidgetTypeBuilder()
+            .module(SelectWidgetTypeModule)
             .build()
     }
 

@@ -316,5 +316,12 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
     <string name="widget_source">Widget source</string>
+    <string name="widget_type">Widget type</string>
+    <string name="widget_type_tree">Tree</string>
+    <string name="widget_type_tree_description">Hierarchical structure of object</string>
+    <string name="widget_type_link">Link</string>
+    <string name="widget_type_link_description">Compact version of the object</string>
+    <string name="widget_type_list_description">Widget with list view of set object</string>
+    <string name="widget_type_list">List</string>
 
 </resources>

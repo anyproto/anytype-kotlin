@@ -1,15 +1,15 @@
 package com.anytypeio.anytype.domain.block.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for unlinking blocks from its context.
- * Unlinking is a remplacement for delete operations.
+ * Unlinking is a replacement for delete operations.
  */
 open class UnlinkBlocks(private val repo: BlockRepository) :
     BaseUseCase<Payload, UnlinkBlocks.Params>() {

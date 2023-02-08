@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
@@ -44,6 +45,7 @@ class HomeScreenViewModel(
     private val configStorage: ConfigStorage,
     private val openObject: OpenObject,
     private val createWidget: CreateWidget,
+    private val deleteWidget: DeleteWidget,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
@@ -84,6 +86,7 @@ class HomeScreenViewModel(
                     }
                 }
             }.map { state ->
+                Timber.d("Emitting new state: ${state::class.java.simpleName}")
                 when (state) {
                     is ObjectViewState.Failure -> {
                         emptyList()
@@ -102,6 +105,7 @@ class HomeScreenViewModel(
                     }
                 }
             }.collect {
+                Timber.d("Emitting list of widgets: ${it.size}")
                 widgets.value = it
             }
         }
@@ -121,16 +125,22 @@ class HomeScreenViewModel(
                     }
                 }
             }.collect {
+                Timber.d("Emitting list of containers: ${it.size}")
                 containers.value = it
             }
         }
 
         viewModelScope.launch {
-            containers.flatMapLatest {
-                combine(
-                    it.map { m -> m.view }
-                ) { array ->
-                    array.toList()
+            containers.flatMapLatest { list ->
+                Timber.d("Receiving list of containers: ${list.size}")
+                if (list.isNotEmpty()) {
+                    combine(
+                        list.map { m -> m.view }
+                    ) { array ->
+                        array.toList()
+                    }
+                } else {
+                    flowOf(emptyList())
                 }
             }.flowOn(appCoroutineDispatchers.io).collect {
                 Timber.d("Views update: $it")
@@ -183,12 +193,38 @@ class HomeScreenViewModel(
                     ctx = config.widgets,
                     source = source
                 )
-            ).collect { status ->
+            ).flowOn(appCoroutineDispatchers.io).collect { status ->
                 Timber.d("Status while creating widget: $status")
                 when (status) {
                     is Resultat.Failure -> {
                         sendToast("Error while creating widget: ${status.exception}")
                         Timber.e(status.exception, "Error while creating widget")
+                    }
+                    is Resultat.Loading -> {
+                        // Do nothing?
+                    }
+                    is Resultat.Success -> {
+                        objectPayloadDispatcher.send(status.value)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun proceedWithDeletingWidget(widget: Id) {
+        viewModelScope.launch {
+            val config = configStorage.get()
+            deleteWidget(
+                DeleteWidget.Params(
+                    ctx = config.widgets,
+                    targets = listOf(widget)
+                )
+            ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                Timber.d("Status while deleting widget: $status")
+                when (status) {
+                    is Resultat.Failure -> {
+                        sendToast("Error while deleting widget: ${status.exception}")
+                        Timber.e(status.exception, "Error while deleting widget")
                     }
                     is Resultat.Loading -> {
                         // Do nothing?
@@ -214,6 +250,10 @@ class HomeScreenViewModel(
         expanded.onExpand(linkPath = path)
     }
 
+    fun onDeleteWidgetClicked(widget: Id) {
+        proceedWithDeletingWidget(widget)
+    }
+
     // TODO move to a separate reducer inject into this VM's constructor
     override fun reduce(state: ObjectView, event: Payload): ObjectView {
         var curr = state
@@ -221,6 +261,11 @@ class HomeScreenViewModel(
             when (e) {
                 is Event.Command.AddBlock -> {
                     curr = curr.copy(blocks = curr.blocks + e.blocks)
+                }
+                is Event.Command.DeleteBlock -> {
+                    curr = curr.copy(
+                        blocks = curr.blocks.filter { !e.targets.contains(it.id) }
+                    )
                 }
                 is Event.Command.UpdateStructure -> {
                     curr = curr.copy(
@@ -247,6 +292,7 @@ class HomeScreenViewModel(
         private val configStorage: ConfigStorage,
         private val openObject: OpenObject,
         private val createWidget: CreateWidget,
+        private val deleteWidget: DeleteWidget,
         private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
@@ -258,6 +304,7 @@ class HomeScreenViewModel(
             configStorage = configStorage,
             openObject = openObject,
             createWidget = createWidget,
+            deleteWidget = deleteWidget,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             appCoroutineDispatchers = appCoroutineDispatchers,
             widgetEventDispatcher = widgetEventDispatcher,

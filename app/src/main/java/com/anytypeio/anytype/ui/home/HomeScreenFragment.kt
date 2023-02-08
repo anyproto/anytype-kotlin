@@ -36,6 +36,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                 onCreateWidget = {
                     findNavController().navigate(R.id.selectWidgetSourceScreen)
                 },
+                onDeleteWidget = vm::onDeleteWidgetClicked,
                 onEditWidgets = { context.toast("Coming soon") },
                 onRefresh = vm::onRefresh
             )

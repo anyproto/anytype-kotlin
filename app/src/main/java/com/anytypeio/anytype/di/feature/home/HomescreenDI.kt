@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -71,11 +72,18 @@ object HomeScreenModule {
     @Provides
     @PerScreen
     fun createWidget(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
+        repo: BlockRepository
     ): CreateWidget = CreateWidget(
         repo = repo,
-        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun deleteWidget(
+        repo: BlockRepository,
+    ): DeleteWidget = DeleteWidget(
+        repo = repo
     )
 
     @JvmStatic

@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -53,6 +54,9 @@ class HomeViewModelTest {
 
     @Mock
     lateinit var createWidget: CreateWidget
+
+    @Mock
+    lateinit var deleteWidget: DeleteWidget
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
@@ -318,6 +322,7 @@ class HomeViewModelTest {
         configStorage = configStorage,
         interceptEvents = interceptEvents,
         createWidget = createWidget,
+        deleteWidget = deleteWidget,
         objectPayloadDispatcher = objectPayloadDispatcher,
         widgetEventDispatcher = widgetEventDispatcher,
         openObject = openObject,

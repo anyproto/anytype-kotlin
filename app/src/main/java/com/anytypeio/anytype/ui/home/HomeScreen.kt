@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,10 +24,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import timber.log.Timber
@@ -36,7 +40,8 @@ fun HomeScreen(
     onExpand: (TreePath) -> Unit,
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    onDeleteWidget: (Id) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -55,6 +60,9 @@ fun HomeScreen(
                                 .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp),
                             shape = RoundedCornerShape(16.dp)
                         ) {
+                            Circle {
+                                onDeleteWidget(item.id)
+                            }
                             Column(Modifier.padding(16.dp)) {
                                 TreeWidgetHeader(item)
                                 item.elements.forEach { element ->
@@ -73,7 +81,7 @@ fun HomeScreen(
                                                 .width(20.dp)
                                                 .height(20.dp)
                                         ) {
-                                            when(val icon = element.icon) {
+                                            when (val icon = element.icon) {
                                                 is WidgetView.Tree.Icon.Branch -> {
                                                     Text(
                                                         text = ">",
@@ -122,6 +130,9 @@ fun HomeScreen(
                                 )
                             }
                         }
+                        Circle {
+                            onDeleteWidget(item.id)
+                        }
                     }
                     is WidgetView.Action.CreateWidget -> {
                         Box(Modifier.fillMaxWidth()) {
@@ -168,7 +179,9 @@ private fun TreeWidgetHeader(item: WidgetView.Tree) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = ">",
-            modifier = Modifier.align(Alignment.CenterVertically).rotate(90f)
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .rotate(90f)
         )
     }
 }
@@ -189,5 +202,26 @@ fun WidgetActionButton(
         shape = RoundedCornerShape(8.dp)
     ) {
         Text(text = label)
+    }
+}
+
+@Composable
+fun Circle(
+    onClick: () -> Unit
+) {
+    Box(
+        Modifier
+            .height(24.dp)
+            .width(24.dp)) {
+        Canvas(
+            modifier = Modifier
+                .size(24.dp)
+                .align(Alignment.CenterEnd)
+                .padding(4.dp)
+                .clickable { onClick() },
+            onDraw = {
+                drawCircle(color = Color.Red)
+            }
+        )
     }
 }

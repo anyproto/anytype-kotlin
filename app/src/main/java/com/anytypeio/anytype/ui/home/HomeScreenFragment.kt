@@ -38,7 +38,13 @@ class HomeScreenFragment : BaseComposeFragment() {
                 },
                 onDeleteWidget = vm::onDeleteWidgetClicked,
                 onEditWidgets = { context.toast("Coming soon") },
-                onRefresh = vm::onRefresh
+                onRefresh = vm::onRefresh,
+                onChangeWidgetSource = {
+                    toast("TODO")
+                },
+                onChangeWidgetType = {
+                    toast("TODO")
+                }
             )
         }
     }

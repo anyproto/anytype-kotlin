@@ -323,5 +323,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="widget_type_link_description">Compact version of the object</string>
     <string name="widget_type_list_description">Widget with list view of set object</string>
     <string name="widget_type_list">List</string>
+    <string name="widget_change_source">Change source</string>
+    <string name="widget_change_type">Change widget type</string>
+    <string name="remove_widget">Remove widget</string>
 
 </resources>

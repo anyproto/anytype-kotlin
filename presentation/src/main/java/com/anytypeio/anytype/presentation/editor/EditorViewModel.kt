@@ -5059,6 +5059,7 @@ class EditorViewModel(
             if (mode == EditorMode.Select) {
                 mode = EditorMode.Edit
                 clearSelections()
+                delay(100)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
             }
             orchestrator.proxies.intents.send(

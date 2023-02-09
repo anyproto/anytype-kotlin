@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -54,6 +55,7 @@ class HomeScreenViewModel(
 ) : BaseViewModel(), Reducer<ObjectView, Payload> {
 
     val views = MutableStateFlow<List<WidgetView>>(actions)
+    val commands = MutableSharedFlow<Command>()
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -242,16 +244,33 @@ class HomeScreenViewModel(
         proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
     }
 
-    fun onStart() {
-        Timber.d("onStart")
-    }
-
     fun onExpand(path: TreePath) {
         expanded.onExpand(linkPath = path)
     }
 
     fun onDeleteWidgetClicked(widget: Id) {
         proceedWithDeletingWidget(widget)
+    }
+
+    fun onChangeWidgetTypeClicked(widget: Id) {
+        val curr = widgets.value.find { it.id == widget }
+        if (curr != null) {
+            viewModelScope.launch {
+                commands.emit(
+                    Command.SelectWidgetType(
+                        ctx = configStorage.get().widgets,
+                        widget = widget,
+                        source = curr.source.id,
+                        type = when(curr) {
+                            is Widget.Link -> Command.SelectWidgetType.TYPE_LINK
+                            is Widget.Tree -> Command.SelectWidgetType.TYPE_TREE
+                        }
+                    )
+                )
+            }
+        } else {
+            sendToast("Widget missing. Please try again later")
+        }
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -330,4 +349,21 @@ sealed class ObjectViewState {
     object Loading : ObjectViewState()
     data class Success(val obj: ObjectView) : ObjectViewState()
     data class Failure(val e: Throwable) : ObjectViewState()
+}
+
+sealed class Command {
+    object SelectWidgetSource : Command()
+    data class SelectWidgetType(
+        val ctx: Id,
+        val widget: Id,
+        val source: Id,
+        val type: Int
+    ) : Command() {
+        companion object {
+            const val UNKNOWN_TYPE = -1
+            const val TYPE_TREE = 0
+            const val TYPE_LINK = 1
+            const val TYPE_LIST = 2
+        }
+    }
 }

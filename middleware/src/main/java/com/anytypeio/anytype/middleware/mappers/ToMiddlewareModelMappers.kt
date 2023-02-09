@@ -471,3 +471,8 @@ fun List<InternalFlags>.toMiddlewareModel(): List<InternalFlag> = map {
         InternalFlags.ShouldSelectType -> InternalFlag(InternalFlag.Value.editorSelectType)
     }
 }
+
+fun Block.Content.Widget.Layout.mw() : MWidgetLayout = when(this) {
+    Block.Content.Widget.Layout.TREE -> MWidgetLayout.Tree
+    Block.Content.Widget.Layout.LINK -> MWidgetLayout.Link
+}

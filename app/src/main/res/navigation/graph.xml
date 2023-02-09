@@ -157,6 +157,11 @@
     </dialog>
 
     <dialog
+        android:id="@+id/selectWidgetTypeScreen"
+        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment">
+    </dialog>
+
+    <dialog
         android:id="@+id/settingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
         android:label="SettingScreen">

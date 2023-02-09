@@ -24,6 +24,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,7 +38,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     widgets: List<WidgetView>,
@@ -45,9 +45,7 @@ fun HomeScreen(
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
     onRefresh: () -> Unit,
-    onDeleteWidget: (Id) -> Unit,
-    onChangeWidgetSource: (Id) -> Unit,
-    onChangeWidgetType: (Id) -> Unit
+    onWidgetMenuAction: (Id, DropDownMenuAction) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -62,14 +60,17 @@ fun HomeScreen(
                         TreeWidgetCard(
                             item = item,
                             onExpand = onExpand,
-                            onChangeWidgetSource = onChangeWidgetSource,
-                            onChangeWidgetType = onChangeWidgetType,
-                            onDeleteWidget = onDeleteWidget
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            }
                         )
                     }
                     is WidgetView.Link -> {
                         LinkWidgetCard(
-                            item = item
+                            item = item,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            }
                         )
                     }
                     is WidgetView.Action.CreateWidget -> {
@@ -105,8 +106,15 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun LinkWidgetCard(item: WidgetView.Link) {
+private fun LinkWidgetCard(
+    item: WidgetView.Link,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit
+) {
+    val isDropDownMenuExpanded = remember {
+        mutableStateOf(false)
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,7 +122,16 @@ private fun LinkWidgetCard(item: WidgetView.Link) {
             .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Box(Modifier.fillMaxHeight()) {
+        Box(
+            Modifier
+                .fillMaxHeight()
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = {
+                        isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
+                    }
+                )
+        ) {
             Text(
                 text = item.obj.name.orEmpty().trim(),
                 style = MaterialTheme.typography.h6,
@@ -123,6 +140,10 @@ private fun LinkWidgetCard(item: WidgetView.Link) {
                     .padding(start = 16.dp)
             )
         }
+        WidgetMenu(
+            isExpanded = isDropDownMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
+        )
     }
 }
 
@@ -131,9 +152,7 @@ private fun LinkWidgetCard(item: WidgetView.Link) {
 private fun TreeWidgetCard(
     item: WidgetView.Tree,
     onExpand: (TreePath) -> Unit,
-    onChangeWidgetSource: (Id) -> Unit,
-    onChangeWidgetType: (Id) -> Unit,
-    onDeleteWidget: (Id) -> Unit
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
     val isDropDownMenuExpanded = remember {
         mutableStateOf(false)
@@ -150,8 +169,7 @@ private fun TreeWidgetCard(
                 .combinedClickable(
                     onClick = {},
                     onLongClick = {
-                        isDropDownMenuExpanded.value =
-                            !isDropDownMenuExpanded.value
+                        isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
                     }
                 )
         ) {
@@ -209,52 +227,47 @@ private fun TreeWidgetCard(
             }
         }
         WidgetMenu(
-            expanded = isDropDownMenuExpanded.value,
-            onDismiss = {
-                isDropDownMenuExpanded.value = false
-            },
-            onChangeSourceClicked = {
-                isDropDownMenuExpanded.value = false
-                onChangeWidgetSource(item.id)
-            },
-            onChangeTypeClicked = {
-                isDropDownMenuExpanded.value = false
-                onChangeWidgetType(item.id)
-            },
-            onRemoveWidgetClicked = {
-                isDropDownMenuExpanded.value = false
-                onDeleteWidget(item.id)
-            }
+            isExpanded = isDropDownMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
         )
     }
 }
 
 @Composable
 private fun WidgetMenu(
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onChangeTypeClicked: () -> Unit,
-    onRemoveWidgetClicked: () -> Unit,
-    onChangeSourceClicked: () -> Unit
+    isExpanded: MutableState<Boolean>,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
     DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismiss
+        expanded = isExpanded.value,
+        onDismissRequest = { isExpanded.value = false }
     ) {
         DropdownMenuItem(
-            onClick = onChangeSourceClicked
+            onClick = {
+                onDropDownMenuAction(DropDownMenuAction.ChangeWidgetSource).also {
+                    isExpanded.value = false
+                }
+            }
         ) {
             Text(stringResource(R.string.widget_change_source))
         }
         Divider(thickness = 0.5.dp)
         DropdownMenuItem(
-            onClick = onChangeTypeClicked
+            onClick = {
+                onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
+                    isExpanded.value = false
+                }
+            }
         ) {
             Text(stringResource(R.string.widget_change_type))
         }
         Divider(thickness = 0.5.dp)
         DropdownMenuItem(
-            onClick = onRemoveWidgetClicked
+            onClick = {
+                onDropDownMenuAction(DropDownMenuAction.RemoveWidget).also {
+                    isExpanded.value = false
+                }
+            }
         ) {
             Text(stringResource(id = R.string.remove_widget))
         }
@@ -297,4 +310,11 @@ fun WidgetActionButton(
     ) {
         Text(text = label)
     }
+}
+
+sealed class DropDownMenuAction {
+    object ChangeWidgetType : DropDownMenuAction()
+    object ChangeWidgetSource : DropDownMenuAction()
+    object RemoveWidget : DropDownMenuAction()
+    object EditWidgets : DropDownMenuAction()
 }

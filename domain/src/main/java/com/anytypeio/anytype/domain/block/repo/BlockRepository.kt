@@ -361,6 +361,13 @@ interface BlockRepository {
         source: Id
     ): Payload
 
+    suspend fun updateWidget(
+        ctx: Id,
+        target: Id,
+        source: Id,
+        type: Block.Content.Widget.Layout
+    ): Payload
+
     suspend fun addDataViewFilter(command: Command.AddFilter): Payload
     suspend fun removeDataViewFilter(command: Command.RemoveFilter): Payload
     suspend fun replaceDataViewFilter(command: Command.ReplaceFilter): Payload

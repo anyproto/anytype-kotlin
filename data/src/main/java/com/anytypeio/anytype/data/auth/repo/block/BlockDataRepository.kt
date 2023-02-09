@@ -711,6 +711,18 @@ class BlockDataRepository(
         source = source
     )
 
+    override suspend fun updateWidget(
+        ctx: Id,
+        target: Id,
+        source: Id,
+        type: Block.Content.Widget.Layout
+    ): Payload = remote.updateWidget(
+        ctx = ctx,
+        target = target,
+        source = source,
+        type = type
+    )
+
     override suspend fun addDataViewFilter(command: Command.AddFilter): Payload {
         return remote.addDataViewFilter(command = command)
     }

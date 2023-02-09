@@ -30,3 +30,6 @@ typealias DVViewerRelation = Block.Content.DataView.Viewer.ViewerRelation
 typealias RelationFormat = Relation.Format
 
 typealias DVRecord = Map<String, Any?>
+
+typealias Widget = Block.Content.Widget
+typealias WidgetLayout = Block.Content.Widget.Layout

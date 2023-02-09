@@ -29,12 +29,14 @@ import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.core
+import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCore
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
@@ -1848,6 +1850,30 @@ class Middleware(
         val request = Rpc.Block.CreateWidget.Request(
             contextId = ctx,
             widgetLayout = Block.Content.Widget.Layout.Tree,
+            block = Block(
+                link = Block.Content.Link(
+                    targetBlockId = source
+                )
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockCreateWidget(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun updateWidget(
+        ctx: Id,
+        target: Id,
+        source: Id,
+        type: WidgetLayout
+    ): Payload {
+        val request = Rpc.Block.CreateWidget.Request(
+            contextId = ctx,
+            targetId = target,
+            widgetLayout = type.mw(),
+            position = Block.Position.Replace,
             block = Block(
                 link = Block.Content.Link(
                     targetBlockId = source

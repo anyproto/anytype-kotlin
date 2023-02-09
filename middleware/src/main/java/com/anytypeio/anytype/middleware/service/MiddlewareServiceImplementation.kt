@@ -1350,6 +1350,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun workspaceObjectListRemove(request: Rpc.Workspace.Object.ListRemove.Request): Rpc.Workspace.Object.ListRemove.Response {
+        val encoded = Service.workspaceObjectListRemove(
+            Rpc.Workspace.Object.ListRemove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Workspace.Object.ListRemove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Workspace.Object.ListRemove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockDataViewAddFilter(request: Rpc.BlockDataview.Filter.Add.Request): Rpc.BlockDataview.Filter.Add.Response {
         val encoded = Service.blockDataviewFilterAdd(
             Rpc.BlockDataview.Filter.Add.Request.ADAPTER.encode(request)

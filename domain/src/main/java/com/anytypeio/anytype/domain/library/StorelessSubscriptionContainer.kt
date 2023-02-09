@@ -54,7 +54,7 @@ interface StorelessSubscriptionContainer {
                         beforeId = null,
                         source = source,
                         ignoreWorkspace = null,
-                        noDepSubscription = null
+                        noDepSubscription = true
                     ).results.map { SubscriptionObject(it.id, it) }.toMutableList()
 
                     val objectsFlow =

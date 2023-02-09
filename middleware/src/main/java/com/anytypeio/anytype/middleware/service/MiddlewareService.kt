@@ -418,5 +418,8 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun workspaceObjectListAdd(request: Rpc.Workspace.Object.ListAdd.Request): Rpc.Workspace.Object.ListAdd.Response
 
+    @Throws(Exception::class)
+    fun workspaceObjectListRemove(request: Rpc.Workspace.Object.ListRemove.Request): Rpc.Workspace.Object.ListRemove.Response
+
     //endregion
 }

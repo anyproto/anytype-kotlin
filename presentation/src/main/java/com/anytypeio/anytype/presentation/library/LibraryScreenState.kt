@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.library
 
-import com.anytypeio.anytype.presentation.navigation.LibraryView
 
 class LibraryScreenState(
     val types: Tabs.Types,

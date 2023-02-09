@@ -656,6 +656,10 @@ class BlockMiddleware(
         return middleware.workspaceObjectListAdd(objects)
     }
 
+    override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
+        return middleware.workspaceObjectListRemove(objects)
+    }
+
     override suspend fun createObject(
         command: Command.CreateObject
     ): CreateObjectResult = middleware.objectCreate(command)

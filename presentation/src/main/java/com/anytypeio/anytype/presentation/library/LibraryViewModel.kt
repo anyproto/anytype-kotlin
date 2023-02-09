@@ -3,11 +3,15 @@ package com.anytypeio.anytype.presentation.library
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
-import com.anytypeio.anytype.presentation.navigation.LibraryView
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,13 +19,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LibraryViewModel(
     private val myTypesDelegate: MyTypesDelegate,
     private val libraryTypesDelegate: LibraryTypesDelegate,
     private val myRelationsDelegate: MyRelationsDelegate,
-    private val libraryRelationsDelegate: LibraryRelationsDelegate
-) : ViewModel() {
+    private val libraryRelationsDelegate: LibraryRelationsDelegate,
+    private val addObjectToWorkspace: AddObjectToWorkspace,
+    private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
+    private val resourceManager: LibraryResourceManager
+) : BaseViewModel() {
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
 
@@ -41,8 +49,72 @@ class LibraryViewModel(
                     is LibraryEvent.Query.LibraryRelations -> {
                         libraryRelationsDelegate.onQueryLibRelations(it.query)
                     }
+                    is LibraryEvent.ToggleInstall -> {
+                        proceedWithToggleInstall(it.item)
+                    }
                 }
             }
+        }
+    }
+
+    private fun proceedWithToggleInstall(item: LibraryView) {
+        when (val dependentData = item.dependentData) {
+            is DependentData.Model -> {
+                proceedWithUnInstallingObject(item, dependentData.item.id)
+            }
+            is DependentData.None -> {
+                proceedWithInstallingObject(item)
+            }
+        }
+    }
+
+    private fun proceedWithInstallingObject(item: LibraryView) {
+        viewModelScope.launch {
+            addObjectToWorkspace(AddObjectToWorkspace.Params(listOf(item.id))).proceed(
+                success = {
+                    when (item) {
+                        is LibraryView.LibraryRelationView -> {
+                            sendToast(resourceManager.messageRelationAdded(item.name))
+                        }
+                        is LibraryView.LibraryTypeView -> {
+                            sendToast(resourceManager.messageTypeAdded(item.name))
+                        }
+                        else -> {
+                            Timber.e("Unsupported item type: $item")
+                        }
+                    }
+                },
+                failure = {
+                    Timber.e(it, "Error while adding relation to workspace.")
+                    sendToast(resourceManager.errorMessage)
+                }
+            )
+        }
+    }
+
+    private fun proceedWithUnInstallingObject(item: LibraryView, id: Id) {
+        viewModelScope.launch {
+            removeObjectsFromWorkspace.execute(
+                RemoveObjectsFromWorkspace.Params(listOf(id))
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while removing relation from workspace.")
+                    sendToast(resourceManager.errorMessage)
+                },
+                onSuccess = {
+                    when (item) {
+                        is LibraryView.LibraryRelationView -> {
+                            sendToast(resourceManager.messageRelationRemoved(item.name))
+                        }
+                        is LibraryView.LibraryTypeView -> {
+                            sendToast(resourceManager.messageTypeRemoved(item.name))
+                        }
+                        else -> {
+                            Timber.e("Unsupported item type: $item")
+                        }
+                    }
+                }
+            )
         }
     }
 
@@ -93,9 +165,17 @@ class LibraryViewModel(
         return libTypes.copy(
             items = libTypes.items.map { libType ->
                 if (libType is LibraryView.LibraryTypeView) {
-                    libType.copy(installed = myTypes.items.find { myType ->
-                        (myType as? LibraryView.MyTypeView)?.sourceObject == libType.id
-                    } != null)
+                    with(
+                        myTypes.items.find {
+                            (it as? LibraryView.MyTypeView)?.sourceObject == libType.id
+                        }
+                    ) {
+                        libType.copy(
+                            dependentData = if (this != null) {
+                                DependentData.Model(item = this)
+                            } else DependentData.None
+                        )
+                    }
                 } else {
                     libType
                 }
@@ -110,9 +190,17 @@ class LibraryViewModel(
         return libRelations.copy(
             items = libRelations.items.map { libRelation ->
                 if (libRelation is LibraryView.LibraryRelationView) {
-                    libRelation.copy(installed = myRelations.items.find { myType ->
-                        (myType as LibraryView.MyRelationView).sourceObject == libRelation.id
-                    } != null)
+                    with(
+                        myRelations.items.find {
+                            (it as? LibraryView.MyRelationView)?.sourceObject == libRelation.id
+                        }
+                    ) {
+                        libRelation.copy(
+                            dependentData = if (this != null) {
+                                DependentData.Model(item = this)
+                            } else DependentData.None
+                        )
+                    }
                 } else {
                     libRelation
                 }
@@ -124,7 +212,10 @@ class LibraryViewModel(
         private val myTypesDelegate: MyTypesDelegate,
         private val libraryTypesDelegate: LibraryTypesDelegate,
         private val myRelationsDelegate: MyRelationsDelegate,
-        private val libraryRelationsDelegate: LibraryRelationsDelegate
+        private val libraryRelationsDelegate: LibraryRelationsDelegate,
+        private val addObjectToWorkspace: AddObjectToWorkspace,
+        private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
+        private val resourceManager: LibraryResourceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -132,7 +223,10 @@ class LibraryViewModel(
                 myTypesDelegate,
                 libraryTypesDelegate,
                 myRelationsDelegate,
-                libraryRelationsDelegate
+                libraryRelationsDelegate,
+                addObjectToWorkspace,
+                removeObjectsFromWorkspace,
+                resourceManager
             ) as T
         }
     }

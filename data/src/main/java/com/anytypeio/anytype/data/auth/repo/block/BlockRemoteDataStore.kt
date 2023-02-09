@@ -621,6 +621,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         return remote.addObjectToWorkspace(objects)
     }
 
+    override suspend fun removeObjectFromWorkspace(objects: List<Id>) : List<Id> {
+        return remote.removeObjectFromWorkspace(objects)
+    }
+
     override suspend fun createObject(
         command: Command.CreateObject
     ): CreateObjectResult {

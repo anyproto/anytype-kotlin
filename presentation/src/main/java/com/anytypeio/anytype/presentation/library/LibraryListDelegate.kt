@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.library
 
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.presentation.navigation.LibraryView
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1812,6 +1812,17 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun workspaceObjectListRemove(objects: List<Id>): List<Id> {
+        val request = Rpc.Workspace.Object.ListRemove.Request(
+            objectIds = objects
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceObjectListRemove(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.ids
+    }
+
+    @Throws(Exception::class)
     fun createWidgetBlock(
         ctx: Id,
         source: Id

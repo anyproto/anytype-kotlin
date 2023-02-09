@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">presentation</string>
+
+    <string name="library_type_added">Type `%1$s` added to your library"</string>
+    <string name="library_type_removed">Type `%1$s` removed from your library"</string>
+    <string name="library_relation_added">Relation `%1$s` added to your library"</string>
+    <string name="library_relation_removed">Relation `%1$s` removed from your library"</string>
+    <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
+
 </resources>

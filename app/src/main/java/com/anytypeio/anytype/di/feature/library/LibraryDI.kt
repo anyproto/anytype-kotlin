@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.library
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -8,8 +9,11 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
+import com.anytypeio.anytype.presentation.library.LibraryResourceManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
@@ -17,6 +21,7 @@ import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
 import com.anytypeio.anytype.ui.library.LibraryFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -32,9 +37,14 @@ import kotlinx.coroutines.Dispatchers
 @PerScreen
 interface LibraryComponent {
 
-    @Component.Factory
-    interface Factory {
-        fun create(dependencies: LibraryDependencies): LibraryComponent
+    @Component.Builder
+    interface Builder {
+        fun withDependencies(dependencies: LibraryDependencies): Builder
+
+        @BindsInstance
+        fun withContext(context: Context): Builder
+
+        fun build(): LibraryComponent
     }
 
     fun inject(fragment: LibraryFragment)
@@ -81,9 +91,25 @@ object LibraryModule {
         return LibraryRelationsDelegate(container, urlBuilder)
     }
 
+    @Provides
+    @PerScreen
+    fun addObjectToWorkspace(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): AddObjectToWorkspace = AddObjectToWorkspace(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @Provides
+    @PerScreen
+    fun removeObjectFromWorkspace(
+        repo: BlockRepository,
+    ): RemoveObjectsFromWorkspace = RemoveObjectsFromWorkspace(repo = repo)
+
     @PerScreen
     @Provides
-    fun provideAppCoroutineDispatchers() : AppCoroutineDispatchers = AppCoroutineDispatchers(
+    fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers = AppCoroutineDispatchers(
         io = Dispatchers.IO,
         computation = Dispatchers.Default,
         main = Dispatchers.Main
@@ -99,6 +125,10 @@ object LibraryModule {
         @PerScreen
         @Binds
         fun bindContainer(container: StorelessSubscriptionContainer.Impl): StorelessSubscriptionContainer
+
+        @PerScreen
+        @Binds
+        fun bindResourceManager(manager: LibraryResourceManager.Impl): LibraryResourceManager
 
     }
 

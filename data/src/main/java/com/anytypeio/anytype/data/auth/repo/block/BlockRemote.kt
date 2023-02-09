@@ -298,6 +298,7 @@ interface BlockRemote {
     ): Payload
 
     suspend fun addObjectToWorkspace(objects: List<Id>): List<Id>
+    suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id>
 
     suspend fun createObject(command: Command.CreateObject): CreateObjectResult
 

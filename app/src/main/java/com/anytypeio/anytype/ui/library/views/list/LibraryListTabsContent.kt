@@ -15,9 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
-import com.anytypeio.anytype.presentation.navigation.LibraryView
+import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.ui.library.LibraryListConfig
 import com.anytypeio.anytype.ui.library.views.list.items.CreateNewTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.ItemDefaults
@@ -28,7 +29,6 @@ import com.anytypeio.anytype.ui.library.views.list.items.MyTypeItem
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
-import timber.log.Timber
 
 @ExperimentalPagerApi
 @Composable
@@ -46,7 +46,8 @@ fun LibraryListTabsContent(
         .padding(start = 4.dp, end = 4.dp)
 
     HorizontalPager(modifier = modifier, state = pagerState, count = configuration.size) { index ->
-        val data = when (configuration[index]) {
+        val config = configuration[index]
+        val data = when (config) {
             is LibraryListConfig.Types, is LibraryListConfig.Relations -> tabs.my
             is LibraryListConfig.TypesLibrary, is LibraryListConfig.RelationsLibrary -> tabs.lib
         }
@@ -74,8 +75,13 @@ fun LibraryListTabsContent(
                                 LibTypeItem(
                                     name = item.name,
                                     icon = item.icon,
-                                    installed = item.installed,
-                                    modifier = itemModifier
+                                    installed = item.dependentData is DependentData.Model,
+                                    modifier = itemModifier,
+                                    onClick = {
+                                        vmEventStream.invoke(
+                                            LibraryEvent.ToggleInstall.Type(item)
+                                        )
+                                    }
                                 )
                             }
                             is LibraryView.MyTypeView -> {
@@ -91,7 +97,12 @@ fun LibraryListTabsContent(
                                     modifier = itemModifier,
                                     name = item.name,
                                     format = item.format,
-                                    installed = item.installed
+                                    installed = item.dependentData is DependentData.Model,
+                                    onClick = {
+                                        vmEventStream.invoke(
+                                            LibraryEvent.ToggleInstall.Relation(item)
+                                        )
+                                    }
                                 )
                             }
                             is LibraryView.MyRelationView -> {

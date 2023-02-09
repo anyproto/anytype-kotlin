@@ -696,6 +696,12 @@ class BlockDataRepository(
         )
     }
 
+    override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
+        return remote.removeObjectFromWorkspace(
+            objects = objects
+        )
+    }
+
     override suspend fun createWidget(ctx: Id, source: Id): Payload = remote.createWidget(
         ctx = ctx,
         source = source

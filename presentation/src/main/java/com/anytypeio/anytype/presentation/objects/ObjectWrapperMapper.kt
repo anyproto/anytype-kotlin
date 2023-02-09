@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.navigation.LibraryView
+import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import timber.log.Timber
@@ -72,7 +72,6 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     layout = obj.getProperLayout(),
                     builder = urlBuilder
                 ),
-                installed = false,
             )
         }
         ObjectTypeIds.OBJECT_TYPE -> {

@@ -12,9 +12,9 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.dashboard.DEFAULT_KEYS
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
+import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.library.QueryListenerMyTypes
 import com.anytypeio.anytype.presentation.library.filterByQuery
-import com.anytypeio.anytype.presentation.navigation.LibraryView
 import com.anytypeio.anytype.presentation.objects.toLibraryViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.common
 
+import android.content.Context
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationModule
@@ -769,10 +770,11 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val libraryComponent = Component {
-        DaggerLibraryComponent
-            .factory()
-            .create(findComponentDependencies())
+    fun libraryComponent(context: Context) = Component {
+        DaggerLibraryComponent.builder()
+            .withContext(context)
+            .withDependencies(findComponentDependencies())
+            .build()
     }
 
     class Component<T>(private val builder: () -> T) {

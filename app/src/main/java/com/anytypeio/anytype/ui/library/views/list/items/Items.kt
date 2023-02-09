@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.ui.library.views.list.items
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,14 +11,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -57,6 +63,7 @@ fun LibTypeItem(
     icon: ObjectIcon?,
     installed: Boolean = false,
     modifier: Modifier,
+    onClick: () -> Unit
 ) {
     Row(
         modifier,
@@ -79,6 +86,9 @@ fun LibTypeItem(
         Image(
             painter = painterResource(id = installedImageRes),
             contentDescription = installedImageRes.toString(),
+            modifier = Modifier.noRippleClickable {
+                onClick()
+            }
         )
     }
 }
@@ -119,7 +129,8 @@ fun LibRelationItem(
     modifier: Modifier,
     name: String,
     format: RelationFormat,
-    installed: Boolean
+    installed: Boolean,
+    onClick: () -> Unit
 ) {
     Row(
         modifier,
@@ -144,6 +155,9 @@ fun LibRelationItem(
         Image(
             painter = painterResource(id = installedImageRes),
             contentDescription = installedImageRes.toString(),
+            Modifier.noRippleClickable {
+                onClick()
+            }
         )
     }
 }
@@ -190,3 +204,20 @@ object ItemDefaults {
     val ITEM_HEIGHT = 52.dp
     val TEXT_PADDING_START = 10.dp
 }
+
+@Composable
+fun Modifier.noRippleClickable(
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    indication: Indication? = null,
+    enabled: Boolean = true,
+    onClickLabel: String? = null,
+    role: Role? = null,
+    onClick: () -> Unit,
+) = clickable(
+    interactionSource = interactionSource,
+    indication = indication,
+    enabled = enabled,
+    onClickLabel = onClickLabel,
+    role = role,
+    onClick = onClick,
+)

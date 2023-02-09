@@ -9,4 +9,9 @@ sealed class LibraryEvent {
         class LibraryRelations(override val query: String) : Query(query)
     }
 
+    sealed class ToggleInstall(open val item: LibraryView) : LibraryEvent() {
+        class Type(override val item: LibraryView) : ToggleInstall(item)
+        class Relation(override val item: LibraryView) : ToggleInstall(item)
+    }
+
 }

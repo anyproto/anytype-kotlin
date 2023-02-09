@@ -9,6 +9,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
@@ -45,12 +48,24 @@ class LibraryFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        with(lifecycleScope) {
+            subscribe(vm.toasts) { toast(it) }
+        }
+    }
+
     override fun injectDependencies() {
-        componentManager().libraryComponent.get().inject(this)
+        componentManager()
+            .libraryComponent(requireContext())
+            .get()
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().libraryComponent.release()
+        componentManager()
+            .libraryComponent(requireContext())
+            .release()
     }
 
 }

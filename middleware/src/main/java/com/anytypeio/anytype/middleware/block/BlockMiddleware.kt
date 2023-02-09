@@ -628,6 +628,12 @@ class BlockMiddleware(
         prefilled = prefilled
     )
 
+    override suspend fun createType(
+        name: String,
+    ): ObjectWrapper.Type = middleware.objectCreateObjectType(
+        name = name
+    )
+
     override suspend fun createRelationOption(
         relation: Key,
         name: String,

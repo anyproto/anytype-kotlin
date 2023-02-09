@@ -224,6 +224,10 @@ interface BlockRemote {
         prefilled: Struct
     ): ObjectWrapper.Relation
 
+    suspend fun createType(
+        name: String,
+    ): ObjectWrapper.Type
+
     suspend fun createRelationOption(
         relation: Id,
         name: String,

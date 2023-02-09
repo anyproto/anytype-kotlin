@@ -80,6 +80,7 @@ import com.anytypeio.anytype.di.feature.settings.AccountAndDataModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
+import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
@@ -775,6 +776,12 @@ class ComponentManager(
             .withContext(context)
             .withDependencies(findComponentDependencies())
             .build()
+    }
+
+    val typeCreationComponent = Component {
+        DaggerTypeCreationComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

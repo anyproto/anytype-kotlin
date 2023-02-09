@@ -733,6 +733,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectCreateObjectType(request: Rpc.Object.CreateObjectType.Request): Rpc.Object.CreateObjectType.Response {
+        val encoded =
+            Service.objectCreateObjectType(Rpc.Object.CreateObjectType.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.CreateObjectType.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CreateObjectType.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+
     override fun objectCreateRelationOption(request: Rpc.Object.CreateRelationOption.Request): Rpc.Object.CreateRelationOption.Response {
         val encoded = Service.objectCreateRelationOption(
             Rpc.Object.CreateRelationOption.Request.ADAPTER.encode(request)

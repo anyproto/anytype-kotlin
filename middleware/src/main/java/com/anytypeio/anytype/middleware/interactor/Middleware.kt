@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.interactor
 
+import anytype.Event
 import anytype.Rpc
 import anytype.model.Block
 import anytype.model.ObjectInfo
@@ -926,6 +927,23 @@ class Middleware(
         val response = service.objectCreateRelation(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return ObjectWrapper.Relation(
+            response.details ?: throw IllegalStateException("Missing details")
+        )
+    }
+
+    @Throws(Exception::class)
+    fun objectCreateObjectType(
+        name: String,
+    ): ObjectWrapper.Type {
+        val request = Rpc.Object.CreateObjectType.Request(
+            details = buildMap {
+                put(Relations.NAME, name)
+            }
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectCreateObjectType(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return ObjectWrapper.Type(
             response.details ?: throw IllegalStateException("Missing details")
         )
     }

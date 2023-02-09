@@ -4,18 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.types.TypeCreationFragment
 import com.google.accompanist.pager.ExperimentalPagerApi
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
@@ -30,6 +34,8 @@ class LibraryFragment : BaseComposeFragment() {
     @FlowPreview
     @ExperimentalLifecycleComposeApi
     @ExperimentalPagerApi
+    @ExperimentalMaterialApi
+    @ExperimentalComposeUiApi
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -50,8 +56,16 @@ class LibraryFragment : BaseComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(lifecycleScope) {
-            subscribe(vm.toasts) { toast(it) }
+        subscribe(vm.toasts) { toast(it) }
+        subscribe(vm.navigation) {
+            when (it) {
+                is LibraryViewModel.Navigation.OpenTypeCreation -> {
+                    findNavController().navigate(
+                        R.id.openTypeCreationScreen,
+                        TypeCreationFragment.args(it.name)
+                    )
+                }
+            }
         }
     }
 

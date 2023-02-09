@@ -69,6 +69,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectCreateRelation(request: Rpc.Object.CreateRelation.Request): Rpc.Object.CreateRelation.Response
 
+    @Throws(Exception::class)
+    fun objectCreateObjectType(request: Rpc.Object.CreateObjectType.Request): Rpc.Object.CreateObjectType.Response
+
     fun objectCreateRelationOption(request: Rpc.Object.CreateRelationOption.Request): Rpc.Object.CreateRelationOption.Response
 
     @Throws(Exception::class)

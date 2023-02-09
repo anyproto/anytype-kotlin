@@ -280,6 +280,10 @@ interface BlockDataStore {
         prefilled: Struct
     ) : ObjectWrapper.Relation
 
+    suspend fun createType(
+        name: String,
+    ): ObjectWrapper.Type
+
     suspend fun createRelationOption(
         relation: Key,
         name: String,

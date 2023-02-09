@@ -66,7 +66,7 @@ fun TabContentScreen(
     modifier: Modifier,
     config: LibraryScreenConfig,
     tabs: LibraryScreenState.Tabs,
-    vmEventStream: (LibraryEvent) -> Unit
+    vmEventStream: (LibraryEvent) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -80,18 +80,28 @@ fun TabContentScreen(
             text = stringResource(config.description),
             style = MaterialTheme.typography.h1,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+            modifier = Modifier.padding(
+                start = HeaderDefaults.HeaderPadding,
+                end = HeaderDefaults.HeaderPadding
+            )
         )
         Box(Modifier.height(18.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                when (config) {
+                    is LibraryScreenConfig.Types -> {
+                        vmEventStream.invoke(LibraryEvent.CreateType())
+                    }
+                    is LibraryScreenConfig.Relations -> {
+                        // do nothing
+                    }
+                }
+            },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.glyph_selected)
             ),
             shape = RoundedCornerShape(10.dp),
-            contentPadding = PaddingValues(
-                28.dp, 10.dp, 28.dp, 10.dp
-            ),
+            contentPadding = HeaderDefaults.ButtonContentPaddingValues,
             content = {
                 Text(
                     text = stringResource(config.mainBtnTitle),
@@ -113,4 +123,11 @@ fun TabContentScreen(
         )
     }
 
+}
+
+private object HeaderDefaults {
+    val HeaderPadding = 20.dp
+    val ButtonContentPaddingValues = PaddingValues(
+        28.dp, 10.dp, 28.dp, 10.dp
+    )
 }

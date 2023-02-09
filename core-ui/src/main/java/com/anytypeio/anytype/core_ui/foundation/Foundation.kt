@@ -50,9 +50,9 @@ fun Toolbar(title: String) {
 }
 
 @Composable
-fun Dragger() {
+fun Dragger(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.size(
+        modifier = modifier.size(
             height = 4.dp,
             width = 48.dp
         ).background(

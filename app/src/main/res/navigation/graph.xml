@@ -467,7 +467,20 @@
     <fragment
         android:id="@+id/libraryFragment"
         android:name="com.anytypeio.anytype.ui.library.LibraryFragment"
-        android:label="LibraryFragment"/>
+        android:label="LibraryFragment">
+        <action
+            android:id="@+id/openTypeCreationScreen"
+            app:destination="@id/typeCreationFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/typeCreationFragment"
+        android:name="com.anytypeio.anytype.ui.types.TypeCreationFragment"
+        android:label="TypeCreationFragment">
+        <argument
+            android:name="arg.type_name"
+            app:argType="string"
+            android:defaultValue="" />
+    </dialog>
     <fragment
         android:id="@+id/archiveFragment"
         android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"

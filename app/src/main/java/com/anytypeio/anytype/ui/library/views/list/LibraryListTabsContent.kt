@@ -1,15 +1,17 @@
 package com.anytypeio.anytype.ui.library.views.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -43,7 +45,7 @@ fun LibraryListTabsContent(
     val itemModifier = Modifier
         .fillMaxWidth()
         .height(ItemDefaults.ITEM_HEIGHT)
-        .padding(start = 4.dp, end = 4.dp)
+        .padding(start = LibraryListDefaults.ItemPadding, end = LibraryListDefaults.ItemPadding)
 
     HorizontalPager(modifier = modifier, state = pagerState, count = configuration.size) { index ->
         val config = configuration[index]
@@ -58,10 +60,11 @@ fun LibraryListTabsContent(
         ) {
             LibraryListSearchWidget(vmEventStream = vmEventStream, config = configuration[index])
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = LibraryListDefaults.ListPadding,
+                    end = LibraryListDefaults.ListPadding
+                )
             ) {
 
                 items(
@@ -115,7 +118,13 @@ fun LibraryListTabsContent(
                             }
                             is LibraryView.CreateNewTypeView -> {
                                 CreateNewTypeItem(
-                                    modifier = itemModifier,
+                                    modifier = itemModifier.clickable {
+                                        vmEventStream.invoke(
+                                            LibraryEvent.CreateType(
+                                                item.name
+                                            )
+                                        )
+                                    },
                                     name = item.name
                                 )
                             }
@@ -125,8 +134,11 @@ fun LibraryListTabsContent(
                         }
                         if (ix < data.items.lastIndex) {
                             Divider(
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                                thickness = LibraryListDefaults.DividerThickness,
+                                modifier = Modifier.padding(
+                                    start = LibraryListDefaults.DividerPadding,
+                                    end = LibraryListDefaults.DividerPadding
+                                ),
                                 color = colorResource(id = R.color.shape_primary)
                             )
                         }
@@ -135,4 +147,12 @@ fun LibraryListTabsContent(
             }
         }
     }
+}
+
+@Immutable
+private object LibraryListDefaults {
+    val ItemPadding = 4.dp
+    val DividerPadding = 4.dp
+    val ListPadding = 16.dp
+    val DividerThickness = 0.5.dp
 }

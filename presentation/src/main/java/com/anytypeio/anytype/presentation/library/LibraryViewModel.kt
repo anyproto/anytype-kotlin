@@ -7,11 +7,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
-import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
+import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,7 +29,7 @@ class LibraryViewModel(
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val resourceManager: LibraryResourceManager
-) : BaseViewModel() {
+) : NavigationViewModel<LibraryViewModel.Navigation>() {
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
 
@@ -49,8 +49,12 @@ class LibraryViewModel(
                     is LibraryEvent.Query.LibraryRelations -> {
                         libraryRelationsDelegate.onQueryLibRelations(it.query)
                     }
+
                     is LibraryEvent.ToggleInstall -> {
                         proceedWithToggleInstall(it.item)
+                    }
+                    is LibraryEvent.CreateType -> {
+                        navigate(Navigation.OpenTypeCreation(it.name))
                     }
                 }
             }
@@ -229,6 +233,12 @@ class LibraryViewModel(
                 resourceManager
             ) as T
         }
+    }
+
+    sealed class Navigation {
+        class OpenTypeCreation(
+            val name: String = ""
+        ) : Navigation()
     }
 
 }

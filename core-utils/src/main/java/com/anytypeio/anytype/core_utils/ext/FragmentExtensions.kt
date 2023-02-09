@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_utils.ext
 
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -43,3 +44,6 @@ fun <T : Parcelable> Fragment.argList(key: String): ArrayList<T> {
 
 fun <T> CoroutineScope.subscribe(flow: Flow<T>, body: suspend (T) -> Unit): Job =
     flow.cancellable().onEach { body(it) }.launchIn(this)
+
+fun <T> Fragment.subscribe(flow: Flow<T>, body: (T) -> Unit): Job =
+    flow.cancellable().onEach { body(it) }.launchIn(viewLifecycleOwner.lifecycleScope)

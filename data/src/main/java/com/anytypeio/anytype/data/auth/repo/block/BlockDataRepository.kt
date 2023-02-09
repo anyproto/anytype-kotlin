@@ -548,6 +548,10 @@ class BlockDataRepository(
         prefilled = prefilled
     )
 
+    override suspend fun createType(
+        name: String,
+    ): ObjectWrapper.Type = remote.createType(name = name)
+
     override suspend fun createRelationOption(
         relation: Key,
         name: String,

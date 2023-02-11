@@ -32,6 +32,7 @@ import com.anytypeio.anytype.di.feature.templates.TemplateSelectSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
+import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -60,6 +61,7 @@ interface MainComponent :
     AppearanceDependencies,
     LibraryDependencies,
     HomeScreenDependencies,
+    CollectionDependencies,
     TypeCreationDependencies {
     fun inject(app: AndroidApplication)
 
@@ -117,6 +119,11 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(HomeScreenDependencies::class)
     abstract fun provideHomeScreenDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CollectionDependencies::class)
+    abstract fun provideHomeWidgetDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

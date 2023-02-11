@@ -148,13 +148,17 @@
         android:id="@+id/homeScreen"
         android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"
         android:label="Home screen"
-        tools:layout="@layout/fragment_home">
-    </fragment>
+        tools:layout="@layout/fragment_home"></fragment>
+
+    <fragment
+        android:id="@+id/homeScreenWidgets"
+        android:name="com.anytypeio.anytype.ui.widgets.collection.CollectionFragment"
+        android:label="Home screen"
+        tools:layout="@layout/fragment_home"></fragment>
 
     <dialog
         android:id="@+id/selectWidgetSourceScreen"
-        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment">
-    </dialog>
+        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment"></dialog>
 
     <dialog
         android:id="@+id/selectWidgetTypeScreen"

@@ -327,6 +327,13 @@ class DashboardFragment :
                     R.id.homeScreen
                 )
             }
+
+            binding.formerDashboardWidgets.visible()
+            binding.formerDashboardWidgets.setOnClickListener {
+                findNavController().navigate(
+                    R.id.homeScreenWidgets
+                )
+            }
         }
     }
 

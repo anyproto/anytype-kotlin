@@ -25,7 +25,6 @@ class ObjectSearchSubscriptionContainer(
 ) {
 
     private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
-
     fun observe(
         subscription: Id,
         sorts: List<DVSort> = emptyList(),

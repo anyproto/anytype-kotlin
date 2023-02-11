@@ -22,6 +22,21 @@
         app:layout_constraintTop_toTopOf="@+id/ivSettings" />
 
     <TextView
+        android:id="@+id/formerDashboardWidgets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:visibility="visible"
+        android:text="[HomeWidgets]"
+        android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="10sp"
+        android:textColor="@color/white"
+        android:fontFamily="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/ivSettings"
+        app:layout_constraintEnd_toStartOf="@+id/widgets"
+        app:layout_constraintTop_toTopOf="@+id/ivSettings" />
+
+    <TextView
         android:id="@+id/tvGreeting"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

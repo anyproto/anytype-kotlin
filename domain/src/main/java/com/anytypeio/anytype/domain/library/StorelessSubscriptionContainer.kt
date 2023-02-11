@@ -24,6 +24,8 @@ interface StorelessSubscriptionContainer {
 
     fun subscribe(searchParams: StoreSearchParams): Flow<List<ObjectWrapper.Basic>>
 
+    suspend fun unsubscribe(subscriptions: List<Id>)
+
     class Impl @Inject constructor(
         private val repo: BlockRepository,
         private val channel: SubscriptionEventChannel,
@@ -95,6 +97,10 @@ interface StorelessSubscriptionContainer {
                     emitAll(objectsFlow)
                 }
             }.flowOn(dispatchers.io)
+
+        override suspend fun unsubscribe(subscriptions: List<Id>) {
+            repo.cancelObjectSearchSubscription(subscriptions)
+        }
     }
 
 }

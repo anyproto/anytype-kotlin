@@ -85,6 +85,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
 
 class ComponentManager(
     private val main: MainComponent,
@@ -181,6 +182,12 @@ class ComponentManager(
 
     val homeScreenComponent = Component {
         DaggerHomeScreenComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val collectionComponent = Component {
+        DaggerCollectionComponent
             .factory()
             .create(findComponentDependencies())
     }

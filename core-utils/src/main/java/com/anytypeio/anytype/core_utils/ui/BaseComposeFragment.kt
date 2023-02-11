@@ -8,12 +8,23 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.anytypeio.anytype.core_utils.BuildConfig
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
+import kotlinx.coroutines.Job
 
 abstract class BaseComposeFragment : Fragment() {
+
+    val jobs = mutableListOf<Job>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectDependencies()
+    }
+
+    override fun onStop() {
+        jobs.apply {
+            forEach { it.cancel() }
+            clear()
+        }
+        super.onStop()
     }
 
     override fun onDestroy() {

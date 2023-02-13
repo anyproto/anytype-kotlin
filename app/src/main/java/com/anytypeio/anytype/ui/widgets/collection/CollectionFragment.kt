@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.collection.CollectionViewModel.Command
 import javax.inject.Inject
@@ -23,6 +24,8 @@ class CollectionFragment : BaseComposeFragment() {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
+
+    val navigation get() = navigation()
 
     private val vm by viewModels<CollectionViewModel> { factory }
 
@@ -56,13 +59,12 @@ class CollectionFragment : BaseComposeFragment() {
     }
 
     private fun launchObjectSet(target: Id) {
-        TODO("Not yet implemented")
+        navigation.launchObjectSet(target)
     }
 
     private fun launchDocument(id: Id) {
-        TODO("Not yet implemented")
+        navigation.launchDocument(id)
     }
-
 
     override fun onStop() {
         //vm.onStop(Subscriptions.SUBSCRIPTION_RECENT)

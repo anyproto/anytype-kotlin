@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.process
@@ -20,7 +22,7 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
-import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
@@ -55,7 +57,7 @@ class HomeScreenViewModel(
     private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val interceptEvents: InterceptEvents
-) : BaseViewModel(), Reducer<ObjectView, Payload> {
+) : NavigationViewModel<HomeScreenViewModel.Navigation>(), Reducer<ObjectView, Payload> {
 
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
@@ -301,6 +303,10 @@ class HomeScreenViewModel(
         proceedWithDeletingWidget(widget)
     }
 
+    fun onWidgetObjectClicked(obj: ObjectWrapper.Basic) {
+        proceedWithOpeningObject(obj)
+    }
+
     fun onChangeWidgetTypeClicked(widget: Id) {
         Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
         val curr = widgets.value.find { it.id == widget }
@@ -376,6 +382,24 @@ class HomeScreenViewModel(
             }
         }
         return curr
+    }
+
+    private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
+        when (obj.layout) {
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.NOTE,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.FILE,
+            ObjectType.Layout.BOOKMARK -> navigate(Navigation.OpenObject(obj.id))
+            ObjectType.Layout.SET -> navigate(Navigation.OpenSet(obj.id))
+            else -> sendToast("Unexpected layout: ${obj.layout}")
+        }
+    }
+
+    sealed class Navigation {
+        data class OpenObject(val ctx: Id) : Navigation()
+        data class OpenSet(val ctx: Id) : Navigation()
     }
 
     class Factory @Inject constructor(

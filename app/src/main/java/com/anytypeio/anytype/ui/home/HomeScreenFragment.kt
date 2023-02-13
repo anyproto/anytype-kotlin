@@ -21,9 +21,12 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
+import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -51,7 +54,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onEditWidgets = { context.toast("Coming soon") },
                     onRefresh = vm::onRefresh,
                     onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                        when(action) {
+                        when (action) {
                             DropDownMenuAction.ChangeWidgetSource -> {
                                 vm.onChangeWidgetSourceClicked(widget)
                             }
@@ -65,7 +68,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                                 vm.onDeleteWidgetClicked(widget)
                             }
                         }
-                    }
+                    },
+                    onWidgetObjectClicked = vm::onWidgetObjectClicked
                 )
             }
         }
@@ -75,13 +79,14 @@ class HomeScreenFragment : BaseComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.commands.collect { command -> proceed(command) }
+                launch { vm.commands.collect { command -> proceed(command) } }
+                launch { vm.navigation.collect { command -> proceed(command) } }
             }
         }
     }
 
     private fun proceed(command: Command) {
-        when(command) {
+        when (command) {
             is Command.ChangeWidgetSource -> {
                 findNavController().navigate(
                     R.id.selectWidgetSourceScreen,
@@ -107,6 +112,13 @@ class HomeScreenFragment : BaseComposeFragment() {
                     )
                 )
             }
+        }
+    }
+
+    private fun proceed(destination: Navigation) {
+        when (destination) {
+            is Navigation.OpenObject -> navigation().launchDocument(destination.ctx)
+            is Navigation.OpenSet -> navigation().launchObjectSet(destination.ctx)
         }
     }
 

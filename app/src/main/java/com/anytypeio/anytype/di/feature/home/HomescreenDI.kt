@@ -114,15 +114,6 @@ object HomeScreenModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun appCoroutineDispatchers(): AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        main = Dispatchers.Main,
-        computation = Dispatchers.Default
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun widgetEventDispatcher() : Dispatcher<WidgetDispatchEvent> = Dispatcher.Default()
 
     @JvmStatic
@@ -155,5 +146,6 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun subscriptionEventChannel(): SubscriptionEventChannel
     fun workspaceManager(): WorkspaceManager
     fun analytics(): Analytics
-    fun eventChannel() : EventChannel
+    fun eventChannel(): EventChannel
+    fun dispatchers(): AppCoroutineDispatchers
 }

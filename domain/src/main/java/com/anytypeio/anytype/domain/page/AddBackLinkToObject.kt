@@ -5,9 +5,11 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Add backlink from set or object itself to another object as a last block
@@ -16,7 +18,8 @@ class AddBackLinkToObject(
     private val openPage: OpenPage,
     private val createBlock: CreateBlock,
     private val closeBlock: CloseBlock,
-) : ResultInteractor<AddBackLinkToObject.Params, ObjectWrapper.Basic>() {
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<AddBackLinkToObject.Params, ObjectWrapper.Basic>(dispatchers.io) {
 
 
     override suspend fun doWork(params: Params): ObjectWrapper.Basic {

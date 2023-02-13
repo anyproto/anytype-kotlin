@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -49,9 +50,12 @@ object LinkToObjectModule {
     )
 
     @JvmStatic
-    @PerScreen
     @Provides
-    fun getObjectTypes(repo: BlockRepository): GetObjectTypes = GetObjectTypes(repo = repo)
+    @PerScreen
+    fun provideGetObjectTypesUseCase(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
 
     @JvmStatic
     @PerScreen

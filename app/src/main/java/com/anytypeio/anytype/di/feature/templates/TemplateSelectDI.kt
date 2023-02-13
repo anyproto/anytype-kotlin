@@ -32,14 +32,11 @@ object TemplateSelectModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun applyTemplate(repo: BlockRepository): ApplyTemplate = ApplyTemplate(
-        repo = repo,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
+    fun applyTemplate(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): ApplyTemplate =
+        ApplyTemplate(
+            repo = repo,
+            dispatchers = dispatchers
         )
-    )
 
     @Module
     interface Bindings {

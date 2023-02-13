@@ -122,11 +122,13 @@ object HomeDashboardModule {
     fun provideOpenDashboardUseCase(
         repo: BlockRepository,
         auth: AuthRepository,
-        provider: ConfigStorage
+        provider: ConfigStorage,
+        dispatchers: AppCoroutineDispatchers
     ): OpenDashboard = OpenDashboard(
         repo = repo,
         auth = auth,
-        provider = provider
+        provider = provider,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -200,10 +202,13 @@ object HomeDashboardModule {
     )
 
     @JvmStatic
-    @Provides
     @PerScreen
-    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
-        GetDefaultEditorType(repo)
+    @Provides
+    fun provideGetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDefaultEditorType =
+        GetDefaultEditorType(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -229,16 +234,13 @@ object HomeDashboardModule {
     fun objectSearchSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
-        store: ObjectStore
+        store: ObjectStore,
+        dispatchers: AppCoroutineDispatchers
     ): ObjectSearchSubscriptionContainer = ObjectSearchSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -256,14 +258,11 @@ object HomeDashboardModule {
     @Provides
     @PerScreen
     fun getTemplates(
-        repo: BlockRepository
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
     ) : GetTemplates = GetTemplates(
         repo = repo,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -272,11 +271,13 @@ object HomeDashboardModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType
+        getDefaultEditorType: GetDefaultEditorType,
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultEditorType = getDefaultEditorType,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

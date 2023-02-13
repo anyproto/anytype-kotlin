@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.ui.settings.LogoutWarningFragment
@@ -46,9 +47,11 @@ object LogoutWarningModule {
     @Provides
     fun provideLogoutUseCase(
         repo: AuthRepository,
-        provider: ConfigStorage
+        provider: ConfigStorage,
+        dispatchers: AppCoroutineDispatchers
     ): Logout = Logout(
-        repo = repo,
-        provider
+        repo,
+        provider,
+        dispatchers
     )
 }

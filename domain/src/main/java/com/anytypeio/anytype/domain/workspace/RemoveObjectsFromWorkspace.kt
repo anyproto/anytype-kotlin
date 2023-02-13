@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.domain.workspace
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import kotlinx.coroutines.Dispatchers
 
 class RemoveObjectsFromWorkspace(
-    private val repo: BlockRepository
-) : ResultInteractor<RemoveObjectsFromWorkspace.Params, List<Id>>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<RemoveObjectsFromWorkspace.Params, List<Id>>(dispatchers.io) {
 
     /**
      * Removes objects from workspace by ids

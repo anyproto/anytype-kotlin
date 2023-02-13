@@ -76,15 +76,6 @@ object RelationAddToObjectModule {
     @JvmStatic
     @Provides
     @PerDialog
-    fun appCoroutineDispatchers() : AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
     fun addObjectToWorkspace(
         repo: BlockRepository,
         appCoroutineDispatchers: AppCoroutineDispatchers
@@ -151,14 +142,6 @@ object RelationAddToDataViewModule {
     @PerDialog
     fun getRelations(repo: BlockRepository) : GetRelations = GetRelations(repo)
 
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun appCoroutineDispatchers() : AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    )
 
     @JvmStatic
     @Provides

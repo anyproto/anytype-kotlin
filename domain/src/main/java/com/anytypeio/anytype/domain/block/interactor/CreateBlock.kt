@@ -5,18 +5,21 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock.Params
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Use-case for creating a block.
  * @see Params
  */
 open class CreateBlock(
-    private val repo: BlockRepository
-) : ResultInteractor<Params, Pair<Id, Payload>>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<Params, Pair<Id, Payload>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Pair<Id, Payload> =
         repo.create(

@@ -8,11 +8,7 @@ import kotlinx.coroutines.Dispatchers
 
 class RestoreAccount(
     private val repo: AuthRepository,
-    dispatchers: AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    ),
+    dispatchers: AppCoroutineDispatchers,
 ) : BaseUseCase<AccountStatus, BaseUseCase.None>(context = dispatchers.io) {
 
     override suspend fun run(params: None) = safe { repo.restoreAccount() }

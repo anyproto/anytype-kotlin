@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
@@ -43,7 +44,10 @@ class DebugSettingsModule {
 
     @Provides
     @PerScreen
-    fun provideDebugSync(repo: BlockRepository) : DebugSync = DebugSync(repo = repo)
+    fun provideDebugSync(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugSync = DebugSync(repo = repo, dispatchers = dispatchers)
 
     @Provides
     @PerScreen

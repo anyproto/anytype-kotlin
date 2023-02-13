@@ -53,7 +53,8 @@ abstract class Interactor<in P>(
     }
 }
 
-abstract class ResultatInteractor<in P, out R>() {
+@Deprecated("Use ResultatInteractor instead")
+abstract class ResultatInteractor<in P, out R> {
     operator fun invoke(params: P): Flow<Resultat<R>> {
         return flow {
             emit(Resultat.Loading())
@@ -63,23 +64,23 @@ abstract class ResultatInteractor<in P, out R>() {
             emit(Resultat.Failure(t))
         }
     }
-    protected abstract suspend fun execute(params: P) : R
+
+    protected abstract suspend fun execute(params: P): R
 }
 
 abstract class ResultInteractor<in P, R>(
-    private val context: CoroutineContext = Dispatchers.IO
+    private val context: CoroutineContext
 ) {
     fun asFlow(params: P): Flow<R> = flow { emit(doWork(params)) }.flowOn(context)
 
     fun stream(params: P): Flow<Resultat<R>> {
-        return asFlow(params)
-            .map {
-                @Suppress("USELESS_CAST")
-                Resultat.Success(run(params)) as Resultat<R>
-            }
-            .onStart { emit(Resultat.Loading()) }
-            .catch { e -> emit(Resultat.Failure(e)) }
-            .flowOn(context)
+        return flow {
+            emit(Resultat.Loading())
+            val r = doWork(params)
+            emit(Resultat.Success(r))
+        }.catch { t ->
+            emit(Resultat.Failure(t))
+        }.flowOn(context)
     }
 
     suspend fun run(params: P) = doWork(params)

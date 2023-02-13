@@ -6,7 +6,9 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.util.dispatchers
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -19,7 +21,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import kotlin.test.assertEquals
 
 class GetObjectTypeTest {
 
@@ -43,7 +44,7 @@ class GetObjectTypeTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        usecase = GetObjectTypes(repo = repo)
+        usecase = GetObjectTypes(repo = repo, dispatchers = dispatchers)
     }
 
     @Test

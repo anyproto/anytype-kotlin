@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.templates.OpenTemplate.Params
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
@@ -16,7 +17,7 @@ import kotlinx.coroutines.withContext
 class OpenTemplate(
     private val repo: BlockRepository,
     private val dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Params, Result<Payload>>() {
+) : ResultInteractor<Params, Result<Payload>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Result<Payload> {
         return withContext(dispatchers.io) { repo.openObjectPreview(params.id) }

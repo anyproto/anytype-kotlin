@@ -11,9 +11,6 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
@@ -56,14 +53,17 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
@@ -459,21 +459,21 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideOpenPageUseCase(
+    fun provideOpenPage(
         repo: BlockRepository,
-        auth: AuthRepository
-    ): OpenPage = OpenPage(
-        repo = repo,
-        auth = auth
-    )
+        auth: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): OpenPage = OpenPage(repo, auth, dispatchers)
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideClosePageUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
     ): CloseBlock = CloseBlock(
-        repo = repo
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -489,9 +489,11 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideCreateBlockUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
     ): CreateBlock = CreateBlock(
-        repo = repo
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -665,9 +667,14 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideCreateObjectUseCase(
         repo: BlockRepository,
-        getTemplates: GetTemplates
+        getTemplates: GetTemplates,
+        dispatchers: AppCoroutineDispatchers
     ): CreateBlockLinkWithObject =
-        CreateBlockLinkWithObject(repo = repo, getTemplates = getTemplates)
+        CreateBlockLinkWithObject(
+            repo = repo,
+            getTemplates = getTemplates,
+            dispatchers = dispatchers
+        )
 
     @JvmStatic
     @Provides
@@ -675,11 +682,13 @@ object EditorUseCaseModule {
     fun provideCreateObjectAsMentionOrLink(
         repo: BlockRepository,
         getDefaultEditorType: GetDefaultEditorType,
-        getTemplates: GetTemplates
+        getTemplates: GetTemplates,
+        dispatchers: AppCoroutineDispatchers
     ): CreateObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
         repo = repo,
         getDefaultEditorType = getDefaultEditorType,
-        getTemplates = getTemplates
+        getTemplates = getTemplates,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -890,8 +899,9 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideGetObjectTypesUseCase(
-        repository: BlockRepository
-    ): GetObjectTypes = GetObjectTypes(repository)
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
 
     @JvmStatic
     @Provides
@@ -915,10 +925,13 @@ object EditorUseCaseModule {
     ): SearchObjects = SearchObjects(repo = repo)
 
     @JvmStatic
-    @Provides
     @PerScreen
-    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
-        GetDefaultEditorType(repo)
+    @Provides
+    fun provideGetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDefaultEditorType =
+        GetDefaultEditorType(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -965,26 +978,20 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun getTemplates(repo: BlockRepository): GetTemplates = GetTemplates(
-        repo = repo,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
+    fun getTemplates(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): GetTemplates =
+        GetTemplates(
+            repo = repo,
+            dispatchers = dispatchers
         )
-    )
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun applyTemplates(repo: BlockRepository): ApplyTemplate = ApplyTemplate(
-        repo = repo,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
+    fun applyTemplates(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): ApplyTemplate =
+        ApplyTemplate(
+            repo = repo,
+            dispatchers = dispatchers
         )
-    )
 
     @JvmStatic
     @Provides
@@ -997,11 +1004,13 @@ object EditorUseCaseModule {
     fun providesDocumentFileShareDownloader(
         repo: BlockRepository,
         context: Context,
-        fileProvider: UriFileProvider
+        fileProvider: UriFileProvider,
+        dispatchers: AppCoroutineDispatchers
     ): DocumentFileShareDownloader = DocumentFileShareDownloader(
         repo = repo,
         context = context.applicationContext,
-        uriFileProvider = fileProvider
+        uriFileProvider = fileProvider,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -1010,11 +1019,13 @@ object EditorUseCaseModule {
     fun providesDebugTreeShareDownloader(
         repo: BlockRepository,
         context: Context,
-        fileProvider: UriFileProvider
+        fileProvider: UriFileProvider,
+        dispatchers: AppCoroutineDispatchers
     ): DebugTreeShareDownloader = DebugTreeShareDownloader(
         repo = repo,
         context = context.applicationContext,
-        uriFileProvider = fileProvider
+        uriFileProvider = fileProvider,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -1112,11 +1123,13 @@ object EditorUseCaseModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType
+        getDefaultEditorType: GetDefaultEditorType,
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultEditorType = getDefaultEditorType,
+        dispatchers = dispatchers
     )
 
     @Module

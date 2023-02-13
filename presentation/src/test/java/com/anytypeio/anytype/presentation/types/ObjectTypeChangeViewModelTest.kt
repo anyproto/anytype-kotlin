@@ -62,7 +62,7 @@ class ObjectTypeChangeViewModelTest {
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
-        getObjectTypes = GetObjectTypes(repo)
+        getObjectTypes = GetObjectTypes(repo, dispatchers)
         addObjectToWorkspace = AddObjectToWorkspace(
             repo = repo,
             dispatchers = dispatchers
@@ -71,7 +71,7 @@ class ObjectTypeChangeViewModelTest {
         runBlocking {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
-        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
+        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository, dispatchers)
     }
 
     @Test

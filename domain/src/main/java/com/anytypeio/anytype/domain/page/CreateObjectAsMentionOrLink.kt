@@ -2,10 +2,12 @@ package com.anytypeio.anytype.domain.page
 
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import kotlinx.coroutines.Dispatchers
 
 /**
  * UseCase for creating a new object as mention or as text link markup
@@ -14,8 +16,11 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 class CreateObjectAsMentionOrLink(
     private val repo: BlockRepository,
     private val getDefaultEditorType: GetDefaultEditorType,
-    private val getTemplates: GetTemplates
-) : ResultInteractor<CreateObjectAsMentionOrLink.Params, CreateObjectAsMentionOrLink.Result>() {
+    private val getTemplates: GetTemplates,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<CreateObjectAsMentionOrLink.Params, CreateObjectAsMentionOrLink.Result>(
+    dispatchers.io
+) {
 
     override suspend fun doWork(params: Params): Result {
 

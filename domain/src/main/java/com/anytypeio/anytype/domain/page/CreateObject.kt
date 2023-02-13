@@ -5,10 +5,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Use case for creating a new object
@@ -16,8 +18,9 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 class CreateObject(
     private val repo: BlockRepository,
     private val getDefaultEditorType: GetDefaultEditorType,
-    private val getTemplates: GetTemplates
-) : ResultInteractor<CreateObject.Param, CreateObject.Result>() {
+    private val getTemplates: GetTemplates,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
     override suspend fun doWork(params: Param): Result {
 

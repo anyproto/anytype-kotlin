@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
@@ -18,7 +19,7 @@ import kotlinx.coroutines.withContext
 class GetTemplates(
     private val repo: BlockRepository,
     private val dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<GetTemplates.Params, List<ObjectWrapper.Basic>>() {
+) : ResultInteractor<GetTemplates.Params, List<ObjectWrapper.Basic>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): List<ObjectWrapper.Basic> {
         return withContext(dispatchers.io) {

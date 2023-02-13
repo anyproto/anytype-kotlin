@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSync
@@ -54,21 +55,26 @@ object AccountAndDataModule {
 
     @Provides
     @PerScreen
-    fun provideDebugSync(repo: BlockRepository): DebugSync = DebugSync(repo = repo)
+    fun provideDebugSync(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugSync = DebugSync(repo = repo, dispatchers = dispatchers)
 
     @Provides
     @PerScreen
     fun provideFileSaver(
         uriFileProvider: UriFileProvider,
-        context: Context
-    ): FileSaver = FileSaver(context, uriFileProvider)
+        context: Context,
+        dispatchers: AppCoroutineDispatchers,
+    ): FileSaver = FileSaver(context, uriFileProvider, dispatchers)
 
     @Provides
     @PerScreen
     fun providesDebugSyncShareDownloader(
         debugSync: DebugSync,
-        fileSaver: FileSaver
-    ): DebugSyncShareDownloader = DebugSyncShareDownloader(debugSync, fileSaver)
+        fileSaver: FileSaver,
+        dispatchers: AppCoroutineDispatchers,
+    ): DebugSyncShareDownloader = DebugSyncShareDownloader(debugSync, fileSaver, dispatchers)
 
     @JvmStatic
     @Provides
@@ -80,10 +86,12 @@ object AccountAndDataModule {
     @Provides
     fun provideLogoutUseCase(
         repo: AuthRepository,
-        provider: ConfigStorage
+        provider: ConfigStorage,
+        dispatchers: AppCoroutineDispatchers
     ): Logout = Logout(
-        repo = repo,
-        provider
+        repo,
+        provider,
+        dispatchers
     )
 
     @JvmStatic

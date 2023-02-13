@@ -2,9 +2,11 @@ package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Use-case for opening a dashboard by sending a special request.
@@ -14,8 +16,9 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 class OpenDashboard(
     private val repo: BlockRepository,
     private val auth: AuthRepository,
-    private val provider: ConfigStorage
-) : ResultInteractor<Unit, Payload>() {
+    private val provider: ConfigStorage,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<Unit, Payload>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit): Payload {
         val config = provider.get()

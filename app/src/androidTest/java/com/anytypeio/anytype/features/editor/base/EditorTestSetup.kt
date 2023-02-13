@@ -298,12 +298,13 @@ open class EditorTestSetup {
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
         uploadBlock = UploadBlock(repo)
-        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, getTemplates)
+        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, getTemplates, dispatchers)
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
         updateFields = UpdateFields(repo)
         setObjectType = SetObjectType(repo)
-        createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(repo, getDefaultEditorType, getTemplates)
+        createObjectAsMentionOrLink =
+            CreateObjectAsMentionOrLink(repo, getDefaultEditorType, getTemplates, dispatchers)
         getSearchObjects = SearchObjects(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepository)
@@ -324,7 +325,7 @@ open class EditorTestSetup {
             matcher = uriMatcher
         )
         move = Move(repo)
-        getObjectTypes = GetObjectTypes(repo)
+        getObjectTypes = GetObjectTypes(repo, dispatchers)
 
         updateBackgroundColor = UpdateBackgroundColor(repo)
 
@@ -333,7 +334,7 @@ open class EditorTestSetup {
         removeDocCover = RemoveDocCover(repo)
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
-        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
+        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository, dispatchers)
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
         createBookmarkBlock = CreateBookmarkBlock(repo)

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature.types
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.types.CreateType
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
@@ -37,8 +38,9 @@ object TypeCreationModule {
     @PerScreen
     @Provides
     fun provideCreateTypeInteractor(
-        blockRepository: BlockRepository
-    ): CreateType = CreateType(blockRepository)
+        blockRepository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateType = CreateType(blockRepository, dispatchers)
 
     @Module
     interface Declarations {
@@ -53,4 +55,5 @@ object TypeCreationModule {
 
 interface TypeCreationDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
+    fun dispatchers(): AppCoroutineDispatchers
 }

@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.domain.page
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import kotlinx.coroutines.Dispatchers
 
 /**
  * UseCase for creating a new Object with block linked to this Object
@@ -11,8 +13,9 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 
 class CreateBlockLinkWithObject(
     private val repo: BlockRepository,
-    private val getTemplates: GetTemplates
-) : ResultInteractor<CreateBlockLinkWithObject.Params, CreateBlockLinkWithObject.Result>() {
+    private val getTemplates: GetTemplates,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<CreateBlockLinkWithObject.Params, CreateBlockLinkWithObject.Result>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Result {
 

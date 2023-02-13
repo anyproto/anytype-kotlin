@@ -42,15 +42,6 @@ object ObjectTypeChangeModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun dispatchers() : AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideObjectTypeViewModelFactory(
         getObjectTypes: GetObjectTypes,
         addObjectToWorkspace: AddObjectToWorkspace,
@@ -70,9 +61,10 @@ object ObjectTypeChangeModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun getObjectTypes(
-        repository: BlockRepository
-    ): GetObjectTypes = GetObjectTypes(repository)
+    fun provideGetObjectTypesUseCase(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
 
     @JvmStatic
     @Provides
@@ -88,6 +80,9 @@ object ObjectTypeChangeModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
-        GetDefaultEditorType(repo)
+    fun provideGetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDefaultEditorType =
+        GetDefaultEditorType(repo, dispatchers)
 }

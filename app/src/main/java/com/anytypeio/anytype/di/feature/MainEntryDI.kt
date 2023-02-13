@@ -111,14 +111,11 @@ object MainEntryModule {
     @PerScreen
     @Provides
     fun provideInterceptAccountStatus(
-        channel: AccountStatusChannel
+        channel: AccountStatusChannel,
+        dispatchers: AppCoroutineDispatchers
     ): InterceptAccountStatus = InterceptAccountStatus(
         channel = channel,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -126,9 +123,11 @@ object MainEntryModule {
     @Provides
     fun provideLogoutUseCase(
         repo: AuthRepository,
-        provider: ConfigStorage
+        provider: ConfigStorage,
+        dispatchers: AppCoroutineDispatchers
     ): Logout = Logout(
-        repo = repo,
-        provider
+        repo,
+        provider,
+        dispatchers
     )
 }

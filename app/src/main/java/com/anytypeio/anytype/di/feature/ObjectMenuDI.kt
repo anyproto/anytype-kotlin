@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -83,7 +84,8 @@ object ObjectMenuModuleBase {
         openPage: OpenPage,
         createBlock: CreateBlock,
         closeBlock: CloseBlock,
-    ): AddBackLinkToObject = AddBackLinkToObject(openPage, createBlock, closeBlock)
+        dispatchers: AppCoroutineDispatchers
+    ): AddBackLinkToObject = AddBackLinkToObject(openPage, createBlock, closeBlock, dispatchers)
 }
 
 @Module
@@ -167,16 +169,19 @@ object ObjectSetMenuModule {
     @PerDialog
     fun provideOpenPage(
         repo: BlockRepository,
-        auth: AuthRepository
-    ): OpenPage = OpenPage(repo, auth)
+        auth: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): OpenPage = OpenPage(repo, auth, dispatchers)
 
     @JvmStatic
     @Provides
     @PerDialog
     fun provideCreateBlock(
-        repo: BlockRepository
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
     ): CreateBlock = CreateBlock(
-        repo = repo
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

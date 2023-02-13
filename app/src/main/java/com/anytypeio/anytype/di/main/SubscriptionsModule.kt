@@ -26,16 +26,13 @@ object SubscriptionsModule {
     fun relationsSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers,
         store: StoreOfRelations
     ): RelationsSubscriptionContainer = RelationsSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -44,16 +41,13 @@ object SubscriptionsModule {
     fun objectTypesSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers,
         store: StoreOfObjectTypes
     ): ObjectTypesSubscriptionContainer = ObjectTypesSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 
     @JvmStatic

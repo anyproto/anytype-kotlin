@@ -117,7 +117,7 @@ object SplashModule {
     fun getLastOpenedObject(
         repo: BlockRepository,
         auth: AuthRepository
-    ) : GetLastOpenedObject = GetLastOpenedObject(
+    ): GetLastOpenedObject = GetLastOpenedObject(
         authRepo = auth,
         blockRepo = repo
     )
@@ -125,8 +125,11 @@ object SplashModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
-        GetDefaultEditorType(repo)
+    fun provideGetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDefaultEditorType =
+        GetDefaultEditorType(repo, dispatchers)
 
     @JvmStatic
     @PerScreen
@@ -140,22 +143,23 @@ object SplashModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType
+        getDefaultEditorType: GetDefaultEditorType,
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultEditorType = getDefaultEditorType,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetTemplates(repo: BlockRepository): GetTemplates = GetTemplates(
+    fun provideGetTemplates(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetTemplates = GetTemplates(
         repo = repo,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 }

@@ -4,12 +4,14 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class GetObjectTypes(
-    private val repo: BlockRepository
-) : ResultInteractor<GetObjectTypes.Params, List<ObjectWrapper.Type>>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<GetObjectTypes.Params, List<ObjectWrapper.Type>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): List<ObjectWrapper.Type> {
         val result = repo.searchObjects(

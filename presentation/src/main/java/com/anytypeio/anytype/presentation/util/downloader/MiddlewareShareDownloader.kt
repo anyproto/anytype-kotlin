@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.util.downloader
 import android.content.Context
 import android.net.Uri
 import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import java.io.File
 
@@ -12,8 +13,9 @@ import java.io.File
  * */
 abstract class MiddlewareShareDownloader(
     private val context: Context,
-    private val uriFileProvider: UriFileProvider
-) : ResultInteractor<MiddlewareShareDownloader.Params, Uri>() {
+    private val uriFileProvider: UriFileProvider,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<MiddlewareShareDownloader.Params, Uri>(dispatchers.io) {
 
     data class Params(
         val hash: Hash,

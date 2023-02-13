@@ -46,15 +46,6 @@ object TemplateModule {
         dispatchers = dispatchers
     )
 
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideDispatchers() : AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    )
-
     @Module
     interface Bindings {
         @PerScreen

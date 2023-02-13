@@ -113,7 +113,7 @@ interface ObjectSetSubComponent {
 }
 
 @Module(
-   includes = [ObjectSetModule.Bindings::class]
+    includes = [ObjectSetModule.Bindings::class]
 )
 object ObjectSetModule {
 
@@ -185,11 +185,13 @@ object ObjectSetModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType
+        getDefaultEditorType: GetDefaultEditorType,
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultEditorType = getDefaultEditorType,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -200,10 +202,13 @@ object ObjectSetModule {
     ): SetDataViewQuery = SetDataViewQuery(repo)
 
     @JvmStatic
-    @Provides
     @PerScreen
-    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
-        GetDefaultEditorType(repo)
+    @Provides
+    fun provideGetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDefaultEditorType =
+        GetDefaultEditorType(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -264,9 +269,10 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideCloseBlockUseCase(
-        repo: BlockRepository
-    ): CloseBlock = CloseBlock(repo)
+    fun provideClosePageUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CloseBlock = CloseBlock(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -311,7 +317,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideDataViewObjectValueProvider(
         db: ObjectSetDatabase
-    ) : ObjectValueProvider = DataViewObjectValueProvider(
+    ): ObjectValueProvider = DataViewObjectValueProvider(
         db = db
     )
 
@@ -371,13 +377,12 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetTemplates(repo: BlockRepository): GetTemplates = GetTemplates(
+    fun provideGetTemplates(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetTemplates = GetTemplates(
         repo = repo,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -390,24 +395,21 @@ object ObjectSetModule {
     @PerScreen
     fun objectSearchSubscriptionContainer(
         repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers,
         channel: SubscriptionEventChannel,
         @Named("object-set-store") store: ObjectStore
     ): DataViewSubscriptionContainer = DataViewSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = AppCoroutineDispatchers(
-            io = Dispatchers.IO,
-            computation = Dispatchers.Default,
-            main = Dispatchers.Main
-        )
+        dispatchers = dispatchers
     )
 
     @JvmStatic
     @Provides
     @PerScreen
     @Named("object-set-store")
-    fun provideObjectStore() : ObjectStore = DefaultObjectStore()
+    fun provideObjectStore(): ObjectStore = DefaultObjectStore()
 
     @JvmStatic
     @Provides
@@ -432,7 +434,7 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun providePaginator() : ObjectSetPaginator = ObjectSetPaginator()
+    fun providePaginator(): ObjectSetPaginator = ObjectSetPaginator()
 
     @JvmStatic
     @Provides

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.util.dispatchers
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -42,7 +43,7 @@ class CreateBlockLinkWithObjectTest {
 
     @Before
     fun setup() {
-        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, getTemplates)
+        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, getTemplates, dispatchers)
     }
 
     @Test

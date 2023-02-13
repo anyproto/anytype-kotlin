@@ -99,15 +99,6 @@ object CollectionModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun appCoroutineDispatchers(): AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        main = Dispatchers.Main,
-        computation = Dispatchers.Default
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun widgetEventDispatcher(): Dispatcher<WidgetDispatchEvent> = Dispatcher.Default()
 
     @JvmStatic
@@ -118,7 +109,10 @@ object CollectionModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun getObjectTypes(repo: BlockRepository): GetObjectTypes = GetObjectTypes(repo = repo)
+    fun getObjectTypes(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypes = GetObjectTypes(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -150,4 +144,6 @@ interface CollectionDependencies : ComponentDependencies {
     fun workspaceManager(): WorkspaceManager
     fun analytics(): Analytics
     fun eventChannel(): EventChannel
+
+    fun dispatchers(): AppCoroutineDispatchers
 }

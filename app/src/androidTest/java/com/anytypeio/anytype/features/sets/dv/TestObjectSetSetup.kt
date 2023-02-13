@@ -150,11 +150,18 @@ abstract class TestObjectSetSetup {
     open fun setup() {
         MockitoAnnotations.openMocks(this)
 
+        val dispatchers = AppCoroutineDispatchers(
+            io = StandardTestDispatcher(),
+            main = StandardTestDispatcher(),
+            computation = StandardTestDispatcher()
+        )
+
         setDataViewQuery = SetDataViewQuery(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
         getDefaultEditorType = GetDefaultEditorType(
-            userSettingsRepository = userSettingsRepository
+            userSettingsRepository = userSettingsRepository,
+            dispatchers = dispatchers
         )
         createDataViewObject = CreateDataViewObject(
             getTemplates = getTemplates,
@@ -165,28 +172,20 @@ abstract class TestObjectSetSetup {
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
-        closeBlock = CloseBlock(repo)
+        closeBlock = CloseBlock(repo, dispatchers)
         urlBuilder = UrlBuilder(gateway)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         setDocCoverImage = SetDocCoverImage(repo)
         getTemplates = GetTemplates(
             repo = repo,
-            dispatchers = AppCoroutineDispatchers(
-                io = StandardTestDispatcher(),
-                main = StandardTestDispatcher(),
-                computation = StandardTestDispatcher()
-            )
+            dispatchers = dispatchers
         )
         database = ObjectSetDatabase(store)
         dataViewSubscriptionContainer = DataViewSubscriptionContainer(
             repo = repo,
             store = store,
             channel = subscriptionEventChannel,
-            dispatchers = AppCoroutineDispatchers(
-                StandardTestDispatcher(),
-                StandardTestDispatcher(),
-                StandardTestDispatcher()
-            )
+            dispatchers = dispatchers
         )
         TestObjectSetFragment.testVmFactory = ObjectSetViewModelFactory(
             openObjectSet = openObjectSet,

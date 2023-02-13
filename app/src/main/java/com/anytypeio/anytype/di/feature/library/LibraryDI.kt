@@ -105,15 +105,8 @@ object LibraryModule {
     @PerScreen
     fun removeObjectFromWorkspace(
         repo: BlockRepository,
-    ): RemoveObjectsFromWorkspace = RemoveObjectsFromWorkspace(repo = repo)
-
-    @PerScreen
-    @Provides
-    fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    )
+        dispatchers: AppCoroutineDispatchers
+    ): RemoveObjectsFromWorkspace = RemoveObjectsFromWorkspace(repo, dispatchers)
 
     @Module
     interface Declarations {
@@ -139,4 +132,6 @@ interface LibraryDependencies : ComponentDependencies {
     fun workspaceManager(): WorkspaceManager
     fun urlBuilder(): UrlBuilder
     fun channel(): SubscriptionEventChannel
+
+    fun dispatchers(): AppCoroutineDispatchers
 }

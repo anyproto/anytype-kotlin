@@ -2,15 +2,18 @@ package com.anytypeio.anytype.ui_settings.account.repo
 
 import android.content.Context
 import android.net.Uri
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import java.io.File
 import java.io.FileOutputStream
+import kotlinx.coroutines.Dispatchers
 
 class FileSaver(
     private val context: Context,
-    private val uriFileProvider: UriFileProvider
-) : ResultInteractor<FileSaver.Params, Uri>() {
+    private val uriFileProvider: UriFileProvider,
+    dispatchers: AppCoroutineDispatchers,
+) : ResultInteractor<FileSaver.Params, Uri>(dispatchers.io) {
 
     data class Params(
         val content: String,

@@ -12,11 +12,7 @@ import kotlinx.coroutines.Dispatchers
 class Logout(
     private val repo: AuthRepository,
     private val provider: ConfigStorage,
-    dispatchers: AppCoroutineDispatchers = AppCoroutineDispatchers(
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    ),
+    dispatchers: AppCoroutineDispatchers,
 ) : Interactor<Logout.Params>(context = dispatchers.io) {
 
     override suspend fun run(params: Params) {

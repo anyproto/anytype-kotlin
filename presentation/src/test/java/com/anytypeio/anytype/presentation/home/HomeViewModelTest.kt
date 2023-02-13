@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
+import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -57,6 +58,9 @@ class HomeViewModelTest {
 
     @Mock
     lateinit var deleteWidget: DeleteWidget
+
+    @Mock
+    lateinit var updateWidget: UpdateWidget
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
@@ -323,6 +327,7 @@ class HomeViewModelTest {
         interceptEvents = interceptEvents,
         createWidget = createWidget,
         deleteWidget = deleteWidget,
+        updateWidget = updateWidget,
         objectPayloadDispatcher = objectPayloadDispatcher,
         widgetEventDispatcher = widgetEventDispatcher,
         openObject = openObject,

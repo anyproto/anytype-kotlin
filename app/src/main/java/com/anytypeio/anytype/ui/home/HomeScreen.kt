@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -174,62 +177,77 @@ private fun TreeWidgetCard(
                 )
         ) {
             TreeWidgetHeader(item)
-            item.elements.forEach { element ->
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .clickable {
-                            onExpand(element.path)
-                        }
-                ) {
-                    if (element.indent > 0) {
-                        Spacer(Modifier.width(20.dp.times(element.indent)))
-                    }
-                    Box(
-                        Modifier
-                            .width(20.dp)
-                            .height(20.dp)
-                    ) {
-                        when (val icon = element.icon) {
-                            is WidgetView.Tree.Icon.Branch -> {
-                                Text(
-                                    // TODO replace with drawable
-                                    text = ">",
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .rotate(if (icon.isExpanded) 90f else 0f)
-                                )
-                            }
-                            is WidgetView.Tree.Icon.Leaf -> {
-                                Text(
-                                    // TODO replace with drawable
-                                    text = "•",
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
-                            is WidgetView.Tree.Icon.Set -> {
-                                Text(
-                                    // TODO replace with drawable
-                                    text = "#",
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
-                        }
-                    }
-                    Text(
-                        text = element.obj.name?.trim() ?: "Untitled"
-                    )
-                }
-                Divider(
-                    thickness = 0.5.dp,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-            }
+            TreeWidgetTreeItem(item, onExpand)
         }
         WidgetMenu(
             isExpanded = isDropDownMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )
+    }
+}
+
+@Composable
+private fun TreeWidgetTreeItem(
+    item: WidgetView.Tree,
+    onExpand: (TreePath) -> Unit
+) {
+    item.elements.forEachIndexed { idx, element ->
+        Row(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .clickable {
+                    onExpand(element.path)
+                }
+        ) {
+            if (element.indent > 0) {
+                Spacer(
+                    Modifier.width(TreeWidgetTreeItemDefaults.Indent.times(element.indent))
+                )
+            }
+            when (val icon = element.icon) {
+                is WidgetView.Tree.Icon.Branch -> {
+                    Image(
+                        painterResource(R.drawable.ic_widget_tree_expand),
+                        contentDescription = "Expand icon",
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .rotate(
+                                if (icon.isExpanded)
+                                    ArrowIconDefaults.Expanded
+                                else
+                                    ArrowIconDefaults.Collapsed
+                            )
+
+                    )
+                }
+                is WidgetView.Tree.Icon.Leaf -> {
+                    Image(
+                        painterResource(R.drawable.ic_widget_tree_dot),
+                        contentDescription = "Dot icon",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+                is WidgetView.Tree.Icon.Set -> {
+                    Image(
+                        painterResource(R.drawable.ic_widget_tree_set),
+                        contentDescription = "Set icon",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+
+                    )
+                }
+            }
+            Text(
+                text = element.obj.name?.trim() ?: "Untitled",
+                modifier = Modifier.padding(start = 8.dp),
+                maxLines = 1
+            )
+        }
+        if (idx != item.elements.lastIndex) {
+            Divider(
+                thickness = 0.5.dp,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
     }
 }
 
@@ -276,7 +294,7 @@ private fun WidgetMenu(
 
 @Composable
 private fun TreeWidgetHeader(item: WidgetView.Tree) {
-    Row() {
+    Box(Modifier.fillMaxWidth()) {
         Text(
             // TODO trimming should be a part of presentation module.
             text = item.obj.name.orEmpty().trim(),
@@ -284,10 +302,11 @@ private fun TreeWidgetHeader(item: WidgetView.Tree) {
             modifier = Modifier.padding(vertical = 8.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = ">",
+        Image(
+            painterResource(R.drawable.ic_widget_tree_expand),
+            contentDescription = "Expand icon",
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(Alignment.CenterEnd)
                 .rotate(90f)
         )
     }
@@ -310,6 +329,17 @@ fun WidgetActionButton(
     ) {
         Text(text = label)
     }
+}
+
+@Immutable
+private object ArrowIconDefaults {
+    const val Collapsed = 0f
+    const val Expanded = 90f
+}
+
+@Immutable
+private object TreeWidgetTreeItemDefaults {
+    val Indent = 20.dp
 }
 
 sealed class DropDownMenuAction {

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -52,7 +53,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                         when(action) {
                             DropDownMenuAction.ChangeWidgetSource -> {
-                                toast("TODO")
+                                vm.onChangeWidgetSourceClicked(widget)
                             }
                             DropDownMenuAction.ChangeWidgetType -> {
                                 vm.onChangeWidgetTypeClicked(widget)
@@ -81,6 +82,17 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     private fun proceed(command: Command) {
         when(command) {
+            is Command.ChangeWidgetSource -> {
+                findNavController().navigate(
+                    R.id.selectWidgetSourceScreen,
+                    args = SelectWidgetSourceFragment.args(
+                        ctx = command.ctx,
+                        widget = command.widget,
+                        source = command.source,
+                        type = command.type
+                    )
+                )
+            }
             is Command.SelectWidgetSource -> {
                 findNavController().navigate(R.id.selectWidgetSourceScreen)
             }

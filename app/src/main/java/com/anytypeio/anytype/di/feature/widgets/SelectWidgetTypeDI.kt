@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature.widgets
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.SelectWidgetTypeViewModel
@@ -42,9 +41,4 @@ object SelectWidgetTypeModule {
         updateWidget = updateWidget,
         appCoroutineDispatchers = appCoroutineDispatchers
     )
-
-    @JvmStatic
-    @PerModal
-    @Provides
-    fun updateWidget(repo: BlockRepository) = UpdateWidget(repo = repo)
 }

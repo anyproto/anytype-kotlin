@@ -10,13 +10,17 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.statusBarHeight
@@ -35,6 +39,12 @@ import javax.inject.Inject
 import timber.log.Timber
 
 class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>() {
+
+    private val ctx: Id get() = arg(CTX_KEY)
+    private val widget: Id get() = arg(WIDGET_ID_KEY)
+    private val source: Id get() = arg(WIDGET_SOURCE_KEY)
+    private val type: Int get() = arg(WIDGET_TYPE_KEY)
+    private val forExistingWidget: Boolean? get() = argOrNull(FLOW_EXISTING_WIDGET)
 
     private val vm by viewModels<SelectWidgetSourceViewModel> { factory }
 
@@ -87,7 +97,16 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
 
     override fun onStart() {
         super.onStart()
-        vm.onStart()
+        if (forExistingWidget == true) {
+            vm.onStartWithExistingWidget(
+                ctx = ctx,
+                source = source,
+                widget = widget,
+                type = type
+            )
+        } else {
+            vm.onStartWithNewWidget()
+        }
         with(lifecycleScope) {
             jobs += subscribe(vm.isDismissed) { isDismissed ->
                 if (isDismissed) dismiss()
@@ -220,6 +239,26 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
     )
 
     companion object {
-
+        /**
+         * Flow for selecting source for already existing widget.
+         * If set to false, this screen is used for selecting source for new widget.
+         */
+        private const val FLOW_EXISTING_WIDGET = "arg.select-widget-source.flow-existing-widget"
+        private const val CTX_KEY = "arg.select-widget-source.ctx"
+        private const val WIDGET_ID_KEY = "arg.select-widget-source.widget-id"
+        private const val WIDGET_TYPE_KEY = "arg.select-widget-source.widget-type"
+        private const val WIDGET_SOURCE_KEY = "arg.select-widget-source.widget-source"
+        fun args(
+            ctx: Id,
+            widget: Id,
+            source: Id,
+            type: Int
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            WIDGET_ID_KEY to widget,
+            WIDGET_SOURCE_KEY to source,
+            WIDGET_TYPE_KEY to type,
+            FLOW_EXISTING_WIDGET to true
+        )
     }
 }

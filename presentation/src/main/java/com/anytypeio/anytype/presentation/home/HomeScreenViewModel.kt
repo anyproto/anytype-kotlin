@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
+import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
@@ -47,6 +49,7 @@ class HomeScreenViewModel(
     private val openObject: OpenObject,
     private val createWidget: CreateWidget,
     private val deleteWidget: DeleteWidget,
+    private val updateWidget: UpdateWidget,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
@@ -182,6 +185,13 @@ class HomeScreenViewModel(
                     is WidgetDispatchEvent.SourcePicked -> {
                         proceedWithCreatingWidget(source = dispatch.source)
                     }
+                    is WidgetDispatchEvent.SourceChanged -> {
+                        proceedWithUpdatingWidget(
+                            widget = dispatch.widget,
+                            source = dispatch.source,
+                            type = dispatch.type
+                        )
+                    }
                 }
             }
         }
@@ -194,6 +204,45 @@ class HomeScreenViewModel(
                 CreateWidget.Params(
                     ctx = config.widgets,
                     source = source
+                )
+            ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                Timber.d("Status while creating widget: $status")
+                when (status) {
+                    is Resultat.Failure -> {
+                        sendToast("Error while creating widget: ${status.exception}")
+                        Timber.e(status.exception, "Error while creating widget")
+                    }
+                    is Resultat.Loading -> {
+                        // Do nothing?
+                    }
+                    is Resultat.Success -> {
+                        objectPayloadDispatcher.send(status.value)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param [type] type code from [Command.SelectWidgetType]
+     */
+    private fun proceedWithUpdatingWidget(
+        widget: Id,
+        source: Id,
+        type: Int
+    ) {
+        viewModelScope.launch {
+            val config = configStorage.get()
+            updateWidget(
+                UpdateWidget.Params(
+                    ctx = config.widgets,
+                    source = source,
+                    target = widget,
+                    type = when(type) {
+                        Command.SelectWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                        Command.SelectWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        else -> throw IllegalStateException("Unexpected type: $type")
+                    }
                 )
             ).flowOn(appCoroutineDispatchers.io).collect { status ->
                 Timber.d("Status while creating widget: $status")
@@ -253,11 +302,33 @@ class HomeScreenViewModel(
     }
 
     fun onChangeWidgetTypeClicked(widget: Id) {
+        Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
         val curr = widgets.value.find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
                 commands.emit(
                     Command.SelectWidgetType(
+                        ctx = configStorage.get().widgets,
+                        widget = widget,
+                        source = curr.source.id,
+                        type = when(curr) {
+                            is Widget.Link -> Command.SelectWidgetType.TYPE_LINK
+                            is Widget.Tree -> Command.SelectWidgetType.TYPE_TREE
+                        }
+                    )
+                )
+            }
+        } else {
+            sendToast("Widget missing. Please try again later")
+        }
+    }
+
+    fun onChangeWidgetSourceClicked(widget: Id) {
+        val curr = widgets.value.find { it.id == widget }
+        if (curr != null) {
+            viewModelScope.launch {
+                commands.emit(
+                    Command.ChangeWidgetSource(
                         ctx = configStorage.get().widgets,
                         widget = widget,
                         source = curr.source.id,
@@ -312,6 +383,7 @@ class HomeScreenViewModel(
         private val openObject: OpenObject,
         private val createWidget: CreateWidget,
         private val deleteWidget: DeleteWidget,
+        private val updateWidget: UpdateWidget,
         private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
@@ -324,6 +396,7 @@ class HomeScreenViewModel(
             openObject = openObject,
             createWidget = createWidget,
             deleteWidget = deleteWidget,
+            updateWidget = updateWidget,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             appCoroutineDispatchers = appCoroutineDispatchers,
             widgetEventDispatcher = widgetEventDispatcher,
@@ -353,6 +426,12 @@ sealed class ObjectViewState {
 
 sealed class Command {
     object SelectWidgetSource : Command()
+    data class ChangeWidgetSource(
+        val ctx: Id,
+        val widget: Id,
+        val source: Id,
+        val type: Int
+    ) : Command()
     data class SelectWidgetType(
         val ctx: Id,
         val widget: Id,
@@ -360,7 +439,6 @@ sealed class Command {
         val type: Int
     ) : Command() {
         companion object {
-            const val UNKNOWN_TYPE = -1
             const val TYPE_TREE = 0
             const val TYPE_LINK = 1
             const val TYPE_LIST = 2

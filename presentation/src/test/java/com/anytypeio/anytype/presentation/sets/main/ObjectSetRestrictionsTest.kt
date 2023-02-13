@@ -54,7 +54,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             ),
             dataViewRestrictions = dvRestrictions
         )
-        stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
 
@@ -94,8 +93,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionEventChannel()
         stubSearchWithSubscription()
 
-        stubUpdateDataViewViewer()
-
         val vm = givenViewModel()
 
         // TESTING
@@ -133,7 +130,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubInterceptThreadStatus()
         stubSubscriptionEventChannel()
         stubSearchWithSubscription()
-        stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
 
@@ -172,7 +168,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubInterceptThreadStatus()
         stubSubscriptionEventChannel()
         stubSearchWithSubscription()
-        stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
 
@@ -211,7 +206,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubInterceptThreadStatus()
         stubSubscriptionEventChannel()
         stubSearchWithSubscription()
-        stubUpdateDataViewViewer()
 
         val vm = givenViewModel()
 

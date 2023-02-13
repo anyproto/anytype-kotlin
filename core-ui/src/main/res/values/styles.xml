@@ -1174,4 +1174,24 @@
     </style>
     <!-- Editor, data view block  -->
 
+    <!-- Set, gallery view, card -->
+    <style name="SetGalleryViewCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="strokeColor">@color/shape_primary</item>
+        <item name="strokeWidth">0.5dp</item>
+    </style>
+
+    <style name="SetGalleryViewTitleStyle">
+        <item name="android:maxLines">3</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:background">@null</item>
+        <item name="android:lineSpacingExtra">5sp</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
 </resources>

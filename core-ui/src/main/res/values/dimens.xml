@@ -308,4 +308,6 @@
 
     <dimen name="block_data_view_height">96dp</dimen>
 
+    <dimen name="default_dv_gallery_first_line_margin_start">22dp</dimen>
+
 </resources>

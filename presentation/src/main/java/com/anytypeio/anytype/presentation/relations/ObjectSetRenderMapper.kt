@@ -100,12 +100,12 @@ suspend fun DVViewer.render(
                 viewer = Viewer.GalleryView(
                     id = id,
                     items = buildGalleryViews(
-                        objects = objects,
+                        objectIds = objects,
                         details = details,
                         relations = dataViewRelations,
                         coverImageHashProvider = coverImageHashProvider,
                         urlBuilder = builder,
-                        store = store
+                        objectStore = store
                     ),
                     title = name,
                     largeCards = cardSize != DVViewerCardSize.SMALL

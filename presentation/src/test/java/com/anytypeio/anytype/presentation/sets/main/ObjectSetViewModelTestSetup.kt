@@ -28,7 +28,6 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
@@ -79,9 +78,6 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var closeBlock: CloseBlock
-
-    @Mock
-    lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     @Mock
     lateinit var updateText: UpdateText
@@ -161,7 +157,6 @@ open class ObjectSetViewModelTestSetup {
     fun givenViewModel(): ObjectSetViewModel = ObjectSetViewModel(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
-        updateDataViewViewer = updateDataViewViewer,
         updateText = updateText,
         interceptEvents = interceptEvents,
         interceptThreadStatus = interceptThreadStatus,
@@ -230,19 +225,6 @@ open class ObjectSetViewModelTestSetup {
                             )
                         ) + additionalEvents
                     )
-                )
-            )
-        }
-    }
-
-    fun stubUpdateDataViewViewer(
-        events: List<Event> = emptyList()
-    ) {
-        updateDataViewViewer.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = events
                 )
             )
         }

@@ -71,7 +71,6 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubSubscriptionEventChannel()
-        stubUpdateDataViewViewer()
         stubOpenObjectSet(
             doc = listOf(
                 header,
@@ -171,7 +170,6 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubUpdateDataViewViewer()
         stubSubscriptionEventChannel()
         stubOpenObjectSet(
             doc = listOf(

@@ -9,7 +9,6 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -29,7 +28,6 @@ class ObjectSetViewModelFactory(
     private val reducer: ObjectSetReducer,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
-    private val updateDataViewViewer: UpdateDataViewViewer,
     private val setObjectDetails: UpdateDetail,
     private val createDataViewObject: CreateDataViewObject,
     private val downloadUnsplashImage: DownloadUnsplashImage,
@@ -57,7 +55,6 @@ class ObjectSetViewModelFactory(
             reducer = reducer,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
-            updateDataViewViewer = updateDataViewViewer,
             setObjectDetails = setObjectDetails,
             createDataViewObject = createDataViewObject,
             setDocCoverImage = setDocCoverImage,

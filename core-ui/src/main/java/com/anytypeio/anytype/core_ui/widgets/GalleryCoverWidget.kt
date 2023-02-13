@@ -4,30 +4,24 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
 
 class GalleryCoverWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : AppCompatImageView(context, attrs) {
 
-    private val radius = resources.getDimension(R.dimen.dp_16)
-
-    fun bind(cover: CoverView, fitImage: Boolean = false) {
+    fun bind(cover: CoverView?, fitImage: Boolean = false) {
         when (cover) {
             is CoverView.Color -> {
                 setImageDrawable(null)
-                setBackgroundResource(R.drawable.cover_solid_shape_rounded)
-                tint(cover.coverColor.color)
+                setBackgroundColor(cover.coverColor.color)
             }
             is CoverView.Gradient -> {
                 setImageDrawable(null)
-                setBackgroundColor(0)
                 when (cover.gradient) {
                     CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow_rounded)
                     CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red_rounded)
@@ -41,7 +35,6 @@ class GalleryCoverWidget @JvmOverloads constructor(
             }
             is CoverView.Image -> {
                 setImageDrawable(null)
-                setBackgroundColor(0)
                 if (fitImage) {
                     Glide
                         .with(this)
@@ -54,10 +47,14 @@ class GalleryCoverWidget @JvmOverloads constructor(
                         .load(cover.url)
                         .transform(
                             CenterCrop(),
-                            GranularRoundedCorners(radius, radius, 0f, 0f)
                         )
                         .into(this)
                 }
+            }
+            null -> {
+                setBackgroundColor(context.getColor(R.color.shape_transparent))
+                setImageDrawable(context.getDrawable(R.drawable.bg_cover_default))
+                scaleType = ScaleType.CENTER
             }
         }
     }

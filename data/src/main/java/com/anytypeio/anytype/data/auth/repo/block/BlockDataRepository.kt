@@ -38,6 +38,7 @@ class BlockDataRepository(
 ) : BlockRepository {
 
     override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
+    override suspend fun getObject(id: Id): ObjectView = remote.getObject(id = id)
 
     override suspend fun openDashboard(
         contextId: String,

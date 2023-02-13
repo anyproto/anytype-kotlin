@@ -90,6 +90,8 @@ interface BlockRepository {
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload
 
     suspend fun openObject(id: Id) : ObjectView
+    suspend fun getObject(id: Id) : ObjectView
+
     @Deprecated("To be deleted")
     suspend fun openObjectPreview(id: Id): Result<Payload>
     @Deprecated("To be deleted")

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import anytype.Event
 import anytype.Rpc
 import anytype.model.Block
 import anytype.model.ObjectInfo
@@ -1477,13 +1476,22 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectShow(id: String): Payload {
+    fun objectShowOld(id: String): Payload {
         val request = Rpc.Object.Show.Request(objectId = id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectShow(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.objectView?.toPayload()
             ?: throw IllegalStateException("Object view was null")
+    }
+
+    @Throws(Exception::class)
+    fun objectShow(id: String): ObjectView {
+        val request = Rpc.Object.Show.Request(objectId = id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectShow(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.objectView?.toCore() ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)

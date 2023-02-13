@@ -42,10 +42,12 @@ class BlockMiddleware(
     }
 
     override suspend fun openObject(id: Id): ObjectView = middleware.objectOpen(id = id)
+    override suspend fun getObject(id: Id): ObjectView = middleware.objectShow(id = id)
+
     override suspend fun openPage(id: String): Payload = middleware.objectOpenOld(id)
     override suspend fun openProfile(id: String): Payload = middleware.objectOpenOld(id)
     override suspend fun openObjectSet(id: String): Payload = middleware.objectOpenOld(id)
-    override suspend fun openObjectPreview(id: Id): Payload = middleware.objectShow(id)
+    override suspend fun openObjectPreview(id: Id): Payload = middleware.objectShowOld(id)
 
     override suspend fun closePage(id: String) {
         middleware.objectClose(id)

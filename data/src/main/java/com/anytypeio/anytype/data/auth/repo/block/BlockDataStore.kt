@@ -50,7 +50,11 @@ interface BlockDataStore {
     suspend fun unlink(command: Command.Unlink): Payload
 
     suspend fun openObject(id: Id) : ObjectView
+    suspend fun getObject(id: Id) : ObjectView
+
+    @Deprecated("Legacy", replaceWith = ReplaceWith("openObject(id: Id): ObjectView"))
     suspend fun openPage(id: String): Payload
+
     suspend fun openObjectSet(id: String): Payload
     suspend fun openProfile(id: String): Payload
     suspend fun openObjectPreview(id: Id): Payload

@@ -39,6 +39,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
     override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
+    override suspend fun getObject(id: Id): ObjectView = remote.getObject(id = id)
+
     override suspend fun openPage(id: String): Payload = remote.openPage(id)
     override suspend fun openProfile(id: String): Payload = remote.openProfile(id)
     override suspend fun openObjectSet(id: String): Payload = remote.openObjectSet(id)

@@ -193,30 +193,38 @@ class ObjectSetViewModel(
                 if (view != null) {
                     val dataViewKeys = dv.relationsIndex.map { it.key }
                     val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
-                    DataViewSubscriptionContainer.Params(
-                        subscription = context,
-                        sorts = view.sorts,
-                        filters = buildList {
-                            addAll(
-                                view.filters.map { f: DVFilter ->
-                                    val r = storeOfRelations.getByKey(f.relation)
-                                    if (r != null && r.relationFormat == RelationFormat.DATE) {
-                                        f.copy(
-                                            relationFormat = r.relationFormat
-                                        )
-                                    } else {
-                                        f
+                    val source = s.getSetOf(ctx = context)
+                    if (source.isEmpty()) {
+                        Timber.d("Data view subscription: source is empty")
+                        null
+                    } else {
+                        Timber.d("Data view subscription: source is not empty")
+                        DataViewSubscriptionContainer.Params(
+                            subscription = context,
+                            sorts = view.sorts,
+                            filters = buildList {
+                                addAll(
+                                    view.filters.map { f: DVFilter ->
+                                        val r = storeOfRelations.getByKey(f.relation)
+                                        if (r != null && r.relationFormat == RelationFormat.DATE) {
+                                            f.copy(
+                                                relationFormat = r.relationFormat
+                                            )
+                                        } else {
+                                            f
+                                        }
                                     }
-                                }
-                            )
-                            addAll(ObjectSearchConstants.defaultDataViewFilters())
-                        },
-                        sources = s.getSetOf(ctx = context),
-                        keys = defaultKeys + dataViewKeys,
-                        limit = DEFAULT_LIMIT,
-                        offset = o
-                    )
+                                )
+                                addAll(ObjectSearchConstants.defaultDataViewFilters())
+                            },
+                            sources = source,
+                            keys = defaultKeys + dataViewKeys,
+                            limit = DEFAULT_LIMIT,
+                            offset = o
+                        )
+                    }
                 } else {
+                    Timber.d("Data view subscription: view is null")
                     null
                 }
             }.distinctUntilChanged().flatMapLatest { params ->

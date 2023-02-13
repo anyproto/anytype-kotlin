@@ -193,7 +193,6 @@ abstract class TestObjectSetSetup {
             closeBlock = closeBlock,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
-            updateDataViewViewer = updateDataViewViewer,
             createDataViewObject = createDataViewObject,
             setObjectDetails = setObjectDetails,
             updateText = updateText,

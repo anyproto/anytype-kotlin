@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
 import android.content.Context
+import android.text.SpannableString
+import android.text.style.LeadingMarginSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -13,7 +17,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
+import com.anytypeio.anytype.core_utils.ext.expandViewHitArea
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.GalleryViewItemDecoration
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -87,119 +95,21 @@ class GalleryViewWidget @JvmOverloads constructor(
         private val onGalleryItemClicked: (Id) -> Unit,
         private val onTaskCheckboxClicked: (Id) -> Unit
     ) : ListAdapter<Viewer.GalleryView.Item, GalleryViewHolder>(Differ) {
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             when (viewType) {
-                VIEW_TYPE_SMALL_ICON -> {
-                    return GalleryViewHolder.SmallIcon(
-                        binding = ItemDvGalleryViewSmallIconBinding.inflate(
-                            inflater, parent, false
-                        )
-                    ).apply {
-                        itemView.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item) {
-                                    onGalleryItemClicked(item.objectId)
-                                }
-                            }
-                        }
-                        icon.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item && item.icon is ObjectIcon.Task) {
-                                    onTaskCheckboxClicked(item.objectId)
-                                }
-                            }
-                        }
-                    }
-                }
-                VIEW_TYPE_BIG_ICON -> {
-                    return GalleryViewHolder.BigIcon(
-                        binding = ItemDvGalleryViewBigIconBinding.inflate(
-                            inflater, parent, false
-                        )
-                    ).apply {
-                        itemView.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item) {
-                                    onGalleryItemClicked(item.objectId)
-                                }
-                            }
-                        }
-                        icon.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item && item.icon is ObjectIcon.Task) {
-                                    onTaskCheckboxClicked(item.objectId)
-                                }
-                            }
-                        }
-                    }
-                }
                 VIEW_TYPE_WITH_COVER -> {
                     return GalleryViewHolder.WithCover(
-                        binding = ItemDvGalleryViewWithCoverBinding.inflate(
+                        binding = ItemDvGalleryItemCoverBinding.inflate(
                             inflater, parent, false
                         )
                     ).apply {
-                        itemView.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item) {
-                                    onGalleryItemClicked(item.objectId)
-                                }
-                            }
-                        }
-                    }
-                }
-                VIEW_TYPE_WITH_COVER_BIG -> {
-                    return GalleryViewHolder.WithCoverBig(
-                        binding = ItemDvGalleryViewWithCoverBigBinding.inflate(
-                            inflater, parent, false
+                        expandViewHitArea(
+                            parent = iconContainer,
+                            child = checkboxView,
                         )
-                    ).apply {
-                        itemView.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item) {
-                                    onGalleryItemClicked(item.objectId)
-                                }
-                            }
-                        }
-                    }
-                }
-                VIEW_TYPE_WITH_COVER_AND_ICON -> {
-                    return GalleryViewHolder.WithCoverAndIcon(
-                        binding = ItemDvGalleryViewWithCoverAndIconBinding.inflate(
-                            inflater, parent, false
-                        )
-                    ).apply {
-                        itemView.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item) {
-                                    onGalleryItemClicked(item.objectId)
-                                }
-                            }
-                        }
-                        icon.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item && item.icon is ObjectIcon.Task) {
-                                    onTaskCheckboxClicked(item.objectId)
-                                }
-                            }
-                        }
+                        setClicks()
                     }
                 }
                 else -> {
@@ -208,15 +118,29 @@ class GalleryViewWidget @JvmOverloads constructor(
                             inflater, parent, false
                         )
                     ).apply {
-                        itemView.setOnClickListener {
-                            val pos = bindingAdapterPosition
-                            if (pos != NO_POSITION) {
-                                val item = getItem(pos)
-                                if (item is Viewer.GalleryView.Item) {
-                                    onGalleryItemClicked(item.objectId)
-                                }
-                            }
-                        }
+                        expandViewHitArea(
+                            parent = iconContainer,
+                            child = checkboxView,
+                        )
+                        setClicks()
+                    }
+                }
+            }
+        }
+
+        private fun GalleryViewHolder.setClicks() {
+            itemView.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != NO_POSITION) {
+                    onGalleryItemClicked(getItem(pos).objectId)
+                }
+            }
+            checkboxView.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != NO_POSITION) {
+                    val item = getItem(pos)
+                    if (item.icon is ObjectIcon.Task) {
+                        onTaskCheckboxClicked(item.objectId)
                     }
                 }
             }
@@ -225,161 +149,111 @@ class GalleryViewWidget @JvmOverloads constructor(
         override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
             when (holder) {
                 is GalleryViewHolder.Default -> {
-                    holder.bind(getItem(position))
-                }
-                is GalleryViewHolder.SmallIcon -> {
-                    holder.bind(getItem(position))
-                }
-                is GalleryViewHolder.BigIcon -> {
-                    holder.bind(getItem(position))
+                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Default)
                 }
                 is GalleryViewHolder.WithCover -> {
-                    holder.bind(getItem(position))
-                }
-                is GalleryViewHolder.WithCoverBig -> {
-                    holder.bind(getItem(position))
-                }
-                is GalleryViewHolder.WithCoverAndIcon -> {
-                    holder.bind(getItem(position))
+                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Cover)
                 }
             }
         }
 
-        override fun getItemViewType(position: Int): Int {
-            return when (val item = getItem(position)) {
-                is Viewer.GalleryView.Item.Cover -> {
-                    when {
-                        item.isCoverLarge -> VIEW_TYPE_WITH_COVER_BIG
-                        item.hideIcon -> {
-                            VIEW_TYPE_WITH_COVER
-                        }
-                        item.icon is ObjectIcon.None || item.icon is ObjectIcon.Basic.Avatar -> {
-                            VIEW_TYPE_WITH_COVER
-                        }
-                        else -> {
-                            VIEW_TYPE_WITH_COVER_AND_ICON
-                        }
-                    }
-                }
-                is Viewer.GalleryView.Item.Default -> {
-                    when {
-                        item.icon is ObjectIcon.Basic.Avatar -> {
-                            VIEW_TYPE_DEFAULT
-                        }
-                        item.icon != ObjectIcon.None -> {
-                            when {
-                                item.hideIcon -> {
-                                    VIEW_TYPE_DEFAULT
-                                }
-                                item.bigIcon -> {
-                                    VIEW_TYPE_BIG_ICON
-                                }
-                                else -> {
-                                    VIEW_TYPE_SMALL_ICON
-                                }
-                            }
-                        }
-                        else -> {
-                            VIEW_TYPE_DEFAULT
-                        }
-                    }
-                }
-            }
+        override fun getItemViewType(position: Int): Int = when (getItem(position)) {
+            is Viewer.GalleryView.Item.Cover -> VIEW_TYPE_WITH_COVER
+            else -> VIEW_TYPE_DEFAULT
         }
     }
 
-    sealed class GalleryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    sealed class GalleryViewHolder(view: View) : ViewHolder(view) {
 
-        class Default(
-            val binding: ItemDvGalleryViewDefaultBinding
-        ) : GalleryViewHolder(binding.root) {
+        private val untitled = itemView.resources.getString(R.string.untitled)
+        private val firstLineMargin =
+            itemView.resources.getDimensionPixelOffset(R.dimen.default_dv_gallery_first_line_margin_start)
+        abstract val iconContainer: FrameLayout
+        abstract val iconView: ObjectIconWidget
+        abstract val titleView: TextView
+        abstract val contentContainer: GalleryViewContentWidget
+        abstract val checkboxView: View
 
-            private val container get() = binding.contentContainer
-            private val title get() = binding.tvTitle
+        class Default(val binding: ItemDvGalleryViewDefaultBinding) :
+            GalleryViewHolder(binding.root) {
 
-            fun bind(item: Viewer.GalleryView.Item) {
-                title.text = item.name
-                container.setItems(item.relations)
+            override val titleView = binding.tvTitle
+            override val iconContainer = binding.cardIconContainer
+            override val iconView = binding.cardIcon
+            override val contentContainer = binding.contentContainer
+            override val checkboxView = binding.cardIcon.checkbox
+
+            fun bind(item: Viewer.GalleryView.Item.Default) {
+                applyTextAndIcon(item)
+                applyContentItems(item)
+            }
+
+            fun processChangePayload(
+                payload: List<Int>,
+                item: Viewer.GalleryView.Item
+            ) {
+                payload(payload, item)
             }
         }
 
-        class SmallIcon(
-            val binding: ItemDvGalleryViewSmallIconBinding
-        ) : GalleryViewHolder(binding.root) {
+        class WithCover(val binding: ItemDvGalleryItemCoverBinding) :
+            GalleryViewHolder(binding.root) {
 
-            private val container get() = binding.contentContainer
-            private val title get() = binding.tvTitle
-            val icon get() = binding.smallIconContainer
-
-            fun bind(item: Viewer.GalleryView.Item) {
-                title.text = item.name
-                container.setItems(item.relations)
-                icon.bind(item.icon)
-            }
-        }
-
-        class BigIcon(
-            val binding: ItemDvGalleryViewBigIconBinding
-        ) : GalleryViewHolder(binding.root) {
-
-            private val container get() = binding.contentContainer
-            private val title get() = binding.tvTitle
-            val icon get() = binding.objectIcon
-
-            fun bind(item: Viewer.GalleryView.Item) {
-                title.text = item.name
-                container.setItems(item.relations)
-                icon.setIcon(item.icon)
-            }
-        }
-
-        class WithCover(
-            val binding: ItemDvGalleryViewWithCoverBinding
-        ) : GalleryViewHolder(binding.root) {
-
-            private val container get() = binding.contentContainer
-            private val title get() = binding.tvTitle
+            override val titleView = binding.tvTitle
+            override val iconContainer = binding.cardIconContainer
+            override val iconView = binding.cardIcon
+            override val contentContainer = binding.contentContainer
             private val cover get() = binding.cover
+            override val checkboxView = binding.cardIcon.checkbox
 
-            fun bind(item: Viewer.GalleryView.Item) {
-                check(item is Viewer.GalleryView.Item.Cover)
-                title.text = item.name
-                container.setItems(item.relations)
+            fun bind(item: Viewer.GalleryView.Item.Cover) {
+                applyTextAndIcon(item)
+                applyContentItems(item)
                 cover.bind(cover = item.cover, fitImage = item.fitImage)
             }
-        }
 
-        class WithCoverBig(
-            val binding: ItemDvGalleryViewWithCoverBigBinding
-        ) : GalleryViewHolder(binding.root) {
-
-            private val container get() = binding.contentContainer
-            private val title get() = binding.tvTitle
-            private val cover get() = binding.cover
-
-            fun bind(item: Viewer.GalleryView.Item) {
-                check(item is Viewer.GalleryView.Item.Cover)
-                title.text = item.name
-                container.setItems(item.relations)
-                cover.bind(cover = item.cover, fitImage = item.fitImage)
+            fun processChangePayload(
+                payload: List<Int>,
+                item: Viewer.GalleryView.Item.Cover
+            ) {
+                payload(payload, item)
+                if (payload.contains(COVER_CHANGED) || payload.contains(FIT_IMAGE_CHANGED)) {
+                    cover.bind(cover = item.cover, fitImage = item.fitImage)
+                }
             }
         }
 
-        class WithCoverAndIcon(
-            val binding: ItemDvGalleryViewWithCoverAndIconBinding
-        ) : GalleryViewHolder(binding.root) {
+        protected fun payload(
+            payload: List<Int>,
+            item: Viewer.GalleryView.Item
+        ) {
+            if (payload.contains(TEXT_ICON_CHANGED)) {
+                applyTextAndIcon(item)
+            }
+            if (payload.contains(CONTENT_CHANGED)) {
+                applyContentItems(item)
+            }
+        }
 
-            private val container get() = binding.contentContainer
-            private val title get() = binding.tvTitle
-            private val cover get() = binding.cover
-            val icon get() = binding.smallIconContainer
+        protected fun applyContentItems(item: Viewer.GalleryView.Item) {
+            contentContainer.setItems(item.relations)
+        }
 
-            fun bind(item: Viewer.GalleryView.Item) {
-                check(item is Viewer.GalleryView.Item.Cover)
-                title.text = item.name
-                container.setItems(item.relations)
-                cover.bind(cover = item.cover, fitImage = item.fitImage)
-                icon.bind(item.icon)
+        protected fun applyTextAndIcon(item: Viewer.GalleryView.Item) {
+            if (!item.hideIcon && item.icon != ObjectIcon.None) {
+                iconContainer.visible()
+                iconView.setIcon(item.icon)
+                val sb = SpannableString(item.name.ifEmpty { untitled })
+                sb.setSpan(
+                    LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
+                )
+                titleView.text = sb
+            } else {
+                iconContainer.gone()
+                when {
+                    item.name.isEmpty() -> titleView.text = untitled
+                    else -> titleView.text = item.name
+                }
             }
         }
     }
@@ -396,6 +270,42 @@ class GalleryViewWidget @JvmOverloads constructor(
             oldItem: Viewer.GalleryView.Item,
             newItem: Viewer.GalleryView.Item
         ): Boolean = oldItem == newItem
+
+        override fun getChangePayload(
+            oldItem: Viewer.GalleryView.Item,
+            newItem: Viewer.GalleryView.Item
+        ): Any? {
+
+            if (oldItem::class != newItem::class) {
+                return super.getChangePayload(oldItem, newItem)
+            }
+
+            val changes = mutableListOf<Int>()
+
+            if (oldItem.name != newItem.name
+                || oldItem.icon != newItem.icon
+                || oldItem.hideIcon != newItem.hideIcon
+            ) {
+                changes.add(TEXT_ICON_CHANGED)
+            }
+
+            if (oldItem.relations != newItem.relations) {
+                changes.add(CONTENT_CHANGED)
+            }
+
+            if (oldItem is Viewer.GalleryView.Item.Cover && newItem is Viewer.GalleryView.Item.Cover) {
+                if (oldItem.cover != newItem.cover) {
+                    changes.add(COVER_CHANGED)
+                }
+                if (oldItem.fitImage != newItem.fitImage) {
+                    changes.add(FIT_IMAGE_CHANGED)
+                }
+            }
+
+            return changes.ifEmpty {
+                super.getChangePayload(oldItem, newItem)
+            }
+        }
     }
 
     companion object {
@@ -403,10 +313,12 @@ class GalleryViewWidget @JvmOverloads constructor(
         const val LARGE_CARDS_COLUMN_COUNT = 1
 
         const val VIEW_TYPE_DEFAULT = 0
-        const val VIEW_TYPE_SMALL_ICON = 1
-        const val VIEW_TYPE_BIG_ICON = 2
         const val VIEW_TYPE_WITH_COVER = 3
-        const val VIEW_TYPE_WITH_COVER_BIG = 4
-        const val VIEW_TYPE_WITH_COVER_AND_ICON = 5
+
+        const val TEXT_ICON_CHANGED = 0
+        const val CONTENT_CHANGED = 2
+
+        const val COVER_CHANGED = 4
+        const val FIT_IMAGE_CHANGED = 5
     }
 }

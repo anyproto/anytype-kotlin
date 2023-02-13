@@ -130,7 +130,6 @@ object ObjectSetModule {
     fun provideObjectSetViewModelFactory(
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
-        updateDataViewViewer: UpdateDataViewViewer,
         setObjectDetails: UpdateDetail,
         updateText: UpdateText,
         interceptEvents: InterceptEvents,
@@ -155,7 +154,6 @@ object ObjectSetModule {
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
-        updateDataViewViewer = updateDataViewViewer,
         setObjectDetails = setObjectDetails,
         createDataViewObject = createDataViewObject,
         updateText = updateText,

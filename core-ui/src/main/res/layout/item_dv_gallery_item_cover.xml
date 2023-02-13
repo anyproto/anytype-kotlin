@@ -11,12 +11,21 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/dp_12">
 
+        <com.anytypeio.anytype.core_ui.widgets.GalleryCoverWidget
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="112dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
         <FrameLayout
             android:id="@+id/cardIconContainer"
             android:layout_width="34dp"
             android:layout_height="31dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cover"
             tools:visibility="visible">
 
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -45,7 +54,7 @@
             app:layout_constraintBottom_toTopOf="@+id/contentContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cover"
             tools:text="Material Design is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material Design streamlines collaboration between designers and developers, and helps teams quickly build beautiful products."
             tools:visibility="visible" />
 

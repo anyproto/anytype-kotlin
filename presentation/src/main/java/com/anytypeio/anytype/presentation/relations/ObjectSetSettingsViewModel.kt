@@ -60,26 +60,20 @@ class ObjectSetSettingsViewModel(
                             }
                         }
 
-                        when (viewer.coverRelationKey) {
-                            null -> {
-                                result.add(ViewerRelationListView.Setting.ImagePreview.None)
-                            }
-                            Relations.PAGE_COVER -> {
-                                result.add(ViewerRelationListView.Setting.ImagePreview.Cover)
-                            }
+                        val coverRelationKey = viewer.coverRelationKey
+                        result.add(when {
+                            coverRelationKey.isNullOrBlank() -> ViewerRelationListView.Setting.ImagePreview.None
+                            coverRelationKey == Relations.PAGE_COVER -> ViewerRelationListView.Setting.ImagePreview.Cover
                             else -> {
                                 val dv = objectSet.dataview.content<DV>()
-                                val preview =
-                                    dv.relations.find { it.key == viewer.coverRelationKey }
+                                val preview = dv.relations.find { it.key == coverRelationKey }
                                 if (preview != null) {
-                                    result.add(
-                                        ViewerRelationListView.Setting.ImagePreview.Custom(
-                                            preview.name
-                                        )
-                                    )
+                                    ViewerRelationListView.Setting.ImagePreview.Custom(preview.name)
+                                } else {
+                                    ViewerRelationListView.Setting.ImagePreview.None
                                 }
                             }
-                        }
+                        })
 
                         result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
                         result.add(ViewerRelationListView.Setting.Toggle.FitImage(toggled = viewer.coverFit))

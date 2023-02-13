@@ -141,7 +141,7 @@ fun Context.dp(value: Float) =
 val Int.px: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-private fun expandViewHitArea(parent: View, child: View) {
+fun expandViewHitArea(parent: View, child: View) {
     parent.post {
         val parentRect = Rect()
         val childRect = Rect()

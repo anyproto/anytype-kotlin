@@ -571,9 +571,6 @@ message Account {
         string homeObjectId = 2; // home dashboard block id
         string archiveObjectId = 3; // archive block id
         string profileObjectId = 4; // profile block id
-        string marketplaceTypeObjectId = 5; // deprecated, to be removed
-        string marketplaceRelationObjectId = 6; // deprecated, to be removed
-        string marketplaceTemplateObjectId = 7; // deprecated, to be removed
         string marketplaceWorkspaceId = 11; // marketplace workspace id
 
         string deviceId = 8;

@@ -191,7 +191,7 @@ class ObjectSetViewModel(
                 if (view != null) {
                     val dataViewKeys = dv.relationsIndex.map { it.key }
                     val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
-                    val source = s.getSetOf(ctx = context)
+                    val source = s.getSetOf(ctx = context).filter { it.isNotBlank() }
                     if (source.isEmpty()) {
                         Timber.d("Data view subscription: source is empty")
                         null

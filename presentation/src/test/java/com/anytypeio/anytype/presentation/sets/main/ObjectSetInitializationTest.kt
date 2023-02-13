@@ -166,4 +166,43 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
 
         coroutineTestRule.advanceTime(100L)
     }
+
+    @Test
+    fun `when open object set and setOf has empty and blank ids, should not start subscription to the records`() {
+
+        stubInterceptThreadStatus(InterceptThreadStatus.Params(ctx))
+        initDataViewSubscriptionContainer()
+        stubSearchWithSubscription()
+        stubSubscriptionEventChannel()
+
+        val view = StubDataViewView()
+        val relLink1 = StubRelationLink()
+        val relLink2 = StubRelationLink()
+
+        val dataView = StubDataView(
+            id = MockDataFactory.randomUuid(),
+            views = listOf(view),
+            relations = listOf(relLink1, relLink2),
+            targetObjectId = MockDataFactory.randomUuid()
+        )
+
+        stubOpenObjectSet(
+            doc = listOf(header, title, dataView),
+            details = Block.Details(
+                mapOf(
+                    root to Block.Fields(
+                        mapOf(Relations.SET_OF to listOf("", " "))
+                    )
+                )
+            )
+        )
+
+        val vm = givenViewModel()
+
+        vm.onStart(ctx = root)
+
+        verifyNoInteractions(repo)
+
+        coroutineTestRule.advanceTime(100L)
+    }
 }

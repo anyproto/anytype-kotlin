@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
+import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.moving.MoveToView
@@ -96,18 +97,8 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
     }
 
     private fun closeKeyboardOnDismiss() {
-        sheet?.let {
-            BottomSheetBehavior.from(it).apply {
-                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        if (slideOffset == -1F) {
-                            vm.onDialogCancelled()
-                        }
-                    }
-
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {}
-                })
-            }
+        sheet?.let { sheet ->
+            TextInputDialogBottomBehaviorApplier(sheet, textInput, vm).apply()
         }
     }
 

@@ -21,12 +21,12 @@ import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_ui.features.search.ObjectSearchDividerItemDecoration
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
-import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
+import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
@@ -35,9 +35,8 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.moving.hideProgress
 import com.anytypeio.anytype.ui.moving.showProgress
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class ObjectSearchFragment :
     ViewStateFragment<ObjectSearchView, FragmentObjectSearchBinding>(R.layout.fragment_object_search) {
@@ -58,22 +57,6 @@ class ObjectSearchFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        BottomSheetBehavior.from(binding.sheet).apply {
-            skipCollapsed = true
-            state = BottomSheetBehavior.STATE_EXPANDED
-            isHideable = true
-            addBottomSheetCallback(
-                object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            hideSoftInput()
-                            vm.onDialogCancelled()
-                        }
-                    }
-                }
-            )
-        }
         vm.state.observe(viewLifecycleOwner, this)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         clearSearchText = binding.searchView.root.findViewById(R.id.clearSearchText)
@@ -86,6 +69,7 @@ class ObjectSearchFragment :
             }
             true
         }
+        TextInputDialogBottomBehaviorApplier(binding.sheet, filterInputField, vm).apply()
         initialize()
     }
 

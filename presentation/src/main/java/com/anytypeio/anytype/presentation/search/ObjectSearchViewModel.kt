@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
@@ -43,7 +44,8 @@ open class ObjectSearchViewModel(
     private val analytics: Analytics,
     private val workspaceManager: WorkspaceManager
 ) : ViewStateViewModel<ObjectSearchView>(),
-    SupportNavigation<EventWrapper<AppNavigation.Command>> {
+    SupportNavigation<EventWrapper<AppNavigation.Command>>,
+    TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
 
     private val jobs = mutableListOf<Job>()
 
@@ -83,7 +85,8 @@ open class ObjectSearchViewModel(
                             stateData.postValue(ObjectSearchView.NoResults(userInput.value))
                         } else {
                             if (userInput.value.isEmpty()) {
-                                val items = mutableListOf<DefaultSearchItem>(ObjectSearchSection.RecentlyOpened)
+                                val items =
+                                    mutableListOf<DefaultSearchItem>(ObjectSearchSection.RecentlyOpened)
                                 items.addAll(this)
                                 stateData.postValue(ObjectSearchView.Success(items))
                             } else {
@@ -191,7 +194,7 @@ open class ObjectSearchViewModel(
         keys = ObjectSearchConstants.defaultKeys
     )
 
-    open fun onDialogCancelled() {
+    override fun onDialogCancelled() {
         navigateToDesktop()
     }
 

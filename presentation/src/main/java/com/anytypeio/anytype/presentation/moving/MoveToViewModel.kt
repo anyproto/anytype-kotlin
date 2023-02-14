@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
@@ -38,7 +39,7 @@ class MoveToViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val workspaceManager: WorkspaceManager
-) : ViewModel() {
+) : ViewModel(), TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
 
     private val _viewState: MutableStateFlow<MoveToView> = MutableStateFlow(MoveToView.Init)
     val viewState: StateFlow<MoveToView> get() = _viewState
@@ -162,7 +163,7 @@ class MoveToViewModel(
         sendSearchResultEvent(view.id)
     }
 
-    fun onDialogCancelled() {
+    override fun onDialogCancelled() {
         commands.value = Command.Exit
     }
 

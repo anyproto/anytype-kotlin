@@ -5,8 +5,10 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +20,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -26,6 +32,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.ui.library.styles.fonts
 import com.anytypeio.anytype.ui.library.views.list.items.ItemDefaults.TEXT_PADDING_START
 
 @Composable
@@ -183,6 +190,41 @@ fun CreateNewTypeItem(
             ),
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.padding(start = TEXT_PADDING_START)
+        )
+    }
+}
+
+@Composable
+fun LibraryTypesEmptyItem(name: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth().padding(top = 48.dp)
+    ) {
+        Text(
+            text = stringResource(
+                id = R.string.library_types_empty,
+                formatArgs = arrayOf(name)
+            ),
+            style = TextStyle(
+                fontFamily = com.anytypeio.anytype.ui.settings.fonts,
+                fontWeight = FontWeight.Normal,
+                fontSize = 17.sp,
+                color = colorResource(id = R.color.text_primary)
+            ),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 9.dp)
+        )
+        Text(
+            text = stringResource(
+                id = R.string.library_types_empty_action
+            ),
+            style = TextStyle(
+                fontFamily = com.anytypeio.anytype.ui.settings.fonts,
+                fontWeight = FontWeight.Normal,
+                fontSize = 13.sp,
+                color = colorResource(id = R.color.text_primary)
+            ),
+            textAlign = TextAlign.Center
         )
     }
 }

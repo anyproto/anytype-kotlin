@@ -551,7 +551,11 @@ class BlockDataRepository(
 
     override suspend fun createType(
         name: String,
-    ): ObjectWrapper.Type = remote.createType(name = name)
+        emojiUnicode: String?,
+    ): ObjectWrapper.Type = remote.createType(
+        name = name,
+        emojiUnicode = emojiUnicode
+    )
 
     override suspend fun createRelationOption(
         relation: Key,

@@ -3,7 +3,7 @@ package com.anytypeio.anytype.ui.sets
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.editor.picker.IconPickerViewModel
+import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.ObjectSetIconPickerViewModelFactory
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import javax.inject.Inject

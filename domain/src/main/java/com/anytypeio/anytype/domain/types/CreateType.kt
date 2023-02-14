@@ -11,10 +11,16 @@ class CreateType(
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateType.Params, ObjectWrapper.Type>(dispatchers.io) {
 
-    class Params(val name: String)
+    class Params(
+        val name: String,
+        val emojiUnicode: String? = null
+    )
 
     override suspend fun doWork(params: Params): ObjectWrapper.Type {
-        return repo.createType(params.name)
+        return repo.createType(
+            params.name,
+            params.emojiUnicode
+        )
     }
 
 }

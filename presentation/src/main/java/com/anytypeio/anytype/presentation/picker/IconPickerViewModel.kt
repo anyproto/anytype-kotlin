@@ -1,20 +1,13 @@
-package com.anytypeio.anytype.presentation.editor.picker
+package com.anytypeio.anytype.presentation.picker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.icon.RemoveIcon
-import com.anytypeio.anytype.domain.icon.SetEmojiIcon
-import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiSuggest
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
-import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,16 +18,10 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
-class IconPickerViewModel<Iconable>(
-    private val setEmojiIcon: SetEmojiIcon<Iconable>,
-    private val setImageIcon: SetImageIcon<Iconable>,
-    private val removeDocumentIcon: RemoveIcon<Iconable>,
+abstract class IconPickerViewModel<Iconable>(
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
-    private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
 ) : ViewModel() {
 
     /**
@@ -45,12 +32,16 @@ class IconPickerViewModel<Iconable>(
     /**
      * UI state stream.
      */
-    private val state: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Init)
+    val state: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Init)
 
     /**
      * Stream of user-generated queries.
      */
     private val queries = Proxy.Subject<String>()
+
+    abstract fun setEmoji(iconable: Iconable, emojiUnicode: String)
+    abstract fun onRemoveClicked(iconable: Iconable)
+    abstract fun onPickedFromDevice(iconable: Iconable, path: String)
 
     init {
         viewModelScope.launch {
@@ -137,66 +128,6 @@ class IconPickerViewModel<Iconable>(
 
     fun onRandomEmoji(iconable: Iconable) {
         setEmoji(iconable, provider.emojis.random().random())
-    }
-
-    private fun setEmoji(
-        iconable: Iconable, emojiUnicode: String
-    ) {
-        viewModelScope.launch {
-            setEmojiIcon(
-                params = SetEmojiIcon.Params(
-                    emoji = emojiUnicode,
-                    target = iconable
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while setting emoji") },
-                success = { payload ->
-                    sendEvent(
-                        analytics = analytics,
-                        eventName = EventsDictionary.objectSetIcon
-                    )
-                    if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    state.value = ViewState.Exit
-                }
-            )
-        }
-    }
-
-    fun onRemoveClicked(iconable: Iconable) {
-        viewModelScope.launch {
-            removeDocumentIcon(iconable).process(
-                failure = { Timber.e(it, "Error while removing icon") },
-                success = { payload ->
-                    sendEvent(
-                        analytics = analytics,
-                        eventName = EventsDictionary.objectRemoveIcon
-                    )
-                    if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    state.value = ViewState.Exit
-                }
-            )
-        }
-    }
-
-    fun onPickedFromDevice(iconable: Iconable, path: String) {
-        viewModelScope.launch {
-            state.value = ViewState.Loading
-            setImageIcon(
-                SetImageIcon.Params(
-                    target = iconable,
-                    path = path
-                )
-            ).process(
-                failure = {
-                    Timber.e("Error while setting image icon")
-                    state.value = ViewState.Init
-                },
-                success = { (payload, _) ->
-                    dispatcher.send(payload)
-                    state.value = ViewState.Exit
-                }
-            )
-        }
     }
 
     fun onQueryChanged(query: String) {

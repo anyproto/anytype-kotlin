@@ -312,6 +312,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="library_subtitle_relations">My relations</string>
     <string name="library_subtitle_library">Library</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
+    <string name="library_types_empty">There are no type named \'%1$s\'</string>
+    <string name="library_types_empty_action">Try creating new one or search for something else</string>
 
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>

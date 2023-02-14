@@ -26,6 +26,7 @@ import com.anytypeio.anytype.ui.library.views.list.items.CreateNewTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.ItemDefaults
 import com.anytypeio.anytype.ui.library.views.list.items.LibRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.LibTypeItem
+import com.anytypeio.anytype.ui.library.views.list.items.LibraryTypesEmptyItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyTypeItem
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -127,6 +128,9 @@ fun LibraryListTabsContent(
                                     },
                                     name = item.name
                                 )
+                            }
+                            is LibraryView.LibraryTypesPlaceholderView -> {
+                                LibraryTypesEmptyItem(item.name)
                             }
                             is LibraryView.UnknownView -> {
                                 // do nothing

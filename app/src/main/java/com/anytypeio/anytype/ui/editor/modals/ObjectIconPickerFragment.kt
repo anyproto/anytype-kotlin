@@ -4,7 +4,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.editor.picker.IconPickerViewModel
+import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
 import javax.inject.Inject
 

@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.icon.TextBlockTarget
-import com.anytypeio.anytype.presentation.editor.picker.IconPickerViewModel
+import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.TextBlockIconPickerViewModelFactory
 import javax.inject.Inject
 

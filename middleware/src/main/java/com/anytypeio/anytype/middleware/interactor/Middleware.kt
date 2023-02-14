@@ -935,10 +935,14 @@ class Middleware(
     @Throws(Exception::class)
     fun objectCreateObjectType(
         name: String,
+        emojiUnicode: String?
     ): ObjectWrapper.Type {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
                 put(Relations.NAME, name)
+                emojiUnicode?.let {
+                    put(Relations.ICON_EMOJI, it)
+                }
             }
         )
         if (BuildConfig.DEBUG) logRequest(request)

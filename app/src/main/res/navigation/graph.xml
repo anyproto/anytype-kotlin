@@ -485,11 +485,20 @@
         android:id="@+id/typeCreationFragment"
         android:name="com.anytypeio.anytype.ui.types.TypeCreationFragment"
         android:label="TypeCreationFragment">
+        <action
+            android:id="@+id/openEmojiPicker"
+            app:destination="@id/typeSetIconPickerScreen" />
         <argument
             android:name="arg.type_name"
-            app:argType="string"
-            android:defaultValue="" />
+            android:defaultValue=""
+            app:argType="string" />
     </dialog>
+
+    <dialog
+        android:id="@+id/typeSetIconPickerScreen"
+        android:name="com.anytypeio.anytype.ui.types.picker.TypeIconPickFragment"
+        android:label="Object-Icon-Picker-Screen" />
+
     <fragment
         android:id="@+id/archiveFragment"
         android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"

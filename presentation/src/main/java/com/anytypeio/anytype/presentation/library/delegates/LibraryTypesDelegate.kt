@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DEFAULT_KEYS
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
+import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.library.QueryListenerLibTypes
 import com.anytypeio.anytype.presentation.library.filterByQuery
 import com.anytypeio.anytype.presentation.objects.toLibraryViews
@@ -39,6 +40,7 @@ class LibraryTypesDelegate @Inject constructor(
             items
                 .toLibraryViews(urlBuilder)
                 .filterByQuery(query)
+                .optAddEmptyPlaceholder(query)
         )
     }
 
@@ -68,6 +70,18 @@ class LibraryTypesDelegate @Inject constructor(
         )
     }
 
+}
+
+private fun List<LibraryView>.optAddEmptyPlaceholder(query: String): MutableList<LibraryView> {
+    val q = query.trim()
+    val result = this.toMutableList()
+    return if (q.isNotEmpty() && result.isEmpty()) {
+        result.apply {
+            add(0, LibraryView.LibraryTypesPlaceholderView(name = q))
+        }
+    } else {
+        result
+    }
 }
 
 private const val SUB_LIBRARY_TYPES = "subscription.library_types"

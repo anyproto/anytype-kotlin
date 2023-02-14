@@ -632,8 +632,10 @@ class BlockMiddleware(
 
     override suspend fun createType(
         name: String,
+        emojiUnicode: String?
     ): ObjectWrapper.Type = middleware.objectCreateObjectType(
-        name = name
+        name = name,
+        emojiUnicode = emojiUnicode
     )
 
     override suspend fun createRelationOption(

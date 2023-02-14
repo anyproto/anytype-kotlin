@@ -28,8 +28,8 @@ import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
-import com.anytypeio.anytype.presentation.editor.picker.IconPickerViewModel
-import com.anytypeio.anytype.presentation.editor.picker.IconPickerViewModel.ViewState
+import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
+import com.anytypeio.anytype.presentation.picker.IconPickerViewModel.ViewState
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 

@@ -228,6 +228,7 @@ interface BlockRemote {
 
     suspend fun createType(
         name: String,
+        emojiUnicode: String?
     ): ObjectWrapper.Type
 
     suspend fun createRelationOption(

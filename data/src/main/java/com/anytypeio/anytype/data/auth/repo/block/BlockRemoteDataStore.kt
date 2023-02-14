@@ -475,7 +475,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun createType(
         name: String,
-    ): ObjectWrapper.Type = remote.createType(name = name)
+        emojiUnicode: String?
+    ): ObjectWrapper.Type = remote.createType(
+        name = name,
+        emojiUnicode = emojiUnicode
+    )
 
     override suspend fun createRelationOption(
         relation: Key,
@@ -627,7 +631,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         return remote.addObjectToWorkspace(objects)
     }
 
-    override suspend fun removeObjectFromWorkspace(objects: List<Id>) : List<Id> {
+    override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return remote.removeObjectFromWorkspace(objects)
     }
 

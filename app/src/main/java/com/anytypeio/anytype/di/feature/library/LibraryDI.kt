@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
@@ -25,7 +26,6 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.Dispatchers
 
 @Component(
     dependencies = [LibraryDependencies::class],
@@ -55,6 +55,7 @@ object LibraryModule {
 
     @PerScreen
     @Provides
+    @JvmStatic
     fun provideMyTypesDelegate(
         container: StorelessSubscriptionContainer,
         workspaceManager: WorkspaceManager,
@@ -65,6 +66,7 @@ object LibraryModule {
 
     @PerScreen
     @Provides
+    @JvmStatic
     fun provideLibTypesDelegate(
         container: StorelessSubscriptionContainer,
         urlBuilder: UrlBuilder
@@ -74,6 +76,7 @@ object LibraryModule {
 
     @PerScreen
     @Provides
+    @JvmStatic
     fun provideMyRelationsDelegate(
         container: StorelessSubscriptionContainer,
         workspaceManager: WorkspaceManager,
@@ -84,6 +87,7 @@ object LibraryModule {
 
     @PerScreen
     @Provides
+    @JvmStatic
     fun provideLibRelationsDelegate(
         container: StorelessSubscriptionContainer,
         urlBuilder: UrlBuilder
@@ -93,6 +97,7 @@ object LibraryModule {
 
     @Provides
     @PerScreen
+    @JvmStatic
     fun addObjectToWorkspace(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -103,10 +108,19 @@ object LibraryModule {
 
     @Provides
     @PerScreen
+    @JvmStatic
     fun removeObjectFromWorkspace(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): RemoveObjectsFromWorkspace = RemoveObjectsFromWorkspace(repo, dispatchers)
+
+    @Provides
+    @PerScreen
+    @JvmStatic
+    fun objectSetDetails(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectDetails = SetObjectDetails(repo = repo, dispatchers = dispatchers)
 
     @Module
     interface Declarations {

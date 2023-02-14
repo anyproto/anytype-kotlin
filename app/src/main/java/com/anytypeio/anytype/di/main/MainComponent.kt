@@ -31,6 +31,7 @@ import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
+import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
@@ -64,7 +65,8 @@ interface MainComponent :
     HomeScreenDependencies,
     CollectionDependencies,
     TypeCreationDependencies,
-    TypeIconPickDependencies {
+    TypeIconPickDependencies,
+    TypeEditDependencies {
     fun inject(app: AndroidApplication)
 
     fun splashComponentBuilder(): SplashSubComponent.Builder
@@ -131,6 +133,11 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(TypeCreationDependencies::class)
     abstract fun provideTypeCreationDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(TypeEditDependencies::class)
+    abstract fun provideTypeEditDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

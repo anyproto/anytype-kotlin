@@ -41,7 +41,7 @@ fun LibraryTabsContent(
     state: LibraryScreenState,
     vmEventStream: (LibraryEvent) -> Unit,
 ) {
-    HorizontalPager(modifier = modifier, state = pagerState, count = configuration.size) { page ->
+    HorizontalPager(modifier = modifier, state = pagerState, count = 2) { page ->
         val dataTabs = when (configuration[page]) {
             is LibraryScreenConfig.Types -> {
                 state.types
@@ -66,7 +66,7 @@ fun TabContentScreen(
     modifier: Modifier,
     config: LibraryScreenConfig,
     tabs: LibraryScreenState.Tabs,
-    vmEventStream: (LibraryEvent) -> Unit,
+    vmEventStream: (LibraryEvent) -> Unit
 ) {
     Column(
         modifier = modifier

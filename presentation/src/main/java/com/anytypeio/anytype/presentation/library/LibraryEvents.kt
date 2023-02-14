@@ -14,8 +14,8 @@ sealed class LibraryEvent {
         class Relation(override val item: LibraryView) : ToggleInstall(item)
     }
 
-    class CreateType(
-        val name: String = "",
-    ) : LibraryEvent()
+    class CreateType(val name: String = "", ) : LibraryEvent()
+
+    class EditType(val item: LibraryView.MyTypeView) : LibraryEvent()
 
 }

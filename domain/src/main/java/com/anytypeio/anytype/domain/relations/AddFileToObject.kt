@@ -21,7 +21,7 @@ class AddFileToObject(
         )
         val obj = params.obj
         val remaining = obj[params.relation].addIds(listOf(hash))
-        repo.updateDetail(
+        repo.setObjectDetail(
             ctx = params.ctx,
             key = params.relation,
             value = remaining

@@ -70,9 +70,7 @@ fun LibraryListTabsContent(
 
                 items(
                     count = data.items.size,
-                    key = { index ->
-                        data.items[index].id
-                    },
+                    key = { index -> data.items[index].id },
                     itemContent = { ix ->
                         when (val item = data.items[ix]) {
                             is LibraryView.LibraryTypeView -> {
@@ -93,7 +91,11 @@ fun LibraryListTabsContent(
                                     name = item.name,
                                     icon = item.icon,
                                     readOnly = item.readOnly,
-                                    modifier = itemModifier
+                                    modifier = itemModifier.clickable {
+                                        vmEventStream.invoke(
+                                            LibraryEvent.EditType(item)
+                                        )
+                                    }
                                 )
                             }
                             is LibraryView.LibraryRelationView -> {

@@ -403,14 +403,22 @@ class BlockMiddleware(
         style = style
     )
 
-    override suspend fun updateDetail(
+    override suspend fun setObjectDetail(
         ctx: Id,
         key: String,
         value: Any?
-    ): Payload = middleware.objectSetDetails(
+    ): Payload = middleware.setObjectDetail(
         ctx = ctx,
         key = key,
         value = value
+    )
+
+    override suspend fun setObjectDetails(
+        ctx: Id,
+        details: Struct
+    ): Payload = middleware.setObjectDetails(
+        ctx = ctx,
+        details = details
     )
 
     override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =

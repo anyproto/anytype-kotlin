@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.types.CreateType
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
-import com.anytypeio.anytype.ui.types.TypeCreationFragment
+import com.anytypeio.anytype.ui.types.create.TypeCreationFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module

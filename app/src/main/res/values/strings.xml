@@ -333,4 +333,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="type_creation_done">Done</string>
     <string name="type_creation_placeholder">Type name</string>
 
+    <string name="type_editing_title">Type settings</string>
+    <string name="type_editing_uninstall">Uninstall</string>
+
 </resources>

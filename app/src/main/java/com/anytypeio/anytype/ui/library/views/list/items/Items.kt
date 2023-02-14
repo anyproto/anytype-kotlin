@@ -93,7 +93,7 @@ fun LibTypeItem(
         Image(
             painter = painterResource(id = installedImageRes),
             contentDescription = installedImageRes.toString(),
-            modifier = Modifier.noRippleClickable {
+            modifier = Modifier.noRippleClickable(enabled = installed.not()) {
                 onClick()
             }
         )
@@ -232,11 +232,14 @@ fun LibraryTypesEmptyItem(name: String) {
 @Composable
 fun Icon(icon: ObjectIcon?) {
     icon?.let {
-        AndroidView(factory = { ctx ->
-            ObjectIconWidget(ctx).apply {
-                setIcon(it)
+        AndroidView(
+            factory = { ctx ->
+                ObjectIconWidget(ctx)
+            },
+            update = {
+                it.setIcon(icon)
             }
-        })
+        )
     }
 }
 

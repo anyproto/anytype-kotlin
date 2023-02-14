@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.types.views
 
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -22,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -31,14 +31,15 @@ import com.anytypeio.anytype.ui.types.views.TypeEditWidgetDefaults.OffsetX
 import com.anytypeio.anytype.ui.types.views.TypeEditWidgetDefaults.PaddingStart
 
 
-@ExperimentalLifecycleComposeApi
 @Composable
 fun TypeEditWidget(
     inputValue: MutableState<Id>,
     nameValid: MutableState<Boolean>,
     buttonColor: MutableState<Int>,
     objectIcon: ObjectIcon,
-    onLeadingIconClick: () -> Unit
+    onLeadingIconClick: () -> Unit,
+    imeOptions: ImeOptions = ImeOptions.Default,
+    onImeDoneClick: (name: String) -> Unit = {}
 ) {
 
     val focusRequester = remember { FocusRequester() }
@@ -62,7 +63,15 @@ fun TypeEditWidget(
                 focusRequester.requestFocus()
             },
         keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Default
+            imeAction = when (imeOptions) {
+                ImeOptions.Default -> ImeAction.Default
+                ImeOptions.Done -> ImeAction.Done
+            }
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onImeDoneClick(inputValue.value)
+            }
         ),
         singleLine = true,
         placeholder = {
@@ -94,6 +103,11 @@ fun TypeEditWidget(
         }
     )
 
+}
+
+enum class ImeOptions {
+    Default,
+    Done,
 }
 
 @Immutable

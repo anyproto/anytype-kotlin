@@ -333,7 +333,7 @@ class EditRelationTagValueTest {
         rvMatcher.onItemView(1, R.id.btnRemoveTag).performClick()
 
         verifyBlocking(repo, times(1)) {
-            updateDetail(
+            setObjectDetail(
                 ctx= target,
                 key = relationKey,
                 value = listOf(option2.id)

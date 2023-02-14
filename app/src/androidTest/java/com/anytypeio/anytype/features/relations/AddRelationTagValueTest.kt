@@ -507,7 +507,7 @@ class AddRelationTagValueTest {
         R.id.btnAdd.performClick()
 
         verifyBlocking(repo, times(1)) {
-            updateDetail(
+            setObjectDetail(
                 ctx = target,
                 key = relationKey,
                 value = listOf(option1.id, option2.id)

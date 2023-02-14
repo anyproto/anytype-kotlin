@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.ui.library.LibraryConfiguration
 import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.styles.TabTitleStyle
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -31,7 +32,7 @@ import kotlinx.coroutines.launch
 fun LibraryTabs(
     modifier: Modifier,
     pagerState: PagerState,
-    configuration: List<LibraryScreenConfig>,
+    configuration: LibraryConfiguration,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -58,21 +59,32 @@ fun LibraryTabs(
         },
         tabs = {
             CompositionLocalProvider(LocalRippleTheme provides LibraryTabsTheme) {
-                configuration.forEachIndexed { index, config ->
-                    LibraryTab(
-                        modifier = modifier,
-                        config = config,
-                        pagerState = pagerState,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                        onTextLayout = { tlResult ->
-                            tabWidths[index] = with(density) { tlResult.size.width.toDp() }
+                LibraryTab(
+                    modifier = modifier,
+                    config = configuration.types,
+                    pagerState = pagerState,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(0)
                         }
-                    )
-                }
+                    },
+                    onTextLayout = { tlResult ->
+                        tabWidths[0] = with(density) { tlResult.size.width.toDp() }
+                    }
+                )
+                LibraryTab(
+                    modifier = modifier,
+                    config = configuration.relations,
+                    pagerState = pagerState,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(1)
+                        }
+                    },
+                    onTextLayout = { tlResult ->
+                        tabWidths[1] = with(density) { tlResult.size.width.toDp() }
+                    }
+                )
             }
         }
     )
@@ -88,6 +100,7 @@ fun LibraryTab(
     onClick: () -> Unit,
     onTextLayout: (TextLayoutResult) -> Unit
 ) {
+
     Tab(
         modifier = modifier,
         selectedContentColor = colorResource(id = R.color.glyph_selected),

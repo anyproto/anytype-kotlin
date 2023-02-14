@@ -557,7 +557,7 @@ class AddRelationStatusValueTest {
         // Veryfying UI
 
         verifyBlocking(repo, times(1)) {
-            updateDetail(
+            setObjectDetail(
                 ctx = target,
                 key = relationKey,
                 value = listOf(option2.id)

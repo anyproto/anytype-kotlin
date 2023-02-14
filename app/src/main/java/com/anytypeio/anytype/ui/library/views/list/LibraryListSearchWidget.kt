@@ -47,7 +47,8 @@ fun LibraryListSearchWidget(
         textStyle = SearchQueryTextStyle,
         placeholder = {
             Text(
-                text = "Search"
+                text = "Search",
+                style = SearchQueryTextStyle
             )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(

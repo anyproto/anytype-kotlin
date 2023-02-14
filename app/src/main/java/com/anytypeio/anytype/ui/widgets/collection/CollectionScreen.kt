@@ -19,7 +19,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -28,7 +27,6 @@ import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun CollectionScreen(vm: CollectionViewModel) {
 

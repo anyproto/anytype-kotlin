@@ -81,11 +81,13 @@ import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
+import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
 
 class ComponentManager(
@@ -779,9 +781,9 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    fun libraryComponent(context: Context) = Component {
+    val libraryComponent = ComponentWithParams { ctx: Context ->
         DaggerLibraryComponent.builder()
-            .withContext(context)
+            .withContext(ctx)
             .withDependencies(findComponentDependencies())
             .build()
     }
@@ -790,6 +792,15 @@ class ComponentManager(
         DaggerTypeCreationComponent
             .factory()
             .create(findComponentDependencies())
+    }
+
+    val typeEditComponent = ComponentWithParams { params: TypeEditParameters ->
+        DaggerTypeEditComponent.builder()
+            .withId(params.id)
+            .withName(params.name)
+            .withIcon(params.icon)
+            .withDependencies(findComponentDependencies())
+            .build()
     }
 
     val typeIconPickComponent = Component {
@@ -834,6 +845,19 @@ class ComponentManager(
 
         fun release(id: Id) {
             map.remove(id)
+        }
+    }
+
+    class ComponentWithParams<out T, in PARAMETER>(private val builder: (PARAMETER) -> T) {
+
+        private var instance: T? = null
+
+        fun get(params: PARAMETER) = instance ?: builder(params).also { instance = it }
+
+        fun new(params: PARAMETER) = builder(params).also { instance = it }
+
+        fun release() {
+            instance = null
         }
     }
 

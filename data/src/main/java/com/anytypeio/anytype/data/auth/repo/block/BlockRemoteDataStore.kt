@@ -373,14 +373,22 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         style = style
     )
 
-    override suspend fun updateDetail(
+    override suspend fun setObjectDetail(
         ctx: Id,
         key: String,
         value: Any?
-    ): Payload = remote.updateDetail(
+    ): Payload = remote.setObjectDetail(
         ctx = ctx,
         key = key,
         value = value
+    )
+
+    override suspend fun setObjectDetails(
+        ctx: Id,
+        details: Struct
+    ): Payload = remote.setObjectDetails(
+        ctx = ctx,
+        details = details
     )
 
     override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =

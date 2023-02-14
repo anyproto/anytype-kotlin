@@ -9,8 +9,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -18,8 +18,15 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.types.TypeCreationFragment
+import com.anytypeio.anytype.ui.types.create.TypeCreationFragment
+import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_ARG_ID
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_ARG_NAME
+import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_UNINSTALL
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_ARG_ICON
+import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.google.accompanist.pager.ExperimentalPagerApi
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
@@ -32,7 +39,6 @@ class LibraryFragment : BaseComposeFragment() {
     private val vm by viewModels<LibraryViewModel> { factory }
 
     @FlowPreview
-    @ExperimentalLifecycleComposeApi
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
@@ -43,12 +49,7 @@ class LibraryFragment : BaseComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    LibraryScreen(
-                        listOf(
-                            LibraryScreenConfig.Types(),
-                            LibraryScreenConfig.Relations()
-                        ), vm
-                    )
+                    LibraryScreen(LibraryConfiguration(), vm)
                 }
             }
         }
@@ -65,21 +66,41 @@ class LibraryFragment : BaseComposeFragment() {
                         TypeCreationFragment.args(it.name)
                     )
                 }
+                is LibraryViewModel.Navigation.OpenTypeEditing -> {
+                    findNavController().navigate(
+                        R.id.openTypeEditingScreen,
+                        TypeEditFragment.args(
+                            typeName = it.view.name,
+                            id = it.view.id,
+                            iconUnicode = (it.view.icon as? ObjectIcon.Basic.Emoji)?.unicode ?: ""
+                        )
+                    )
+                }
             }
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setFragmentResultListener(REQUEST_KEY_UNINSTALL) { _, bundle ->
+            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_ID))
+            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_NAME))
+            vm.uninstallType(id, name)
+        }
+        setFragmentResultListener(REQUEST_KEY_MODIFY) { _, bundle ->
+            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_ID))
+            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_NAME))
+            val icon = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_ICON))
+            vm.updateType(id, name, icon)
+        }
+    }
+
     override fun injectDependencies() {
-        componentManager()
-            .libraryComponent(requireContext())
-            .get()
-            .inject(this)
+        componentManager().libraryComponent.get(requireContext()).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager()
-            .libraryComponent(requireContext())
-            .release()
+        componentManager().libraryComponent.release()
     }
 
 }

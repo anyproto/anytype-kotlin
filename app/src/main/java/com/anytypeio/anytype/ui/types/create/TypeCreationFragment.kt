@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.types
+package com.anytypeio.anytype.ui.types.create
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -47,7 +46,6 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
     }
 
     @ExperimentalMaterialApi
-    @ExperimentalLifecycleComposeApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -91,4 +89,3 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
 }
 
 private const val ARG_TYPE_NAME = "arg.type_name"
-

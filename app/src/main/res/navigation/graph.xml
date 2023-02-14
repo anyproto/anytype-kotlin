@@ -480,16 +480,40 @@
         <action
             android:id="@+id/openTypeCreationScreen"
             app:destination="@id/typeCreationFragment" />
+        <action
+            android:id="@+id/openTypeEditingScreen"
+            app:destination="@id/typeEditingFragment" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"
-        android:name="com.anytypeio.anytype.ui.types.TypeCreationFragment"
+        android:name="com.anytypeio.anytype.ui.types.create.TypeCreationFragment"
         android:label="TypeCreationFragment">
         <action
             android:id="@+id/openEmojiPicker"
             app:destination="@id/typeSetIconPickerScreen" />
         <argument
             android:name="arg.type_name"
+            android:defaultValue=""
+            app:argType="string" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/typeEditingFragment"
+        android:name="com.anytypeio.anytype.ui.types.edit.TypeEditFragment"
+        android:label="TypeEditFragment">
+        <action
+            android:id="@+id/openEmojiPicker"
+            app:destination="@id/typeSetIconPickerScreen" />
+        <argument
+            android:name="arg.arg.type_edit_name"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="arg.arg.type_edit_id"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="arg.arg.type_edit_unicode"
             android:defaultValue=""
             app:argType="string" />
     </dialog>

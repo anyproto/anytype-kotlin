@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.types
+package com.anytypeio.anytype.ui.types.create
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -10,17 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
-import com.anytypeio.anytype.ui.types.TypeScreenDefaults.PaddingBottom
-import com.anytypeio.anytype.ui.types.TypeScreenDefaults.PaddingTop
+import com.anytypeio.anytype.ui.types.create.TypeScreenDefaults.PaddingBottom
+import com.anytypeio.anytype.ui.types.create.TypeScreenDefaults.PaddingTop
 import com.anytypeio.anytype.ui.types.views.TypeCreationHeader
 import com.anytypeio.anytype.ui.types.views.TypeEditWidget
 
-@ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
 fun TypeCreationScreen(vm: TypeCreationViewModel, preparedName: Id) {

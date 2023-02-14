@@ -173,10 +173,15 @@ interface BlockDataStore {
         style: Block.Content.Text.Style
     ): Payload
 
-    suspend fun updateDetail(
+    suspend fun setObjectDetail(
         ctx: Id,
         key: String,
         value: Any?
+    ): Payload
+
+    suspend fun setObjectDetails(
+        ctx: Id,
+        details: Struct
     ): Payload
 
     suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload

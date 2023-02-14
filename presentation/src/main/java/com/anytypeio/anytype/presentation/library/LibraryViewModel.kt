@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
@@ -28,7 +31,8 @@ class LibraryViewModel(
     private val libraryRelationsDelegate: LibraryRelationsDelegate,
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
-    private val resourceManager: LibraryResourceManager
+    private val resourceManager: LibraryResourceManager,
+    private val setObjectDetails: SetObjectDetails
 ) : NavigationViewModel<LibraryViewModel.Navigation>() {
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
@@ -55,6 +59,9 @@ class LibraryViewModel(
                     }
                     is LibraryEvent.CreateType -> {
                         navigate(Navigation.OpenTypeCreation(it.name))
+                    }
+                    is LibraryEvent.EditType -> {
+                        navigate(Navigation.OpenTypeEditing(it.item))
                     }
                 }
             }
@@ -117,6 +124,22 @@ class LibraryViewModel(
                             Timber.e("Unsupported item type: $item")
                         }
                     }
+                }
+            )
+        }
+    }
+
+    fun uninstallType(id: Id, name: String) {
+        viewModelScope.launch {
+            removeObjectsFromWorkspace.execute(
+                RemoveObjectsFromWorkspace.Params(listOf(id))
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while uninstalling type")
+                    sendToast(resourceManager.errorMessage)
+                },
+                onSuccess = {
+                    sendToast(resourceManager.messageTypeRemoved(name))
                 }
             )
         }
@@ -212,6 +235,28 @@ class LibraryViewModel(
         )
     }
 
+    fun updateType(id: String, name: String, icon: String) {
+        viewModelScope.launch {
+            setObjectDetails.execute(
+                SetObjectDetails.Params(
+                    ctx = id,
+                    details = mapOf(
+                        Relations.NAME to name,
+                        Relations.ICON_EMOJI to icon.orNull(),
+                    )
+                )
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while updating type")
+                    sendToast(resourceManager.errorMessage)
+                },
+                onSuccess = {
+                    // do nothing
+                }
+            )
+        }
+    }
+
     class Factory @Inject constructor(
         private val myTypesDelegate: MyTypesDelegate,
         private val libraryTypesDelegate: LibraryTypesDelegate,
@@ -219,7 +264,8 @@ class LibraryViewModel(
         private val libraryRelationsDelegate: LibraryRelationsDelegate,
         private val addObjectToWorkspace: AddObjectToWorkspace,
         private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
-        private val resourceManager: LibraryResourceManager
+        private val resourceManager: LibraryResourceManager,
+        private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -230,7 +276,8 @@ class LibraryViewModel(
                 libraryRelationsDelegate,
                 addObjectToWorkspace,
                 removeObjectsFromWorkspace,
-                resourceManager
+                resourceManager,
+                setObjectDetails
             ) as T
         }
     }
@@ -239,6 +286,10 @@ class LibraryViewModel(
         class OpenTypeCreation(
             val name: String = ""
         ) : Navigation()
+
+        class OpenTypeEditing(
+            val view: LibraryView.MyTypeView
+        ): Navigation()
     }
 
 }

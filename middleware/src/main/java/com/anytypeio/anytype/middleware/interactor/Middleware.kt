@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -939,6 +940,7 @@ class Middleware(
     ): ObjectWrapper.Type {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
+                put(Relations.TYPE, ObjectTypeIds.OBJECT_TYPE)
                 put(Relations.NAME, name)
                 emojiUnicode?.let {
                     put(Relations.ICON_EMOJI, it)
@@ -1338,7 +1340,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectSetDetails(
+    fun setObjectDetail(
         ctx: Id,
         key: String,
         value: Any?
@@ -1350,6 +1352,27 @@ class Middleware(
         val request = Rpc.Object.SetDetails.Request(
             contextId = ctx,
             details = listOf(detail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun setObjectDetails(
+        ctx: Id,
+        details: Struct
+    ): Payload {
+        val detailsList = details.map { entry ->
+            Rpc.Object.SetDetails.Detail(
+                key = entry.key,
+                value_ = entry.value
+            )
+        }
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = ctx,
+            details = detailsList
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSetDetails(request)

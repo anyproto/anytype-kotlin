@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.library
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -9,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
@@ -23,31 +21,28 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @FlowPreview
-@ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @Composable
-fun LibraryScreen(configuration: List<LibraryScreenConfig>, viewModel: LibraryViewModel) {
+fun LibraryScreen(configuration: LibraryConfiguration, viewModel: LibraryViewModel) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(INITIAL_TAB)
     val modifier = Modifier.background(color = colorResource(id = R.color.background_primary))
 
-    Box {
-        Column(modifier = modifier) {
-            LibraryTabs(
-                modifier = modifier,
-                pagerState = pagerState,
-                configuration = configuration
-            )
-            LibraryTabsContent(
-                modifier = modifier,
-                pagerState = pagerState,
-                configuration = configuration,
-                state = uiState,
-                vmEventStream = viewModel::eventStream
-            )
-        }
+    Column(modifier = modifier) {
+        LibraryTabs(
+            modifier = modifier,
+            pagerState = pagerState,
+            configuration = configuration
+        )
+        LibraryTabsContent(
+            modifier = modifier,
+            pagerState = pagerState,
+            configuration = listOf(configuration.types, configuration.relations),
+            state = uiState,
+            vmEventStream = viewModel::eventStream
+        )
     }
 
 }

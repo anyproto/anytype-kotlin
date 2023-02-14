@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 class UpdateDetail(private val repo: BlockRepository): BaseUseCase<Payload, UpdateDetail.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.updateDetail(
+        repo.setObjectDetail(
             ctx = params.ctx,
             key = params.key,
             value = params.value

@@ -6,6 +6,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 
+data class LibraryConfiguration(
+    val types: LibraryScreenConfig = LibraryScreenConfig.Types(),
+    val relations: LibraryScreenConfig = LibraryScreenConfig.Relations()
+)
+
 sealed class LibraryScreenConfig(
     @StringRes val mainTitle: Int,
     @StringRes val mainBtnTitle: Int,

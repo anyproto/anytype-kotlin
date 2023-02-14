@@ -222,7 +222,7 @@ sealed class DataViewBlockViewHolder(
     private fun applyName(item: BlockView.DataView) {
         val name = item.title
         val sb = if (name.isNullOrBlank()) "" else SpannableString(name)
-        titleView.append(sb)
+        titleView.text = sb
     }
 
     private fun applyImageOrEmoji(item: BlockView.DataView) {

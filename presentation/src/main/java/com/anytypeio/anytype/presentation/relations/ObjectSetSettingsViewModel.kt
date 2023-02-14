@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
@@ -34,7 +35,8 @@ class ObjectSetSettingsViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val storeOfRelations: StoreOfRelations,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val deleteRelationFromDataView: DeleteRelationFromDataView
 ) : BaseListViewModel<ViewerRelationListView>() {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
@@ -163,13 +165,18 @@ class ObjectSetSettingsViewModel(
     }
 
     fun onDeleteClicked(ctx: Id, item: SimpleRelationView) {
+        proceedWithDeletingRelationFromViewer(ctx = ctx, relation = item.key)
+    }
+
+    private fun proceedWithDeletingRelationFromViewer(ctx: Id, relation: Id) {
         viewModelScope.launch {
             val state = objectSetState.value
+            val dv = state.dataview
             val params = UpdateDataViewViewer.Params.ViewerRelation.Remove(
                 ctx = ctx,
-                dv = state.dataview.id,
+                dv = dv.id,
                 view = state.viewerById(session.currentViewerId.value).id,
-                keys = listOf(item.key)
+                keys = listOf(relation)
             )
             updateDataViewViewer(params).process(
                 failure = { e -> Timber.e(e, "Error while deleting relation from dv") },
@@ -177,10 +184,27 @@ class ObjectSetSettingsViewModel(
                     dispatcher.send(payload)
                     proceedWithUpdatingCurrentViewAfterRelationDeletion(
                         ctx = ctx,
-                        relation = item.key
+                        relation = relation
                     )
+                    proceedWithDeletingRelationFromDataView(ctx = ctx, relation = relation)
                     sendAnalyticsRelationDeleteEvent(analytics)
                 }
+            )
+        }
+    }
+
+    private fun proceedWithDeletingRelationFromDataView(ctx: Id, relation: Id) {
+        viewModelScope.launch {
+            val state = objectSetState.value
+            val dv = state.dataview
+            val params = DeleteRelationFromDataView.Params(
+                ctx = ctx,
+                dv = dv.id,
+                relation = relation
+            )
+            deleteRelationFromDataView(params).process(
+                failure = { e -> Timber.e(e, "Error while deleting relation from dv") },
+                success = { payload -> dispatcher.send(payload) }
             )
         }
     }
@@ -263,7 +287,8 @@ class ObjectSetSettingsViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val store: StoreOfRelations,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val deleteRelationFromDataView: DeleteRelationFromDataView
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -273,7 +298,8 @@ class ObjectSetSettingsViewModel(
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
                 storeOfRelations = store,
-                analytics = analytics
+                analytics = analytics,
+                deleteRelationFromDataView = deleteRelationFromDataView
             ) as T
         }
     }

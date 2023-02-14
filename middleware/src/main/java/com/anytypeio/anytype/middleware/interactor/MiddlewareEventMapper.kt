@@ -244,5 +244,14 @@ fun anytype.Event.Message.toCoreModels(
             fields = event.fields?.toCoreModels()
         )
     }
+    blockDataviewRelationDelete != null -> {
+        val event = blockDataviewRelationDelete
+        checkNotNull(event)
+        Event.Command.DataView.DeleteRelation(
+            context = context,
+            dv = event.id,
+            keys = event.relationKeys
+        )
+    }
     else -> null
 }

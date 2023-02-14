@@ -1,5 +1,35 @@
 # Change log for Android @Anytype app.
 
+### New features & enhancements 🚀
+
+* Editor | Introduced inline-set block (#2864)
+* Sets | Optimised performance by integrating atomic changes for filters, sorts, relations and view updates in data view (#2866)
+
+### Fixes & tech 🚒
+
+* Editor | Line breaks should not be ignored inside text blocks (#2823, #2783)
+* Editor | Allowed webp format for image blocks (#2861)
+* Editor | Do not crash when dismissing move-to dialog with open keyboard (#2899)
+* Editor | Style panels should not leak click events to block action panel (#2894)
+* Editor | Should not allow editing read-only-value relations via featured-relations block (#2835, #2890)
+* Editor | Object should be closed when moved to bin (#2844, #2870)
+* Editor | Block-action panel should be hidden after move-to action (#2903)
+* Sets | Cover and icon are not always displayed in sets (#2848, #2914)
+* Sets | Data view 'source' renamed to data view 'query' (#2874)
+* Relations | Relation status might disappear from list of relations when there is no value set (#2897)
+* Relations | Should filter out system object types when searching for values for Relations with object format (#2891)
+* Analytics | Fixed 'createObject' event (#2926)
+* Search | Fixed last item's padding (#2808)
+* App | Renamed `marketplace` Types and Relations into `library` types and relations (#2849)
+
+### Design & UX 🔳
+
+* Editor | Unified haptic feedback when selecting blocks (#2824)
+* Relations | Introduced more user-friendly UX for setting status value (#2814)
+* Sets | Showing lock-icon in grid-view column for read-only relations (#2829)
+* Sets | View settings might have incorrect position on the screen when coming back to an open set (#2812)
+* Search | Added section `Recently opened` recent-object search results in global search (#2822)
+
 ## Version 0.13.0
 
 ### New features & enhancements 🚀

@@ -129,6 +129,24 @@ class ObjectSetReducer {
                     }
                 )
             }
+            is Command.DataView.DeleteRelation -> {
+                state.copy(
+                    blocks = state.blocks.map { block ->
+                        if (block.id == event.dv) {
+                            val content = block.content
+                            check(content is DV)
+                            block.copy(
+                                content = content.copy(
+                                    relationsIndex = content.relationsIndex.filter { link ->
+                                        !event.keys.contains(link.key)
+                                    }
+                                )
+                            )
+                        } else
+                            block
+                    }
+                )
+            }
             is Command.DataView.SetTargetObjectId -> {
                 state.copy(
                     blocks = state.blocks.map { block ->

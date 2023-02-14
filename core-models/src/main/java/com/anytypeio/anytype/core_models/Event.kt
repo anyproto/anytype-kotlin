@@ -260,6 +260,12 @@ sealed class Event {
                 val links: List<RelationLink>
             ) : DataView()
 
+            data class DeleteRelation(
+                override val context: String,
+                val dv: Id,
+                val keys: List<Key>
+            ) : DataView()
+
             data class UpdateView(
                 override val context: Id,
                 val block: Id,

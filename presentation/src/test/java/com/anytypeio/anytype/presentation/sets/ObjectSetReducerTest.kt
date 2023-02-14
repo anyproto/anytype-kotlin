@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubDataViewView
 import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubFilter
+import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubSort
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -776,6 +777,78 @@ class ObjectSetReducerTest {
                 ),
                 relations = listOf(),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf()
+        )
+
+        val expected = ObjectSetReducer.Transformation(
+            state = ObjectSet(blocks = listOf(title, expectedDataView)),
+            effects = emptyList()
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `when relation deleted from dataview, should delete it from relationLinks`() {
+        val context = MockDataFactory.randomUuid()
+        val title = StubTitle()
+
+        val relationKey1 = MockDataFactory.randomUuid()
+        val relationKey2 = MockDataFactory.randomUuid()
+        val relationKey3 = MockDataFactory.randomUuid()
+        val relation1 = StubDataViewViewRelation(key = relationKey1)
+        val relation2 = StubDataViewViewRelation(key = relationKey2)
+        val relation3 = StubDataViewViewRelation(key = relationKey3)
+
+        val relationLink1 = StubRelationLink(key = relationKey1)
+        val relationLink2 = StubRelationLink(key = relationKey2)
+        val relationLink3 = StubRelationLink(key = relationKey3)
+
+        val viewer = StubDataViewView(
+            type = Block.Content.DataView.Viewer.Type.GRID,
+            viewerRelations = listOf(relation1, relation2, relation3),
+            name = MockDataFactory.randomString()
+        )
+
+        val dataView = StubDataView(
+            id = MockDataFactory.randomUuid(),
+            views = listOf(viewer),
+            relations = listOf(relationLink1, relationLink2, relationLink3)
+        )
+
+        val blocks = listOf(title, dataView)
+
+        val objectSet = ObjectSet(blocks = blocks)
+
+        // TESTING
+
+        val event = Event.Command.DataView.DeleteRelation(
+            context = context,
+            dv = dataView.id,
+            keys = listOf(relationKey2)
+        )
+
+        val result = reducer.reduce(state = objectSet, events = listOf(event))
+
+        val expectedDataView = Block(
+            id = dataView.id,
+            content = Block.Content.DataView(
+                viewers = listOf(
+                    Block.Content.DataView.Viewer(
+                        id = viewer.id,
+                        type = viewer.type,
+                        viewerRelations = viewer.viewerRelations,
+                        sorts = viewer.sorts,
+                        filters = viewer.filters,
+                        name = viewer.name,
+                        coverRelationKey = viewer.coverRelationKey
+                    )
+                ),
+                relationsIndex = listOf(relationLink1, relationLink3),
+                targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId,
+                relations = emptyList()
             ),
             fields = Block.Fields.empty(),
             children = listOf()

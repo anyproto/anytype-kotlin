@@ -49,7 +49,9 @@ class CreateObject(
 
         return Result(
             objectId = result.id,
-            event = result.event
+            event = result.event,
+            appliedTemplate = template,
+            type = type
         )
     }
 
@@ -59,6 +61,8 @@ class CreateObject(
 
     data class Result(
         val objectId: Id,
-        val event: Payload
+        val event: Payload,
+        val appliedTemplate: String? = null,
+        val type: String? = null
     )
 }

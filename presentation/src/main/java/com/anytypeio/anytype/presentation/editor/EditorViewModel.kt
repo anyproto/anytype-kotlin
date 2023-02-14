@@ -1416,6 +1416,11 @@ class EditorViewModel(
     ) {
         Timber.d("onEndLineEnterClicked, id:[$id] text:[$text] marks:[$marks]")
 
+        if (isObjectTypesWidgetVisible) {
+            dispatchObjectCreateEvent()
+            proceedWithHidingObjectTypeWidget()
+        }
+
         val target = blocks.first { it.id == id }
 
         val content = target.content<Content.Text>().copy(
@@ -2902,6 +2907,12 @@ class EditorViewModel(
 
     fun onOutsideClicked() {
         Timber.d("onOutsideClicked, ")
+
+        if (isObjectTypesWidgetVisible) {
+            dispatchObjectCreateEvent()
+            proceedWithHidingObjectTypeWidget()
+        }
+
         if (mode is EditorMode.Styling) {
             onExitBlockStyleToolbarClicked()
             return
@@ -3132,7 +3143,17 @@ class EditorViewModel(
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null))
                 .fold(
-                    onSuccess = { result -> proceedWithOpeningObject(result.objectId) },
+                    onSuccess = { result ->
+                        if (result.appliedTemplate != null) {
+                            sendAnalyticsObjectCreateEvent(
+                                analytics = analytics,
+                                objType = result.type,
+                                route = EventsDictionary.Routes.objPowerTool,
+                                context = analyticsContext
+                            )
+                        }
+                        proceedWithOpeningObject(result.objectId)
+                    },
                     onFailure = { e -> Timber.e(e, "Error while creating a new page") }
                 )
         }
@@ -5868,7 +5889,6 @@ class EditorViewModel(
     private fun dispatchObjectCreateEvent(objectType: String? = null) {
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        if (wrapper.isDraft != true) return
         if (objectType != null) {
             viewModelScope.launch {
                 val type = storeOfObjectTypes.get(objectType)
@@ -5899,15 +5919,6 @@ class EditorViewModel(
                     )
                 }
             }
-        }
-    }
-
-    private fun getObjectSmartBlockType(): SmartBlockType {
-        val block = blocks.firstOrNull { it.id == context }
-        return if (block?.content is Content.Smart) {
-            block.content<Content.Smart>().type
-        } else {
-            SmartBlockType.PAGE
         }
     }
 

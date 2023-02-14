@@ -734,7 +734,7 @@ fun CoroutineScope.sendAnalyticsRemoveSortEvent(
 fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     analytics: Analytics,
     objType: String?,
-    layout: Double?,
+    layout: Double? = null,
     route: String,
     startTime: Long? = null,
     middleTime: Long? = null,

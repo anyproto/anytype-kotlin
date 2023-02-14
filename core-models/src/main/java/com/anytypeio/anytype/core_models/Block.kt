@@ -50,7 +50,6 @@ data class Block(
             }
 
         val id: Id? by default
-        val isDraft: Boolean? by default
         val snippet: String? by default
 
         val layout: Double?

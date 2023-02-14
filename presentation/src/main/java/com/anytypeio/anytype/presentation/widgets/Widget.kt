@@ -29,6 +29,15 @@ sealed class Widget {
         override val id: Id,
         override val source: ObjectWrapper.Basic
     ) : Widget()
+
+    /**
+     * @property [id] id of the widget
+     * @property [source] source for this widget - one specific object associate with this widget.
+     */
+    data class List(
+        override val id: Id,
+        override val source: ObjectWrapper.Basic
+    ) : Widget()
 }
 
 fun List<Block>.parseWidgets(

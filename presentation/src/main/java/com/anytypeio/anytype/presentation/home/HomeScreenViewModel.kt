@@ -16,7 +16,9 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.Reducer
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -25,10 +27,12 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -53,12 +57,17 @@ class HomeScreenViewModel(
     private val deleteWidget: DeleteWidget,
     private val updateWidget: UpdateWidget,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val getObject: GetObject,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
-    private val interceptEvents: InterceptEvents
-) : NavigationViewModel<HomeScreenViewModel.Navigation>(), Reducer<ObjectView, Payload> {
-
+    private val interceptEvents: InterceptEvents,
+    private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
+) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
+    Reducer<ObjectView, Payload>,
+    WidgetActiveViewStateHolder by widgetActiveViewStateHolder
+{
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
 
@@ -129,6 +138,12 @@ class HomeScreenViewModel(
                             container = objectSearchSubscriptionContainer,
                             expandedBranches = expanded.stream(w.id)
                         )
+                        is Widget.List -> ListWidgetContainer(
+                            widget = w,
+                            storage = storelessSubscriptionContainer,
+                            getObject = getObject,
+                            activeView = observeCurrentWidgetView(w.id)
+                        )
                     }
                 }
             }.collect {
@@ -139,7 +154,7 @@ class HomeScreenViewModel(
 
         viewModelScope.launch {
             containers.flatMapLatest { list ->
-                Timber.d("Receiving list of containers: ${list.size}")
+                Timber.d("Receiving list of containers: ${list.map { it::class }}")
                 if (list.isNotEmpty()) {
                     combine(
                         list.map { m -> m.view }
@@ -150,7 +165,7 @@ class HomeScreenViewModel(
                     flowOf(emptyList())
                 }
             }.flowOn(appCoroutineDispatchers.io).collect {
-                Timber.d("Views update: $it")
+                Timber.d("Views update: ${it.map { v -> v::class }}")
                 views.value = it + actions
             }
         }
@@ -304,6 +319,7 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetObjectClicked(obj: ObjectWrapper.Basic) {
+        Timber.d("With id: ${obj.id}")
         proceedWithOpeningObject(obj)
     }
 
@@ -317,10 +333,7 @@ class HomeScreenViewModel(
                         ctx = configStorage.get().widgets,
                         widget = widget,
                         source = curr.source.id,
-                        type = when(curr) {
-                            is Widget.Link -> Command.SelectWidgetType.TYPE_LINK
-                            is Widget.Tree -> Command.SelectWidgetType.TYPE_TREE
-                        }
+                        type = parseWidgetType(curr)
                     )
                 )
             }
@@ -338,16 +351,19 @@ class HomeScreenViewModel(
                         ctx = configStorage.get().widgets,
                         widget = widget,
                         source = curr.source.id,
-                        type = when(curr) {
-                            is Widget.Link -> Command.SelectWidgetType.TYPE_LINK
-                            is Widget.Tree -> Command.SelectWidgetType.TYPE_TREE
-                        }
+                        type = parseWidgetType(curr)
                     )
                 )
             }
         } else {
             sendToast("Widget missing. Please try again later")
         }
+    }
+
+    private fun parseWidgetType(curr: Widget) = when (curr) {
+        is Widget.Link -> Command.SelectWidgetType.TYPE_LINK
+        is Widget.Tree -> Command.SelectWidgetType.TYPE_TREE
+        is Widget.List -> Command.SelectWidgetType.TYPE_LIST
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -412,7 +428,10 @@ class HomeScreenViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
         private val objectPayloadDispatcher: Dispatcher<Payload>,
-        private val interceptEvents: InterceptEvents
+        private val interceptEvents: InterceptEvents,
+        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
+        private val getObject: GetObject,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -425,7 +444,10 @@ class HomeScreenViewModel(
             appCoroutineDispatchers = appCoroutineDispatchers,
             widgetEventDispatcher = widgetEventDispatcher,
             objectPayloadDispatcher = objectPayloadDispatcher,
-            interceptEvents = interceptEvents
+            interceptEvents = interceptEvents,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            widgetActiveViewStateHolder = widgetActiveViewStateHolder,
+            getObject = getObject
         ) as T
     }
 

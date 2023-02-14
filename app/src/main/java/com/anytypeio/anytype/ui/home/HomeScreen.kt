@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 
 @Composable
@@ -29,7 +30,8 @@ fun HomeScreen(
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
     onRefresh: () -> Unit,
-    onWidgetMenuAction: (Id, DropDownMenuAction) -> Unit
+    onWidgetMenuAction: (Id, DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (Id, Id) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -57,6 +59,16 @@ fun HomeScreen(
                                 onWidgetMenuAction(item.id, action)
                             },
                             onWidgetObjectClicked = onWidgetObjectClicked
+                        )
+                    }
+                    is WidgetView.Set -> {
+                        ListWidgetCard(
+                            item = item,
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
+                            onChangeWidgetView = onChangeWidgetView
                         )
                     }
                     is WidgetView.Action.CreateWidget -> {

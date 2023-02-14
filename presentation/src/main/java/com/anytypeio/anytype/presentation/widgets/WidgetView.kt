@@ -29,6 +29,19 @@ sealed class WidgetView {
         val obj: ObjectWrapper.Basic,
     ) : WidgetView()
 
+    data class Set(
+        val id: Id,
+        val obj: ObjectWrapper.Basic,
+        val tabs: List<Tab>,
+        val elements: List<ObjectWrapper.Basic>
+    ) : WidgetView() {
+        data class Tab(
+            val id: Id,
+            val name: String,
+            val isSelected: Boolean
+        )
+    }
+
     sealed class Action : WidgetView() {
         object EditWidgets : Action()
         object CreateWidget: Action()

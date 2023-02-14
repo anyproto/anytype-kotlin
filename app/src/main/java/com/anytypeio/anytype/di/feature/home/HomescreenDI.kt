@@ -13,7 +13,9 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
@@ -24,6 +26,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Binds
@@ -99,6 +102,17 @@ object HomeScreenModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun getObject(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObject = GetObject(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun objectSearchSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
@@ -134,6 +148,14 @@ object HomeScreenModule {
         @PerScreen
         @Binds
         fun factory(factory: HomeScreenViewModel.Factory): ViewModelProvider.Factory
+
+        @PerScreen
+        @Binds
+        fun container(container: StorelessSubscriptionContainer.Impl): StorelessSubscriptionContainer
+
+        @PerScreen
+        @Binds
+        fun holder(holder: WidgetActiveViewStateHolder.Impl): WidgetActiveViewStateHolder
     }
 }
 

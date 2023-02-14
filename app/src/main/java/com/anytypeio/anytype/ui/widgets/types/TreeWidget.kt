@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,8 +61,8 @@ fun TreeWidgetCard(
                     }
                 )
         ) {
-            TreeWidgetHeader(
-                item = item,
+            WidgetHeader(
+                item = item.obj,
                 isDropDownMenuExpanded = isDropDownMenuExpanded,
                 onWidgetObjectClicked = onWidgetObjectClicked
             )
@@ -144,29 +145,28 @@ private fun TreeWidgetTreeItem(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun TreeWidgetHeader(
-    item: WidgetView.Tree,
+fun WidgetHeader(
+    item: ObjectWrapper.Basic,
     isDropDownMenuExpanded: MutableState<Boolean>,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit
 ) {
-    Box(Modifier.fillMaxWidth()) {
+    Box(Modifier.fillMaxWidth().height(40.dp)) {
         Text(
             // TODO trimming should be a part of presentation module.
-            text = item.obj.name.orEmpty().trim(),
+            text = item.name.orEmpty().trim(),
             style = MaterialTheme.typography.h6,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 8.dp, end = 28.dp)
                 .combinedClickable(
                     onClick = {
-                        onWidgetObjectClicked(item.obj)
+                        onWidgetObjectClicked(item)
                     },
                     onLongClick = {
                         isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
                     }
                 )
         )
-        Spacer(modifier = Modifier.width(8.dp))
         Image(
             painterResource(R.drawable.ic_widget_tree_expand),
             contentDescription = "Expand icon",

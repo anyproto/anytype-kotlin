@@ -18,6 +18,8 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -26,6 +28,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -69,21 +72,30 @@ class HomeViewModelTest {
     lateinit var openObject: OpenObject
 
     @Mock
+    lateinit var getObject: GetObject
+
+    @Mock
     lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
+
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
+    @Mock
+    lateinit var activeViewStateHolder: WidgetActiveViewStateHolder
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
 
     lateinit var vm: HomeScreenViewModel
 
-    private val config = StubConfig(
-        widgets = WIDGET_OBJECT_ID
-    )
-
     private val appCoroutineDispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.dispatcher,
         main = coroutineTestRule.dispatcher,
         computation = coroutineTestRule.dispatcher
+    )
+
+    private val config = StubConfig(
+        widgets = WIDGET_OBJECT_ID
     )
 
     @Before
@@ -332,7 +344,10 @@ class HomeViewModelTest {
         widgetEventDispatcher = widgetEventDispatcher,
         openObject = openObject,
         objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
-        appCoroutineDispatchers = appCoroutineDispatchers
+        appCoroutineDispatchers = appCoroutineDispatchers,
+        getObject = getObject,
+        storelessSubscriptionContainer = storelessSubscriptionContainer,
+        widgetActiveViewStateHolder = activeViewStateHolder
     )
 
     companion object {

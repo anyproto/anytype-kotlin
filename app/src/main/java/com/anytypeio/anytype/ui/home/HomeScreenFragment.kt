@@ -29,6 +29,7 @@ import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class HomeScreenFragment : BaseComposeFragment() {
 
@@ -69,7 +70,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                             }
                         }
                     },
-                    onWidgetObjectClicked = vm::onWidgetObjectClicked
+                    onWidgetObjectClicked = vm::onWidgetObjectClicked,
+                    onChangeWidgetView = vm::onChangeCurrentWidgetView
                 )
             }
         }
@@ -81,6 +83,7 @@ class HomeScreenFragment : BaseComposeFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { vm.commands.collect { command -> proceed(command) } }
                 launch { vm.navigation.collect { command -> proceed(command) } }
+                launch { vm.toasts.collect { toast(it) } }
             }
         }
     }
@@ -116,6 +119,7 @@ class HomeScreenFragment : BaseComposeFragment() {
     }
 
     private fun proceed(destination: Navigation) {
+        Timber.d("New destination: $destination")
         when (destination) {
             is Navigation.OpenObject -> navigation().launchDocument(destination.ctx)
             is Navigation.OpenSet -> navigation().launchObjectSet(destination.ctx)

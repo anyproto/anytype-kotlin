@@ -83,8 +83,6 @@ sealed class ObjectWrapper {
 
         val description: String? by default
 
-        val isDraft: Boolean? by default
-
         val url: String? by default
 
         val featuredRelations: List<String>? by default

@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowSetEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -1038,6 +1039,14 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null)).fold(
                 onSuccess = { result ->
+                    if (result.appliedTemplate != null) {
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            objType = result.type,
+                            route = EventsDictionary.Routes.objCreateSet,
+                            context = analyticsContext
+                        )
+                    }
                     proceedWithOpeningObject(result.objectId)
                 },
                 onFailure = { e ->

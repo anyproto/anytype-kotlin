@@ -28,18 +28,17 @@ fun TypeEditScreen(vm: TypeEditViewModel, preparedName: String) {
     val state by vm.uiState.collectAsStateWithLifecycle()
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
-    val buttonColor = remember { mutableStateOf(R.color.palette_system_red) }
 
     Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom)) {
         TypeEditHeader(vm = vm)
         TypeEditWidget(
-            inputValue = inputValue,
+            preparedString = inputValue,
             nameValid = nameValid,
-            buttonColor = buttonColor,
             objectIcon = (state as? TypeEditState.Data)?.objectIcon ?: ObjectIcon.None,
             onLeadingIconClick = vm::openEmojiPicker,
             onImeDoneClick = vm::updateObjectDetails,
-            imeOptions = ImeOptions.Done
+            imeOptions = ImeOptions.Done,
+            shouldMoveCursor = preparedName.trim().isNotEmpty()
         )
     }
 

@@ -37,6 +37,8 @@ class LibraryViewModel(
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
 
+    val effects = MutableStateFlow<Effect>(Effect.Idle)
+
     init {
         viewModelScope.launch {
             uiEvents.collect {
@@ -257,6 +259,10 @@ class LibraryViewModel(
         }
     }
 
+    fun onTypeCreated() {
+        effects.value = Effect.TypeCreated()
+    }
+
     class Factory @Inject constructor(
         private val myTypesDelegate: MyTypesDelegate,
         private val libraryTypesDelegate: LibraryTypesDelegate,
@@ -289,7 +295,12 @@ class LibraryViewModel(
 
         class OpenTypeEditing(
             val view: LibraryView.MyTypeView
-        ): Navigation()
+        ) : Navigation()
+    }
+
+    sealed class Effect {
+        class TypeCreated : Effect()
+        object Idle : Effect()
     }
 
 }

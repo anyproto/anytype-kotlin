@@ -59,7 +59,7 @@ class TypeCreationViewModel(
                 )
             ).fold(
                 onSuccess = {
-                    navigate(Navigation.Back)
+                    navigate(Navigation.BackWithCreatedType)
                 },
                 onFailure = {
                     Timber.e(it, "Error while creating type $name")
@@ -89,7 +89,7 @@ class TypeCreationViewModel(
     }
 
     sealed class Navigation {
-        object Back : Navigation()
+        object BackWithCreatedType: Navigation()
         object SelectEmoji : Navigation()
     }
 

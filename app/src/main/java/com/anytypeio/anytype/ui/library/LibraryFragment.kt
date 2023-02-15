@@ -20,6 +20,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.types.create.REQUEST_CREATE_TYPE
 import com.anytypeio.anytype.ui.types.create.TypeCreationFragment
 import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY
 import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_ARG_ID
@@ -92,6 +93,9 @@ class LibraryFragment : BaseComposeFragment() {
             val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_NAME))
             val icon = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_ICON))
             vm.updateType(id, name, icon)
+        }
+        setFragmentResultListener(REQUEST_CREATE_TYPE) { _, bundle ->
+            vm.onTypeCreated()
         }
     }
 

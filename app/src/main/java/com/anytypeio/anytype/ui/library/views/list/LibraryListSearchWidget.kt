@@ -8,9 +8,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.ui.library.LibraryListConfig
+import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.styles.SearchQueryTextStyle
 import com.anytypeio.anytype.ui.library.views.LibraryTextField
 import com.anytypeio.anytype.ui.library.views.list.LibraryListSearchWidgetDefaults.CornerRadius
@@ -30,8 +33,10 @@ fun LibraryListSearchWidget(
     vmEventStream: (LibraryEvent) -> Unit,
     config: LibraryListConfig,
     modifier: Modifier,
+    animationStartState: MutableState<Boolean>,
+    screenState: MutableState<ScreenState>,
+    input: MutableState<String>
 ) {
-    val input = remember { mutableStateOf(String()) }
     LibraryTextField(
         value = input.value,
         onValueChange = {
@@ -42,7 +47,14 @@ fun LibraryListSearchWidget(
         },
         shape = RoundedCornerShape(CornerRadius),
         modifier = modifier
-            .height(Height),
+            .height(Height)
+            .onFocusEvent {
+                if (it.isFocused && animationStartState.value.not()) {
+                    animationStartState.value = true
+                    screenState.value = ScreenState.SEARCH
+                }
+            }
+        ,
         textStyle = SearchQueryTextStyle,
         placeholder = {
             Text(
@@ -72,7 +84,7 @@ fun LibraryListSearchWidget(
     )
 }
 
-private fun LibraryListConfig.toEvent(query: String): LibraryEvent.Query = when (this) {
+fun LibraryListConfig.toEvent(query: String): LibraryEvent.Query = when (this) {
     LibraryListConfig.Relations -> LibraryEvent.Query.MyRelations(query)
     LibraryListConfig.RelationsLibrary -> LibraryEvent.Query.LibraryRelations(query)
     LibraryListConfig.Types -> LibraryEvent.Query.MyTypes(query)

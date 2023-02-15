@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
 import com.anytypeio.anytype.ui.types.create.TypeScreenDefaults.PaddingBottom
 import com.anytypeio.anytype.ui.types.create.TypeScreenDefaults.PaddingTop
@@ -21,34 +20,24 @@ import com.anytypeio.anytype.ui.types.views.TypeEditWidget
 
 @ExperimentalMaterialApi
 @Composable
-fun TypeCreationScreen(vm: TypeCreationViewModel, preparedName: Id) {
+fun TypeCreationScreen(vm: TypeCreationViewModel, preparedName: String) {
 
     val state by vm.uiState.collectAsStateWithLifecycle()
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
-    val buttonColor = remember {
-        mutableStateOf(
-            if (nameValid.value) {
-                R.color.text_primary
-            } else {
-                R.color.text_secondary
-            }
-        )
-    }
 
     Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom)) {
         TypeCreationHeader(
             vm = vm,
             nameValid = nameValid,
-            buttonColor = buttonColor,
             inputValue = inputValue
         )
         TypeEditWidget(
-            inputValue = inputValue,
+            preparedString = inputValue,
             nameValid = nameValid,
-            buttonColor = buttonColor,
             objectIcon = state.objectIcon,
-            onLeadingIconClick = vm::openEmojiPicker
+            onLeadingIconClick = vm::openEmojiPicker,
+            shouldMoveCursor = preparedName.trim().isNotEmpty()
         )
     }
 

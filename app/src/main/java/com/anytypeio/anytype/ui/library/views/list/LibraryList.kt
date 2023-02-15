@@ -10,6 +10,7 @@ import androidx.compose.ui.res.colorResource
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
+import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.LibraryListConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -23,6 +24,7 @@ fun LibraryListView(
     tabs: LibraryScreenState.Tabs,
     vmEventStream: (LibraryEvent) -> Unit,
     screenState: MutableState<ScreenState>,
+    effects: LibraryViewModel.Effect,
 ) {
     val pagerState = rememberPagerState(INITIAL_TAB)
     val modifier = Modifier.background(
@@ -37,6 +39,7 @@ fun LibraryListView(
             tabs = tabs,
             vmEventStream = vmEventStream,
             screenState = screenState,
+            effects = effects
         )
     }
 }

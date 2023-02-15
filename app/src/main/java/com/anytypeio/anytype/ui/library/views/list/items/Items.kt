@@ -32,7 +32,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.ui.library.styles.fonts
+import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults
 import com.anytypeio.anytype.ui.library.views.list.items.ItemDefaults.TEXT_PADDING_START
 
 @Composable
@@ -43,7 +43,10 @@ fun MyTypeItem(
     modifier: Modifier
 ) {
     Row(
-        modifier,
+        modifier.padding(
+            start = LibraryListDefaults.ItemPadding,
+            end = LibraryListDefaults.ItemPadding
+        ),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -73,7 +76,10 @@ fun LibTypeItem(
     onClick: () -> Unit
 ) {
     Row(
-        modifier,
+        modifier.padding(
+            start = LibraryListDefaults.ItemPadding,
+            end = LibraryListDefaults.ItemPadding
+        ),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -108,7 +114,10 @@ fun MyRelationItem(
     readOnly: Boolean = false,
 ) {
     Row(
-        modifier,
+        modifier.padding(
+            start = LibraryListDefaults.ItemPadding,
+            end = LibraryListDefaults.ItemPadding
+        ),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -140,7 +149,10 @@ fun LibRelationItem(
     onClick: () -> Unit
 ) {
     Row(
-        modifier,
+        modifier.padding(
+            start = LibraryListDefaults.ItemPadding,
+            end = LibraryListDefaults.ItemPadding
+        ),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -175,7 +187,10 @@ fun CreateNewTypeItem(
     name: String,
 ) {
     Row(
-        modifier,
+        modifier.padding(
+            start = LibraryListDefaults.ItemPadding,
+            end = LibraryListDefaults.ItemPadding
+        ),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {

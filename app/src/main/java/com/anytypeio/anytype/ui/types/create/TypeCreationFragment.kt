@@ -9,12 +9,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -32,7 +32,7 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<TypeCreationViewModel> { factory }
 
-    private val preparedName get() = arg<Id>(ARG_TYPE_NAME)
+    private val preparedName get() = argString(ARG_TYPE_NAME)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +64,8 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
         vm.onPreparedString(preparedName)
         subscribe(vm.navigation) {
             when (it) {
-                is TypeCreationViewModel.Navigation.Back -> {
+                is TypeCreationViewModel.Navigation.BackWithCreatedType -> {
+                    setFragmentResult(REQUEST_CREATE_TYPE, bundleOf())
                     findNavController().popBackStack()
                 }
                 TypeCreationViewModel.Navigation.SelectEmoji -> {
@@ -89,3 +90,4 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
 }
 
 private const val ARG_TYPE_NAME = "arg.type_name"
+const val REQUEST_CREATE_TYPE = "request.create_type"

@@ -5,14 +5,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
@@ -21,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -36,6 +35,7 @@ import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryView
+import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.LibraryListConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
@@ -67,14 +67,15 @@ fun LibraryListTabsContent(
     tabs: LibraryScreenState.Tabs,
     vmEventStream: (LibraryEvent) -> Unit,
     screenState: MutableState<ScreenState>,
+    effects: LibraryViewModel.Effect,
 ) {
 
-    val itemModifier = Modifier
-        .fillMaxWidth()
-        .height(ItemDefaults.ITEM_HEIGHT)
-        .padding(start = LibraryListDefaults.ItemPadding, end = LibraryListDefaults.ItemPadding)
-
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val animationStartState = remember {
+        mutableStateOf(false)
+    }
+    val input = remember { mutableStateOf(String()) }
 
     HorizontalPager(
         modifier = modifier,
@@ -82,8 +83,7 @@ fun LibraryListTabsContent(
         count = configuration.size,
         userScrollEnabled = screenState.value == ScreenState.CONTENT
     ) { index ->
-        val config = configuration[index]
-        val data = when (config) {
+        val data = when (configuration[index]) {
             is LibraryListConfig.Types, is LibraryListConfig.Relations -> tabs.my
             is LibraryListConfig.TypesLibrary, is LibraryListConfig.RelationsLibrary -> tabs.lib
         }
@@ -98,22 +98,40 @@ fun LibraryListTabsContent(
             Row(
                 modifier = Modifier.padding(start = SearchBarPadding, end = SearchBarPadding)
             ) {
+                LaunchedEffect(key1 = effects) {
+                    if (effects is LibraryViewModel.Effect.TypeCreated) {
+                        input.value = ""
+                        vmEventStream.invoke(
+                            configuration[index].toEvent(input.value)
+                        )
+                        animationStartState.value = false
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        screenState.value = ScreenState.CONTENT
+                    }
+                }
+
                 LibraryListSearchWidget(
                     vmEventStream = vmEventStream,
                     config = configuration[index],
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    screenState = screenState,
+                    animationStartState = animationStartState,
+                    input = input
                 )
                 SearchCancel(
                     modifier = Modifier
                         .padding(start = SearchCancelPaddingStart, top = SearchCancelPaddingTop)
                         .noRippleClickable {
                             keyboardController?.hide()
+                            focusManager.clearFocus()
+                            animationStartState.value = false
                             screenState.value = ScreenState.CONTENT
                         },
                     visible = screenState.value.visible().not()
                 )
             }
-            LibraryList(data, itemModifier, vmEventStream, screenState)
+            LibraryList(data, vmEventStream, screenState)
         }
     }
 }
@@ -137,26 +155,15 @@ private fun SearchCancel(modifier: Modifier = Modifier, visible: Boolean = false
 @Composable
 private fun LibraryList(
     data: LibraryScreenState.Tabs.TabData,
-    itemModifier: Modifier,
     vmEventStream: (LibraryEvent) -> Unit,
     screenState: MutableState<ScreenState>
 ) {
 
-    val keyboardIsVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val itemModifier = Modifier
+        .fillMaxWidth()
+        .height(ItemDefaults.ITEM_HEIGHT)
 
-    LaunchedEffect(key1 = keyboardIsVisible) {
-        if (keyboardIsVisible) {
-            screenState.value = ScreenState.SEARCH
-        }
-    }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = LibraryListDefaults.ListPadding,
-            end = LibraryListDefaults.ListPadding
-        )
-    ) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
 
         items(
             count = data.items.size,
@@ -249,10 +256,9 @@ private fun LibraryDivider() {
 }
 
 @Immutable
-private object LibraryListDefaults {
-    val ItemPadding = 4.dp
-    val DividerPadding = 4.dp
-    val ListPadding = 16.dp
+internal object LibraryListDefaults {
+    val ItemPadding = 20.dp
+    val DividerPadding = 20.dp
     val DividerThickness = 0.5.dp
     val SearchBarPadding = 20.dp
     val SearchCancelPaddingStart = 8.dp

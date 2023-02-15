@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
+import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
@@ -46,6 +47,7 @@ fun LibraryTabsContent(
     state: LibraryScreenState,
     vmEventStream: (LibraryEvent) -> Unit,
     screenState: MutableState<ScreenState>,
+    effects: LibraryViewModel.Effect,
 ) {
     HorizontalPager(modifier = modifier, state = pagerState, count = 2) { page ->
         val dataTabs = when (configuration[page]) {
@@ -61,7 +63,8 @@ fun LibraryTabsContent(
             config = configuration[page],
             tabs = dataTabs,
             vmEventStream = vmEventStream,
-            screenState = screenState
+            screenState = screenState,
+            effects = effects
         )
     }
 }
@@ -75,7 +78,8 @@ fun TabContentScreen(
     config: LibraryScreenConfig,
     tabs: LibraryScreenState.Tabs,
     vmEventStream: (LibraryEvent) -> Unit,
-    screenState: MutableState<ScreenState>
+    screenState: MutableState<ScreenState>,
+    effects: LibraryViewModel.Effect
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -87,7 +91,8 @@ fun TabContentScreen(
             libraryListConfig = config.listConfig,
             tabs = tabs,
             vmEventStream = vmEventStream,
-            screenState = screenState
+            screenState = screenState,
+            effects = effects
         )
     }
 

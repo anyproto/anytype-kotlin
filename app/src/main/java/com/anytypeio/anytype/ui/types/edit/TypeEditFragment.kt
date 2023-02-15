@@ -15,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -33,9 +33,9 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<TypeEditViewModel> { factory }
 
-    private val id get() = arg<String>(ARG_TYPE_EDIT_ID)
-    private val name get() = arg<String>(ARG_TYPE_EDIT_NAME)
-    private val icon get() = arg<String>(ARG_TYPE_EDIT_UNICODE)
+    private val id get() = argString(ARG_TYPE_EDIT_ID)
+    private val name get() = argString(ARG_TYPE_EDIT_NAME)
+    private val icon get() = argString(ARG_TYPE_EDIT_UNICODE)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -26,14 +26,16 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
+import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 import com.anytypeio.anytype.ui.settings.fonts
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.types.views.HeaderDefaults.ColorTextActive
+import com.anytypeio.anytype.ui.types.views.HeaderDefaults.ColorTextDisabled
 
 @Composable
 fun TypeCreationHeader(
     vm: TypeCreationViewModel,
     nameValid: MutableState<Boolean>,
-    buttonColor: MutableState<Int>,
     inputValue: MutableState<Id>,
 ) {
 
@@ -56,10 +58,10 @@ fun TypeCreationHeader(
         Box(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(id = R.string.type_creation_done),
-                color = colorResource(id = buttonColor.value),
+                color = colorResource(id = if (nameValid.value) ColorTextActive else ColorTextDisabled),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(enabled = nameValid.value) {
+                    .noRippleClickable(enabled = nameValid.value) {
                         vm.createType(inputValue.value)
                     },
                 textAlign = TextAlign.End,
@@ -79,4 +81,6 @@ private object HeaderDefaults {
         fontWeight = FontWeight.Normal,
         fontSize = 17.sp
     )
+    const val ColorTextActive = R.color.text_primary
+    const val ColorTextDisabled = R.color.text_secondary
 }

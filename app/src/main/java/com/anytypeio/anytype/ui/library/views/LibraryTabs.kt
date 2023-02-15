@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.ui.library.LibraryConfiguration
 import com.anytypeio.anytype.ui.library.LibraryScreenConfig
+import com.anytypeio.anytype.ui.library.ScreenState
+import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
 import com.anytypeio.anytype.ui.library.styles.TabTitleStyle
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -33,7 +36,8 @@ fun LibraryTabs(
     modifier: Modifier,
     pagerState: PagerState,
     configuration: LibraryConfiguration,
-) {
+    screenState: MutableState<ScreenState>,
+) = WrapWithLibraryAnimation(visible = screenState.value.visible()) {
     val coroutineScope = rememberCoroutineScope()
 
     val density = LocalDensity.current

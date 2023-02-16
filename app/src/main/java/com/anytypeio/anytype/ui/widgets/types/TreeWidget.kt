@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -119,8 +120,8 @@ private fun TreeWidgetTreeItems(
                     Modifier.width(TreeWidgetTreeItemDefaults.Indent.times(element.indent))
                 )
             }
-            when (val icon = element.icon) {
-                is WidgetView.Tree.Icon.Branch -> {
+            when (val icon = element.elementIcon) {
+                is WidgetView.Tree.ElementIcon.Branch -> {
                     Image(
                         painterResource(R.drawable.ic_widget_tree_expand),
                         contentDescription = "Expand icon",
@@ -136,14 +137,14 @@ private fun TreeWidgetTreeItems(
 
                     )
                 }
-                is WidgetView.Tree.Icon.Leaf -> {
+                is WidgetView.Tree.ElementIcon.Leaf -> {
                     Image(
                         painterResource(R.drawable.ic_widget_tree_dot),
                         contentDescription = "Dot icon",
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
-                is WidgetView.Tree.Icon.Set -> {
+                is WidgetView.Tree.ElementIcon.Set -> {
                     Image(
                         painterResource(R.drawable.ic_widget_tree_set),
                         contentDescription = "Set icon",
@@ -152,10 +153,18 @@ private fun TreeWidgetTreeItems(
                     )
                 }
             }
+            if (element.objectIcon != ObjectIcon.None && element.objectIcon !is ObjectIcon.Basic.Avatar) {
+                TreeWidgetObjectIcon(
+                    element = element,
+                    paddingStart = 8.dp,
+                    paddingEnd = 4.dp
+                )
+            }
             Text(
                 text = element.obj.name?.trim() ?: stringResource(id = R.string.untitled),
                 modifier = Modifier.padding(start = 8.dp),
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,

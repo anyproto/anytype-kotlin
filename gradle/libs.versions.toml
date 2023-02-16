@@ -59,6 +59,7 @@ protocVersion = '3.9.0'
 roomVersion = '2.4.3'
 amplitudeVersion = '2.36.1'
 okhttpVersion = '4.2.2'
+coilComposeVersion = '2.2.2'
 
 [libraries]
 middleware = { module = "io.anytype:android-mw", version.ref = "middlewareVersion" }
@@ -84,6 +85,7 @@ wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVe
 gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion" }
+coilCompose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion"  }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }
 androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunitVersion" }

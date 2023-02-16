@@ -2,14 +2,18 @@ package com.anytypeio.anytype.presentation.home
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -41,6 +45,9 @@ class TreeWidgetContainerTest {
     @Mock
     lateinit var store: ObjectStore
 
+    @Mock
+    lateinit var gateway: Gateway
+
     lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
 
     val testDispatcher = StandardTestDispatcher()
@@ -51,9 +58,12 @@ class TreeWidgetContainerTest {
         computation = testDispatcher
     )
 
+    private lateinit var urlBuilder: UrlBuilder
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        urlBuilder = UrlBuilder(gateway = gateway)
         objectSearchSubscriptionContainer = ObjectSearchSubscriptionContainer(
             repo = repo,
             channel = subscriptionEventChannel,
@@ -88,7 +98,8 @@ class TreeWidgetContainerTest {
                 container = objectSearchSubscriptionContainer,
                 widget = widget,
                 expandedBranches = expanded,
-                isWidgetCollapsed = flowOf(false)
+                isWidgetCollapsed = flowOf(false),
+                urlBuilder = urlBuilder
             )
 
             stubObjectSearch(
@@ -153,7 +164,8 @@ class TreeWidgetContainerTest {
             container = objectSearchSubscriptionContainer,
             widget = widget,
             expandedBranches = expanded,
-            isWidgetCollapsed = flowOf(false)
+            isWidgetCollapsed = flowOf(false),
+            urlBuilder = urlBuilder
         )
 
         stubObjectSearch(
@@ -191,19 +203,22 @@ class TreeWidgetContainerTest {
 
             // SETUP
 
+            val layout = ObjectType.Layout.BASIC.code.toDouble()
+
             val linkA = StubObject(
                 id = "A",
                 links = listOf(
                     "A1",
                     "A2",
                     "A3"
-                )
+                ),
+                layout = layout
             )
-            val linkA1 = StubObject(id = "A1")
-            val linkA2 = StubObject(id = "A2")
-            val linkA3 = StubObject(id = "A3")
-            val linkB = StubObject(id = "B")
-            val linkC = StubObject(id = "C")
+            val linkA1 = StubObject(id = "A1", layout = layout)
+            val linkA2 = StubObject(id = "A2", layout = layout)
+            val linkA3 = StubObject(id = "A3", layout = layout)
+            val linkB = StubObject(id = "B", layout = layout)
+            val linkC = StubObject(id = "C", layout = layout)
 
             val sourceLinks = listOf(linkA, linkB, linkC)
 
@@ -229,7 +244,8 @@ class TreeWidgetContainerTest {
                 container = objectSearchSubscriptionContainer,
                 widget = widget,
                 expandedBranches = expanded,
-                isWidgetCollapsed = flowOf(false)
+                isWidgetCollapsed = flowOf(false),
+                urlBuilder = urlBuilder
             )
 
             stubObjectSearch(
@@ -257,19 +273,22 @@ class TreeWidgetContainerTest {
                                 indent = 0,
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
-                                icon = WidgetView.Tree.Icon.Branch(isExpanded = false)
+                                elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = false),
+                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[0].name.orEmpty())
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
-                                icon = WidgetView.Tree.Icon.Leaf
+                                elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[1].name.orEmpty())
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
-                                icon = WidgetView.Tree.Icon.Leaf
+                                elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[2].name.orEmpty())
                             )
                         ),
                         isExpanded = true
@@ -288,37 +307,43 @@ class TreeWidgetContainerTest {
                                 indent = 0,
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
-                                icon = WidgetView.Tree.Icon.Branch(isExpanded = true)
+                                elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = true),
+                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[0].name.orEmpty())
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
                                 obj = linkA1,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA1.id,
-                                icon = WidgetView.Tree.Icon.Leaf
+                                elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                objectIcon = ObjectIcon.Basic.Avatar(linkA1.name.orEmpty())
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
                                 obj = linkA2,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA2.id,
-                                icon = WidgetView.Tree.Icon.Leaf
+                                elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                objectIcon = ObjectIcon.Basic.Avatar(linkA2.name.orEmpty())
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
                                 obj = linkA3,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA3.id,
-                                icon = WidgetView.Tree.Icon.Leaf
+                                elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                objectIcon = ObjectIcon.Basic.Avatar(linkA3.name.orEmpty())
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
-                                icon = WidgetView.Tree.Icon.Leaf
+                                elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[1].name.orEmpty())
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
-                                icon = WidgetView.Tree.Icon.Leaf
+                                elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[2].name.orEmpty())
                             )
                         ),
                         isExpanded = true

@@ -17,8 +17,10 @@ import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
@@ -87,6 +89,9 @@ class HomeViewModelTest {
     @Mock
     lateinit var collapsedWidgetStateHolder: CollapsedWidgetStateHolder
 
+    @Mock
+    lateinit var gateway: Gateway
+
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
 
@@ -102,9 +107,12 @@ class HomeViewModelTest {
         widgets = WIDGET_OBJECT_ID
     )
 
+    private lateinit var urlBuilder: UrlBuilder
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        urlBuilder = UrlBuilder(gateway)
     }
 
     @Test
@@ -367,7 +375,8 @@ class HomeViewModelTest {
         getObject = getObject,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         widgetActiveViewStateHolder = activeViewStateHolder,
-        collapsedWidgetStateHolder = collapsedWidgetStateHolder
+        collapsedWidgetStateHolder = collapsedWidgetStateHolder,
+        urlBuilder = urlBuilder
     )
 
     companion object {

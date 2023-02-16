@@ -4,7 +4,9 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +16,7 @@ import timber.log.Timber
 class TreeWidgetContainer(
     private val widget: Widget.Tree,
     private val container: ObjectSearchSubscriptionContainer,
+    private val urlBuilder: UrlBuilder,
     expandedBranches: Flow<List<TreePath>>,
     isWidgetCollapsed: Flow<Boolean>
 ) : WidgetContainer {
@@ -71,11 +74,16 @@ class TreeWidgetContainer(
                 val isExpandable = level < MAX_INDENT
                 add(
                     WidgetView.Tree.Element(
-                        icon = resolveObjectIcon(
+                        elementIcon = resolveObjectIcon(
                             obj = obj,
                             isExpandable = isExpandable,
                             expanded = expanded,
                             currentLinkPath = currentLinkPath
+                        ),
+                        objectIcon = ObjectIcon.from(
+                            obj = obj,
+                            layout = obj.layout,
+                            builder = urlBuilder
                         ),
                         indent = level,
                         obj = obj,
@@ -102,10 +110,10 @@ class TreeWidgetContainer(
         expanded: List<TreePath>,
         currentLinkPath: String
     ) = when {
-        obj.type.contains(ObjectTypeIds.SET) -> WidgetView.Tree.Icon.Set
-        !isExpandable -> WidgetView.Tree.Icon.Leaf
-        obj.links.isEmpty() -> WidgetView.Tree.Icon.Leaf
-        else -> WidgetView.Tree.Icon.Branch(
+        obj.type.contains(ObjectTypeIds.SET) -> WidgetView.Tree.ElementIcon.Set
+        !isExpandable -> WidgetView.Tree.ElementIcon.Leaf
+        obj.links.isEmpty() -> WidgetView.Tree.ElementIcon.Leaf
+        else -> WidgetView.Tree.ElementIcon.Branch(
             isExpanded = expanded.contains(currentLinkPath)
         )
     }

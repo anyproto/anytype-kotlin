@@ -164,6 +164,7 @@ dependencies {
     implementation libs.recyclerView
     implementation libs.constraintLayout
     implementation libs.glide
+    implementation libs.coilCompose
     implementation libs.dagger
     implementation libs.timber
     implementation libs.gson

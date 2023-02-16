@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.editor.model.Indent
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class WidgetView {
     data class Tree(
@@ -12,16 +13,17 @@ sealed class WidgetView {
         val isExpanded: Boolean
     ) : WidgetView() {
         data class Element(
-            val icon: Icon,
+            val elementIcon: ElementIcon,
+            val objectIcon: ObjectIcon = ObjectIcon.None,
             val indent: Indent,
             val obj: ObjectWrapper.Basic,
             val path: String
         )
 
-        sealed class Icon {
-            data class Branch(val isExpanded: Boolean) : Icon()
-            object Leaf : Icon()
-            object Set : Icon()
+        sealed class ElementIcon {
+            data class Branch(val isExpanded: Boolean) : ElementIcon()
+            object Leaf : ElementIcon()
+            object Set : ElementIcon()
         }
     }
 

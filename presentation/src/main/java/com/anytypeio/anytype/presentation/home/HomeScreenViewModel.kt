@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.Reducer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
@@ -66,6 +67,7 @@ class HomeScreenViewModel(
     private val interceptEvents: InterceptEvents,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
+    private val urlBuilder: UrlBuilder
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -140,7 +142,8 @@ class HomeScreenViewModel(
                             widget = w,
                             container = objectSearchSubscriptionContainer,
                             expandedBranches = treeWidgetBranchStateHolder.stream(w.id),
-                            isWidgetCollapsed = isCollapsed(w.id)
+                            isWidgetCollapsed = isCollapsed(w.id),
+                            urlBuilder = urlBuilder
                         )
                         is Widget.List -> ListWidgetContainer(
                             widget = w,
@@ -437,6 +440,7 @@ class HomeScreenViewModel(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
         private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
+        private val urlBuilder: UrlBuilder,
         private val getObject: GetObject,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -454,7 +458,8 @@ class HomeScreenViewModel(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,
             collapsedWidgetStateHolder = collapsedWidgetStateHolder,
-            getObject = getObject
+            getObject = getObject,
+            urlBuilder = urlBuilder
         ) as T
     }
 

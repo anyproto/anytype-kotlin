@@ -215,7 +215,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.ivEmoji)
             } catch (e: Throwable) {
-                Timber.e(e, "Error while setting emoji icon for: ${emoji}")
+                Timber.e(e, "Error while setting emoji icon for: $emoji")
             }
         } else {
             binding.ivEmoji.setImageDrawable(null)

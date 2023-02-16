@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -19,34 +20,52 @@ class ListWidgetContainer(
     private val widget: Widget.List,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
-    private val activeView: Flow<Id?>
+    activeView: Flow<Id?>,
+    isWidgetCollapsed: Flow<Boolean>
 ) : WidgetContainer {
 
-    override val view: Flow<WidgetView> = activeView.distinctUntilChanged().flatMapLatest { view ->
-        val obj = getObject.run(widget.source.id)
-        val params = obj.parse(viewer = view, source = widget.source)
-        if (params != null) {
-            storage.subscribe(params).map { objects ->
-                WidgetView.Set(
-                    id = widget.id,
-                    obj = widget.source,
-                    tabs = obj.tabs(viewer = view),
-                    elements = objects
-                )
-            }
-        } else {
+    override val view: Flow<WidgetView> = combine(
+        activeView.distinctUntilChanged(),
+        isWidgetCollapsed
+    ) { view, isCollapsed -> Pair(view, isCollapsed) }.flatMapLatest { (view, isCollapsed) ->
+        if (isCollapsed) {
             flowOf(
                 WidgetView.Set(
                     id = widget.id,
                     obj = widget.source,
                     tabs = emptyList(),
-                    elements = emptyList()
+                    elements = emptyList(),
+                    isExpanded = false
                 )
             )
+        } else {
+            val obj = getObject.run(widget.source.id)
+            val params = obj.parse(viewer = view, source = widget.source)
+            if (params != null) {
+                storage.subscribe(params).map { objects ->
+                    WidgetView.Set(
+                        id = widget.id,
+                        obj = widget.source,
+                        tabs = obj.tabs(viewer = view),
+                        elements = objects,
+                        isExpanded = true
+                    )
+                }
+            } else {
+                flowOf(
+                    WidgetView.Set(
+                        id = widget.id,
+                        obj = widget.source,
+                        tabs = emptyList(),
+                        elements = emptyList(),
+                        isExpanded = true
+                    )
+                )
+            }
         }
     }
 
-    fun ObjectView.tabs(viewer: Id?) : List<WidgetView.Set.Tab> = buildList {
+    fun ObjectView.tabs(viewer: Id?): List<WidgetView.Set.Tab> = buildList {
         val block = blocks.find { it.content is DV }
         block?.content<DV>()?.viewers?.forEachIndexed { idx, view ->
             add(

@@ -31,7 +31,8 @@ fun HomeScreen(
     onEditWidgets: () -> Unit,
     onRefresh: () -> Unit,
     onWidgetMenuAction: (Id, DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (Id, Id) -> Unit
+    onChangeWidgetView: (Id, Id) -> Unit,
+    onToggleExpandedWidgetState: (Id) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -49,7 +50,8 @@ fun HomeScreen(
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
-                            onWidgetObjectClicked = onWidgetObjectClicked
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
                         )
                     }
                     is WidgetView.Link -> {
@@ -68,7 +70,8 @@ fun HomeScreen(
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
-                            onChangeWidgetView = onChangeWidgetView
+                            onChangeWidgetView = onChangeWidgetView,
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
                         )
                     }
                     is WidgetView.Action.CreateWidget -> {

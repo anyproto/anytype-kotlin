@@ -12,6 +12,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 
@@ -22,7 +23,8 @@ fun WidgetMenu(
 ) {
     DropdownMenu(
         expanded = isExpanded.value,
-        onDismissRequest = { isExpanded.value = false }
+        onDismissRequest = { isExpanded.value = false },
+        offset = DpOffset(x = 0.dp, y = 12.dp)
     ) {
         DropdownMenuItem(
             onClick = {

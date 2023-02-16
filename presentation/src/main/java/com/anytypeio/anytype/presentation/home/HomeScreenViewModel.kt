@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
@@ -64,9 +65,11 @@ class HomeScreenViewModel(
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val interceptEvents: InterceptEvents,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
+    private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
-    WidgetActiveViewStateHolder by widgetActiveViewStateHolder
+    WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
+    CollapsedWidgetStateHolder by collapsedWidgetStateHolder
 {
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
@@ -74,7 +77,7 @@ class HomeScreenViewModel(
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())
     private val containers = MutableStateFlow<List<WidgetContainer>>(emptyList())
-    private val expanded = TreeWidgetBranchStateHolder()
+    private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     init {
 
@@ -136,13 +139,15 @@ class HomeScreenViewModel(
                         is Widget.Tree -> TreeWidgetContainer(
                             widget = w,
                             container = objectSearchSubscriptionContainer,
-                            expandedBranches = expanded.stream(w.id)
+                            expandedBranches = treeWidgetBranchStateHolder.stream(w.id),
+                            isWidgetCollapsed = isCollapsed(w.id)
                         )
                         is Widget.List -> ListWidgetContainer(
                             widget = w,
                             storage = storelessSubscriptionContainer,
                             getObject = getObject,
-                            activeView = observeCurrentWidgetView(w.id)
+                            activeView = observeCurrentWidgetView(w.id),
+                            isWidgetCollapsed = isCollapsed(w.id)
                         )
                     }
                 }
@@ -311,7 +316,7 @@ class HomeScreenViewModel(
     }
 
     fun onExpand(path: TreePath) {
-        expanded.onExpand(linkPath = path)
+        treeWidgetBranchStateHolder.onExpand(linkPath = path)
     }
 
     fun onDeleteWidgetClicked(widget: Id) {
@@ -431,6 +436,7 @@ class HomeScreenViewModel(
         private val interceptEvents: InterceptEvents,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
+        private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
         private val getObject: GetObject,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -447,6 +453,7 @@ class HomeScreenViewModel(
             interceptEvents = interceptEvents,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,
+            collapsedWidgetStateHolder = collapsedWidgetStateHolder,
             getObject = getObject
         ) as T
     }

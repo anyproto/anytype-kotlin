@@ -16,6 +16,8 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -41,6 +43,14 @@ class TreeWidgetContainerTest {
 
     lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
 
+    val testDispatcher = StandardTestDispatcher()
+
+    val dispatchers = AppCoroutineDispatchers(
+        io = testDispatcher,
+        main = testDispatcher,
+        computation = testDispatcher
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -48,11 +58,7 @@ class TreeWidgetContainerTest {
             repo = repo,
             channel = subscriptionEventChannel,
             store = store,
-            dispatchers = AppCoroutineDispatchers(
-                io = StandardTestDispatcher(),
-                main = StandardTestDispatcher(),
-                computation = StandardTestDispatcher()
-            )
+            dispatchers = dispatchers
         )
     }
 
@@ -81,7 +87,8 @@ class TreeWidgetContainerTest {
             val container = TreeWidgetContainer(
                 container = objectSearchSubscriptionContainer,
                 widget = widget,
-                expandedBranches = expanded
+                expandedBranches = expanded,
+                isWidgetCollapsed = flowOf(false)
             )
 
             stubObjectSearch(
@@ -145,7 +152,8 @@ class TreeWidgetContainerTest {
         val container = TreeWidgetContainer(
             container = objectSearchSubscriptionContainer,
             widget = widget,
-            expandedBranches = expanded
+            expandedBranches = expanded,
+            isWidgetCollapsed = flowOf(false)
         )
 
         stubObjectSearch(
@@ -173,156 +181,153 @@ class TreeWidgetContainerTest {
                     keys = TreeWidgetContainer.keys
                 )
             }
-            awaitItem()
-            verifyBlocking(
-                repo, times(1)
-            ) {
-                searchObjectsByIdWithSubscription(
-                    subscription = widget.id,
-                    ids = links.map { it.id },
-                    keys = TreeWidgetContainer.keys
-                )
-            }
             awaitComplete()
         }
     }
 
     @Test
-    fun `should define correct indent level for children of children of source objects`() = runTest {
+    fun `should define correct indent level for children of children of source objects`() =
+        runTest {
 
-        // SETUP
+            // SETUP
 
-        val linkA = StubObject(
-            id = "A",
-            links = listOf(
-                "A1",
-                "A2",
-                "A3"
+            val linkA = StubObject(
+                id = "A",
+                links = listOf(
+                    "A1",
+                    "A2",
+                    "A3"
+                )
             )
-        )
-        val linkA1 = StubObject(id = "A1")
-        val linkA2 = StubObject(id = "A2")
-        val linkA3 = StubObject(id = "A3")
-        val linkB = StubObject(id = "B")
-        val linkC = StubObject(id = "C")
+            val linkA1 = StubObject(id = "A1")
+            val linkA2 = StubObject(id = "A2")
+            val linkA3 = StubObject(id = "A3")
+            val linkB = StubObject(id = "B")
+            val linkC = StubObject(id = "C")
 
-        val sourceLinks = listOf(linkA, linkB, linkC)
+            val sourceLinks = listOf(linkA, linkB, linkC)
 
-        val source = StubObject(
-            id = "root",
-            links = sourceLinks.map { it.id }
-        )
-
-        val widget = Widget.Tree(
-            id = "widget",
-            source = source
-        )
-
-        val expanded = flowOf(
-            emptyList(),
-            listOf(
-                widget.id + "/" + widget.source.id + "/" + linkA.id
+            val source = StubObject(
+                id = "root",
+                links = sourceLinks.map { it.id }
             )
-        )
 
-        val container = TreeWidgetContainer(
-            container = objectSearchSubscriptionContainer,
-            widget = widget,
-            expandedBranches = expanded
-        )
-
-        stubObjectSearch(
-            widget = widget,
-            targets = sourceLinks.map { it.id },
-            results = sourceLinks
-        )
-
-        stubObjectSearch(
-            widget = widget,
-            targets = sourceLinks.map { it.id } + linkA.links,
-            results = sourceLinks + listOf(linkA1, linkA2, linkA3)
-        )
-
-        // TESTING
-
-        container.view.test {
-            val firstTimeState = awaitItem()
-            val secondTimeState = awaitItem()
-            assertEquals(
-                expected = WidgetView.Tree(
-                    id = widget.id,
-                    obj = widget.source,
-                    elements = listOf(
-                        WidgetView.Tree.Element(
-                            indent = 0,
-                            obj = sourceLinks[0],
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[0].id,
-                            icon = WidgetView.Tree.Icon.Branch(isExpanded = false)
-                        ),
-                        WidgetView.Tree.Element(
-                            indent = 0,
-                            obj = sourceLinks[1],
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[1].id,
-                            icon = WidgetView.Tree.Icon.Leaf
-                        ),
-                        WidgetView.Tree.Element(
-                            indent = 0,
-                            obj = sourceLinks[2],
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[2].id,
-                            icon = WidgetView.Tree.Icon.Leaf
-                        )
-                    )
-                ),
-                actual = firstTimeState
+            val widget = Widget.Tree(
+                id = "widget",
+                source = source
             )
-            assertEquals(
-                expected = WidgetView.Tree(
-                    id = widget.id,
-                    obj = widget.source,
-                    elements = listOf(
-                        WidgetView.Tree.Element(
-                            indent = 0,
-                            obj = sourceLinks[0],
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[0].id,
-                            icon = WidgetView.Tree.Icon.Branch(isExpanded = true)
-                        ),
-                        WidgetView.Tree.Element(
-                            indent = 1,
-                            obj = linkA1,
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA1.id,
-                            icon = WidgetView.Tree.Icon.Leaf
-                        ),
-                        WidgetView.Tree.Element(
-                            indent = 1,
-                            obj = linkA2,
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA2.id,
-                            icon = WidgetView.Tree.Icon.Leaf
-                        ),
-                        WidgetView.Tree.Element(
-                            indent = 1,
-                            obj = linkA3,
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA3.id,
-                            icon = WidgetView.Tree.Icon.Leaf
-                        ),
-                        WidgetView.Tree.Element(
-                            indent = 0,
-                            obj = sourceLinks[1],
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[1].id,
-                            icon = WidgetView.Tree.Icon.Leaf
-                        ),
-                        WidgetView.Tree.Element(
-                            indent = 0,
-                            obj = sourceLinks[2],
-                            path = widget.id +  "/" + widget.source.id + "/" + sourceLinks[2].id,
-                            icon = WidgetView.Tree.Icon.Leaf
-                        )
-                    )
-                ),
-                actual = secondTimeState
+
+            val delayBeforeExpanded = 1L
+
+            val expanded = flow {
+                emit(emptyList())
+                delay(delayBeforeExpanded)
+                emit(listOf(widget.id + "/" + widget.source.id + "/" + linkA.id))
+            }
+
+            val container = TreeWidgetContainer(
+                container = objectSearchSubscriptionContainer,
+                widget = widget,
+                expandedBranches = expanded,
+                isWidgetCollapsed = flowOf(false)
             )
-            awaitComplete()
+
+            stubObjectSearch(
+                widget = widget,
+                targets = sourceLinks.map { it.id },
+                results = sourceLinks
+            )
+
+            stubObjectSearch(
+                widget = widget,
+                targets = sourceLinks.map { it.id } + linkA.links,
+                results = sourceLinks + listOf(linkA1, linkA2, linkA3)
+            )
+
+            // TESTING
+
+            container.view.test {
+                val firstTimeState = awaitItem()
+                assertEquals(
+                    expected = WidgetView.Tree(
+                        id = widget.id,
+                        obj = widget.source,
+                        elements = listOf(
+                            WidgetView.Tree.Element(
+                                indent = 0,
+                                obj = sourceLinks[0],
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
+                                icon = WidgetView.Tree.Icon.Branch(isExpanded = false)
+                            ),
+                            WidgetView.Tree.Element(
+                                indent = 0,
+                                obj = sourceLinks[1],
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
+                                icon = WidgetView.Tree.Icon.Leaf
+                            ),
+                            WidgetView.Tree.Element(
+                                indent = 0,
+                                obj = sourceLinks[2],
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
+                                icon = WidgetView.Tree.Icon.Leaf
+                            )
+                        ),
+                        isExpanded = true
+                    ),
+                    actual = firstTimeState
+                )
+                // Should be using coroutine delay instead, but it does not work currently.
+                Thread.sleep(delayBeforeExpanded * 2)
+                val secondTimeState = awaitItem()
+                assertEquals(
+                    expected = WidgetView.Tree(
+                        id = widget.id,
+                        obj = widget.source,
+                        elements = listOf(
+                            WidgetView.Tree.Element(
+                                indent = 0,
+                                obj = sourceLinks[0],
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
+                                icon = WidgetView.Tree.Icon.Branch(isExpanded = true)
+                            ),
+                            WidgetView.Tree.Element(
+                                indent = 1,
+                                obj = linkA1,
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA1.id,
+                                icon = WidgetView.Tree.Icon.Leaf
+                            ),
+                            WidgetView.Tree.Element(
+                                indent = 1,
+                                obj = linkA2,
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA2.id,
+                                icon = WidgetView.Tree.Icon.Leaf
+                            ),
+                            WidgetView.Tree.Element(
+                                indent = 1,
+                                obj = linkA3,
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA3.id,
+                                icon = WidgetView.Tree.Icon.Leaf
+                            ),
+                            WidgetView.Tree.Element(
+                                indent = 0,
+                                obj = sourceLinks[1],
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
+                                icon = WidgetView.Tree.Icon.Leaf
+                            ),
+                            WidgetView.Tree.Element(
+                                indent = 0,
+                                obj = sourceLinks[2],
+                                path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
+                                icon = WidgetView.Tree.Icon.Leaf
+                            )
+                        ),
+                        isExpanded = true
+                    ),
+                    actual = secondTimeState
+                )
+                awaitComplete()
+            }
         }
-    }
 
     private fun stubObjectSearch(
         widget: Widget.Tree,

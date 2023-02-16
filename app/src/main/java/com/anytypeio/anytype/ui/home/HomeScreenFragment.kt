@@ -71,7 +71,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                         }
                     },
                     onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                    onChangeWidgetView = vm::onChangeCurrentWidgetView
+                    onChangeWidgetView = vm::onChangeCurrentWidgetView,
+                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState
                 )
             }
         }

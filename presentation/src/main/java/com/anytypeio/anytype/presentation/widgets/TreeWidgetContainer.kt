@@ -8,23 +8,30 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 
 class TreeWidgetContainer(
     private val widget: Widget.Tree,
     private val container: ObjectSearchSubscriptionContainer,
-    private val expandedBranches: Flow<List<TreePath>>
+    expandedBranches: Flow<List<TreePath>>,
+    isWidgetCollapsed: Flow<Boolean>
 ) : WidgetContainer {
 
     private val store = mutableMapOf<Id, ObjectWrapper.Basic>()
 
-    override val view: Flow<WidgetView.Tree> = expandedBranches.mapLatest {
+    override val view: Flow<WidgetView.Tree> = combine(
+        expandedBranches, isWidgetCollapsed
+    ) { paths, isWidgetCollapsed ->
         container.get(
             subscription = widget.id,
             keys = keys,
-            targets = getSubscriptionTargets(paths = it).also { targets ->
-                Timber.d("Subscription targets: $targets")
+            targets = if (!isWidgetCollapsed) {
+                getSubscriptionTargets(paths = paths).also { targets ->
+                    Timber.d("Subscription targets: $targets")
+                }
+            } else {
+                emptyList()
             }
         ).also { result ->
             val valid = result.filter { obj -> isValidObject(obj) }
@@ -34,10 +41,11 @@ class TreeWidgetContainer(
         WidgetView.Tree(
             id = widget.id,
             obj = widget.source,
+            isExpanded = !isWidgetCollapsed,
             elements = buildTree(
                 links = widget.source.links,
                 level = ROOT_INDENT,
-                expanded = it,
+                expanded = paths,
                 path = widget.id + SEPARATOR + widget.source.id + SEPARATOR
             )
         )

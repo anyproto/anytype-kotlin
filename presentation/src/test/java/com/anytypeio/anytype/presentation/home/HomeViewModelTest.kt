@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -82,6 +83,9 @@ class HomeViewModelTest {
 
     @Mock
     lateinit var activeViewStateHolder: WidgetActiveViewStateHolder
+
+    @Mock
+    lateinit var collapsedWidgetStateHolder: CollapsedWidgetStateHolder
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -190,6 +194,8 @@ class HomeViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
+        stubCollapsedWidgetState(widgetBlock)
+        stubWidgetActiveView(widgetBlock)
 
         val vm = buildViewModel()
 
@@ -208,7 +214,8 @@ class HomeViewModelTest {
                         WidgetView.Tree(
                             id = widgetBlock.id,
                             obj = sourceObject,
-                            elements = emptyList()
+                            elements = emptyList(),
+                            isExpanded = true
                         )
                     )
                     addAll(HomeScreenViewModel.actions)
@@ -334,6 +341,18 @@ class HomeViewModelTest {
         }
     }
 
+    private fun stubWidgetActiveView(widgetBlock: Block) {
+        activeViewStateHolder.stub {
+            on { observeCurrentWidgetView(widgetBlock.id) } doReturn flowOf(null)
+        }
+    }
+
+    private fun stubCollapsedWidgetState(widgetBlock: Block) {
+        collapsedWidgetStateHolder.stub {
+            on { isCollapsed(widgetBlock.id) } doReturn flowOf(false)
+        }
+    }
+
     private fun buildViewModel() = HomeScreenViewModel(
         configStorage = configStorage,
         interceptEvents = interceptEvents,
@@ -347,7 +366,8 @@ class HomeViewModelTest {
         appCoroutineDispatchers = appCoroutineDispatchers,
         getObject = getObject,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
-        widgetActiveViewStateHolder = activeViewStateHolder
+        widgetActiveViewStateHolder = activeViewStateHolder,
+        collapsedWidgetStateHolder = collapsedWidgetStateHolder
     )
 
     companion object {

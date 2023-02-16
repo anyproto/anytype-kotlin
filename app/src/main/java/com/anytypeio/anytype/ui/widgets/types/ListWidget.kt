@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.types
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -27,14 +29,18 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ListWidgetCard(
     item: WidgetView.Set,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (Id, Id) -> Unit
+    onChangeWidgetView: (Id, Id) -> Unit,
+    onToggleExpandedWidgetState: (Id) -> Unit
 ) {
     val isDropDownMenuExpanded = remember {
         mutableStateOf(false)
@@ -42,44 +48,59 @@ fun ListWidgetCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp),
-        shape = RoundedCornerShape(16.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .animateContentSize(),
+        shape = RoundedCornerShape(16.dp),
+        onClick = {
+            isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
+        },
+        backgroundColor = if (isDropDownMenuExpanded.value) {
+            colorResource(id = R.color.shape_secondary)
+        } else {
+            colorResource(id = R.color.dashboard_card_background)
+        }
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.height(6.dp))
-            Box(
-                Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-            ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 6.dp)
+        ) {
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                 WidgetHeader(
                     item = item.obj,
                     isDropDownMenuExpanded = isDropDownMenuExpanded,
-                    onWidgetObjectClicked = onWidgetObjectClicked
+                    onWidgetObjectClicked = onWidgetObjectClicked,
+                    onExpandElement = { onToggleExpandedWidgetState(item.id) },
+                    isExpanded = item.isExpanded
                 )
             }
-            LazyRow(
-                modifier = Modifier
-                    .height(40.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                items(
-                    items = item.tabs,
-                    itemContent = { tab ->
-                        Text(
-                            text = tab.name,
-                            fontSize = 15.sp,
-                            color = if (tab.isSelected)
-                                colorResource(id = R.color.text_primary)
-                            else
-                                colorResource(id = R.color.glyph_active),
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .clickable { onChangeWidgetView(item.id, tab.id) }
-                        )
-                    }
-                )
+            if (item.isExpanded) {
+                LazyRow(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(
+                        items = item.tabs,
+                        itemContent = { tab ->
+                            Text(
+                                text = tab.name,
+                                fontSize = 15.sp,
+                                color = if (tab.isSelected)
+                                    colorResource(id = R.color.text_primary)
+                                else
+                                    colorResource(id = R.color.glyph_active),
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier
+                                    .padding(start = 16.dp)
+                                    .noRippleClickable {
+                                        onChangeWidgetView(item.id, tab.id)
+                                    }
+                            )
+                        }
+                    )
+                }
             }
             item.elements.forEachIndexed { idx, element ->
                 Box(
@@ -130,6 +151,10 @@ fun ListWidgetCard(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
+            WidgetMenu(
+                isExpanded = isDropDownMenuExpanded,
+                onDropDownMenuAction = onDropDownMenuAction
+            )
         }
     }
 }

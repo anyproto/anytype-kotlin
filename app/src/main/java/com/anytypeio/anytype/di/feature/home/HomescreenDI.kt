@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
@@ -47,7 +48,7 @@ interface HomeScreenComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: HomeScreenDependencies) : HomeScreenComponent
+        fun create(dependencies: HomeScreenDependencies): HomeScreenComponent
     }
 
     fun inject(fragment: HomeScreenFragment)
@@ -128,17 +129,17 @@ object HomeScreenModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun widgetEventDispatcher() : Dispatcher<WidgetDispatchEvent> = Dispatcher.Default()
+    fun widgetEventDispatcher(): Dispatcher<WidgetDispatchEvent> = Dispatcher.Default()
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun objectPayloadDispatcher() : Dispatcher<Payload> = Dispatcher.Default()
+    fun objectPayloadDispatcher(): Dispatcher<Payload> = Dispatcher.Default()
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun interceptEvents(channel: EventChannel) : InterceptEvents = InterceptEvents(
+    fun interceptEvents(channel: EventChannel): InterceptEvents = InterceptEvents(
         context = Dispatchers.IO,
         channel = channel
     )
@@ -156,12 +157,18 @@ object HomeScreenModule {
         @PerScreen
         @Binds
         fun holder(holder: WidgetActiveViewStateHolder.Impl): WidgetActiveViewStateHolder
+
+        @PerScreen
+        @Binds
+        fun collapsedWidgetStateHolder(
+            holder: CollapsedWidgetStateHolder.Impl
+        ): CollapsedWidgetStateHolder
     }
 }
 
 interface HomeScreenDependencies : ComponentDependencies {
     fun blockRepo(): BlockRepository
-    fun authRepo() : AuthRepository
+    fun authRepo(): AuthRepository
     fun config(): ConfigStorage
     fun urlBuilder(): UrlBuilder
     fun objectStore(): ObjectStore

@@ -12,9 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.widgets.TreePath
+import com.anytypeio.anytype.presentation.widgets.ViewId
+import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
@@ -30,9 +31,9 @@ fun HomeScreen(
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
     onRefresh: () -> Unit,
-    onWidgetMenuAction: (Id, DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (Id, Id) -> Unit,
-    onToggleExpandedWidgetState: (Id) -> Unit
+    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier

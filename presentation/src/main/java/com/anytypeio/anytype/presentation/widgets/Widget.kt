@@ -78,3 +78,6 @@ fun List<Block>.parseWidgets(
         }
     }
 }
+
+typealias WidgetId = Id
+typealias ViewId = Id

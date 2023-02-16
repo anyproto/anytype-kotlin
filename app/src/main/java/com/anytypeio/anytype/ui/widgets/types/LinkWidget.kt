@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -62,14 +63,16 @@ fun LinkWidgetCard(
         ) {
             Text(
                 text = item.obj.name.orEmpty().trim(),
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = colorResource(id = R.color.text_primary),
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp),
+                style = TextStyle(
+                    fontSize = 17.sp,
+                    color = colorResource(id = R.color.text_primary),
+                    fontWeight = FontWeight.Bold
+                )
             )
         }
         WidgetMenu(

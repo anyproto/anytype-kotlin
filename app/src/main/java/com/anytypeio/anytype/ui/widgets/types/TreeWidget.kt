@@ -28,14 +28,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.widgets.TreePath
+import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
@@ -48,7 +50,7 @@ fun TreeWidgetCard(
     onExpandElement: (TreePath) -> Unit,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    onToggleExpandedWidgetState: (Id) -> Unit
+    onToggleExpandedWidgetState: (WidgetId) -> Unit
 ) {
     val isDropDownMenuExpanded = remember {
         mutableStateOf(false)
@@ -79,11 +81,17 @@ fun TreeWidgetCard(
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded
             )
-            TreeWidgetTreeItem(
-                item = item,
-                onExpand = onExpandElement,
-                onWidgetElementClicked = onWidgetObjectClicked
-            )
+            if (item.elements.isNotEmpty()) {
+                TreeWidgetTreeItems(
+                    item = item,
+                    onExpand = onExpandElement,
+                    onWidgetElementClicked = onWidgetObjectClicked
+                )
+            } else {
+                if (item.isExpanded) {
+                    EmptyWidgetPlaceholder(R.string.empty_tree_widget)
+                }
+            }
         }
         WidgetMenu(
             isExpanded = isDropDownMenuExpanded,
@@ -93,7 +101,7 @@ fun TreeWidgetCard(
 }
 
 @Composable
-private fun TreeWidgetTreeItem(
+private fun TreeWidgetTreeItems(
     item: WidgetView.Tree,
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit
@@ -103,7 +111,8 @@ private fun TreeWidgetTreeItem(
             modifier = Modifier
                 .padding(vertical = 8.dp)
                 .noRippleClickable {
-                    onWidgetElementClicked(element.obj) }
+                    onWidgetElementClicked(element.obj)
+                }
         ) {
             if (element.indent > 0) {
                 Spacer(
@@ -144,12 +153,14 @@ private fun TreeWidgetTreeItem(
                 }
             }
             Text(
-                text = element.obj.name?.trim() ?: "Untitled",
+                text = element.obj.name?.trim() ?: stringResource(id = R.string.untitled),
                 modifier = Modifier.padding(start = 8.dp),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1
+                maxLines = 1,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = colorResource(id = R.color.text_primary),
+                )
             )
         }
         Divider(
@@ -177,10 +188,12 @@ fun WidgetHeader(
             .height(40.dp)) {
         Text(
             // TODO trimming should be a part of presentation module.
-            text = item.name.orEmpty().trim(),
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(id = R.color.text_primary),
+            text = item.name?.trim() ?: stringResource(id = R.string.untitled),
+            style = TextStyle(
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.text_primary),
+            ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier

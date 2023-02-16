@@ -21,13 +21,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.widgets.ViewId
+import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
@@ -39,8 +41,8 @@ fun ListWidgetCard(
     item: WidgetView.Set,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (Id, Id) -> Unit,
-    onToggleExpandedWidgetState: (Id) -> Unit
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit
 ) {
     val isDropDownMenuExpanded = remember {
         mutableStateOf(false)
@@ -74,7 +76,7 @@ fun ListWidgetCard(
                     isExpanded = item.isExpanded
                 )
             }
-            if (item.isExpanded) {
+            if (item.tabs.isNotEmpty() && item.isExpanded) {
                 LazyRow(
                     modifier = Modifier
                         .height(40.dp)
@@ -102,53 +104,66 @@ fun ListWidgetCard(
                     )
                 }
             }
-            item.elements.forEachIndexed { idx, element ->
-                Box(
-                    modifier = Modifier
-                        .clickable(onClick = { onWidgetObjectClicked(element) })
-                        .height(72.dp)
-                        .fillMaxWidth()
-                        .padding(end = 8.dp)
-                ) {
-                    val hasDescription = element.description?.isNotEmpty() ?: false
-                    Text(
-                        text = element.name.orEmpty(),
-                        fontSize = 15.sp,
-                        modifier = if (hasDescription)
-                            Modifier
-                                .padding(
-                                    top = 18.dp,
-                                    start = 16.dp
-                                )
-                        else
-                            Modifier
-                                .padding(start = 16.dp)
-                                .align(Alignment.CenterStart),
-                        color = colorResource(id = R.color.text_primary),
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    if (hasDescription) {
+            if (item.elements.isNotEmpty()) {
+                item.elements.forEachIndexed { idx, element ->
+                    Box(
+                        modifier = Modifier
+                            .clickable(onClick = { onWidgetObjectClicked(element) })
+                            .height(72.dp)
+                            .fillMaxWidth()
+                            .padding(end = 8.dp)
+                    ) {
+                        val hasDescription = element.description?.isNotEmpty() ?: false
                         Text(
-                            text = element.description.orEmpty(),
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(
-                                top = 39.dp,
-                                start = 16.dp
-                            ),
-                            color = colorResource(id = R.color.text_secondary),
+                            text = element.name.orEmpty(),
+                            modifier = if (hasDescription)
+                                Modifier
+                                    .padding(
+                                        top = 18.dp,
+                                        start = 16.dp
+                                    )
+                            else
+                                Modifier
+                                    .padding(start = 16.dp)
+                                    .align(Alignment.CenterStart),
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                color = colorResource(id = R.color.text_primary),
+                                fontWeight = FontWeight.Medium,
+                            )
                         )
+                        if (hasDescription) {
+                            Text(
+                                text = element.description.orEmpty(),
+                                modifier = Modifier.padding(
+                                    top = 39.dp,
+                                    start = 16.dp
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    color = colorResource(id = R.color.text_secondary)
+                                )
+                            )
+                        }
+                    }
+                    Divider(
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(end = 16.dp, start = 8.dp)
+                    )
+                    if (idx == item.elements.lastIndex) {
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
-                Divider(
-                    thickness = 0.5.dp,
-                    modifier = Modifier.padding(end = 16.dp, start = 8.dp)
-                )
-                if (idx == item.elements.lastIndex) {
-                    Spacer(modifier = Modifier.height(16.dp))
+            } else {
+                if (item.isExpanded) {
+                    if (item.tabs.isNotEmpty())
+                        EmptyWidgetPlaceholder(R.string.empty_list_widget)
+                    else
+                        EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
                 }
             }
             WidgetMenu(

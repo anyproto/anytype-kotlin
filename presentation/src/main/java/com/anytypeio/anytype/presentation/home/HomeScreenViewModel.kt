@@ -150,7 +150,8 @@ class HomeScreenViewModel(
                             storage = storelessSubscriptionContainer,
                             getObject = getObject,
                             activeView = observeCurrentWidgetView(w.id),
-                            isWidgetCollapsed = isCollapsed(w.id)
+                            isWidgetCollapsed = isCollapsed(w.id),
+                            urlBuilder = urlBuilder
                         )
                     }
                 }

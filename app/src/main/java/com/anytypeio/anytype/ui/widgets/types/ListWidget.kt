@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -108,23 +109,32 @@ fun ListWidgetCard(
                 item.elements.forEachIndexed { idx, element ->
                     Box(
                         modifier = Modifier
-                            .clickable(onClick = { onWidgetObjectClicked(element) })
+                            .clickable(onClick = { onWidgetObjectClicked(element.obj) })
                             .height(72.dp)
                             .fillMaxWidth()
                             .padding(end = 8.dp)
                     ) {
-                        val hasDescription = element.description?.isNotEmpty() ?: false
+                        val hasDescription = element.obj.description?.isNotEmpty() ?: false
+                        val hasIcon = element.icon != ObjectIcon.None && element.icon !is ObjectIcon.Basic.Avatar
+                        if (hasIcon) {
+                            ListWidgetObjectIcon(
+                                icon = element.icon,
+                                modifier = Modifier
+                                    .align(Alignment.CenterStart)
+                                    .padding(start = 16.dp)
+                            )
+                        }
                         Text(
-                            text = element.name.orEmpty(),
+                            text = element.obj.name.orEmpty(),
                             modifier = if (hasDescription)
                                 Modifier
                                     .padding(
                                         top = 18.dp,
-                                        start = 16.dp
+                                        start = if (hasIcon) 76.dp else 16.dp
                                     )
                             else
                                 Modifier
-                                    .padding(start = 16.dp)
+                                    .padding(start = if (hasIcon) 76.dp else 16.dp)
                                     .align(Alignment.CenterStart),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -136,10 +146,10 @@ fun ListWidgetCard(
                         )
                         if (hasDescription) {
                             Text(
-                                text = element.description.orEmpty(),
+                                text = element.obj.description.orEmpty(),
                                 modifier = Modifier.padding(
                                     top = 39.dp,
-                                    start = 16.dp
+                                    start = if (hasIcon) 76.dp else 16.dp
                                 ),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,

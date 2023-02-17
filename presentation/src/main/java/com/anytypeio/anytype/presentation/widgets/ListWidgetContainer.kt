@@ -7,7 +7,9 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -20,6 +22,7 @@ class ListWidgetContainer(
     private val widget: Widget.List,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
+    private val urlBuilder: UrlBuilder,
     activeView: Flow<Id?>,
     isWidgetCollapsed: Flow<Boolean>
 ) : WidgetContainer {
@@ -47,7 +50,16 @@ class ListWidgetContainer(
                         id = widget.id,
                         obj = widget.source,
                         tabs = obj.tabs(viewer = view),
-                        elements = objects,
+                        elements = objects.map { obj ->
+                            WidgetView.Set.Element(
+                                obj = obj,
+                                icon = ObjectIcon.from(
+                                    obj = obj,
+                                    layout = obj.layout,
+                                    builder = urlBuilder
+                                )
+                            )
+                        },
                         isExpanded = true
                     )
                 }

@@ -36,13 +36,17 @@ sealed class WidgetView {
         val id: Id,
         val obj: ObjectWrapper.Basic,
         val tabs: List<Tab>,
-        val elements: List<ObjectWrapper.Basic>,
+        val elements: List<Element>,
         val isExpanded: Boolean
     ) : WidgetView() {
         data class Tab(
             val id: Id,
             val name: String,
             val isSelected: Boolean
+        )
+        data class Element(
+            val icon: ObjectIcon,
+            val obj: ObjectWrapper.Basic
         )
     }
 

@@ -78,6 +78,9 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
             FLOW_BLOCK -> {
                 componentManager().limitObjectTypeBlockComponent.get(ctx).inject(this)
             }
+            FLOW_LIBRARY -> {
+                componentManager().limitObjectTypeLibraryComponent.get(ctx).inject(this)
+            }
         }
     }
 
@@ -91,6 +94,9 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
             }
             FLOW_BLOCK -> {
                 componentManager().limitObjectTypeBlockComponent.release(ctx)
+            }
+            FLOW_LIBRARY -> {
+                componentManager().limitObjectTypeLibraryComponent.release(ctx)
             }
         }
     }
@@ -106,6 +112,7 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
         const val CTX_KEY = "arg.limit-object-type.ctx"
         const val FLOW_TYPE = "arg.limit-object-type.flow"
         const val FLOW_OBJECT = "arg.limit-object-type.flow-object"
+        const val FLOW_LIBRARY = "arg.limit-object-type.flow-library"
         const val FLOW_DV = "arg.limit-object-type.flow-dv"
         const val FLOW_BLOCK = "arg.limit-object-type.flow-block"
     }

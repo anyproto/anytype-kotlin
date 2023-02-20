@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.dashboard.DEFAULT_KEYS
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
+import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.library.QueryListenerMyRelations
 import com.anytypeio.anytype.presentation.library.filterByQuery
 import com.anytypeio.anytype.presentation.objects.toLibraryViews
@@ -44,6 +45,7 @@ class MyRelationsDelegate @Inject constructor(
             items
                 .toLibraryViews(urlBuilder)
                 .filterByQuery(query)
+                .optAddCreateRelationView(query)
         )
     }
 
@@ -83,6 +85,18 @@ class MyRelationsDelegate @Inject constructor(
         )
     }
 
+}
+
+private fun List<LibraryView>.optAddCreateRelationView(query: String): MutableList<LibraryView> {
+    val q = query.trim()
+    val result = this.toMutableList()
+    return if (q.isNotEmpty() && result.none { it.name.lowercase() == q.lowercase() }) {
+        result.apply {
+            add(0, LibraryView.CreateNewRelationView(name = q))
+        }
+    } else {
+        result
+    }
 }
 
 private const val SUB_LIBRARY_MY_RELATIONS = "subscription.library_my_relations"

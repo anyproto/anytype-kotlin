@@ -483,6 +483,9 @@
         <action
             android:id="@+id/openTypeEditingScreen"
             app:destination="@id/typeEditingFragment" />
+        <action
+            android:id="@+id/openRelationCreationScreen"
+            app:destination="@id/relationCreationFragment" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"
@@ -495,6 +498,12 @@
             android:name="arg.type_name"
             android:defaultValue=""
             app:argType="string" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/relationCreationFragment"
+        android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromLibraryFragment"
+        android:label="RelationCreationFragment">
     </dialog>
 
     <dialog

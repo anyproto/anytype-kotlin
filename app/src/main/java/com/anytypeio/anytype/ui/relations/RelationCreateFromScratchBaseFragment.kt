@@ -186,6 +186,8 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
         fun new(ctx: Id, query: String) = RelationCreateFromScratchForObjectFragment().apply {
             arguments = bundleOf(CTX_KEY to ctx, QUERY_KEY to query)
         }
+
+        fun args(ctx: Id, query: String) = bundleOf(CTX_KEY to ctx, QUERY_KEY to query)
     }
 }
 

@@ -13,12 +13,14 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.types.create.REQUEST_CREATE_TYPE
 import com.anytypeio.anytype.ui.types.create.TypeCreationFragment
@@ -62,18 +64,30 @@ class LibraryFragment : BaseComposeFragment() {
         subscribe(vm.navigation) {
             when (it) {
                 is LibraryViewModel.Navigation.OpenTypeCreation -> {
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
+                        R.id.libraryFragment,
                         R.id.openTypeCreationScreen,
                         TypeCreationFragment.args(it.name)
                     )
                 }
                 is LibraryViewModel.Navigation.OpenTypeEditing -> {
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
+                        R.id.libraryFragment,
                         R.id.openTypeEditingScreen,
                         TypeEditFragment.args(
                             typeName = it.view.name,
                             id = it.view.id,
                             iconUnicode = (it.view.icon as? ObjectIcon.Basic.Emoji)?.unicode ?: ""
+                        )
+                    )
+                }
+                is LibraryViewModel.Navigation.OpenRelationCreation -> {
+                    findNavController().safeNavigate(
+                        R.id.libraryFragment,
+                        R.id.openRelationCreationScreen,
+                        RelationCreateFromScratchForObjectFragment.args(
+                            ctx = "",
+                            query = it.name
                         )
                     )
                 }

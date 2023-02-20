@@ -18,4 +18,6 @@ sealed class LibraryEvent {
 
     class EditType(val item: LibraryView.MyTypeView) : LibraryEvent()
 
+    class CreateRelation(val name: String = ""): LibraryEvent()
+
 }

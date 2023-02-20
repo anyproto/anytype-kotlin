@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -174,7 +173,7 @@ fun LibRelationItem(
         Image(
             painter = painterResource(id = installedImageRes),
             contentDescription = installedImageRes.toString(),
-            Modifier.noRippleClickable {
+            Modifier.noRippleClickable(enabled = installed.not()) {
                 onClick()
             }
         )
@@ -210,15 +209,17 @@ fun CreateNewTypeItem(
 }
 
 @Composable
-fun LibraryTypesEmptyItem(name: String) {
+fun LibraryObjectEmptyItem(objectType: String, name: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth().padding(top = 48.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 48.dp)
     ) {
         Text(
             text = stringResource(
-                id = R.string.library_types_empty,
-                formatArgs = arrayOf(name)
+                id = R.string.library_objects_empty,
+                formatArgs = arrayOf(objectType, name)
             ),
             style = TextStyle(
                 fontFamily = com.anytypeio.anytype.ui.settings.fonts,
@@ -231,7 +232,7 @@ fun LibraryTypesEmptyItem(name: String) {
         )
         Text(
             text = stringResource(
-                id = R.string.library_types_empty_action
+                id = R.string.library_objects_empty_action
             ),
             style = TextStyle(
                 fontFamily = com.anytypeio.anytype.ui.settings.fonts,
@@ -240,6 +241,34 @@ fun LibraryTypesEmptyItem(name: String) {
                 color = colorResource(id = R.color.text_primary)
             ),
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun CreateNewRelationItem(
+    modifier: Modifier,
+    name: String,
+) {
+    Row(
+        modifier.padding(
+            start = LibraryListDefaults.ItemPadding,
+            end = LibraryListDefaults.ItemPadding
+        ),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_default_plus),
+            contentDescription = "",
+        )
+        Text(
+            text = stringResource(
+                id = R.string.library_create_new_relation,
+                formatArgs = arrayOf(name)
+            ),
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.padding(start = TEXT_PADDING_START)
         )
     }
 }

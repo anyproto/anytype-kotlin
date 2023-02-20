@@ -63,6 +63,7 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
+import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
@@ -699,6 +700,12 @@ class ComponentManager(
             .build()
     }
 
+    val relationFormatPickerLibraryComponent = DependentComponentMap { ctx ->
+        relationCreationFromLibraryComponent.get()
+            .relationFormatPickerComponent()
+            .build()
+    }
+
     val relationFormatPickerBlockComponent = DependentComponentMap { ctx ->
         relationCreateFromScratchForObjectBlockComponent
             .get(ctx)
@@ -729,6 +736,13 @@ class ComponentManager(
 
     val limitObjectTypeDataViewComponent = DependentComponentMap { ctx ->
         relationCreateFromScratchForDataViewComponent.get(ctx)
+            .limitObjectTypeComponent()
+            .module(LimitObjectTypeModule)
+            .build()
+    }
+
+    val limitObjectTypeLibraryComponent = DependentComponentMap { ctx ->
+        relationCreationFromLibraryComponent.get()
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)
             .build()
@@ -805,6 +819,12 @@ class ComponentManager(
 
     val typeIconPickComponent = Component {
         DaggerTypeIconPickComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val relationCreationFromLibraryComponent = Component {
+        DaggerRelationCreateFromLibraryComponent
             .factory()
             .create(findComponentDependencies())
     }

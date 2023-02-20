@@ -43,11 +43,12 @@ import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchBar
 import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchBarPaddingTop
 import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchCancelPaddingStart
 import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchCancelPaddingTop
+import com.anytypeio.anytype.ui.library.views.list.items.CreateNewRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.CreateNewTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.ItemDefaults
 import com.anytypeio.anytype.ui.library.views.list.items.LibRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.LibTypeItem
-import com.anytypeio.anytype.ui.library.views.list.items.LibraryTypesEmptyItem
+import com.anytypeio.anytype.ui.library.views.list.items.LibraryObjectEmptyItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
@@ -228,8 +229,23 @@ private fun LibraryList(
                             name = item.name
                         )
                     }
+                    is LibraryView.CreateNewRelationView -> {
+                        CreateNewRelationItem(
+                            modifier = itemModifier.clickable {
+                                vmEventStream.invoke(
+                                    LibraryEvent.CreateRelation(
+                                        item.name
+                                    )
+                                )
+                            },
+                            name = item.name
+                        )
+                    }
                     is LibraryView.LibraryTypesPlaceholderView -> {
-                        LibraryTypesEmptyItem(item.name)
+                        LibraryObjectEmptyItem(LibraryObjectTypes.TYPES.type, item.name)
+                    }
+                    is LibraryView.LibraryRelationsPlaceholderView -> {
+                        LibraryObjectEmptyItem(LibraryObjectTypes.RELATIONS.type, item.name)
                     }
                     is LibraryView.UnknownView -> {
                         // do nothing
@@ -264,4 +280,8 @@ internal object LibraryListDefaults {
     val SearchCancelPaddingStart = 8.dp
     val SearchCancelPaddingTop = 4.dp
     val SearchBarPaddingTop = 16.dp
+}
+
+enum class LibraryObjectTypes(val type: String) {
+    TYPES("types"), RELATIONS("relations")
 }

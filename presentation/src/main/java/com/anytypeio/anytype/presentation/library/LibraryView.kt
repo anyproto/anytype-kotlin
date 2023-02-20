@@ -64,7 +64,19 @@ sealed interface LibraryView {
         override val dependentData: DependentData = DependentData.None
     ) : LibraryView
 
+    class CreateNewRelationView(
+        override val id: Id = "",
+        override val name: String = "",
+        override val dependentData: DependentData = DependentData.None
+    ) : LibraryView
+
     class LibraryTypesPlaceholderView(
+        override val id: Id = "",
+        override val name: String = "",
+        override val dependentData: DependentData = DependentData.None,
+    ) : LibraryView
+
+    class LibraryRelationsPlaceholderView(
         override val id: Id = "",
         override val name: String = "",
         override val dependentData: DependentData = DependentData.None,

@@ -126,7 +126,7 @@ private fun Header(
                         vmEventStream.invoke(LibraryEvent.CreateType())
                     }
                     is LibraryScreenConfig.Relations -> {
-                        // do nothing
+                        vmEventStream.invoke(LibraryEvent.CreateRelation())
                     }
                 }
             },

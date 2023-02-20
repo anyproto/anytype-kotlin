@@ -65,6 +65,9 @@ class LibraryViewModel(
                     is LibraryEvent.EditType -> {
                         navigate(Navigation.OpenTypeEditing(it.item))
                     }
+                    is LibraryEvent.CreateRelation -> {
+                        navigate(Navigation.OpenRelationCreation(it.name))
+                    }
                 }
             }
         }
@@ -290,6 +293,10 @@ class LibraryViewModel(
 
     sealed class Navigation {
         class OpenTypeCreation(
+            val name: String = ""
+        ) : Navigation()
+
+        class OpenRelationCreation(
             val name: String = ""
         ) : Navigation()
 

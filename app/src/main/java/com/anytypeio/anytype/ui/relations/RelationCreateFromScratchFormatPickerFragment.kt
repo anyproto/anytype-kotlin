@@ -73,6 +73,9 @@ class RelationCreateFromScratchFormatPickerFragment :
             FLOW_DV -> {
                 componentManager().relationFormatPickerObjectSetComponent.get(ctx).inject(this)
             }
+            FLOW_LIBRARY -> {
+                componentManager().relationFormatPickerLibraryComponent.get(ctx).inject(this)
+            }
         }
     }
 
@@ -86,6 +89,9 @@ class RelationCreateFromScratchFormatPickerFragment :
             }
             FLOW_DV -> {
                 componentManager().relationFormatPickerObjectSetComponent.release(ctx)
+            }
+            FLOW_LIBRARY -> {
+                componentManager().relationFormatPickerLibraryComponent.release(ctx)
             }
         }
     }
@@ -109,5 +115,6 @@ class RelationCreateFromScratchFormatPickerFragment :
         const val FLOW_OBJECT = "arg.relation-format-picker.flow-object"
         const val FLOW_DV = "arg.relation-format-picker.flow-dv"
         const val FLOW_BLOCK = "arg.relation-format-picker.flow-block"
+        const val FLOW_LIBRARY = "arg.relation-format-picker.flow-library"
     }
 }

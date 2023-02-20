@@ -23,6 +23,7 @@ import com.anytypeio.anytype.di.feature.SplashSubComponent
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
@@ -34,6 +35,7 @@ import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
+import com.anytypeio.anytype.presentation.relations.RelationCreateFromLibraryViewModel
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
 import dagger.Component
@@ -66,7 +68,8 @@ interface MainComponent :
     CollectionDependencies,
     TypeCreationDependencies,
     TypeIconPickDependencies,
-    TypeEditDependencies {
+    TypeEditDependencies,
+    RelationCreateFromLibraryDependencies {
     fun inject(app: AndroidApplication)
 
     fun splashComponentBuilder(): SplashSubComponent.Builder
@@ -143,5 +146,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(TypeIconPickDependencies::class)
     abstract fun provideTypeIconPickDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(RelationCreateFromLibraryDependencies::class)
+    abstract fun provideRelationCreateFromLibraryDependencies(component: MainComponent): ComponentDependencies
 
 }

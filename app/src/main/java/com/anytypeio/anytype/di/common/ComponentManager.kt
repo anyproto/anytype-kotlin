@@ -64,6 +64,7 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
+import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
@@ -88,6 +89,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
 
@@ -810,6 +812,15 @@ class ComponentManager(
 
     val typeEditComponent = ComponentWithParams { params: TypeEditParameters ->
         DaggerTypeEditComponent.builder()
+            .withId(params.id)
+            .withName(params.name)
+            .withIcon(params.icon)
+            .withDependencies(findComponentDependencies())
+            .build()
+    }
+
+    val relationEditComponent = ComponentWithParams { params: RelationEditParameters ->
+        DaggerRelationEditComponent.builder()
             .withId(params.id)
             .withName(params.name)
             .withIcon(params.icon)

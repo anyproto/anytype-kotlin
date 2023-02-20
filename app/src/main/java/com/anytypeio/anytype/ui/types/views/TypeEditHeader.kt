@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.types.TypeEditViewModel
+import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 import com.anytypeio.anytype.ui.settings.fonts
 import com.anytypeio.anytype.ui.settings.typography
 
@@ -54,7 +55,7 @@ fun TypeEditHeader(
                 color = colorResource(id = R.color.palette_system_red),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
+                    .noRippleClickable {
                         vm.uninstallType()
                     },
                 textAlign = TextAlign.End,

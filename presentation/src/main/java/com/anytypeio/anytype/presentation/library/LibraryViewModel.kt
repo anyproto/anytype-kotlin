@@ -39,121 +39,6 @@ class LibraryViewModel(
 
     val effects = MutableStateFlow<Effect>(Effect.Idle)
 
-    init {
-        viewModelScope.launch {
-            uiEvents.collect {
-                when (it) {
-                    is LibraryEvent.Query.MyTypes -> {
-                        myTypesDelegate.onQueryMyTypes(it.query)
-                    }
-                    is LibraryEvent.Query.LibraryTypes -> {
-                        libraryTypesDelegate.onQueryLibTypes(it.query)
-                    }
-                    is LibraryEvent.Query.MyRelations -> {
-                        myRelationsDelegate.onQueryMyRelations(it.query)
-                    }
-                    is LibraryEvent.Query.LibraryRelations -> {
-                        libraryRelationsDelegate.onQueryLibRelations(it.query)
-                    }
-
-                    is LibraryEvent.ToggleInstall -> {
-                        proceedWithToggleInstall(it.item)
-                    }
-                    is LibraryEvent.CreateType -> {
-                        navigate(Navigation.OpenTypeCreation(it.name))
-                    }
-                    is LibraryEvent.EditType -> {
-                        navigate(Navigation.OpenTypeEditing(it.item))
-                    }
-                    is LibraryEvent.CreateRelation -> {
-                        navigate(Navigation.OpenRelationCreation(it.name))
-                    }
-                }
-            }
-        }
-    }
-
-    private fun proceedWithToggleInstall(item: LibraryView) {
-        when (val dependentData = item.dependentData) {
-            is DependentData.Model -> {
-                proceedWithUnInstallingObject(item, dependentData.item.id)
-            }
-            is DependentData.None -> {
-                proceedWithInstallingObject(item)
-            }
-        }
-    }
-
-    private fun proceedWithInstallingObject(item: LibraryView) {
-        viewModelScope.launch {
-            addObjectToWorkspace(AddObjectToWorkspace.Params(listOf(item.id))).proceed(
-                success = {
-                    when (item) {
-                        is LibraryView.LibraryRelationView -> {
-                            sendToast(resourceManager.messageRelationAdded(item.name))
-                        }
-                        is LibraryView.LibraryTypeView -> {
-                            sendToast(resourceManager.messageTypeAdded(item.name))
-                        }
-                        else -> {
-                            Timber.e("Unsupported item type: $item")
-                        }
-                    }
-                },
-                failure = {
-                    Timber.e(it, "Error while adding relation to workspace.")
-                    sendToast(resourceManager.errorMessage)
-                }
-            )
-        }
-    }
-
-    private fun proceedWithUnInstallingObject(item: LibraryView, id: Id) {
-        viewModelScope.launch {
-            removeObjectsFromWorkspace.execute(
-                RemoveObjectsFromWorkspace.Params(listOf(id))
-            ).fold(
-                onFailure = {
-                    Timber.e(it, "Error while removing relation from workspace.")
-                    sendToast(resourceManager.errorMessage)
-                },
-                onSuccess = {
-                    when (item) {
-                        is LibraryView.LibraryRelationView -> {
-                            sendToast(resourceManager.messageRelationRemoved(item.name))
-                        }
-                        is LibraryView.LibraryTypeView -> {
-                            sendToast(resourceManager.messageTypeRemoved(item.name))
-                        }
-                        else -> {
-                            Timber.e("Unsupported item type: $item")
-                        }
-                    }
-                }
-            )
-        }
-    }
-
-    fun uninstallType(id: Id, name: String) {
-        viewModelScope.launch {
-            removeObjectsFromWorkspace.execute(
-                RemoveObjectsFromWorkspace.Params(listOf(id))
-            ).fold(
-                onFailure = {
-                    Timber.e(it, "Error while uninstalling type")
-                    sendToast(resourceManager.errorMessage)
-                },
-                onSuccess = {
-                    sendToast(resourceManager.messageTypeRemoved(name))
-                }
-            )
-        }
-    }
-
-    fun eventStream(event: LibraryEvent) {
-        uiEvents.value = event
-    }
-
     val uiState: StateFlow<LibraryScreenState> = combine(
         myTypesDelegate.itemsFlow,
         libraryTypesDelegate.itemsFlow,
@@ -189,6 +74,131 @@ class LibraryViewModel(
             )
         )
     )
+
+    init {
+        viewModelScope.launch {
+            uiEvents.collect {
+                when (it) {
+                    is LibraryEvent.Query -> proceedQueryEvent(it)
+                    is LibraryEvent.ToggleInstall -> proceedWithToggleInstall(it.item)
+                    is LibraryEvent.Type -> proceedWithTypeActions(it)
+                    is LibraryEvent.Relation -> proceedWithRelationActions(it)
+                }
+            }
+        }
+    }
+
+    private fun proceedQueryEvent(event: LibraryEvent.Query) {
+        when (event) {
+            is LibraryEvent.Query.MyTypes -> {
+                myTypesDelegate.onQueryMyTypes(event.query)
+            }
+            is LibraryEvent.Query.LibraryTypes -> {
+                libraryTypesDelegate.onQueryLibTypes(event.query)
+            }
+            is LibraryEvent.Query.MyRelations -> {
+                myRelationsDelegate.onQueryMyRelations(event.query)
+            }
+            is LibraryEvent.Query.LibraryRelations -> {
+                libraryRelationsDelegate.onQueryLibRelations(event.query)
+            }
+        }
+    }
+
+    private fun proceedWithToggleInstall(item: LibraryView) {
+        when (val dependentData = item.dependentData) {
+            is DependentData.Model -> uninstallObject(item, dependentData.item.id)
+            is DependentData.None -> installObject(item)
+        }
+    }
+
+    private fun proceedWithTypeActions(event: LibraryEvent.Type) {
+        when (event) {
+            is LibraryEvent.Type.Create -> navigate(Navigation.OpenTypeCreation(event.name))
+            is LibraryEvent.Type.Edit -> navigate(Navigation.OpenTypeEditing(event.item))
+        }
+    }
+
+    private fun proceedWithRelationActions(event: LibraryEvent.Relation) {
+        when (event) {
+            is LibraryEvent.Relation.Create -> navigate(Navigation.OpenRelationCreation(event.name))
+            is LibraryEvent.Relation.Edit -> navigate(Navigation.OpenRelationEditing(event.item))
+        }
+    }
+
+    private fun installObject(item: LibraryView) {
+        viewModelScope.launch {
+            addObjectToWorkspace(AddObjectToWorkspace.Params(listOf(item.id))).proceed(
+                success = {
+                    when (item) {
+                        is LibraryView.LibraryRelationView -> {
+                            sendToast(resourceManager.messageRelationAdded(item.name))
+                        }
+                        is LibraryView.LibraryTypeView -> {
+                            sendToast(resourceManager.messageTypeAdded(item.name))
+                        }
+                        else -> {
+                            Timber.e("Unsupported item type: $item")
+                        }
+                    }
+                },
+                failure = {
+                    Timber.e(it, "Error while adding relation to workspace.")
+                    sendToast(resourceManager.errorMessage)
+                }
+            )
+        }
+    }
+
+    private fun uninstallObject(item: LibraryView, id: Id) {
+        viewModelScope.launch {
+            removeObjectsFromWorkspace.execute(
+                RemoveObjectsFromWorkspace.Params(listOf(id))
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while removing relation from workspace.")
+                    sendToast(resourceManager.errorMessage)
+                },
+                onSuccess = {
+                    when (item) {
+                        is LibraryView.LibraryRelationView -> {
+                            sendToast(resourceManager.messageRelationRemoved(item.name))
+                        }
+                        is LibraryView.LibraryTypeView -> {
+                            sendToast(resourceManager.messageTypeRemoved(item.name))
+                        }
+                        else -> {
+                            Timber.e("Unsupported item type: $item")
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    fun uninstallObject(id: Id, type: LibraryItem, name: String) {
+        viewModelScope.launch {
+            removeObjectsFromWorkspace.execute(
+                RemoveObjectsFromWorkspace.Params(listOf(id))
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while uninstalling object")
+                    sendToast(resourceManager.errorMessage)
+                },
+                onSuccess = {
+                    val message = when (type) {
+                        LibraryItem.TYPE -> resourceManager.messageTypeRemoved(name)
+                        LibraryItem.RELATION -> resourceManager.messageRelationRemoved(name)
+                    }
+                    sendToast(message)
+                }
+            )
+        }
+    }
+
+    fun eventStream(event: LibraryEvent) {
+        uiEvents.value = event
+    }
 
     private fun updateInstalledValueForTypes(
         libTypes: LibraryScreenState.Tabs.TabData,
@@ -240,7 +250,7 @@ class LibraryViewModel(
         )
     }
 
-    fun updateType(id: String, name: String, icon: String) {
+    fun updateObject(id: String, name: String, icon: String?) {
         viewModelScope.launch {
             setObjectDetails.execute(
                 SetObjectDetails.Params(
@@ -252,7 +262,7 @@ class LibraryViewModel(
                 )
             ).fold(
                 onFailure = {
-                    Timber.e(it, "Error while updating type")
+                    Timber.e(it, "Error while updating object details")
                     sendToast(resourceManager.errorMessage)
                 },
                 onSuccess = {
@@ -262,8 +272,8 @@ class LibraryViewModel(
         }
     }
 
-    fun onTypeCreated() {
-        effects.value = Effect.TypeCreated()
+    fun onObjectCreated() {
+        effects.value = Effect.ObjectCreated()
     }
 
     class Factory @Inject constructor(
@@ -303,11 +313,19 @@ class LibraryViewModel(
         class OpenTypeEditing(
             val view: LibraryView.MyTypeView
         ) : Navigation()
+
+        class OpenRelationEditing(
+            val view: LibraryView.MyRelationView
+        ) : Navigation()
     }
 
     sealed class Effect {
-        class TypeCreated : Effect()
+        class ObjectCreated : Effect()
         object Idle : Effect()
+    }
+
+    enum class LibraryItem {
+        TYPE, RELATION
     }
 
 }

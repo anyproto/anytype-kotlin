@@ -486,6 +486,9 @@
         <action
             android:id="@+id/openRelationCreationScreen"
             app:destination="@id/relationCreationFragment" />
+        <action
+            android:id="@+id/openRelationEditingScreen"
+            app:destination="@id/relationEditingFragment" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"
@@ -525,6 +528,27 @@
             android:name="arg.arg.type_edit_unicode"
             android:defaultValue=""
             app:argType="string" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/relationEditingFragment"
+        android:name="com.anytypeio.anytype.ui.relations.RelationEditFragment"
+        android:label="TypeEditFragment">
+        <action
+            android:id="@+id/openEmojiPicker"
+            app:destination="@id/typeSetIconPickerScreen" />
+        <argument
+            android:name="arg.arg.relation_edit_name"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="arg.arg.relation_edit_id"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="arg.arg.relation_edit_unicode"
+            android:defaultValue="0"
+            app:argType="integer" />
     </dialog>
 
     <dialog

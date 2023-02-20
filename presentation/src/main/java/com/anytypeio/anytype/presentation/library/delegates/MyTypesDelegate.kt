@@ -86,12 +86,13 @@ class MyTypesDelegate @Inject constructor(
 
 }
 
-private fun List<LibraryView>.optAddCreateTypeView(query: String): MutableList<LibraryView> {
+private fun List<LibraryView>.optAddCreateTypeView(query: String): List<LibraryView> {
     val q = query.trim()
-    val result = this.toMutableList()
+    val result = this
     return if (q.isNotEmpty() && result.none { it.name.lowercase() == q.lowercase() }) {
-        result.apply {
-            add(0, LibraryView.CreateNewTypeView(name = q))
+        buildList {
+            add(LibraryView.CreateNewTypeView(name = q))
+            addAll(result)
         }
     } else {
         result

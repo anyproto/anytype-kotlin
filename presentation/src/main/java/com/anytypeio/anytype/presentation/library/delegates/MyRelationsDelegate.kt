@@ -87,12 +87,13 @@ class MyRelationsDelegate @Inject constructor(
 
 }
 
-private fun List<LibraryView>.optAddCreateRelationView(query: String): MutableList<LibraryView> {
+private fun List<LibraryView>.optAddCreateRelationView(query: String): List<LibraryView> {
     val q = query.trim()
-    val result = this.toMutableList()
+    val result = this
     return if (q.isNotEmpty() && result.none { it.name.lowercase() == q.lowercase() }) {
-        result.apply {
-            add(0, LibraryView.CreateNewRelationView(name = q))
+        buildList {
+            add(LibraryView.CreateNewRelationView(name = q))
+            addAll(result)
         }
     } else {
         result

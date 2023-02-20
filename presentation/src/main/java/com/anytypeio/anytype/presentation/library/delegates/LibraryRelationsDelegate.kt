@@ -64,13 +64,11 @@ class LibraryRelationsDelegate @Inject constructor(
 
 }
 
-private fun List<LibraryView>.optAddEmptyPlaceholder(query: String): MutableList<LibraryView> {
+private fun List<LibraryView>.optAddEmptyPlaceholder(query: String): List<LibraryView> {
     val q = query.trim()
-    val result = this.toMutableList()
+    val result = this
     return if (q.isNotEmpty() && result.isEmpty()) {
-        result.apply {
-            add(0, LibraryView.LibraryRelationsPlaceholderView(name = q))
-        }
+        listOf<LibraryView>(LibraryView.LibraryRelationsPlaceholderView(name = q))
     } else {
         result
     }

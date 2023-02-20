@@ -13,6 +13,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -20,15 +21,20 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
+import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
+import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
+import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_NAME
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
+import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.types.create.REQUEST_CREATE_TYPE
+import com.anytypeio.anytype.ui.types.create.REQUEST_CREATE_OBJECT
 import com.anytypeio.anytype.ui.types.create.TypeCreationFragment
-import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_ARG_ID
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_ARG_NAME
-import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_UNINSTALL
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_ARG_ICON
+import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY_TYPE
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ID
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_NAME
+import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_UNINSTALL_TYPE
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ICON
 import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.google.accompanist.pager.ExperimentalPagerApi
 import javax.inject.Inject
@@ -91,25 +97,50 @@ class LibraryFragment : BaseComposeFragment() {
                         )
                     )
                 }
+                is LibraryViewModel.Navigation.OpenRelationEditing -> {
+                    findNavController().safeNavigate(
+                        R.id.libraryFragment,
+                        R.id.openRelationEditingScreen,
+                        RelationEditFragment.args(
+                            typeName = it.view.name,
+                            id = it.view.id,
+                            iconUnicode = it.view.format.simpleIcon() ?: 0
+                        )
+                    )
+                }
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFragmentResultListener(REQUEST_KEY_UNINSTALL) { _, bundle ->
-            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_ID))
-            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_NAME))
-            vm.uninstallType(id, name)
+        setFragmentResultListener(REQUEST_KEY_UNINSTALL_TYPE) { _, bundle ->
+            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ID))
+            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_NAME))
+            vm.uninstallObject(id, LibraryViewModel.LibraryItem.TYPE, name)
         }
-        setFragmentResultListener(REQUEST_KEY_MODIFY) { _, bundle ->
-            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_ID))
-            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_NAME))
-            val icon = requireNotNull(bundle.getString(REQUEST_UNINSTALL_ARG_ICON))
-            vm.updateType(id, name, icon)
+        setFragmentResultListener(REQUEST_KEY_MODIFY_TYPE) { _, bundle ->
+            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ID))
+            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_NAME))
+            val icon = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ICON))
+            vm.updateObject(id, name, icon)
         }
-        setFragmentResultListener(REQUEST_CREATE_TYPE) { _, bundle ->
-            vm.onTypeCreated()
+        setFragmentResultListener(REQUEST_KEY_UNINSTALL_RELATION) { _, bundle ->
+            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_ID))
+            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_NAME))
+            vm.uninstallObject(id, LibraryViewModel.LibraryItem.RELATION, name)
+        }
+        setFragmentResultListener(REQUEST_KEY_MODIFY_RELATION) { _, bundle ->
+            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_ID))
+            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_NAME))
+            vm.updateObject(
+                id = id,
+                name = name,
+                icon = null
+            )
+        }
+        setFragmentResultListener(REQUEST_CREATE_OBJECT) { _, _ ->
+            vm.onObjectCreated()
         }
     }
 

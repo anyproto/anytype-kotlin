@@ -14,10 +14,14 @@ sealed class LibraryEvent {
         class Relation(override val item: LibraryView) : ToggleInstall(item)
     }
 
-    class CreateType(val name: String = "", ) : LibraryEvent()
+    sealed class Type: LibraryEvent() {
+        class Create(val name: String = "") : Type()
+        class Edit(val item: LibraryView.MyTypeView) : Type()
+    }
 
-    class EditType(val item: LibraryView.MyTypeView) : LibraryEvent()
-
-    class CreateRelation(val name: String = ""): LibraryEvent()
+    sealed class Relation: LibraryEvent() {
+        class Create(val name: String = "") : Relation()
+        class Edit(val item: LibraryView.MyRelationView) : Relation()
+    }
 
 }

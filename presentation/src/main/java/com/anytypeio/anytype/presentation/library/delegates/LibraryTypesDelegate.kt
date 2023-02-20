@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.library.delegates
 
+import android.graphics.Insets.add
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
@@ -72,13 +73,11 @@ class LibraryTypesDelegate @Inject constructor(
 
 }
 
-private fun List<LibraryView>.optAddEmptyPlaceholder(query: String): MutableList<LibraryView> {
+private fun List<LibraryView>.optAddEmptyPlaceholder(query: String): List<LibraryView> {
     val q = query.trim()
-    val result = this.toMutableList()
+    val result = this
     return if (q.isNotEmpty() && result.isEmpty()) {
-        result.apply {
-            add(0, LibraryView.LibraryTypesPlaceholderView(name = q))
-        }
+        listOf(LibraryView.LibraryTypesPlaceholderView(name = q))
     } else {
         result
     }

@@ -65,7 +65,7 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
         subscribe(vm.navigation) {
             when (it) {
                 is TypeCreationViewModel.Navigation.BackWithCreatedType -> {
-                    setFragmentResult(REQUEST_CREATE_TYPE, bundleOf())
+                    setFragmentResult(REQUEST_CREATE_OBJECT, bundleOf())
                     findNavController().popBackStack()
                 }
                 TypeCreationViewModel.Navigation.SelectEmoji -> {
@@ -90,4 +90,4 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
 }
 
 private const val ARG_TYPE_NAME = "arg.type_name"
-const val REQUEST_CREATE_TYPE = "request.create_type"
+const val REQUEST_CREATE_OBJECT = "request.create_type"

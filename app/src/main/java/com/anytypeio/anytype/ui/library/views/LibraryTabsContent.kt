@@ -123,10 +123,10 @@ private fun Header(
             onClick = {
                 when (config) {
                     is LibraryScreenConfig.Types -> {
-                        vmEventStream.invoke(LibraryEvent.CreateType())
+                        vmEventStream.invoke(LibraryEvent.Type.Create())
                     }
                     is LibraryScreenConfig.Relations -> {
-                        vmEventStream.invoke(LibraryEvent.CreateRelation())
+                        vmEventStream.invoke(LibraryEvent.Relation.Create())
                     }
                 }
             },

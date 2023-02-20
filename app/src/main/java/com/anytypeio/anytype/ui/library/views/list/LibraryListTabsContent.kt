@@ -100,7 +100,7 @@ fun LibraryListTabsContent(
                 modifier = Modifier.padding(start = SearchBarPadding, end = SearchBarPadding)
             ) {
                 LaunchedEffect(key1 = effects) {
-                    if (effects is LibraryViewModel.Effect.TypeCreated) {
+                    if (effects is LibraryViewModel.Effect.ObjectCreated) {
                         input.value = ""
                         vmEventStream.invoke(
                             configuration[index].toEvent(input.value)
@@ -124,6 +124,10 @@ fun LibraryListTabsContent(
                     modifier = Modifier
                         .padding(start = SearchCancelPaddingStart, top = SearchCancelPaddingTop)
                         .noRippleClickable {
+                            input.value = ""
+                            vmEventStream.invoke(
+                                configuration[index].toEvent(input.value)
+                            )
                             keyboardController?.hide()
                             focusManager.clearFocus()
                             animationStartState.value = false
@@ -191,7 +195,7 @@ private fun LibraryList(
                             readOnly = item.readOnly,
                             modifier = itemModifier.clickable {
                                 vmEventStream.invoke(
-                                    LibraryEvent.EditType(item)
+                                    LibraryEvent.Type.Edit(item)
                                 )
                             }
                         )
@@ -211,7 +215,11 @@ private fun LibraryList(
                     }
                     is LibraryView.MyRelationView -> {
                         MyRelationItem(
-                            modifier = itemModifier,
+                            modifier = itemModifier.clickable {
+                                vmEventStream.invoke(
+                                    LibraryEvent.Relation.Edit(item)
+                                )
+                            },
                             name = item.name,
                             readOnly = item.readOnly,
                             format = item.format
@@ -221,9 +229,7 @@ private fun LibraryList(
                         CreateNewTypeItem(
                             modifier = itemModifier.clickable {
                                 vmEventStream.invoke(
-                                    LibraryEvent.CreateType(
-                                        item.name
-                                    )
+                                    LibraryEvent.Type.Create(item.name)
                                 )
                             },
                             name = item.name
@@ -233,9 +239,7 @@ private fun LibraryList(
                         CreateNewRelationItem(
                             modifier = itemModifier.clickable {
                                 vmEventStream.invoke(
-                                    LibraryEvent.CreateRelation(
-                                        item.name
-                                    )
+                                    LibraryEvent.Relation.Create(item.name)
                                 )
                             },
                             name = item.name

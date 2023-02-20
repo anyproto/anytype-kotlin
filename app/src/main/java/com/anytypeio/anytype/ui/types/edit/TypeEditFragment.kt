@@ -37,7 +37,6 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
     private val name get() = argString(ARG_TYPE_EDIT_NAME)
     private val icon get() = argString(ARG_TYPE_EDIT_UNICODE)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setFragmentResultListener(REQUEST_KEY_PICK_EMOJI) { _, bundle ->
@@ -78,19 +77,19 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
                 }
                 is TypeEditViewModel.Navigation.BackWithUninstall -> {
                     setFragmentResult(
-                        REQUEST_KEY_UNINSTALL, bundleOf(
-                            REQUEST_UNINSTALL_ARG_ID to id,
-                            REQUEST_UNINSTALL_ARG_NAME to name,
+                        REQUEST_KEY_UNINSTALL_TYPE, bundleOf(
+                            REQUEST_UNINSTALL_TYPE_ARG_ID to id,
+                            REQUEST_UNINSTALL_TYPE_ARG_NAME to name,
                         )
                     )
                     findNavController().popBackStack()
                 }
                 is TypeEditViewModel.Navigation.BackWithModify -> {
                     setFragmentResult(
-                        REQUEST_KEY_MODIFY, bundleOf(
-                            REQUEST_UNINSTALL_ARG_ID to id,
-                            REQUEST_UNINSTALL_ARG_NAME to it.typeName,
-                            REQUEST_UNINSTALL_ARG_ICON to it.typeIcon
+                        REQUEST_KEY_MODIFY_TYPE, bundleOf(
+                            REQUEST_UNINSTALL_TYPE_ARG_ID to id,
+                            REQUEST_UNINSTALL_TYPE_ARG_NAME to it.typeName,
+                            REQUEST_UNINSTALL_TYPE_ARG_ICON to it.typeIcon
                         )
                     )
                     findNavController().popBackStack()
@@ -133,11 +132,11 @@ data class TypeEditParameters(
     val icon: String
 )
 
-const val REQUEST_KEY_UNINSTALL = "request.type_edit_uninstall"
-const val REQUEST_KEY_MODIFY = "request.type_edit_modify"
-const val REQUEST_UNINSTALL_ARG_ID = "request.type_edit_uninstall_id"
-const val REQUEST_UNINSTALL_ARG_NAME = "request.type_edit_uninstall_name"
-const val REQUEST_UNINSTALL_ARG_ICON = "request.type_edit_uninstall_icon"
+const val REQUEST_KEY_UNINSTALL_TYPE = "request.type_edit_uninstall"
+const val REQUEST_KEY_MODIFY_TYPE = "request.type_edit_modify"
+const val REQUEST_UNINSTALL_TYPE_ARG_ID = "request.type_edit_uninstall_id"
+const val REQUEST_UNINSTALL_TYPE_ARG_NAME = "request.type_edit_uninstall_name"
+const val REQUEST_UNINSTALL_TYPE_ARG_ICON = "request.type_edit_uninstall_icon"
 
 private const val ARG_TYPE_EDIT_NAME = "arg.type_edit_name"
 private const val ARG_TYPE_EDIT_ID = "arg.type_edit_id"

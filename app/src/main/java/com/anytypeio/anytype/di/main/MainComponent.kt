@@ -24,6 +24,7 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
+import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
@@ -69,7 +70,8 @@ interface MainComponent :
     TypeCreationDependencies,
     TypeIconPickDependencies,
     TypeEditDependencies,
-    RelationCreateFromLibraryDependencies {
+    RelationCreateFromLibraryDependencies,
+    RelationEditDependencies {
     fun inject(app: AndroidApplication)
 
     fun splashComponentBuilder(): SplashSubComponent.Builder
@@ -151,5 +153,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(RelationCreateFromLibraryDependencies::class)
     abstract fun provideRelationCreateFromLibraryDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(RelationEditDependencies::class)
+    abstract fun provideRelationEditDependencies(component: MainComponent): ComponentDependencies
 
 }

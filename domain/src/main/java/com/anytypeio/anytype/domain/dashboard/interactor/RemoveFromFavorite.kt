@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+@Deprecated("Use-case for adding an object to favorite list.")
 class RemoveFromFavorite(
     private val repo: BlockRepository
 ) : BaseUseCase<Payload, RemoveFromFavorite.Params>() {

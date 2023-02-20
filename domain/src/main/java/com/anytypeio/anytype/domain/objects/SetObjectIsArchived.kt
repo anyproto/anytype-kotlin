@@ -8,6 +8,10 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for archiving (or restoring from archive) an object.
  */
+@Deprecated(
+    "Use SetObjectListIsArchived instead",
+    replaceWith = ReplaceWith("SetObjectListIsArchived")
+)
 class SetObjectIsArchived(
     private val repo: BlockRepository
 ) : BaseUseCase<Payload, SetObjectIsArchived.Params>() {

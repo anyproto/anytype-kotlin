@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for adding an object to favorite list.
  */
+@Deprecated("Use-case for adding an object to favorite list.")
 class AddToFavorite(
     private val repo: BlockRepository
 ) : BaseUseCase<Payload, AddToFavorite.Params>() {

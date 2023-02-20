@@ -183,6 +183,7 @@ dependencies {
     implementation libs.composeAccompanistPager
     implementation libs.composeAccompanistPagerIndicators
     implementation libs.preference
+    implementation libs.activityCompose
     debugImplementation libs.composeTooling
 
     implementation libs.room

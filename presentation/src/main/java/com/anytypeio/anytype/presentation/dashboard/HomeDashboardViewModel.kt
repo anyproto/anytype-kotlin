@@ -35,9 +35,9 @@ import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.DeleteObjectsOld
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchivedOld
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
@@ -84,8 +84,8 @@ class HomeDashboardViewModel(
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
-    private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val deleteObjects: DeleteObjects,
+    private val setObjectListIsArchived: SetObjectListIsArchivedOld,
+    private val deleteObjects: DeleteObjectsOld,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
@@ -665,7 +665,7 @@ class HomeDashboardViewModel(
             mode.value = Mode.DEFAULT
             val ids = archived.value.filter { it.isSelected }.map { it.id }
             setObjectListIsArchived(
-                SetObjectListIsArchived.Params(
+                SetObjectListIsArchivedOld.Params(
                     targets = ids,
                     isArchived = false
                 )
@@ -705,7 +705,7 @@ class HomeDashboardViewModel(
             isDeletionInProgress.value = true
             val ids = archived.value.filter { it.isSelected }.map { it.id }
             deleteObjects(
-                DeleteObjects.Params(
+                DeleteObjectsOld.Params(
                     targets = ids
                 )
             ).process(

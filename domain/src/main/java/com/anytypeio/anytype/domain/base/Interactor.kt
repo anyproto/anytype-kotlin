@@ -1,15 +1,13 @@
 package com.anytypeio.anytype.domain.base
 
 import com.anytypeio.anytype.domain.base.Interactor.Status
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Interactor, whose invocation [Status] can be observed.
@@ -84,6 +82,10 @@ abstract class ResultInteractor<in P, R>(
     }
 
     suspend fun run(params: P) = doWork(params)
+
+    /*
+    * Executes on the caller's thread.
+    * */
     suspend fun execute(params: P): Resultat<R> = runCatchingL { doWork(params) }
 
     protected abstract suspend fun doWork(params: P): R

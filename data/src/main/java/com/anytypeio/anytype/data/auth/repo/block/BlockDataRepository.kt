@@ -482,6 +482,11 @@ class BlockDataRepository(
         isFavorite: Boolean
     ): Payload = remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
 
+    override suspend fun setObjectListIsFavorite(
+        objectIds: List<Id>,
+        isFavorite: Boolean
+    ) = remote.setObjectListIsFavorite(objectIds, isFavorite)
+
     override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean

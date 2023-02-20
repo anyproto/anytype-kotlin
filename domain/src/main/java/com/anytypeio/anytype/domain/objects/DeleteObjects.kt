@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.domain.objects
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
@@ -10,12 +10,11 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
  * @see SetObjectIsArchived
  */
 class DeleteObjects(
-    private val repo: BlockRepository
-) : BaseUseCase<Unit, DeleteObjects.Params>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<DeleteObjects.Params, Unit>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        repo.deleteObjects(params.targets)
-    }
+    override suspend fun doWork(params: Params) = repo.deleteObjects(params.targets)
 
     /**
      * @property [targets] id of the objects to delete.

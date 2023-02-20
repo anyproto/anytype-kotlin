@@ -19,9 +19,9 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.DeleteObjectsOld
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchivedOld
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
@@ -72,8 +72,8 @@ object HomeDashboardModule {
         getDebugSettings: GetDebugSettings,
         analytics: Analytics,
         urlBuilder: UrlBuilder,
-        setObjectListIsArchived: SetObjectListIsArchived,
-        deleteObjects: DeleteObjects,
+        setObjectListIsArchived: SetObjectListIsArchivedOld,
+        deleteObjects: DeleteObjectsOld,
         objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
         objectStore: ObjectStore,
@@ -215,7 +215,7 @@ object HomeDashboardModule {
     @PerScreen
     fun deleteObjects(
         repo: BlockRepository
-    ): DeleteObjects = DeleteObjects(
+    ): DeleteObjectsOld = DeleteObjectsOld(
         repo = repo
     )
 
@@ -224,7 +224,7 @@ object HomeDashboardModule {
     @PerScreen
     fun setObjectListIsArchived(
         repo: BlockRepository
-    ): SetObjectListIsArchived = SetObjectListIsArchived(
+    ): SetObjectListIsArchivedOld = SetObjectListIsArchivedOld(
         repo = repo
     )
 

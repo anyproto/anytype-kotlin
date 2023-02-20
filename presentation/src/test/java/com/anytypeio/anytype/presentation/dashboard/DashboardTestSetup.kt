@@ -25,9 +25,9 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.DeleteObjectsOld
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchivedOld
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
@@ -67,10 +67,10 @@ open class DashboardTestSetup {
     lateinit var closeDashboard: CloseDashboard
 
     @Mock
-    lateinit var deleteObjects: DeleteObjects
+    lateinit var deleteObjects: DeleteObjectsOld
 
     @Mock
-    lateinit var setObjectListIsArchived: SetObjectListIsArchived
+    lateinit var setObjectListIsArchived: SetObjectListIsArchivedOld
 
     @Mock
     lateinit var interceptEvents: InterceptEvents

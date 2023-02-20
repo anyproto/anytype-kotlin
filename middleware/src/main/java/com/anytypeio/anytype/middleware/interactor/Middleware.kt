@@ -1433,6 +1433,10 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Deprecated(
+        "Use objectListSetIsArchived instead",
+        replaceWith = ReplaceWith("objectListSetIsArchived")
+    )
     @Throws(Exception::class)
     fun objectSetIsArchived(
         ctx: Id,
@@ -1448,6 +1452,10 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Deprecated(
+        "Use objectListSetIsFavorite instead",
+        replaceWith = ReplaceWith("objectListSetIsFavorite")
+    )
     @Throws(Exception::class)
     fun objectSetIsFavorite(
         ctx: Id,
@@ -1461,6 +1469,21 @@ class Middleware(
         val response = service.objectSetIsFavorite(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectListSetIsFavorite(
+        objectIds: List<Id>,
+        isFavorite: Boolean
+    ) {
+        Rpc.Object.ListDelete
+        val request = Rpc.Object.ListSetIsFavorite.Request(
+            objectIds = objectIds,
+            isFavorite = isFavorite
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectListSetIsFavorite(request)
+        if (BuildConfig.DEBUG) logResponse(response)
     }
 
     @Throws(Exception::class)

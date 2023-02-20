@@ -105,6 +105,9 @@ interface MiddlewareService {
     fun objectSetIsFavorite(request: Rpc.Object.SetIsFavorite.Request): Rpc.Object.SetIsFavorite.Response
 
     @Throws(Exception::class)
+    fun objectListSetIsFavorite(request: Rpc.Object.ListSetIsFavorite.Request): Rpc.Object.ListSetIsFavorite.Response
+
+    @Throws(Exception::class)
     fun objectSetIsArchived(request: Rpc.Object.SetIsArchived.Request): Rpc.Object.SetIsArchived.Response
 
     @Throws(Exception::class)

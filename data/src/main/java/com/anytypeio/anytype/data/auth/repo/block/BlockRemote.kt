@@ -50,7 +50,7 @@ interface BlockRemote {
     ): CreateBlockLinkWithObjectResult
 
     suspend fun openObject(id: Id): ObjectView
-    suspend fun getObject(id: Id) : ObjectView
+    suspend fun getObject(id: Id): ObjectView
 
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String): Payload
@@ -197,6 +197,8 @@ interface BlockRemote {
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
     suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
+    suspend fun setObjectListIsFavorite(objectIds: List<Id>, isFavorite: Boolean)
+
     suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean): Payload
 
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)

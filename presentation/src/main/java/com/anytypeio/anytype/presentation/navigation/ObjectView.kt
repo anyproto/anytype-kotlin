@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 interface DefaultSearchItem
@@ -12,6 +11,7 @@ data class DefaultObjectView(
     val name: String,
     val type: String? = null,
     val typeName: String? = null,
+    val description: String? = null,
     val layout: ObjectType.Layout? = null,
     val icon: ObjectIcon = ObjectIcon.None
 ) : DefaultSearchItem

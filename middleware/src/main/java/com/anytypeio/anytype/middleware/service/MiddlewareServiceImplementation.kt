@@ -8,8 +8,8 @@ import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupported
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import com.anytypeio.anytype.middleware.BuildConfig
-import service.Service
 import javax.inject.Inject
+import service.Service
 
 class MiddlewareServiceImplementation @Inject constructor(
     featureToggles: FeatureToggles
@@ -1022,6 +1022,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Object.SetIsFavorite.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.SetIsFavorite.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectListSetIsFavorite(request: Rpc.Object.ListSetIsFavorite.Request): Rpc.Object.ListSetIsFavorite.Response {
+        val encoded = Service.objectListSetIsFavorite(
+            Rpc.Object.ListSetIsFavorite.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.ListSetIsFavorite.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.ListSetIsFavorite.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

@@ -21,9 +21,9 @@ import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.DeleteObjectsOld
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchivedOld
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertContains
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -56,7 +57,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
-import kotlin.test.assertContains
 
 class HomeDashboardViewModelTest {
 
@@ -82,10 +82,10 @@ class HomeDashboardViewModelTest {
     lateinit var searchObjects: SearchObjects
 
     @Mock
-    lateinit var setObjectListIsArchived: SetObjectListIsArchived
+    lateinit var setObjectListIsArchived: SetObjectListIsArchivedOld
 
     @Mock
-    lateinit var deleteObjects: DeleteObjects
+    lateinit var deleteObjects: DeleteObjectsOld
 
     @Mock
     lateinit var interceptEvents: InterceptEvents

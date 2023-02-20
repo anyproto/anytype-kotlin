@@ -170,7 +170,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="view_name">View name</string>
     <string name="delete">Delete</string>
     <string name="view_relations">View relations</string>
-    <string name="edit">Edit</string>
     <string name="clear">Clear</string>
     <string name="views">Views</string>
     <string name="create">Create</string>
@@ -217,9 +216,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
-    <string name="favorites">Favorites</string>
-    <string name="recent">Recent</string>
-    <string name="sets">Sets</string>
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Unknown type</string>
     <string name="set">Set</string>
@@ -240,8 +236,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>
 
-    <string name="select_all">Select all</string>
-    <string name="unselect_all">Unselect all (%1$d)</string>
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>
     <string name="are_you_sure_delete_n_objects">Are you sure you want to delete %1$d objects?</string>
     <string name="delete_irrevocably">These objects will be deleted irrevocably. You can\'t undo this action.</string>

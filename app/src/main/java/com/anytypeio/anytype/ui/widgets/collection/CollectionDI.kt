@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.collection
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
@@ -10,12 +11,15 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -23,6 +27,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -122,6 +127,30 @@ object CollectionModule {
         channel = channel
     )
 
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getSetObjectListIsArchived(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getSetObjectListIsFavorite(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsFavorite = SetObjectListIsFavorite(repo, dispatchers)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getDeleteObjects(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteObjects = DeleteObjects(repo, dispatchers)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -135,6 +164,7 @@ object CollectionModule {
 }
 
 interface CollectionDependencies : ComponentDependencies {
+    fun context(): Context
     fun blockRepo(): BlockRepository
     fun authRepo(): AuthRepository
     fun config(): ConfigStorage

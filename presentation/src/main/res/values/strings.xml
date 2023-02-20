@@ -7,4 +7,13 @@
     <string name="library_relation_removed">Relation `%1$s` removed from your library"</string>
     <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
 
+    <string name="edit">Edit</string>
+    <string name="done">Done</string>
+    <string name="select_all">Select all</string>
+    <string name="unselect_all">Unselect all</string>
+    <string name="sets">Sets</string>
+    <string name="favorites">Favorites</string>
+    <string name="recent">Recent</string>
+    <string name="bin">Bin</string>
+
 </resources>

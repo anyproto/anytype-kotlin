@@ -7,9 +7,9 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import timber.log.Timber
@@ -30,6 +30,7 @@ fun List<ObjectWrapper.Basic>.toView(
                 id = typeUrl,
                 types = objectTypes
             ),
+            description = obj.description,
             layout = layout,
             icon = ObjectIcon.from(
                 obj = obj,
@@ -48,6 +49,7 @@ fun List<ObjectWrapper.Basic>.toViews(
     DefaultObjectView(
         id = obj.id,
         name = obj.getProperName(),
+        description = obj.description,
         type = typeUrl,
         typeName = objectTypes.firstOrNull { it.id == typeUrl }?.name,
         layout = layout,

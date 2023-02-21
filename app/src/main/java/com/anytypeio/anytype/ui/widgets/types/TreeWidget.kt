@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.ui.widgets.types
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
@@ -221,7 +224,7 @@ fun WidgetHeader(
                 .fillMaxWidth()
                 .padding(
                     start = 16.dp,
-                    end = if (isEditable) 68.dp else 28.dp
+                    end = if (isEditable) 76.dp else 32.dp
                 )
                 .align(Alignment.CenterStart)
                 .combinedClickable(
@@ -244,13 +247,17 @@ fun WidgetHeader(
                 .rotate(if (isExpanded) 90f else 0f)
                 .noRippleClickable { onExpandElement() }
         )
-        if (isEditable) {
-            Box(Modifier.align(Alignment.CenterEnd)) {
+        AnimatedVisibility(
+            visible = isEditable,
+            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 48.dp),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box {
                 Image(
                     painterResource(R.drawable.ic_widget_three_dots),
                     contentDescription = "Widget menu icon",
                     modifier = Modifier
-                        .padding(end = 48.dp)
                         .noRippleClickable {
                             isHeaderMenuExpanded.value = !isHeaderMenuExpanded.value
                         }

@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.ui.widgets.types
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
@@ -78,10 +81,13 @@ fun LinkWidgetCard(
                     fontWeight = FontWeight.Bold
                 )
             )
-            if (isEditable) {
-                Box(
-                    Modifier.align(Alignment.CenterEnd).padding(end = 48.dp)
-                ) {
+            AnimatedVisibility(
+                visible = isEditable,
+                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 48.dp),
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Box {
                     Image(
                         painterResource(R.drawable.ic_widget_three_dots),
                         contentDescription = "Widget menu icon",

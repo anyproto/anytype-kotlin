@@ -1,5 +1,12 @@
 package com.anytypeio.anytype.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -69,13 +76,18 @@ fun HomeScreen(
             onEditWidgets = onEditWidgets,
             onRefresh = onRefresh
         )
-        if (mode is InteractionMode.Edit) {
+        AnimatedVisibility(
+            visible = mode is InteractionMode.Edit,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 26.dp, vertical = 20.dp),
+            enter = fadeIn() + slideInVertically { it },
+            exit = fadeOut() + slideOutVertically { it }
+        ) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 26.dp, vertical = 34.dp)
                     .height(52.dp)
                     .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
             ) {
                 HomeScreenButton(
                     text = stringResource(id = R.string.add),
@@ -89,14 +101,20 @@ fun HomeScreen(
                     onClick = { onExitEditMode() }
                 )
             }
-        } else {
+        }
+        AnimatedVisibility(
+            visible = mode is InteractionMode.Default,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 20.dp),
+            enter = fadeIn() + slideInVertically { it },
+            exit = fadeOut() + slideOutVertically { it }
+        ) {
             HomeScreenBottomToolbar(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 34.dp),
                 onSearchClicked = onSearchClicked,
                 onCreateNewObjectClicked = onCreateNewObjectClicked,
-                onSpaceClicked = onSpaceClicked
+                onSpaceClicked = onSpaceClicked,
+                modifier = Modifier
             )
         }
     }
@@ -134,18 +152,23 @@ private fun WidgetList(
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             mode = mode
                         )
-                        if (mode is InteractionMode.Edit) {
+                        AnimatedVisibility(
+                            visible = mode is InteractionMode.Edit,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 12.dp),
+                            enter = fadeIn() + slideInHorizontally { it / 4 },
+                            exit = fadeOut() + slideOutHorizontally { it / 4 }
+                        ) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_remove_widget),
                                 modifier = Modifier
-                                    .padding(end = 12.dp)
                                     .height(24.dp)
                                     .width(24.dp)
                                     .background(
                                         shape = CircleShape,
                                         color = Color.Gray
                                     )
-                                    .align(Alignment.TopEnd)
                                     .noRippleClickable {
                                         onWidgetMenuAction(
                                             item.id, DropDownMenuAction.RemoveWidget
@@ -170,18 +193,23 @@ private fun WidgetList(
                             onWidgetObjectClicked = onWidgetObjectClicked,
                             isEditable = mode is InteractionMode.Edit
                         )
-                        if (mode is InteractionMode.Edit) {
+                        AnimatedVisibility(
+                            visible = mode is InteractionMode.Edit,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 12.dp),
+                            enter = fadeIn() + slideInHorizontally { it / 4 },
+                            exit = fadeOut() + slideOutHorizontally { it / 4 }
+                        ) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_remove_widget),
                                 modifier = Modifier
-                                    .padding(end = 12.dp)
                                     .height(24.dp)
                                     .width(24.dp)
                                     .background(
                                         shape = CircleShape,
                                         color = Color.Gray
                                     )
-                                    .align(Alignment.TopEnd)
                                     .noRippleClickable {
                                         onWidgetMenuAction(
                                             item.id, DropDownMenuAction.RemoveWidget
@@ -220,13 +248,19 @@ private fun WidgetList(
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .padding(top = 6.dp, bottom = 128.dp)
+                            .padding(top = 6.dp)
+                            .height(128.dp)
                     ) {
-                        if (mode is InteractionMode.Default) {
+                        AnimatedVisibility(
+                            visible = mode is InteractionMode.Default,
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
                             WidgetActionButton(
                                 label = stringResource(R.string.edit_widgets),
                                 onClick = onEditWidgets,
-                                modifier = Modifier.align(Alignment.Center)
+                                modifier = Modifier
                             )
                         }
                     }
@@ -257,11 +291,11 @@ fun HomeScreenButton(
 ) {
     Box(
         modifier = modifier
+            .height(52.dp)
             .background(
                 color = colorResource(id = R.color.home_screen_button),
                 shape = RoundedCornerShape(14.dp)
             )
-            .height(52.dp)
             .noRippleClickable { onClick() }
     ) {
         Text(

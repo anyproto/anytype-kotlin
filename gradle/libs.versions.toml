@@ -157,8 +157,8 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttpVersion"
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "7.4.0" }
-library = { id = "com.android.library", version = "7.4.0" }
+application = { id = "com.android.application", version = "7.4.1" }
+library = { id = "com.android.library", version = "7.4.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
@@ -32,7 +33,8 @@ class LibraryViewModel(
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val resourceManager: LibraryResourceManager,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val createObject: CreateObject
 ) : NavigationViewModel<LibraryViewModel.Navigation>() {
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
@@ -83,8 +85,29 @@ class LibraryViewModel(
                     is LibraryEvent.ToggleInstall -> proceedWithToggleInstall(it.item)
                     is LibraryEvent.Type -> proceedWithTypeActions(it)
                     is LibraryEvent.Relation -> proceedWithRelationActions(it)
+                    is LibraryEvent.BottomMenu -> proceedWithBottomMenuActions(it)
                 }
             }
+        }
+    }
+
+    private fun proceedWithBottomMenuActions(it: LibraryEvent.BottomMenu) {
+        when (it) {
+            is LibraryEvent.BottomMenu.Back -> navigate(Navigation.Back())
+            is LibraryEvent.BottomMenu.Search -> navigate(Navigation.Search())
+            is LibraryEvent.BottomMenu.AddDoc -> proceedWithCreateDoc()
+        }
+    }
+
+    private fun proceedWithCreateDoc() {
+        viewModelScope.launch {
+            createObject.execute(CreateObject.Param(type = null))
+                .fold(
+                    onSuccess = { result ->
+                       navigate(Navigation.CreateDoc(result.objectId))
+                    },
+                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                )
         }
     }
 
@@ -284,7 +307,8 @@ class LibraryViewModel(
         private val addObjectToWorkspace: AddObjectToWorkspace,
         private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
         private val resourceManager: LibraryResourceManager,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val createObject: CreateObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -296,7 +320,8 @@ class LibraryViewModel(
                 addObjectToWorkspace,
                 removeObjectsFromWorkspace,
                 resourceManager,
-                setObjectDetails
+                setObjectDetails,
+                createObject
             ) as T
         }
     }
@@ -317,6 +342,12 @@ class LibraryViewModel(
         class OpenRelationEditing(
             val view: LibraryView.MyRelationView
         ) : Navigation()
+
+        class Back : Navigation()
+
+        class Search: Navigation()
+
+        class CreateDoc(val id: Id): Navigation()
     }
 
     sealed class Effect {

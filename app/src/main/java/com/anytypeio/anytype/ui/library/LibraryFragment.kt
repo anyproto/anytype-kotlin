@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -105,6 +107,24 @@ class LibraryFragment : BaseComposeFragment() {
                             typeName = it.view.name,
                             id = it.view.id,
                             iconUnicode = it.view.format.simpleIcon() ?: 0
+                        )
+                    )
+                }
+                is LibraryViewModel.Navigation.Back -> {
+                    findNavController().popBackStack()
+                }
+                is LibraryViewModel.Navigation.Search -> {
+                    findNavController().safeNavigate(
+                        R.id.libraryFragment,
+                        R.id.pageSearchFragment
+                    )
+                }
+                is LibraryViewModel.Navigation.CreateDoc -> {
+                    findNavController().safeNavigate(
+                        R.id.libraryFragment,
+                        R.id.objectNavigation,
+                        bundleOf(
+                            EditorFragment.ID_KEY to it.id
                         )
                     )
                 }

@@ -6,10 +6,14 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -114,6 +118,41 @@ object LibraryModule {
         dispatchers: AppCoroutineDispatchers
     ): RemoveObjectsFromWorkspace = RemoveObjectsFromWorkspace(repo, dispatchers)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getCreateObject(
+        repo: BlockRepository,
+        getTemplates: GetTemplates,
+        getDefaultEditorType: GetDefaultEditorType,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateObject = CreateObject(
+        repo = repo,
+        getTemplates = getTemplates,
+        getDefaultEditorType = getDefaultEditorType,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideGetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDefaultEditorType =
+        GetDefaultEditorType(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetTemplates(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetTemplates = GetTemplates(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
     @Provides
     @PerScreen
     @JvmStatic
@@ -148,4 +187,6 @@ interface LibraryDependencies : ComponentDependencies {
     fun channel(): SubscriptionEventChannel
 
     fun dispatchers(): AppCoroutineDispatchers
+
+    fun userSettingsRepository(): UserSettingsRepository
 }

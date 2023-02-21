@@ -47,7 +47,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.relations.RelationEditState
 import com.anytypeio.anytype.presentation.relations.RelationEditViewModel
-import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.ui.relations.TypeEditWidgetDefaults.OffsetX
 import com.anytypeio.anytype.ui.relations.TypeEditWidgetDefaults.PaddingStart
 import com.anytypeio.anytype.ui.relations.RelationScreenDefaults.PaddingBottom

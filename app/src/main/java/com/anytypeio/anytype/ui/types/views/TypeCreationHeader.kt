@@ -25,7 +25,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
-import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.ui.settings.fonts
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.types.views.HeaderDefaults.ColorTextActive

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 
 @Composable
 fun WidgetMenu(

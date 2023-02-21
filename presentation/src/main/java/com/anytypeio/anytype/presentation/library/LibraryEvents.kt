@@ -2,6 +2,12 @@ package com.anytypeio.anytype.presentation.library
 
 sealed class LibraryEvent {
 
+    sealed class BottomMenu : LibraryEvent() {
+        class Back : BottomMenu()
+        class Search: BottomMenu()
+        class AddDoc: BottomMenu()
+    }
+
     sealed class Query(open val query: String) : LibraryEvent() {
         class MyTypes(override val query: String) : Query(query)
         class LibraryTypes(override val query: String) : Query(query)

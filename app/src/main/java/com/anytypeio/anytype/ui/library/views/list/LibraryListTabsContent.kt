@@ -31,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
@@ -51,7 +52,6 @@ import com.anytypeio.anytype.ui.library.views.list.items.LibTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.LibraryObjectEmptyItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyTypeItem
-import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 import com.anytypeio.anytype.ui.settings.fonts
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -157,11 +157,12 @@ private fun SearchCancel(modifier: Modifier = Modifier, visible: Boolean = false
 
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun LibraryList(
     data: LibraryScreenState.Tabs.TabData,
     vmEventStream: (LibraryEvent) -> Unit,
-    screenState: MutableState<ScreenState>
+    screenState: MutableState<ScreenState>,
 ) {
 
     val itemModifier = Modifier
@@ -257,6 +258,9 @@ private fun LibraryList(
                 }
                 if (ix < data.items.lastIndex) {
                     LibraryDivider()
+                }
+                if (ix == data.items.lastIndex && screenState.value.visible()) {
+                    Spacer(modifier = Modifier.height(48.dp))
                 }
             }
         )

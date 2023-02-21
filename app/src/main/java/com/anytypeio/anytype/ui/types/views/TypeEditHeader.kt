@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.types.views
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.types.TypeEditViewModel
-import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.ui.settings.fonts
 import com.anytypeio.anytype.ui.settings.typography
 

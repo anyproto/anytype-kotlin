@@ -16,17 +16,23 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
+import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.views.LibraryTabs
 import com.anytypeio.anytype.ui.library.views.LibraryTabsContent
@@ -50,24 +56,43 @@ fun LibraryScreen(configuration: LibraryConfiguration, viewModel: LibraryViewMod
 
     val screenState = remember { mutableStateOf(ScreenState.CONTENT) }
 
-    Column(modifier = modifier) {
-        LibraryTabs(
-            modifier = modifier,
-            pagerState = pagerState,
-            configuration = configuration,
-            screenState = screenState,
-        )
-        LibraryTabsContent(
-            modifier = modifier,
-            pagerState = pagerState,
-            configuration = listOf(configuration.types, configuration.relations),
-            state = uiState,
-            vmEventStream = viewModel::eventStream,
-            screenState = screenState,
-            effects = effects
-        )
+    Scaffold(bottomBar = { Menu(viewModel, modifier = modifier) }) {
+        println(it)
+        Column(modifier = modifier) {
+            LibraryTabs(
+                modifier = modifier,
+                pagerState = pagerState,
+                configuration = configuration,
+                screenState = screenState,
+            )
+            LibraryTabsContent(
+                modifier = modifier,
+                pagerState = pagerState,
+                configuration = listOf(configuration.types, configuration.relations),
+                state = uiState,
+                vmEventStream = viewModel::eventStream,
+                screenState = screenState,
+                effects = effects
+            )
+        }
     }
 
+}
+
+@Composable
+fun Menu(
+    viewModel: LibraryViewModel,
+    modifier: Modifier = Modifier
+) {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    if (isImeVisible) return
+    BottomNavigationMenu(
+        modifier = modifier,
+        backClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back()) },
+        homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back()) },
+        searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search()) },
+        addDocClick = { viewModel.eventStream(LibraryEvent.BottomMenu.AddDoc()) },
+    )
 }
 
 @Composable

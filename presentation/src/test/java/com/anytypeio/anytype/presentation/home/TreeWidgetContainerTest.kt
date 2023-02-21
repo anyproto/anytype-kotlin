@@ -232,7 +232,7 @@ class TreeWidgetContainerTest {
                 source = source
             )
 
-            val delayBeforeExpanded = 1L
+            val delayBeforeExpanded = 100L
 
             val expanded = flow {
                 emit(emptyList())

@@ -9,8 +9,9 @@ sealed class WidgetView {
     data class Tree(
         val id: Id,
         val obj: ObjectWrapper.Basic,
-        val elements: List<Element>,
-        val isExpanded: Boolean
+        val elements: List<Element> = emptyList(),
+        val isExpanded: Boolean = false,
+        val isEditable: Boolean = true
     ) : WidgetView() {
         data class Element(
             val elementIcon: ElementIcon,

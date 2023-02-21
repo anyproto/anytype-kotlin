@@ -75,6 +75,7 @@ class HomeScreenViewModel(
 {
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
+    val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -319,6 +320,14 @@ class HomeScreenViewModel(
         proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
     }
 
+    fun onEditWidgets() {
+        mode.value = InteractionMode.Edit
+    }
+
+    fun onExitEditMode() {
+        mode.value = InteractionMode.Default
+    }
+
     fun onExpand(path: TreePath) {
         treeWidgetBranchStateHolder.onExpand(linkPath = path)
     }
@@ -466,9 +475,7 @@ class HomeScreenViewModel(
 
     companion object {
         val actions = listOf(
-            WidgetView.Action.EditWidgets,
-            WidgetView.Action.CreateWidget,
-            WidgetView.Action.Refresh
+            WidgetView.Action.EditWidgets
         )
     }
 }
@@ -481,6 +488,11 @@ sealed class ObjectViewState {
     object Loading : ObjectViewState()
     data class Success(val obj: ObjectView) : ObjectViewState()
     data class Failure(val e: Throwable) : ObjectViewState()
+}
+
+sealed class InteractionMode {
+    object Default : InteractionMode()
+    object Edit : InteractionMode()
 }
 
 sealed class Command {

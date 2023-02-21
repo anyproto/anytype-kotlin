@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -45,14 +47,19 @@ class HomeScreenFragment : BaseComposeFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            MaterialTheme(typography = typography) {
+            MaterialTheme(
+                typography = typography,
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
+            ) {
                 HomeScreen(
                     widgets = vm.views.collectAsState().value,
+                    mode = vm.mode.collectAsState().value,
                     onExpand = { path -> vm.onExpand(path) },
                     onCreateWidget = {
                         findNavController().navigate(R.id.selectWidgetSourceScreen)
                     },
-                    onEditWidgets = { context.toast("Coming soon") },
+                    onEditWidgets = vm::onEditWidgets,
+                    onExitEditMode = vm::onExitEditMode,
                     onRefresh = vm::onRefresh,
                     onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                         when (action) {
@@ -63,7 +70,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                                 vm.onChangeWidgetTypeClicked(widget)
                             }
                             DropDownMenuAction.EditWidgets -> {
-                                toast("TODO")
+                                vm.onEditWidgets()
                             }
                             DropDownMenuAction.RemoveWidget -> {
                                 vm.onDeleteWidgetClicked(widget)
@@ -72,7 +79,16 @@ class HomeScreenFragment : BaseComposeFragment() {
                     },
                     onWidgetObjectClicked = vm::onWidgetObjectClicked,
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState
+                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+                    onSearchClicked = {
+                        toast("TODO")
+                    },
+                    onCreateNewObjectClicked = {
+                        toast("TODO")
+                    },
+                    onSpaceClicked = {
+                        toast("TODO")
+                    }
                 )
             }
         }

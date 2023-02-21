@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,19 +46,23 @@ fun ListWidgetCard(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit
 ) {
-    val isDropDownMenuExpanded = remember {
+    val isCardMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+    val isHeaderMenuExpanded = remember {
         mutableStateOf(false)
     }
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .animateContentSize(),
+            .animateContentSize()
+            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f),
         shape = RoundedCornerShape(16.dp),
         onClick = {
-            isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
+            isCardMenuExpanded.value = !isCardMenuExpanded.value
         },
-        backgroundColor = if (isDropDownMenuExpanded.value) {
+        backgroundColor = if (isCardMenuExpanded.value) {
             colorResource(id = R.color.shape_secondary)
         } else {
             colorResource(id = R.color.dashboard_card_background)
@@ -71,10 +76,12 @@ fun ListWidgetCard(
             Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                 WidgetHeader(
                     item = item.obj,
-                    isDropDownMenuExpanded = isDropDownMenuExpanded,
+                    isCardMenuExpanded = isCardMenuExpanded,
+                    isHeaderMenuExpanded = isHeaderMenuExpanded,
                     onWidgetObjectClicked = onWidgetObjectClicked,
                     onExpandElement = { onToggleExpandedWidgetState(item.id) },
-                    isExpanded = item.isExpanded
+                    isExpanded = item.isExpanded,
+                    onDropDownMenuAction = onDropDownMenuAction
                 )
             }
             if (item.tabs.isNotEmpty() && item.isExpanded) {
@@ -177,7 +184,7 @@ fun ListWidgetCard(
                 }
             }
             WidgetMenu(
-                isExpanded = isDropDownMenuExpanded,
+                isExpanded = isCardMenuExpanded,
                 onDropDownMenuAction = onDropDownMenuAction
             )
         }

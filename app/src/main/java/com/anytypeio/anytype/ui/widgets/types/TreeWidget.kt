@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetId
@@ -47,13 +49,17 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
 fun TreeWidgetCard(
+    mode: InteractionMode,
     item: WidgetView.Tree,
     onExpandElement: (TreePath) -> Unit,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit
 ) {
-    val isDropDownMenuExpanded = remember {
+    val isCardMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+    val isHeaderMenuExpanded = remember {
         mutableStateOf(false)
     }
     Card(
@@ -61,26 +67,27 @@ fun TreeWidgetCard(
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
             .animateContentSize()
-        ,
+            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f),
         shape = RoundedCornerShape(16.dp),
         onClick = {
-            isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
-        },
-        backgroundColor = if (isDropDownMenuExpanded.value) {
-            colorResource(id = R.color.shape_secondary)
-        } else {
-            colorResource(id = R.color.dashboard_card_background)
+            isCardMenuExpanded.value = !isCardMenuExpanded.value
         }
     ) {
         Column(
-            Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+            Modifier.padding(
+                top = 6.dp,
+                bottom = 6.dp,
+            )
         ) {
             WidgetHeader(
                 item = item.obj,
-                isDropDownMenuExpanded = isDropDownMenuExpanded,
+                isCardMenuExpanded = isCardMenuExpanded,
+                isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetObjectClicked = onWidgetObjectClicked,
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
-                isExpanded = item.isExpanded
+                isExpanded = item.isExpanded,
+                onDropDownMenuAction = onDropDownMenuAction,
+                isEditable = mode is InteractionMode.Edit
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
@@ -95,7 +102,7 @@ fun TreeWidgetCard(
             }
         }
         WidgetMenu(
-            isExpanded = isDropDownMenuExpanded,
+            isExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )
     }
@@ -110,7 +117,7 @@ private fun TreeWidgetTreeItems(
     item.elements.forEachIndexed { idx, element ->
         Row(
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp, horizontal = 16.dp)
                 .noRippleClickable {
                     onWidgetElementClicked(element.obj)
                 }
@@ -186,15 +193,20 @@ private fun TreeWidgetTreeItems(
 @Composable
 fun WidgetHeader(
     item: ObjectWrapper.Basic,
-    isDropDownMenuExpanded: MutableState<Boolean>,
+    isCardMenuExpanded: MutableState<Boolean>,
+    isHeaderMenuExpanded: MutableState<Boolean>,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onExpandElement: () -> Unit = {},
     isExpanded: Boolean = false,
+    isEditable: Boolean = true
 ) {
     Box(
         Modifier
             .fillMaxWidth()
-            .height(40.dp)) {
+            .height(40.dp)
+    )
+    {
         Text(
             // TODO trimming should be a part of presentation module.
             text = item.name?.trim() ?: stringResource(id = R.string.untitled),
@@ -207,14 +219,17 @@ fun WidgetHeader(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = 28.dp)
+                .padding(
+                    start = 16.dp,
+                    end = if (isEditable) 68.dp else 28.dp
+                )
                 .align(Alignment.CenterStart)
                 .combinedClickable(
                     onClick = {
                         onWidgetObjectClicked(item)
                     },
                     onLongClick = {
-                        isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
                     },
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
@@ -225,9 +240,27 @@ fun WidgetHeader(
             contentDescription = "Expand icon",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
+                .padding(end = 12.dp)
                 .rotate(if (isExpanded) 90f else 0f)
                 .noRippleClickable { onExpandElement() }
         )
+        if (isEditable) {
+            Box(Modifier.align(Alignment.CenterEnd)) {
+                Image(
+                    painterResource(R.drawable.ic_widget_three_dots),
+                    contentDescription = "Widget menu icon",
+                    modifier = Modifier
+                        .padding(end = 48.dp)
+                        .noRippleClickable {
+                            isHeaderMenuExpanded.value = !isHeaderMenuExpanded.value
+                        }
+                )
+                WidgetMenu(
+                    isExpanded = isHeaderMenuExpanded,
+                    onDropDownMenuAction = onDropDownMenuAction
+                )
+            }
+        }
     }
 }
 

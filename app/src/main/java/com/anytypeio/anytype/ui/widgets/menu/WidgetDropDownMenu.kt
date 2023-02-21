@@ -1,20 +1,27 @@
 package com.anytypeio.anytype.ui.widgets.menu
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 
 @Composable
 fun WidgetMenu(
@@ -24,7 +31,7 @@ fun WidgetMenu(
     DropdownMenu(
         expanded = isExpanded.value,
         onDismissRequest = { isExpanded.value = false },
-        offset = DpOffset(x = 0.dp, y = 12.dp)
+        offset = DpOffset(x = 0.dp, y = 6.dp)
     ) {
         DropdownMenuItem(
             onClick = {
@@ -53,10 +60,24 @@ fun WidgetMenu(
                 }
             }
         ) {
-            Text(stringResource(id = R.string.remove_widget))
+            Text(
+                text = stringResource(id = R.string.remove_widget),
+                color = colorResource(id = R.color.palette_dark_red)
+            )
+        }
+        Divider(thickness = 0.5.dp)
+        DropdownMenuItem(
+            onClick = {
+                onDropDownMenuAction(DropDownMenuAction.EditWidgets).also {
+                    isExpanded.value = false
+                }
+            }
+        ) {
+            Text(stringResource(R.string.edit_widgets))
         }
     }
 }
+
 
 @Composable
 fun WidgetActionButton(
@@ -64,16 +85,27 @@ fun WidgetActionButton(
     label: String,
     onClick: () -> Unit
 ) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = R.color.text_primary),
-            contentColor = colorResource(id = R.color.widget_button)
-        ),
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp)
+    Box(
+        modifier = modifier
+            .height(32.dp)
+            .background(
+                shape = RoundedCornerShape(8.dp),
+                color = colorResource(id = R.color.widget_button)
+            )
+            .noRippleClickable { onClick() }
+        ,
     ) {
-        Text(text = label)
+        Text(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 12.dp),
+            text = label,
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = colorResource(id = R.color.text_primary)
+            )
+        )
     }
 }
 

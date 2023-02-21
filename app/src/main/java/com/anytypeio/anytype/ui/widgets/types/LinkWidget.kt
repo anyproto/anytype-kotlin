@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.widgets.types
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.library.views.list.items.noRippleClickable
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
@@ -32,21 +36,21 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 fun LinkWidgetCard(
     item: WidgetView.Link,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onDropDownMenuAction: (DropDownMenuAction) -> Unit
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
+    isEditable: Boolean
 ) {
-    val isDropDownMenuExpanded = remember {
+    val isCardMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+    val isHeaderMenuExpanded = remember {
         mutableStateOf(false)
     }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp),
-        shape = RoundedCornerShape(16.dp),
-        backgroundColor = if (isDropDownMenuExpanded.value) {
-            colorResource(id = R.color.shape_secondary)
-        } else {
-            colorResource(id = R.color.dashboard_card_background)
-        }
+            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Box(
             Modifier
@@ -55,7 +59,7 @@ fun LinkWidgetCard(
                 .combinedClickable(
                     onClick = { onWidgetObjectClicked(item.obj) },
                     onLongClick = {
-                        isDropDownMenuExpanded.value = !isDropDownMenuExpanded.value
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
                     },
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
@@ -74,9 +78,27 @@ fun LinkWidgetCard(
                     fontWeight = FontWeight.Bold
                 )
             )
+            if (isEditable) {
+                Box(
+                    Modifier.align(Alignment.CenterEnd).padding(end = 48.dp)
+                ) {
+                    Image(
+                        painterResource(R.drawable.ic_widget_three_dots),
+                        contentDescription = "Widget menu icon",
+                        modifier = Modifier
+                            .noRippleClickable {
+                                isHeaderMenuExpanded.value = !isHeaderMenuExpanded.value
+                            }
+                    )
+                    WidgetMenu(
+                        isExpanded = isHeaderMenuExpanded,
+                        onDropDownMenuAction = onDropDownMenuAction
+                    )
+                }
+            }
         }
         WidgetMenu(
-            isExpanded = isDropDownMenuExpanded,
+            isExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )
     }

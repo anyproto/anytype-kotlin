@@ -11,15 +11,19 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
@@ -114,6 +118,43 @@ object HomeScreenModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun createObject(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers,
+        getDefaultEditorType: GetDefaultEditorType,
+        getTemplates: GetTemplates
+    ): CreateObject = CreateObject(
+        repo = repo,
+        dispatchers = dispatchers,
+        getTemplates = getTemplates,
+        getDefaultEditorType = getDefaultEditorType
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getDefaultEditorType(
+        userSettingsRepository: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers,
+    ) : GetDefaultEditorType = GetDefaultEditorType(
+        userSettingsRepository = userSettingsRepository,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getTemplates(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers,
+    ) : GetTemplates = GetTemplates(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun objectSearchSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
@@ -169,6 +210,7 @@ object HomeScreenModule {
 interface HomeScreenDependencies : ComponentDependencies {
     fun blockRepo(): BlockRepository
     fun authRepo(): AuthRepository
+    fun userRepo(): UserSettingsRepository
     fun config(): ConfigStorage
     fun urlBuilder(): UrlBuilder
     fun objectStore(): ObjectStore

@@ -81,13 +81,13 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
                     onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
                     onSearchClicked = {
-                        toast("TODO")
+                        navigation().openPageSearch()
                     },
                     onCreateNewObjectClicked = {
-                        toast("TODO")
+                        vm.onCreateNewObjectClicked()
                     },
                     onSpaceClicked = {
-                        toast("TODO")
+                        navigation().openSettings()
                     }
                 )
             }

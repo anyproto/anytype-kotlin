@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -76,6 +77,9 @@ class HomeViewModelTest {
 
     @Mock
     lateinit var getObject: GetObject
+
+    @Mock
+    lateinit var createObject: CreateObject
 
     @Mock
     lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
@@ -370,6 +374,7 @@ class HomeViewModelTest {
         objectPayloadDispatcher = objectPayloadDispatcher,
         widgetEventDispatcher = widgetEventDispatcher,
         openObject = openObject,
+        createObject = createObject,
         objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
         appCoroutineDispatchers = appCoroutineDispatchers,
         getObject = getObject,

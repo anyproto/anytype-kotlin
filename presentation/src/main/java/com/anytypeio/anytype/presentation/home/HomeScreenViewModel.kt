@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -67,7 +69,8 @@ class HomeScreenViewModel(
     private val interceptEvents: InterceptEvents,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val createObject: CreateObject
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -450,6 +453,20 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onCreateNewObjectClicked() {
+        viewModelScope.launch {
+            createObject.stream(CreateObject.Param(null)).collect { result ->
+                result.fold(
+                    onSuccess = { navigate(Navigation.OpenObject(it.objectId)) },
+                    onFailure = {
+                        Timber.e(it, "Error while creating object")
+                        sendToast("Error while creating object. Please, try again later")
+                    }
+                )
+            }
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id) : Navigation()
         data class OpenSet(val ctx: Id) : Navigation()
@@ -458,6 +475,7 @@ class HomeScreenViewModel(
     class Factory @Inject constructor(
         private val configStorage: ConfigStorage,
         private val openObject: OpenObject,
+        private val createObject: CreateObject,
         private val createWidget: CreateWidget,
         private val deleteWidget: DeleteWidget,
         private val updateWidget: UpdateWidget,
@@ -476,6 +494,7 @@ class HomeScreenViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
             configStorage = configStorage,
             openObject = openObject,
+            createObject = createObject,
             createWidget = createWidget,
             deleteWidget = deleteWidget,
             updateWidget = updateWidget,

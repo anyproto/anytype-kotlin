@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -48,12 +48,18 @@ fun LinkWidgetCard(
     val isHeaderMenuExpanded = remember {
         mutableStateOf(false)
     }
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f),
-        shape = RoundedCornerShape(16.dp)
+            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.dashboard_card_background)
+            )
+            .noRippleClickable {
+                isCardMenuExpanded.value = !isCardMenuExpanded.value
+            }
     ) {
         Box(
             Modifier
@@ -83,7 +89,9 @@ fun LinkWidgetCard(
             )
             AnimatedVisibility(
                 visible = isEditable,
-                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 48.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 48.dp),
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {

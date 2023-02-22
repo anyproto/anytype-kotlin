@@ -33,6 +33,10 @@ fun WidgetMenu(
         onDismissRequest = { isExpanded.value = false },
         offset = DpOffset(x = 0.dp, y = 6.dp)
     ) {
+        val defaultTextStyle = TextStyle(
+            color = colorResource(id = R.color.text_primary),
+            fontSize = 17.sp
+        )
         DropdownMenuItem(
             onClick = {
                 onDropDownMenuAction(DropDownMenuAction.ChangeWidgetSource).also {
@@ -40,9 +44,15 @@ fun WidgetMenu(
                 }
             }
         ) {
-            Text(stringResource(R.string.widget_change_source))
+            Text(
+                text = stringResource(R.string.widget_change_source),
+                style = defaultTextStyle
+            )
         }
-        Divider(thickness = 0.5.dp)
+        Divider(
+            thickness = 0.5.dp,
+            color = colorResource(id = R.color.shape_primary)
+        )
         DropdownMenuItem(
             onClick = {
                 onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
@@ -50,9 +60,15 @@ fun WidgetMenu(
                 }
             }
         ) {
-            Text(stringResource(R.string.widget_change_type))
+            Text(
+                text = stringResource(R.string.widget_change_type),
+                style = defaultTextStyle
+            )
         }
-        Divider(thickness = 0.5.dp)
+        Divider(
+            thickness = 0.5.dp,
+            color = colorResource(id = R.color.shape_primary)
+        )
         DropdownMenuItem(
             onClick = {
                 onDropDownMenuAction(DropDownMenuAction.RemoveWidget).also {
@@ -62,10 +78,16 @@ fun WidgetMenu(
         ) {
             Text(
                 text = stringResource(id = R.string.remove_widget),
-                color = colorResource(id = R.color.palette_dark_red)
+                style = TextStyle(
+                    color = colorResource(id = R.color.palette_dark_red),
+                    fontSize = 17.sp
+                )
             )
         }
-        Divider(thickness = 0.5.dp)
+        Divider(
+            thickness = 0.5.dp,
+            color = colorResource(id = R.color.shape_primary)
+        )
         DropdownMenuItem(
             onClick = {
                 onDropDownMenuAction(DropDownMenuAction.EditWidgets).also {
@@ -73,7 +95,10 @@ fun WidgetMenu(
                 }
             }
         ) {
-            Text(stringResource(R.string.edit_widgets))
+            Text(
+                text = stringResource(R.string.edit_widgets),
+                style = defaultTextStyle
+            )
         }
     }
 }
@@ -90,7 +115,7 @@ fun WidgetActionButton(
             .height(32.dp)
             .background(
                 shape = RoundedCornerShape(8.dp),
-                color = colorResource(id = R.color.widget_button)
+                color = colorResource(id = R.color.background_primary).copy(alpha = 0.65f)
             )
             .noRippleClickable { onClick() }
         ,

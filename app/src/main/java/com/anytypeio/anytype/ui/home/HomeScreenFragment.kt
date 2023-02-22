@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -49,7 +50,10 @@ class HomeScreenFragment : BaseComposeFragment() {
         setContent {
             MaterialTheme(
                 typography = typography,
-                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.background_secondary)
+                )
             ) {
                 HomeScreen(
                     widgets = vm.views.collectAsState().value,

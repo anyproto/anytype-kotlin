@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -724,9 +725,14 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun createWidget(ctx: Id, source: Id): Payload = remote.createWidget(
+    override suspend fun createWidget(
+        ctx: Id,
+        source: Id,
+        layout: WidgetLayout
+    ): Payload = remote.createWidget(
         ctx = ctx,
-        source = source
+        source = source,
+        layout = layout
     )
 
     override suspend fun updateWidget(

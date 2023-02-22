@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.page.Redo
@@ -367,7 +368,8 @@ interface BlockRepository {
 
     suspend fun createWidget(
         ctx: Id,
-        source: Id
+        source: Id,
+        layout: WidgetLayout
     ): Payload
 
     suspend fun updateWidget(

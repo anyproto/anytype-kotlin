@@ -208,9 +208,16 @@ class HomeScreenViewModel(
     private fun proceedWithDispatches() {
         viewModelScope.launch {
             widgetEventDispatcher.flow().collect { dispatch ->
+                Timber.d("New dispatch: $dispatch")
                 when (dispatch) {
                     is WidgetDispatchEvent.SourcePicked -> {
-                        proceedWithCreatingWidget(source = dispatch.source)
+                        commands.emit(
+                            Command.SelectWidgetType(
+                                ctx = configStorage.get().widgets,
+                                source = dispatch.source,
+                                layout = dispatch.sourceLayout
+                            )
+                        )
                     }
                     is WidgetDispatchEvent.SourceChanged -> {
                         proceedWithUpdatingWidget(
@@ -219,18 +226,30 @@ class HomeScreenViewModel(
                             type = dispatch.type
                         )
                     }
+                    is WidgetDispatchEvent.TypePicked -> {
+                        proceedWithCreatingWidget(
+                            source = dispatch.source,
+                            type = dispatch.widgetType
+                        )
+                    }
                 }
             }
         }
     }
 
-    private fun proceedWithCreatingWidget(source: Id) {
+    private fun proceedWithCreatingWidget(source: Id, type: Int) {
         viewModelScope.launch {
             val config = configStorage.get()
             createWidget(
                 CreateWidget.Params(
                     ctx = config.widgets,
-                    source = source
+                    source = source,
+                    type = when(type) {
+                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LINK
+                        else -> WidgetLayout.LINK
+                    }
                 )
             ).flowOn(appCoroutineDispatchers.io).collect { status ->
                 Timber.d("Status while creating widget: $status")
@@ -251,7 +270,7 @@ class HomeScreenViewModel(
     }
 
     /**
-     * @param [type] type code from [Command.SelectWidgetType]
+     * @param [type] type code from [Command.ChangeWidgetType]
      */
     private fun proceedWithUpdatingWidget(
         widget: Id,
@@ -266,8 +285,8 @@ class HomeScreenViewModel(
                     source = source,
                     target = widget,
                     type = when(type) {
-                        Command.SelectWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                        Command.SelectWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         else -> throw IllegalStateException("Unexpected type: $type")
                     }
                 )
@@ -347,7 +366,7 @@ class HomeScreenViewModel(
         if (curr != null) {
             viewModelScope.launch {
                 commands.emit(
-                    Command.SelectWidgetType(
+                    Command.ChangeWidgetType(
                         ctx = configStorage.get().widgets,
                         widget = widget,
                         source = curr.source.id,
@@ -379,9 +398,9 @@ class HomeScreenViewModel(
     }
 
     private fun parseWidgetType(curr: Widget) = when (curr) {
-        is Widget.Link -> Command.SelectWidgetType.TYPE_LINK
-        is Widget.Tree -> Command.SelectWidgetType.TYPE_TREE
-        is Widget.List -> Command.SelectWidgetType.TYPE_LIST
+        is Widget.Link -> Command.ChangeWidgetType.TYPE_LINK
+        is Widget.Tree -> Command.ChangeWidgetType.TYPE_TREE
+        is Widget.List -> Command.ChangeWidgetType.TYPE_LIST
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -497,13 +516,18 @@ sealed class InteractionMode {
 
 sealed class Command {
     object SelectWidgetSource : Command()
+    data class SelectWidgetType(
+        val ctx: Id,
+        val source: Id,
+        val layout: Int
+    ) : Command()
     data class ChangeWidgetSource(
         val ctx: Id,
         val widget: Id,
         val source: Id,
         val type: Int
     ) : Command()
-    data class SelectWidgetType(
+    data class ChangeWidgetType(
         val ctx: Id,
         val widget: Id,
         val source: Id,

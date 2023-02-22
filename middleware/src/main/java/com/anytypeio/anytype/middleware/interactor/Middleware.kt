@@ -1903,11 +1903,12 @@ class Middleware(
     @Throws(Exception::class)
     fun createWidgetBlock(
         ctx: Id,
-        source: Id
+        source: Id,
+        layout: WidgetLayout
     ): Payload {
         val request = Rpc.Block.CreateWidget.Request(
             contextId = ctx,
-            widgetLayout = Block.Content.Widget.Layout.Tree,
+            widgetLayout = layout.mw(),
             block = Block(
                 link = Block.Content.Link(
                     targetBlockId = source

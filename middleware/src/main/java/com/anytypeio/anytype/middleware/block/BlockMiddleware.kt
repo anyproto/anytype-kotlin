@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
@@ -691,9 +692,14 @@ class BlockMiddleware(
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult = middleware.blockLinkCreateWithObject(command)
 
-    override suspend fun createWidget(ctx: Id, source: Id): Payload = middleware.createWidgetBlock(
+    override suspend fun createWidget(
+        ctx: Id,
+        source: Id,
+        layout: WidgetLayout
+    ): Payload = middleware.createWidgetBlock(
         ctx = ctx,
-        source = source
+        source = source,
+        layout = layout
     )
 
     override suspend fun updateWidget(

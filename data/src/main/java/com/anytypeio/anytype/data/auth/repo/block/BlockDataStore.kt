@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.WidgetLayout
 
 
 interface BlockDataStore {
@@ -322,7 +323,7 @@ interface BlockDataStore {
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult
 
-    suspend fun createWidget(ctx: Id, source: Id): Payload
+    suspend fun createWidget(ctx: Id, source: Id, layout: WidgetLayout): Payload
 
     suspend fun updateWidget(
         ctx: Id,

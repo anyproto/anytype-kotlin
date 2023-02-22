@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.widgets
 
-import com.anytypeio.anytype.presentation.home.Command.SelectWidgetType.Companion.TYPE_LINK
-import com.anytypeio.anytype.presentation.home.Command.SelectWidgetType.Companion.TYPE_LIST
-import com.anytypeio.anytype.presentation.home.Command.SelectWidgetType.Companion.TYPE_TREE
+import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.TYPE_LINK
+import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.TYPE_LIST
+import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.TYPE_TREE
 
 sealed class WidgetTypeView {
     abstract val isSelected: Boolean

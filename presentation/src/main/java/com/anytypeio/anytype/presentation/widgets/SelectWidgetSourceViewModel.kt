@@ -13,6 +13,8 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -33,6 +35,17 @@ class SelectWidgetSourceViewModel(
 
     val isDismissed = MutableStateFlow(false)
     var config : Config = Config.None
+
+    init {
+        viewModelScope.launch {
+            dispatcher.flow()
+                .filterIsInstance<WidgetDispatchEvent.TypePicked>()
+                .take(1)
+                .collect {
+                    isDismissed.value = true
+                }
+        }
+    }
 
     fun onStartWithNewWidget() {
         Timber.d("onStart with picking source for new widget")
@@ -66,8 +79,12 @@ class SelectWidgetSourceViewModel(
         when(val curr = config) {
             is Config.NewWidget -> {
                 viewModelScope.launch {
-                    dispatcher.send(WidgetDispatchEvent.SourcePicked(view.id))
-                    isDismissed.value = true
+                    dispatcher.send(
+                        WidgetDispatchEvent.SourcePicked(
+                            source = view.id,
+                            sourceLayout = view.layout?.code ?: -1
+                        )
+                    )
                 }
             }
             is Config.ExistingWidget -> {

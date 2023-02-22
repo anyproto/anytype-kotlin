@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.WidgetLayout
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
@@ -654,9 +655,14 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         return remote.createObject(command)
     }
 
-    override suspend fun createWidget(ctx: Id, source: Id): Payload = remote.createWidget(
+    override suspend fun createWidget(
+        ctx: Id,
+        source: Id,
+        layout: WidgetLayout
+    ): Payload = remote.createWidget(
         ctx = ctx,
-        source = source
+        source = source,
+        layout = layout
     )
 
     override suspend fun updateWidget(

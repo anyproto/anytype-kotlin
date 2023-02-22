@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.SelectWidgetTypeViewModel
+import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import dagger.Module
 import dagger.Provides
@@ -33,11 +34,13 @@ object SelectWidgetTypeModule {
     @PerModal
     @Provides
     fun factory(
-        dispatcher: Dispatcher<Payload>,
+        payloadDispatcher: Dispatcher<Payload>,
+        widgetDispatcher: Dispatcher<WidgetDispatchEvent>,
         updateWidget: UpdateWidget,
         appCoroutineDispatchers: AppCoroutineDispatchers
     ): SelectWidgetTypeViewModel.Factory = SelectWidgetTypeViewModel.Factory(
-        dispatcher = dispatcher,
+        payloadDispatcher = payloadDispatcher,
+        widgetDispatcher = widgetDispatcher,
         updateWidget = updateWidget,
         appCoroutineDispatchers = appCoroutineDispatchers
     )

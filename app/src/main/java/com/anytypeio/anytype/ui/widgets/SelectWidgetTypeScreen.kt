@@ -16,7 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -79,7 +82,7 @@ fun SelectWidgetTypeScreen(
                 Divider(paddingStart = 76.dp)
             }
         }
-        Spacer(modifier = Modifier.height(52.dp))
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
@@ -109,14 +112,21 @@ fun WidgetTypeItem(
                 .align(Alignment.TopStart)
                 .padding(start = 70.dp, top = 11.dp),
             text = title,
-            color = colorResource(id = R.color.text_primary)
+            style = TextStyle(
+                color = colorResource(id = R.color.text_primary),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium
+            )
         )
         Text(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 70.dp, bottom = 11.dp),
             text = subtitle,
-            color = colorResource(id = R.color.text_secondary)
+            style = TextStyle(
+                color = colorResource(id = R.color.text_secondary),
+                fontSize = 13.sp
+            )
         )
         if (isChecked) {
             Image(

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.widgets
 
-import android.content.DialogInterface
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
@@ -14,6 +13,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ext.statusBarHeight
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
+import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
@@ -34,11 +35,11 @@ import com.anytypeio.anytype.presentation.widgets.SelectWidgetSourceViewModel
 import com.anytypeio.anytype.ui.moving.hideProgress
 import com.anytypeio.anytype.ui.moving.showProgress
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import timber.log.Timber
 
-class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>() {
+class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>(),
+    TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
 
     private val ctx: Id get() = arg(CTX_KEY)
     private val widget: Id get() = arg(WIDGET_ID_KEY)
@@ -66,21 +67,13 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         super.onViewCreated(view, savedInstanceState)
         setupFullHeight()
         setTransparent()
-        BottomSheetBehavior.from(binding.sheet).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-            isHideable = true
-            skipCollapsed = true
-            addBottomSheetCallback(
-                object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            vm.onDialogCancelled()
-                        }
-                    }
-                }
-            )
-        }
+
+        TextInputDialogBottomBehaviorApplier(
+            attachView = binding.sheet,
+            textInput = textInput,
+            dialogCancelListener = this
+        ).apply()
+
         vm.state.observe(viewLifecycleOwner) { observe(it) }
         clearSearchText = binding.searchView.root.findViewById(R.id.clearSearchText)
         filterInputField = binding.searchView.root.findViewById(R.id.filterInputField)
@@ -93,6 +86,10 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             true
         }
         initialize()
+    }
+
+    override fun onDialogCancelled() {
+        findNavController().popBackStack()
     }
 
     override fun onStart() {
@@ -118,11 +115,6 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
     override fun onStop() {
         super.onStop()
         vm.onStop()
-    }
-
-    override fun onCancel(dialog: DialogInterface) {
-        super.onCancel(dialog)
-        vm.onDialogCancelled()
     }
 
     private fun observe(state: ObjectSearchView) {

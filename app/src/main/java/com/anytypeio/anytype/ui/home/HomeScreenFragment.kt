@@ -119,9 +119,11 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Command.SelectWidgetSource -> {
-                findNavController().navigate(R.id.selectWidgetSourceScreen)
+                findNavController().navigate(
+                    R.id.selectWidgetSourceScreen
+                )
             }
-            is Command.SelectWidgetType -> {
+            is Command.ChangeWidgetType -> {
                 findNavController().navigate(
                     R.id.selectWidgetTypeScreen,
                     args = SelectWidgetTypeFragment.args(
@@ -129,6 +131,16 @@ class HomeScreenFragment : BaseComposeFragment() {
                         widget = command.widget,
                         source = command.source,
                         type = command.type
+                    )
+                )
+            }
+            is Command.SelectWidgetType -> {
+                findNavController().navigate(
+                    R.id.selectWidgetTypeScreen,
+                    args = SelectWidgetTypeFragment.args(
+                        ctx = command.ctx,
+                        source = command.source,
+                        layout = command.layout
                     )
                 )
             }

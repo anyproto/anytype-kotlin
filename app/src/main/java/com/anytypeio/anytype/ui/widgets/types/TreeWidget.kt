@@ -1,7 +1,10 @@
 package com.anytypeio.anytype.ui.widgets.types
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -19,10 +22,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +53,6 @@ import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
 fun TreeWidgetCard(
     mode: InteractionMode,
     item: WidgetView.Tree,
@@ -69,7 +71,6 @@ fun TreeWidgetCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .animateContentSize()
             .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
             .background(
                 shape = RoundedCornerShape(16.dp),
@@ -242,13 +243,16 @@ fun WidgetHeader(
                     interactionSource = remember { MutableInteractionSource() }
                 )
         )
+
+        val rotation = getAnimatableRotation(isExpanded)
+
         Image(
             painterResource(R.drawable.ic_widget_tree_expand),
             contentDescription = "Expand icon",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 12.dp)
-                .rotate(if (isExpanded) 90f else 0f)
+                .rotate(rotation.value)
                 .noRippleClickable { onExpandElement() }
         )
         AnimatedVisibility(
@@ -275,6 +279,31 @@ fun WidgetHeader(
             }
         }
     }
+}
+
+@Composable
+fun getAnimatableRotation(isExpanded: Boolean): Animatable<Float, AnimationVector1D> {
+    var currentRotation = remember {
+        mutableStateOf(
+            if (isExpanded) ArrowIconDefaults.Expanded else ArrowIconDefaults.Collapsed
+        )
+    }
+    val rotation = remember { Animatable(currentRotation.value) }
+    LaunchedEffect(isExpanded) {
+        rotation.animateTo(
+            targetValue = if (isExpanded)
+                ArrowIconDefaults.Expanded
+            else
+                ArrowIconDefaults.Collapsed,
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = LinearOutSlowInEasing
+            )
+        ) {
+            currentRotation.value = value
+        }
+    }
+    return rotation
 }
 
 

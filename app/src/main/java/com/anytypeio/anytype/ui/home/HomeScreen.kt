@@ -1,12 +1,16 @@
 package com.anytypeio.anytype.ui.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,16 +34,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
@@ -120,6 +125,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WidgetList(
     widgets: List<WidgetView>,
@@ -141,6 +147,11 @@ private fun WidgetList(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = if (index == 0) 12.dp else 0.dp)
+                            .animateContentSize(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            )
                     ) {
                         TreeWidgetCard(
                             item = item,
@@ -250,6 +261,12 @@ private fun WidgetList(
                             .fillMaxWidth()
                             .padding(top = 6.dp)
                             .height(128.dp)
+                            .animateItemPlacement(
+                                spring(
+                                    stiffness = Spring.StiffnessHigh,
+                                    visibilityThreshold = IntOffset.Zero
+                                )
+                            )
                     ) {
                         AnimatedVisibility(
                             visible = mode is InteractionMode.Default,

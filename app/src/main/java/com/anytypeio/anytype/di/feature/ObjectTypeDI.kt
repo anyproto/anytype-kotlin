@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
@@ -17,7 +17,6 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(modules = [ObjectTypeChangeModule::class])
 @PerScreen
@@ -47,14 +46,14 @@ object ObjectTypeChangeModule {
         addObjectToWorkspace: AddObjectToWorkspace,
         dispatchers: AppCoroutineDispatchers,
         workspaceManager: WorkspaceManager,
-        getDefaultEditorType: GetDefaultEditorType
+        getDefaultPageType: GetDefaultPageType
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
             getObjectTypes = getObjectTypes,
             addObjectToWorkspace = addObjectToWorkspace,
             dispatchers = dispatchers,
             workspaceManager = workspaceManager,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultPageType = getDefaultPageType
         )
     }
 
@@ -81,8 +80,15 @@ object ObjectTypeChangeModule {
     @PerScreen
     @Provides
     fun provideGetDefaultPageType(
-        repo: UserSettingsRepository,
+        userSettingsRepository: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers
-    ): GetDefaultEditorType =
-        GetDefaultEditorType(repo, dispatchers)
+    ): GetDefaultPageType = GetDefaultPageType(
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        dispatchers = dispatchers
+    )
+
 }

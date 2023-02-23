@@ -8,23 +8,22 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.templates.GetTemplates
-import kotlinx.coroutines.Dispatchers
 
 /**
  * Use case for creating a new object
  */
 class CreateObject(
     private val repo: BlockRepository,
-    private val getDefaultEditorType: GetDefaultEditorType,
+    private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
     override suspend fun doWork(params: Param): Result {
 
-        val type = params.type ?: getDefaultEditorType.run(Unit).type
+        val type = params.type ?: getDefaultPageType.run(Unit).type
 
         val template = if (type != null) {
             getTemplates.run(GetTemplates.Params(type = type)).singleOrNull()?.id

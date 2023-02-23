@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.templates.GetTemplates
 
@@ -22,7 +22,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 class CreateDataViewObject(
     private val repo: BlockRepository,
     private val getTemplates: GetTemplates,
-    private val getDefaultEditorType: GetDefaultEditorType,
+    private val getDefaultPageType: GetDefaultPageType,
     private val storeOfRelations: StoreOfRelations
 ) : BaseUseCase<Id, CreateDataViewObject.Params>() {
 
@@ -117,7 +117,7 @@ class CreateDataViewObject(
 
     private suspend fun resolveDefaultObjectType(): Id {
         return try {
-            getDefaultEditorType.run(Unit).type ?: ObjectTypeIds.NOTE
+            getDefaultPageType.run(Unit).type ?: ObjectTypeIds.NOTE
         } catch (e: Exception) {
             ObjectTypeIds.NOTE
         }

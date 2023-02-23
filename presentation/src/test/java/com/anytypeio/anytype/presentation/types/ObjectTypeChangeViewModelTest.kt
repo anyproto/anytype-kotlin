@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
@@ -38,7 +38,7 @@ import kotlin.test.assertEquals
 class ObjectTypeChangeViewModelTest {
 
     @Mock
-    lateinit var repo: BlockRepository
+    lateinit var blockRepository: BlockRepository
 
     @Mock
     lateinit var userSettingsRepository: UserSettingsRepository
@@ -48,7 +48,7 @@ class ObjectTypeChangeViewModelTest {
 
     private lateinit var getObjectTypes: GetObjectTypes
     private lateinit var addObjectToWorkspace: AddObjectToWorkspace
-    private lateinit var getDefaultEditorType: GetDefaultEditorType
+    private lateinit var getDefaultPageType: GetDefaultPageType
 
     lateinit var workspaceManager: WorkspaceManager
     val workspaceId = MockDataFactory.randomString()
@@ -62,16 +62,21 @@ class ObjectTypeChangeViewModelTest {
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
-        getObjectTypes = GetObjectTypes(repo, dispatchers)
+        getObjectTypes = GetObjectTypes(blockRepository, dispatchers)
         addObjectToWorkspace = AddObjectToWorkspace(
-            repo = repo,
+            repo = blockRepository,
             dispatchers = dispatchers
         )
         workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
         runBlocking {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
-        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository, dispatchers)
+        getDefaultPageType = GetDefaultPageType(
+            userSettingsRepository,
+            blockRepository,
+            workspaceManager,
+            dispatchers
+        )
     }
 
     @Test
@@ -102,7 +107,7 @@ class ObjectTypeChangeViewModelTest {
 
         // TESTING
 
-        verifyNoInteractions(repo)
+        verifyNoInteractions(blockRepository)
 
         vm.onStart(
             isWithBookmark = false,
@@ -112,7 +117,7 @@ class ObjectTypeChangeViewModelTest {
             selectedTypes = emptyList()
         )
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -155,7 +160,7 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
@@ -172,7 +177,7 @@ class ObjectTypeChangeViewModelTest {
 
         // TESTING
 
-        verifyNoInteractions(repo)
+        verifyNoInteractions(blockRepository)
 
         vm.onStart(
             isWithBookmark = false,
@@ -184,7 +189,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for my types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -197,7 +202,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for marketplace types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -242,7 +247,7 @@ class ObjectTypeChangeViewModelTest {
 
         val query = MockDataFactory.randomString()
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
@@ -257,7 +262,7 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMarketplaceTypeFilters,
@@ -270,7 +275,7 @@ class ObjectTypeChangeViewModelTest {
             } doReturn emptyList()
         }
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
@@ -285,7 +290,7 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMarketplaceTypeFilters,
@@ -300,7 +305,7 @@ class ObjectTypeChangeViewModelTest {
 
         // TESTING
 
-        verifyNoInteractions(repo)
+        verifyNoInteractions(blockRepository)
 
         vm.onStart(
             isWithBookmark = false,
@@ -312,7 +317,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for my types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -325,7 +330,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for marketplace types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -344,7 +349,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for my types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -357,7 +362,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for marketplace types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -401,7 +406,7 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
@@ -416,7 +421,7 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMarketplaceTypeFilters,
@@ -429,7 +434,7 @@ class ObjectTypeChangeViewModelTest {
             } doReturn listOf(marketplaceType3.map)
         }
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 addObjectToWorkspace(objects = listOf(marketplaceType3.id))
             } doReturn listOf(expectedInstalledTypeId)
@@ -449,7 +454,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for my types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -462,7 +467,7 @@ class ObjectTypeChangeViewModelTest {
 
         // Checking search query for marketplace types
 
-        verifyBlocking(repo, times(1)) {
+        verifyBlocking(blockRepository, times(1)) {
             searchObjects(
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
@@ -491,7 +496,7 @@ class ObjectTypeChangeViewModelTest {
                 ),
                 actual = awaitItem()
             )
-            verifyBlocking(repo, times(1)) {
+            verifyBlocking(blockRepository, times(1)) {
                 addObjectToWorkspace(objects = listOf(marketplaceType3.id))
             }
         }
@@ -513,7 +518,7 @@ class ObjectTypeChangeViewModelTest {
         val expectedMyTypesFilters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
-        repo.stub {
+        blockRepository.stub {
             onBlocking {
                 searchObjects(
                     filters = expectedMyTypesFilters,
@@ -552,7 +557,7 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        verifyBlocking(repo, times(0)) {
+        verifyBlocking(blockRepository, times(0)) {
             addObjectToWorkspace(objects = listOf(installedType1.id))
         }
     }
@@ -562,6 +567,6 @@ class ObjectTypeChangeViewModelTest {
         addObjectToWorkspace = addObjectToWorkspace,
         dispatchers = dispatchers,
         workspaceManager = workspaceManager,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultPageType = getDefaultPageType
     )
 }

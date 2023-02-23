@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
@@ -13,7 +13,7 @@ class ObjectTypeChangeViewModelFactory(
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val dispatchers: AppCoroutineDispatchers,
     private val workspaceManager: WorkspaceManager,
-    private val getDefaultEditorType: GetDefaultEditorType
+    private val getDefaultPageType: GetDefaultPageType
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -23,7 +23,7 @@ class ObjectTypeChangeViewModelFactory(
             addObjectToWorkspace = addObjectToWorkspace,
             dispatchers = dispatchers,
             workspaceManager = workspaceManager,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultPageType = getDefaultPageType
         ) as T
     }
 }

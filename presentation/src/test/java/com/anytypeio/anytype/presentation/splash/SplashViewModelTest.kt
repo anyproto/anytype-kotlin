@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -77,7 +77,7 @@ class SplashViewModelTest {
     lateinit var appActionManager: AppActionManager
 
     @Mock
-    private lateinit var getDefaultEditorType: GetDefaultEditorType
+    private lateinit var getDefaultPageType: GetDefaultPageType
 
     @Mock
     private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
@@ -104,7 +104,7 @@ class SplashViewModelTest {
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
             setDefaultEditorType = setDefaultEditorType,
-            getDefaultEditorType = getDefaultEditorType,
+            getDefaultPageType = getDefaultPageType,
             createObject = createObject,
             appActionManager = appActionManager,
             relationsSubscriptionManager = relationsSubscriptionManager,
@@ -143,14 +143,14 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        getDefaultEditorType.stub {
+        getDefaultPageType.stub {
             onBlocking { execute(Unit) } doThrow Exception("error")
         }
 
         initViewModel()
 
         runBlocking {
-            verify(getDefaultEditorType, times(1)).execute(any())
+            verify(getDefaultPageType, times(1)).execute(any())
             verify(checkAuthorizationStatus, times(1)).invoke(any())
         }
     }
@@ -169,7 +169,7 @@ class SplashViewModelTest {
         initViewModel()
 
         runBlocking {
-            verify(getDefaultEditorType, times(1)).execute(any())
+            verify(getDefaultPageType, times(1)).execute(any())
             verify(checkAuthorizationStatus, times(1)).invoke(any())
         }
     }
@@ -363,9 +363,9 @@ class SplashViewModelTest {
     }
 
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
-        getDefaultEditorType.stub {
+        getDefaultPageType.stub {
             onBlocking { execute(Unit) } doReturn Resultat.success(
-                GetDefaultEditorType.Response(
+                GetDefaultPageType.Response(
                     type,
                     name
                 )

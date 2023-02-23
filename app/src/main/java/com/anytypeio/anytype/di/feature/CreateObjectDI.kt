@@ -1,18 +1,19 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(modules = [CreateObjectModule::class])
 @PerScreen
@@ -36,12 +37,12 @@ object CreateObjectModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers
     )
 
@@ -49,10 +50,16 @@ object CreateObjectModule {
     @PerScreen
     @Provides
     fun provideGetDefaultPageType(
-        repo: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        userSettingsRepository: UserSettingsRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers
-    ): GetDefaultEditorType =
-        GetDefaultEditorType(repo, dispatchers)
+    ): GetDefaultPageType = GetDefaultPageType(
+        userSettingsRepository,
+        blockRepository,
+        workspaceManager,
+        dispatchers
+    )
 
     @JvmStatic
     @Provides

@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -26,7 +26,6 @@ import com.anytypeio.anytype.ui.splash.SplashFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.Dispatchers
 
 @PerScreen
 @Subcomponent(modules = [SplashModule::class])
@@ -53,7 +52,7 @@ object SplashModule {
         launchWallet: LaunchWallet,
         analytics: Analytics,
         getLastOpenedObject: GetLastOpenedObject,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         setDefaultEditorType: SetDefaultEditorType,
         createObject: CreateObject,
         appActionManager: AppActionManager,
@@ -66,7 +65,7 @@ object SplashModule {
         analytics = analytics,
         getLastOpenedObject = getLastOpenedObject,
         setDefaultEditorType = setDefaultEditorType,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         createObject = createObject,
         appActionManager = appActionManager,
         relationsSubscriptionManager = relationsSubscriptionManager,
@@ -126,10 +125,16 @@ object SplashModule {
     @PerScreen
     @Provides
     fun provideGetDefaultPageType(
-        repo: UserSettingsRepository,
+        userSettingsRepository: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers
-    ): GetDefaultEditorType =
-        GetDefaultEditorType(repo, dispatchers)
+    ): GetDefaultPageType = GetDefaultPageType(
+        userSettingsRepository,
+        blockRepository,
+        workspaceManager,
+        dispatchers
+    )
 
     @JvmStatic
     @PerScreen
@@ -143,12 +148,12 @@ object SplashModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers
     )
 

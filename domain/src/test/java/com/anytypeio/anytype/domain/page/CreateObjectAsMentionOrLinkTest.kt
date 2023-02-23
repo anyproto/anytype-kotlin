@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.util.dispatchers
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -38,7 +38,7 @@ class CreateObjectAsMentionOrLinkTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var getDefaultEditorType: GetDefaultEditorType
+    lateinit var getDefaultPageType: GetDefaultPageType
 
     @Mock
     lateinit var getTemplates: GetTemplates
@@ -48,7 +48,7 @@ class CreateObjectAsMentionOrLinkTest {
     @Before
     fun setup() {
         createObjectAsMentionOrLink =
-            CreateObjectAsMentionOrLink(repo, getDefaultEditorType, getTemplates, dispatchers)
+            CreateObjectAsMentionOrLink(repo, getDefaultPageType, getTemplates, dispatchers)
     }
 
     @Test
@@ -190,8 +190,8 @@ class CreateObjectAsMentionOrLinkTest {
         }
 
     private fun givenGetDefaultObjectType(type: String? = null, name: String? = null) {
-        getDefaultEditorType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultEditorType.Response(type, name)
+        getDefaultPageType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type, name)
         }
     }
 

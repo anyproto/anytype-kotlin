@@ -51,7 +51,7 @@ import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -225,7 +225,7 @@ object EditorSessionModule {
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
         searchObjects: SearchObjects,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         findObjectSetForType: FindObjectSetForType,
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         downloadUnsplashImage: DownloadUnsplashImage,
@@ -259,7 +259,7 @@ object EditorSessionModule {
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
         searchObjects = searchObjects,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         findObjectSetForType = findObjectSetForType,
         createObjectSet = createObjectSet,
         copyFileToCacheDirectory = copyFileToCacheDirectory,
@@ -681,12 +681,12 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideCreateObjectAsMentionOrLink(
         repo: BlockRepository,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         getTemplates: GetTemplates,
         dispatchers: AppCoroutineDispatchers
     ): CreateObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
         repo = repo,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         getTemplates = getTemplates,
         dispatchers = dispatchers
     )
@@ -929,9 +929,15 @@ object EditorUseCaseModule {
     @Provides
     fun provideGetDefaultPageType(
         repo: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers
-    ): GetDefaultEditorType =
-        GetDefaultEditorType(repo, dispatchers)
+    ): GetDefaultPageType = GetDefaultPageType(
+        repo,
+        blockRepository,
+        workspaceManager,
+        dispatchers
+    )
 
     @JvmStatic
     @Provides
@@ -1123,12 +1129,12 @@ object EditorUseCaseModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers
     )
 

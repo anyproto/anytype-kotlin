@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -121,23 +121,27 @@ object HomeScreenModule {
     fun createObject(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultEditorType: GetDefaultPageType,
         getTemplates: GetTemplates
     ): CreateObject = CreateObject(
         repo = repo,
         dispatchers = dispatchers,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultPageType = getDefaultEditorType
     )
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun getDefaultEditorType(
+    fun getDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
-    ) : GetDefaultEditorType = GetDefaultEditorType(
+    ) : GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
         dispatchers = dispatchers
     )
 

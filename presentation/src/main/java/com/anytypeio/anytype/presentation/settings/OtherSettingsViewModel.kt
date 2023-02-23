@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.ClearFileCache
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class OtherSettingsViewModel(
-    private val getDefaultEditorType: GetDefaultEditorType,
+    private val getDefaultPageType: GetDefaultPageType,
     private val setDefaultEditorType: SetDefaultEditorType,
     private val clearFileCache: ClearFileCache,
     private val appActionManager: AppActionManager,
@@ -37,7 +37,7 @@ class OtherSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultEditorType.execute(Unit).fold(
+            getDefaultPageType.execute(Unit).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },
@@ -128,7 +128,7 @@ class OtherSettingsViewModel(
     }
 
     class Factory(
-        private val getDefaultEditorType: GetDefaultEditorType,
+        private val getDefaultPageType: GetDefaultPageType,
         private val setDefaultEditorType: SetDefaultEditorType,
         private val clearFileCache: ClearFileCache,
         private val appActionManager: AppActionManager,
@@ -138,7 +138,7 @@ class OtherSettingsViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = OtherSettingsViewModel(
-            getDefaultEditorType = getDefaultEditorType,
+            getDefaultPageType = getDefaultPageType,
             setDefaultEditorType = setDefaultEditorType,
             clearFileCache = clearFileCache,
             appActionManager = appActionManager,

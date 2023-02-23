@@ -20,7 +20,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -43,7 +43,7 @@ class SplashViewModel(
     private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount,
     private val getLastOpenedObject: GetLastOpenedObject,
-    private val getDefaultEditorType: GetDefaultEditorType,
+    private val getDefaultPageType: GetDefaultPageType,
     private val setDefaultEditorType: SetDefaultEditorType,
     private val createObject: CreateObject,
     private val appActionManager: AppActionManager,
@@ -59,7 +59,7 @@ class SplashViewModel(
 
     private fun proceedWithUserSettings() {
         viewModelScope.launch {
-            getDefaultEditorType.execute(Unit).fold(
+            getDefaultPageType.execute(Unit).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting default page type")
                     checkAuthorizationStatus()

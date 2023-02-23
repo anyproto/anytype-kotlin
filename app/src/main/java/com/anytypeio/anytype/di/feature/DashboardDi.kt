@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjectsOld
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -205,10 +205,16 @@ object HomeDashboardModule {
     @PerScreen
     @Provides
     fun provideGetDefaultPageType(
-        repo: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        userSettingsRepository: UserSettingsRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers
-    ): GetDefaultEditorType =
-        GetDefaultEditorType(repo, dispatchers)
+    ): GetDefaultPageType = GetDefaultPageType(
+        userSettingsRepository,
+        blockRepository,
+        workspaceManager,
+        dispatchers
+    )
 
     @JvmStatic
     @Provides
@@ -260,7 +266,7 @@ object HomeDashboardModule {
     fun getTemplates(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ) : GetTemplates = GetTemplates(
+    ): GetTemplates = GetTemplates(
         repo = repo,
         dispatchers = dispatchers
     )
@@ -271,12 +277,12 @@ object HomeDashboardModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers
     )
 

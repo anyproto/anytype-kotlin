@@ -27,7 +27,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -48,6 +48,7 @@ import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -183,12 +184,12 @@ object ObjectSetModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers
     )
 
@@ -203,10 +204,16 @@ object ObjectSetModule {
     @PerScreen
     @Provides
     fun provideGetDefaultPageType(
-        repo: UserSettingsRepository,
+        userSettingsRepository: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers
-    ): GetDefaultEditorType =
-        GetDefaultEditorType(repo, dispatchers)
+    ): GetDefaultPageType = GetDefaultPageType(
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @Provides
@@ -229,11 +236,11 @@ object ObjectSetModule {
     fun provideCreateDataViewRecordUseCase(
         repo: BlockRepository,
         storeOfRelations: StoreOfRelations,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         getTemplates: GetTemplates
     ): CreateDataViewObject = CreateDataViewObject(
         repo = repo,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         getTemplates = getTemplates,
         storeOfRelations = storeOfRelations
     )

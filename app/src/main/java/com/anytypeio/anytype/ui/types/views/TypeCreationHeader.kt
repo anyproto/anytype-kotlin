@@ -52,7 +52,12 @@ fun TypeCreationHeader(
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = stringResource(id = R.string.type_creation_new_type),
-            style = typography.h3,
+            style = TextStyle(
+                fontFamily = com.anytypeio.anytype.ui.library.styles.fonts,
+                color = colorResource(id = R.color.text_primary),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 17.sp,
+            ),
         )
         Box(modifier = Modifier.weight(1f)) {
             Text(

@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -25,7 +25,7 @@ class SplashViewModelFactory(
     private val launchWallet: LaunchWallet,
     private val analytics: Analytics,
     private val getLastOpenedObject: GetLastOpenedObject,
-    private val getDefaultEditorType: GetDefaultEditorType,
+    private val getDefaultPageType: GetDefaultPageType,
     private val setDefaultEditorType: SetDefaultEditorType,
     private val appActionManager: AppActionManager,
     private val createObject: CreateObject,
@@ -41,7 +41,7 @@ class SplashViewModelFactory(
             launchWallet = launchWallet,
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
-            getDefaultEditorType = getDefaultEditorType,
+            getDefaultPageType = getDefaultPageType,
             setDefaultEditorType = setDefaultEditorType,
             appActionManager = appActionManager,
             createObject = createObject,

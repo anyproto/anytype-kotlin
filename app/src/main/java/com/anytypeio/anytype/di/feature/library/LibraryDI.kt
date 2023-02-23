@@ -7,7 +7,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -124,23 +124,29 @@ object LibraryModule {
     fun getCreateObject(
         repo: BlockRepository,
         getTemplates: GetTemplates,
-        getDefaultEditorType: GetDefaultEditorType,
+        getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
-        getDefaultEditorType = getDefaultEditorType,
+        getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers
     )
 
     @JvmStatic
-    @PerScreen
     @Provides
+    @PerScreen
     fun provideGetDefaultPageType(
-        repo: UserSettingsRepository,
+        userSettingsRepository: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers
-    ): GetDefaultEditorType =
-        GetDefaultEditorType(repo, dispatchers)
+    ): GetDefaultPageType = GetDefaultPageType(
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @Provides
@@ -185,8 +191,6 @@ interface LibraryDependencies : ComponentDependencies {
     fun workspaceManager(): WorkspaceManager
     fun urlBuilder(): UrlBuilder
     fun channel(): SubscriptionEventChannel
-
     fun dispatchers(): AppCoroutineDispatchers
-
     fun userSettingsRepository(): UserSettingsRepository
 }

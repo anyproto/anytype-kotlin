@@ -26,7 +26,7 @@ import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -43,6 +43,7 @@ import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -56,6 +57,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -75,6 +77,8 @@ abstract class TestObjectSetSetup {
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDataViewQuery: SetDataViewQuery
+
+    private val workspaceId: Id = MockDataFactory.randomString()
 
     lateinit var urlBuilder: UrlBuilder
 
@@ -110,7 +114,7 @@ abstract class TestObjectSetSetup {
     lateinit var createObject: CreateObject
 
     private lateinit var getTemplates: GetTemplates
-    private lateinit var getDefaultEditorType: GetDefaultEditorType
+    private lateinit var getDefaultPageType: GetDefaultPageType
 
     private val session = ObjectSetSession()
     private val reducer = ObjectSetReducer()
@@ -118,6 +122,7 @@ abstract class TestObjectSetSetup {
     private val paginator = ObjectSetPaginator()
     private val store: ObjectStore = DefaultObjectStore()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    private val workspaceManager: WorkspaceManager = WorkspaceManager.DefaultWorkspaceManager()
 
     private lateinit var database: ObjectSetDatabase
     private lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
@@ -159,15 +164,20 @@ abstract class TestObjectSetSetup {
         setDataViewQuery = SetDataViewQuery(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
-        getDefaultEditorType = GetDefaultEditorType(
+        runBlocking {
+            workspaceManager.setCurrentWorkspace(workspaceId)
+        }
+        getDefaultPageType = GetDefaultPageType(
             userSettingsRepository = userSettingsRepository,
+            blockRepository = repo,
+            workspaceManager = workspaceManager,
             dispatchers = dispatchers
         )
         createDataViewObject = CreateDataViewObject(
             getTemplates = getTemplates,
             repo = repo,
             storeOfRelations = storeOfRelations,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultPageType = getDefaultPageType
         )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)

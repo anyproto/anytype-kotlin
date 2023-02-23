@@ -58,7 +58,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -303,7 +303,7 @@ open class EditorViewModelTest {
     lateinit var searchObjects: SearchObjects
 
     @Mock
-    lateinit var getDefaultEditorType: GetDefaultEditorType
+    lateinit var getDefaultPageType: GetDefaultPageType
 
     @Mock
     lateinit var findObjectSetForType: FindObjectSetForType
@@ -3924,8 +3924,8 @@ open class EditorViewModelTest {
     }
 
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
-        getDefaultEditorType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultEditorType.Response(
+        getDefaultPageType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
                 type,
                 name
             )
@@ -4023,7 +4023,7 @@ open class EditorViewModelTest {
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             searchObjects = searchObjects,
-            getDefaultEditorType = getDefaultEditorType,
+            getDefaultPageType = getDefaultPageType,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
             copyFileToCache = copyFileToCacheDirectory,

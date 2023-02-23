@@ -59,7 +59,7 @@ import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -206,7 +206,7 @@ open class EditorTestSetup {
     lateinit var clearBlockContent: ClearBlockContent
     lateinit var clearBlockStyle: ClearBlockStyle
 
-    lateinit var getDefaultEditorType: GetDefaultEditorType
+    lateinit var getDefaultPageType: GetDefaultPageType
 
     private lateinit var findObjectSetForType: FindObjectSetForType
     private lateinit var createObjectSet: CreateObjectSet
@@ -304,7 +304,7 @@ open class EditorTestSetup {
         updateFields = UpdateFields(repo)
         setObjectType = SetObjectType(repo)
         createObjectAsMentionOrLink =
-            CreateObjectAsMentionOrLink(repo, getDefaultEditorType, getTemplates, dispatchers)
+            CreateObjectAsMentionOrLink(repo, getDefaultPageType, getTemplates, dispatchers)
         getSearchObjects = SearchObjects(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepository)
@@ -334,7 +334,12 @@ open class EditorTestSetup {
         removeDocCover = RemoveDocCover(repo)
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
-        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository, dispatchers)
+        getDefaultPageType = GetDefaultPageType(
+            userSettingsRepository,
+            repo,
+            workspaceManager,
+            dispatchers
+        )
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
         createBookmarkBlock = CreateBookmarkBlock(repo)
@@ -429,7 +434,7 @@ open class EditorTestSetup {
             detailModificationManager = InternalDetailModificationManager(stores.details),
             updateDetail = updateDetail,
             searchObjects = getSearchObjects,
-            getDefaultEditorType = getDefaultEditorType,
+            getDefaultPageType = getDefaultPageType,
             createObjectSet = createObjectSet,
             findObjectSetForType = findObjectSetForType,
             copyFileToCacheDirectory = copyFileToCacheDirectory,

@@ -65,7 +65,7 @@ import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -257,7 +257,7 @@ class EditorViewModel(
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val searchObjects: SearchObjects,
-    private val getDefaultEditorType: GetDefaultEditorType,
+    private val getDefaultPageType: GetDefaultPageType,
     private val findObjectSetForType: FindObjectSetForType,
     private val createObjectSet: CreateObjectSet,
     private val copyFileToCache: CopyFileToCacheDirectory,
@@ -5579,7 +5579,7 @@ class EditorViewModel(
     fun onAddMentionNewPageClicked(mentionText: String) {
         Timber.d("onAddMentionNewPageClicked, mentionText:[$mentionText]")
         viewModelScope.launch {
-            getDefaultEditorType.execute(Unit).fold(
+            getDefaultPageType.execute(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                     proceedWithCreateNewObject(objectType = null, mentionText = mentionText)
@@ -5877,7 +5877,7 @@ class EditorViewModel(
     }
 
     private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView>) {
-        getDefaultEditorType.execute(Unit).fold(
+        getDefaultPageType.execute(Unit).fold(
             onFailure = {
                 Timber.e(it, "Error while getting default object type")
             },
@@ -5975,7 +5975,7 @@ class EditorViewModel(
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
         Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
         viewModelScope.launch {
-            getDefaultEditorType.execute(Unit).fold(
+            getDefaultPageType.execute(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                 },

@@ -222,7 +222,7 @@ class CollectionViewModel(
             container.subscribe(buildSearchParams()),
             queryFlow(),
             objectTypes(),
-            openObject.asFlow(configstorage.get().home)
+            openObject.asFlow(OpenObject.Params(configstorage.get().home, false))
                 .flatMapLatest { payloads.scan(it) { s, p -> reduce(s, p) } },
         ) { objs, query, types, favorotiesObj ->
             prepareFavorites(favorotiesObj, objs, query, types)

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -72,6 +73,7 @@ fun HomeScreen(
     onCreateNewObjectClicked: () -> Unit,
     onSpaceClicked: () -> Unit
 ) {
+
     Box(modifier = Modifier.fillMaxSize()) {
         WidgetList(
             widgets = widgets,
@@ -129,6 +131,8 @@ fun HomeScreen(
             )
         }
     }
+
+    BackHandler(enabled = mode is InteractionMode.Edit) { onExitEditMode() }
 }
 
 @OptIn(ExperimentalFoundationApi::class)

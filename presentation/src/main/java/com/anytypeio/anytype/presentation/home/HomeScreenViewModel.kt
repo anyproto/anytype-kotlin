@@ -240,7 +240,9 @@ class HomeScreenViewModel(
 
     private fun proceedWithOpeningWidgetObject(widgetObject: Id) {
         viewModelScope.launch {
-            openObject.stream(widgetObject).collect { result ->
+            openObject.stream(
+                OpenObject.Params(widgetObject, false)
+            ).collect { result ->
                 when (result) {
                     is Resultat.Failure -> {
                         objectViewState.value = ObjectViewState.Failure(result.exception)
@@ -475,7 +477,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onChangeWidgetSourceClicked(widget: Id) {
+    private fun onChangeWidgetSourceClicked(widget: Id) {
         val curr = widgets.value.find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {

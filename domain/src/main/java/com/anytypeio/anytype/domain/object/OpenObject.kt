@@ -11,9 +11,17 @@ class OpenObject(
     private val repo: BlockRepository,
     private val auth: AuthRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Id, ObjectView>(dispatchers.io) {
+) : ResultInteractor<OpenObject.Params, ObjectView>(dispatchers.io) {
 
-    override suspend fun doWork(params: Id) = repo.openObject(params).also {
-        auth.saveLastOpenedObjectId(params)
+    override suspend fun doWork(params: Params) = repo.openObject(params.obj).also {
+        if (params.saveAsLastOpened)
+            auth.saveLastOpenedObjectId(params.obj)
+        else
+            auth.clearLastOpenedObject()
     }
+
+    data class Params(
+        val obj: Id,
+        val saveAsLastOpened: Boolean = true
+    )
 }

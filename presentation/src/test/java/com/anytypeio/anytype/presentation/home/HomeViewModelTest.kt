@@ -160,7 +160,7 @@ class HomeViewModelTest {
 
         delay(1)
 
-        verify(openObject, times(1)).stream(WIDGET_OBJECT_ID)
+        verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
     }
 
     @Test
@@ -229,7 +229,7 @@ class HomeViewModelTest {
                 },
                 actual = secondTimeItem
             )
-            verify(openObject, times(1)).stream(WIDGET_OBJECT_ID)
+            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
         }
     }
 
@@ -334,7 +334,7 @@ class HomeViewModelTest {
                 },
                 actual = secondTimeItem
             )
-            verify(openObject, times(1)).stream(WIDGET_OBJECT_ID)
+            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
         }
     }
 
@@ -436,7 +436,7 @@ class HomeViewModelTest {
                 },
                 actual = secondTimeItem
             )
-            verify(openObject, times(1)).stream(WIDGET_OBJECT_ID)
+            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
         }
     }
 
@@ -455,7 +455,7 @@ class HomeViewModelTest {
     private fun stubOpenObject(givenObjectView: ObjectView) {
         openObject.stub {
             on {
-                stream(WIDGET_OBJECT_ID)
+                stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
             } doReturn flowOf(
                 Resultat.Success(
                     value = givenObjectView

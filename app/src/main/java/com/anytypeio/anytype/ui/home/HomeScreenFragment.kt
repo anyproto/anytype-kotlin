@@ -25,11 +25,11 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
+import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
-import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -66,20 +66,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onExitEditMode = vm::onExitEditMode,
                     onRefresh = vm::onRefresh,
                     onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                        when (action) {
-                            DropDownMenuAction.ChangeWidgetSource -> {
-                                vm.onChangeWidgetSourceClicked(widget)
-                            }
-                            DropDownMenuAction.ChangeWidgetType -> {
-                                vm.onChangeWidgetTypeClicked(widget)
-                            }
-                            DropDownMenuAction.EditWidgets -> {
-                                vm.onEditWidgets()
-                            }
-                            DropDownMenuAction.RemoveWidget -> {
-                                vm.onDeleteWidgetClicked(widget)
-                            }
-                        }
+                        vm.onDropDownMenuAction(widget, action)
                     },
                     onWidgetObjectClicked = vm::onWidgetObjectClicked,
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
@@ -87,12 +74,16 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onSearchClicked = {
                         navigation().openPageSearch()
                     },
+                    onLibraryClicked = {
+                        navigation().openLibrary()
+                    },
                     onCreateNewObjectClicked = {
                         vm.onCreateNewObjectClicked()
                     },
                     onSpaceClicked = {
                         navigation().openSettings()
-                    }
+                    },
+                    onBundledWidgetClicked = vm::onBundledWidgetClicked
                 )
             }
         }
@@ -156,6 +147,7 @@ class HomeScreenFragment : BaseComposeFragment() {
         when (destination) {
             is Navigation.OpenObject -> navigation().openDocument(destination.ctx)
             is Navigation.OpenSet -> navigation().openObjectSet(destination.ctx)
+            is Navigation.ExpandWidget -> navigation().launchCollections(destination.subscription)
         }
     }
 

@@ -41,11 +41,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
@@ -59,6 +59,7 @@ fun HomeScreen(
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
     onRefresh: () -> Unit,
@@ -67,6 +68,7 @@ fun HomeScreen(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onExitEditMode: () -> Unit,
     onSearchClicked: () -> Unit,
+    onLibraryClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onSpaceClicked: () -> Unit
 ) {
@@ -76,12 +78,14 @@ fun HomeScreen(
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetObjectClicked = onWidgetObjectClicked,
+            onBundledWidgetHeaderClicked = onBundledWidgetClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onChangeWidgetView = onChangeWidgetView,
             onCreateWidget = onCreateWidget,
             onEditWidgets = onEditWidgets,
-            onRefresh = onRefresh
+            onRefresh = onRefresh,
+            onLibraryClicked = onLibraryClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -134,11 +138,13 @@ private fun WidgetList(
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onBundledWidgetHeaderClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     mode: InteractionMode,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
+    onLibraryClicked: () -> Unit,
     onRefresh: () -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -269,6 +275,7 @@ private fun WidgetList(
                         ListWidgetCard(
                             item = item,
                             onWidgetObjectClicked = onWidgetObjectClicked,
+                            onListWidgetHeaderClicked = onBundledWidgetHeaderClicked,
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
@@ -280,7 +287,8 @@ private fun WidgetList(
                     BinWidgetCard(
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
-                        }
+                        },
+                        onClick = { onBundledWidgetHeaderClicked(item.id) }
                     )
                 }
                 is WidgetView.Action.CreateWidget -> {
@@ -294,6 +302,33 @@ private fun WidgetList(
                             onClick = onCreateWidget,
                             modifier = Modifier.align(Alignment.Center)
                         )
+                    }
+                }
+                is WidgetView.Action.Library -> {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp, bottom = 6.dp)
+                            .height(32.dp)
+                            .animateItemPlacement(
+                                spring(
+                                    stiffness = Spring.StiffnessHigh,
+                                    visibilityThreshold = IntOffset.Zero
+                                )
+                            )
+                    ) {
+                        AnimatedVisibility(
+                            visible = mode is InteractionMode.Default,
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            WidgetActionButton(
+                                label = stringResource(R.string.library),
+                                onClick = onLibraryClicked,
+                                modifier = Modifier
+                            )
+                        }
                     }
                 }
                 is WidgetView.Action.EditWidgets -> {

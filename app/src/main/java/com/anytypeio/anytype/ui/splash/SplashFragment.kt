@@ -24,9 +24,9 @@ import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Created by Konstantin Ivanov
@@ -68,7 +68,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             SplashViewModel.Command.NavigateToDashboard -> {
                 try {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_desktopScreen
+                        R.id.action_splashScreen_to_homeScreen
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")

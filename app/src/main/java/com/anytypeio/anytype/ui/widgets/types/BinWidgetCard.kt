@@ -26,14 +26,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
+import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BinWidgetCard(
-    onDropDownMenuAction: (DropDownMenuAction) -> Unit
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
+    onClick: () -> Unit,
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -50,24 +50,21 @@ fun BinWidgetCard(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .noRippleClickable {
-                isCardMenuExpanded.value = !isCardMenuExpanded.value
-            }
+            .combinedClickable(
+                onClick = {
+                    onClick()
+                },
+                onLongClick = {
+                    isCardMenuExpanded.value = !isCardMenuExpanded.value
+                },
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            )
     ) {
         Box(
             Modifier
                 .padding(vertical = 6.dp)
                 .height(40.dp)
-                .combinedClickable(
-                    onClick = {
-
-                    },
-                    onLongClick = {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_widget_bin),

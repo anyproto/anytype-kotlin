@@ -229,7 +229,7 @@ class HomeViewModelTest {
                 },
                 actual = secondTimeItem
             )
-            verify(openObject, times(1)).invoke(WIDGET_OBJECT_ID)
+            verify(openObject, times(1)).stream(WIDGET_OBJECT_ID)
         }
     }
 
@@ -321,15 +321,6 @@ class HomeViewModelTest {
             assertEquals(
                 expected = buildList {
                     addAll(defaultWidgets)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                },
-                actual = secondTimeItem
-            )
-            val thirdTimeItem = awaitItem()
-            assertEquals(
-                expected = buildList {
-                    addAll(defaultWidgets)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -341,7 +332,7 @@ class HomeViewModelTest {
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = thirdTimeItem
+                actual = secondTimeItem
             )
             verify(openObject, times(1)).stream(WIDGET_OBJECT_ID)
         }
@@ -434,15 +425,6 @@ class HomeViewModelTest {
             assertEquals(
                 expected = buildList {
                     addAll(defaultWidgets)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                },
-                actual = secondTimeItem
-            )
-            val thirdTimeItem = awaitItem()
-            assertEquals(
-                expected = buildList {
-                    addAll(defaultWidgets)
                     add(
                         WidgetView.Link(
                             id = widgetBlock.id,
@@ -452,7 +434,7 @@ class HomeViewModelTest {
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = thirdTimeItem
+                actual = secondTimeItem
             )
             verify(openObject, times(1)).stream(WIDGET_OBJECT_ID)
         }

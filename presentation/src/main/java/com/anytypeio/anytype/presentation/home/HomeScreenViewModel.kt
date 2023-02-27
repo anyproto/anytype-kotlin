@@ -32,6 +32,7 @@ import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
@@ -42,6 +43,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -395,6 +397,10 @@ class HomeScreenViewModel(
         mode.value = InteractionMode.Edit
     }
 
+    fun onWidgetMenuAction() {
+
+    }
+
     fun onExitEditMode() {
         mode.value = InteractionMode.Default
     }
@@ -413,6 +419,40 @@ class HomeScreenViewModel(
             proceedWithOpeningObject(obj)
         } else {
             sendToast("Open bin to restore your object")
+        }
+    }
+
+    fun onDropDownMenuAction(widget: Id, action: DropDownMenuAction) {
+        when (action) {
+            DropDownMenuAction.ChangeWidgetSource -> {
+                onChangeWidgetSourceClicked(widget)
+            }
+            DropDownMenuAction.ChangeWidgetType -> {
+                onChangeWidgetTypeClicked(widget)
+            }
+            DropDownMenuAction.EditWidgets -> {
+                onEditWidgets()
+            }
+            DropDownMenuAction.RemoveWidget -> {
+                onDeleteWidgetClicked(widget)
+            }
+        }
+    }
+
+    fun onBundledWidgetClicked(widget: Id) {
+        when(widget) {
+            Subscriptions.SUBSCRIPTION_SETS -> {
+                navigate(Navigation.ExpandWidget(Subscription.Sets))
+            }
+            Subscriptions.SUBSCRIPTION_RECENT -> {
+                navigate(Navigation.ExpandWidget(Subscription.Recent))
+            }
+            Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+                navigate(Navigation.ExpandWidget(Subscription.Bin))
+            }
+            Subscriptions.SUBSCRIPTION_FAVORITES -> {
+                navigate(Navigation.ExpandWidget(Subscription.Favorites))
+            }
         }
     }
 
@@ -523,6 +563,7 @@ class HomeScreenViewModel(
     sealed class Navigation {
         data class OpenObject(val ctx: Id) : Navigation()
         data class OpenSet(val ctx: Id) : Navigation()
+        data class ExpandWidget(val subscription: Subscription) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -566,6 +607,7 @@ class HomeScreenViewModel(
 
     companion object {
         val actions = listOf(
+            WidgetView.Action.Library,
             WidgetView.Action.EditWidgets
         )
     }

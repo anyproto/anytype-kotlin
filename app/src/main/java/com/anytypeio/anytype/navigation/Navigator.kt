@@ -29,7 +29,7 @@ class Navigator : AppNavigation {
     }
 
     override fun startDesktopFromSplash() {
-        navController?.navigate(R.id.action_splashScreen_to_desktopScreen)
+        navController?.navigate(R.id.action_splashScreen_to_homeScreen)
     }
 
     override fun startDesktopFromLogin() {
@@ -97,7 +97,7 @@ class Navigator : AppNavigation {
             R.id.objectNavigation,
             bundleOf(EditorFragment.ID_KEY to id),
             navOptions {
-                popUpTo = R.id.desktopScreen
+                popUpTo = R.id.homeScreen
                 launchSingleTop = true
             }
         )
@@ -115,7 +115,7 @@ class Navigator : AppNavigation {
             R.id.dataViewNavigation,
             bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
             navOptions {
-                popUpTo = R.id.desktopScreen
+                popUpTo = R.id.homeScreen
                 launchSingleTop = true
             }
         )
@@ -177,14 +177,14 @@ class Navigator : AppNavigation {
     override fun exit() {
         val popped = navController?.popBackStack()
         if (popped == false) {
-            navController?.navigate(R.id.desktopScreen)
+            navController?.navigate(R.id.homeScreen)
         }
     }
 
     override fun exitToDesktop() {
-        val popped = navController?.popBackStack(R.id.desktopScreen, false)
+        val popped = navController?.popBackStack(R.id.homeScreen, false)
         if (popped == false) {
-            navController?.navigate(R.id.desktopScreen)
+            navController?.navigate(R.id.homeScreen)
         }
     }
 
@@ -203,10 +203,10 @@ class Navigator : AppNavigation {
 
     override fun exitToDesktopAndOpenPage(pageId: String) {
         navController?.navigate(
-            R.id.desktopScreen,
+            R.id.homeScreen,
             bundleOf(EditorFragment.ID_KEY to pageId),
             navOptions {
-                popUpTo = R.id.desktopScreen
+                popUpTo = R.id.homeScreen
                 launchSingleTop = true
             }
         )

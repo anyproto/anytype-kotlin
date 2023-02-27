@@ -75,5 +75,14 @@ sealed class WidgetView {
         object CreateWidget: Action()
         // Will be deleted. For testing only.
         object Refresh: Action()
+        // Will be deleted. For testing only.
+        object Library : Action()
     }
+}
+
+sealed class DropDownMenuAction {
+    object ChangeWidgetType : DropDownMenuAction()
+    object ChangeWidgetSource : DropDownMenuAction()
+    object RemoveWidget : DropDownMenuAction()
+    object EditWidgets : DropDownMenuAction()
 }

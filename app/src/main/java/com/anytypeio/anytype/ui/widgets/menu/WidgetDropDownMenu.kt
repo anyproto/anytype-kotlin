@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 
 @Composable
 fun WidgetMenu(
@@ -141,11 +142,4 @@ fun WidgetActionButton(
             )
         )
     }
-}
-
-sealed class DropDownMenuAction {
-    object ChangeWidgetType : DropDownMenuAction()
-    object ChangeWidgetSource : DropDownMenuAction()
-    object RemoveWidget : DropDownMenuAction()
-    object EditWidgets : DropDownMenuAction()
 }

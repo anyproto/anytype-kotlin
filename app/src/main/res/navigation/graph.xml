@@ -249,8 +249,8 @@
         android:label="SplashFragment"
         tools:layout="@layout/fragment_splash">
         <action
-            android:id="@+id/action_splashScreen_to_desktopScreen"
-            app:destination="@id/desktopScreen"
+            android:id="@+id/action_splashScreen_to_homeScreen"
+            app:destination="@id/homeScreen"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -413,7 +413,7 @@
         </fragment>
         <action
             android:id="@+id/action_global_desktopScreen"
-            app:destination="@+id/desktopScreen"
+            app:destination="@+id/homeScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"

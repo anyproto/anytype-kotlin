@@ -9,9 +9,9 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
  * @see SetObjectIsArchived
  */
 @Deprecated(
-    "Use DeleteObjectsOld instead",
+    "Use DeleteObjects instead",
     replaceWith = ReplaceWith(
-        "DeleteObjectsOld"
+        "DeleteObjects"
     )
 )
 class DeleteObjectsOld(

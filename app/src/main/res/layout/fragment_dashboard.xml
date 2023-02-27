@@ -22,18 +22,63 @@
         app:layout_constraintTop_toTopOf="@+id/ivSettings" />
 
     <TextView
-        android:id="@+id/formerDashboardWidgets"
+        android:id="@+id/formerDashboardWidgetsBin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:visibility="visible"
-        android:text="[HomeWidgets]"
+        android:text="[Bin]"
         android:stateListAnimator="@animator/scale_shrink"
         android:textSize="10sp"
         android:textColor="@color/white"
         android:fontFamily="monospace"
         app:layout_constraintBottom_toBottomOf="@+id/ivSettings"
         app:layout_constraintEnd_toStartOf="@+id/widgets"
+        app:layout_constraintTop_toTopOf="@+id/ivSettings" />
+
+    <TextView
+        android:id="@+id/formerDashboardWidgetsSets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:visibility="visible"
+        android:text="[Set]"
+        android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="10sp"
+        android:textColor="@color/white"
+        android:fontFamily="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/ivSettings"
+        app:layout_constraintEnd_toStartOf="@+id/formerDashboardWidgetsBin"
+        app:layout_constraintTop_toTopOf="@+id/ivSettings" />
+
+    <TextView
+        android:id="@+id/formerDashboardWidgetsFavorites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:visibility="visible"
+        android:text="[Fav]"
+        android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="10sp"
+        android:textColor="@color/white"
+        android:fontFamily="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/ivSettings"
+        app:layout_constraintEnd_toStartOf="@+id/formerDashboardWidgetsSets"
+        app:layout_constraintTop_toTopOf="@+id/ivSettings" />
+
+    <TextView
+        android:id="@+id/formerDashboardWidgetsRecent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:visibility="visible"
+        android:text="[Rec]"
+        android:stateListAnimator="@animator/scale_shrink"
+        android:textSize="10sp"
+        android:textColor="@color/white"
+        android:fontFamily="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/ivSettings"
+        app:layout_constraintEnd_toStartOf="@+id/formerDashboardWidgetsFavorites"
         app:layout_constraintTop_toTopOf="@+id/ivSettings" />
 
     <TextView

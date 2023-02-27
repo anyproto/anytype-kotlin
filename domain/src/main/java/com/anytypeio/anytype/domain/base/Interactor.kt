@@ -51,7 +51,10 @@ abstract class Interactor<in P>(
     }
 }
 
-@Deprecated("Use ResultatInteractor instead")
+@Deprecated(
+    "Use ResultInteractor instead",
+    replaceWith = ReplaceWith("ResultInteractor<P, R>")
+)
 abstract class ResultatInteractor<in P, out R> {
     operator fun invoke(params: P): Flow<Resultat<R>> {
         return flow {

@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -66,7 +66,7 @@ object HomeDashboardModule {
         openDashboard: OpenDashboard,
         closeDashboard: CloseDashboard,
         getConfig: GetConfig,
-        move: Move,
+        move: MoveOld,
         interceptEvents: InterceptEvents,
         eventConverter: HomeDashboardEventConverter,
         getDebugSettings: GetDebugSettings,
@@ -156,7 +156,7 @@ object HomeDashboardModule {
     @PerScreen
     fun provideMoveUseCase(
         repo: BlockRepository
-    ): Move = Move(
+    ): MoveOld = MoveOld(
         repo = repo
     )
 

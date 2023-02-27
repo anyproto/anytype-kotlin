@@ -10,12 +10,12 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.presentation.common.Action
@@ -219,6 +219,7 @@ class ObjectMenuViewModel(
                 isDismissed.value = true
             }
             ObjectAction.MOVE_TO,
+            ObjectAction.MOVE_TO_BIN,
             ObjectAction.USE_AS_TEMPLATE -> {
                 throw IllegalStateException("$action is unsupported")
             }

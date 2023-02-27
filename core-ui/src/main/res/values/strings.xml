@@ -216,6 +216,7 @@
     <string name="action_bar_turn_into">Turn into</string>
     <string name="action_bar_turn_into_page">Turn into Page</string>
     <string name="action_bar_delete">Delete</string>
+    <string name="action_bar_to_bin">Move to Bin</string>
     <string name="action_bar_duplicate">Duplicate</string>
     <string name="action_bar_move_to">Move to</string>
     <string name="action_bar_style">Style</string>

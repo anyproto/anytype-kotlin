@@ -8,6 +8,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.settings.EditorSettings
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
+import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 
 class Navigator : AppNavigation {
 
@@ -98,6 +100,13 @@ class Navigator : AppNavigation {
                 popUpTo = R.id.desktopScreen
                 launchSingleTop = true
             }
+        )
+    }
+
+    override fun launchCollections(subscription: Subscription) {
+        navController?.navigate(
+            R.id.homeScreenWidgets,
+            bundleOf(CollectionFragment.SUBSCRIPTION_KEY to subscription.id)
         )
     }
 

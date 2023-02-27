@@ -32,7 +32,9 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel.TAB
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -328,11 +330,18 @@ class DashboardFragment :
                 )
             }
 
-            binding.formerDashboardWidgets.visible()
-            binding.formerDashboardWidgets.setOnClickListener {
-                findNavController().navigate(
-                    R.id.homeScreenWidgets
-                )
+            binding.formerDashboardWidgetsRecent.visible()
+            binding.formerDashboardWidgetsRecent.setOnClickListener {
+                navigation().launchCollections(Subscription.Recent)
+            }
+            binding.formerDashboardWidgetsFavorites.setOnClickListener {
+                navigation().launchCollections(Subscription.Favorites)
+            }
+            binding.formerDashboardWidgetsSets.setOnClickListener {
+                navigation().launchCollections(Subscription.Sets)
+            }
+            binding.formerDashboardWidgetsBin.setOnClickListener {
+                navigation().launchCollections(Subscription.Bin)
             }
         }
     }

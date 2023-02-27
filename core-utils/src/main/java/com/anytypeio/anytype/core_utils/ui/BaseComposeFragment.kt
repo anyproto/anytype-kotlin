@@ -5,10 +5,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_utils.BuildConfig
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 abstract class BaseComposeFragment : Fragment() {
 
@@ -20,10 +27,7 @@ abstract class BaseComposeFragment : Fragment() {
     }
 
     override fun onStop() {
-        jobs.apply {
-            forEach { it.cancel() }
-            clear()
-        }
+        jobs.cancel()
         super.onStop()
     }
 
@@ -49,6 +53,15 @@ abstract class BaseComposeFragment : Fragment() {
         }
     }
 
+    protected fun DialogFragment.showChildFragment(tag: String? = null) {
+        show(this@BaseComposeFragment.childFragmentManager, tag)
+    }
+
+
     abstract fun injectDependencies()
     abstract fun releaseDependencies()
+}
+
+fun <T> BaseComposeFragment.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
+    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
 }

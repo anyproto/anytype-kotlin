@@ -238,7 +238,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithOpeningWidgetObject(widgetObject: Id) {
         viewModelScope.launch {
-            openObject(widgetObject).flowOn(appCoroutineDispatchers.io).collect { result ->
+            openObject.stream(widgetObject).collect { result ->
                 when (result) {
                     is Resultat.Failure -> {
                         objectViewState.value = ObjectViewState.Failure(result.exception)

@@ -4,29 +4,33 @@ import com.anytypeio.anytype.core_models.Command.Move
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.ResultInteractor
-import com.anytypeio.anytype.domain.block.interactor.Move.Params
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.block.interactor.MoveOld.Params
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for moving a group of blocks (cross-document, inside one document, one block after another, etc).
  * @see Params for details.
  */
-class Move(
-    private val repo: BlockRepository,
-    appCoroutineDispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Params, Payload>(appCoroutineDispatchers.io) {
-
-    override suspend fun doWork(params: Params) = repo.move(
-        command = Move(
-            ctx = params.context,
-            targetId = params.targetId,
-            targetContextId = params.targetContext,
-            position = params.position,
-            blockIds = params.blockIds
-        )
+@Deprecated(
+    "Use Move instead",
+    replaceWith = ReplaceWith(
+        "Move"
     )
+)
+class MoveOld(private val repo: BlockRepository) : BaseUseCase<Payload, Params>() {
+
+    override suspend fun run(params: Params) = safe {
+        repo.move(
+            command = Move(
+                ctx = params.context,
+                targetId = params.targetId,
+                targetContextId = params.targetContext,
+                position = params.position,
+                blockIds = params.blockIds
+            )
+        )
+    }
 
     /**
      * Params for moving a group of blocks.

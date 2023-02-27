@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.config.Gateway
@@ -82,7 +82,7 @@ open class DashboardTestSetup {
     lateinit var searchObjects: SearchObjects
 
     @Mock
-    lateinit var move: Move
+    lateinit var move: MoveOld
 
     @Mock
     lateinit var gateway: Gateway

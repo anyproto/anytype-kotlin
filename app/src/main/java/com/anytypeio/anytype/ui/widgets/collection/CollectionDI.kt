@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -22,8 +23,6 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.domain.widgets.CreateWidget
-import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -71,20 +70,10 @@ object CollectionModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun createWidget(
-        repo: BlockRepository
-    ): CreateWidget = CreateWidget(
-        repo = repo,
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun deleteWidget(
+    fun provideMoveUseCase(
         repo: BlockRepository,
-    ): DeleteWidget = DeleteWidget(
-        repo = repo
-    )
+        appCoroutineDispatchers: AppCoroutineDispatchers
+    ): Move = Move(repo, appCoroutineDispatchers)
 
     @JvmStatic
     @Provides

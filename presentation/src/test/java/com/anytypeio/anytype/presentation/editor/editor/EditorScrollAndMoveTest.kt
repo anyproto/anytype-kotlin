@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -17,6 +17,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -26,7 +27,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
-import kotlin.test.assertEquals
 
 
 class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
@@ -439,7 +439,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         verifyBlocking(move, times(1)) {
             invoke(
-                params = Move.Params(
+                params = MoveOld.Params(
                     context = root,
                     targetContext = root,
                     targetId = b.id,
@@ -510,7 +510,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         verifyBlocking(move, times(1)) {
             invoke(
-                params = Move.Params(
+                params = MoveOld.Params(
                     context = root,
                     targetContext = root,
                     targetId = b.id,
@@ -572,7 +572,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         verifyBlocking(move, times(1)) {
             invoke(
-                params = Move.Params(
+                params = MoveOld.Params(
                     context = root,
                     targetContext = b.content<Block.Content.Link>().target,
                     targetId = b.id,
@@ -881,7 +881,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         verifyBlocking(move, times(1)) {
             invoke(
-                params = Move.Params(
+                params = MoveOld.Params(
                     context = root,
                     targetContext = root,
                     targetId = a.id,

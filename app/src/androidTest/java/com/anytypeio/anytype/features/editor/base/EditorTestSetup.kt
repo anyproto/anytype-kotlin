@@ -15,8 +15,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -27,7 +25,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
@@ -61,14 +59,16 @@ import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
@@ -133,7 +133,7 @@ open class EditorTestSetup {
     lateinit var uploadBlock: UploadBlock
     lateinit var splitBlock: SplitBlock
     lateinit var updateBackgroundColor: UpdateBackgroundColor
-    lateinit var move: Move
+    lateinit var move: MoveOld
     lateinit var setRelationKey: SetRelationKey
     lateinit var updateDetail: UpdateDetail
 
@@ -324,7 +324,7 @@ open class EditorTestSetup {
             clipboard = clipboard,
             matcher = uriMatcher
         )
-        move = Move(repo)
+        move = MoveOld(repo)
         getObjectTypes = GetObjectTypes(repo, dispatchers)
 
         updateBackgroundColor = UpdateBackgroundColor(repo)

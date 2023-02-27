@@ -30,7 +30,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
@@ -270,7 +270,7 @@ open class EditorViewModelTest {
     lateinit var updateTitle: UpdateTitle
 
     @Mock
-    lateinit var move: Move
+    lateinit var move: MoveOld
 
     @Mock
     lateinit var turnIntoDocument: TurnIntoDocument

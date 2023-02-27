@@ -181,9 +181,11 @@ dependencies {
     implementation libs.composeMaterial
     implementation libs.composeToolingPreview
     implementation libs.composeAccompanistPager
+    implementation libs.composeAccompanistThemeAdapter
     implementation libs.composeAccompanistPagerIndicators
     implementation libs.preference
     implementation libs.activityCompose
+    implementation libs.composeReorderable
     debugImplementation libs.composeTooling
 
     implementation libs.room

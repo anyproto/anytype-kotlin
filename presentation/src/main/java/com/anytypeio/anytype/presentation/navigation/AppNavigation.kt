@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.settings.EditorSettings
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 
 interface AppNavigation {
 
@@ -23,6 +24,7 @@ interface AppNavigation {
     fun openDocument(id: String, editorSettings: EditorSettings? = null)
 
     fun launchDocument(id: String)
+    fun launchCollections(subscription: Subscription)
     fun launchObjectFromSplash(id: Id)
     fun launchObjectSetFromSplash(id: Id)
     fun launchObjectSet(id: Id)

@@ -28,7 +28,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
@@ -78,7 +78,7 @@ class HomeDashboardViewModel(
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
     private val getConfig: GetConfig,
-    private val move: Move,
+    private val move: MoveOld,
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
@@ -191,7 +191,7 @@ class HomeDashboardViewModel(
             dropChanges
                 .withLatestFrom(movementChanges) { a, b -> Pair(a, b) }
                 .mapLatest { (subject, movement) ->
-                    Move.Params(
+                    MoveOld.Params(
                         context = context,
                         targetContext = context,
                         position = movement.direction,

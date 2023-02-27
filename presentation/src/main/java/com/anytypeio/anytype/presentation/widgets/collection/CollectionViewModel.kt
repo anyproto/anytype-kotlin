@@ -3,19 +3,35 @@ package com.anytypeio.anytype.presentation.widgets.collection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -24,10 +40,13 @@ import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,8 +54,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -52,7 +75,28 @@ class CollectionViewModel(
     private val setObjectListIsFavorite: SetObjectListIsFavorite,
     private val deleteObjects: DeleteObjects,
     private val resourceProvider: CollectionResourceProvider,
-) : ViewModel() {
+    private val openObject: OpenObject,
+    private val configstorage: ConfigStorage,
+    interceptEvents: InterceptEvents,
+    private val objectPayloadDispatcher: Dispatcher<Payload>,
+    private val move: Move,
+    private val analytics: Analytics,
+) : ViewModel(), Reducer<ObjectView, Payload> {
+
+    val payloads: Flow<Payload>
+
+    init {
+        val externalChannelEvents =
+            interceptEvents.build(InterceptEvents.Params(configstorage.get().home)).map {
+                Payload(
+                    context = configstorage.get().home,
+                    events = it
+                )
+            }
+
+        val internalChannelEvents = objectPayloadDispatcher.flow()
+        payloads = merge(externalChannelEvents, internalChannelEvents)
+    }
 
     val commands = MutableSharedFlow<Command>()
 
@@ -60,11 +104,13 @@ class CollectionViewModel(
     private val queryFlow: MutableStateFlow<String> = MutableStateFlow("")
     private val views = MutableStateFlow<Resultat<List<CollectionView>>>(Resultat.loading())
     private val interactionMode = MutableStateFlow<InteractionMode>(InteractionMode.View)
+    private var operationInProgress = MutableStateFlow(false)
+
     private var actionMode: ActionMode = ActionMode.Edit
     private var subscription: Subscription = Subscription.None
 
     val uiState: StateFlow<Resultat<CollectionUiState>> =
-        interactionMode.combine(views) { mode, views ->
+        combine(interactionMode, views, operationInProgress) { mode, views, operationInProgress ->
             Resultat.success(
                 CollectionUiState(
                     views,
@@ -74,7 +120,8 @@ class CollectionViewModel(
                     resourceProvider.actionModeName(actionMode),
                     actionObjectFilter.filter(subscription, views.getOrDefault(emptyList())),
                     subscription == Subscription.Favorites && mode == InteractionMode.Edit,
-                    subscription != Subscription.Sets
+                    subscription != Subscription.Sets,
+                    operationInProgress
                 )
             )
         }.stateIn(
@@ -83,6 +130,16 @@ class CollectionViewModel(
             initialValue = Resultat.loading()
         )
 
+    private fun updateViewsExternally(update: List<CollectionView>) {
+        val old = buildMap {
+            currentViews().forEach { put(it.obj.id, it) }
+        }
+        views.value = Resultat.success(update.map {
+            it.copy(
+                isSelected = old[it.obj.id]?.isSelected ?: false
+            )
+        })
+    }
 
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
@@ -131,24 +188,64 @@ class CollectionViewModel(
         )
     }
 
-    @OptIn(FlowPreview::class)
     private fun subscribeObjects() {
         launch {
-            combine(
-                container.subscribe(buildSearchParams()),
-                queryFlow(),
-                objectTypes()
-            ) { objs, query, types ->
-                objs.filter { obj -> obj.getProperName().lowercase().contains(query.lowercase()) }
-                    .toViews(urlBuilder, types).map { CollectionView(it) }
+            val flow = if (subscription == Subscription.Favorites) {
+                favoritesSubsciptionFlow()
+            } else {
+                subscriptionFlow()
             }
-                .flowOn(dispatchers.io)
-                .collect {
-                    views.value = Resultat.success(it)
-                }
+
+            flow.collect {
+                updateViewsExternally(it)
+            }
         }
     }
 
+    @OptIn(FlowPreview::class)
+    private suspend fun subscriptionFlow() =
+        combine(
+            container.subscribe(buildSearchParams()),
+            queryFlow(),
+            objectTypes()
+        ) { objs, query, types ->
+            objs.filter { obj ->
+                obj.getProperName().lowercase().contains(query.lowercase())
+            }
+                .toViews(urlBuilder, types).map { CollectionView(it) }
+        }
+            .flowOn(dispatchers.io)
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    private suspend fun favoritesSubsciptionFlow() =
+        combine(
+            container.subscribe(buildSearchParams()),
+            queryFlow(),
+            objectTypes(),
+            openObject.asFlow(configstorage.get().home)
+                .flatMapLatest { payloads.scan(it) { s, p -> reduce(s, p) } },
+        ) { objs, query, types, favorotiesObj ->
+            prepareFavorites(favorotiesObj, objs, query, types)
+        }
+            .flowOn(dispatchers.io)
+
+    private fun prepareFavorites(
+        favorotiesObj: ObjectView,
+        objs: List<ObjectWrapper.Basic>,
+        query: String,
+        types: List<ObjectWrapper.Type>
+    ): List<CollectionView> {
+        val favs = favorotiesObj.blocks.parseFavorites(
+            root = favorotiesObj.root,
+            details = favorotiesObj.details
+        )
+
+        return objs.toOrder(favs).filter { obj ->
+            obj.getProperName().lowercase().contains(query.lowercase())
+        }
+            .toViews(urlBuilder, types)
+            .map { CollectionView(it, favs[it.id]?.blockId ?: "") }
+    }
 
     fun onSearchTextChanged(search: String) {
         queryFlow.value = search
@@ -239,17 +336,59 @@ class CollectionViewModel(
         }
     }
 
+    fun onMove(currentViews: List<CollectionView>, from: Int, to: Int) {
+        if (from == to) return
+        Timber.d("## from:[$from], to:[$to]")
+        launch {
+
+            val direction = if (from < to) Position.BOTTOM else Position.TOP
+            val subject = currentViews[to].blockId
+            val target =
+                if (direction == Position.TOP) currentViews[to.inc()].blockId else currentViews[to.dec()].blockId
+
+            val param = Move.Params(
+                context = configstorage.get().home,
+                targetContext = configstorage.get().home,
+                position = direction,
+                blockIds = listOf(subject),
+                targetId = target
+            )
+
+            move.stream(param).collect {
+                it.fold(
+                    onSuccess = {
+                        sendEvent(
+                            analytics = analytics,
+                            eventName = EventsDictionary.reorderObjects,
+                            props = Props(
+                                mapOf(
+                                    EventsPropertiesKey.route to EventsDictionary.Routes.home
+                                )
+                            )
+                        )
+                        Timber.d("successful DND for: $param")
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while DND for: $param")
+                    }
+                )
+            }
+        }
+    }
+
     private fun onUnselectAll() {
         actionMode = ActionMode.SelectAll
         unselectViews()
     }
 
     private fun onDone() {
-        unselectViews()
-        if (subscription != Subscription.Bin) {
+        if (subscription == Subscription.Bin) {
+            actionMode = ActionMode.SelectAll
+        } else {
             actionMode = ActionMode.Edit
             interactionMode.value = InteractionMode.View
         }
+        unselectViews()
     }
 
     private fun onStartEditMode() {
@@ -279,44 +418,36 @@ class CollectionViewModel(
     }
 
     fun onActionWidgetClicked(action: ObjectAction) {
-        val selected = currentViews().filter { it.isSelected }
+        val selected = selectedViews()
         proceed(action, selected)
     }
 
     fun proceed(action: ObjectAction, views: List<CollectionView>) {
-        val objIds = views.map { it.obj.id }
+        val objIds = views.toObjIds()
         when (action) {
             ObjectAction.ADD_TO_FAVOURITE -> addToFavorite(objIds)
             ObjectAction.REMOVE_FROM_FAVOURITE -> removeFromFavorite(objIds)
             ObjectAction.DELETE -> deleteFromBin(objIds)
-            ObjectAction.RESTORE -> restoreFromBin(objIds)
+            ObjectAction.MOVE_TO_BIN -> changeObjectListBinStatus(objIds, true)
+            ObjectAction.RESTORE -> changeObjectListBinStatus(objIds, false)
             else -> {
                 Timber.e("Unexpected action: $action")
             }
         }
     }
 
-    private fun restoreFromBin(ids: List<Id>) {
+    private fun List<CollectionView>.toObjIds() = this.map { it.obj.id }
+
+    private fun changeObjectListBinStatus(ids: List<Id>, isArchived: Boolean) {
         launch {
-            setObjectListIsArchived.stream(SetObjectListIsArchived.Params(ids, false))
-                .collect {
-                    it.fold(
-                        onSuccess = { Timber.d("Restored") },
-                        onFailure = { Timber.e(it) }
-                    )
-                }
+            setObjectListIsArchived.stream(SetObjectListIsArchived.Params(ids, isArchived))
+                .collect { it.progressiveFold() }
         }
     }
 
     private fun deleteFromBin(ids: List<Id>) {
         launch {
-            deleteObjects.stream(DeleteObjects.Params(ids))
-                .collect {
-                    it.fold(
-                        onSuccess = { Timber.d("Restored") },
-                        onFailure = { Timber.e(it) }
-                    )
-                }
+            commands.emit(Command.ConfirmRemoveFromBin(ids.size))
         }
     }
 
@@ -330,13 +461,8 @@ class CollectionViewModel(
 
     private fun changeFavoriteState(views: List<Id>, isFavorite: Boolean) {
         launch {
-            setObjectListIsFavorite.stream(SetObjectListIsFavorite.Params(views, false))
-                .collect {
-                    it.fold(
-                        onSuccess = { Timber.d("Favorite state changed $isFavorite") },
-                        onFailure = { Timber.e(it) }
-                    )
-                }
+            setObjectListIsFavorite.stream(SetObjectListIsFavorite.Params(views, isFavorite))
+                .collect { it.progressiveFold() }
         }
     }
 
@@ -346,6 +472,73 @@ class CollectionViewModel(
         } else {
             if (interactionMode.value == InteractionMode.Edit) onDone()
         }
+    }
+
+    fun onDeletionAccepted() {
+
+        val selected = selectedViews().toObjIds()
+
+        launch {
+            deleteObjects.stream(DeleteObjects.Params(selected))
+                .collect { it.progressiveFold() }
+        }
+    }
+
+    private inline fun <T> Resultat<T>.progressiveFold(
+        onSuccess: (value: T) -> Unit = {},
+        onFailure: (exception: Throwable) -> Unit = {},
+        onLoading: () -> Unit = {},
+    ) {
+        return when (this) {
+            is Resultat.Failure -> {
+                operationInProgress.value = false
+                Timber.d(exception)
+                onFailure(exception)
+            }
+            is Resultat.Loading -> {
+                operationInProgress.value = true
+                onLoading()
+            }
+            is Resultat.Success -> {
+                operationInProgress.value = false
+                onSuccess(value)
+            }
+        }
+    }
+
+    private fun selectedViews() = currentViews().filter { it.isSelected }
+
+    override fun reduce(state: ObjectView, event: Payload): ObjectView {
+        var curr = state
+        event.events.forEach { e ->
+            when (e) {
+                is Event.Command.AddBlock -> {
+                    curr = curr.copy(blocks = curr.blocks + e.blocks)
+                }
+                is Event.Command.DeleteBlock -> {
+                    curr = curr.copy(
+                        blocks = curr.blocks.filter { !e.targets.contains(it.id) }
+                    )
+                }
+                is Event.Command.UpdateStructure -> {
+                    curr = curr.copy(
+                        blocks = curr.blocks.replace(
+                            replacement = { target ->
+                                target.copy(children = e.children)
+                            },
+                            target = { block -> block.id == e.id }
+                        )
+                    )
+                }
+                is Event.Command.Details -> {
+                    curr = curr.copy(details = curr.details.process(e))
+                }
+                else -> {
+                    Timber.d("Skipping event: $e")
+                }
+            }
+        }
+        return curr
     }
 
     class Factory @Inject constructor(
@@ -359,6 +552,12 @@ class CollectionViewModel(
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val deleteObjects: DeleteObjects,
         private val resourceProvider: CollectionResourceProvider,
+        private val openObject: OpenObject,
+        private val configStorage: ConfigStorage,
+        private val interceptEvents: InterceptEvents,
+        private val objectPayloadDispatcher: Dispatcher<Payload>,
+        private val move: Move,
+        private val analytics: Analytics,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -374,15 +573,40 @@ class CollectionViewModel(
                 setObjectListIsFavorite = setObjectListIsFavorite,
                 deleteObjects = deleteObjects,
                 resourceProvider = resourceProvider,
+                openObject = openObject,
+                configstorage = configStorage,
+                interceptEvents = interceptEvents,
+                objectPayloadDispatcher = objectPayloadDispatcher,
+                move = move,
+                analytics = analytics,
             ) as T
         }
     }
 
     sealed class Command {
+        data class ConfirmRemoveFromBin(val count: Int) : Command()
         data class LaunchDocument(val id: Id) : Command()
         data class LaunchObjectSet(val target: Id) : Command()
         object Exit : Command()
     }
+}
+
+private fun List<ObjectWrapper.Basic>.toOrder(favs: Map<Id, FavoritesOrder>): List<ObjectWrapper.Basic> {
+    if (favs.size != this.size) {
+        Timber.e("Favorite order size is not equal to the list size")
+    }
+    val orderedFavorites = MutableList<ObjectWrapper.Basic?>(this.size) { null }
+    for (item in this) {
+        val order = favs[item.id]?.order
+        if (order == null) {
+            Timber.e("Favorite order is null for ${item.id}")
+        } else if (order < 0 || order >= this.size) {
+            Timber.e("Favorite order is out of bounds for ${item.id}")
+        } else {
+            orderedFavorites[order] = item
+        }
+    }
+    return orderedFavorites.filterNotNull()
 }
 
 private const val DEBOUNCE_TIMEOUT = 100L

@@ -9,8 +9,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
@@ -20,7 +18,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
@@ -50,14 +48,16 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
@@ -220,7 +220,7 @@ open class EditorPresentationTestSetup {
     lateinit var replaceBlock: ReplaceBlock
 
     @Mock
-    lateinit var move: Move
+    lateinit var move: MoveOld
 
     @Mock
     lateinit var turnIntoDocument: TurnIntoDocument

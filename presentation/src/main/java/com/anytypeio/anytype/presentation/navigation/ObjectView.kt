@@ -13,7 +13,8 @@ data class DefaultObjectView(
     val typeName: String? = null,
     val description: String? = null,
     val layout: ObjectType.Layout? = null,
-    val icon: ObjectIcon = ObjectIcon.None
+    val icon: ObjectIcon = ObjectIcon.None,
+    val lastModifiedDate: Long = 0L
 ) : DefaultSearchItem
 
 data class ObjectView(

@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
@@ -75,7 +75,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
         verify(move, times(1)).invoke(
             scope = any(),
             params = eq(
-                Move.Params(
+                MoveOld.Params(
                     context = config.home,
                     targetContext = config.home,
                     targetId = pages.last().id,
@@ -136,7 +136,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
         verify(move, times(1)).invoke(
             scope = any(),
             params = eq(
-                Move.Params(
+                MoveOld.Params(
                     context = config.home,
                     targetContext = config.home,
                     targetId = links.first().id,
@@ -197,7 +197,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
         verify(move, times(1)).invoke(
             scope = any(),
             params = eq(
-                Move.Params(
+                MoveOld.Params(
                     context = config.home,
                     targetContext = config.home,
                     targetId = links[1].id,
@@ -258,7 +258,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
         verify(move, times(1)).invoke(
             scope = any(),
             params = eq(
-                Move.Params(
+                MoveOld.Params(
                     context = config.home,
                     targetContext = config.home,
                     targetId = links.last().id,

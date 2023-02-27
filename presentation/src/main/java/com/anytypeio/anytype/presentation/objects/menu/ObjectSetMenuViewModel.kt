@@ -7,10 +7,10 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.presentation.common.Action
@@ -166,6 +166,7 @@ class ObjectSetMenuViewModel(
             ObjectAction.UNDO_REDO,
             ObjectAction.LOCK,
             ObjectAction.UNLOCK,
+            ObjectAction.MOVE_TO_BIN,
             ObjectAction.USE_AS_TEMPLATE -> throw IllegalStateException("$action is unsupported")
         }
     }

@@ -10,6 +10,7 @@ class CollectionUiState(
     val collectionName: String,
     val actionName: String,
     val objectActions: List<ObjectAction>,
-    val showBurgerMenu: Boolean,
+    val inDragMode: Boolean,
     val displayType: Boolean,
+    val operationInProgress: Boolean
 )

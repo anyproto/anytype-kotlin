@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
@@ -28,7 +28,6 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.block.interactor.UploadBlock
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -36,6 +35,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -79,7 +79,7 @@ class Orchestrator(
     private val updateFields: UpdateFields,
     private val createTable: CreateTable,
     private val fillTableRow: FillTableRow,
-    private val move: Move,
+    private val move: MoveOld,
     private val copy: Copy,
     private val paste: Paste,
     private val undo: Undo,
@@ -404,7 +404,7 @@ class Orchestrator(
                 }
                 is Intent.Document.Move -> {
                     move(
-                        params = Move.Params(
+                        params = MoveOld.Params(
                             context = intent.context,
                             targetContext = intent.targetContext,
                             targetId = intent.target,

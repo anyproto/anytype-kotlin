@@ -5,29 +5,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
+import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import javax.inject.Inject
-import kotlinx.coroutines.launch
 
 class CollectionFragment : BaseComposeFragment() {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
 
-    val navigation get() = navigation()
+    private val navigation get() = navigation()
+
+    private val subscription: Subscription by lazy {
+        SubscriptionMapper().map(
+            argString(
+                SUBSCRIPTION_KEY
+            )
+        )
+    }
 
     private val vm by viewModels<CollectionViewModel> { factory }
 
@@ -39,7 +46,7 @@ class CollectionFragment : BaseComposeFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            MaterialTheme(typography = typography) {
+            DefaultTheme {
                 CollectionScreen(vm)
             }
         }
@@ -47,10 +54,8 @@ class CollectionFragment : BaseComposeFragment() {
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launch {
-            jobs += subscribe(vm.commands) { execute(it) }
-        }
-        vm.onStart(Subscription.Bin)
+        proceed(vm.commands) { execute(it) }
+        vm.onStart(subscription)
     }
 
     private fun execute(command: Command) {
@@ -58,7 +63,14 @@ class CollectionFragment : BaseComposeFragment() {
             is Command.LaunchDocument -> launchDocument(command.id)
             is Command.LaunchObjectSet -> launchObjectSet(command.target)
             is Command.Exit -> exit()
+            is Command.ConfirmRemoveFromBin -> confirmRemoveFromBin(command)
         }
+    }
+
+    private fun confirmRemoveFromBin(command: Command.ConfirmRemoveFromBin) {
+        val dialog = DeleteAlertFragment.new(command.count)
+        dialog.onDeletionAccepted = { vm.onDeletionAccepted() }
+        dialog.showChildFragment()
     }
 
     private fun exit() {
@@ -74,7 +86,6 @@ class CollectionFragment : BaseComposeFragment() {
     }
 
     override fun onStop() {
-        //vm.onStop(Subscriptions.SUBSCRIPTION_RECENT)
         vm.onStop()
         super.onStop()
     }
@@ -85,5 +96,9 @@ class CollectionFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().collectionComponent.release()
+    }
+
+    companion object {
+        val SUBSCRIPTION_KEY: String = "arg.collection.subscription"
     }
 }

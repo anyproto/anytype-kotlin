@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import timber.log.Timber
@@ -58,7 +59,8 @@ fun List<ObjectWrapper.Basic>.toViews(
             obj = obj,
             layout = layout,
             builder = urlBuilder
-        )
+        ),
+        lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L
     )
 }
 

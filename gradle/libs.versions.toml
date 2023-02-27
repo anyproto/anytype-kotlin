@@ -5,7 +5,8 @@ androidxCoreVersion = "1.9.0"
 androidxComposeVersion1 = '1.3.1'
 androidxComposeVersion2 = '1.3.2'
 activityComposeVersion = '1.6.1'
-accompanistPagerVersion = "0.29.1-alpha"
+composeReorderableVersion = '0.9.6'
+accompanistVersion = "0.29.1-alpha"
 appcompatVersion = '1.5.1'
 fragmentVersion = "1.5.5"
 exoplayerVersion = "2.18.2"
@@ -72,8 +73,10 @@ composeTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "and
 composeToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidxComposeVersion2" }
 composeFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidxComposeVersion1" }
 composeMaterial = { module = "androidx.compose.material:material", version.ref = "androidxComposeVersion1" }
-composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerVersion" }
-composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerVersion" }
+composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistVersion" }
+composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
+composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }
+composeReorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composeReorderableVersion" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidAnnotations = { module = "androidx.annotation:annotation", version.ref = "appcompatVersion" }

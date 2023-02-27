@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
@@ -25,7 +25,7 @@ class HomeDashboardViewModelFactory(
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
     private val getConfig: GetConfig,
-    private val move: Move,
+    private val move: MoveOld,
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,

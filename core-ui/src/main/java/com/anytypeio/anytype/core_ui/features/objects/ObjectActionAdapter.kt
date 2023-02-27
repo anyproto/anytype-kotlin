@@ -36,6 +36,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
                     tvActionTitle.setText(R.string.action_bar_delete)
                 }
+                ObjectAction.MOVE_TO_BIN -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
+                    tvActionTitle.setText(R.string.action_bar_to_bin)
+                }
                 ObjectAction.DUPLICATE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_duplicate)
                     tvActionTitle.setText(R.string.object_action_duplicate)

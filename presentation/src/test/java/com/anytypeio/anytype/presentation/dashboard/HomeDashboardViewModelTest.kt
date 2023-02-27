@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -94,7 +94,7 @@ class HomeDashboardViewModelTest {
     lateinit var getDebugSettings: GetDebugSettings
 
     @Mock
-    lateinit var move: Move
+    lateinit var move: MoveOld
 
     @Mock
     lateinit var gateway: Gateway

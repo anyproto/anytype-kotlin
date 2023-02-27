@@ -7,6 +7,15 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,21 +38,31 @@ import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,20 +81,36 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionUiState
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
+import com.anytypeio.anytype.ui.settings.typography
+import com.google.accompanist.themeadapter.material.createMdcTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
-    Column(
+    Box(
         Modifier.background(color = colorResource(R.color.background_primary))
     )
     {
-        TopBar(vm, uiState)
-        SearchBar(vm, uiState)
-        ListView(vm, uiState)
+        Column {
+            TopBar(vm, uiState)
+            SearchBar(vm, uiState)
+            ListView(vm, uiState)
+        }
+
+        if (uiState.operationInProgress) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .align(BottomCenter)
+                    .fillMaxWidth(),
+            )
+        }
     }
 }
 
@@ -97,7 +132,7 @@ private fun TopBar(
         )
         Text(
             modifier = Modifier
-                .align(Alignment.CenterEnd)
+                .align(CenterEnd)
                 .clickable { vm.onActionClicked() },
             text = uiState.actionName,
             style = actionTextStyle(),
@@ -116,23 +151,63 @@ private fun ListView(
     vm: CollectionViewModel,
     uiState: CollectionUiState
 ) {
+
+    val views = remember {
+        mutableStateOf<List<CollectionView>>(listOf())
+    }
+    val lazyListState = rememberReorderableLazyListState(
+        onMove = { from, to ->
+            views.value = views.value.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+        },
+        onDragEnd = { from, to -> vm.onMove(views.value, from, to) },
+    )
+
     uiState.views.fold(
         onSuccess = { list ->
+            views.value = list
             LazyColumn(
+                state = lazyListState.listState,
                 modifier = Modifier
+                    .reorderable(lazyListState)
                     .fillMaxHeight()
                     .fillMaxWidth()
             ) {
-                items(
-                    items = list, itemContent = { item ->
-                        CollectionItem(
-                            view = item,
-                            inEditMode = uiState.showEditMode,
-                            showBurgerMenu = uiState.showBurgerMenu,
-                            displayType = uiState.displayType,
-                            onClick = { vm.onObjectClicked(item) },
-                            onLongClick = { vm.onObjectLongClicked(item) })
-                    })
+
+                items(items = views.value, key = { it.obj.id }) { item ->
+
+                    ReorderableItem(
+                        lazyListState,
+                        key = item.obj.id,
+                    ) { isDragging ->
+                        val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
+
+                        Column(
+                            modifier =
+                            Modifier
+                                .shadow(elevation.value)
+                                .then(
+                                    if (uiState.inDragMode) {
+                                        Modifier.detectReorderAfterLongPress(
+                                            lazyListState
+                                        )
+                                    } else {
+                                        Modifier
+                                    }
+                                )
+                                .background(MaterialTheme.colors.surface)
+                        ) {
+                            CollectionItem(
+                                view = item,
+                                inEditMode = uiState.showEditMode,
+                                inDragMode = uiState.inDragMode,
+                                displayType = uiState.displayType,
+                                onClick = { vm.onObjectClicked(item) },
+                                onLongClick = { vm.onObjectLongClicked(item) })
+                        }
+                    }
+                }
 
             }
         }
@@ -196,50 +271,69 @@ fun Icon(icon: ObjectIcon?) {
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun CollectionItem(
     view: CollectionView,
     inEditMode: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    showBurgerMenu: Boolean,
+    inDragMode: Boolean,
     displayType: Boolean,
 ) {
+
     Box(
         Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
+            .then(
+                if (inDragMode) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier.combinedClickable(
+                        onClick = onClick,
+                        onLongClick = onLongClick
+                    )
+                }
             )
     ) {
+
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp, 0.dp, 0.dp)
         ) {
 
-            if (inEditMode) {
+            AnimatedContent(
+                modifier = Modifier
+                    .align(CenterVertically),
+                targetState = inEditMode,
+                transitionSpec = {
+                    fadeIn() + slideInHorizontally() with
+                            fadeOut() + slideOutHorizontally()
+                }
+            ) { inEditMode ->
+                if (inEditMode) {
 
-                val icon =
-                    if (view.isSelected) R.drawable.checkbox_collections_checked else
-                        R.drawable.checkbox_collections_unchecked
+                    val icon =
+                        if (view.isSelected) R.drawable.checkbox_collections_checked else
+                            R.drawable.checkbox_collections_unchecked
 
-                Box(
-                    modifier = Modifier
-                        .align(CenterVertically)
-                        .padding(0.dp, 0.dp, 10.dp, 0.dp)
-                        .width(34.dp),
-                ) {
-                    Image(
-                        painter = painterResource(icon),
-                        contentDescription = null,
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.Center)
-                            .size(24.dp),
-                    )
+                            .align(CenterVertically)
+                            .padding(0.dp, 0.dp, 10.dp, 0.dp)
+                            .width(34.dp),
+                    ) {
+                        Image(
+                            painter = painterResource(icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(24.dp),
+                        )
+                    }
                 }
             }
 
@@ -258,10 +352,13 @@ fun CollectionItem(
                     .padding(0.dp, 0.dp, 60.dp, 0.dp)
             ) {
 
+                val name = view.obj.name.ifBlank { stringResource(R.string.untitled) }
+
                 Text(
-                    text = view.obj.name,
+                    text = name,
                     style = objNameTextStyle(),
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 val description = view.obj.description
@@ -269,7 +366,8 @@ fun CollectionItem(
                     Text(
                         text = description,
                         style = objDescriptionTextStyle(),
-                        maxLines = 1
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
@@ -280,17 +378,24 @@ fun CollectionItem(
                             text = typeName,
                             fontSize = 12.sp,
                             style = objTypeNameTextStyle(),
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
             }
         }
 
-        if (showBurgerMenu) {
+        AnimatedVisibility(
+            visible = inDragMode,
+            modifier = Modifier
+                .align(CenterEnd),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.CenterEnd)
+                    .align(CenterEnd)
                     .width(60.dp),
             ) {
                 Image(
@@ -306,7 +411,7 @@ fun CollectionItem(
         Divider(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
+                .align(BottomCenter)
                 .padding(16.dp, 0.dp, 16.dp, 0.dp),
             thickness = 0.5.dp,
             color = colorResource(R.color.shape_primary)
@@ -409,5 +514,22 @@ private fun BlockWidget(
         }, update = {
             it.bind(uiState.objectActions)
         }
+    )
+}
+
+@Composable
+fun DefaultTheme(
+    content: @Composable () -> Unit
+) {
+    val theme = createMdcTheme(
+        context = LocalContext.current,
+        layoutDirection = LocalLayoutDirection.current
+    )
+
+    MaterialTheme(
+        colors = theme.colors ?: MaterialTheme.colors,
+        typography = typography,
+        shapes = theme.shapes ?: MaterialTheme.shapes,
+        content = content
     )
 }

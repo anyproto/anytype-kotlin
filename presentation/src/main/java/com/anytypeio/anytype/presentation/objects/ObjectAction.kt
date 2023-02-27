@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.objects
 
 enum class ObjectAction {
     DELETE,
+    MOVE_TO_BIN,
     RESTORE,
     ADD_TO_FAVOURITE,
     REMOVE_FROM_FAVOURITE,

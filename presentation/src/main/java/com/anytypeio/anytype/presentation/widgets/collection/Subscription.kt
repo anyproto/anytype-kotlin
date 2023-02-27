@@ -17,7 +17,7 @@ sealed class Subscription(
 ) {
     object Recent : Subscription(
         Subscriptions.SUBSCRIPTION_RECENT,
-        DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
+        SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
         ObjectSearchConstants.sortTabRecent,
         ObjectSearchConstants.limitTabRecent,
         filters = { workspaceId -> ObjectSearchConstants.filterTabRecent(workspaceId) }
@@ -25,7 +25,7 @@ sealed class Subscription(
 
     object Bin : Subscription(
         Subscriptions.SUBSCRIPTION_ARCHIVED,
-        DEFAULT_KEYS,
+        SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabArchive,
         0,
         filters = { workspaceId -> ObjectSearchConstants.filterTabArchive(workspaceId) }
@@ -33,7 +33,7 @@ sealed class Subscription(
 
     object Sets : Subscription(
         Subscriptions.SUBSCRIPTION_SETS,
-        DEFAULT_KEYS,
+        SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
         filters = { workspaceId -> ObjectSearchConstants.filterTabSets(workspaceId) }
@@ -41,7 +41,7 @@ sealed class Subscription(
 
     object Favorites : Subscription(
         Subscriptions.SUBSCRIPTION_FAVORITES,
-        DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
+        SUBSCRIPTION_DEFAULT_KEYS,
         emptyList(),
         0,
         filters = { workspaceId -> ObjectSearchConstants.filterTabFavorites(workspaceId) }
@@ -49,3 +49,18 @@ sealed class Subscription(
 
     object None : Subscription("", emptyList(), emptyList(), 0, filters = { emptyList() })
 }
+
+class SubscriptionMapper {
+
+    fun map(id: Id): Subscription {
+        return when (id) {
+            Subscriptions.SUBSCRIPTION_RECENT -> Subscription.Recent
+            Subscriptions.SUBSCRIPTION_ARCHIVED -> Subscription.Bin
+            Subscriptions.SUBSCRIPTION_SETS -> Subscription.Sets
+            Subscriptions.SUBSCRIPTION_FAVORITES -> Subscription.Favorites
+            else -> Subscription.None
+        }
+    }
+}
+
+private val SUBSCRIPTION_DEFAULT_KEYS = DEFAULT_KEYS + Relations.DESCRIPTION

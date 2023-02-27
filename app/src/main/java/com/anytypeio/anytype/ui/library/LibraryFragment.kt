@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -49,6 +50,7 @@ class LibraryFragment : BaseComposeFragment() {
 
     private val vm by viewModels<LibraryViewModel> { factory }
 
+    @OptIn(ExperimentalAnimationApi::class)
     @FlowPreview
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
@@ -60,7 +62,12 @@ class LibraryFragment : BaseComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    LibraryScreen(LibraryConfiguration(), vm)
+                    LibraryScreen(
+                        LibraryConfiguration(),
+                        vm
+                    ) {
+                        findNavController().popBackStack()
+                    }
                 }
             }
         }

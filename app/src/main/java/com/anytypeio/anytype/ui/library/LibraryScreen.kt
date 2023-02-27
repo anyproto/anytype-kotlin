@@ -2,6 +2,7 @@
 
 package com.anytypeio.anytype.ui.library
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,12 +43,17 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.FlowPreview
 
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @FlowPreview
 @ExperimentalPagerApi
 @Composable
-fun LibraryScreen(configuration: LibraryConfiguration, viewModel: LibraryViewModel) {
+fun LibraryScreen(
+    configuration: LibraryConfiguration,
+    viewModel: LibraryViewModel,
+    onBackPressed: () -> Unit
+) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val effects by viewModel.effects.collectAsStateWithLifecycle()
@@ -56,7 +63,13 @@ fun LibraryScreen(configuration: LibraryConfiguration, viewModel: LibraryViewMod
 
     val screenState = remember { mutableStateOf(ScreenState.CONTENT) }
 
-    Scaffold(bottomBar = { Menu(viewModel, modifier = modifier) }) {
+    Scaffold(bottomBar = {
+        Menu(
+            viewModel,
+            modifier = modifier,
+            screenState = screenState
+        )
+    }) {
         println(it)
         Column(modifier = modifier) {
             LibraryTabs(
@@ -77,18 +90,33 @@ fun LibraryScreen(configuration: LibraryConfiguration, viewModel: LibraryViewMod
         }
     }
 
+    BackHandler {
+        if (screenState.value == ScreenState.SEARCH) {
+            screenState.value = ScreenState.CONTENT
+        } else {
+            onBackPressed.invoke()
+        }
+    }
+
 }
 
 @Composable
 fun Menu(
     viewModel: LibraryViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    screenState: MutableState<ScreenState>
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
     BottomNavigationMenu(
         modifier = modifier,
-        backClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back()) },
+        backClick = {
+            if (screenState.value == ScreenState.SEARCH) {
+                screenState.value = ScreenState.CONTENT
+            } else {
+                viewModel.eventStream(LibraryEvent.BottomMenu.Back())
+            }
+        },
         homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back()) },
         searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search()) },
         addDocClick = { viewModel.eventStream(LibraryEvent.BottomMenu.AddDoc()) },

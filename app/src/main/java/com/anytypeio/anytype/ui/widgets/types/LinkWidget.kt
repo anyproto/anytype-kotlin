@@ -64,6 +64,7 @@ fun LinkWidgetCard(
         Box(
             Modifier
                 .padding(vertical = 6.dp)
+                .fillMaxWidth()
                 .height(40.dp)
                 .combinedClickable(
                     onClick = { onWidgetObjectClicked(item.obj) },
@@ -80,7 +81,10 @@ fun LinkWidgetCard(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .padding(horizontal = 16.dp),
+                    .padding(
+                        start = 16.dp,
+                        end = if (isEditable) 76.dp else 32.dp
+                    ),
                 style = TextStyle(
                     fontSize = 17.sp,
                     color = colorResource(id = R.color.text_primary),

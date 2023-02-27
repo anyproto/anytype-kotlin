@@ -194,7 +194,7 @@ private fun LibraryList(
                             name = item.name,
                             icon = item.icon,
                             readOnly = item.readOnly,
-                            modifier = itemModifier.clickable {
+                            modifier = itemModifier.clickable(item.editable) {
                                 vmEventStream.invoke(
                                     LibraryEvent.Type.Edit(item)
                                 )
@@ -216,7 +216,7 @@ private fun LibraryList(
                     }
                     is LibraryView.MyRelationView -> {
                         MyRelationItem(
-                            modifier = itemModifier.clickable {
+                            modifier = itemModifier.clickable(item.editable) {
                                 vmEventStream.invoke(
                                     LibraryEvent.Relation.Edit(item)
                                 )

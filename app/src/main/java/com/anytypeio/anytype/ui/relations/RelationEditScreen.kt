@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.relations
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,19 +52,18 @@ import com.anytypeio.anytype.ui.relations.TypeEditWidgetDefaults.PaddingStart
 import com.anytypeio.anytype.ui.relations.RelationScreenDefaults.PaddingBottom
 import com.anytypeio.anytype.ui.relations.RelationScreenDefaults.PaddingTop
 import com.anytypeio.anytype.ui.settings.fonts
-import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.types.views.ImeOptions
 
 @ExperimentalMaterialApi
 @Composable
-fun RelationEditScreen(vm: RelationEditViewModel, preparedName: String) {
+fun RelationEditScreen(vm: RelationEditViewModel, preparedName: String, readOnly: Boolean) {
 
     val state by vm.uiState.collectAsStateWithLifecycle()
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
 
     Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom)) {
-        RelationEditHeader(vm = vm)
+        RelationEditHeader(vm = vm, readOnly = readOnly)
         RelationEditWidget(
             preparedString = inputValue,
             nameValid = nameValid,
@@ -82,7 +80,8 @@ fun RelationEditScreen(vm: RelationEditViewModel, preparedName: String) {
 
 @Composable
 fun RelationEditHeader(
-    vm: RelationEditViewModel
+    vm: RelationEditViewModel,
+    readOnly: Boolean
 ) {
 
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -96,7 +95,9 @@ fun RelationEditHeader(
             .height(EditHeaderDefaults.Height)
             .padding(EditHeaderDefaults.PaddingValues)
     ) {
-        Spacer(modifier = Modifier.weight(1f))
+        if (!readOnly) {
+            Spacer(modifier = Modifier.weight(1f))
+        }
         Text(
             text = stringResource(id = R.string.relation_editing_title),
             style = TextStyle(
@@ -106,16 +107,18 @@ fun RelationEditHeader(
                 fontSize = 17.sp,
             ),
         )
-        Box(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(id = R.string.type_editing_uninstall),
-                color = colorResource(id = R.color.palette_system_red),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .noRippleClickable { vm.uninstallRelation() },
-                textAlign = TextAlign.End,
-                style = EditHeaderDefaults.TextButtonStyle
-            )
+        if (!readOnly) {
+            Box(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(id = R.string.type_editing_uninstall),
+                    color = colorResource(id = R.color.palette_system_red),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noRippleClickable { vm.uninstallRelation() },
+                    textAlign = TextAlign.End,
+                    style = EditHeaderDefaults.TextButtonStyle
+                )
+            }
         }
     }
 

@@ -63,7 +63,7 @@ class MyRelationsDelegate @Inject constructor(
             keys = DEFAULT_KEYS + listOf(
                 Relations.SOURCE_OBJECT,
                 Relations.RELATION_FORMAT,
-                Relations.RELATION_READ_ONLY_VALUE
+                Relations.RESTRICTIONS
             ),
             filters = buildList {
                 addAll(ObjectSearchConstants.filterMyRelations())

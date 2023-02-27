@@ -24,7 +24,8 @@ sealed interface LibraryView {
         override val name: String,
         val icon: ObjectIcon? = null,
         val sourceObject: Id? = null,
-        val readOnly: Boolean = false,
+        val readOnly: Boolean = true,
+        val editable: Boolean = true,
         override val dependentData: DependentData = DependentData.None
     ) : LibraryView
 
@@ -41,7 +42,8 @@ sealed interface LibraryView {
         override val name: String,
         val format: RelationFormat,
         val sourceObject: Id? = null,
-        val readOnly: Boolean = false,
+        val readOnly: Boolean = true,
+        val editable: Boolean = true,
         override val dependentData: DependentData = DependentData.None
     ) : LibraryView
 

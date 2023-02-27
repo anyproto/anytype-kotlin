@@ -62,7 +62,7 @@ class MyTypesDelegate @Inject constructor(
             subscription = SUB_LIBRARY_MY_TYPES,
             keys = DEFAULT_KEYS + listOf(
                 Relations.SOURCE_OBJECT,
-                Relations.RELATION_READ_ONLY_VALUE
+                Relations.RESTRICTIONS
             ),
             filters = buildList {
                 addAll(ObjectSearchConstants.filterTypes())

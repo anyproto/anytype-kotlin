@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -36,6 +37,7 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
     private val id get() = argString(ARG_TYPE_EDIT_ID)
     private val name get() = argString(ARG_TYPE_EDIT_NAME)
     private val icon get() = argString(ARG_TYPE_EDIT_UNICODE)
+    private val readOnly get() = argBoolean(ARG_TYPE_EDIT_READONLY)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +62,7 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
                 TypeEditScreen(
                     vm = vm,
                     preparedName = name,
+                    readOnly = readOnly
                 )
             }
         }
@@ -116,11 +119,13 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
         fun args(
             typeName: String,
             id: Id,
-            iconUnicode: String
+            iconUnicode: String,
+            readOnly: Boolean
         ) = bundleOf(
             ARG_TYPE_EDIT_NAME to typeName,
             ARG_TYPE_EDIT_ID to id,
-            ARG_TYPE_EDIT_UNICODE to iconUnicode
+            ARG_TYPE_EDIT_UNICODE to iconUnicode,
+            ARG_TYPE_EDIT_READONLY to readOnly
         )
     }
 
@@ -141,3 +146,4 @@ const val REQUEST_UNINSTALL_TYPE_ARG_ICON = "request.type_edit_uninstall_icon"
 private const val ARG_TYPE_EDIT_NAME = "arg.type_edit_name"
 private const val ARG_TYPE_EDIT_ID = "arg.type_edit_id"
 private const val ARG_TYPE_EDIT_UNICODE = "arg.type_edit_unicode"
+private const val ARG_TYPE_EDIT_READONLY = "arg.type_edit_readonly"

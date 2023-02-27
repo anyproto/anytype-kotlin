@@ -33,6 +33,10 @@ fun Fragment.argInt(key: String): Int {
     return requireArguments().getInt(key)
 }
 
+fun Fragment.argBoolean(key: String): Boolean {
+    return requireArguments().getBoolean(key)
+}
+
 fun Fragment.argLong(key: String): Long {
     return requireArguments().getLong(key)
 }

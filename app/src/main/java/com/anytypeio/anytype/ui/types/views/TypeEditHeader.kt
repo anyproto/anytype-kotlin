@@ -25,11 +25,11 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.types.TypeEditViewModel
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.ui.settings.fonts
-import com.anytypeio.anytype.ui.settings.typography
 
 @Composable
 fun TypeEditHeader(
-    vm: TypeEditViewModel
+    vm: TypeEditViewModel,
+    readOnly: Boolean
 ) {
 
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -43,7 +43,9 @@ fun TypeEditHeader(
             .height(EditHeaderDefaults.Height)
             .padding(EditHeaderDefaults.PaddingValues)
     ) {
-        Spacer(modifier = Modifier.weight(1f))
+        if (!readOnly) {
+            Spacer(modifier = Modifier.weight(1f))
+        }
         Text(
             text = stringResource(id = R.string.type_editing_title),
             style = TextStyle(
@@ -53,18 +55,20 @@ fun TypeEditHeader(
                 fontSize = 17.sp,
             ),
         )
-        Box(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(id = R.string.type_editing_uninstall),
-                color = colorResource(id = R.color.palette_system_red),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .noRippleClickable {
-                        vm.uninstallType()
-                    },
-                textAlign = TextAlign.End,
-                style = EditHeaderDefaults.TextButtonStyle
-            )
+        if (!readOnly) {
+            Box(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(id = R.string.type_editing_uninstall),
+                    color = colorResource(id = R.color.palette_system_red),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noRippleClickable {
+                            vm.uninstallType()
+                        },
+                    textAlign = TextAlign.End,
+                    style = EditHeaderDefaults.TextButtonStyle
+                )
+            }
         }
     }
 

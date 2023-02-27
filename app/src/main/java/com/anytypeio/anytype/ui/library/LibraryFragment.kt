@@ -92,7 +92,8 @@ class LibraryFragment : BaseComposeFragment() {
                         TypeEditFragment.args(
                             typeName = it.view.name,
                             id = it.view.id,
-                            iconUnicode = (it.view.icon as? ObjectIcon.Basic.Emoji)?.unicode ?: ""
+                            iconUnicode = (it.view.icon as? ObjectIcon.Basic.Emoji)?.unicode ?: "",
+                            readOnly = it.view.readOnly
                         )
                     )
                 }
@@ -113,7 +114,8 @@ class LibraryFragment : BaseComposeFragment() {
                         RelationEditFragment.args(
                             typeName = it.view.name,
                             id = it.view.id,
-                            iconUnicode = it.view.format.simpleIcon() ?: 0
+                            iconUnicode = it.view.format.simpleIcon() ?: 0,
+                            readOnly = it.view.readOnly
                         )
                     )
                 }

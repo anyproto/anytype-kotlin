@@ -532,6 +532,10 @@
             android:name="arg.arg.type_edit_unicode"
             android:defaultValue=""
             app:argType="string" />
+        <argument
+            android:name="arg.arg.type_edit_readonly"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
 
     <dialog
@@ -553,6 +557,10 @@
             android:name="arg.arg.relation_edit_unicode"
             android:defaultValue="0"
             app:argType="integer" />
+        <argument
+            android:name="arg.arg.relation_edit_readonly"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
 
     <dialog

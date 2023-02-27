@@ -12,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -33,6 +34,7 @@ class RelationEditFragment: BaseBottomSheetComposeFragment() {
     private val id get() = argString(ARG_RELATION_EDIT_ID)
     private val name get() = argString(ARG_RELATION_EDIT_NAME)
     private val icon get() = argInt(ARG_RELATION_EDIT_UNICODE)
+    private val readOnly get() = argBoolean(ARG_RELATION_EDIT_READONLY)
 
     @ExperimentalMaterialApi
     override fun onCreateView(
@@ -46,6 +48,7 @@ class RelationEditFragment: BaseBottomSheetComposeFragment() {
                 RelationEditScreen(
                     vm = vm,
                     preparedName = name,
+                    readOnly = readOnly
                 )
             }
         }
@@ -91,11 +94,13 @@ class RelationEditFragment: BaseBottomSheetComposeFragment() {
         fun args(
             typeName: String,
             id: Id,
-            iconUnicode: Int
+            iconUnicode: Int,
+            readOnly: Boolean
         ) = bundleOf(
             ARG_RELATION_EDIT_NAME to typeName,
             ARG_RELATION_EDIT_ID to id,
-            ARG_RELATION_EDIT_UNICODE to iconUnicode
+            ARG_RELATION_EDIT_UNICODE to iconUnicode,
+            ARG_RELATION_EDIT_READONLY to readOnly
         )
     }
 
@@ -116,3 +121,4 @@ const val REQUEST_UNINSTALL_RELATION_ARG_NAME = "request.type_edit_uninstall_nam
 private const val ARG_RELATION_EDIT_NAME = "arg.relation_edit_name"
 private const val ARG_RELATION_EDIT_ID = "arg.relation_edit_id"
 private const val ARG_RELATION_EDIT_UNICODE = "arg.relation_edit_unicode"
+private const val ARG_RELATION_EDIT_READONLY = "arg.relation_edit_readonly"

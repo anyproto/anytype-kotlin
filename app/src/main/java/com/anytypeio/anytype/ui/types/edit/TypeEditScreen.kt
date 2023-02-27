@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.types.TypeEditState
 import com.anytypeio.anytype.presentation.types.TypeEditViewModel
@@ -23,14 +22,14 @@ import com.anytypeio.anytype.ui.types.views.TypeEditWidget
 
 @ExperimentalMaterialApi
 @Composable
-fun TypeEditScreen(vm: TypeEditViewModel, preparedName: String) {
+fun TypeEditScreen(vm: TypeEditViewModel, preparedName: String, readOnly: Boolean) {
 
     val state by vm.uiState.collectAsStateWithLifecycle()
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
 
     Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom)) {
-        TypeEditHeader(vm = vm)
+        TypeEditHeader(vm = vm, readOnly)
         TypeEditWidget(
             preparedString = inputValue,
             nameValid = nameValid,

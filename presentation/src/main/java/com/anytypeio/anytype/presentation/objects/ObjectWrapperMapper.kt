@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
@@ -86,7 +87,8 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     builder = urlBuilder
                 ),
                 sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = obj.relationReadonlyValue ?: false
+                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
             )
         }
         ObjectTypeIds.RELATION -> {
@@ -96,7 +98,8 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                 name = obj.name ?: "",
                 format = relation.format,
                 sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = relation.isReadonlyValue
+                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
             )
         }
         MarketplaceObjectTypeIds.RELATION -> {

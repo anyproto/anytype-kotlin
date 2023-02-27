@@ -122,7 +122,7 @@ fun ListWidgetObjectIcon(
         is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
-        is ObjectIcon.Bookmark -> DefaultObjectImageIcon(icon.image, modifier, iconSize)
+        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
         is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon)
         else -> {
             // Draw nothing.
@@ -161,6 +161,21 @@ private fun DefaultObjectImageIcon(
         contentDescription = "Icon from URI",
         modifier = modifier.size(iconSize)
     )
+}
+
+@Composable
+private fun DefaultObjectBookmarkIcon(
+    url: Url,
+    modifier: Modifier,
+    iconSize: Dp
+) {
+    Box(modifier = modifier.size(iconSize)) {
+        Image(
+            painter = rememberAsyncImagePainter(url),
+            contentDescription = "Icon from URI",
+            modifier = Modifier.align(Alignment.Center).size(24.dp)
+        )
+    }
 }
 
 @Composable
@@ -222,7 +237,7 @@ private fun DefaultEmojiObjectIcon(
             painter = rememberAsyncImagePainter(Emojifier.uri(icon.unicode)),
             contentDescription = "Icon from URI",
             modifier = Modifier
-                .size(28.dp)
+                .size(24.dp)
                 .align(Alignment.Center)
         )
     }

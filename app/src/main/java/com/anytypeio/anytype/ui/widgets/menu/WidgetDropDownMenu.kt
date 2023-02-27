@@ -25,6 +25,9 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 
 @Composable
 fun WidgetMenu(
+    canRemove: Boolean = true,
+    canChangeSource: Boolean = true,
+    canChangeType: Boolean = true,
     isExpanded: MutableState<Boolean>,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
@@ -37,57 +40,63 @@ fun WidgetMenu(
             color = colorResource(id = R.color.text_primary),
             fontSize = 17.sp
         )
-        DropdownMenuItem(
-            onClick = {
-                onDropDownMenuAction(DropDownMenuAction.ChangeWidgetSource).also {
-                    isExpanded.value = false
+        if (canChangeSource) {
+            DropdownMenuItem(
+                onClick = {
+                    onDropDownMenuAction(DropDownMenuAction.ChangeWidgetSource).also {
+                        isExpanded.value = false
+                    }
                 }
-            }
-        ) {
-            Text(
-                text = stringResource(R.string.widget_change_source),
-                style = defaultTextStyle
-            )
-        }
-        Divider(
-            thickness = 0.5.dp,
-            color = colorResource(id = R.color.shape_primary)
-        )
-        DropdownMenuItem(
-            onClick = {
-                onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
-                    isExpanded.value = false
-                }
-            }
-        ) {
-            Text(
-                text = stringResource(R.string.widget_change_type),
-                style = defaultTextStyle
-            )
-        }
-        Divider(
-            thickness = 0.5.dp,
-            color = colorResource(id = R.color.shape_primary)
-        )
-        DropdownMenuItem(
-            onClick = {
-                onDropDownMenuAction(DropDownMenuAction.RemoveWidget).also {
-                    isExpanded.value = false
-                }
-            }
-        ) {
-            Text(
-                text = stringResource(id = R.string.remove_widget),
-                style = TextStyle(
-                    color = colorResource(id = R.color.palette_dark_red),
-                    fontSize = 17.sp
+            ) {
+                Text(
+                    text = stringResource(R.string.widget_change_source),
+                    style = defaultTextStyle
                 )
+            }
+            Divider(
+                thickness = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
             )
         }
-        Divider(
-            thickness = 0.5.dp,
-            color = colorResource(id = R.color.shape_primary)
-        )
+        if (canChangeType) {
+            DropdownMenuItem(
+                onClick = {
+                    onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
+                        isExpanded.value = false
+                    }
+                }
+            ) {
+                Text(
+                    text = stringResource(R.string.widget_change_type),
+                    style = defaultTextStyle
+                )
+            }
+            Divider(
+                thickness = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+        }
+        if (canRemove) {
+            DropdownMenuItem(
+                onClick = {
+                    onDropDownMenuAction(DropDownMenuAction.RemoveWidget).also {
+                        isExpanded.value = false
+                    }
+                }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.remove_widget),
+                    style = TextStyle(
+                        color = colorResource(id = R.color.palette_dark_red),
+                        fontSize = 17.sp
+                    )
+                )
+            }
+            Divider(
+                thickness = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+        }
         DropdownMenuItem(
             onClick = {
                 onDropDownMenuAction(DropDownMenuAction.EditWidgets).also {

@@ -47,6 +47,8 @@ import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
+import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
@@ -146,7 +148,7 @@ private fun WidgetList(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = if (index == 0) 12.dp else 0.dp)
+                            .padding(top = if (index == 0) 6.dp else 0.dp)
                             .animateContentSize(
                                 animationSpec = spring(
                                     stiffness = Spring.StiffnessLow
@@ -194,7 +196,7 @@ private fun WidgetList(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = if (index == 0) 12.dp else 0.dp)
+                            .padding(top = if (index == 0) 6.dp else 0.dp)
                     ) {
                         LinkWidgetCard(
                             item = item,
@@ -231,15 +233,54 @@ private fun WidgetList(
                         }
                     }
                 }
-                is WidgetView.Set -> {
-                    ListWidgetCard(
-                        item = item,
-                        onWidgetObjectClicked = onWidgetObjectClicked,
+                is WidgetView.SetOfObjects -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = if (index == 0) 6.dp else 0.dp)
+                            .animateContentSize(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            )
+                    ) {
+                        DataViewListWidgetCard(
+                            item = item,
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
+                            onChangeWidgetView = onChangeWidgetView,
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                        )
+                    }
+                }
+                is WidgetView.ListOfObjects -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = if (index == 0) 6.dp else 0.dp)
+                            .animateContentSize(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            )
+                    ) {
+                        ListWidgetCard(
+                            item = item,
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                        )
+                    }
+                }
+                is WidgetView.Bin -> {
+                    BinWidgetCard(
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
-                        },
-                        onChangeWidgetView = onChangeWidgetView,
-                        onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                        }
                     )
                 }
                 is WidgetView.Action.CreateWidget -> {

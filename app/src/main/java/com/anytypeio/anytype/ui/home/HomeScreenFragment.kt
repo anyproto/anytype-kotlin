@@ -154,8 +154,8 @@ class HomeScreenFragment : BaseComposeFragment() {
     private fun proceed(destination: Navigation) {
         Timber.d("New destination: $destination")
         when (destination) {
-            is Navigation.OpenObject -> navigation().launchDocument(destination.ctx)
-            is Navigation.OpenSet -> navigation().launchObjectSet(destination.ctx)
+            is Navigation.OpenObject -> navigation().openDocument(destination.ctx)
+            is Navigation.OpenSet -> navigation().openObjectSet(destination.ctx)
         }
     }
 

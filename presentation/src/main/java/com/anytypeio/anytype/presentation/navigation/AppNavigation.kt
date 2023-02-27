@@ -19,8 +19,8 @@ interface AppNavigation {
     fun openSettings()
 
     fun openArchive(target: String)
-    fun openObjectSet(target: String, isPopUpToDashboard: Boolean)
-    fun openDocument(id: String, editorSettings: EditorSettings?)
+    fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
+    fun openDocument(id: String, editorSettings: EditorSettings? = null)
 
     fun launchDocument(id: String)
     fun launchObjectFromSplash(id: Id)

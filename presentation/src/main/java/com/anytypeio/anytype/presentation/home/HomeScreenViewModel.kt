@@ -28,8 +28,10 @@ import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
+import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
@@ -85,6 +87,52 @@ class HomeScreenViewModel(
     private val containers = MutableStateFlow<List<WidgetContainer>>(emptyList())
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
+    // Bundled widget containing recently opened objects
+    private val recent by lazy {
+        ListWidgetContainer(
+            workspace = configStorage.get().workspace,
+            isWidgetCollapsed = isCollapsed(Subscriptions.SUBSCRIPTION_RECENT),
+            storage = storelessSubscriptionContainer,
+            urlBuilder = urlBuilder,
+            subscription = Subscriptions.SUBSCRIPTION_RECENT
+        )
+    }
+
+    // Bundled widget containing sets
+    private val sets by lazy {
+        ListWidgetContainer(
+            workspace = configStorage.get().workspace,
+            isWidgetCollapsed = isCollapsed(Subscriptions.SUBSCRIPTION_SETS),
+            storage = storelessSubscriptionContainer,
+            urlBuilder = urlBuilder,
+            subscription = Subscriptions.SUBSCRIPTION_SETS
+        )
+    }
+
+    // Bundled widget containing objects from favorites
+    private val favorites by lazy {
+        ListWidgetContainer(
+            workspace = configStorage.get().workspace,
+            isWidgetCollapsed = isCollapsed(Subscriptions.SUBSCRIPTION_FAVORITES),
+            storage = storelessSubscriptionContainer,
+            urlBuilder = urlBuilder,
+            subscription = Subscriptions.SUBSCRIPTION_FAVORITES
+        )
+    }
+
+    // Bundled widget containing archived objects
+    private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+    private val bundledWidgets by lazy {
+        combine(
+            listOf(
+                favorites.view,
+                recent.view,
+                sets.view
+            )
+        ) { array -> array }
+    }
+
     init {
 
         val config = configStorage.get()
@@ -137,24 +185,24 @@ class HomeScreenViewModel(
 
         viewModelScope.launch {
             widgets.map {
-                it.map { w ->
-                    when (w) {
+                it.map { widget ->
+                    when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
-                            widget = w
+                            widget = widget
                         )
                         is Widget.Tree -> TreeWidgetContainer(
-                            widget = w,
+                            widget = widget,
                             container = objectSearchSubscriptionContainer,
-                            expandedBranches = treeWidgetBranchStateHolder.stream(w.id),
-                            isWidgetCollapsed = isCollapsed(w.id),
+                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
+                            isWidgetCollapsed = isCollapsed(widget.id),
                             urlBuilder = urlBuilder
                         )
-                        is Widget.List -> ListWidgetContainer(
-                            widget = w,
+                        is Widget.List -> DataViewListWidgetContainer(
+                            widget = widget,
                             storage = storelessSubscriptionContainer,
                             getObject = getObject,
-                            activeView = observeCurrentWidgetView(w.id),
-                            isWidgetCollapsed = isCollapsed(w.id),
+                            activeView = observeCurrentWidgetView(widget.id),
+                            isWidgetCollapsed = isCollapsed(widget.id),
                             urlBuilder = urlBuilder
                         )
                     }
@@ -177,9 +225,10 @@ class HomeScreenViewModel(
                 } else {
                     flowOf(emptyList())
                 }
+            }.combine(bundledWidgets) { fromWidgetObject, bundled ->
+                bundled.toList() + fromWidgetObject
             }.flowOn(appCoroutineDispatchers.io).collect {
-                Timber.d("Views update: ${it.map { v -> v::class }}")
-                views.value = it + actions
+                views.value = it + bin + actions
             }
         }
 
@@ -360,7 +409,11 @@ class HomeScreenViewModel(
 
     fun onWidgetObjectClicked(obj: ObjectWrapper.Basic) {
         Timber.d("With id: ${obj.id}")
-        proceedWithOpeningObject(obj)
+        if (obj.isArchived != true) {
+            proceedWithOpeningObject(obj)
+        } else {
+            sendToast("Open bin to restore your object")
+        }
     }
 
     fun onChangeWidgetTypeClicked(widget: Id) {

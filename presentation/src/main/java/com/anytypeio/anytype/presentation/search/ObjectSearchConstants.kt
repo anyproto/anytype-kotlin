@@ -348,7 +348,7 @@ object ObjectSearchConstants {
 
     val sortTabRecent = listOf(
         DVSort(
-            relationKey = Relations.LAST_MODIFIED_DATE,
+            relationKey = Relations.LAST_OPENED_DATE,
             type = DVSortType.DESC
         )
     )

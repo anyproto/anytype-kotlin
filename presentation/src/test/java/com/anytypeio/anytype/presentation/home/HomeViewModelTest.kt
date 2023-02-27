@@ -28,9 +28,11 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
+import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -47,6 +49,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -141,6 +144,7 @@ class HomeViewModelTest {
         stubConfig()
         stubInterceptEvents(events)
         stubOpenObject(givenObjectView)
+        stubCollapsedWidgetState(any())
 
         val vm = buildViewModel()
 
@@ -160,7 +164,77 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `should emit tree-widget with empty elements when source has no links`() = runTest {
+    fun `should emit only default widgets with bin and actions when home screen has no associated widgets except the default ones`() = runTest {
+
+        // SETUP
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = emptyList(),
+            type = SmartBlockType.WIDGET
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            type = SmartBlockType.WIDGET,
+            blocks = listOf(smartBlock),
+            details = emptyMap()
+        )
+
+        val defaultWidgets = listOf(
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_FAVORITES,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Favorites
+            ),
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_RECENT,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Recent
+            ),
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_SETS,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Sets
+            )
+        )
+
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenObject(givenObjectView)
+        stubCollapsedWidgetState(any())
+        stubDefaultContainerSubscriptions()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = HomeScreenViewModel.actions
+            )
+            val secondTimeItem = awaitItem()
+            assertEquals(
+                expected = buildList {
+                    addAll(defaultWidgets)
+                    add(binWidget)
+                    addAll(HomeScreenViewModel.actions)
+                },
+                actual = secondTimeItem
+            )
+            verify(openObject, times(1)).invoke(WIDGET_OBJECT_ID)
+        }
+    }
+
+    @Test
+    fun `should emit default widgets, tree-widget with empty elements and bin when source has no links`() = runTest {
 
         // SETUP
 
@@ -199,6 +273,29 @@ class HomeViewModelTest {
             )
         )
 
+        val defaultWidgets = listOf(
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_FAVORITES,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Favorites
+            ),
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_RECENT,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Recent
+            ),
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_SETS,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Sets
+            )
+        )
+
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenObject(givenObjectView)
@@ -206,8 +303,9 @@ class HomeViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(widgetBlock)
+        stubCollapsedWidgetState(any())
         stubWidgetActiveView(widgetBlock)
+        stubDefaultContainerSubscriptions()
 
         val vm = buildViewModel()
 
@@ -222,6 +320,16 @@ class HomeViewModelTest {
             val secondTimeItem = awaitItem()
             assertEquals(
                 expected = buildList {
+                    addAll(defaultWidgets)
+                    add(binWidget)
+                    addAll(HomeScreenViewModel.actions)
+                },
+                actual = secondTimeItem
+            )
+            val thirdTimeItem = awaitItem()
+            assertEquals(
+                expected = buildList {
+                    addAll(defaultWidgets)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -230,16 +338,17 @@ class HomeViewModelTest {
                             isExpanded = true
                         )
                     )
+                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = secondTimeItem
+                actual = thirdTimeItem
             )
             verify(openObject, times(1)).invoke(WIDGET_OBJECT_ID)
         }
     }
 
     @Test
-    fun `should emit link-widget and actions`() = runTest {
+    fun `should emit default widgets, link-widget, bin and actions`() = runTest {
 
         // SETUP
 
@@ -278,6 +387,29 @@ class HomeViewModelTest {
             )
         )
 
+        val defaultWidgets = listOf(
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_FAVORITES,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Favorites
+            ),
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_RECENT,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Recent
+            ),
+            WidgetView.ListOfObjects(
+                id = Subscriptions.SUBSCRIPTION_SETS,
+                elements = emptyList(),
+                isExpanded = true,
+                type = WidgetView.ListOfObjects.Type.Sets
+            )
+        )
+
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenObject(givenObjectView)
@@ -285,6 +417,8 @@ class HomeViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
+        stubCollapsedWidgetState(any())
+        stubDefaultContainerSubscriptions()
 
         val vm = buildViewModel()
 
@@ -299,15 +433,26 @@ class HomeViewModelTest {
             val secondTimeItem = awaitItem()
             assertEquals(
                 expected = buildList {
+                    addAll(defaultWidgets)
+                    add(binWidget)
+                    addAll(HomeScreenViewModel.actions)
+                },
+                actual = secondTimeItem
+            )
+            val thirdTimeItem = awaitItem()
+            assertEquals(
+                expected = buildList {
+                    addAll(defaultWidgets)
                     add(
                         WidgetView.Link(
                             id = widgetBlock.id,
                             obj = sourceObject
                         )
                     )
+                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = secondTimeItem
+                actual = thirdTimeItem
             )
             verify(openObject, times(1)).invoke(WIDGET_OBJECT_ID)
         }
@@ -359,9 +504,44 @@ class HomeViewModelTest {
         }
     }
 
-    private fun stubCollapsedWidgetState(widgetBlock: Block) {
+    private fun stubCollapsedWidgetState(id: Id, isCollapsed: Boolean = false) {
         collapsedWidgetStateHolder.stub {
-            on { isCollapsed(widgetBlock.id) } doReturn flowOf(false)
+            on { isCollapsed(id) } doReturn flowOf(isCollapsed)
+        }
+    }
+
+    private fun stubDefaultContainerSubscriptions() {
+        storelessSubscriptionContainer.stub {
+            on {
+                subscribe(
+                    ListWidgetContainer.params(
+                        subscription = Subscriptions.SUBSCRIPTION_RECENT,
+                        workspace = config.workspace
+                    )
+                )
+            } doReturn flowOf(emptyList())
+        }
+
+        storelessSubscriptionContainer.stub {
+            on {
+                subscribe(
+                    ListWidgetContainer.params(
+                        subscription = Subscriptions.SUBSCRIPTION_FAVORITES,
+                        workspace = config.workspace
+                    )
+                )
+            } doReturn flowOf(emptyList())
+        }
+
+        storelessSubscriptionContainer.stub {
+            on {
+                subscribe(
+                    ListWidgetContainer.params(
+                        subscription = Subscriptions.SUBSCRIPTION_SETS,
+                        workspace = config.workspace
+                    )
+                )
+            } doReturn flowOf(emptyList())
         }
     }
 

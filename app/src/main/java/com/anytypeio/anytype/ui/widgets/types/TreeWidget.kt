@@ -87,10 +87,10 @@ fun TreeWidgetCard(
             )
         ) {
             WidgetHeader(
-                item = item.obj,
+                title = item.obj.name?.trim().orEmpty(),
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
-                onWidgetObjectClicked = onWidgetObjectClicked,
+                onWidgetHeaderClicked = { onWidgetObjectClicked(item.obj) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction,
@@ -200,10 +200,10 @@ private fun TreeWidgetTreeItems(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WidgetHeader(
-    item: ObjectWrapper.Basic,
+    title: String,
     isCardMenuExpanded: MutableState<Boolean>,
     isHeaderMenuExpanded: MutableState<Boolean>,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetHeaderClicked: () -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onExpandElement: () -> Unit = {},
     isExpanded: Boolean = false,
@@ -216,8 +216,7 @@ fun WidgetHeader(
     )
     {
         Text(
-            // TODO trimming should be a part of presentation module.
-            text = item.name?.trim() ?: stringResource(id = R.string.untitled),
+            text = title.ifEmpty { stringResource(id = R.string.untitled) },
             style = TextStyle(
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
@@ -233,9 +232,7 @@ fun WidgetHeader(
                 )
                 .align(Alignment.CenterStart)
                 .combinedClickable(
-                    onClick = {
-                        onWidgetObjectClicked(item)
-                    },
+                    onClick = onWidgetHeaderClicked,
                     onLongClick = {
                         isCardMenuExpanded.value = !isCardMenuExpanded.value
                     },
@@ -283,7 +280,7 @@ fun WidgetHeader(
 
 @Composable
 fun getAnimatableRotation(isExpanded: Boolean): Animatable<Float, AnimationVector1D> {
-    var currentRotation = remember {
+    val currentRotation = remember {
         mutableStateOf(
             if (isExpanded) ArrowIconDefaults.Expanded else ArrowIconDefaults.Collapsed
         )

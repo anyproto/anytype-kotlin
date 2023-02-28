@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.types.edit
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -28,7 +29,7 @@ fun TypeEditScreen(vm: TypeEditViewModel, preparedName: String, readOnly: Boolea
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
 
-    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom)) {
+    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(120.dp)) {
         TypeEditHeader(vm = vm, readOnly)
         TypeEditWidget(
             preparedString = inputValue,

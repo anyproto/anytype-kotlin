@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.types.create
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ fun TypeCreationScreen(vm: TypeCreationViewModel, preparedName: String) {
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
 
-    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom)) {
+    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(120.dp)) {
         TypeCreationHeader(
             vm = vm,
             nameValid = nameValid,

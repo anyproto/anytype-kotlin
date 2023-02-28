@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
@@ -14,6 +13,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -50,7 +50,10 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = ComposeView(requireContext()).apply {
+    ) = ComposeDialogView(
+        context = requireContext(),
+        dialog = requireDialog()
+    ).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {

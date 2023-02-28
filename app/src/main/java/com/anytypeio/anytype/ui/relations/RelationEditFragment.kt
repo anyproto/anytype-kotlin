@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -41,7 +41,10 @@ class RelationEditFragment: BaseBottomSheetComposeFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = ComposeView(requireContext()).apply {
+    ) = ComposeDialogView(
+        context = requireContext(),
+        dialog = requireDialog()
+    ).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {

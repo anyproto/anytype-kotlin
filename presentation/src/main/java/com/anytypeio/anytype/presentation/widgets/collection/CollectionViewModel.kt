@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
@@ -41,6 +40,8 @@ import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,6 +64,7 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.anytypeio.anytype.core_models.ObjectView as CoreObjectView
 
 class CollectionViewModel(
     private val container: StorelessSubscriptionContainer,
@@ -81,7 +83,8 @@ class CollectionViewModel(
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val move: Move,
     private val analytics: Analytics,
-) : ViewModel(), Reducer<ObjectView, Payload> {
+    private val dateProvider: DateProvider,
+) : ViewModel(), Reducer<CoreObjectView, Payload> {
 
     val payloads: Flow<Payload>
 
@@ -115,7 +118,7 @@ class CollectionViewModel(
                 CollectionUiState(
                     views,
                     mode == InteractionMode.Edit,
-                    mode == InteractionMode.Edit && currentViews().any { it.isSelected },
+                    mode == InteractionMode.Edit && isAnySelected(),
                     resourceProvider.subscriptionName(subscription),
                     resourceProvider.actionModeName(actionMode),
                     actionObjectFilter.filter(subscription, views.getOrDefault(emptyList())),
@@ -129,17 +132,6 @@ class CollectionViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = Resultat.loading()
         )
-
-    private fun updateViewsExternally(update: List<CollectionView>) {
-        val old = buildMap {
-            currentViews().forEach { put(it.obj.id, it) }
-        }
-        views.value = Resultat.success(update.map {
-            it.copy(
-                isSelected = old[it.obj.id]?.isSelected ?: false
-            )
-        })
-    }
 
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
@@ -190,14 +182,32 @@ class CollectionViewModel(
 
     private fun subscribeObjects() {
         launch {
-            val flow = if (subscription == Subscription.Favorites) {
-                favoritesSubsciptionFlow()
+            if (subscription == Subscription.Favorites) {
+                favoritesSubsciptionFlow().map { it.map { it as CollectionView } }
             } else {
                 subscriptionFlow()
             }
+                .map { update ->
+                    preserveSelectedState(update)
+                }
+                .flowOn(dispatchers.io)
+                .collect {
+                    views.value = Resultat.success(it)
+                }
+        }
+    }
 
-            flow.collect {
-                updateViewsExternally(it)
+    private fun preserveSelectedState(update: List<CollectionView>): List<CollectionView> {
+        val curr = currentViews()
+            .filterIsInstance<CollectionObjectView>().associateBy { it.obj.id }
+
+        return update.map {
+            when (it) {
+                is ObjectView -> it.copy(isSelected = curr[it.obj.id]?.isSelected ?: false)
+                is FavoritesView -> it.copy(
+                    isSelected = curr[it.obj.id]?.isSelected ?: false
+                )
+                else -> it
             }
         }
     }
@@ -212,9 +222,39 @@ class CollectionViewModel(
             objs.filter { obj ->
                 obj.getProperName().lowercase().contains(query.lowercase())
             }
-                .toViews(urlBuilder, types).map { CollectionView(it) }
+                .toViews(urlBuilder, types)
+                .map { ObjectView(it) }
+                .tryAddSections()
         }
-            .flowOn(dispatchers.io)
+
+    private fun List<ObjectView>.tryAddSections() =
+        if (subscription == Subscription.Recent)
+            this.groupBy { dateProvider.getRelativeTimeSpanString(it.obj.lastModifiedDate) }
+                .flatMap { (key, value) ->
+                    buildList<CollectionView> {
+                        add(CollectionView.SectionView(key.toString()))
+                        addAll(value)
+                    }
+                }
+        else this
+
+    private fun List<ObjectWrapper.Basic>.toOrder(favs: Map<Id, FavoritesOrder>): List<ObjectWrapper.Basic> {
+        if (favs.size != this.size) {
+            Timber.e("Favorite order size is not equal to the list size")
+        }
+        val orderedFavorites = MutableList<ObjectWrapper.Basic?>(this.size) { null }
+        for (item in this) {
+            val order = favs[item.id]?.order
+            if (order == null) {
+                Timber.e("Favorite order is null for ${item.id}")
+            } else if (order < 0 || order >= this.size) {
+                Timber.e("Favorite order is out of bounds for ${item.id}")
+            } else {
+                orderedFavorites[order] = item
+            }
+        }
+        return orderedFavorites.filterNotNull()
+    }
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private suspend fun favoritesSubsciptionFlow() =
@@ -227,31 +267,30 @@ class CollectionViewModel(
         ) { objs, query, types, favorotiesObj ->
             prepareFavorites(favorotiesObj, objs, query, types)
         }
-            .flowOn(dispatchers.io)
 
     private fun prepareFavorites(
-        favorotiesObj: ObjectView,
+        favoritesObj: CoreObjectView,
         objs: List<ObjectWrapper.Basic>,
         query: String,
         types: List<ObjectWrapper.Type>
-    ): List<CollectionView> {
-        val favs = favorotiesObj.blocks.parseFavorites(
-            root = favorotiesObj.root,
-            details = favorotiesObj.details
+    ): List<CollectionObjectView> {
+        val favs = favoritesObj.blocks.parseFavorites(
+            root = favoritesObj.root,
+            details = favoritesObj.details
         )
 
         return objs.toOrder(favs).filter { obj ->
             obj.getProperName().lowercase().contains(query.lowercase())
         }
             .toViews(urlBuilder, types)
-            .map { CollectionView(it, favs[it.id]?.blockId ?: "") }
+            .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
     }
 
     fun onSearchTextChanged(search: String) {
         queryFlow.value = search
     }
 
-    fun onObjectClicked(view: CollectionView) {
+    fun onObjectClicked(view: CollectionObjectView) {
         if (interactionMode.value == InteractionMode.Edit) {
             selectView(view)
             ensureViewMode()
@@ -284,41 +323,45 @@ class CollectionViewModel(
     }
 
     private fun ensureViewMode() {
-        if (currentViews().none { it.isSelected } && subscription != Subscription.Bin) {
+        if (isNoneSelected() && subscription != Subscription.Bin) {
             actionMode = ActionMode.Edit
             interactionMode.value = InteractionMode.View
         }
     }
 
-    fun onObjectLongClicked(view: CollectionView) {
+    fun onObjectLongClicked(view: CollectionObjectView) {
         if (interactionMode.value != InteractionMode.Edit) {
             interactionMode.value = InteractionMode.Edit
         }
         onObjectClicked(view)
     }
 
-    private fun selectView(view: CollectionView) {
+    private fun selectView(view: CollectionObjectView) {
         val views = currentViews()
-        val indexOf = views.indexOf(view)
+        val indexOf = views.indexOf(view as CollectionView)
         if (indexOf != -1) {
-            views[indexOf] = view.copy(isSelected = !view.isSelected)
+            when (view) {
+                is ObjectView -> {
+                    views[indexOf] = view.copy(isSelected = !view.isSelected)
+                }
+                is FavoritesView -> {
+                    views[indexOf] = view.copy(isSelected = !view.isSelected)
+                }
+                else -> {
+                    Timber.e("Unexpected view type: ${view::class}")
+                }
+            }
             alterActionState(views)
             this.views.value = Resultat.success(views)
         }
     }
 
-    private fun alterActionState(views: MutableList<CollectionView>) {
-        actionMode = if (views.all { it.isSelected }) {
+    private fun alterActionState(views: List<CollectionView>) {
+        actionMode = if (isAllSelected(views)) {
             ActionMode.UnselectAll
         } else {
             ActionMode.SelectAll
         }
-    }
-
-    private fun currentViews() = views.value.getOrDefault(listOf()).toMutableList()
-
-    private inline fun launch(crossinline block: suspend CoroutineScope.() -> Unit) {
-        jobs += viewModelScope.launch { block() }
     }
 
     fun onActionClicked() {
@@ -340,11 +383,15 @@ class CollectionViewModel(
         if (from == to) return
         Timber.d("## from:[$from], to:[$to]")
         launch {
-
+            val currentViews = currentViews.filterIsInstance<FavoritesView>()
             val direction = if (from < to) Position.BOTTOM else Position.TOP
             val subject = currentViews[to].blockId
             val target =
-                if (direction == Position.TOP) currentViews[to.inc()].blockId else currentViews[to.dec()].blockId
+                if (direction == Position.TOP) {
+                    currentViews[to.inc()].blockId
+                } else {
+                    currentViews[to.dec()].blockId
+                }
 
             val param = Move.Params(
                 context = configstorage.get().home,
@@ -397,7 +444,15 @@ class CollectionViewModel(
     }
 
     private fun unselectViews() {
-        views.value = Resultat.success(currentViews().map { it.copy(isSelected = false) })
+        changeSelectionStatus(false)
+    }
+
+    private fun changeSelectionStatus(isSelected: Boolean) {
+        views.value = Resultat.success(
+            currentViews()
+                .map {
+                    if (it is ObjectView) it.copy(isSelected = isSelected) else it
+                })
     }
 
     private fun onSelectAll() {
@@ -406,7 +461,7 @@ class CollectionViewModel(
         } else {
             ActionMode.Done
         }
-        views.value = Resultat.success(currentViews().map { it.copy(isSelected = true) })
+        changeSelectionStatus(true)
     }
 
     fun onBackPressed(isExpanded: Boolean) {
@@ -418,11 +473,10 @@ class CollectionViewModel(
     }
 
     fun onActionWidgetClicked(action: ObjectAction) {
-        val selected = selectedViews()
-        proceed(action, selected)
+        proceed(action, selectedViews())
     }
 
-    fun proceed(action: ObjectAction, views: List<CollectionView>) {
+    fun proceed(action: ObjectAction, views: List<ObjectView>) {
         val objIds = views.toObjIds()
         when (action) {
             ObjectAction.ADD_TO_FAVOURITE -> addToFavorite(objIds)
@@ -436,7 +490,7 @@ class CollectionViewModel(
         }
     }
 
-    private fun List<CollectionView>.toObjIds() = this.map { it.obj.id }
+    private fun List<ObjectView>.toObjIds() = this.map { it.obj.id }
 
     private fun changeObjectListBinStatus(ids: List<Id>, isArchived: Boolean) {
         launch {
@@ -484,6 +538,21 @@ class CollectionViewModel(
         }
     }
 
+    private fun isNoneSelected() =
+        currentViews().none { it is ObjectView && it.isSelected }
+
+    private fun isAnySelected() =
+        currentViews().any { it is ObjectView && it.isSelected }
+
+    private fun isAllSelected(views: List<CollectionView>) =
+        views.filterIsInstance<ObjectView>().all { it.isSelected }
+
+    private fun currentViews() = views.value.getOrDefault(listOf()).toMutableList()
+
+    private inline fun launch(crossinline block: suspend CoroutineScope.() -> Unit) {
+        jobs += viewModelScope.launch { block() }
+    }
+
     private inline fun <T> Resultat<T>.progressiveFold(
         onSuccess: (value: T) -> Unit = {},
         onFailure: (exception: Throwable) -> Unit = {},
@@ -506,9 +575,12 @@ class CollectionViewModel(
         }
     }
 
-    private fun selectedViews() = currentViews().filter { it.isSelected }
+    private fun selectedViews() =
+        currentViews()
+            .filterIsInstance<ObjectView>()
+            .filter { it.isSelected }
 
-    override fun reduce(state: ObjectView, event: Payload): ObjectView {
+    override fun reduce(state: CoreObjectView, event: Payload): CoreObjectView {
         var curr = state
         event.events.forEach { e ->
             when (e) {
@@ -558,6 +630,7 @@ class CollectionViewModel(
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val move: Move,
         private val analytics: Analytics,
+        private val dateProvider: DateProvider
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -579,6 +652,7 @@ class CollectionViewModel(
                 objectPayloadDispatcher = objectPayloadDispatcher,
                 move = move,
                 analytics = analytics,
+                dateProvider = dateProvider,
             ) as T
         }
     }
@@ -589,24 +663,6 @@ class CollectionViewModel(
         data class LaunchObjectSet(val target: Id) : Command()
         object Exit : Command()
     }
-}
-
-private fun List<ObjectWrapper.Basic>.toOrder(favs: Map<Id, FavoritesOrder>): List<ObjectWrapper.Basic> {
-    if (favs.size != this.size) {
-        Timber.e("Favorite order size is not equal to the list size")
-    }
-    val orderedFavorites = MutableList<ObjectWrapper.Basic?>(this.size) { null }
-    for (item in this) {
-        val order = favs[item.id]?.order
-        if (order == null) {
-            Timber.e("Favorite order is null for ${item.id}")
-        } else if (order < 0 || order >= this.size) {
-            Timber.e("Favorite order is out of bounds for ${item.id}")
-        } else {
-            orderedFavorites[order] = item
-        }
-    }
-    return orderedFavorites.filterNotNull()
 }
 
 private const val DEBOUNCE_TIMEOUT = 100L

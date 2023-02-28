@@ -21,6 +21,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,6 +57,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -70,6 +72,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.widgets.CollectionActionWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -77,8 +80,11 @@ import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionObjectView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionUiState
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.SectionView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -133,7 +139,7 @@ private fun TopBar(
         Text(
             modifier = Modifier
                 .align(CenterEnd)
-                .clickable { vm.onActionClicked() },
+                .noRippleClickable { vm.onActionClicked() },
             text = uiState.actionName,
             style = actionTextStyle(),
         )
@@ -175,36 +181,53 @@ private fun ListView(
                     .fillMaxWidth()
             ) {
 
-                items(items = views.value, key = { it.obj.id }) { item ->
+                items(items = views.value, key = {
+                    when (it) {
+                        is ObjectView -> it.obj.id
+                        is CollectionView.FavoritesView -> it.obj.id
+                        is SectionView -> it.name
+                    }
+                }) { item ->
+                    when (item) {
+                        is CollectionObjectView -> {
+                            ReorderableItem(
+                                lazyListState,
+                                key = item.obj.id,
+                            ) { isDragging ->
+                                val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
 
-                    ReorderableItem(
-                        lazyListState,
-                        key = item.obj.id,
-                    ) { isDragging ->
-                        val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
-
-                        Column(
-                            modifier =
-                            Modifier
-                                .shadow(elevation.value)
-                                .then(
-                                    if (uiState.inDragMode) {
-                                        Modifier.detectReorderAfterLongPress(
-                                            lazyListState
+                                Column(
+                                    modifier =
+                                    Modifier
+                                        .shadow(elevation.value)
+                                        .then(
+                                            if (uiState.inDragMode) {
+                                                Modifier.detectReorderAfterLongPress(
+                                                    lazyListState
+                                                )
+                                            } else {
+                                                Modifier
+                                            }
                                         )
-                                    } else {
-                                        Modifier
-                                    }
-                                )
-                                .background(MaterialTheme.colors.surface)
-                        ) {
-                            CollectionItem(
-                                view = item,
-                                inEditMode = uiState.showEditMode,
-                                inDragMode = uiState.inDragMode,
-                                displayType = uiState.displayType,
-                                onClick = { vm.onObjectClicked(item) },
-                                onLongClick = { vm.onObjectLongClicked(item) })
+                                        .background(MaterialTheme.colors.surface)
+                                ) {
+                                    CollectionItem(
+                                        view = item,
+                                        inEditMode = uiState.showEditMode,
+                                        inDragMode = uiState.inDragMode,
+                                        displayType = uiState.displayType,
+                                        onClick = { vm.onObjectClicked(item) },
+                                        onLongClick = { vm.onObjectLongClicked(item) })
+                                }
+                            }
+                        }
+                        is SectionView -> {
+                            ReorderableItem(
+                                lazyListState,
+                                key = item.name,
+                            ) { isDragging ->
+                                SectionItem(item)
+                            }
                         }
                     }
                 }
@@ -270,11 +293,31 @@ fun Icon(icon: ObjectIcon?) {
     }
 }
 
+@Composable
+fun SectionItem(
+    view: SectionView
+) {
+
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+
+        Text(
+            modifier = Modifier.padding(16.dp, 20.dp, 0.dp, 0.dp),
+            text = view.name,
+            style = sectionTextStyle(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun CollectionItem(
-    view: CollectionView,
+    view: CollectionObjectView,
     inEditMode: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -419,6 +462,13 @@ fun CollectionItem(
     }
 }
 
+
+@Composable
+private fun sectionTextStyle() = MaterialTheme.typography.body2.copy(
+    fontSize = 15.sp,
+    color = colorResource(id = R.color.text_secondary)
+)
+
 @Composable
 private fun objTypeNameTextStyle() = MaterialTheme.typography.body2.copy(
     color = colorResource(id = R.color.text_secondary)
@@ -450,6 +500,18 @@ fun CollectionScreen(vm: CollectionViewModel) {
     uiState.fold(
         onSuccess = { uiState ->
             BottomSheetScaffold(
+                modifier =
+                Modifier.pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        coroutineScope.launch {
+                            if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                                bottomSheetScaffoldState.bottomSheetState.expand()
+                            } else {
+                                bottomSheetScaffoldState.bottomSheetState.collapse()
+                            }
+                        }
+                    })
+                },
                 sheetElevation = 0.dp,
                 sheetBackgroundColor = Color.Transparent,
                 scaffoldState = bottomSheetScaffoldState,

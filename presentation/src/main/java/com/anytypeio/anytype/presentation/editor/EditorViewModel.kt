@@ -3092,7 +3092,16 @@ class EditorViewModel(
                 target = focused.children.first()
             }
         } else {
-            position = Position.BOTTOM
+            val content = focused.content
+            position = if (content is Content.Text) {
+                if (content.text.isEmpty() || content.text == "/") {
+                    Position.REPLACE
+                } else {
+                    Position.BOTTOM
+                }
+            } else {
+                Position.REPLACE
+            }
         }
 
         val params = CreateBlockLinkWithObject.Params(

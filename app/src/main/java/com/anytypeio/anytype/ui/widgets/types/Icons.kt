@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -173,7 +174,9 @@ private fun DefaultObjectBookmarkIcon(
         Image(
             painter = rememberAsyncImagePainter(url),
             contentDescription = "Icon from URI",
-            modifier = Modifier.align(Alignment.Center).size(24.dp)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(24.dp)
         )
     }
 }
@@ -192,8 +195,9 @@ private fun DefaultProfileAvatarIcon(
                 color = colorResource(id = R.color.shape_primary)
             )
     ) {
+        val name = icon.name.ifEmpty { stringResource(id = R.string.u) }
         Text(
-            text = icon.name.first().toString(),
+            text = name.take(1),
             modifier = Modifier.align(Alignment.Center),
             style = TextStyle(
                 fontSize = 28.sp,

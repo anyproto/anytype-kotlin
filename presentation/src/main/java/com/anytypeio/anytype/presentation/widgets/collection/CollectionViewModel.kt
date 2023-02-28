@@ -451,7 +451,11 @@ class CollectionViewModel(
         views.value = Resultat.success(
             currentViews()
                 .map {
-                    if (it is ObjectView) it.copy(isSelected = isSelected) else it
+                    when (it) {
+                        is FavoritesView -> it.copy(isSelected = isSelected)
+                        is ObjectView -> it.copy(isSelected = isSelected)
+                        else -> it
+                    }
                 })
     }
 
@@ -476,7 +480,7 @@ class CollectionViewModel(
         proceed(action, selectedViews())
     }
 
-    fun proceed(action: ObjectAction, views: List<ObjectView>) {
+    fun proceed(action: ObjectAction, views: List<CollectionObjectView>) {
         val objIds = views.toObjIds()
         when (action) {
             ObjectAction.ADD_TO_FAVOURITE -> addToFavorite(objIds)
@@ -490,7 +494,7 @@ class CollectionViewModel(
         }
     }
 
-    private fun List<ObjectView>.toObjIds() = this.map { it.obj.id }
+    private fun List<CollectionObjectView>.toObjIds() = this.map { it.obj.id }
 
     private fun changeObjectListBinStatus(ids: List<Id>, isArchived: Boolean) {
         launch {
@@ -539,13 +543,13 @@ class CollectionViewModel(
     }
 
     private fun isNoneSelected() =
-        currentViews().none { it is ObjectView && it.isSelected }
+        currentViews().none { it is CollectionObjectView && it.isSelected }
 
     private fun isAnySelected() =
-        currentViews().any { it is ObjectView && it.isSelected }
+        currentViews().any { it is CollectionObjectView && it.isSelected }
 
     private fun isAllSelected(views: List<CollectionView>) =
-        views.filterIsInstance<ObjectView>().all { it.isSelected }
+        views.filterIsInstance<CollectionObjectView>().all { it.isSelected }
 
     private fun currentViews() = views.value.getOrDefault(listOf()).toMutableList()
 
@@ -577,7 +581,7 @@ class CollectionViewModel(
 
     private fun selectedViews() =
         currentViews()
-            .filterIsInstance<ObjectView>()
+            .filterIsInstance<CollectionObjectView>()
             .filter { it.isSelected }
 
     override fun reduce(state: CoreObjectView, event: Payload): CoreObjectView {

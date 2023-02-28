@@ -25,10 +25,12 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,10 +47,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
@@ -61,6 +65,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -89,6 +94,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.google.accompanist.themeadapter.material.createMdcTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -242,6 +248,8 @@ private fun SearchBar(
     vm: CollectionViewModel,
     uiState: CollectionUiState
 ) {
+    val isKeyboardOpen by keyboardAsState()
+
     AndroidView(
         modifier = Modifier
             .padding(16.dp, 6.dp)
@@ -279,6 +287,19 @@ private fun SearchBar(
             it.findViewById<View>(R.id.progressBar).setVisible(uiState.views.isLoading)
         }
     )
+
+    val currentView = LocalView.current
+
+    LaunchedEffect(isKeyboardOpen) {
+
+        snapshotFlow { isKeyboardOpen }
+            .distinctUntilChanged()
+            .collectLatest {
+                if (!it) {
+                    currentView.findViewById<View>(R.id.filterInputField).clearFocus()
+                }
+            }
+    }
 }
 
 @Composable
@@ -560,7 +581,7 @@ private fun BlockWidget(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .absolutePadding(16.dp, 16.dp, 16.dp, 32.dp),
+            .absolutePadding(16.dp, 0.dp, 16.dp, 22.dp),
         factory = { context ->
             CollectionActionWidget(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
@@ -594,4 +615,10 @@ fun DefaultTheme(
         shapes = theme.shapes ?: MaterialTheme.shapes,
         content = content
     )
+}
+
+@Composable
+fun keyboardAsState(): State<Boolean> {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    return rememberUpdatedState(isImeVisible)
 }

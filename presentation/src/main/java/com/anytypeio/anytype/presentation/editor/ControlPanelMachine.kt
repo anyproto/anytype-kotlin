@@ -535,12 +535,7 @@ sealed class ControlPanelMachine {
                     }
                 }
             }
-            Event.OnDocumentMenuClicked -> {
-                state.copy(
-                    slashWidget = Toolbar.SlashWidget.reset(),
-                    objectTypesToolbar = Toolbar.ObjectTypes.reset()
-                )
-            }
+            Event.OnDocumentMenuClicked -> { init() }
             Event.OnDocumentIconClicked -> {
                 state.copy(
                     slashWidget = Toolbar.SlashWidget.reset(),

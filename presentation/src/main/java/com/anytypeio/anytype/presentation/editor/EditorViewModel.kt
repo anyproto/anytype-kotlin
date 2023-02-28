@@ -1446,7 +1446,12 @@ class EditorViewModel(
 
     fun onDocumentMenuClicked() {
         Timber.d("onDocumentMenuClicked, ")
-        proceedWithOpeningObjectMenu()
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            views.onEach { if (it is Focusable) it.isFocused = false }
+            renderCommand.send(Unit)
+            proceedWithOpeningObjectMenu()
+        }
     }
 
     private fun proceedWithOpeningObjectMenu() {

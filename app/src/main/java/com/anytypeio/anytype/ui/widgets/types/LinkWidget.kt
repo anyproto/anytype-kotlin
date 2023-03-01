@@ -57,23 +57,27 @@ fun LinkWidgetCard(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .noRippleClickable {
-                isCardMenuExpanded.value = !isCardMenuExpanded.value
-            }
+            .then(
+                if (isEditable)
+                    Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                else
+                    Modifier.combinedClickable(
+                        onClick = { onWidgetObjectClicked(item.obj) },
+                        onLongClick = {
+                            isCardMenuExpanded.value = !isCardMenuExpanded.value
+                        },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+            )
     ) {
         Box(
             Modifier
                 .padding(vertical = 6.dp)
                 .fillMaxWidth()
                 .height(40.dp)
-                .combinedClickable(
-                    onClick = { onWidgetObjectClicked(item.obj) },
-                    onLongClick = {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
         ) {
             Text(
                 text = item.obj.name.orEmpty().trim(),

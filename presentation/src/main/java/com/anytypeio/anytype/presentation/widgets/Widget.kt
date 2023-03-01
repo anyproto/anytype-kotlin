@@ -81,3 +81,5 @@ fun List<Block>.parseWidgets(
 
 typealias WidgetId = Id
 typealias ViewId = Id
+typealias FromIndex = Int
+typealias ToIndex = Int

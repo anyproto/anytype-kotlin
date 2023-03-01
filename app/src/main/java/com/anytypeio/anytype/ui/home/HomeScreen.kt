@@ -28,6 +28,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +45,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
+import com.anytypeio.anytype.presentation.widgets.FromIndex
+import com.anytypeio.anytype.presentation.widgets.ToIndex
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.WidgetId
@@ -53,6 +57,10 @@ import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun HomeScreen(
@@ -63,7 +71,6 @@ fun HomeScreen(
     onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
-    onRefresh: () -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -71,7 +78,8 @@ fun HomeScreen(
     onSearchClicked: () -> Unit,
     onLibraryClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
-    onSpaceClicked: () -> Unit
+    onSpaceClicked: () -> Unit,
+    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -84,10 +92,9 @@ fun HomeScreen(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onChangeWidgetView = onChangeWidgetView,
-            onCreateWidget = onCreateWidget,
             onEditWidgets = onEditWidgets,
-            onRefresh = onRefresh,
-            onLibraryClicked = onLibraryClicked
+            onLibraryClicked = onLibraryClicked,
+            onMove = onMove
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -146,100 +153,140 @@ private fun WidgetList(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     mode: InteractionMode,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
     onLibraryClicked: () -> Unit,
-    onRefresh: () -> Unit
+    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(widgets) { index, item ->
+    val views = remember { mutableStateOf(widgets) }
+    views.value = widgets
+    val lazyListState = rememberReorderableLazyListState(
+        onMove = { from, to ->
+            views.value = views.value.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+        },
+        onDragEnd = { from, to ->
+            onMove(views.value, from, to)
+        },
+        canDragOver = { draggedOver, _ ->
+            val curr = views.value
+            val targetView = curr[draggedOver.index]
+            targetView is WidgetView.Draggable
+        }
+    )
+    LazyColumn(
+        state = lazyListState.listState,
+        modifier = Modifier
+            .reorderable(lazyListState)
+            .fillMaxSize()
+    ) {
+        itemsIndexed(
+            items = views.value,
+            key = { _, item -> item.id }
+        ) { index, item ->
             when (item) {
                 is WidgetView.Tree -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = if (index == 0) 6.dp else 0.dp)
-                            .animateContentSize(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow
-                                )
-                            )
-                    ) {
-                        TreeWidgetCard(
-                            item = item,
-                            onExpandElement = onExpand,
-                            onDropDownMenuAction = { action ->
-                                onWidgetMenuAction(item.id, action)
-                            },
-                            onWidgetObjectClicked = onWidgetObjectClicked,
-                            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            mode = mode
-                        )
-                        AnimatedVisibility(
-                            visible = mode is InteractionMode.Edit,
+                    ReorderableItem(lazyListState, key = item.id) { isDragging ->
+                        Box(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(end = 12.dp),
-                            enter = fadeIn() + slideInHorizontally { it / 4 },
-                            exit = fadeOut() + slideOutHorizontally { it / 4 }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_remove_widget),
-                                modifier = Modifier
-                                    .height(24.dp)
-                                    .width(24.dp)
-                                    .background(
-                                        shape = CircleShape,
-                                        color = Color.Gray
+                                .fillMaxWidth()
+                                .padding(top = if (index == 0) 6.dp else 0.dp)
+                                .animateContentSize(
+                                    animationSpec = spring(
+                                        stiffness = Spring.StiffnessLow
                                     )
-                                    .noRippleClickable {
-                                        onWidgetMenuAction(
-                                            item.id, DropDownMenuAction.RemoveWidget
-                                        )
-                                    },
-                                contentDescription = "Remove widget icon"
+                                )
+                                .then(
+                                    if (mode is InteractionMode.Edit)
+                                        Modifier.detectReorderAfterLongPress(lazyListState)
+                                    else
+                                        Modifier
+                                )
+                        ) {
+                            TreeWidgetCard(
+                                item = item,
+                                onExpandElement = onExpand,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                                mode = mode
                             )
+                            AnimatedVisibility(
+                                visible = mode is InteractionMode.Edit,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(end = 12.dp),
+                                enter = fadeIn() + slideInHorizontally { it / 4 },
+                                exit = fadeOut() + slideOutHorizontally { it / 4 }
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_remove_widget),
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                        .width(24.dp)
+                                        .background(
+                                            shape = CircleShape,
+                                            color = Color.Gray
+                                        )
+                                        .noRippleClickable {
+                                            onWidgetMenuAction(
+                                                item.id, DropDownMenuAction.RemoveWidget
+                                            )
+                                        },
+                                    contentDescription = "Remove widget icon"
+                                )
+                            }
                         }
                     }
                 }
                 is WidgetView.Link -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = if (index == 0) 6.dp else 0.dp)
-                    ) {
-                        LinkWidgetCard(
-                            item = item,
-                            onDropDownMenuAction = { action ->
-                                onWidgetMenuAction(item.id, action)
-                            },
-                            onWidgetObjectClicked = onWidgetObjectClicked,
-                            isEditable = mode is InteractionMode.Edit
-                        )
-                        AnimatedVisibility(
-                            visible = mode is InteractionMode.Edit,
+                    ReorderableItem(lazyListState, key = item.id) {
+                        Box(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(end = 12.dp),
-                            enter = fadeIn() + slideInHorizontally { it / 4 },
-                            exit = fadeOut() + slideOutHorizontally { it / 4 }
+                                .fillMaxWidth()
+                                .padding(top = if (index == 0) 6.dp else 0.dp)
+                                .then(
+                                    if (mode is InteractionMode.Edit)
+                                        Modifier.detectReorderAfterLongPress(lazyListState)
+                                    else
+                                        Modifier
+                                )
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_remove_widget),
-                                modifier = Modifier
-                                    .height(24.dp)
-                                    .width(24.dp)
-                                    .background(
-                                        shape = CircleShape,
-                                        color = Color.Gray
-                                    )
-                                    .noRippleClickable {
-                                        onWidgetMenuAction(
-                                            item.id, DropDownMenuAction.RemoveWidget
-                                        )
-                                    },
-                                contentDescription = "Remove widget icon"
+                            LinkWidgetCard(
+                                item = item,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                isEditable = mode is InteractionMode.Edit
                             )
+                            AnimatedVisibility(
+                                visible = mode is InteractionMode.Edit,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(end = 12.dp),
+                                enter = fadeIn() + slideInHorizontally { it / 4 },
+                                exit = fadeOut() + slideOutHorizontally { it / 4 }
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_remove_widget),
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                        .width(24.dp)
+                                        .background(
+                                            shape = CircleShape,
+                                            color = Color.Gray
+                                        )
+                                        .noRippleClickable {
+                                            onWidgetMenuAction(
+                                                item.id, DropDownMenuAction.RemoveWidget
+                                            )
+                                        },
+                                    contentDescription = "Remove widget icon"
+                                )
+                            }
                         }
                     }
                 }
@@ -253,6 +300,12 @@ private fun WidgetList(
                                     stiffness = Spring.StiffnessLow
                                 )
                             )
+                            .then(
+                                if (mode is InteractionMode.Edit)
+                                    Modifier.detectReorderAfterLongPress(lazyListState)
+                                else
+                                    Modifier
+                            )
                     ) {
                         DataViewListWidgetCard(
                             item = item,
@@ -261,30 +314,42 @@ private fun WidgetList(
                                 onWidgetMenuAction(item.id, action)
                             },
                             onChangeWidgetView = onChangeWidgetView,
-                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                            mode = mode
                         )
                     }
                 }
                 is WidgetView.ListOfObjects -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = if (index == 0) 6.dp else 0.dp)
-                            .animateContentSize(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow
+                    ReorderableItem(
+                        lazyListState, key = item.id
+                    ) { isDragging ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = if (index == 0) 6.dp else 0.dp)
+                                .animateContentSize(
+                                    animationSpec = spring(
+                                        stiffness = Spring.StiffnessLow
+                                    )
                                 )
+                                .then(
+                                    if (mode is InteractionMode.Edit)
+                                        Modifier.detectReorderAfterLongPress(lazyListState)
+                                    else
+                                        Modifier
+                                )
+                        ) {
+                            ListWidgetCard(
+                                item = item,
+                                mode = mode,
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onListWidgetHeaderClicked = onBundledWidgetHeaderClicked,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
+                                onToggleExpandedWidgetState = onToggleExpandedWidgetState
                             )
-                    ) {
-                        ListWidgetCard(
-                            item = item,
-                            onWidgetObjectClicked = onWidgetObjectClicked,
-                            onListWidgetHeaderClicked = onBundledWidgetHeaderClicked,
-                            onDropDownMenuAction = { action ->
-                                onWidgetMenuAction(item.id, action)
-                            },
-                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
-                        )
+                        }
                     }
                 }
                 is WidgetView.Bin -> {
@@ -292,21 +357,9 @@ private fun WidgetList(
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
-                        onClick = { onBundledWidgetHeaderClicked(item.id) }
+                        onClick = { onBundledWidgetHeaderClicked(item.id) },
+                        mode = mode
                     )
-                }
-                is WidgetView.Action.CreateWidget -> {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp)
-                    ) {
-                        WidgetActionButton(
-                            label = stringResource(R.string.create_widget),
-                            onClick = onCreateWidget,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
                 }
                 is WidgetView.Action.Library -> {
                     Box(
@@ -360,19 +413,6 @@ private fun WidgetList(
                                 modifier = Modifier
                             )
                         }
-                    }
-                }
-                is WidgetView.Action.Refresh -> {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp)
-                    ) {
-                        WidgetActionButton(
-                            label = "Refresh (for testing)",
-                            onClick = onRefresh,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
                     }
                 }
             }

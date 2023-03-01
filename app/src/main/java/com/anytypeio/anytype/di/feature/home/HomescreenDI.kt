@@ -9,6 +9,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceSubcomponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeSubcomponent
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -102,6 +103,17 @@ object HomeScreenModule {
         repo: BlockRepository,
     ): UpdateWidget = UpdateWidget(
         repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun move(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ) : Move = Move(
+        repo = repo,
+        appCoroutineDispatchers = dispatchers
     )
 
     @JvmStatic

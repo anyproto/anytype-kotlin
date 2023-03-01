@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -83,6 +84,9 @@ class HomeViewModelTest {
 
     @Mock
     lateinit var createObject: CreateObject
+
+    @Mock
+    lateinit var move: Move
 
     @Mock
     lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
@@ -543,7 +547,8 @@ class HomeViewModelTest {
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         widgetActiveViewStateHolder = activeViewStateHolder,
         collapsedWidgetStateHolder = collapsedWidgetStateHolder,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        move = move
     )
 
     companion object {

@@ -26,12 +26,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BinWidgetCard(
+    mode: InteractionMode,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onClick: () -> Unit,
 ) {
@@ -50,15 +52,20 @@ fun BinWidgetCard(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .combinedClickable(
-                onClick = {
-                    onClick()
-                },
-                onLongClick = {
-                    isCardMenuExpanded.value = !isCardMenuExpanded.value
-                },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
+            .then(
+                if (mode is InteractionMode.Default)
+                    Modifier.combinedClickable(
+                        onClick = {
+                            onClick()
+                        },
+                        onLongClick = {
+                            isCardMenuExpanded.value = !isCardMenuExpanded.value
+                        },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+                else
+                    Modifier
             )
     ) {
         Box(

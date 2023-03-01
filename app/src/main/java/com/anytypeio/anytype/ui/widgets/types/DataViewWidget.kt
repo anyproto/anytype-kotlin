@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.types
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +29,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ViewId
@@ -40,6 +40,7 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 @Composable
 fun DataViewListWidgetCard(
     item: WidgetView.SetOfObjects,
+    mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -86,7 +87,8 @@ fun DataViewListWidgetCard(
                     ListWidgetElement(
                         onWidgetObjectClicked = onWidgetObjectClicked,
                         obj = element.obj,
-                        icon = element.icon
+                        icon = element.icon,
+                        mode = mode
                     )
                     Divider(
                         thickness = 0.5.dp,
@@ -147,16 +149,22 @@ private fun DataViewTabs(
 
 @Composable
 fun ListWidgetElement(
+    mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     icon: ObjectIcon,
     obj: ObjectWrapper.Basic
 ) {
     Box(
         modifier = Modifier
-            .clickable(onClick = { onWidgetObjectClicked(obj) })
             .height(72.dp)
             .fillMaxWidth()
             .padding(end = 8.dp)
+            .then(
+                if (mode is InteractionMode.Default)
+                    Modifier.noRippleClickable { onWidgetObjectClicked(obj) }
+                else
+                    Modifier
+            )
     ) {
         val hasDescription = obj.description?.isNotEmpty() ?: false
         val hasIcon = icon != ObjectIcon.None && icon !is ObjectIcon.Basic.Avatar

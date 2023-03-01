@@ -9,12 +9,14 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -74,7 +76,8 @@ class HomeScreenViewModel(
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
     private val urlBuilder: UrlBuilder,
-    private val createObject: CreateObject
+    private val createObject: CreateObject,
+    private val move: Move
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -390,17 +393,8 @@ class HomeScreenViewModel(
         }
     }
 
-    @Deprecated("For debugging only")
-    fun onRefresh() {
-        proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
-    }
-
     fun onEditWidgets() {
         mode.value = InteractionMode.Edit
-    }
-
-    fun onWidgetMenuAction() {
-
     }
 
     fun onExitEditMode() {
@@ -411,32 +405,28 @@ class HomeScreenViewModel(
         treeWidgetBranchStateHolder.onExpand(linkPath = path)
     }
 
-    fun onDeleteWidgetClicked(widget: Id) {
-        proceedWithDeletingWidget(widget)
-    }
-
     fun onWidgetObjectClicked(obj: ObjectWrapper.Basic) {
         Timber.d("With id: ${obj.id}")
         if (obj.isArchived != true) {
             proceedWithOpeningObject(obj)
         } else {
-            sendToast("Open bin to restore your object")
+            sendToast("Open bin to restore your archived object")
         }
     }
 
     fun onDropDownMenuAction(widget: Id, action: DropDownMenuAction) {
         when (action) {
             DropDownMenuAction.ChangeWidgetSource -> {
-                onChangeWidgetSourceClicked(widget)
+                proceedWithChangingSource(widget)
             }
             DropDownMenuAction.ChangeWidgetType -> {
-                onChangeWidgetTypeClicked(widget)
+                proceedWithChangingType(widget)
             }
             DropDownMenuAction.EditWidgets -> {
                 onEditWidgets()
             }
             DropDownMenuAction.RemoveWidget -> {
-                onDeleteWidgetClicked(widget)
+                proceedWithDeletingWidget(widget)
             }
         }
     }
@@ -458,7 +448,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onChangeWidgetTypeClicked(widget: Id) {
+    private fun proceedWithChangingType(widget: Id) {
         Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
         val curr = widgets.value.find { it.id == widget }
         if (curr != null) {
@@ -477,7 +467,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun onChangeWidgetSourceClicked(widget: Id) {
+    private fun proceedWithChangingSource(widget: Id) {
         val curr = widgets.value.find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
@@ -562,6 +552,28 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onMove(views: List<WidgetView>, from: Int, to: Int) {
+        viewModelScope.launch {
+            val direction = if (from < to) Position.BOTTOM else Position.TOP
+            val subject = views[to].id
+            val target = if (direction == Position.TOP) views[to.inc()].id else views[to.dec()].id
+            move.stream(
+                Move.Params(
+                    context = configStorage.get().widgets,
+                    targetId = target,
+                    targetContext = configStorage.get().widgets,
+                    blockIds = listOf(subject),
+                    position = direction
+                )
+            ).collect { result ->
+                result.fold(
+                    onSuccess = { objectPayloadDispatcher.send(it) },
+                    onFailure = { Timber.e(it, "Error while moving blocks") }
+                )
+            }
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id) : Navigation()
         data class OpenSet(val ctx: Id) : Navigation()
@@ -585,6 +597,7 @@ class HomeScreenViewModel(
         private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
         private val urlBuilder: UrlBuilder,
         private val getObject: GetObject,
+        private val move: Move
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -603,7 +616,8 @@ class HomeScreenViewModel(
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,
             collapsedWidgetStateHolder = collapsedWidgetStateHolder,
             getObject = getObject,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            move = move
         ) as T
     }
 

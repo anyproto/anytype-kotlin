@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 @Composable
 fun ListWidgetCard(
     item: WidgetView.ListOfObjects,
+    mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onListWidgetHeaderClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
@@ -49,9 +51,15 @@ fun ListWidgetCard(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .noRippleClickable {
-                isCardMenuExpanded.value = !isCardMenuExpanded.value
-            }
+            .then(
+                if (mode is InteractionMode.Edit)
+                    Modifier.noRippleClickable {
+                        // TODO
+//                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                else
+                    Modifier
+            )
     ) {
         Column(
             modifier = Modifier
@@ -66,7 +74,11 @@ fun ListWidgetCard(
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
-                onWidgetHeaderClicked = { onListWidgetHeaderClicked(item.id) },
+                onWidgetHeaderClicked = {
+                    if (mode is InteractionMode.Default) {
+                        onListWidgetHeaderClicked(item.id)
+                    }
+                },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isEditable = false,
@@ -77,7 +89,8 @@ fun ListWidgetCard(
                     ListWidgetElement(
                         onWidgetObjectClicked = onWidgetObjectClicked,
                         obj = element.obj,
-                        icon = element.icon
+                        icon = element.icon,
+                        mode = mode
                     )
                     Divider(
                         thickness = 0.5.dp,

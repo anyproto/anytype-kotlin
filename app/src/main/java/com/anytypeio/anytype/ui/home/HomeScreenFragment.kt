@@ -64,7 +64,6 @@ class HomeScreenFragment : BaseComposeFragment() {
                     },
                     onEditWidgets = vm::onEditWidgets,
                     onExitEditMode = vm::onExitEditMode,
-                    onRefresh = vm::onRefresh,
                     onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                         vm.onDropDownMenuAction(widget, action)
                     },
@@ -83,7 +82,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onSpaceClicked = {
                         navigation().openSettings()
                     },
-                    onBundledWidgetClicked = vm::onBundledWidgetClicked
+                    onBundledWidgetClicked = vm::onBundledWidgetClicked,
+                    onMove = vm::onMove
                 )
             }
         }

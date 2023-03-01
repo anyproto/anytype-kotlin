@@ -76,9 +76,14 @@ fun TreeWidgetCard(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .noRippleClickable {
-                isCardMenuExpanded.value = !isCardMenuExpanded.value
-            }
+            .then(
+                if (mode is InteractionMode.Edit)
+                    Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                else
+                    Modifier
+            )
     ) {
         Column(
             Modifier.padding(
@@ -99,6 +104,7 @@ fun TreeWidgetCard(
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
                     item = item,
+                    mode = mode,
                     onExpand = onExpandElement,
                     onWidgetElementClicked = onWidgetObjectClicked
                 )
@@ -117,6 +123,7 @@ fun TreeWidgetCard(
 
 @Composable
 private fun TreeWidgetTreeItems(
+    mode: InteractionMode,
     item: WidgetView.Tree,
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit
@@ -125,9 +132,12 @@ private fun TreeWidgetTreeItems(
         Row(
             modifier = Modifier
                 .padding(vertical = 8.dp, horizontal = 16.dp)
-                .noRippleClickable {
-                    onWidgetElementClicked(element.obj)
-                }
+                .then(
+                    if (mode is InteractionMode.Default)
+                        Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
+                    else
+                        Modifier
+                )
         ) {
             if (element.indent > 0) {
                 Spacer(
@@ -147,8 +157,12 @@ private fun TreeWidgetTreeItems(
                                 else
                                     ArrowIconDefaults.Collapsed
                             )
-                            .noRippleClickable { onExpand(element.path) }
-
+                            .then(
+                                if (mode is InteractionMode.Default)
+                                    Modifier.noRippleClickable { onExpand(element.path) }
+                                else
+                                    Modifier
+                            )
                     )
                 }
                 is WidgetView.Tree.ElementIcon.Leaf -> {
@@ -231,13 +245,18 @@ fun WidgetHeader(
                     end = if (isEditable) 76.dp else 32.dp
                 )
                 .align(Alignment.CenterStart)
-                .combinedClickable(
-                    onClick = onWidgetHeaderClicked,
-                    onLongClick = {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
+                .then(
+                    if (isEditable)
+                        Modifier
+                    else
+                        Modifier.combinedClickable(
+                            onClick = onWidgetHeaderClicked,
+                            onLongClick = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
                 )
         )
 
@@ -250,7 +269,12 @@ fun WidgetHeader(
                 .align(Alignment.CenterEnd)
                 .padding(end = 12.dp)
                 .rotate(rotation.value)
-                .noRippleClickable { onExpandElement() }
+                .then(
+                    if (isEditable)
+                        Modifier
+                    else
+                        Modifier.noRippleClickable { onExpandElement() }
+                )
         )
         AnimatedVisibility(
             visible = isEditable,

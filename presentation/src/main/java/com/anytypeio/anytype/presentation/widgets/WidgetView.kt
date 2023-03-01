@@ -6,13 +6,16 @@ import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class WidgetView {
+
+    abstract val id: Id
+
     data class Tree(
-        val id: Id,
+        override val id: Id,
         val obj: ObjectWrapper.Basic,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
         val isEditable: Boolean = true
-    ) : WidgetView() {
+    ) : WidgetView(), Draggable {
         data class Element(
             val elementIcon: ElementIcon,
             val objectIcon: ObjectIcon = ObjectIcon.None,
@@ -29,17 +32,17 @@ sealed class WidgetView {
     }
 
     data class Link(
-        val id: Id,
+        override val id: Id,
         val obj: ObjectWrapper.Basic,
-    ) : WidgetView()
+    ) : WidgetView(), Draggable
 
     data class SetOfObjects(
-        val id: Id,
+        override val id: Id,
         val obj: ObjectWrapper.Basic,
         val tabs: List<Tab>,
         val elements: List<Element>,
         val isExpanded: Boolean
-    ) : WidgetView() {
+    ) : WidgetView(), Draggable {
         data class Tab(
             val id: Id,
             val name: String,
@@ -52,7 +55,7 @@ sealed class WidgetView {
     }
 
     data class ListOfObjects(
-        val id: Id,
+        override val id: Id,
         val type: Type,
         val elements: List<Element>,
         val isExpanded: Boolean
@@ -68,16 +71,19 @@ sealed class WidgetView {
         }
     }
 
-    data class Bin(val id: Id) : WidgetView()
+    data class Bin(override val id: Id) : WidgetView()
 
     sealed class Action : WidgetView() {
-        object EditWidgets : Action()
-        object CreateWidget: Action()
+        object EditWidgets : Action() {
+            override val id: Id get() = "id.action.edit-widgets"
+        }
         // Will be deleted. For testing only.
-        object Refresh: Action()
-        // Will be deleted. For testing only.
-        object Library : Action()
+        object Library : Action() {
+            override val id: Id get() = "id.action.library"
+        }
     }
+
+    interface Draggable
 }
 
 sealed class DropDownMenuAction {

@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -165,21 +164,6 @@ object HomeScreenModule {
         dispatchers: AppCoroutineDispatchers,
     ) : GetTemplates = GetTemplates(
         repo = repo,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun objectSearchSubscriptionContainer(
-        repo: BlockRepository,
-        channel: SubscriptionEventChannel,
-        store: ObjectStore,
-        dispatchers: AppCoroutineDispatchers
-    ): ObjectSearchSubscriptionContainer = ObjectSearchSubscriptionContainer(
-        repo = repo,
-        channel = channel,
-        store = store,
         dispatchers = dispatchers
     )
 

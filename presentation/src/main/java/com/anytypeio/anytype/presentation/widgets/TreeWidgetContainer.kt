@@ -4,60 +4,74 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import timber.log.Timber
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+
 
 class TreeWidgetContainer(
     private val widget: Widget.Tree,
-    private val container: ObjectSearchSubscriptionContainer,
+    private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
+    dispatchers: AppCoroutineDispatchers,
     expandedBranches: Flow<List<TreePath>>,
     isWidgetCollapsed: Flow<Boolean>
 ) : WidgetContainer {
 
-    private val store = mutableMapOf<Id, ObjectWrapper.Basic>()
+    private val nodes = mutableMapOf<Id, List<Id>>()
 
-    override val view: Flow<WidgetView.Tree> = combine(
+    override val view: Flow<WidgetView> = combine(
         expandedBranches, isWidgetCollapsed
     ) { paths, isWidgetCollapsed ->
-        container.get(
-            subscription = widget.id,
-            keys = keys,
-            targets = if (!isWidgetCollapsed) {
-                getSubscriptionTargets(paths = paths).also { targets ->
-                    Timber.d("Subscription targets: $targets")
+        paths to isWidgetCollapsed
+    }.flatMapLatest { (paths, isWidgetCollapsed) ->
+        container.subscribe(
+            StoreSearchByIdsParams(
+                subscription = widget.id,
+                keys = keys,
+                targets = if (!isWidgetCollapsed) {
+                    getSubscriptionTargets(paths = paths)
+                } else {
+                    emptyList()
                 }
-            } else {
-                emptyList()
-            }
-        ).also { result ->
-            val valid = result.filter { obj -> isValidObject(obj) }
-            store.clear()
-            store.putAll(valid.associateBy { r -> r.id })
-        }
-        WidgetView.Tree(
-            id = widget.id,
-            obj = widget.source,
-            isExpanded = !isWidgetCollapsed,
-            elements = buildTree(
-                links = widget.source.links,
-                level = ROOT_INDENT,
-                expanded = paths,
-                path = widget.id + SEPARATOR + widget.source.id + SEPARATOR
             )
-        )
-    }
+        ).map { results ->
+            val valid = results.filter { obj -> isValidObject(obj) }
+            val data = valid.associateBy { r -> r.id }
+            with(nodes) {
+                clear()
+                putAll(valid.associate { obj -> obj.id to obj.links })
+            }
+            WidgetView.Tree(
+                id = widget.id,
+                obj = widget.source,
+                isExpanded = !isWidgetCollapsed,
+                elements = buildTree(
+                    links = widget.source.links,
+                    level = ROOT_INDENT,
+                    expanded = paths,
+                    path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
+                    data = data
+                )
+            )
+        }
+    }.flowOn(dispatchers.io)
 
-    private fun getSubscriptionTargets(paths: List<TreePath>) = buildList {
+    private fun getSubscriptionTargets(
+        paths: List<TreePath>
+    ) = buildList {
         addAll(widget.source.links)
-        store.forEach { (id, obj) ->
-            if (paths.any { path -> path.contains(id) }) addAll(obj.links)
+        nodes.forEach { (id, links) ->
+            if (paths.any { path -> path.contains(id) }) addAll(links)
         }
     }.distinct()
 
@@ -65,10 +79,11 @@ class TreeWidgetContainer(
         links: List<Id>,
         expanded: List<TreePath>,
         level: Int,
-        path: TreePath
+        path: TreePath,
+        data: Map<Id, ObjectWrapper.Basic>
     ): List<WidgetView.Tree.Element> = buildList {
         links.forEach { link ->
-            val obj = store[link]
+            val obj = data[link]
             if (obj != null) {
                 val currentLinkPath = path + link
                 val isExpandable = level < MAX_INDENT
@@ -96,7 +111,8 @@ class TreeWidgetContainer(
                             links = obj.links,
                             level = level.inc(),
                             expanded = expanded,
-                            path = currentLinkPath + SEPARATOR
+                            path = currentLinkPath + SEPARATOR,
+                            data = data
                         )
                     )
                 }
@@ -127,6 +143,11 @@ class TreeWidgetContainer(
             add(Relations.LINKS)
         }
     }
+
+    data class Node(
+        val id: Id,
+        val children: List<Id>
+    )
 }
 
 /**

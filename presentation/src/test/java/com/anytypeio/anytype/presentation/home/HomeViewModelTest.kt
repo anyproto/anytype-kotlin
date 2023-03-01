@@ -20,12 +20,12 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
@@ -87,9 +87,6 @@ class HomeViewModelTest {
 
     @Mock
     lateinit var move: Move
-
-    @Mock
-    lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
 
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
@@ -473,14 +470,16 @@ class HomeViewModelTest {
         targets: List<Id>,
         keys: List<Key> = TreeWidgetContainer.keys
     ) {
-        objectSearchSubscriptionContainer.stub {
+        storelessSubscriptionContainer.stub {
             onBlocking {
-                get(
-                    subscription = subscription,
-                    keys = keys,
-                    targets = targets
+                subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = subscription,
+                        keys = keys,
+                        targets = targets
+                    )
                 )
-            } doReturn emptyList()
+            } doReturn flowOf(emptyList())
         }
     }
 
@@ -541,7 +540,6 @@ class HomeViewModelTest {
         widgetEventDispatcher = widgetEventDispatcher,
         openObject = openObject,
         createObject = createObject,
-        objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
         appCoroutineDispatchers = appCoroutineDispatchers,
         getObject = getObject,
         storelessSubscriptionContainer = storelessSubscriptionContainer,

@@ -4,16 +4,14 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
-import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -23,9 +21,9 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -36,26 +34,19 @@ import org.mockito.kotlin.verifyBlocking
 
 class TreeWidgetContainerTest {
 
-    @Mock
-    lateinit var repo: BlockRepository
-
-    @Mock
-    lateinit var subscriptionEventChannel: SubscriptionEventChannel
-
-    @Mock
-    lateinit var store: ObjectStore
+    @get:Rule
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Mock
     lateinit var gateway: Gateway
 
-    lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
-
-    val testDispatcher = StandardTestDispatcher()
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     val dispatchers = AppCoroutineDispatchers(
-        io = testDispatcher,
-        main = testDispatcher,
-        computation = testDispatcher
+        io = coroutineTestRule.dispatcher,
+        main = coroutineTestRule.dispatcher,
+        computation = coroutineTestRule.dispatcher
     )
 
     private lateinit var urlBuilder: UrlBuilder
@@ -64,12 +55,6 @@ class TreeWidgetContainerTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway = gateway)
-        objectSearchSubscriptionContainer = ObjectSearchSubscriptionContainer(
-            repo = repo,
-            channel = subscriptionEventChannel,
-            store = store,
-            dispatchers = dispatchers
-        )
     }
 
     @Test
@@ -95,11 +80,12 @@ class TreeWidgetContainerTest {
             val expanded = flowOf(emptyList<TreePath>())
 
             val container = TreeWidgetContainer(
-                container = objectSearchSubscriptionContainer,
+                container = storelessSubscriptionContainer,
                 widget = widget,
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                dispatchers = dispatchers
             )
 
             stubObjectSearch(
@@ -113,13 +99,13 @@ class TreeWidgetContainerTest {
             container.view.test {
                 awaitItem()
                 awaitComplete()
-                verifyBlocking(
-                    repo, times(1)
-                ) {
-                    searchObjectsByIdWithSubscription(
-                        subscription = widget.id,
-                        ids = links.map { it.id },
-                        keys = TreeWidgetContainer.keys
+                verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                    subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = widget.id,
+                            targets = links.map { it.id },
+                            keys = TreeWidgetContainer.keys
+                        )
                     )
                 }
             }
@@ -161,11 +147,12 @@ class TreeWidgetContainerTest {
         )
 
         val container = TreeWidgetContainer(
-            container = objectSearchSubscriptionContainer,
+            container = storelessSubscriptionContainer,
             widget = widget,
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            dispatchers = dispatchers
         )
 
         stubObjectSearch(
@@ -184,16 +171,17 @@ class TreeWidgetContainerTest {
 
         container.view.test {
             awaitItem()
-            verifyBlocking(
-                repo, times(1)
-            ) {
-                searchObjectsByIdWithSubscription(
-                    subscription = widget.id,
-                    ids = links.map { it.id },
-                    keys = TreeWidgetContainer.keys
+            awaitItem()
+            awaitComplete()
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = widget.id,
+                        targets = links.map { it.id },
+                        keys = TreeWidgetContainer.keys
+                    )
                 )
             }
-            awaitComplete()
         }
     }
 
@@ -241,11 +229,12 @@ class TreeWidgetContainerTest {
             }
 
             val container = TreeWidgetContainer(
-                container = objectSearchSubscriptionContainer,
+                container = storelessSubscriptionContainer,
                 widget = widget,
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                dispatchers = dispatchers
             )
 
             stubObjectSearch(
@@ -359,17 +348,16 @@ class TreeWidgetContainerTest {
         targets: List<Id>,
         results: List<ObjectWrapper.Basic>,
     ) {
-        repo.stub {
-            onBlocking {
-                searchObjectsByIdWithSubscription(
-                    subscription = widget.id,
-                    ids = targets,
-                    keys = TreeWidgetContainer.keys
+        storelessSubscriptionContainer.stub {
+            on {
+                subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = widget.id,
+                        targets = targets,
+                        keys = TreeWidgetContainer.keys
+                    )
                 )
-            } doReturn SearchResult(
-                results = results,
-                dependencies = emptyList()
-            )
+            } doReturn flowOf(results)
         }
     }
 }

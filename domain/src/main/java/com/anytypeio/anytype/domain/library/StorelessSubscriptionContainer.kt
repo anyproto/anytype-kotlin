@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.scan
 interface StorelessSubscriptionContainer {
 
     fun subscribe(searchParams: StoreSearchParams): Flow<List<ObjectWrapper.Basic>>
+    fun subscribe(searchParams: StoreSearchByIdsParams) : Flow<List<ObjectWrapper.Basic>>
 
     suspend fun unsubscribe(subscriptions: List<Id>)
 
@@ -44,7 +45,6 @@ interface StorelessSubscriptionContainer {
         override fun subscribe(searchParams: StoreSearchParams): Flow<List<ObjectWrapper.Basic>> =
             flow {
                 with(searchParams) {
-
                     val initial = repo.searchObjectsWithSubscription(
                         subscription = subscription,
                         sorts = sorts,
@@ -58,51 +58,73 @@ interface StorelessSubscriptionContainer {
                         ignoreWorkspace = null,
                         noDepSubscription = true
                     ).results.map { SubscriptionObject(it.id, it) }.toMutableList()
-
-                    val objectsFlow =
-                        subscribe(
-                            listOf(searchParams.subscription)
-                        ).scan(initial) { dataItems, payload ->
-                            var result = dataItems
-                            payload.forEach { event ->
-                                when (event) {
-                                    is SubscriptionEvent.Add -> {
-                                        result = addEventProcessor.process(event, result)
-                                    }
-                                    is SubscriptionEvent.Amend -> {
-                                        result = amendEventProcessor.process(event, result)
-                                    }
-                                    is SubscriptionEvent.Position -> {
-                                        result = positionEventProcessor.process(event, result)
-                                    }
-                                    is SubscriptionEvent.Remove -> {
-                                        result = removeEventProcessor.process(event, result)
-                                    }
-                                    is SubscriptionEvent.Set -> {
-                                        result = setEventProcessor.process(event, result)
-                                    }
-                                    is SubscriptionEvent.Unset -> {
-                                        result = unsetEventProcessor.process(event, result)
-                                    }
-                                    else -> {
-                                        // do nothing
-                                    }
-                                }
-                            }
-                            result
-                        }.map {
-                            it.mapNotNull { item -> item.objectWrapper }
-                        }
-
-                    emitAll(objectsFlow)
+                    emitAll(
+                        buildObjectsFlow(
+                            subscription = searchParams.subscription,
+                            initial = initial
+                        )
+                    )
                 }
             }.flowOn(dispatchers.io)
+
+        override fun subscribe(searchParams: StoreSearchByIdsParams) = flow {
+            with(searchParams) {
+                val initial = repo.searchObjectsByIdWithSubscription(
+                    subscription = subscription,
+                    ids = targets,
+                    keys = keys
+                ).results.map { SubscriptionObject(it.id, it) }.toMutableList()
+                emitAll(
+                    buildObjectsFlow(
+                        subscription = searchParams.subscription,
+                        initial = initial
+                    )
+                )
+            }
+        }.flowOn(dispatchers.io)
+
+        private fun buildObjectsFlow(
+            subscription: Id,
+            initial: MutableList<SubscriptionObject>
+        ): Flow<List<ObjectWrapper.Basic>> {
+            val objectsFlow = subscribe(listOf(subscription)).scan(initial) { dataItems, payload ->
+                var result = dataItems
+                payload.forEach { event ->
+                    when (event) {
+                        is SubscriptionEvent.Add -> {
+                            result = addEventProcessor.process(event, result)
+                        }
+                        is SubscriptionEvent.Amend -> {
+                            result = amendEventProcessor.process(event, result)
+                        }
+                        is SubscriptionEvent.Position -> {
+                            result = positionEventProcessor.process(event, result)
+                        }
+                        is SubscriptionEvent.Remove -> {
+                            result = removeEventProcessor.process(event, result)
+                        }
+                        is SubscriptionEvent.Set -> {
+                            result = setEventProcessor.process(event, result)
+                        }
+                        is SubscriptionEvent.Unset -> {
+                            result = unsetEventProcessor.process(event, result)
+                        }
+                        else -> {
+                            // do nothing
+                        }
+                    }
+                }
+                result
+            }.map {
+                it.mapNotNull { item -> item.objectWrapper }
+            }
+            return objectsFlow
+        }
 
         override suspend fun unsubscribe(subscriptions: List<Id>) {
             repo.cancelObjectSearchSubscription(subscriptions)
         }
     }
-
 }
 
 data class SubscriptionObject(

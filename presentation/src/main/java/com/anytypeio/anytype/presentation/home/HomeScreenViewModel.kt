@@ -25,7 +25,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
@@ -66,7 +65,6 @@ class HomeScreenViewModel(
     private val createWidget: CreateWidget,
     private val deleteWidget: DeleteWidget,
     private val updateWidget: UpdateWidget,
-    private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val getObject: GetObject,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
@@ -197,10 +195,11 @@ class HomeScreenViewModel(
                         )
                         is Widget.Tree -> TreeWidgetContainer(
                             widget = widget,
-                            container = objectSearchSubscriptionContainer,
+                            container = storelessSubscriptionContainer,
                             expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
                             isWidgetCollapsed = isCollapsed(widget.id),
-                            urlBuilder = urlBuilder
+                            urlBuilder = urlBuilder,
+                            dispatchers = appCoroutineDispatchers
                         )
                         is Widget.List -> DataViewListWidgetContainer(
                             widget = widget,
@@ -587,7 +586,6 @@ class HomeScreenViewModel(
         private val createWidget: CreateWidget,
         private val deleteWidget: DeleteWidget,
         private val updateWidget: UpdateWidget,
-        private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
         private val objectPayloadDispatcher: Dispatcher<Payload>,
@@ -607,7 +605,6 @@ class HomeScreenViewModel(
             createWidget = createWidget,
             deleteWidget = deleteWidget,
             updateWidget = updateWidget,
-            objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             appCoroutineDispatchers = appCoroutineDispatchers,
             widgetEventDispatcher = widgetEventDispatcher,
             objectPayloadDispatcher = objectPayloadDispatcher,

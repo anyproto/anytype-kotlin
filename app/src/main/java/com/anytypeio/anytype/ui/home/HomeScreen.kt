@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -186,7 +188,8 @@ private fun WidgetList(
         ) { index, item ->
             when (item) {
                 is WidgetView.Tree -> {
-                    ReorderableItem(lazyListState, key = item.id) { isDragging ->
+                    ReorderableItem(lazyListState, key = item.id) { isDragged ->
+                        val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -202,6 +205,7 @@ private fun WidgetList(
                                     else
                                         Modifier
                                 )
+                                .alpha(alpha.value)
                         ) {
                             TreeWidgetCard(
                                 item = item,
@@ -242,7 +246,8 @@ private fun WidgetList(
                     }
                 }
                 is WidgetView.Link -> {
-                    ReorderableItem(lazyListState, key = item.id) {
+                    ReorderableItem(lazyListState, key = item.id) { isDragged ->
+                        val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -253,6 +258,7 @@ private fun WidgetList(
                                     else
                                         Modifier
                                 )
+                                .alpha(alpha.value)
                         ) {
                             LinkWidgetCard(
                                 item = item,
@@ -322,7 +328,8 @@ private fun WidgetList(
                 is WidgetView.ListOfObjects -> {
                     ReorderableItem(
                         lazyListState, key = item.id
-                    ) { isDragging ->
+                    ) { isDragged ->
+                        val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -338,6 +345,7 @@ private fun WidgetList(
                                     else
                                         Modifier
                                 )
+                                .alpha(alpha.value)
                         ) {
                             ListWidgetCard(
                                 item = item,

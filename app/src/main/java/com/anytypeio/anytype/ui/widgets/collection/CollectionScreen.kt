@@ -25,12 +25,10 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,12 +45,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
@@ -93,6 +89,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.Sect
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.util.keyboardAsState
 import com.google.accompanist.themeadapter.material.createMdcTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -291,11 +288,10 @@ private fun SearchBar(
     val currentView = LocalView.current
 
     LaunchedEffect(isKeyboardOpen) {
-
         snapshotFlow { isKeyboardOpen }
             .distinctUntilChanged()
-            .collectLatest {
-                if (!it) {
+            .collectLatest { isOpen ->
+                if (!isOpen) {
                     currentView.findViewById<View>(R.id.filterInputField).clearFocus()
                 }
             }
@@ -615,10 +611,4 @@ fun DefaultTheme(
         shapes = theme.shapes ?: MaterialTheme.shapes,
         content = content
     )
-}
-
-@Composable
-fun keyboardAsState(): State<Boolean> {
-    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    return rememberUpdatedState(isImeVisible)
 }

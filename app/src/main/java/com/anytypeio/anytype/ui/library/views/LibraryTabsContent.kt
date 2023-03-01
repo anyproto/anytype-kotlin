@@ -139,7 +139,7 @@ private fun Header(
             content = {
                 Text(
                     text = stringResource(config.mainBtnTitle),
-                    color = colorResource(id = R.color.text_white),
+                    color = colorResource(id = R.color.glyph_label),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold
                 )

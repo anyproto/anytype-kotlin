@@ -21,6 +21,7 @@
     <color name="glyph_inactive">#494843</color>
     <color name="glyph_accent">#FFB522</color>
     <color name="glyph_white">#FFFFFF</color>
+    <color name="glyph_label">#000000</color>
 
     <color name="dashboard_card_background">#99000000</color>
     <color name="dashboard_background">#99252525</color>

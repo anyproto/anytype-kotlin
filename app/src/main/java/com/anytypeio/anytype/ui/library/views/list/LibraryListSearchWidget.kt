@@ -70,7 +70,7 @@ fun LibraryListSearchWidget(
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
             placeholderColor = colorResource(id = R.color.glyph_active),
-            cursorColor = colorResource(id = R.color.text_primary)
+            cursorColor = colorResource(id = R.color.orange)
         ),
         singleLine = true,
         maxLines = 1,

@@ -156,7 +156,7 @@ interface EditorSubComponent {
 
     // Relations
 
-    fun documentRelationSubComponent(): DocumentRelationSubComponent.Builder
+    fun objectRelationListComponent(): ObjectRelationListComponent.Builder
     fun relationAddToObjectComponent(): RelationAddToObjectSubComponent.Builder
     fun relationCreateFromScratchForObjectComponent(): RelationCreateFromScratchForObjectSubComponent.Builder
     fun relationCreateFromScratchForObjectBlockComponent(): RelationCreateFromScratchForObjectBlockSubComponent.Builder

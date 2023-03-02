@@ -3,9 +3,9 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -14,30 +14,30 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.RelationListFragment
+import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [DocumentRelationModule::class])
+@Subcomponent(modules = [ObjectRelationListModule::class])
 @PerModal
-interface DocumentRelationSubComponent {
+interface ObjectRelationListComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: DocumentRelationModule): Builder
-        fun build(): DocumentRelationSubComponent
+        fun module(module: ObjectRelationListModule): Builder
+        fun build(): ObjectRelationListComponent
     }
 
-    fun inject(fragment: RelationListFragment)
+    fun inject(fragment: ObjectRelationListFragment)
 }
 
 @Module
-object DocumentRelationModule {
+object ObjectRelationListModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun provideObjectRelationViewModelFactory(
+    fun factory(
         stores: Editor.Storage,
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,

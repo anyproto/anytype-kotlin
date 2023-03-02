@@ -12,7 +12,6 @@ import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
-import com.anytypeio.anytype.di.feature.DocumentRelationModule
 import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
 import com.anytypeio.anytype.di.feature.EditorSessionModule
 import com.anytypeio.anytype.di.feature.EditorUseCaseModule
@@ -35,6 +34,7 @@ import com.anytypeio.anytype.di.feature.ObjectLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModuleBase
 import com.anytypeio.anytype.di.feature.ObjectObjectRelationValueModule
+import com.anytypeio.anytype.di.feature.ObjectRelationListModule
 import com.anytypeio.anytype.di.feature.ObjectSearchModule
 import com.anytypeio.anytype.di.feature.ObjectSetCreateBookmarkRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetIconPickerModule
@@ -381,11 +381,11 @@ class ComponentManager(
             .build()
     }
 
-    val documentRelationComponent = DependentComponentMap { id ->
+    val objectRelationListComponent = DependentComponentMap { id ->
         editorComponent
             .get(id)
-            .documentRelationSubComponent()
-            .module(DocumentRelationModule)
+            .objectRelationListComponent()
+            .module(ObjectRelationListModule)
             .build()
     }
 

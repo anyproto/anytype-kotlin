@@ -19,10 +19,10 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -38,9 +38,11 @@ import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.test_utils.utils.resources
-import com.anytypeio.anytype.ui.relations.RelationListFragment
+import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -48,8 +50,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import java.text.SimpleDateFormat
-import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -97,7 +97,7 @@ class ObjectRelationListTest {
         addToFeaturedRelations = AddToFeaturedRelations(repo)
         removeFromFeaturedRelations = RemoveFromFeaturedRelations(repo)
         deleteRelationFromObject = DeleteRelationFromObject(repo)
-        TestRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
+        TestObjectRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
             stores = storage,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
@@ -137,8 +137,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -181,8 +181,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -224,8 +224,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -283,8 +283,8 @@ class ObjectRelationListTest {
 
         launchFragment(
             bundleOf(
-                RelationListFragment.ARG_CTX to ctx,
-                RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+                ObjectRelationListFragment.ARG_CTX to ctx,
+                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
             )
         )
 
@@ -356,8 +356,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -420,8 +420,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -494,8 +494,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -574,8 +574,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -641,8 +641,8 @@ class ObjectRelationListTest {
         }
 
         launchFragment(bundleOf(
-            RelationListFragment.ARG_CTX to ctx,
-            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            ObjectRelationListFragment.ARG_CTX to ctx,
+            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
         ))
 
         // TESTING
@@ -656,7 +656,7 @@ class ObjectRelationListTest {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestRelationListFragment> {
+    private fun launchFragment(args: Bundle): FragmentScenario<TestObjectRelationListFragment> {
         return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme

@@ -29,7 +29,7 @@ import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
-import com.anytypeio.anytype.ui.relations.RelationListFragment
+import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 
 abstract class ObjectMenuBaseFragment :
     BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
@@ -152,10 +152,10 @@ abstract class ObjectMenuBaseFragment :
         findNavController().navigate(
             R.id.objectRelationListScreen,
             bundleOf(
-                RelationListFragment.ARG_CTX to ctx,
-                RelationListFragment.ARG_TARGET to null,
-                RelationListFragment.ARG_LOCKED to isLocked,
-                RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+                ObjectRelationListFragment.ARG_CTX to ctx,
+                ObjectRelationListFragment.ARG_TARGET to null,
+                ObjectRelationListFragment.ARG_LOCKED to isLocked,
+                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
             )
         )
     }

@@ -15,7 +15,17 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argInt
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.argStringOrNull
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationListBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -23,11 +33,11 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelF
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
+import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
-import javax.inject.Inject
 
-open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBinding>(),
+open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelationListBinding>(),
     RelationTextValueFragment.TextValueEditReceiver,
     RelationDateValueFragment.DateValueEditReceiver {
 
@@ -230,11 +240,11 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
     }
 
     override fun injectDependencies() {
-        componentManager().documentRelationComponent.get(ctx).inject(this)
+        componentManager().objectRelationListComponent.get(ctx).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().documentRelationComponent.release(ctx)
+        componentManager().objectRelationListComponent.release(ctx)
     }
 
     override fun inflateBinding(
@@ -250,7 +260,7 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
             target: String?,
             mode: Int,
             locked: Boolean = false
-        ) = RelationListFragment().apply {
+        ) = ObjectRelationListFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_TARGET to target,

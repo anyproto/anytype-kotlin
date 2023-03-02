@@ -30,7 +30,7 @@
         </fragment>
         <dialog
             android:id="@+id/objectRelationListScreen"
-            android:name="com.anytypeio.anytype.ui.relations.RelationListFragment"
+            android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
             android:label="Object-Relation-List-Screen" />
         <dialog
             android:id="@+id/objectRelationValueScreen"
@@ -92,6 +92,10 @@
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         </fragment>
+        <dialog
+            android:id="@+id/objectRelationListScreen"
+            android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
+            android:label="Object-Relation-List-Screen" />
         <dialog
             android:id="@+id/dataViewRelationValueScreen"
             android:name="com.anytypeio.anytype.ui.relations.RelationValueDVFragment"

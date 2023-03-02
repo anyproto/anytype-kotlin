@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -114,13 +115,13 @@ fun HomeScreen(
                 HomeScreenButton(
                     text = stringResource(id = R.string.add),
                     modifier = Modifier.weight(1f),
-                    onClick = { onCreateWidget() }
+                    onClick = throttledClick(onCreateWidget)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 HomeScreenButton(
                     text = stringResource(id = R.string.done),
                     modifier = Modifier.weight(1f),
-                    onClick = { onExitEditMode() }
+                    onClick = throttledClick(onExitEditMode)
                 )
             }
         }
@@ -133,9 +134,9 @@ fun HomeScreen(
             exit = fadeOut() + slideOutVertically { it }
         ) {
             HomeScreenBottomToolbar(
-                onSearchClicked = onSearchClicked,
-                onCreateNewObjectClicked = onCreateNewObjectClicked,
-                onSpaceClicked = onSpaceClicked,
+                onSearchClicked = throttledClick(onSearchClicked),
+                onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
+                onSpaceClicked = throttledClick(onSpaceClicked),
                 modifier = Modifier
             )
         }

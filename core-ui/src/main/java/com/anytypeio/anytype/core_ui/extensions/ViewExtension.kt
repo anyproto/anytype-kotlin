@@ -140,3 +140,19 @@ fun ShapeableImageView.setCorneredShape(cornerRadius: Float) {
         .build()
     shapeAppearanceModel = shapeModel
 }
+
+fun throttledClick(
+    onClick: () -> Unit,
+    duration: Int = THROTTLE_DURATION
+): () -> Unit {
+    var latest: Long = 0
+    return {
+        val now = System.currentTimeMillis()
+        if (now - latest >= duration) {
+            onClick()
+            latest = now
+        }
+    }
+}
+
+const val THROTTLE_DURATION = 300

@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
 @Composable
@@ -93,7 +94,7 @@ fun TreeWidgetCard(
             )
         ) {
             WidgetHeader(
-                title = item.obj.name?.trim().orEmpty(),
+                title = item.obj.getWidgetObjectName().orEmpty(),
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetObjectClicked(item.obj) },
@@ -190,7 +191,7 @@ private fun TreeWidgetTreeItems(
                 )
             }
             Text(
-                text = element.obj.name?.trim() ?: stringResource(id = R.string.untitled),
+                text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
                 modifier = Modifier.padding(start = 8.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

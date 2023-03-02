@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -91,4 +92,12 @@ sealed class DropDownMenuAction {
     object ChangeWidgetSource : DropDownMenuAction()
     object RemoveWidget : DropDownMenuAction()
     object EditWidgets : DropDownMenuAction()
+}
+
+fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
+    return if (layout == ObjectType.Layout.NOTE) {
+        snippet?.ifEmpty { null }
+    } else {
+        name?.ifEmpty { null }
+    }
 }

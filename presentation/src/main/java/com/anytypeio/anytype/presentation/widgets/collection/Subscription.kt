@@ -63,4 +63,4 @@ class SubscriptionMapper {
     }
 }
 
-private val SUBSCRIPTION_DEFAULT_KEYS = DEFAULT_KEYS + Relations.DESCRIPTION
+private val SUBSCRIPTION_DEFAULT_KEYS = DEFAULT_KEYS + Relations.IS_FAVORITE + Relations.DESCRIPTION

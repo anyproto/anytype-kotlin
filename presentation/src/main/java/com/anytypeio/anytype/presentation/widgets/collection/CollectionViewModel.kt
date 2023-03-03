@@ -121,7 +121,7 @@ class CollectionViewModel(
                     mode == InteractionMode.Edit && isAnySelected(),
                     resourceProvider.subscriptionName(subscription),
                     resourceProvider.actionModeName(actionMode),
-                    actionObjectFilter.filter(subscription, views.getOrDefault(emptyList())),
+                    actionObjectFilter.filter(subscription, selectedViews()),
                     subscription == Subscription.Favorites && mode == InteractionMode.Edit,
                     subscription != Subscription.Sets,
                     operationInProgress
@@ -551,6 +551,11 @@ class CollectionViewModel(
     private fun isAllSelected(views: List<CollectionView>) =
         views.filterIsInstance<CollectionObjectView>().all { it.isSelected }
 
+    private fun selectedViews() =
+        currentViews()
+            .filterIsInstance<CollectionObjectView>()
+            .filter { it.isSelected }
+
     private fun currentViews() = views.value.getOrDefault(listOf()).toMutableList()
 
     private inline fun launch(crossinline block: suspend CoroutineScope.() -> Unit) {
@@ -578,11 +583,6 @@ class CollectionViewModel(
             }
         }
     }
-
-    private fun selectedViews() =
-        currentViews()
-            .filterIsInstance<CollectionObjectView>()
-            .filter { it.isSelected }
 
     override fun reduce(state: CoreObjectView, event: Payload): CoreObjectView {
         var curr = state

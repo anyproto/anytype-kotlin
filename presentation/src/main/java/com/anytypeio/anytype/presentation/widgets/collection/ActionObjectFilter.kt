@@ -10,16 +10,22 @@ import javax.inject.Inject
 
 class ActionObjectFilter @Inject constructor() {
 
-    fun filter(subscription: Subscription, views: List<CollectionView>): List<ObjectAction> {
+    fun filter(subscription: Subscription, views: List<CollectionObjectView>): List<ObjectAction> {
         return when (subscription) {
-            Subscription.Recent, Subscription.Sets -> listOf(
-                ADD_TO_FAVOURITE,
-                REMOVE_FROM_FAVOURITE,
-                MOVE_TO_BIN
-            )
+
+            Subscription.Recent, Subscription.Sets ->
+                buildList {
+                    if (views.someNonFavorites()) add(ADD_TO_FAVOURITE)
+                    if (views.someFavorites()) add(REMOVE_FROM_FAVOURITE)
+                    add(MOVE_TO_BIN)
+                }
             Subscription.Bin -> listOf(DELETE, RESTORE)
             Subscription.Favorites -> listOf(REMOVE_FROM_FAVOURITE, MOVE_TO_BIN)
             Subscription.None -> emptyList()
         }
     }
+
+    private fun List<CollectionObjectView>.someFavorites() = any { it.obj.isFavorite }
+
+    private fun List<CollectionObjectView>.someNonFavorites() = any { !it.obj.isFavorite }
 }

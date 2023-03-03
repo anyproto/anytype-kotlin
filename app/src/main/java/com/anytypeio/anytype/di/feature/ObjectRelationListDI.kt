@@ -10,9 +10,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
-import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
+import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import dagger.Module
@@ -38,7 +39,8 @@ object ObjectRelationListModule {
     @Provides
     @PerModal
     fun factory(
-        stores: Editor.Storage,
+        lockedStateProvider: LockedStateProvider,
+        relationListProvider: RelationListProvider,
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
@@ -50,7 +52,8 @@ object ObjectRelationListModule {
         storeOfRelations: StoreOfRelations
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
-            stores = stores,
+            lockedStateProvider = lockedStateProvider,
+            relationListProvider = relationListProvider,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
             updateDetail = updateDetail,

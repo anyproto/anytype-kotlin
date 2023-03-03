@@ -4,18 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
-import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectRelationListViewModelFactory(
-    private val stores: Editor.Storage,
+    private val relationListProvider: RelationListProvider,
+    private val lockedStateProvider: LockedStateProvider,
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDetail: UpdateDetail,
@@ -30,7 +32,8 @@ class ObjectRelationListViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return RelationListViewModel(
-            stores = stores,
+            relationListProvider = relationListProvider,
+            lockedStateProvider = lockedStateProvider,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
             updateDetail = updateDetail,

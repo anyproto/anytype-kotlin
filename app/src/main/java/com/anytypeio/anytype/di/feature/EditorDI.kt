@@ -112,11 +112,13 @@ import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -202,6 +204,24 @@ object EditorSessionModule {
     @Provides
     @PerScreen
     fun provideStorage(): Editor.Storage = Editor.Storage()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun lockedStateProvider(
+        storage: Editor.Storage
+    ) : LockedStateProvider = LockedStateProvider.EditorLockedStateProvider(
+        storage = storage
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun relationListProvider(
+        storage: Editor.Storage
+    ) : RelationListProvider = RelationListProvider.EditorRelationListProvider(
+        storage = storage
+    )
 
     @JvmStatic
     @Provides

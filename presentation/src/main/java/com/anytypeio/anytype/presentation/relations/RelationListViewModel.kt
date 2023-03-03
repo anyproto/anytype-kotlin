@@ -12,19 +12,20 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
+import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,7 +36,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RelationListViewModel(
-    private val stores: Editor.Storage,
+    private val relationListProvider: RelationListProvider,
+    private val lockedStateProvider: LockedStateProvider,
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDetail: UpdateDetail,
@@ -62,15 +64,14 @@ class RelationListViewModel(
             eventName = relationsScreenShow
         )
         jobs += viewModelScope.launch {
-            stores.relationLinks.stream().combine(
-                stores.details.stream(),
+            combine(
+                relationListProvider.links,
+                relationListProvider.details
             ) { relationLinks, details ->
-
                 val relations = relationLinks.mapNotNull { storeOfRelations.getByKey(it.key) }
                 val detail = details.details[ctx]
                 val values = detail?.map ?: emptyMap()
                 val featured = detail?.featuredRelations ?: emptyList()
-
                 relations.views(
                     context = ctx,
                     details = details,
@@ -308,10 +309,7 @@ class RelationListViewModel(
         }
     }
 
-    private fun resolveIsLockedState(ctx: Id): Boolean {
-        val doc = stores.document.get().find { it.id == ctx }
-        return doc?.fields?.isLocked ?: false
-    }
+    private fun resolveIsLockedState(ctx: Id): Boolean = lockedStateProvider.isLocked(ctx)
 
     private fun proceedWithTogglingRelationCheckboxValue(view: DocumentRelationView, ctx: Id) {
         viewModelScope.launch {
@@ -334,17 +332,14 @@ class RelationListViewModel(
 
     private fun getRelations(ctx: Id) {
         viewModelScope.launch {
-            val relations =
-                stores.relationLinks.current().mapNotNull { storeOfRelations.getByKey(it.key) }
-            val details = stores.details.current()
+            val relations = relationListProvider.getLinks().mapNotNull { storeOfRelations.getByKey(it.key) }
+            val details = relationListProvider.getDetails()
             val values = details.details[ctx]?.map ?: emptyMap()
-            views.value =
-                relations.views(
+            views.value = relations.views(
                     details = details,
                     values = values,
                     urlBuilder = urlBuilder
-                )
-                    .map { Model.Item(it) }
+            ).map { Model.Item(it) }
         }
     }
 

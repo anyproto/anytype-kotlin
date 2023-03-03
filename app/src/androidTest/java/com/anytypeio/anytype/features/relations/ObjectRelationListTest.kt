@@ -29,7 +29,9 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
+import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -79,6 +81,12 @@ class ObjectRelationListTest {
     @Mock
     lateinit var storeOfRelations: StoreOfRelations
 
+    @Mock
+    lateinit var relationListProvider: RelationListProvider
+
+    @Mock
+    lateinit var lockedStateProvider: LockedStateProvider
+
     private lateinit var updateDetail: UpdateDetail
     private lateinit var addToFeaturedRelations: AddToFeaturedRelations
     private lateinit var removeFromFeaturedRelations: RemoveFromFeaturedRelations
@@ -98,7 +106,8 @@ class ObjectRelationListTest {
         removeFromFeaturedRelations = RemoveFromFeaturedRelations(repo)
         deleteRelationFromObject = DeleteRelationFromObject(repo)
         TestObjectRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
-            stores = storage,
+            lockedStateProvider = lockedStateProvider,
+            relationListProvider = relationListProvider,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
             detailModificationManager = detailModificationManager,

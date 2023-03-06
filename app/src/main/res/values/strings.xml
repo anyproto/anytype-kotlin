@@ -332,7 +332,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Relation settings</string>
 
-    <string name="type_editing_uninstall">Uninstall</string>
+    <string name="type_editing_uninstall">Remove</string>
     <string name="empty_tree_widget">This object has no links to other objects</string>
     <string name="empty_list_widget">This view has no objects</string>
     <string name="empty_list_widget_no_view">This data view has no objects</string>

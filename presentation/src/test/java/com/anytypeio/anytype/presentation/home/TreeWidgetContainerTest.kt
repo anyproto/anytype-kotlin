@@ -343,6 +343,114 @@ class TreeWidgetContainerTest {
             }
         }
 
+    @Test
+    fun `should start subscription with empty keys if source is archived`() = runTest {
+
+        // SETUP
+
+        val link1 = StubObject()
+        val link2 = StubObject()
+        val link3 = StubObject()
+        val links = listOf(link1, link2, link3)
+
+        val source = StubObject(
+            links = links.map { it.id },
+            isArchived = true
+        )
+
+        val widget = Widget.Tree(
+            id = MockDataFactory.randomUuid(),
+            source = source
+        )
+
+        val expanded = flowOf(emptyList<TreePath>())
+
+        val container = TreeWidgetContainer(
+            container = storelessSubscriptionContainer,
+            widget = widget,
+            expandedBranches = expanded,
+            isWidgetCollapsed = flowOf(false),
+            urlBuilder = urlBuilder,
+            dispatchers = dispatchers
+        )
+
+        stubObjectSearch(
+            widget = widget,
+            targets = emptyList(),
+            results = links
+        )
+
+        // TESTING
+
+        container.view.test {
+            awaitItem()
+            awaitComplete()
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = widget.id,
+                        targets = emptyList(),
+                        keys = TreeWidgetContainer.keys
+                    )
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `should start subscription with empty keys if source is deleted`() = runTest {
+
+        // SETUP
+
+        val link1 = StubObject()
+        val link2 = StubObject()
+        val link3 = StubObject()
+        val links = listOf(link1, link2, link3)
+
+        val source = StubObject(
+            links = links.map { it.id },
+            isDeleted = true
+        )
+
+        val widget = Widget.Tree(
+            id = MockDataFactory.randomUuid(),
+            source = source
+        )
+
+        val expanded = flowOf(emptyList<TreePath>())
+
+        val container = TreeWidgetContainer(
+            container = storelessSubscriptionContainer,
+            widget = widget,
+            expandedBranches = expanded,
+            isWidgetCollapsed = flowOf(false),
+            urlBuilder = urlBuilder,
+            dispatchers = dispatchers
+        )
+
+        stubObjectSearch(
+            widget = widget,
+            targets = emptyList(),
+            results = links
+        )
+
+        // TESTING
+
+        container.view.test {
+            awaitItem()
+            awaitComplete()
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = widget.id,
+                        targets = emptyList(),
+                        keys = TreeWidgetContainer.keys
+                    )
+                )
+            }
+        }
+    }
+
     private fun stubObjectSearch(
         widget: Widget.Tree,
         targets: List<Id>,

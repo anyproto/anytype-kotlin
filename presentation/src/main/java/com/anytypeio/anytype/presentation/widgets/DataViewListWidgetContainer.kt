@@ -94,6 +94,7 @@ class DataViewListWidgetContainer(
         source: ObjectWrapper.Basic,
         viewer: Id?
     ): StoreSearchParams? {
+        if (source.isArchived == true || source.isDeleted == true) return null
         val block = blocks.find { it.content is DV } ?: return null
         val dv = block.content<DV>()
         val view = dv.viewers.find { it.id == viewer } ?: dv.viewers.firstOrNull() ?: return null

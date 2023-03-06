@@ -69,9 +69,11 @@ class TreeWidgetContainer(
     private fun getSubscriptionTargets(
         paths: List<TreePath>
     ) = buildList {
-        addAll(widget.source.links)
-        nodes.forEach { (id, links) ->
-            if (paths.any { path -> path.contains(id) }) addAll(links)
+        if (widget.source.isArchived != true && widget.source.isDeleted != true) {
+            addAll(widget.source.links)
+            nodes.forEach { (id, links) ->
+                if (paths.any { path -> path.contains(id) }) addAll(links)
+            }
         }
     }.distinct()
 

@@ -336,5 +336,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="empty_tree_widget">This object has no links to other objects</string>
     <string name="empty_list_widget">This view has no objects</string>
     <string name="empty_list_widget_no_view">This data view has no objects</string>
+    <string name="empty_bin">Empty bin</string>
 
 </resources>

@@ -29,6 +29,7 @@ fun WidgetMenu(
     canRemove: Boolean = true,
     canChangeSource: Boolean = true,
     canChangeType: Boolean = true,
+    canEmptyBin: Boolean = false,
     isExpanded: MutableState<Boolean>,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
@@ -87,6 +88,27 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(id = R.string.remove_widget),
+                    style = TextStyle(
+                        color = colorResource(id = R.color.palette_dark_red),
+                        fontSize = 17.sp
+                    )
+                )
+            }
+            Divider(
+                thickness = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+        }
+        if (canEmptyBin) {
+            DropdownMenuItem(
+                onClick = {
+                    onDropDownMenuAction(DropDownMenuAction.EmptyBin).also {
+                        isExpanded.value = false
+                    }
+                }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.empty_bin),
                     style = TextStyle(
                         color = colorResource(id = R.color.palette_dark_red),
                         fontSize = 17.sp

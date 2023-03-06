@@ -92,6 +92,7 @@ sealed class DropDownMenuAction {
     object ChangeWidgetSource : DropDownMenuAction()
     object RemoveWidget : DropDownMenuAction()
     object EditWidgets : DropDownMenuAction()
+    object EmptyBin: DropDownMenuAction()
 }
 
 fun ObjectWrapper.Basic.getWidgetObjectName(): String? {

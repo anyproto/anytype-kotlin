@@ -82,9 +82,11 @@ class HomeScreenViewModel(
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder {
+
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
+    val isEmptyingBinInProgress  = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -394,6 +396,32 @@ class HomeScreenViewModel(
         }
     }
 
+    private fun proceedWithEmptyingBin() {
+        viewModelScope.launch {
+            emptyBin.stream(Unit).flowOn(appCoroutineDispatchers.io).collect { status ->
+                Timber.d("Status while emptying bin: $status")
+                when (status) {
+                    is Resultat.Failure -> {
+                        Timber.e(status.exception, "Error while emptying bin").also {
+                            isEmptyingBinInProgress.value = false
+                        }
+                    }
+                    is Resultat.Loading -> {
+                        isEmptyingBinInProgress.value = true
+                    }
+                    is Resultat.Success -> {
+                        when(status.value.size) {
+                            0 -> sendToast("Bin already empty")
+                            1 -> sendToast("One object deleted")
+                            else -> "${status.value.size} objects deleted"
+                        }
+                        isEmptyingBinInProgress.value = false
+                    }
+                }
+            }
+        }
+    }
+
     fun onEditWidgets() {
         mode.value = InteractionMode.Edit
     }
@@ -428,6 +456,9 @@ class HomeScreenViewModel(
             }
             DropDownMenuAction.RemoveWidget -> {
                 proceedWithDeletingWidget(widget)
+            }
+            DropDownMenuAction.EmptyBin -> {
+                proceedWithEmptyingBin()
             }
         }
     }

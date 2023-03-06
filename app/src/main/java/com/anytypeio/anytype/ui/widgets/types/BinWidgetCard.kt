@@ -97,7 +97,8 @@ fun BinWidgetCard(
             onDropDownMenuAction = onDropDownMenuAction,
             canRemove = false,
             canChangeType = false,
-            canChangeSource = false
+            canChangeSource = false,
+            canEmptyBin = true
         )
     }
 }

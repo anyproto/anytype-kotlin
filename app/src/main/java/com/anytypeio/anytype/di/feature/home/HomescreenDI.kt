@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -77,6 +78,17 @@ object HomeScreenModule {
         repo = repo,
         dispatchers = dispatchers,
         auth = auth
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun closeObject(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CloseBlock = CloseBlock(
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

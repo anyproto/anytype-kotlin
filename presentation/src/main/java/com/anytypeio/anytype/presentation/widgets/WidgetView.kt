@@ -97,8 +97,8 @@ sealed class DropDownMenuAction {
 
 fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
     return if (layout == ObjectType.Layout.NOTE) {
-        snippet?.ifEmpty { null }
+        snippet?.trim()?.ifEmpty { null }
     } else {
-        name?.ifEmpty { null }
+        name?.trim()?.ifEmpty { null }
     }
 }

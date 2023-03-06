@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -82,6 +83,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var openObject: OpenObject
+
+    @Mock
+    lateinit var closeObject: CloseBlock
 
     @Mock
     lateinit var getObject: GetObject
@@ -150,7 +154,7 @@ class HomeScreenViewModelTest {
             blocks = listOf(smartBlock)
         )
 
-        val events : Flow<List<Event>> = emptyFlow()
+        val events: Flow<List<Event>> = emptyFlow()
 
         stubConfig()
         stubInterceptEvents(events)
@@ -160,6 +164,8 @@ class HomeScreenViewModelTest {
         val vm = buildViewModel()
 
         // TESTING
+
+        vm.onStart()
 
         vm.views.test {
             val firstTimeState = awaitItem()
@@ -175,179 +181,185 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit only default widgets with bin and actions when home screen has no associated widgets except the default ones`() = runTest {
+    fun `should emit only default widgets with bin and actions when home screen has no associated widgets except the default ones`() =
+        runTest {
 
-        // SETUP
+            // SETUP
 
-        val smartBlock = StubSmartBlock(
-            id = WIDGET_OBJECT_ID,
-            children = emptyList(),
-            type = SmartBlockType.WIDGET
-        )
-
-        val givenObjectView = StubObjectView(
-            root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
-            blocks = listOf(smartBlock),
-            details = emptyMap()
-        )
-
-        val defaultWidgets = listOf(
-            WidgetView.ListOfObjects(
-                id = Subscriptions.SUBSCRIPTION_FAVORITES,
-                elements = emptyList(),
-                isExpanded = true,
-                type = WidgetView.ListOfObjects.Type.Favorites
-            ),
-            WidgetView.ListOfObjects(
-                id = Subscriptions.SUBSCRIPTION_RECENT,
-                elements = emptyList(),
-                isExpanded = true,
-                type = WidgetView.ListOfObjects.Type.Recent
-            ),
-            WidgetView.ListOfObjects(
-                id = Subscriptions.SUBSCRIPTION_SETS,
-                elements = emptyList(),
-                isExpanded = true,
-                type = WidgetView.ListOfObjects.Type.Sets
+            val smartBlock = StubSmartBlock(
+                id = WIDGET_OBJECT_ID,
+                children = emptyList(),
+                type = SmartBlockType.WIDGET
             )
-        )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
-
-        stubConfig()
-        stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
-        stubCollapsedWidgetState(any())
-        stubDefaultContainerSubscriptions()
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.views.test {
-            val firstTimeState = awaitItem()
-            assertEquals(
-                actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+            val givenObjectView = StubObjectView(
+                root = WIDGET_OBJECT_ID,
+                type = SmartBlockType.WIDGET,
+                blocks = listOf(smartBlock),
+                details = emptyMap()
             )
-            val secondTimeItem = awaitItem()
-            assertEquals(
-                expected = buildList {
-                    addAll(defaultWidgets)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                },
-                actual = secondTimeItem
+
+            val defaultWidgets = listOf(
+                WidgetView.ListOfObjects(
+                    id = Subscriptions.SUBSCRIPTION_FAVORITES,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    type = WidgetView.ListOfObjects.Type.Favorites
+                ),
+                WidgetView.ListOfObjects(
+                    id = Subscriptions.SUBSCRIPTION_RECENT,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    type = WidgetView.ListOfObjects.Type.Recent
+                ),
+                WidgetView.ListOfObjects(
+                    id = Subscriptions.SUBSCRIPTION_SETS,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    type = WidgetView.ListOfObjects.Type.Sets
+                )
             )
-            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+
+            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+            stubConfig()
+            stubInterceptEvents(events = emptyFlow())
+            stubOpenObject(givenObjectView)
+            stubCollapsedWidgetState(any())
+            stubDefaultContainerSubscriptions()
+
+            val vm = buildViewModel()
+
+            // TESTING
+
+            vm.onStart()
+
+            vm.views.test {
+                val firstTimeState = awaitItem()
+                assertEquals(
+                    actual = firstTimeState,
+                    expected = HomeScreenViewModel.actions
+                )
+                val secondTimeItem = awaitItem()
+                assertEquals(
+                    expected = buildList {
+                        addAll(defaultWidgets)
+                        add(binWidget)
+                        addAll(HomeScreenViewModel.actions)
+                    },
+                    actual = secondTimeItem
+                )
+                verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+            }
         }
-    }
 
     @Test
-    fun `should emit default widgets, tree-widget with empty elements and bin when source has no links`() = runTest {
+    fun `should emit default widgets, tree-widget with empty elements and bin when source has no links`() =
+        runTest {
 
-        // SETUP
+            // SETUP
 
-        val sourceObject = StubObject(
-            id = "SOURCE OBJECT",
-            links = emptyList()
-        )
-
-        val sourceLink = StubLinkToObjectBlock(
-            id = "SOURCE LINK",
-            target = sourceObject.id
-        )
-
-        val widgetBlock = StubWidgetBlock(
-            id = "WIDGET BLOCK",
-            layout = Block.Content.Widget.Layout.TREE,
-            children = listOf(sourceLink.id)
-        )
-
-        val smartBlock = StubSmartBlock(
-            id = WIDGET_OBJECT_ID,
-            children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
-        )
-
-        val givenObjectView = StubObjectView(
-            root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
-            blocks = listOf(
-                smartBlock,
-                widgetBlock,
-                sourceLink
-            ),
-            details = mapOf(
-                sourceObject.id to sourceObject.map
+            val sourceObject = StubObject(
+                id = "SOURCE OBJECT",
+                links = emptyList()
             )
-        )
 
-        val defaultWidgets = listOf(
-            WidgetView.ListOfObjects(
-                id = Subscriptions.SUBSCRIPTION_FAVORITES,
-                elements = emptyList(),
-                isExpanded = true,
-                type = WidgetView.ListOfObjects.Type.Favorites
-            ),
-            WidgetView.ListOfObjects(
-                id = Subscriptions.SUBSCRIPTION_RECENT,
-                elements = emptyList(),
-                isExpanded = true,
-                type = WidgetView.ListOfObjects.Type.Recent
-            ),
-            WidgetView.ListOfObjects(
-                id = Subscriptions.SUBSCRIPTION_SETS,
-                elements = emptyList(),
-                isExpanded = true,
-                type = WidgetView.ListOfObjects.Type.Sets
+            val sourceLink = StubLinkToObjectBlock(
+                id = "SOURCE LINK",
+                target = sourceObject.id
             )
-        )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
-
-        stubConfig()
-        stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
-        stubStorelessSubscriptionContainer(
-            subscription = widgetBlock.id,
-            targets = emptyList()
-        )
-        stubCollapsedWidgetState(any())
-        stubWidgetActiveView(widgetBlock)
-        stubDefaultContainerSubscriptions()
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.views.test {
-            val firstTimeState = awaitItem()
-            assertEquals(
-                actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+            val widgetBlock = StubWidgetBlock(
+                id = "WIDGET BLOCK",
+                layout = Block.Content.Widget.Layout.TREE,
+                children = listOf(sourceLink.id)
             )
-            val secondTimeItem = awaitItem()
-            assertEquals(
-                expected = buildList {
-                    addAll(defaultWidgets)
-                    add(
-                        WidgetView.Tree(
-                            id = widgetBlock.id,
-                            obj = sourceObject,
-                            elements = emptyList(),
-                            isExpanded = true
+
+            val smartBlock = StubSmartBlock(
+                id = WIDGET_OBJECT_ID,
+                children = listOf(widgetBlock.id),
+                type = SmartBlockType.WIDGET
+            )
+
+            val givenObjectView = StubObjectView(
+                root = WIDGET_OBJECT_ID,
+                type = SmartBlockType.WIDGET,
+                blocks = listOf(
+                    smartBlock,
+                    widgetBlock,
+                    sourceLink
+                ),
+                details = mapOf(
+                    sourceObject.id to sourceObject.map
+                )
+            )
+
+            val defaultWidgets = listOf(
+                WidgetView.ListOfObjects(
+                    id = Subscriptions.SUBSCRIPTION_FAVORITES,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    type = WidgetView.ListOfObjects.Type.Favorites
+                ),
+                WidgetView.ListOfObjects(
+                    id = Subscriptions.SUBSCRIPTION_RECENT,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    type = WidgetView.ListOfObjects.Type.Recent
+                ),
+                WidgetView.ListOfObjects(
+                    id = Subscriptions.SUBSCRIPTION_SETS,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    type = WidgetView.ListOfObjects.Type.Sets
+                )
+            )
+
+            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+            stubConfig()
+            stubInterceptEvents(events = emptyFlow())
+            stubOpenObject(givenObjectView)
+            stubStorelessSubscriptionContainer(
+                subscription = widgetBlock.id,
+                targets = emptyList()
+            )
+            stubCollapsedWidgetState(any())
+            stubWidgetActiveView(widgetBlock)
+            stubDefaultContainerSubscriptions()
+
+            val vm = buildViewModel()
+
+            // TESTING
+
+            vm.onStart()
+
+            vm.views.test {
+                val firstTimeState = awaitItem()
+                assertEquals(
+                    actual = firstTimeState,
+                    expected = HomeScreenViewModel.actions
+                )
+                val secondTimeItem = awaitItem()
+                assertEquals(
+                    expected = buildList {
+                        addAll(defaultWidgets)
+                        add(
+                            WidgetView.Tree(
+                                id = widgetBlock.id,
+                                obj = sourceObject,
+                                elements = emptyList(),
+                                isExpanded = true
+                            )
                         )
-                    )
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                },
-                actual = secondTimeItem
-            )
-            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+                        add(binWidget)
+                        addAll(HomeScreenViewModel.actions)
+                    },
+                    actual = secondTimeItem
+                )
+                verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+            }
         }
-    }
 
     @Test
     fun `should emit default widgets, link-widget, bin and actions`() = runTest {
@@ -427,6 +439,8 @@ class HomeScreenViewModelTest {
 
         // TESTING
 
+        vm.onStart()
+
         vm.views.test {
             val firstTimeState = awaitItem()
             assertEquals(
@@ -455,6 +469,7 @@ class HomeScreenViewModelTest {
 
     @Test
     fun `should unsubscribe when widget is deleted as result of user action`() = runTest {
+
         // SETUP
 
         val sourceObject = StubObject(
@@ -532,6 +547,8 @@ class HomeScreenViewModelTest {
 
         // TESTING
 
+        vm.onStart()
+
         vm.onDropDownMenuAction(
             widget = widgetBlock.id,
             DropDownMenuAction.RemoveWidget
@@ -546,6 +563,7 @@ class HomeScreenViewModelTest {
 
     @Test
     fun `should unsubscribe when widget is deleted as result of external event`() = runTest {
+
         // SETUP
 
         val sourceObject = StubObject(
@@ -619,6 +637,8 @@ class HomeScreenViewModelTest {
 
         // TESTING
 
+        vm.onStart()
+
         vm.onDropDownMenuAction(
             widget = widgetBlock.id,
             DropDownMenuAction.RemoveWidget
@@ -629,7 +649,75 @@ class HomeScreenViewModelTest {
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(subscriptions = listOf(widgetBlock.id))
         }
+    }
 
+    @Test
+    fun `should close widget object and unsubscribe when widget on onStop lifecycle event callback`() = runTest {
+        // SETUP
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = emptyList()
+        )
+
+        val sourceLinkBlock = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.LINK,
+            children = listOf(sourceLinkBlock.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+            type = SmartBlockType.WIDGET
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            type = SmartBlockType.WIDGET,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLinkBlock
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        stubInterceptEvents(events = emptyFlow())
+        stubConfig()
+        stubOpenObject(givenObjectView)
+        stubStorelessSubscriptionContainer(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+        stubCollapsedWidgetState(any())
+        stubDefaultContainerSubscriptions()
+        stubCloseObject()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        delay(1)
+
+        vm.onStop()
+
+        delay(1)
+
+        verifyBlocking(unsubscriber, times(1)) {
+            unsubscribe(subscriptions = listOf(widgetBlock.id))
+        }
+
+        verify(closeObject, times(1)).stream(params = WIDGET_OBJECT_ID)
     }
 
     private fun stubInterceptEvents(events: Flow<List<Event>>) {
@@ -653,6 +741,16 @@ class HomeScreenViewModelTest {
                     value = givenObjectView
                 )
             )
+        }
+    }
+
+    private fun stubCloseObject() {
+        closeObject.stub {
+            onBlocking {
+                stream(
+                    params = WIDGET_OBJECT_ID
+                )
+            } doReturn flowOf(Resultat.Loading(), Resultat.Success(Unit))
         }
     }
 
@@ -730,6 +828,7 @@ class HomeScreenViewModelTest {
         objectPayloadDispatcher = objectPayloadDispatcher,
         widgetEventDispatcher = widgetEventDispatcher,
         openObject = openObject,
+        closeObject = closeObject,
         createObject = createObject,
         appCoroutineDispatchers = appCoroutineDispatchers,
         getObject = getObject,

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -64,6 +65,7 @@ import timber.log.Timber
 class HomeScreenViewModel(
     private val configStorage: ConfigStorage,
     private val openObject: OpenObject,
+    private val closeObject: CloseBlock,
     private val createWidget: CreateWidget,
     private val deleteWidget: DeleteWidget,
     private val updateWidget: UpdateWidget,
@@ -90,7 +92,7 @@ class HomeScreenViewModel(
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
-    private val isEmptyingBinInProgress  = MutableStateFlow(false)
+    private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -149,7 +151,8 @@ class HomeScreenViewModel(
 
         val config = configStorage.get()
 
-        val externalChannelEvents = interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
+        val externalChannelEvents =
+            interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
                 Payload(
                     context = config.widgets,
                     events = it
@@ -245,7 +248,6 @@ class HomeScreenViewModel(
             }
         }
 
-        proceedWithOpeningWidgetObject(widgetObject = config.widgets)
         proceedWithDispatches()
     }
 
@@ -268,6 +270,23 @@ class HomeScreenViewModel(
                         )
                     }
                 }
+            }
+        }
+    }
+
+    private fun proceedWithClosingWidgetObject(widgetObject: Id) {
+        viewModelScope.launch {
+            val subscriptions = widgets.value.map { widget -> widget.id }
+            if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
+            closeObject.stream(widgetObject).collect { status ->
+                status.fold(
+                    onFailure = {
+                        Timber.e(it, "Error while closing widget object")
+                    },
+                    onSuccess = {
+                        Timber.d("Widget object closed successfully")
+                    }
+                )
             }
         }
     }
@@ -419,7 +438,7 @@ class HomeScreenViewModel(
                         isEmptyingBinInProgress.value = true
                     }
                     is Resultat.Success -> {
-                        when(status.value.size) {
+                        when (status.value.size) {
                             0 -> sendToast("Bin already empty")
                             1 -> sendToast("One object deleted")
                             else -> "${status.value.size} objects deleted"
@@ -571,7 +590,7 @@ class HomeScreenViewModel(
         curr: ObjectView,
         e: Event.Command.DeleteBlock
     ) {
-        val deletedWidgets : List<Id> = curr.blocks.mapNotNull { block ->
+        val deletedWidgets: List<Id> = curr.blocks.mapNotNull { block ->
             if (e.targets.contains(block.id) && block.content is Block.Content.Widget)
                 block.id
             else
@@ -582,6 +601,16 @@ class HomeScreenViewModel(
                 unsubscriber.unsubscribe(deletedWidgets)
             }
         }
+    }
+
+    fun onStart() {
+        Timber.d("onStart")
+        proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
+    }
+
+    fun onStop() {
+        Timber.d("onStop")
+        proceedWithClosingWidgetObject(widgetObject = configStorage.get().widgets)
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
@@ -642,6 +671,7 @@ class HomeScreenViewModel(
     class Factory @Inject constructor(
         private val configStorage: ConfigStorage,
         private val openObject: OpenObject,
+        private val closeObject: CloseBlock,
         private val createObject: CreateObject,
         private val createWidget: CreateWidget,
         private val deleteWidget: DeleteWidget,
@@ -663,6 +693,7 @@ class HomeScreenViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
             configStorage = configStorage,
             openObject = openObject,
+            closeObject = closeObject,
             createObject = createObject,
             createWidget = createWidget,
             deleteWidget = deleteWidget,

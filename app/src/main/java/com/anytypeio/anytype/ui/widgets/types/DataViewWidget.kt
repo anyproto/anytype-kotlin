@@ -196,10 +196,7 @@ fun ListWidgetElement(
             overflow = TextOverflow.Ellipsis,
             style = TextStyle(
                 fontSize = 15.sp,
-                color = if (name != null || snippet != null)
-                    colorResource(id = R.color.text_primary)
-                else
-                    colorResource(id = R.color.text_tertiary),
+                color = colorResource(id = R.color.text_primary),
                 fontWeight = FontWeight.Medium,
             )
         )

@@ -89,6 +89,16 @@ class HomeScreenFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {

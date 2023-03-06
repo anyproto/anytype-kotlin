@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
+import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -44,6 +45,7 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -56,6 +58,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 
 class HomeScreenViewModelTest {
 
@@ -100,6 +103,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var collapsedWidgetStateHolder: CollapsedWidgetStateHolder
+
+    @Mock
+    lateinit var unsubscriber: Unsubscriber
 
     @Mock
     lateinit var gateway: Gateway
@@ -304,7 +310,7 @@ class HomeScreenViewModelTest {
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenObject(givenObjectView)
-        stubObjectSearchContainer(
+        stubStorelessSubscriptionContainer(
             subscription = widgetBlock.id,
             targets = emptyList()
         )
@@ -409,12 +415,13 @@ class HomeScreenViewModelTest {
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenObject(givenObjectView)
-        stubObjectSearchContainer(
+        stubStorelessSubscriptionContainer(
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
         stubDefaultContainerSubscriptions()
+        stubCollapsedWidgetState(any())
+
 
         val vm = buildViewModel()
 
@@ -426,6 +433,7 @@ class HomeScreenViewModelTest {
                 actual = firstTimeState,
                 expected = HomeScreenViewModel.actions
             )
+            delay(1)
             val secondTimeItem = awaitItem()
             assertEquals(
                 expected = buildList {
@@ -443,6 +451,185 @@ class HomeScreenViewModelTest {
             )
             verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
         }
+    }
+
+    @Test
+    fun `should unsubscribe when widget is deleted as result of user action`() = runTest {
+        // SETUP
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = emptyList()
+        )
+
+        val sourceLinkBlock = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.LINK,
+            children = listOf(sourceLinkBlock.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+            type = SmartBlockType.WIDGET
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            type = SmartBlockType.WIDGET,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLinkBlock
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenObject(givenObjectView)
+        stubStorelessSubscriptionContainer(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+        stubCollapsedWidgetState(any())
+        stubDefaultContainerSubscriptions()
+
+        val givenPayload = Payload(
+            context = WIDGET_OBJECT_ID,
+            events = listOf(
+                Event.Command.UpdateStructure(
+                    context = WIDGET_OBJECT_ID,
+                    children = emptyList(),
+                    id = smartBlock.id
+                ),
+                Event.Command.DeleteBlock(
+                    context = WIDGET_OBJECT_ID,
+                    targets = listOf(widgetBlock.id, sourceLinkBlock.id)
+                )
+            )
+        )
+
+        deleteWidget.stub {
+            onBlocking {
+                stream(
+                    DeleteWidget.Params(
+                        ctx = WIDGET_OBJECT_ID,
+                        targets = listOf(widgetBlock.id)
+                    )
+                )
+            } doReturn flowOf(Resultat.Success(givenPayload))
+        }
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onDropDownMenuAction(
+            widget = widgetBlock.id,
+            DropDownMenuAction.RemoveWidget
+        )
+
+        delay(1)
+
+        verifyBlocking(unsubscriber, times(1)) {
+            unsubscribe(subscriptions = listOf(widgetBlock.id))
+        }
+    }
+
+    @Test
+    fun `should unsubscribe when widget is deleted as result of external event`() = runTest {
+        // SETUP
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = emptyList()
+        )
+
+        val sourceLinkBlock = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.LINK,
+            children = listOf(sourceLinkBlock.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+            type = SmartBlockType.WIDGET
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            type = SmartBlockType.WIDGET,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLinkBlock
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        val delayBeforeEvents = 300L
+
+        val givenPayload = Payload(
+            context = WIDGET_OBJECT_ID,
+            events = listOf(
+                Event.Command.UpdateStructure(
+                    context = WIDGET_OBJECT_ID,
+                    children = emptyList(),
+                    id = smartBlock.id
+                ),
+                Event.Command.DeleteBlock(
+                    context = WIDGET_OBJECT_ID,
+                    targets = listOf(widgetBlock.id, sourceLinkBlock.id)
+                )
+            )
+        )
+
+        stubInterceptEvents(
+            events = flow {
+                delay(delayBeforeEvents)
+                emit(givenPayload.events)
+            }
+        )
+        stubConfig()
+        stubOpenObject(givenObjectView)
+        stubStorelessSubscriptionContainer(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+        stubCollapsedWidgetState(any())
+        stubDefaultContainerSubscriptions()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onDropDownMenuAction(
+            widget = widgetBlock.id,
+            DropDownMenuAction.RemoveWidget
+        )
+
+        delay(delayBeforeEvents + 1)
+
+        verifyBlocking(unsubscriber, times(1)) {
+            unsubscribe(subscriptions = listOf(widgetBlock.id))
+        }
+
     }
 
     private fun stubInterceptEvents(events: Flow<List<Event>>) {
@@ -469,7 +656,7 @@ class HomeScreenViewModelTest {
         }
     }
 
-    private fun stubObjectSearchContainer(
+    private fun stubStorelessSubscriptionContainer(
         subscription: Id,
         targets: List<Id>,
         keys: List<Key> = TreeWidgetContainer.keys
@@ -551,7 +738,8 @@ class HomeScreenViewModelTest {
         collapsedWidgetStateHolder = collapsedWidgetStateHolder,
         urlBuilder = urlBuilder,
         move = move,
-        emptyBin = emptyBin
+        emptyBin = emptyBin,
+        unsubscriber = unsubscriber
     )
 
     companion object {

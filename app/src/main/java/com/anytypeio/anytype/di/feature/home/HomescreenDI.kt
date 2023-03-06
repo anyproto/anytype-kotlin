@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -92,8 +93,10 @@ object HomeScreenModule {
     @PerScreen
     fun deleteWidget(
         repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
     ): DeleteWidget = DeleteWidget(
-        repo = repo
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -212,6 +215,10 @@ object HomeScreenModule {
         @PerScreen
         @Binds
         fun holder(holder: WidgetActiveViewStateHolder.Impl): WidgetActiveViewStateHolder
+
+        @PerScreen
+        @Binds
+        fun unsubscriber(impl: Unsubscriber.Impl) : Unsubscriber
 
         @PerScreen
         @Binds

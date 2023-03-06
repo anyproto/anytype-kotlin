@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -77,16 +78,19 @@ class HomeScreenViewModel(
     private val urlBuilder: UrlBuilder,
     private val createObject: CreateObject,
     private val move: Move,
-    private val emptyBin: EmptyBin
+    private val emptyBin: EmptyBin,
+    private val unsubscriber: Unsubscriber,
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
-    CollapsedWidgetStateHolder by collapsedWidgetStateHolder {
+    CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
+    Unsubscriber by unsubscriber {
 
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
-    val isEmptyingBinInProgress  = MutableStateFlow(false)
+
+    private val isEmptyingBinInProgress  = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -141,10 +145,11 @@ class HomeScreenViewModel(
 
     init {
 
+        viewModelScope.launch { unsubscriber.start() }
+
         val config = configStorage.get()
 
-        val externalChannelEvents =
-            interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
+        val externalChannelEvents = interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
                 Payload(
                     context = config.widgets,
                     events = it
@@ -363,7 +368,9 @@ class HomeScreenViewModel(
                         // Do nothing?
                     }
                     is Resultat.Success -> {
-                        objectPayloadDispatcher.send(status.value)
+                        launch {
+                            objectPayloadDispatcher.send(status.value)
+                        }
                     }
                 }
             }
@@ -373,7 +380,7 @@ class HomeScreenViewModel(
     private fun proceedWithDeletingWidget(widget: Id) {
         viewModelScope.launch {
             val config = configStorage.get()
-            deleteWidget(
+            deleteWidget.stream(
                 DeleteWidget.Params(
                     ctx = config.widgets,
                     targets = listOf(widget)
@@ -389,7 +396,9 @@ class HomeScreenViewModel(
                         // Do nothing?
                     }
                     is Resultat.Success -> {
-                        objectPayloadDispatcher.send(status.value)
+                        launch {
+                            objectPayloadDispatcher.send(status.value)
+                        }
                     }
                 }
             }
@@ -532,6 +541,7 @@ class HomeScreenViewModel(
                     curr = curr.copy(blocks = curr.blocks + e.blocks)
                 }
                 is Event.Command.DeleteBlock -> {
+                    interceptWidgetDeletion(curr, e)
                     curr = curr.copy(
                         blocks = curr.blocks.filter { !e.targets.contains(it.id) }
                     )
@@ -555,6 +565,23 @@ class HomeScreenViewModel(
             }
         }
         return curr
+    }
+
+    private fun interceptWidgetDeletion(
+        curr: ObjectView,
+        e: Event.Command.DeleteBlock
+    ) {
+        val deletedWidgets : List<Id> = curr.blocks.mapNotNull { block ->
+            if (e.targets.contains(block.id) && block.content is Block.Content.Widget)
+                block.id
+            else
+                null
+        }
+        if (deletedWidgets.isNotEmpty()) {
+            viewModelScope.launch {
+                unsubscriber.unsubscribe(deletedWidgets)
+            }
+        }
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
@@ -629,7 +656,8 @@ class HomeScreenViewModel(
         private val urlBuilder: UrlBuilder,
         private val getObject: GetObject,
         private val move: Move,
-        private val emptyBin: EmptyBin
+        private val emptyBin: EmptyBin,
+        private val unsubscriber: Unsubscriber
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -649,7 +677,8 @@ class HomeScreenViewModel(
             getObject = getObject,
             urlBuilder = urlBuilder,
             move = move,
-            emptyBin = emptyBin
+            emptyBin = emptyBin,
+            unsubscriber = unsubscriber
         ) as T
     }
 

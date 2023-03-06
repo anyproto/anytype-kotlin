@@ -30,6 +30,7 @@ fun WidgetMenu(
     canChangeSource: Boolean = true,
     canChangeType: Boolean = true,
     canEmptyBin: Boolean = false,
+    canEditWidgets: Boolean = true,
     isExpanded: MutableState<Boolean>,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
@@ -120,17 +121,19 @@ fun WidgetMenu(
                 color = colorResource(id = R.color.shape_primary)
             )
         }
-        DropdownMenuItem(
-            onClick = {
-                onDropDownMenuAction(DropDownMenuAction.EditWidgets).also {
-                    isExpanded.value = false
+        if (canEditWidgets) {
+            DropdownMenuItem(
+                onClick = {
+                    onDropDownMenuAction(DropDownMenuAction.EditWidgets).also {
+                        isExpanded.value = false
+                    }
                 }
+            ) {
+                Text(
+                    text = stringResource(R.string.edit_widgets),
+                    style = defaultTextStyle
+                )
             }
-        ) {
-            Text(
-                text = stringResource(R.string.edit_widgets),
-                style = defaultTextStyle
-            )
         }
     }
 }

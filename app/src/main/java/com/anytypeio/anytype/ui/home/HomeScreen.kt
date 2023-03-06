@@ -267,7 +267,7 @@ private fun WidgetList(
                                     onWidgetMenuAction(item.id, action)
                                 },
                                 onWidgetObjectClicked = onWidgetObjectClicked,
-                                isEditable = mode is InteractionMode.Edit
+                                isInEditMode = mode is InteractionMode.Edit
                             )
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,

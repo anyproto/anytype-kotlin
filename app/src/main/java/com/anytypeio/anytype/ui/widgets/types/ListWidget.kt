@@ -81,7 +81,7 @@ fun ListWidgetCard(
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isEditable = false,
+                isInEditMode = false,
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.elements.isNotEmpty()) {

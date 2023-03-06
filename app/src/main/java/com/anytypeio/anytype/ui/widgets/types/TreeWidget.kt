@@ -101,7 +101,7 @@ fun TreeWidgetCard(
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction,
-                isEditable = mode is InteractionMode.Edit
+                isInEditMode = mode is InteractionMode.Edit
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
@@ -223,7 +223,7 @@ fun WidgetHeader(
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onExpandElement: () -> Unit = {},
     isExpanded: Boolean = false,
-    isEditable: Boolean = true
+    isInEditMode: Boolean = true
 ) {
     Box(
         Modifier
@@ -244,11 +244,11 @@ fun WidgetHeader(
                 .fillMaxWidth()
                 .padding(
                     start = 16.dp,
-                    end = if (isEditable) 76.dp else 32.dp
+                    end = if (isInEditMode) 76.dp else 32.dp
                 )
                 .align(Alignment.CenterStart)
                 .then(
-                    if (isEditable)
+                    if (isInEditMode)
                         Modifier
                     else
                         Modifier.combinedClickable(
@@ -272,14 +272,14 @@ fun WidgetHeader(
                 .padding(end = 12.dp)
                 .rotate(rotation.value)
                 .then(
-                    if (isEditable)
+                    if (isInEditMode)
                         Modifier
                     else
                         Modifier.noRippleClickable { onExpandElement() }
                 )
         )
         AnimatedVisibility(
-            visible = isEditable,
+            visible = isInEditMode,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 48.dp),
@@ -297,7 +297,8 @@ fun WidgetHeader(
                 )
                 WidgetMenu(
                     isExpanded = isHeaderMenuExpanded,
-                    onDropDownMenuAction = onDropDownMenuAction
+                    onDropDownMenuAction = onDropDownMenuAction,
+                    canEditWidgets = !isInEditMode
                 )
             }
         }

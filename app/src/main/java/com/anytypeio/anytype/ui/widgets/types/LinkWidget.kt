@@ -42,7 +42,7 @@ fun LinkWidgetCard(
     item: WidgetView.Link,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    isEditable: Boolean
+    isInEditMode: Boolean
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -60,7 +60,7 @@ fun LinkWidgetCard(
                 color = colorResource(id = R.color.dashboard_card_background)
             )
             .then(
-                if (isEditable)
+                if (isInEditMode)
                     Modifier.noRippleClickable {
                         isCardMenuExpanded.value = !isCardMenuExpanded.value
                     }
@@ -89,7 +89,7 @@ fun LinkWidgetCard(
                     .align(Alignment.CenterStart)
                     .padding(
                         start = 16.dp,
-                        end = if (isEditable) 76.dp else 32.dp
+                        end = if (isInEditMode) 76.dp else 32.dp
                     ),
                 style = TextStyle(
                     fontSize = 17.sp,
@@ -98,7 +98,7 @@ fun LinkWidgetCard(
                 )
             )
             AnimatedVisibility(
-                visible = isEditable,
+                visible = isInEditMode,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 48.dp),
@@ -116,14 +116,16 @@ fun LinkWidgetCard(
                     )
                     WidgetMenu(
                         isExpanded = isHeaderMenuExpanded,
-                        onDropDownMenuAction = onDropDownMenuAction
+                        onDropDownMenuAction = onDropDownMenuAction,
+                        canEditWidgets = !isInEditMode
                     )
                 }
             }
         }
         WidgetMenu(
             isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction
+            onDropDownMenuAction = onDropDownMenuAction,
+            canEditWidgets = !isInEditMode
         )
     }
 }

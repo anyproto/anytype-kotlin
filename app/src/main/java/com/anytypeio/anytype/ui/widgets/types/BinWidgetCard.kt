@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
@@ -65,7 +66,9 @@ fun BinWidgetCard(
                         interactionSource = remember { MutableInteractionSource() }
                     )
                 else
-                    Modifier
+                    Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
             )
     ) {
         Box(
@@ -76,7 +79,9 @@ fun BinWidgetCard(
             Image(
                 painter = painterResource(id = R.drawable.ic_widget_bin),
                 contentDescription = "Bin icon",
-                modifier = Modifier.align(Alignment.CenterStart).padding(start = 14.dp)
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 14.dp)
             )
             Text(
                 text = stringResource(id = R.string.bin),
@@ -98,7 +103,8 @@ fun BinWidgetCard(
             canRemove = false,
             canChangeType = false,
             canChangeSource = false,
-            canEmptyBin = true
+            canEmptyBin = true,
+            canEditWidgets = mode is InteractionMode.Default
         )
     }
 }

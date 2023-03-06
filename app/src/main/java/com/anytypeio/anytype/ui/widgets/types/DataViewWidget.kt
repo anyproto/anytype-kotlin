@@ -110,7 +110,8 @@ fun DataViewListWidgetCard(
         }
         WidgetMenu(
             isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction
+            onDropDownMenuAction = onDropDownMenuAction,
+            canEditWidgets = mode is InteractionMode.Default
         )
     }
 }

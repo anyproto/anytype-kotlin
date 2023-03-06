@@ -9,6 +9,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceSubcomponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeSubcomponent
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -113,6 +114,19 @@ object HomeScreenModule {
     ) : Move = Move(
         repo = repo,
         appCoroutineDispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun emptyBin(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers,
+        workspaceManager: WorkspaceManager
+    ) : EmptyBin = EmptyBin(
+        repo = repo,
+        dispatchers = dispatchers,
+        workspaceManager = workspaceManager
     )
 
     @JvmStatic

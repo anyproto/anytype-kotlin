@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -75,12 +76,12 @@ class HomeScreenViewModel(
     private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
     private val urlBuilder: UrlBuilder,
     private val createObject: CreateObject,
-    private val move: Move
+    private val move: Move,
+    private val emptyBin: EmptyBin
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
-    CollapsedWidgetStateHolder by collapsedWidgetStateHolder
-{
+    CollapsedWidgetStateHolder by collapsedWidgetStateHolder {
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
@@ -140,12 +141,13 @@ class HomeScreenViewModel(
 
         val config = configStorage.get()
 
-        val externalChannelEvents = interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
-            Payload(
-                context = config.widgets,
-                events = it
-            )
-        }
+        val externalChannelEvents =
+            interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
+                Payload(
+                    context = config.widgets,
+                    events = it
+                )
+            }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
 
@@ -302,7 +304,7 @@ class HomeScreenViewModel(
                 CreateWidget.Params(
                     ctx = config.widgets,
                     source = source,
-                    type = when(type) {
+                    type = when (type) {
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LINK
@@ -342,7 +344,7 @@ class HomeScreenViewModel(
                     ctx = config.widgets,
                     source = source,
                     target = widget,
-                    type = when(type) {
+                    type = when (type) {
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         else -> throw IllegalStateException("Unexpected type: $type")
@@ -431,7 +433,7 @@ class HomeScreenViewModel(
     }
 
     fun onBundledWidgetClicked(widget: Id) {
-        when(widget) {
+        when (widget) {
             Subscriptions.SUBSCRIPTION_SETS -> {
                 navigate(Navigation.ExpandWidget(Subscription.Sets))
             }
@@ -595,7 +597,8 @@ class HomeScreenViewModel(
         private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
         private val urlBuilder: UrlBuilder,
         private val getObject: GetObject,
-        private val move: Move
+        private val move: Move,
+        private val emptyBin: EmptyBin
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -614,7 +617,8 @@ class HomeScreenViewModel(
             collapsedWidgetStateHolder = collapsedWidgetStateHolder,
             getObject = getObject,
             urlBuilder = urlBuilder,
-            move = move
+            move = move,
+            emptyBin = emptyBin
         ) as T
     }
 
@@ -648,12 +652,14 @@ sealed class Command {
         val source: Id,
         val layout: Int
     ) : Command()
+
     data class ChangeWidgetSource(
         val ctx: Id,
         val widget: Id,
         val source: Id,
         val type: Int
     ) : Command()
+
     data class ChangeWidgetType(
         val ctx: Id,
         val widget: Id,

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
@@ -56,7 +57,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
-class HomeViewModelTest {
+class HomeScreenViewModelTest {
 
     @get:Rule
     val coroutineTestRule = DefaultCoroutineTestRule()
@@ -87,6 +88,9 @@ class HomeViewModelTest {
 
     @Mock
     lateinit var move: Move
+
+    @Mock
+    lateinit var emptyBin: EmptyBin
 
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
@@ -546,7 +550,8 @@ class HomeViewModelTest {
         widgetActiveViewStateHolder = activeViewStateHolder,
         collapsedWidgetStateHolder = collapsedWidgetStateHolder,
         urlBuilder = urlBuilder,
-        move = move
+        move = move,
+        emptyBin = emptyBin
     )
 
     companion object {

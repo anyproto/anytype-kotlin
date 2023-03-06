@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -88,6 +90,7 @@ fun LibraryListTabsContent(
             is LibraryListConfig.Types, is LibraryListConfig.Relations -> tabs.my
             is LibraryListConfig.TypesLibrary, is LibraryListConfig.RelationsLibrary -> tabs.lib
         }
+        val itemsListState = rememberLazyListState()
         Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -109,6 +112,7 @@ fun LibraryListTabsContent(
                         keyboardController?.hide()
                         focusManager.clearFocus()
                         screenState.value = ScreenState.CONTENT
+                        itemsListState.animateScrollToItem(0)
                     }
                 }
 
@@ -136,7 +140,7 @@ fun LibraryListTabsContent(
                     visible = screenState.value.visible().not()
                 )
             }
-            LibraryList(data, vmEventStream, screenState)
+            LibraryList(data, vmEventStream, screenState, itemsListState)
         }
     }
 }
@@ -163,13 +167,14 @@ private fun LibraryList(
     data: LibraryScreenState.Tabs.TabData,
     vmEventStream: (LibraryEvent) -> Unit,
     screenState: MutableState<ScreenState>,
+    itemsListState: LazyListState,
 ) {
 
     val itemModifier = Modifier
         .fillMaxWidth()
         .height(ItemDefaults.ITEM_HEIGHT)
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize(), state = itemsListState) {
 
         items(
             count = data.items.size,

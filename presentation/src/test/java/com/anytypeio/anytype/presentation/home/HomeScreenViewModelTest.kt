@@ -39,10 +39,12 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
+import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -718,6 +720,150 @@ class HomeScreenViewModelTest {
         }
 
         verify(closeObject, times(1)).stream(params = WIDGET_OBJECT_ID)
+    }
+
+    @Test
+    fun `should filter out link widgets where source has unsupported object type`() = runTest {
+
+        // SETUP
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = emptyList(),
+            objectType = WidgetConfig.excludedTypes.random()
+        )
+
+        val sourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.LINK,
+            children = listOf(sourceLink.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+            type = SmartBlockType.WIDGET
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            type = SmartBlockType.WIDGET,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLink
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenObject(givenObjectView)
+        stubStorelessSubscriptionContainer(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+        stubDefaultContainerSubscriptions()
+        stubCollapsedWidgetState(any())
+
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = HomeScreenViewModel.actions
+            )
+            delay(1)
+            val secondTimeItem = awaitItem()
+            assertTrue { secondTimeItem.none { it.id == widgetBlock.id } }        }
+    }
+
+    @Test
+    fun `should filter out tree widgets where source has unsupported object type`() = runTest {
+
+        // SETUP
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = emptyList(),
+            objectType = WidgetConfig.excludedTypes.random()
+        )
+
+        val sourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.TREE,
+            children = listOf(sourceLink.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+            type = SmartBlockType.WIDGET
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            type = SmartBlockType.WIDGET,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLink
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenObject(givenObjectView)
+        stubStorelessSubscriptionContainer(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+        stubDefaultContainerSubscriptions()
+        stubCollapsedWidgetState(any())
+
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = HomeScreenViewModel.actions
+            )
+            delay(1)
+            val secondTimeItem = awaitItem()
+            assertTrue { secondTimeItem.none { it.id == widgetBlock.id } }
+        }
+    }
+
+    @Test
+    fun `should filter out list widgets where source has unsupported object type`() {
+        // TODO when list-layout is supported on mw level
     }
 
     private fun stubInterceptEvents(events: Flow<List<Event>>) {

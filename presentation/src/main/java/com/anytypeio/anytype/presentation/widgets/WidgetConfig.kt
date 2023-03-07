@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 object WidgetConfig {
-    private val excludedTypes = listOf(
+    val excludedTypes = listOf(
         ObjectTypeIds.OBJECT_TYPE,
         ObjectTypeIds.RELATION,
         ObjectTypeIds.TEMPLATE,

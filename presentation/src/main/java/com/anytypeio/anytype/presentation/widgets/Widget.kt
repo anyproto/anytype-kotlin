@@ -55,22 +55,25 @@ fun List<Block>.parseWidgets(
                 if (source is Block.Content.Link) {
                     val raw = details[source.target] ?: emptyMap()
                     val data = ObjectWrapper.Basic(raw)
-                    when (content.layout) {
-                        Block.Content.Widget.Layout.TREE -> {
-                            add(
-                                Widget.Tree(
-                                    id = w.id,
-                                    source = data
+                    val type = data.type.firstOrNull()
+                    if (!WidgetConfig.excludedTypes.contains(type)) {
+                        when (content.layout) {
+                            Block.Content.Widget.Layout.TREE -> {
+                                add(
+                                    Widget.Tree(
+                                        id = w.id,
+                                        source = data
+                                    )
                                 )
-                            )
-                        }
-                        Block.Content.Widget.Layout.LINK -> {
-                            add(
-                                Widget.Link(
-                                    id = w.id,
-                                    source = data
+                            }
+                            Block.Content.Widget.Layout.LINK -> {
+                                add(
+                                    Widget.Link(
+                                        id = w.id,
+                                        source = data
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }

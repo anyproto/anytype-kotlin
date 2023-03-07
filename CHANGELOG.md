@@ -1,5 +1,17 @@
 # Change log for Android @Anytype app.
 
+## Version 0.15.0 (WIP)
+
+### New features & enhancements 🚀
+
+### Fixes & tech 🚒
+
+* Editor | Do not allow changing icon when object is locked (#2990)
+
+### Design & UX 🔳
+
+## Version 0.14.0
+
 ### New features & enhancements 🚀
 
 * Editor | Introduced inline-set block (#2864)

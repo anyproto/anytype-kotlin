@@ -4009,6 +4009,10 @@ class EditorViewModel(
 
     fun onPageIconClicked() {
         Timber.d("onPageIconClicked, ")
+        if (mode == EditorMode.Locked) {
+            sendToast("Unlock your object to change its icon")
+            return
+        }
         val restrictions = orchestrator.stores.objectRestrictions.current()
         val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
         if (isDetailsAllowed) {

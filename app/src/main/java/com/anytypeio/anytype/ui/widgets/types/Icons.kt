@@ -48,7 +48,7 @@ fun TreeWidgetObjectIcon(
                     )
             ) {
                 Text(
-                    text = icon.name.first().toString(),
+                    text = icon.name.ifEmpty { stringResource(id = R.string.u) }.take(1),
                     modifier = Modifier.align(Alignment.Center),
                     style = TextStyle(
                         fontSize = 11.sp,

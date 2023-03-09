@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +22,8 @@ import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
 import com.anytypeio.anytype.ui.settings.system.SettingsActivity
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -78,6 +81,15 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val offsetFromTop = PADDING_TOP
+        (dialog as? BottomSheetDialog)?.behavior?.apply {
+            isFitToContents = false
+            expandedOffset = offsetFromTop
+            state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.commands.collect { command -> processCommands(command) }
@@ -113,3 +125,5 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
         componentManager().mainSettingsComponent.release()
     }
 }
+
+private const val PADDING_TOP = 54

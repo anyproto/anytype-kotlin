@@ -2,6 +2,8 @@ package com.anytypeio.anytype.ui_settings.main
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -23,44 +25,80 @@ fun MainSettingScreen(
     onAppearanceClicked: () -> Unit,
     showDebugMenu: Boolean
 ) {
-    Column {
-        Box(
-            modifier = Modifier.padding(vertical = 6.dp).align(Alignment.CenterHorizontally)
-        ) {
-            Dragger()
-        }
-        Option(
-            image = R.drawable.ic_account_and_data,
-            text = stringResource(R.string.account_and_data),
-            onClick = onAccountAndDataClicked
-        )
+    Column(Modifier.fillMaxSize()) {
+        Header(Modifier.align(Alignment.CenterHorizontally))
+        Spacer(modifier = Modifier.height(10.dp))
         Divider()
-        Option(
-            image = R.drawable.ic_personalization,
-            text = stringResource(R.string.personalization),
-            onClick = onPersonalizationClicked
+        Spacer(modifier = Modifier.height(26.dp))
+        Settings(
+            onAccountAndDataClicked = onAccountAndDataClicked,
+            onPersonalizationClicked = onPersonalizationClicked,
+            onAppearanceClicked = onAppearanceClicked,
+            onAboutAppClicked = onAboutAppClicked,
+            showDebugMenu = showDebugMenu,
+            onDebugClicked = onDebugClicked
         )
-        Divider()
-        Option(
-            image = R.drawable.ic_appearance,
-            text = stringResource(R.string.appearance),
-            onClick = onAppearanceClicked
-        )
-        Divider()
-        Option(
-            image = R.drawable.ic_about,
-            text = stringResource(R.string.about),
-            onClick = onAboutAppClicked
-        )
-        Divider()
-        if (showDebugMenu) {
-            Option(
-                image = R.drawable.ic_debug,
-                text = stringResource(R.string.debug),
-                onClick = onDebugClicked
-            )
-            Divider()
-        }
         Box(modifier = Modifier.height(16.dp))
     }
+}
+
+@Composable
+private fun Settings(
+    onAccountAndDataClicked: () -> Unit,
+    onPersonalizationClicked: () -> Unit,
+    onAppearanceClicked: () -> Unit,
+    onAboutAppClicked: () -> Unit,
+    showDebugMenu: Boolean,
+    onDebugClicked: () -> Unit
+) {
+    Section(
+        modifier = Modifier.padding(start = 20.dp, bottom = 4.dp),
+        title = "Settings"
+    )
+    Option(
+        image = R.drawable.ic_account_and_data,
+        text = stringResource(R.string.account_and_data),
+        onClick = onAccountAndDataClicked
+    )
+    Divider(paddingStart = 60.dp)
+    Option(
+        image = R.drawable.ic_personalization,
+        text = stringResource(R.string.personalization),
+        onClick = onPersonalizationClicked
+    )
+    Divider(paddingStart = 60.dp)
+    Option(
+        image = R.drawable.ic_appearance,
+        text = stringResource(R.string.appearance),
+        onClick = onAppearanceClicked
+    )
+    Divider(paddingStart = 60.dp)
+    Option(
+        image = R.drawable.ic_about,
+        text = stringResource(R.string.about),
+        onClick = onAboutAppClicked
+    )
+    Divider(paddingStart = 60.dp)
+    if (showDebugMenu) {
+        Option(
+            image = R.drawable.ic_debug,
+            text = stringResource(R.string.debug),
+            onClick = onDebugClicked
+        )
+        Divider(paddingStart = 60.dp)
+    }
+}
+
+@Composable
+private fun Header(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.padding(vertical = 6.dp)) {
+        Dragger()
+    }
+    Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
+        SpaceNameBlock()
+    }
+    Box(modifier = modifier) {
+        SpaceImageBlock(Modifier)
+    }
+    NameBlock(name = "Personal")
 }

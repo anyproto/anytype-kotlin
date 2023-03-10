@@ -13,20 +13,20 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import javax.inject.Inject
 
 /**
  * Created by Konstantin Ivanov
  * email :  ki@agileburo.com
  * on 2019-10-21.
  */
-class SplashViewModelFactory(
+class SplashViewModelFactory @Inject constructor(
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val launchAccount: LaunchAccount,
     private val launchWallet: LaunchWallet,
     private val analytics: Analytics,
     private val getLastOpenedObject: GetLastOpenedObject,
     private val getDefaultPageType: GetDefaultPageType,
-    private val setDefaultEditorType: SetDefaultEditorType,
     private val appActionManager: AppActionManager,
     private val createObject: CreateObject,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
@@ -42,7 +42,6 @@ class SplashViewModelFactory(
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
             getDefaultPageType = getDefaultPageType,
-            setDefaultEditorType = setDefaultEditorType,
             appActionManager = appActionManager,
             createObject = createObject,
             relationsSubscriptionManager = relationsSubscriptionManager,

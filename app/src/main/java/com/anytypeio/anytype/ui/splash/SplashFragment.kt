@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.splash
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -57,10 +56,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
 
     private fun observe(command: SplashViewModel.Command) {
         when (command) {
-            SplashViewModel.Command.CheckFirstInstall -> {
-                val isFirstInstall = isFirstInstall()
-                vm.onFirstInstallStatusChecked(isFirstInstall = isFirstInstall)
-            }
             is SplashViewModel.Command.Error -> {
                 toast(command.msg)
                 binding.error.visible()
@@ -126,25 +121,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
 
     private fun showVersion() {
         binding.version.text = "${BuildConfig.VERSION_NAME}-alpha"
-    }
-
-    private fun isFirstInstall(): Boolean {
-        return try {
-            val firstInstallTime: Long =
-                requireContext().packageManager.getPackageInfo(
-                    BuildConfig.APPLICATION_ID,
-                    0
-                ).firstInstallTime
-            val lastUpdateTime: Long =
-                requireContext().packageManager.getPackageInfo(
-                    BuildConfig.APPLICATION_ID,
-                    0
-                ).lastUpdateTime
-            firstInstallTime == lastUpdateTime
-        } catch (e: PackageManager.NameNotFoundException) {
-            Timber.e(e, "Error while checking first install time")
-            false
-        }
     }
 
     override fun injectDependencies() {

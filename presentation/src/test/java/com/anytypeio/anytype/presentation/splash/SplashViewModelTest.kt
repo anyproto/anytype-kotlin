@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
@@ -14,15 +13,12 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -36,7 +32,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 
 class SplashViewModelTest {
@@ -66,9 +61,6 @@ class SplashViewModelTest {
     lateinit var auth: AuthRepository
 
     private lateinit var getLastOpenedObject: GetLastOpenedObject
-
-    @Mock
-    private lateinit var setDefaultEditorType: SetDefaultEditorType
 
     @Mock
     lateinit var createObject: CreateObject
@@ -103,7 +95,6 @@ class SplashViewModelTest {
             launchWallet = launchWallet,
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
-            setDefaultEditorType = setDefaultEditorType,
             getDefaultPageType = getDefaultPageType,
             createObject = createObject,
             appActionManager = appActionManager,
@@ -122,13 +113,11 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        stubGetDefaultObjectType(null)
 
         initViewModel()
 
         runBlocking {
-            verify(checkAuthorizationStatus, times(0)).invoke(any(), any(), any())
-            verify(checkAuthorizationStatus, times(0)).invoke(any())
+            verify(checkAuthorizationStatus, times(1)).invoke(any())
             verifyNoMoreInteractions(checkAuthorizationStatus)
         }
     }
@@ -230,109 +219,6 @@ class SplashViewModelTest {
             verify(launchAccount, times(1)).invoke(any())
         }
     }
-
-    @Test
-    fun `should fallback to default object type if default object type contains deprecated prefix id`() =
-        runTest {
-            stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
-            stubLaunchWallet()
-            stubLaunchAccount()
-            stubGetLastOpenedObject()
-            stubGetDefaultObjectType(type = MARKETPLACE_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
-
-            initViewModel()
-
-            verify(setDefaultEditorType, times(1)).invoke(
-                SetDefaultEditorType.Params(
-                    SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.first,
-                    SplashViewModel.DEFAULT_TYPE_FIRST_INSTALL.second
-                )
-            )
-        }
-
-    @Test
-    fun `should not fallback to default object type if default object type does not contain deprecated prefix id`() =
-        runTest {
-            stubCheckAuthStatus(Either.Right(AuthStatus.AUTHORIZED))
-            stubLaunchWallet()
-            stubLaunchAccount()
-            stubGetLastOpenedObject()
-            stubGetDefaultObjectType(type = ObjectTypeIds.DEFAULT_OBJECT_TYPE_PREFIX + MockDataFactory.randomUuid())
-
-            initViewModel()
-
-            verifyNoInteractions(setDefaultEditorType)
-        }
-
-    //Todo can't mock Amplitude
-//    @Test
-//    fun `should emit appropriate navigation command if account is launched`() {
-//
-//        val status = AuthStatus.AUTHORIZED
-//
-//        val response = Either.Right(status)
-//
-//
-//        //Mockito.`when`(amplitude.setUserId("accountId", true)).
-//        stubCheckAuthStatus(response)
-//        stubLaunchAccount()
-//        stubLaunchWallet()
-//
-//        vm.onResume()
-//
-//        verify(amplitude, times(1)).setUserId("accountId", true)
-//
-//        vm.navigation.test().assertValue { value ->
-//            value.peekContent() == AppNavigation.Command.StartDesktopFromSplash
-//        }
-//    }
-
-//    @Test
-//    fun `should emit appropriate navigation command if user is unauthorized`() {
-//
-//        val status = AuthStatus.UNAUTHORIZED
-//
-//        val response = Either.Right(status)
-//
-//        stubCheckAuthStatus(response)
-//        stubGetLastOpenedObject()
-//
-//        vm.onResume()
-//
-//        vm.navigation.test().assertValue { value ->
-//            value.peekContent() == AppNavigation.Command.OpenStartLoginScreen
-//        }
-//    }
-
-//    @Test
-//    fun `should retry launching wallet after failed launch and emit error`() {
-//
-//        // SETUP
-//
-//        val status = AuthStatus.AUTHORIZED
-//
-//        val response = Either.Right(status)
-//
-//        val exception = Exception(MockDataFactory.randomString())
-//
-//        stubCheckAuthStatus(response)
-//
-//        stubLaunchWallet(response = Either.Left(exception))
-//
-//        // TESTING
-//
-//        val state = vm.state.test()
-//
-//        state.assertNoValue()
-//
-//        vm.onResume()
-//
-//        state.assertValue { value -> value is ViewState.Error }
-//
-//        runBlocking {
-//            verify(launchWallet, times(2)).invoke(any())
-//        }
-//    }
 
     private fun stubCheckAuthStatus(response: Either.Right<AuthStatus>) {
         checkAuthorizationStatus.stub {

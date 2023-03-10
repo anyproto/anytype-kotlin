@@ -373,3 +373,11 @@ fun Fragment.shareFile(uri: Uri) {
         Timber.e(e, "Error while opening file")
     }
 }
+
+inline fun <T1 : Any, T2 : Any, R : Any> Pair<T1?, T2?>.letNotNull(block: (T1, T2) -> R): R? {
+    return if (first != null && second != null) {
+        block(first!!, second!!)
+    } else {
+        null
+    }
+}

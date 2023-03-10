@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.di.feature
 
+import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -16,6 +18,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -23,18 +26,24 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
+import dagger.Binds
+import dagger.Component
 import dagger.Module
 import dagger.Provides
-import dagger.Subcomponent
 
+@Component(
+    dependencies = [SplashDependencies::class],
+    modules = [
+        SplashModule::class,
+        SplashModule.Declarations::class
+    ]
+)
 @PerScreen
-@Subcomponent(modules = [SplashModule::class])
-interface SplashSubComponent {
+interface SplashComponent {
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun build(): SplashSubComponent
-        fun module(module: SplashModule): Builder
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: SplashDependencies): SplashComponent
     }
 
     fun inject(fragment: SplashFragment)
@@ -42,35 +51,6 @@ interface SplashSubComponent {
 
 @Module
 object SplashModule {
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideSplashViewModelFactory(
-        checkAuthorizationStatus: CheckAuthorizationStatus,
-        launchAccount: LaunchAccount,
-        launchWallet: LaunchWallet,
-        analytics: Analytics,
-        getLastOpenedObject: GetLastOpenedObject,
-        getDefaultPageType: GetDefaultPageType,
-        setDefaultEditorType: SetDefaultEditorType,
-        createObject: CreateObject,
-        appActionManager: AppActionManager,
-        relationsSubscriptionManager: RelationsSubscriptionManager,
-        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
-    ): SplashViewModelFactory = SplashViewModelFactory(
-        checkAuthorizationStatus = checkAuthorizationStatus,
-        launchAccount = launchAccount,
-        launchWallet = launchWallet,
-        analytics = analytics,
-        getLastOpenedObject = getLastOpenedObject,
-        setDefaultEditorType = setDefaultEditorType,
-        getDefaultPageType = getDefaultPageType,
-        createObject = createObject,
-        appActionManager = appActionManager,
-        relationsSubscriptionManager = relationsSubscriptionManager,
-        objectTypesSubscriptionManager = objectTypesSubscriptionManager
-    )
 
     @JvmStatic
     @PerScreen
@@ -167,4 +147,28 @@ object SplashModule {
         repo = repo,
         dispatchers = dispatchers
     )
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(factory: SplashViewModelFactory): ViewModelProvider.Factory
+    }
+
+}
+
+interface SplashDependencies : ComponentDependencies {
+    fun blockRepository(): BlockRepository
+    fun workspaceManager(): WorkspaceManager
+    fun urlBuilder(): UrlBuilder
+    fun analytics(): Analytics
+    fun appActionManager(): AppActionManager
+    fun relationsSubscriptionManager(): RelationsSubscriptionManager
+    fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
+    fun authRepository(): AuthRepository
+    fun pathProvider(): PathProvider
+    fun featuresConfigProvider(): FeaturesConfigProvider
+    fun configStorage(): ConfigStorage
+    fun userSettingsRepository(): UserSettingsRepository
+    fun dispatchers(): AppCoroutineDispatchers
 }

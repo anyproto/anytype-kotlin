@@ -25,7 +25,6 @@ import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicatorImpl
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(
     modules = [MainEntryModule::class]

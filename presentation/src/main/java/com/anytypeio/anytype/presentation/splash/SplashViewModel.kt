@@ -9,10 +9,8 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds.NOTE
-import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
+import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -21,7 +19,6 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -44,7 +41,6 @@ class SplashViewModel(
     private val launchAccount: LaunchAccount,
     private val getLastOpenedObject: GetLastOpenedObject,
     private val getDefaultPageType: GetDefaultPageType,
-    private val setDefaultEditorType: SetDefaultEditorType,
     private val createObject: CreateObject,
     private val appActionManager: AppActionManager,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
@@ -54,73 +50,7 @@ class SplashViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     init {
-        proceedWithUserSettings()
-    }
-
-    private fun proceedWithUserSettings() {
-        viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
-                onFailure = { e ->
-                    Timber.e(e, "Error while getting default page type")
-                    checkAuthorizationStatus()
-                },
-                onSuccess = { result ->
-                    Timber.d("getDefaultPageType: ${result.type}")
-                    val defaultObjectType = result.type
-                    if (defaultObjectType == null) {
-                        commands.emit(Command.CheckFirstInstall)
-                    } else if (defaultObjectType.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
-                        fallbackToNoteAsDefaultObjectType()
-                    } else {
-                        checkAuthorizationStatus()
-                    }
-                }
-            )
-        }
-    }
-
-    fun onFirstInstallStatusChecked(isFirstInstall: Boolean) {
-        Timber.d("setDefaultUserSettings, isFirstInstall:[$isFirstInstall]")
-        val (typeId, typeName) = if (isFirstInstall) {
-            DEFAULT_TYPE_FIRST_INSTALL
-        } else {
-            DEFAULT_TYPE_UPDATE
-        }
-        proceedWithUpdatingDefaultObjectType(
-            typeId = typeId,
-            typeName = typeName
-        )
-    }
-
-    private fun fallbackToNoteAsDefaultObjectType() {
-        val (typeId, typeName) = DEFAULT_TYPE_FIRST_INSTALL
-        proceedWithUpdatingDefaultObjectType(
-            typeId = typeId,
-            typeName = typeName
-        )
-    }
-
-    private fun proceedWithUpdatingDefaultObjectType(
-        typeId: String,
-        typeName: String
-    ) {
-        appActionManager.setup(
-            AppActionManager.Action.CreateNew(
-                type = typeId,
-                name = typeName
-            )
-        )
-        viewModelScope.launch {
-            val params = SetDefaultEditorType.Params(typeId, typeName)
-            Timber.d("Start to update Default Page Type:${params.type}")
-            setDefaultEditorType.invoke(params).process(
-                failure = {
-                    Timber.e(it, "Error while setting default page type")
-                    checkAuthorizationStatus()
-                },
-                success = { checkAuthorizationStatus() }
-            )
-        }
+        checkAuthorizationStatus()
     }
 
     private fun checkAuthorizationStatus() {
@@ -171,11 +101,32 @@ class SplashViewModel(
                     val props = Props.empty()
                     sendEvent(startTime, openAccount, props)
                     proceedWithGlobalSubscriptions()
-                    commands.emit(Command.CheckAppStartIntent)
+                    setupShortcutsAndStartApp()
                 },
                 failure = { e ->
                     Timber.e(e, "Error while launching account")
                     commands.emit(Command.Error(ERROR_MESSAGE))
+                }
+            )
+        }
+    }
+
+    private fun setupShortcutsAndStartApp() {
+        viewModelScope.launch {
+            getDefaultPageType.execute(Unit).fold(
+                onSuccess = {
+                    Pair(it.name, it.type).letNotNull { name, type ->
+                        appActionManager.setup(
+                            AppActionManager.Action.CreateNew(
+                                type = type,
+                                name = name
+                            )
+                        )
+                    }
+                    commands.emit(Command.CheckAppStartIntent)
+                },
+                onFailure = {
+                    commands.emit(Command.CheckAppStartIntent)
                 }
             )
         }
@@ -262,7 +213,6 @@ class SplashViewModel(
     }
 
     sealed class Command {
-        object CheckFirstInstall : Command()
         object NavigateToDashboard : Command()
         object NavigateToWidgets : Command()
         object NavigateToLogin : Command()
@@ -274,7 +224,5 @@ class SplashViewModel(
 
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account..."
-        val DEFAULT_TYPE_FIRST_INSTALL = Pair(NOTE, "Note")
-        val DEFAULT_TYPE_UPDATE = Pair(PAGE, "Page")
     }
 }

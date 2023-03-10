@@ -14,12 +14,12 @@ import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
 import com.anytypeio.anytype.di.feature.LinkToObjectSubComponent
 import com.anytypeio.anytype.di.feature.MainEntrySubComponent
 import com.anytypeio.anytype.di.feature.MoveToSubComponent
+import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
 import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
-import com.anytypeio.anytype.di.feature.SplashSubComponent
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
@@ -36,7 +36,6 @@ import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
-import com.anytypeio.anytype.presentation.relations.RelationCreateFromLibraryViewModel
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
 import dagger.Component
@@ -71,10 +70,10 @@ interface MainComponent :
     TypeIconPickDependencies,
     TypeEditDependencies,
     RelationCreateFromLibraryDependencies,
-    RelationEditDependencies {
+    RelationEditDependencies,
+    SplashDependencies {
     fun inject(app: AndroidApplication)
 
-    fun splashComponentBuilder(): SplashSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
@@ -158,5 +157,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(RelationEditDependencies::class)
     abstract fun provideRelationEditDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SplashDependencies::class)
+    abstract fun provideSplashDependencies(component: MainComponent): ComponentDependencies
 
 }

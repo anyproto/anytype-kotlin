@@ -3,6 +3,9 @@ package com.anytypeio.anytype.presentation.types
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryCreateType
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -26,7 +29,8 @@ import timber.log.Timber
 class TypeCreationViewModel(
     private val createTypeInteractor: CreateType,
     private val urlBuilder: UrlBuilder,
-    private val emojiProvider: EmojiProvider
+    private val emojiProvider: EmojiProvider,
+    private val analytics: Analytics
 ) : NavigationViewModel<TypeCreationViewModel.Navigation>() {
 
     private val unicodeIconFlow = MutableStateFlow("")
@@ -59,6 +63,7 @@ class TypeCreationViewModel(
                 )
             ).fold(
                 onSuccess = {
+                    viewModelScope.sendEvent(analytics = analytics, eventName = libraryCreateType)
                     navigate(Navigation.BackWithCreatedType)
                 },
                 onFailure = {
@@ -96,14 +101,16 @@ class TypeCreationViewModel(
     class Factory @Inject constructor(
         private val createType: CreateType,
         private val urlBuilder: UrlBuilder,
-        private val emojiProvider: EmojiProvider
+        private val emojiProvider: EmojiProvider,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return TypeCreationViewModel(
                 createTypeInteractor = createType,
                 urlBuilder = urlBuilder,
-                emojiProvider = emojiProvider
+                emojiProvider = emojiProvider,
+                analytics = analytics
             ) as T
         }
     }

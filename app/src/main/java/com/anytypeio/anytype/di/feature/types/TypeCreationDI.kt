@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.types
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -65,4 +66,5 @@ interface TypeCreationDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun urlBuilder(): UrlBuilder
+    fun analytics(): Analytics
 }

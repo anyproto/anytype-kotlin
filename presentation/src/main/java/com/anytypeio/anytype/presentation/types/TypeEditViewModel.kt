@@ -3,6 +3,9 @@ package com.anytypeio.anytype.presentation.types
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.librarySetTypeName
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -23,7 +26,8 @@ class TypeEditViewModel(
     private val urlBuilder: UrlBuilder,
     private val id: Id,
     private val name: String,
-    private val icon: String
+    private val icon: String,
+    private val analytics: Analytics
 ) : NavigationViewModel<TypeEditViewModel.Navigation>() {
 
     private val unicodeIconFlow = MutableStateFlow(icon)
@@ -68,6 +72,7 @@ class TypeEditViewModel(
     }
 
     fun updateObjectDetails(name: String) {
+        viewModelScope.sendEvent(analytics = analytics, eventName = librarySetTypeName)
         navigate(Navigation.BackWithModify(id, name, unicodeIconFlow.value))
     }
 
@@ -86,7 +91,8 @@ class TypeEditViewModel(
         private val urlBuilder: UrlBuilder,
         @TypeId private val id: Id,
         @TypeName private val name: String,
-        @TypeIcon private val icon: String
+        @TypeIcon private val icon: String,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -94,7 +100,8 @@ class TypeEditViewModel(
                 urlBuilder = urlBuilder,
                 id = id,
                 name = name,
-                icon = icon
+                icon = icon,
+                analytics = analytics
             ) as T
         }
     }

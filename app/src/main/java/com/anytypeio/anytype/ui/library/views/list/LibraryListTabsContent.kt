@@ -87,8 +87,22 @@ fun LibraryListTabsContent(
         userScrollEnabled = screenState.value == ScreenState.CONTENT
     ) { index ->
         val data = when (configuration[index]) {
-            is LibraryListConfig.Types, is LibraryListConfig.Relations -> tabs.my
-            is LibraryListConfig.TypesLibrary, is LibraryListConfig.RelationsLibrary -> tabs.lib
+            is LibraryListConfig.Types -> {
+                vmEventStream.invoke(LibraryEvent.Ui.ViewTypes)
+                tabs.my
+            }
+            is LibraryListConfig.Relations -> {
+                vmEventStream.invoke(LibraryEvent.Ui.ViewRelations)
+                tabs.my
+            }
+            is LibraryListConfig.TypesLibrary -> {
+                vmEventStream.invoke(LibraryEvent.Ui.ViewLibTypes)
+                tabs.lib
+            }
+            is LibraryListConfig.RelationsLibrary -> {
+                vmEventStream.invoke(LibraryEvent.Ui.ViewLibRelations)
+                tabs.lib
+            }
         }
         val itemsListState = rememberLazyListState()
         Column(

@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.ui.library.LibraryConfiguration
 import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.ScreenState
@@ -36,7 +37,7 @@ fun LibraryTabs(
     modifier: Modifier,
     pagerState: PagerState,
     configuration: LibraryConfiguration,
-    screenState: MutableState<ScreenState>,
+    screenState: MutableState<ScreenState>
 ) = WrapWithLibraryAnimation(visible = screenState.value.visible()) {
     val coroutineScope = rememberCoroutineScope()
 

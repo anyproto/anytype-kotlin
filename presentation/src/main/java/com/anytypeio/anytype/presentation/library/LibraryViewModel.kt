@@ -3,6 +3,12 @@ package com.anytypeio.anytype.presentation.library
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenRelation
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenType
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryView
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.orNull
@@ -34,7 +40,8 @@ class LibraryViewModel(
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val resourceManager: LibraryResourceManager,
     private val setObjectDetails: SetObjectDetails,
-    private val createObject: CreateObject
+    private val createObject: CreateObject,
+    private val analytics: Analytics
 ) : NavigationViewModel<LibraryViewModel.Navigation>() {
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
@@ -86,9 +93,23 @@ class LibraryViewModel(
                     is LibraryEvent.Type -> proceedWithTypeActions(it)
                     is LibraryEvent.Relation -> proceedWithRelationActions(it)
                     is LibraryEvent.BottomMenu -> proceedWithBottomMenuActions(it)
+                    is LibraryEvent.Ui -> proceedWithViewAnalytics(it)
                 }
             }
         }
+    }
+
+    private fun proceedWithViewAnalytics(it: LibraryEvent.Ui) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = libraryView,
+            props = Props(
+                mapOf(
+                    "type" to it.type,
+                    "view" to it.view
+                )
+            )
+        )
     }
 
     private fun proceedWithBottomMenuActions(it: LibraryEvent.BottomMenu) {
@@ -104,7 +125,7 @@ class LibraryViewModel(
             createObject.execute(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
-                       navigate(Navigation.CreateDoc(result.objectId))
+                        navigate(Navigation.CreateDoc(result.objectId))
                     },
                     onFailure = { e -> Timber.e(e, "Error while creating a new page") }
                 )
@@ -137,15 +158,35 @@ class LibraryViewModel(
 
     private fun proceedWithTypeActions(event: LibraryEvent.Type) {
         when (event) {
-            is LibraryEvent.Type.Create -> navigate(Navigation.OpenTypeCreation(event.name))
-            is LibraryEvent.Type.Edit -> navigate(Navigation.OpenTypeEditing(event.item))
+            is LibraryEvent.Type.Create -> {
+                navigate(Navigation.OpenTypeCreation(event.name))
+            }
+            is LibraryEvent.Type.Edit -> {
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = libraryScreenType,
+                    props = Props(
+                        map = mapOf("objectType" to event.item.id)
+                    )
+                )
+                navigate(Navigation.OpenTypeEditing(event.item))
+            }
         }
     }
 
     private fun proceedWithRelationActions(event: LibraryEvent.Relation) {
         when (event) {
             is LibraryEvent.Relation.Create -> navigate(Navigation.OpenRelationCreation(event.name))
-            is LibraryEvent.Relation.Edit -> navigate(Navigation.OpenRelationEditing(event.item))
+            is LibraryEvent.Relation.Edit -> {
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = libraryScreenRelation,
+                    props = Props(
+                        map = mapOf("relationKey" to event.item.id)
+                    )
+                )
+                navigate(Navigation.OpenRelationEditing(event.item))
+            }
         }
     }
 
@@ -308,7 +349,8 @@ class LibraryViewModel(
         private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
         private val resourceManager: LibraryResourceManager,
         private val setObjectDetails: SetObjectDetails,
-        private val createObject: CreateObject
+        private val createObject: CreateObject,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -321,7 +363,8 @@ class LibraryViewModel(
                 removeObjectsFromWorkspace,
                 resourceManager,
                 setObjectDetails,
-                createObject
+                createObject,
+                analytics
             ) as T
         }
     }
@@ -345,9 +388,9 @@ class LibraryViewModel(
 
         class Back : Navigation()
 
-        class Search: Navigation()
+        class Search : Navigation()
 
-        class CreateDoc(val id: Id): Navigation()
+        class CreateDoc(val id: Id) : Navigation()
     }
 
     sealed class Effect {

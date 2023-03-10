@@ -41,6 +41,7 @@ class AmplitudeTracker(
                     renderTime = event.duration?.render
                 )
                 tracker.logEvent(event.name, props)
+                Timber.d("Analytics Amplitude(event = $event)")
             }
         }
     }

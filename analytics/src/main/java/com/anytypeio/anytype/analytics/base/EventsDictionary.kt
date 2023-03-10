@@ -115,12 +115,18 @@ object EventsDictionary {
     const val goBack = "HistoryBack"
     const val bookmarkOpenUrl = "BlockBookmarkOpenUrl"
 
-    //Toolbars
+    // Toolbars
     const val slashMenu = "KeyboardBarSlashMenu"
     const val styleMenu = "KeyboardBarStyleMenu"
     const val selectionMenu = "KeyboardBarSelectionMenu"
     const val mentionMenu = "KeyboardBarMentionMenu"
 
+    // Library
+    const val libraryView = "LibraryView"
+    const val libraryScreenType = "ScreenType"
+    const val libraryScreenRelation = "ScreenRelation"
+    const val librarySetTypeName = "SetTypeName"
+    const val libraryCreateType = "CreateType"
 
     // Routes
     object Routes {

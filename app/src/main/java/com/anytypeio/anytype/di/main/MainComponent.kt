@@ -9,17 +9,16 @@ import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
 import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
 import com.anytypeio.anytype.di.feature.EditorSubComponent
-import com.anytypeio.anytype.di.feature.HomeDashboardSubComponent
 import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
 import com.anytypeio.anytype.di.feature.LinkToObjectSubComponent
 import com.anytypeio.anytype.di.feature.MainEntrySubComponent
 import com.anytypeio.anytype.di.feature.MoveToSubComponent
-import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
 import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
+import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
@@ -74,7 +73,6 @@ interface MainComponent :
     SplashDependencies {
     fun inject(app: AndroidApplication)
 
-    fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder

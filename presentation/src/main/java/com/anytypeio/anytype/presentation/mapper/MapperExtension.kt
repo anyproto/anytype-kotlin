@@ -13,14 +13,11 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
-import com.anytypeio.anytype.presentation.extension.getTypeName
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
@@ -312,112 +309,6 @@ fun List<Block.Content.Text.Mark>.filterByRange(textLength: Int): List<Block.Con
             }
         }
     }
-}
-
-suspend fun List<Block>.toDashboardViews(
-    details: Block.Details = Block.Details(),
-    builder: UrlBuilder,
-    storeOfObjectTypes: StoreOfObjectTypes
-): List<DashboardView> = this.mapNotNull { block ->
-    when (val content = block.content) {
-        is Block.Content.Link -> {
-            val targetDetails = details.details[content.target]
-            val layoutCode = targetDetails?.layout?.toInt()
-            val layout = layoutCode?.let { code ->
-                ObjectType.Layout.values().find { layout ->
-                    layout.code == code
-                }
-            }
-            when (layout) {
-                ObjectType.Layout.BASIC -> content.toPageView(
-                    id = block.id,
-                    details = details,
-                    builder = builder,
-                    storeOfObjectTypes = storeOfObjectTypes
-                )
-                ObjectType.Layout.SET -> content.toSetView(block.id, details, builder)
-                else -> {
-                    when (content.type) {
-                        Block.Content.Link.Type.PAGE -> content.toPageView(
-                            id = block.id,
-                            details = details,
-                            builder = builder,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                        Block.Content.Link.Type.DATA_VIEW -> content.toSetView(
-                            block.id,
-                            details,
-                            builder
-                        )
-                        Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
-                        else -> null
-                    }
-                }
-            }
-        }
-        else -> null
-    }
-}
-
-fun Block.Content.Link.toArchiveView(
-    id: String,
-    details: Block.Details
-): DashboardView.Archive {
-    return DashboardView.Archive(
-        id = id,
-        target = target,
-        title = details.details[target]?.name.orEmpty()
-    )
-}
-
-suspend fun Block.Content.Link.toPageView(
-    id: String,
-    details: Block.Details,
-    builder: UrlBuilder,
-    storeOfObjectTypes: StoreOfObjectTypes
-): DashboardView.Document {
-
-    val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
-
-    return DashboardView.Document(
-        id = id,
-        target = target,
-        title = obj.getProperName(),
-        emoji = obj.iconEmoji?.let { unicode -> unicode.ifEmpty { null } },
-        image = obj.iconImage?.let { hash ->
-            if (hash.isNotEmpty()) builder.image(hash) else null
-        },
-        isArchived = obj.isArchived ?: false,
-        isLoading = !details.details.containsKey(target),
-        type = obj.type.firstOrNull(),
-        typeName = obj.getTypeName(storeOfObjectTypes),
-        layout = obj.layout,
-        done = obj.done,
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = obj.layout,
-            builder = builder
-        )
-    )
-}
-
-fun Block.Content.Link.toSetView(
-    id: String,
-    details: Block.Details,
-    urlBuilder: UrlBuilder
-): DashboardView.ObjectSet {
-    val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
-    return DashboardView.ObjectSet(
-        id = id,
-        target = target,
-        title = details.details[target]?.name,
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = obj.layout,
-            builder = urlBuilder
-        ),
-        isArchived = details.details[target]?.isArchived ?: false
-    )
 }
 
 fun UiBlock.style(): Block.Content.Text.Style = when (this) {

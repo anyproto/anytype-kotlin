@@ -13,8 +13,8 @@ import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
-import com.anytypeio.anytype.ui.dashboard.DashboardFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
@@ -37,7 +37,7 @@ class Navigator : AppNavigation {
     }
 
     override fun startDesktopFromSignUp() {
-        val bundle = bundleOf(DashboardFragment.SHOW_MNEMONIC_REMINDER_KEY to true)
+        val bundle = bundleOf(HomeScreenFragment.SHOW_MNEMONIC_KEY to true)
         navController?.navigate(R.id.action_global_desktopScreen, bundle)
     }
 

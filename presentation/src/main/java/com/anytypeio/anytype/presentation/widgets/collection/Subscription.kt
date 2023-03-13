@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.presentation.dashboard.DEFAULT_KEYS
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 
@@ -63,4 +62,4 @@ class SubscriptionMapper {
     }
 }
 
-private val SUBSCRIPTION_DEFAULT_KEYS = DEFAULT_KEYS + Relations.IS_FAVORITE + Relations.DESCRIPTION
+private val SUBSCRIPTION_DEFAULT_KEYS = ObjectSearchConstants.defaultKeys + Relations.IS_FAVORITE + Relations.DESCRIPTION

@@ -16,7 +16,6 @@ import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
 import com.anytypeio.anytype.di.feature.EditorSessionModule
 import com.anytypeio.anytype.di.feature.EditorUseCaseModule
-import com.anytypeio.anytype.di.feature.HomeDashboardModule
 import com.anytypeio.anytype.di.feature.KeychainLoginModule
 import com.anytypeio.anytype.di.feature.KeychainPhraseModule
 import com.anytypeio.anytype.di.feature.LinkToObjectModule
@@ -175,13 +174,6 @@ class ComponentManager(
         main
             .keychainPhraseComponentBuilder()
             .keychainPhraseModule(KeychainPhraseModule)
-            .build()
-    }
-
-    val dashboardComponent = Component {
-        main
-            .homeDashboardComponentBuilder()
-            .homeDashboardModule(HomeDashboardModule)
             .build()
     }
 

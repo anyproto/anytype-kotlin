@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.dashboard.DEFAULT_KEYS
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryView
@@ -48,7 +47,7 @@ class LibraryRelationsDelegate @Inject constructor(
     private fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
             subscription = SUB_LIBRARY_RELATIONS,
-            keys = DEFAULT_KEYS + listOf(Relations.RELATION_FORMAT),
+            keys = ObjectSearchConstants.defaultKeys + listOf(Relations.RELATION_FORMAT),
             filters = buildList {
                 addAll(ObjectSearchConstants.filterMarketplaceRelations())
                 add(

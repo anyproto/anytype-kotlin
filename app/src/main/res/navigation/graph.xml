@@ -133,22 +133,6 @@
     </navigation>
 
     <fragment
-        android:id="@+id/desktopScreen"
-        android:name="com.anytypeio.anytype.ui.dashboard.DashboardFragment"
-        android:label="DesktopFragment"
-        tools:layout="@layout/fragment_dashboard">
-        <action
-            android:id="@+id/action_open_settings"
-            app:destination="@id/settingsScreen"/>
-        <action
-            android:id="@+id/action_desktopScreen_to_pageNavigationFragment"
-            app:destination="@id/pageNavigationFragment" />
-        <action
-            android:id="@+id/action_desktopScreen_to_archiveFragment"
-            app:destination="@id/archiveFragment" />
-    </fragment>
-
-    <fragment
         android:id="@+id/homeScreen"
         android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"
         android:label="Home screen"

@@ -169,4 +169,8 @@ class HomeScreenFragment : BaseComposeFragment() {
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
     }
+
+    companion object {
+        const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
+    }
 }

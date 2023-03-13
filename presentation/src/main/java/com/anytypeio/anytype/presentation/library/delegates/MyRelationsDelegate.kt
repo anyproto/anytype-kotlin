@@ -8,7 +8,6 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.dashboard.DEFAULT_KEYS
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryView
@@ -60,7 +59,7 @@ class MyRelationsDelegate @Inject constructor(
     private fun buildSearchParams(workspaceId: Id): StoreSearchParams {
         return StoreSearchParams(
             subscription = SUB_LIBRARY_MY_RELATIONS,
-            keys = DEFAULT_KEYS + listOf(
+            keys = ObjectSearchConstants.defaultKeys + listOf(
                 Relations.SOURCE_OBJECT,
                 Relations.RELATION_FORMAT,
                 Relations.RESTRICTIONS

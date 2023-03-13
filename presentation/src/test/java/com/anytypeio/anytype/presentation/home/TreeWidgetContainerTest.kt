@@ -51,6 +51,8 @@ class TreeWidgetContainerTest {
 
     private lateinit var urlBuilder: UrlBuilder
 
+    private val workspace = MockDataFactory.randomUuid()
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -58,7 +60,7 @@ class TreeWidgetContainerTest {
     }
 
     @Test
-    fun `should search for data for source object's links when no data is available about expanded branches`() =
+    fun `should search for data for source object links when no data is available about expanded branches`() =
         runTest {
 
             // SETUP
@@ -74,7 +76,7 @@ class TreeWidgetContainerTest {
 
             val widget = Widget.Tree(
                 id = MockDataFactory.randomUuid(),
-                source = source
+                source = Widget.Source.Default(source)
             )
 
             val expanded = flowOf(emptyList<TreePath>())
@@ -85,7 +87,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                dispatchers = dispatchers
+                dispatchers = dispatchers,
+                workspace = workspace
             )
 
             stubObjectSearch(
@@ -136,7 +139,7 @@ class TreeWidgetContainerTest {
 
         val widget = Widget.Tree(
             id = "widget",
-            source = source
+            source = Widget.Source.Default(source)
         )
 
         val expanded = flowOf(
@@ -152,7 +155,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            workspace = workspace
         )
 
         stubObjectSearch(
@@ -217,7 +221,7 @@ class TreeWidgetContainerTest {
 
             val widget = Widget.Tree(
                 id = "widget",
-                source = source
+                source = Widget.Source.Default(source)
             )
 
             val delayBeforeExpanded = 100L
@@ -234,7 +238,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                dispatchers = dispatchers
+                dispatchers = dispatchers,
+                workspace = workspace
             )
 
             stubObjectSearch(
@@ -256,7 +261,7 @@ class TreeWidgetContainerTest {
                 assertEquals(
                     expected = WidgetView.Tree(
                         id = widget.id,
-                        obj = widget.source,
+                        source = widget.source,
                         elements = listOf(
                             WidgetView.Tree.Element(
                                 indent = 0,
@@ -290,7 +295,7 @@ class TreeWidgetContainerTest {
                 assertEquals(
                     expected = WidgetView.Tree(
                         id = widget.id,
-                        obj = widget.source,
+                        source = widget.source,
                         elements = listOf(
                             WidgetView.Tree.Element(
                                 indent = 0,
@@ -360,7 +365,7 @@ class TreeWidgetContainerTest {
 
         val widget = Widget.Tree(
             id = MockDataFactory.randomUuid(),
-            source = source
+            source = Widget.Source.Default(source)
         )
 
         val expanded = flowOf(emptyList<TreePath>())
@@ -371,7 +376,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            workspace = workspace
         )
 
         stubObjectSearch(
@@ -414,7 +420,7 @@ class TreeWidgetContainerTest {
 
         val widget = Widget.Tree(
             id = MockDataFactory.randomUuid(),
-            source = source
+            source = Widget.Source.Default(source)
         )
 
         val expanded = flowOf(emptyList<TreePath>())
@@ -425,7 +431,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            workspace = workspace
         )
 
         stubObjectSearch(

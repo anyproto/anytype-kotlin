@@ -59,7 +59,8 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
 
     private val selectWidgetSourceAdapter by lazy {
         DefaultObjectViewAdapter(
-            onClick = vm::onObjectClicked
+            onDefaultObjectClicked = vm::onObjectClicked,
+            onBundledWidgetSourceClicked = vm::onBundledWidgetSourceClicked
         )
     }
 

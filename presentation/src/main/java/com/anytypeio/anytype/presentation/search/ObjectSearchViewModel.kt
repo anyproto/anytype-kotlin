@@ -49,7 +49,7 @@ open class ObjectSearchViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    private val userInput = MutableStateFlow(EMPTY_QUERY)
+    protected val userInput = MutableStateFlow(EMPTY_QUERY)
     private val searchQuery = userInput
         .take(1)
         .onCompletion {
@@ -78,26 +78,30 @@ open class ObjectSearchViewModel(
                         )
                     )
                 }
-            }.collectLatest { views ->
-                if (views.isSuccess) {
-                    with(views.getOrThrow()) {
-                        if (this.isEmpty()) {
-                            stateData.postValue(ObjectSearchView.NoResults(userInput.value))
-                        } else {
-                            if (userInput.value.isEmpty()) {
-                                val items =
-                                    mutableListOf<DefaultSearchItem>(ObjectSearchSection.RecentlyOpened)
-                                items.addAll(this)
-                                stateData.postValue(ObjectSearchView.Success(items))
-                            } else {
-                                stateData.postValue(ObjectSearchView.Success(this))
-                            }
-                        }
-                    }
+            }.collectLatest { result ->
+                resolveViews(result)
+            }
+        }
+    }
+
+    protected open fun resolveViews(result: Resultat<List<DefaultObjectView>>) {
+        if (result.isSuccess) {
+            with(result.getOrThrow()) {
+                if (this.isEmpty()) {
+                    stateData.postValue(ObjectSearchView.NoResults(userInput.value))
                 } else {
-                    stateData.postValue(ObjectSearchView.Loading)
+                    if (userInput.value.isEmpty()) {
+                        val items =
+                            mutableListOf<DefaultSearchItem>(ObjectSearchSection.RecentlyOpened)
+                        items.addAll(this)
+                        stateData.postValue(ObjectSearchView.Success(items))
+                    } else {
+                        stateData.postValue(ObjectSearchView.Success(this))
+                    }
                 }
             }
+        } else {
+            stateData.postValue(ObjectSearchView.Loading)
         }
     }
 

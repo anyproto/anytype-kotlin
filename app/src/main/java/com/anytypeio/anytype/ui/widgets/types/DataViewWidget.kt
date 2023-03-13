@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.types
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,11 +32,12 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ViewId
+import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
 @Composable
@@ -43,6 +45,7 @@ fun DataViewListWidgetCard(
     item: WidgetView.SetOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit
@@ -72,10 +75,15 @@ fun DataViewListWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = item.obj.getProperName(),
+                title = when (val source = item.source) {
+                    is Widget.Source.Default -> {
+                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                    }
+                    is Widget.Source.Bundled -> { stringResource(id = source.res()) }
+                },
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetObjectClicked(item.obj) },
+                onWidgetHeaderClicked = { onWidgetSourceClicked(item.source) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction
@@ -217,4 +225,11 @@ fun ListWidgetElement(
             )
         }
     }
+}
+
+@StringRes
+fun Widget.Source.Bundled.res() : Int = when(this) {
+    Widget.Source.Bundled.Favorites -> R.string.favorites
+    Widget.Source.Bundled.Recent -> R.string.recent
+    Widget.Source.Bundled.Sets -> R.string.sets
 }

@@ -54,31 +54,45 @@ class ListWidgetContainer(
     private fun buildParams() = params(subscription = subscription, workspace = workspace)
 
     private fun resolveType() = when (subscription) {
-        Subscriptions.SUBSCRIPTION_RECENT -> WidgetView.ListOfObjects.Type.Recent
-        Subscriptions.SUBSCRIPTION_SETS -> WidgetView.ListOfObjects.Type.Sets
-        Subscriptions.SUBSCRIPTION_FAVORITES -> WidgetView.ListOfObjects.Type.Favorites
+        BundledWidgetSourceIds.RECENT -> WidgetView.ListOfObjects.Type.Recent
+        BundledWidgetSourceIds.SETS -> WidgetView.ListOfObjects.Type.Sets
+        BundledWidgetSourceIds.FAVORITE -> WidgetView.ListOfObjects.Type.Favorites
         else -> throw IllegalStateException("Unexpected subscription: $subscription")
     }
 
     companion object {
         private const val MAX_COUNT = 3
-        fun params(subscription: Id, workspace: Id) = when (subscription) {
-            Subscriptions.SUBSCRIPTION_RECENT -> {
+        fun params(
+            subscription: Id,
+            workspace: Id,
+            keys: List<Id> = ObjectSearchConstants.defaultKeys,
+            limit: Int = MAX_COUNT
+        ) = when (subscription) {
+            BundledWidgetSourceIds.RECENT -> {
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecent,
                     filters = ObjectSearchConstants.filterTabRecent(workspace),
-                    keys = ObjectSearchConstants.defaultKeys,
-                    limit = MAX_COUNT
+                    keys = keys,
+                    limit = limit
                 )
             }
-            Subscriptions.SUBSCRIPTION_SETS -> {
+            BundledWidgetSourceIds.SETS -> {
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabSets,
                     filters = ObjectSearchConstants.filterTabSets(workspace),
-                    keys = ObjectSearchConstants.defaultKeys,
-                    limit = MAX_COUNT
+                    keys = keys,
+                    limit = limit
+                )
+            }
+            BundledWidgetSourceIds.FAVORITE -> {
+                StoreSearchParams(
+                    subscription = subscription,
+                    sorts = emptyList(),
+                    filters = ObjectSearchConstants.filterTabFavorites(workspace),
+                    keys = keys,
+                    limit = limit
                 )
             }
             Subscriptions.SUBSCRIPTION_ARCHIVED -> {
@@ -86,17 +100,8 @@ class ListWidgetContainer(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabArchive,
                     filters = ObjectSearchConstants.filterTabArchive(workspace),
-                    keys = ObjectSearchConstants.defaultKeys,
-                    limit = MAX_COUNT
-                )
-            }
-            Subscriptions.SUBSCRIPTION_FAVORITES -> {
-                StoreSearchParams(
-                    subscription = subscription,
-                    sorts = emptyList(),
-                    filters = ObjectSearchConstants.filterTabFavorites(workspace),
-                    keys = ObjectSearchConstants.defaultKeys,
-                    limit = MAX_COUNT
+                    keys = keys,
+                    limit = limit
                 )
             }
             else -> throw IllegalStateException("Unexpected subscription: $subscription")

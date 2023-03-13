@@ -31,48 +31,53 @@ class DataViewListWidgetContainer(
         activeView.distinctUntilChanged(),
         isWidgetCollapsed
     ) { view, isCollapsed -> Pair(view, isCollapsed) }.flatMapLatest { (view, isCollapsed) ->
-        if (isCollapsed) {
-            flowOf(
-                WidgetView.SetOfObjects(
-                    id = widget.id,
-                    obj = widget.source,
-                    tabs = emptyList(),
-                    elements = emptyList(),
-                    isExpanded = false
-                )
-            )
-        } else {
-            val obj = getObject.run(widget.source.id)
-            val params = obj.parse(viewer = view, source = widget.source)
-            if (params != null) {
-                storage.subscribe(params).map { objects ->
-                    WidgetView.SetOfObjects(
-                        id = widget.id,
-                        obj = widget.source,
-                        tabs = obj.tabs(viewer = view),
-                        elements = objects.map { obj ->
-                            WidgetView.SetOfObjects.Element(
-                                obj = obj,
-                                icon = ObjectIcon.from(
-                                    obj = obj,
-                                    layout = obj.layout,
-                                    builder = urlBuilder
-                                )
+        when(widget.source) {
+            is Widget.Source.Bundled -> throw IllegalStateException("Bundled widgets do not support data view layout")
+            is Widget.Source.Default -> {
+                if (isCollapsed) {
+                    flowOf(
+                        WidgetView.SetOfObjects(
+                            id = widget.id,
+                            source = widget.source,
+                            tabs = emptyList(),
+                            elements = emptyList(),
+                            isExpanded = false
+                        )
+                    )
+                } else {
+                    val obj = getObject.run(widget.source.id)
+                    val params = obj.parse(viewer = view, source = widget.source.obj)
+                    if (params != null) {
+                        storage.subscribe(params).map { objects ->
+                            WidgetView.SetOfObjects(
+                                id = widget.id,
+                                source = widget.source,
+                                tabs = obj.tabs(viewer = view),
+                                elements = objects.map { obj ->
+                                    WidgetView.SetOfObjects.Element(
+                                        obj = obj,
+                                        icon = ObjectIcon.from(
+                                            obj = obj,
+                                            layout = obj.layout,
+                                            builder = urlBuilder
+                                        )
+                                    )
+                                },
+                                isExpanded = true
                             )
-                        },
-                        isExpanded = true
-                    )
+                        }
+                    } else {
+                        flowOf(
+                            WidgetView.SetOfObjects(
+                                id = widget.id,
+                                source = widget.source,
+                                tabs = emptyList(),
+                                elements = emptyList(),
+                                isExpanded = true
+                            )
+                        )
+                    }
                 }
-            } else {
-                flowOf(
-                    WidgetView.SetOfObjects(
-                        id = widget.id,
-                        obj = widget.source,
-                        tabs = emptyList(),
-                        elements = emptyList(),
-                        isExpanded = true
-                    )
-                )
             }
         }
     }

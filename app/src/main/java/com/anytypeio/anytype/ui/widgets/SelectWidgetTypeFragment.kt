@@ -83,9 +83,15 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
     override fun onStart() {
         super.onStart()
         if (forExistingWidget) {
-            vm.onStartForExistingWidget(currentType = currentType)
+            vm.onStartForExistingWidget(
+                currentType = currentType,
+                source = source
+            )
         } else {
-            vm.onStartForNewWidget(layout = sourceLayout)
+            vm.onStartForNewWidget(
+                layout = sourceLayout,
+                source = source,
+            )
         }
     }
 

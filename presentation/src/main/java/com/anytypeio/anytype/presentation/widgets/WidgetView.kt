@@ -12,7 +12,7 @@ sealed class WidgetView {
 
     data class Tree(
         override val id: Id,
-        val obj: ObjectWrapper.Basic,
+        val source: Widget.Source,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
         val isEditable: Boolean = true
@@ -34,12 +34,12 @@ sealed class WidgetView {
 
     data class Link(
         override val id: Id,
-        val obj: ObjectWrapper.Basic,
+        val source: Widget.Source,
     ) : WidgetView(), Draggable
 
     data class SetOfObjects(
         override val id: Id,
-        val obj: ObjectWrapper.Basic,
+        val source: Widget.Source,
         val tabs: List<Tab>,
         val elements: List<Element>,
         val isExpanded: Boolean

@@ -38,7 +38,6 @@ import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -99,51 +98,8 @@ class HomeScreenViewModel(
     private val containers = MutableStateFlow<List<WidgetContainer>>(emptyList())
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    // Bundled widget containing recently opened objects
-    private val recent by lazy {
-        ListWidgetContainer(
-            workspace = configStorage.get().workspace,
-            isWidgetCollapsed = isCollapsed(Subscriptions.SUBSCRIPTION_RECENT),
-            storage = storelessSubscriptionContainer,
-            urlBuilder = urlBuilder,
-            subscription = Subscriptions.SUBSCRIPTION_RECENT
-        )
-    }
-
-    // Bundled widget containing sets
-    private val sets by lazy {
-        ListWidgetContainer(
-            workspace = configStorage.get().workspace,
-            isWidgetCollapsed = isCollapsed(Subscriptions.SUBSCRIPTION_SETS),
-            storage = storelessSubscriptionContainer,
-            urlBuilder = urlBuilder,
-            subscription = Subscriptions.SUBSCRIPTION_SETS
-        )
-    }
-
-    // Bundled widget containing objects from favorites
-    private val favorites by lazy {
-        ListWidgetContainer(
-            workspace = configStorage.get().workspace,
-            isWidgetCollapsed = isCollapsed(Subscriptions.SUBSCRIPTION_FAVORITES),
-            storage = storelessSubscriptionContainer,
-            urlBuilder = urlBuilder,
-            subscription = Subscriptions.SUBSCRIPTION_FAVORITES
-        )
-    }
-
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
-
-    private val bundledWidgets by lazy {
-        combine(
-            listOf(
-                favorites.view,
-                recent.view,
-                sets.view
-            )
-        ) { array -> array }
-    }
 
     init {
 
@@ -211,7 +167,8 @@ class HomeScreenViewModel(
                             expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
                             isWidgetCollapsed = isCollapsed(widget.id),
                             urlBuilder = urlBuilder,
-                            dispatchers = appCoroutineDispatchers
+                            dispatchers = appCoroutineDispatchers,
+                            workspace = config.workspace
                         )
                         is Widget.List -> DataViewListWidgetContainer(
                             widget = widget,
@@ -241,8 +198,6 @@ class HomeScreenViewModel(
                 } else {
                     flowOf(emptyList())
                 }
-            }.combine(bundledWidgets) { fromWidgetObject, bundled ->
-                bundled.toList() + fromWidgetObject
             }.flowOn(appCoroutineDispatchers.io).collect {
                 views.value = it + bin + actions
             }
@@ -276,7 +231,12 @@ class HomeScreenViewModel(
 
     private fun proceedWithClosingWidgetObject(widgetObject: Id) {
         viewModelScope.launch {
-            val subscriptions = widgets.value.map { widget -> widget.id }
+            val subscriptions = widgets.value.map { widget ->
+                if (widget.source is Widget.Source.Bundled)
+                    widget.source.id
+                else
+                    widget.id
+            }
             if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
             closeObject.stream(widgetObject).collect { status ->
                 status.fold(
@@ -296,12 +256,21 @@ class HomeScreenViewModel(
             widgetEventDispatcher.flow().collect { dispatch ->
                 Timber.d("New dispatch: $dispatch")
                 when (dispatch) {
-                    is WidgetDispatchEvent.SourcePicked -> {
+                    is WidgetDispatchEvent.SourcePicked.Default -> {
                         commands.emit(
                             Command.SelectWidgetType(
                                 ctx = configStorage.get().widgets,
                                 source = dispatch.source,
                                 layout = dispatch.sourceLayout
+                            )
+                        )
+                    }
+                    is WidgetDispatchEvent.SourcePicked.Bundled -> {
+                        commands.emit(
+                            Command.SelectWidgetType(
+                                ctx = configStorage.get().widgets,
+                                source = dispatch.source,
+                                layout = ObjectType.Layout.SET.code
                             )
                         )
                     }
@@ -468,6 +437,30 @@ class HomeScreenViewModel(
             proceedWithOpeningObject(obj)
         } else {
             sendToast("Open bin to restore your archived object")
+        }
+    }
+
+    fun onWidgetSourceClicked(source: Widget.Source) {
+        when (source) {
+            is Widget.Source.Bundled.Favorites -> {
+                // TODO switch to bundled widgets id
+                navigate(Navigation.ExpandWidget(Subscription.Favorites))
+            }
+            is Widget.Source.Bundled.Sets -> {
+                // TODO switch to bundled widgets id
+                navigate(Navigation.ExpandWidget(Subscription.Sets))
+            }
+            is Widget.Source.Bundled.Recent -> {
+                // TODO switch to bundled widgets id
+                navigate(Navigation.ExpandWidget(Subscription.Recent))
+            }
+            is Widget.Source.Default -> {
+                if (source.obj.isArchived != true) {
+                    proceedWithOpeningObject(source.obj)
+                } else {
+                    sendToast("Open bin to restore your archived object")
+                }
+            }
         }
     }
 

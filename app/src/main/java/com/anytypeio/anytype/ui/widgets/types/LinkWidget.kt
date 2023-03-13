@@ -29,9 +29,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
+import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
@@ -40,7 +40,7 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 @Composable
 fun LinkWidgetCard(
     item: WidgetView.Link,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     isInEditMode: Boolean
 ) {
@@ -66,7 +66,7 @@ fun LinkWidgetCard(
                     }
                 else
                     Modifier.combinedClickable(
-                        onClick = { onWidgetObjectClicked(item.obj) },
+                        onClick = { onWidgetSourceClicked(item.source) },
                         onLongClick = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
@@ -82,7 +82,12 @@ fun LinkWidgetCard(
                 .height(40.dp)
         ) {
             Text(
-                text = item.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
+                text = when (val source = item.source) {
+                    is Widget.Source.Default -> {
+                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                    }
+                    is Widget.Source.Bundled -> { stringResource(id = source.res()) }
+                },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

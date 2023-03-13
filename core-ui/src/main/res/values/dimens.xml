@@ -183,7 +183,7 @@
     <dimen name="list_item_object_subtitle_margin_top">34dp</dimen>
     <dimen name="list_item_object_subtitle_margin_start">80dp</dimen>
     <dimen name="list_item_object_subtitle_margin_end">20dp</dimen>
-    <dimen name="list_item_object_emoji_size">28dp</dimen>
+    <dimen name="list_item_object_emoji_size">24dp</dimen>
     <dimen name="list_item_object_checkbox_size">24dp</dimen>
     <dimen name="list_item_object_initials_size">28sp</dimen>
     <dimen name="list_item_object_image_corner_radius">2dp</dimen>

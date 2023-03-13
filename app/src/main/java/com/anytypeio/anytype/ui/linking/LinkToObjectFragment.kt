@@ -40,9 +40,9 @@ import com.anytypeio.anytype.ui.moving.hideProgress
 import com.anytypeio.anytype.ui.moving.showProgress
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>() {
 
@@ -62,7 +62,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
 
     private val moveToAdapter by lazy {
         DefaultObjectViewAdapter(
-            onClick = vm::onObjectClicked
+            onDefaultObjectClicked = vm::onObjectClicked
         )
     }
 

@@ -9,7 +9,7 @@ class LinkWidgetContainer(
     override val view: Flow<WidgetView.Link> = flowOf(
         WidgetView.Link(
             id = widget.id,
-            obj = widget.source
+            source = widget.source
         )
     )
 }

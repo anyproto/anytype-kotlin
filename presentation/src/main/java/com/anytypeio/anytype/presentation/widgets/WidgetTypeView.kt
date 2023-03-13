@@ -7,9 +7,9 @@ import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companio
 sealed class WidgetTypeView {
     abstract val isSelected: Boolean
 
-    data class List(override val isSelected: Boolean) : WidgetTypeView()
-    data class Tree(override val isSelected: Boolean) : WidgetTypeView()
-    data class Link(override val isSelected: Boolean) : WidgetTypeView()
+    data class List(override val isSelected: Boolean = false) : WidgetTypeView()
+    data class Tree(override val isSelected: Boolean = false) : WidgetTypeView()
+    data class Link(override val isSelected: Boolean = false) : WidgetTypeView()
 
     fun setIsSelected(type: Int): WidgetTypeView = when (this) {
         is Link -> copy(isSelected = type == TYPE_LINK)

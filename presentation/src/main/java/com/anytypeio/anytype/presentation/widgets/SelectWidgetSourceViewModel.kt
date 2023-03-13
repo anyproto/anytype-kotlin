@@ -5,13 +5,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.search.ObjectSearchSection
+import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.take
@@ -47,6 +52,43 @@ class SelectWidgetSourceViewModel(
         }
     }
 
+    override fun resolveViews(result: Resultat<List<DefaultObjectView>>) {
+        result.fold(
+            onSuccess = { views ->
+                if (views.isEmpty()) {
+                    stateData.postValue(ObjectSearchView.NoResults(userInput.value))
+                } else {
+                    if (userInput.value.isEmpty()) {
+                        stateData.postValue(
+                            ObjectSearchView.Success(
+                                buildList {
+                                    add(ObjectSearchSection.SelectWidgetSource.FromLibrary)
+                                    addAll(
+                                        listOf(
+                                            BundledWidgetSourceView.Favorites,
+                                            BundledWidgetSourceView.Recent,
+                                            BundledWidgetSourceView.Sets
+                                        )
+                                    )
+                                    add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
+                                    addAll(views)
+                                }
+                            )
+                        )
+                    } else {
+                        stateData.postValue(ObjectSearchView.Success(views))
+                    }
+                }
+            },
+            onLoading = {
+                stateData.postValue(ObjectSearchView.Loading)
+            },
+            onFailure = {
+                Timber.e(it, "Error while selecting source for widget")
+            }
+        )
+    }
+
     fun onStartWithNewWidget() {
         Timber.d("onStart with picking source for new widget")
         config = Config.NewWidget
@@ -74,13 +116,42 @@ class SelectWidgetSourceViewModel(
         startProcessingSearchQuery(null)
     }
 
+    fun onBundledWidgetSourceClicked(view: BundledWidgetSourceView) {
+        Timber.d("onBundledWidgetSourceClicked, view:[$view]")
+        when (val curr = config) {
+            is Config.NewWidget -> {
+                viewModelScope.launch {
+                    dispatcher.send(
+                        WidgetDispatchEvent.SourcePicked.Bundled(source = view.id)
+                    )
+                }
+            }
+            is Config.ExistingWidget -> {
+                viewModelScope.launch {
+                    dispatcher.send(
+                        WidgetDispatchEvent.SourceChanged(
+                            ctx = curr.ctx,
+                            widget = curr.widget,
+                            source = view.id,
+                            type = curr.type
+                        )
+                    )
+                    isDismissed.value = true
+                }
+            }
+            Config.None -> {
+                // Do nothing.
+            }
+        }
+    }
+
     override fun onObjectClicked(view: DefaultObjectView) {
         Timber.d("onObjectClicked, view:[$view]")
         when(val curr = config) {
             is Config.NewWidget -> {
                 viewModelScope.launch {
                     dispatcher.send(
-                        WidgetDispatchEvent.SourcePicked(
+                        WidgetDispatchEvent.SourcePicked.Default(
                             source = view.id,
                             sourceLayout = view.layout?.code ?: -1
                         )

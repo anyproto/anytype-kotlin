@@ -52,6 +52,7 @@ import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
+import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
@@ -71,6 +72,7 @@ fun HomeScreen(
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
     onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
@@ -91,6 +93,7 @@ fun HomeScreen(
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetObjectClicked = onWidgetObjectClicked,
+            onWidgetSourceClicked = onWidgetSourceClicked,
             onBundledWidgetHeaderClicked = onBundledWidgetClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
@@ -152,6 +155,7 @@ private fun WidgetList(
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
     onBundledWidgetHeaderClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     mode: InteractionMode,
@@ -215,6 +219,7 @@ private fun WidgetList(
                                     onWidgetMenuAction(item.id, action)
                                 },
                                 onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetSourceClicked = onWidgetSourceClicked,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 mode = mode
                             )
@@ -266,7 +271,7 @@ private fun WidgetList(
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
-                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetSourceClicked = onWidgetSourceClicked,
                                 isInEditMode = mode is InteractionMode.Edit
                             )
                             AnimatedVisibility(
@@ -317,6 +322,7 @@ private fun WidgetList(
                         DataViewListWidgetCard(
                             item = item,
                             onWidgetObjectClicked = onWidgetObjectClicked,
+                            onWidgetSourceClicked = onWidgetSourceClicked,
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },

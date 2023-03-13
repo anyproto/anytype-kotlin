@@ -34,18 +34,33 @@ class SelectWidgetTypeViewModel(
 
     val isDismissed = MutableStateFlow(false)
 
-    fun onStartForExistingWidget(currentType: Int) {
-        views.value = views.value.map { view -> view.setIsSelected(currentType) }
+    fun onStartForExistingWidget(currentType: Int, source: Id) {
+        Timber.d("onStart for existing widget")
+        if (BundledWidgetSourceIds.ids.contains(source)) {
+            views.value = listOf(
+                WidgetTypeView.Tree().setIsSelected(currentType),
+                WidgetTypeView.List().setIsSelected(currentType)
+            )
+        } else {
+            views.value = views.value.map { view -> view.setIsSelected(currentType) }
+        }
     }
 
-    fun onStartForNewWidget(layout: Int) {
-        Timber.d("onStart for new widget: $layout")
-        val objectLayout = ObjectType.Layout.values().find { it.code == layout }
-        if (objectLayout == ObjectType.Layout.SET) {
+    fun onStartForNewWidget(layout: Int, source: Id) {
+        Timber.d("onStart for new widget")
+        if (BundledWidgetSourceIds.ids.contains(source)) {
             views.value = listOf(
-                WidgetTypeView.List(isSelected = false),
-                WidgetTypeView.Link(isSelected = false)
+                WidgetTypeView.Tree(isSelected = false),
+                WidgetTypeView.List(isSelected = false)
             )
+        } else {
+            val objectLayout = ObjectType.Layout.values().find { it.code == layout }
+            if (objectLayout == ObjectType.Layout.SET) {
+                views.value = listOf(
+                    WidgetTypeView.List(isSelected = false),
+                    WidgetTypeView.Link(isSelected = false)
+                )
+            }
         }
     }
 
@@ -65,7 +80,7 @@ class SelectWidgetTypeViewModel(
                         type = when (view) {
                             is WidgetTypeView.Link -> WidgetLayout.LINK
                             is WidgetTypeView.Tree -> WidgetLayout.TREE
-                            is WidgetTypeView.List -> TODO()
+                            is WidgetTypeView.List -> WidgetLayout.LINK
                         }
                     )
                 ).flowOn(appCoroutineDispatchers.io).collect { result ->

@@ -30,7 +30,7 @@ class ObjectSearchDividerItemDecoration(
         val right: Int = parent.width
         val childCount = parent.childCount
         val startPosition =
-            if (parent.getChildViewHolder(parent.getChildAt(0)) is DefaultObjectViewAdapter.RecentlyOpenedHolder) {
+            if (parent.getChildViewHolder(parent.getChildAt(0)) is DefaultObjectViewAdapter.SectionViewHolder) {
                 POSITION_HEADER
             } else {
                 POSITION_DATA

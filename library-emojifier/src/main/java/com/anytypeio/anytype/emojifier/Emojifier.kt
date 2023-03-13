@@ -48,7 +48,7 @@ object Emojifier {
 
     /**
      * @param unicode emoji unicode
-     * @return a pair constisting of emoji's page and emoji's index for this [unicode]
+     * @return a pair consisting of emoji's page and emoji's index for this [unicode]
      */
     private fun search(unicode: String): Pair<Int, Int>? {
         val cached = cache[unicode]

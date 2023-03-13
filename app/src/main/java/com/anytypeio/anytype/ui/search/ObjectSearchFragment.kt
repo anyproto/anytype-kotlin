@@ -51,7 +51,7 @@ class ObjectSearchFragment :
 
     private val searchAdapter by lazy {
         DefaultObjectViewAdapter(
-            onClick = vm::onObjectClicked
+            onDefaultObjectClicked = vm::onObjectClicked
         )
     }
 

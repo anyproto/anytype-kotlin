@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.TreePath
+import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
@@ -59,6 +60,7 @@ fun TreeWidgetCard(
     item: WidgetView.Tree,
     onExpandElement: (TreePath) -> Unit,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit
 ) {
@@ -94,10 +96,15 @@ fun TreeWidgetCard(
             )
         ) {
             WidgetHeader(
-                title = item.obj.getWidgetObjectName().orEmpty(),
+                title = when (val source = item.source) {
+                    is Widget.Source.Default -> {
+                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                    }
+                    is Widget.Source.Bundled -> { stringResource(id = source.res()) }
+                },
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetObjectClicked(item.obj) },
+                onWidgetHeaderClicked = { onWidgetSourceClicked(item.source) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction,

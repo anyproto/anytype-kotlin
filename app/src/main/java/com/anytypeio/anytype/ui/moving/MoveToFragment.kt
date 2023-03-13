@@ -60,7 +60,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 
     private val moveToAdapter by lazy {
         DefaultObjectViewAdapter(
-            onClick = vm::onObjectClicked
+            onDefaultObjectClicked = vm::onObjectClicked
         )
     }
 

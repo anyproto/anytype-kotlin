@@ -25,3 +25,10 @@ object WidgetConfig {
                 && SupportedLayouts.isSupported(obj.layout)
     }
 }
+
+object BundledWidgetSourceIds {
+    const val FAVORITE = "favorite"
+    const val RECENT = "recent"
+    const val SETS = "sets"
+    val ids = listOf(FAVORITE, RECENT, SETS)
+}

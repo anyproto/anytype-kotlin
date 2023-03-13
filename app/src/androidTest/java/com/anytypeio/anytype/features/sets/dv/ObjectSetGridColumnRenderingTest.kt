@@ -131,7 +131,6 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation1, relation2, relation3, relation4, relation5),
                 viewers = listOf(viewer),
                 
             )

@@ -28,6 +28,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import timber.log.Timber
 import javax.inject.Inject
 
+@Deprecated("Legacy screen, is not used")
 class PageNavigationFragment
     : ViewStateFragment<ViewState<PageNavigationView>, FragmentPageNavigationBinding>(R.layout.fragment_page_navigation) {
 

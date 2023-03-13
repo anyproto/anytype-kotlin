@@ -30,13 +30,13 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddFileToObject
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -86,7 +86,7 @@ class DisplayRelationTagValueTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     private val root = MockDataFactory.randomUuid()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val store: ObjectStore = DefaultObjectStore()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val db = ObjectSetDatabase(store)
@@ -100,12 +100,13 @@ class DisplayRelationTagValueTest {
         urlBuilder = UrlBuilder(gateway)
         TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(
-                objectSetState = state,
+                objectState = state,
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(db = db),
-            details = object: ObjectDetailProvider {
-                override fun provide(): Map<Id, Block.Fields> = state.value.details
+            details = object : ObjectDetailProvider {
+                override fun provide(): Map<Id, Block.Fields> =
+                    state.value.dataViewState()?.details.orEmpty()
             },
             urlBuilder = urlBuilder,
             copyFileToCache = copyFileToCacheDirectory,
@@ -124,10 +125,6 @@ class DisplayRelationTagValueTest {
         val relation = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target
-        )
-
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -137,33 +134,18 @@ class DisplayRelationTagValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relation,
-                                isMulti = true,
-                                name = MockDataFactory.randomString(),
-                                format = Relation.Format.TAG,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -197,10 +179,6 @@ class DisplayRelationTagValueTest {
         val relation = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target
-        )
-
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -210,33 +188,18 @@ class DisplayRelationTagValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relation,
-                                isMulti = true,
-                                name = name,
-                                format = Relation.Format.TAG,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -261,14 +224,7 @@ class DisplayRelationTagValueTest {
 
         // SETUP
 
-        val option1Color = ThemeColor.values().random()
         val option2Color = ThemeColor.values().random()
-
-        val option1 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "Architect",
-            color = option1Color.code
-        )
 
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
@@ -285,11 +241,6 @@ class DisplayRelationTagValueTest {
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to listOf(option2.id, option3.id)
-        )
-
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -299,37 +250,18 @@ class DisplayRelationTagValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationKey,
-                                defaultValue = null,
-                                isHidden = false,
-                                isReadOnly = false,
-                                isMulti = true,
-                                name = MockDataFactory.randomString(),
-                                source = Relation.Source.values().random(),
-                                format = Relation.Format.TAG,
-                                selections = listOf(option1, option2, option3)
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -364,19 +296,8 @@ class DisplayRelationTagValueTest {
 
         // SETUP
 
-        val option1 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "Architect",
-            color = ""
-        )
-
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to listOf(option1.id)
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -387,37 +308,18 @@ class DisplayRelationTagValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationKey,
-                                defaultValue = null,
-                                isHidden = false,
-                                isReadOnly = false,
-                                isMulti = true,
-                                name = MockDataFactory.randomString(),
-                                source = Relation.Source.values().random(),
-                                format = Relation.Format.TAG,
-                                selections = listOf(option1)
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -442,30 +344,8 @@ class DisplayRelationTagValueTest {
 
         // SETUP
 
-        val option1 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "TAG1",
-            color = MockDataFactory.randomString()
-        )
-
-        val option2 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "TAG 2",
-            color = MockDataFactory.randomString()
-        )
-
-        val option3 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "TAG 3",
-            color = MockDataFactory.randomString()
-        )
-
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -476,37 +356,18 @@ class DisplayRelationTagValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationKey,
-                                defaultValue = null,
-                                isHidden = false,
-                                isReadOnly = false,
-                                isMulti = true,
-                                name = MockDataFactory.randomString(),
-                                source = Relation.Source.values().random(),
-                                format = Relation.Format.TAG,
-                                selections = listOf(option1, option2, option3)
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING

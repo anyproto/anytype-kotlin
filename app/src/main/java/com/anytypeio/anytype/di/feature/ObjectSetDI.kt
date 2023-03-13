@@ -19,9 +19,9 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -43,6 +44,7 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -57,12 +59,15 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
-import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
+import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -71,8 +76,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Named
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [ObjectSetModule::class])
 @PerScreen
@@ -128,6 +133,15 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideDataViewSubscription(
+        dataViewSubscriptionContainer: DataViewSubscriptionContainer
+    ): DataViewSubscription = DefaultDataViewSubscription(
+        dataViewSubscriptionContainer
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideObjectSetViewModelFactory(
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
@@ -137,7 +151,6 @@ object ObjectSetModule {
         interceptThreadStatus: InterceptThreadStatus,
         createDataViewObject: CreateDataViewObject,
         createObject: CreateObject,
-        reducer: ObjectSetReducer,
         dispatcher: Dispatcher<Payload>,
         delegator: Delegator<Action>,
         urlBuilder: UrlBuilder,
@@ -148,10 +161,16 @@ object ObjectSetModule {
         setDocCoverImage: SetDocCoverImage,
         dataViewSubscriptionContainer: DataViewSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
-        setDataViewQuery: SetDataViewQuery,
+        setQueryToObjectSet: SetQueryToObjectSet,
         database: ObjectSetDatabase,
         paginator: ObjectSetPaginator,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        objectStateReducer: ObjectStateReducer,
+        dataViewSubscription: DataViewSubscription,
+        workspaceManager: WorkspaceManager,
+        @Named("object-set-store") objectStore: ObjectStore,
+        addObjectToCollection: AddObjectToCollection,
+        convertObjectToCollection: ConvertObjectToCollection
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -160,7 +179,6 @@ object ObjectSetModule {
         updateText = updateText,
         interceptEvents = interceptEvents,
         interceptThreadStatus = interceptThreadStatus,
-        reducer = reducer,
         dispatcher = dispatcher,
         delegator = delegator,
         coverImageHashProvider = coverImageHashProvider,
@@ -172,10 +190,27 @@ object ObjectSetModule {
         createObject = createObject,
         dataViewSubscriptionContainer = dataViewSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
-        setDataViewQuery = setDataViewQuery,
+        setQueryToObjectSet = setQueryToObjectSet,
         database = database,
         paginator = paginator,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        objectStateReducer = objectStateReducer,
+        dataViewSubscription = dataViewSubscription,
+        workspaceManager = workspaceManager,
+        objectStore = objectStore,
+        addObjectToCollection = addObjectToCollection,
+        objectToCollection = convertObjectToCollection
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideConvertObjectToCollection(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): ConvertObjectToCollection = ConvertObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -196,9 +231,10 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideSetDataViewSource(
-        repo: BlockRepository
-    ): SetDataViewQuery = SetDataViewQuery(repo)
+    fun provideSetQueryToSet(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetQueryToObjectSet = SetQueryToObjectSet(repo, dispatchers)
 
     @JvmStatic
     @PerScreen
@@ -282,14 +318,12 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideObjectSetReducer(): ObjectSetReducer = ObjectSetReducer()
+    fun provideState(reducer: ObjectStateReducer): MutableStateFlow<ObjectState> = reducer.state
 
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideState(
-        reducer: ObjectSetReducer
-    ): StateFlow<ObjectSet> = reducer.state
+    fun provideObjectStateReducer(): ObjectStateReducer = DefaultObjectStateReducer()
 
     @JvmStatic
     @Provides
@@ -310,10 +344,10 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideDataViewObjectRelationProvider(
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         storeOfRelations: StoreOfRelations
     ): ObjectRelationProvider = DataViewObjectRelationProvider(
-        objectSetState = state,
+        objectState = state,
         storeOfRelations = storeOfRelations
     )
 
@@ -330,9 +364,14 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideObjectDetailProvider(
-        state: StateFlow<ObjectSet>,
+        objectState: MutableStateFlow<ObjectState>,
     ): ObjectDetailProvider = object : ObjectDetailProvider {
-        override fun provide(): Map<Id, Block.Fields> = state.value.details
+        override fun provide(): Map<Id, Block.Fields> {
+            return when (val state = objectState.value) {
+                is ObjectState.DataView -> state.details
+                else -> emptyMap()
+            }
+        }
     }
 
     @JvmStatic
@@ -455,6 +494,17 @@ object ObjectSetModule {
         repo: BlockRepository
     ): DuplicateObject = DuplicateObject(
         repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddObjectToCollection(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): AddObjectToCollection = AddObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @Module

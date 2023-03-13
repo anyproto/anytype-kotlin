@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+@Deprecated("Legacy , is not used")
 class GetObjectInfoWithLinks(
     private val repo: BlockRepository
 ) : BaseUseCase<GetObjectInfoWithLinks.Response, GetObjectInfoWithLinks.Params>() {

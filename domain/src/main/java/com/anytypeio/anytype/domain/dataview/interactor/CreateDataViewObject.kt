@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relation
@@ -50,6 +51,20 @@ class CreateDataViewObject(
                         type = type
                     ),
                     internalFlags = listOf()
+                )
+                val result = repo.createObject(command)
+                result.id
+            }
+            Params.Collection -> {
+                val type = resolveDefaultObjectType()
+                val command = Command.CreateObject(
+                    template = resolveTemplateForNewObject(type = type),
+                    prefilled = resolveSetByRelationPrefilledObjectData(
+                        filters = emptyList(),
+                        relations = emptyList(),
+                        type = type
+                    ),
+                    internalFlags = listOf(InternalFlags.ShouldSelectTemplate)
                 )
                 val result = repo.createObject(command)
                 result.id
@@ -155,6 +170,8 @@ class CreateDataViewObject(
             val filters: List<DVFilter>,
             val relations: List<Id>
         ) : Params()
+
+        object Collection : Params()
     }
 
     companion object {

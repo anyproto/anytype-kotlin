@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
@@ -145,14 +145,14 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
                 relations = listOf(
-                    DocumentRelationView.ObjectType.Base(
-                        relationId = objectType.id,
-                        relationKey = Relations.TYPE,
+                    ObjectRelationView.ObjectType.Base(
+                        id = objectType.id,
+                        key = Relations.TYPE,
                         name = objectTypeName,
                         value = null,
-                        isFeatured = true,
+                        featured = true,
                         type = objectTypeId,
-                        isSystem = true
+                        system = true
                     )
                 )
             )
@@ -262,14 +262,14 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
                 relations = listOf(
-                    DocumentRelationView.ObjectType.Base(
-                        relationId = objectTypeId,
-                        relationKey = Relations.TYPE,
+                    ObjectRelationView.ObjectType.Base(
+                        id = objectTypeId,
+                        key = Relations.TYPE,
                         name = objectTypeName,
                         value = null,
-                        isFeatured = true,
+                        featured = true,
                         type = objectTypeId,
-                        isSystem = true
+                        system = true
                     )
                 )
             )

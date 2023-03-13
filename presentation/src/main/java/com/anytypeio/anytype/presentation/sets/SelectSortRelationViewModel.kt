@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
@@ -14,30 +13,33 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddSortEvent
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SelectSortRelationViewModel(
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val storeOfRelations: StoreOfRelations,
     private val analytics: Analytics
 ) : SearchRelationViewModel(
-    objectSetState = objectSetState,
+    objectState = objectState,
     session = session,
     storeOfRelations = storeOfRelations
 ) {
 
     fun onRelationClicked(ctx: Id, relation: SimpleRelationView) {
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Add(
                 ctx = ctx,
-                dv = objectSetState.value.dataview.id,
-                view = objectSetState.value.viewerById(session.currentViewerId.value).id,
+                dv = state.dataViewBlock.id,
+                view = viewer.id,
                 sort = DVSort(
                     relationKey = relation.key,
                     type = DVSortType.ASC
@@ -60,7 +62,7 @@ class SelectSortRelationViewModel(
     }
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val objectState: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
@@ -70,7 +72,7 @@ class SelectSortRelationViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SelectSortRelationViewModel(
-                objectSetState = state,
+                objectState = objectState,
                 session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
@@ -85,17 +87,17 @@ class SelectSortRelationViewModel(
     }
 
     override suspend fun filterRelationsFromAlreadyInUse(
-        set: ObjectSet,
+        objectState: ObjectState,
         viewerId: String?,
         storeOfRelations: StoreOfRelations
     ): List<SimpleRelationView> {
+        val dataViewState = objectState.dataViewState() ?: return emptyList()
         val relationsInUse: List<String> = run {
-            val block = set.blocks.first { it.content is DV }
-            val dv = block.content as DV
+            val dv = dataViewState.dataViewContent
             val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
             viewer.sorts.map { it.relationKey }.toList()
         }
-        return set.simpleRelations(
+        return objectState.simpleRelations(
             viewerId = viewerId,
             storeOfRelations = storeOfRelations
         ).filterNot { it.key in relationsInUse }

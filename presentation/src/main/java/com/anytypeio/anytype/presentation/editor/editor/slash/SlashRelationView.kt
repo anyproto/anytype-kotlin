@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.editor.editor.slash
 
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 
 sealed class SlashRelationView : DefaultObjectDiffIdentifier {
-    data class Item(val view: DocumentRelationView) : SlashRelationView() {
+    data class Item(val view: ObjectRelationView) : SlashRelationView() {
         override val identifier: String get() = view.identifier
     }
 

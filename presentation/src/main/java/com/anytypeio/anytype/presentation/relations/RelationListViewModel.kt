@@ -81,12 +81,12 @@ class RelationListViewModel(
                 ).map { view ->
                     Model.Item(
                         view = view,
-                        isRemoveable = isPossibleToRemoveRelation(relationKey = view.relationKey)
+                        isRemoveable = isPossibleToRemoveRelation(relationKey = view.key)
                     )
                 }
             }.map { views ->
                 val result = mutableListOf<Model>().apply {
-                    val (isFeatured, other) = views.partition { it.view.isFeatured }
+                    val (isFeatured, other) = views.partition { it.view.featured }
                     if (isFeatured.isNotEmpty()) {
                         add(Model.Section.Featured)
                         addAll(isFeatured)
@@ -113,7 +113,7 @@ class RelationListViewModel(
         }
     }
 
-    fun onRelationClicked(ctx: Id, target: Id?, view: DocumentRelationView) {
+    fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
         if (isInAddMode.value) {
             onRelationClickedAddMode(target = target, view = view)
         } else {
@@ -121,7 +121,7 @@ class RelationListViewModel(
         }
     }
 
-    fun onCheckboxClicked(ctx: Id, view: DocumentRelationView) {
+    fun onCheckboxClicked(ctx: Id, view: ObjectRelationView) {
         val isLocked = resolveIsLockedState(ctx)
         if (isLocked) {
             sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
@@ -131,12 +131,12 @@ class RelationListViewModel(
     }
 
     private fun proceedWithUpdatingFeaturedRelations(
-        view: DocumentRelationView,
+        view: ObjectRelationView,
         ctx: Id
     ) {
-        val relationKey = view.relationKey ?: return
+        val relationKey = view.key ?: return
         viewModelScope.launch {
-            if (view.isFeatured) {
+            if (view.featured) {
                 viewModelScope.launch {
                     removeFromFeaturedRelations(
                         RemoveFromFeaturedRelations.Params(
@@ -176,12 +176,12 @@ class RelationListViewModel(
         }
     }
 
-    fun onDeleteClicked(ctx: Id, view: DocumentRelationView) {
+    fun onDeleteClicked(ctx: Id, view: ObjectRelationView) {
         viewModelScope.launch {
             deleteRelationFromObject(
                 DeleteRelationFromObject.Params(
                     ctx = ctx,
-                    relation = view.relationKey
+                    relation = view.key
                 )
             ).process(
                 failure = { Timber.e(it, "Error while deleting relation") },
@@ -200,7 +200,7 @@ class RelationListViewModel(
             isEditMode.value = !isEditMode.value
             views.value = views.value.map { view ->
                 if (view is Model.Item) {
-                    view.copy(isRemoveable = isPossibleToRemoveRelation(relationKey = view.view.relationKey))
+                    view.copy(isRemoveable = isPossibleToRemoveRelation(relationKey = view.view.key))
                 } else {
                     view
                 }
@@ -214,27 +214,27 @@ class RelationListViewModel(
 
     private fun onRelationClickedAddMode(
         target: Id?,
-        view: DocumentRelationView
+        view: ObjectRelationView
     ) {
         checkNotNull(target)
         viewModelScope.launch {
             commands.emit(
                 Command.SetRelationKey(
                     blockId = target,
-                    key = view.relationKey
+                    key = view.key
                 )
             )
         }
     }
 
-    private fun onRelationClickedListMode(ctx: Id, view: DocumentRelationView) {
+    private fun onRelationClickedListMode(ctx: Id, view: ObjectRelationView) {
         viewModelScope.launch {
-            val relation = storeOfRelations.getById(view.relationId)
+            val relation = storeOfRelations.getById(view.id)
             if (relation == null) {
                 if (BuildConfig.DEBUG) {
-                    _toasts.emit("$NOT_FOUND_IN_RELATION_STORE[${view.relationId}]")
+                    _toasts.emit("$NOT_FOUND_IN_RELATION_STORE[${view.id}]")
                 }
-                Timber.w("Couldn't find relation in store by id:${view.relationId}")
+                Timber.w("Couldn't find relation in store by id:${view.id}")
                 return@launch
             }
             if (relation.isReadonlyValue) {
@@ -311,13 +311,13 @@ class RelationListViewModel(
 
     private fun resolveIsLockedState(ctx: Id): Boolean = lockedStateProvider.isLocked(ctx)
 
-    private fun proceedWithTogglingRelationCheckboxValue(view: DocumentRelationView, ctx: Id) {
+    private fun proceedWithTogglingRelationCheckboxValue(view: ObjectRelationView, ctx: Id) {
         viewModelScope.launch {
-            check(view is DocumentRelationView.Checkbox)
+            check(view is ObjectRelationView.Checkbox)
             updateDetail(
                 UpdateDetail.Params(
                     ctx = ctx,
-                    key = view.relationKey,
+                    key = view.key,
                     value = !view.isChecked
                 )
             ).process(
@@ -382,7 +382,7 @@ class RelationListViewModel(
         }
 
         data class Item(
-            val view: DocumentRelationView,
+            val view: ObjectRelationView,
             val isRemoveable: Boolean = false
         ) : Model() {
             override val identifier: String get() = view.identifier

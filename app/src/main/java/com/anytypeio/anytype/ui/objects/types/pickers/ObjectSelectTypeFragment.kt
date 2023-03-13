@@ -15,7 +15,7 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
 
     override fun startWithParams() {
         vm.onStart(
-            isWithSet = false,
+            isWithCollection = false,
             isWithBookmark = false,
             excludeTypes = excludeTypes,
             selectedTypes = emptyList(),

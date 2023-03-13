@@ -17,9 +17,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.StubRelationOptionObject
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -35,9 +32,10 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -56,11 +54,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -92,7 +85,7 @@ class DisplayRelationObjectValueTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     private val root = MockDataFactory.randomUuid()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val store: ObjectStore = DefaultObjectStore()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
@@ -106,12 +99,13 @@ class DisplayRelationObjectValueTest {
         urlBuilder = UrlBuilder(gateway)
         TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(
-                objectSetState = state,
+                objectState = state,
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(db = db),
-            details = object: ObjectDetailProvider {
-                override fun provide(): Map<Id, Block.Fields> = state.value.details
+            details = object : ObjectDetailProvider {
+                override fun provide(): Map<Id, Block.Fields> =
+                    state.value.dataViewState()?.details.orEmpty()
             },
             urlBuilder = urlBuilder,
             copyFileToCache = copyFileToCacheDirectory,
@@ -144,33 +138,18 @@ class DisplayRelationObjectValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relation,
-                                isMulti = true,
-                                name = MockDataFactory.randomString(),
-                                format = Relation.Format.OBJECT,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -219,33 +198,18 @@ class DisplayRelationObjectValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relation,
-                                isMulti = true,
-                                name = name,
-                                format = Relation.Format.OBJECT,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -271,15 +235,8 @@ class DisplayRelationObjectValueTest {
 
         // SETUP
 
-        val name = "Object"
-
         val relationId = MockDataFactory.randomUuid()
         val targetId = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to targetId,
-            relationId to emptyList<Id>()
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -290,32 +247,18 @@ class DisplayRelationObjectValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationId,
-                                name = name,
-                                format = Relation.Format.OBJECT,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -376,11 +319,6 @@ class DisplayRelationObjectValueTest {
         val relationId = MockDataFactory.randomUuid()
         val recordId = MockDataFactory.randomUuid()
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to recordId,
-            relationId to listOf(object1Id, object2Id)
-        )
-
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -390,32 +328,18 @@ class DisplayRelationObjectValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationId,
-                                name = relationName,
-                                format = Relation.Format.OBJECT,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
             ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            ),
             details = mapOf(
                 object1Id to Block.Fields(
                     mapOf(
@@ -495,7 +419,6 @@ class DisplayRelationObjectValueTest {
             isReadOnly = false
         )
 
-        val relationName = "Cast"
         val object1Name = "Charlie Chaplin"
         val object1Id = MockDataFactory.randomUuid()
         val object2Name = "Jean-Pierre Léaud"
@@ -503,11 +426,6 @@ class DisplayRelationObjectValueTest {
 
         val relationId = MockDataFactory.randomUuid()
         val recordId = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to recordId,
-            relationId to listOf(object1Id, object2Id)
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -518,32 +436,18 @@ class DisplayRelationObjectValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationId,
-                                name = relationName,
-                                format = Relation.Format.OBJECT,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
             ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            ),
             details = mapOf(
                 object1Id to Block.Fields(
                     mapOf(
@@ -587,7 +491,6 @@ class DisplayRelationObjectValueTest {
 
         // SETUP
 
-        val relationName = "Writers"
         val object1Name = "Virginia Woolf"
         val object1Id = MockDataFactory.randomUuid()
         val object2Name = "Réné-Auguste Chateaubriand"
@@ -622,11 +525,6 @@ class DisplayRelationObjectValueTest {
         val relationId = MockDataFactory.randomUuid()
         val recordId = MockDataFactory.randomUuid()
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to recordId,
-            relationId to listOf(object1Id, object2Id)
-        )
-
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -636,32 +534,18 @@ class DisplayRelationObjectValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationId,
-                                name = relationName,
-                                format = Relation.Format.OBJECT,
-                                source = Relation.Source.values().random()
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
             ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            ),
             details = mapOf(
                 object1Id to Block.Fields(
                     mapOf(
@@ -701,39 +585,9 @@ class DisplayRelationObjectValueTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestRelationValueDVFragment> {
-        return launchFragmentInContainer<TestRelationValueDVFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )
-    }
-
-    private fun verifyCreateRelationOptionCalled() {
-        verifyBlocking(repo, times(1)) {
-            createRelationOption(
-                relation = any(),
-                color = any(),
-                name = any()
-            )
-        }
-    }
-
-    private fun stubCreateRelationOption(
-        name: String = MockDataFactory.randomString(),
-        id: Id = MockDataFactory.randomUuid(),
-        color: String = ThemeColor.values().random().code
-    ) {
-        repo.stub {
-            onBlocking {
-                createRelationOption(
-                    relation = any(),
-                    color = any(),
-                    name = any()
-                )
-            } doReturn StubRelationOptionObject(
-                id = id,
-                color = color,
-                text = name
-            )
-        }
     }
 }

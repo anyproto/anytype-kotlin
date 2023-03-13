@@ -16,7 +16,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationTagBind
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.ListRelationViewHolder
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import timber.log.Timber
 
@@ -191,37 +191,37 @@ class DocumentRelationAdapter(
             is ListRelationViewHolder.Status -> {
                 check(item is RelationListViewModel.Model.Item)
                 val view = item.view
-                check(view is DocumentRelationView.Status)
+                check(view is ObjectRelationView.Status)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Checkbox -> {
                 check(item is RelationListViewModel.Model.Item)
                 val view = item.view
-                check(view is DocumentRelationView.Checkbox)
+                check(view is ObjectRelationView.Checkbox)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Tags -> {
                 check(item is RelationListViewModel.Model.Item)
                 val view = item.view
-                check(view is DocumentRelationView.Tags)
+                check(view is ObjectRelationView.Tags)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Object -> {
                 check(item is RelationListViewModel.Model.Item)
                 val view = item.view
-                check(view is DocumentRelationView.Object)
+                check(view is ObjectRelationView.Object)
                 holder.bind(view)
             }
             is ListRelationViewHolder.File -> {
                 check(item is RelationListViewModel.Model.Item)
                 val view = item.view
-                check(view is DocumentRelationView.File)
+                check(view is ObjectRelationView.File)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Default -> {
                 check(item is RelationListViewModel.Model.Item)
                 val view = item.view
-                check(view is DocumentRelationView.Default)
+                check(view is ObjectRelationView.Default)
                 holder.bind(view)
             }
             is SectionViewHolder -> {
@@ -234,7 +234,7 @@ class DocumentRelationAdapter(
         }
         if (holder is ListRelationViewHolder) {
             check(item is RelationListViewModel.Model.Item)
-            holder.setIsFeatured(item.view.isFeatured)
+            holder.setIsFeatured(item.view.featured)
             holder.setIsRemovable(item.isRemoveable)
         }
     }
@@ -244,11 +244,11 @@ class DocumentRelationAdapter(
     override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
         is RelationListViewModel.Model.Item -> {
             when (item.view) {
-                is DocumentRelationView.Checkbox -> R.layout.item_relation_list_relation_checkbox
-                is DocumentRelationView.Object -> R.layout.item_relation_list_relation_object
-                is DocumentRelationView.Status -> R.layout.item_relation_list_relation_status
-                is DocumentRelationView.Tags -> R.layout.item_relation_list_relation_tag
-                is DocumentRelationView.File -> R.layout.item_relation_list_relation_file
+                is ObjectRelationView.Checkbox -> R.layout.item_relation_list_relation_checkbox
+                is ObjectRelationView.Object -> R.layout.item_relation_list_relation_object
+                is ObjectRelationView.Status -> R.layout.item_relation_list_relation_status
+                is ObjectRelationView.Tags -> R.layout.item_relation_list_relation_tag
+                is ObjectRelationView.File -> R.layout.item_relation_list_relation_file
                 else -> R.layout.item_relation_list_relation_default
             }
         }

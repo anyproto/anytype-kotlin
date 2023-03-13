@@ -18,9 +18,9 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
@@ -58,7 +58,7 @@ class ViewerObjectSortTest {
 
     private val root = MockDataFactory.randomUuid()
     private val session = ObjectSetSession()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
 
     @Before
@@ -117,17 +117,16 @@ class ViewerObjectSortTest {
             selections = emptyList()
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
             )
         )

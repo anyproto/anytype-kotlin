@@ -45,6 +45,7 @@ data class ObjectType(
         SPACE(10),
         BOOKMARK(11),
         DATABASE(20),
+        COLLECTION(14)
     }
 
     /**

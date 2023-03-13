@@ -161,7 +161,7 @@ open class ObjectSearchViewModel(
             ObjectType.Layout.BOOKMARK -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
             }
-            ObjectType.Layout.SET -> {
+            ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchObjectSet(target = target)))
             }
             else -> {

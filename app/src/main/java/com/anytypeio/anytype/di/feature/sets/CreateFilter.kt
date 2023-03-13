@@ -10,17 +10,17 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFromInputFieldValueFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFromSelectedValueFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [CreateFilterModule::class])
 @PerModal
@@ -43,7 +43,7 @@ object CreateFilterModule {
     @Provides
     @PerModal
     fun provideViewModelFactory(
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,
@@ -56,7 +56,7 @@ object CreateFilterModule {
         getOptions: GetOptions,
         workspaceManager: WorkspaceManager
     ): FilterViewModel.Factory = FilterViewModel.Factory(
-        objectSetState = state,
+        objectState = state,
         session = session,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,

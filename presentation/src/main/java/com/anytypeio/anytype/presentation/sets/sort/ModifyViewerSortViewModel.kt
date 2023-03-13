@@ -9,8 +9,9 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeSortValueEvent
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ModifyViewerSortViewModel(
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
@@ -35,8 +36,8 @@ class ModifyViewerSortViewModel(
     fun onStart(sortId: Id, relationKey: Key) {
         Timber.d("onStart, sortId: [$sortId], relationKey:[$relationKey]")
         jobs += viewModelScope.launch {
-            objectSetState.filter { it.isInitialized }.collect { state ->
-                val viewer = state.viewerById(session.currentViewerId.value)
+            objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
+                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
                 val sort = viewer.sorts.find { it.id == sortId }
                 if (sort != null) {
                     val relation = storeOfRelations.getByKey(relationKey)
@@ -84,8 +85,8 @@ class ModifyViewerSortViewModel(
         sortId: Id,
         type: Block.Content.DataView.Sort.Type
     ) {
-        val state = objectSetState.value
-        val viewer = state.viewerById(session.currentViewerId.value)
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val sort = viewer.sorts.find { it.id == sortId }
         if (sort == null) {
             Timber.e("Couldn't find sort in view:[$viewer] by sortId:[$sortId]")
@@ -94,7 +95,7 @@ class ModifyViewerSortViewModel(
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Replace(
                 ctx = ctx,
-                dv = state.dataview.id,
+                dv = state.dataViewBlock.id,
                 view = viewer.id,
                 sort = sort.copy(type = type)
             )
@@ -117,7 +118,7 @@ class ModifyViewerSortViewModel(
     )
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val state: StateFlow<ObjectState>,
         private val dispatcher: Dispatcher<Payload>,
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
@@ -127,7 +128,7 @@ class ModifyViewerSortViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ModifyViewerSortViewModel(
-                objectSetState = state,
+                objectState = state,
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,

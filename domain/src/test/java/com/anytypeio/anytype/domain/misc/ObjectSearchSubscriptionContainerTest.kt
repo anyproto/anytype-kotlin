@@ -95,7 +95,8 @@ class ObjectSearchSubscriptionContainerTest {
                     beforeId = null,
                     source = emptyList(),
                     noDepSubscription = null,
-                    ignoreWorkspace = null
+                    ignoreWorkspace = null,
+                    collection = null
                 )
             } doReturn SearchResult(
                 results = initialResults1,

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -19,8 +18,10 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ import timber.log.Timber
 
 class RelationAddToDataViewViewModel(
     relationsProvider: ObjectRelationProvider,
-    private val state: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
@@ -83,15 +84,13 @@ class RelationAddToDataViewViewModel(
     }
     
     private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relation: Id) {
-        val state = state.value
-        val block = state.dataview
-        val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
 
         updateDataViewViewer(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
                 ctx = ctx,
-                dv = block.id,
+                dv = state.dataViewBlock.id,
                 view = viewer.id,
                 relation = DVViewerRelation(
                     key = relation,
@@ -105,7 +104,7 @@ class RelationAddToDataViewViewModel(
     }
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val state: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addRelationToDataView: AddRelationToDataView,
@@ -124,7 +123,7 @@ class RelationAddToDataViewViewModel(
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
-                state = state,
+                objectState = state,
                 analytics = analytics,
                 relationsProvider = relationsProvider,
                 appCoroutineDispatchers = appCoroutineDispatchers,

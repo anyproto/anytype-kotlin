@@ -54,7 +54,7 @@ class LinkToObjectViewModel(
                     text = view.name,
                     icon = view.icon,
                     isBookmark = view.layout == ObjectType.Layout.BOOKMARK,
-                    isSet = view.layout == ObjectType.Layout.SET
+                    isSet = view.layout == ObjectType.Layout.SET || view.layout == ObjectType.Layout.COLLECTION
                 )
             )
         }

@@ -25,13 +25,13 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddFileToObject
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -88,7 +88,7 @@ class EditRelationTagValueTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     private val ctx = MockDataFactory.randomUuid()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val store: ObjectStore = DefaultObjectStore()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val db = ObjectSetDatabase(store = store)
@@ -102,12 +102,13 @@ class EditRelationTagValueTest {
         addFileToObject = AddFileToObject(repo)
         TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(
-                objectSetState = state,
+                objectState = state,
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(db = db),
             details = object : ObjectDetailProvider {
-                override fun provide(): Map<Id, Block.Fields> = state.value.details
+                override fun provide(): Map<Id, Block.Fields> =
+                    state.value.dataViewState()?.details.orEmpty()
             },
             urlBuilder = urlBuilder,
             copyFileToCache = copyFileToCacheDirectory,
@@ -127,12 +128,6 @@ class EditRelationTagValueTest {
         val option1Color = ThemeColor.values().random()
         val option2Color = ThemeColor.values().random()
 
-        val option1 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "Architect",
-            color = option1Color.code
-        )
-
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Manager",
@@ -148,11 +143,6 @@ class EditRelationTagValueTest {
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to listOf(option2.id, option3.id)
-        )
-
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -162,37 +152,18 @@ class EditRelationTagValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(
-                            Relation(
-                                key = relationKey,
-                                defaultValue = null,
-                                isHidden = false,
-                                isReadOnly = false,
-                                isMulti = true,
-                                name = "Roles",
-                                source = Relation.Source.values().random(),
-                                format = Relation.Format.TAG,
-                                selections = listOf(option1, option2, option3)
-                            )
-                        ),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -245,31 +216,14 @@ class EditRelationTagValueTest {
         val option1Color = ThemeColor.values().random()
         val option2Color = ThemeColor.values().random()
 
-        val option1 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "Architect",
-            color = option1Color.code
-        )
-
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Manager",
             color = option2Color.code
         )
 
-        val option3 = Relation.Option(
-            id = MockDataFactory.randomUuid(),
-            text = "Developer",
-            color = ""
-        )
-
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to listOf(option2.id, option3.id)
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -285,32 +239,13 @@ class EditRelationTagValueTest {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(
-                    Relation(
-                        key = relationKey,
-                        defaultValue = null,
-                        isHidden = false,
-                        isReadOnly = false,
-                        isMulti = true,
-                        name = "Roles",
-                        source = Relation.Source.values().random(),
-                        format = Relation.Format.TAG,
-                        selections = listOf(option1, option2, option3)
-                    )
-                ),
                 viewers = listOf(viewer),
-                
-            )
+
+                )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+        state.value = ObjectState.DataView.Set(
+            blocks = listOf(dv)
         )
 
         // TESTING
@@ -334,7 +269,7 @@ class EditRelationTagValueTest {
 
         verifyBlocking(repo, times(1)) {
             setObjectDetail(
-                ctx= target,
+                ctx = target,
                 key = relationKey,
                 value = listOf(option2.id)
             )

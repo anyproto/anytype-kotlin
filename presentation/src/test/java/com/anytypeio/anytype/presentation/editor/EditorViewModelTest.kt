@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -333,6 +334,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var tableDelegate: EditorTableDelegate
+
+    @Mock
+    lateinit var convertObjectToCollection: ConvertObjectToCollection
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -4038,7 +4042,8 @@ open class EditorViewModelTest {
             storeOfObjectTypes = storeOfObjectTypes,
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
-            getObjectTypes = getObjectTypes
+            getObjectTypes = getObjectTypes,
+            objectToCollection = convertObjectToCollection
         )
     }
 

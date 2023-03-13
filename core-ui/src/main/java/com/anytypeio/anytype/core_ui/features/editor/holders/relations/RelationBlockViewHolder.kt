@@ -34,7 +34,7 @@ import com.anytypeio.anytype.core_ui.extensions.clearDrawable
 import com.anytypeio.anytype.core_ui.extensions.setDrawable
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
 sealed class RelationBlockViewHolder(
@@ -121,7 +121,7 @@ sealed class RelationBlockViewHolder(
                 applyRelationValue(block.view)
             }
             if (payload.relationNameChanged()) {
-                applyRelationName(block.view.name, block.view.isReadOnly)
+                applyRelationName(block.view.name, block.view.readOnly)
             }
         }
     }
@@ -131,7 +131,7 @@ sealed class RelationBlockViewHolder(
         relationName.setReadOnly(isReadOnly)
     }
 
-    abstract fun applyRelationValue(item: DocumentRelationView)
+    abstract fun applyRelationValue(item: ObjectRelationView)
 
     init {
         applyDefaultOffsets(itemView)
@@ -161,7 +161,7 @@ sealed class RelationBlockViewHolder(
             super.applyContentDecorations(itemView, decorations)
         }
 
-        override fun applyRelationValue(item: DocumentRelationView) {}
+        override fun applyRelationValue(item: ObjectRelationView) {}
     }
 
     class Default(binding: ItemBlockRelationDefaultBinding) :
@@ -174,8 +174,8 @@ sealed class RelationBlockViewHolder(
         override val relationName: TextView = tvTitle
         override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
-        fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name, item.isReadOnly)
+        fun bind(item: ObjectRelationView) {
+            applyRelationName(item.name, item.readOnly)
             applyRelationValue(item)
         }
 
@@ -187,10 +187,10 @@ sealed class RelationBlockViewHolder(
             super.applyContentDecorations(itemView, decorations)
         }
 
-        override fun applyRelationValue(item: DocumentRelationView) {
+        override fun applyRelationValue(item: ObjectRelationView) {
             tvValue.apply {
                 text = item.value
-                if (item is DocumentRelationView.Default) {
+                if (item is ObjectRelationView.Default) {
                     when (item.format) {
                         Relation.Format.SHORT_TEXT -> setHint(R.string.enter_text)
                         Relation.Format.LONG_TEXT -> setHint(R.string.enter_text)
@@ -215,8 +215,8 @@ sealed class RelationBlockViewHolder(
         override val selected = binding.selected
         override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name, item.isReadOnly)
+        fun bind(item: ObjectRelationView) {
+            applyRelationName(item.name, item.readOnly)
             applyRelationValue(item)
         }
 
@@ -230,8 +230,8 @@ sealed class RelationBlockViewHolder(
             super.applyContentDecorations(itemView, decorations)
         }
 
-        override fun applyRelationValue(item: DocumentRelationView) {
-            if (item is DocumentRelationView.Checkbox) {
+        override fun applyRelationValue(item: ObjectRelationView) {
+            if (item is ObjectRelationView.Checkbox) {
                 tvCheckbox.isSelected = item.isChecked
             }
         }
@@ -247,8 +247,8 @@ sealed class RelationBlockViewHolder(
 
         val c = binding.content
 
-        fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name, item.isReadOnly)
+        fun bind(item: ObjectRelationView) {
+            applyRelationName(item.name, item.readOnly)
             applyRelationValue(item)
         }
 
@@ -262,8 +262,8 @@ sealed class RelationBlockViewHolder(
             super.applyContentDecorations(itemView, decorations)
         }
 
-        override fun applyRelationValue(item: DocumentRelationView) {
-            if (item is DocumentRelationView.Status) {
+        override fun applyRelationValue(item: ObjectRelationView) {
+            if (item is ObjectRelationView.Status) {
                 tvValue.apply {
                     if (item.status.isNotEmpty()) {
                         val status = item.status.first()
@@ -292,13 +292,13 @@ sealed class RelationBlockViewHolder(
         override val selected = binding.selected
         override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name, item.isReadOnly)
+        fun bind(item: ObjectRelationView) {
+            applyRelationName(item.name, item.readOnly)
             applyRelationValue(item)
         }
 
-        override fun applyRelationValue(item: DocumentRelationView) {
-            if (item is DocumentRelationView.Tags) {
+        override fun applyRelationValue(item: ObjectRelationView) {
+            if (item is ObjectRelationView.Tags) {
                 if (item.tags.isEmpty()) {
                     placeholder.visible()
                 } else {
@@ -349,13 +349,13 @@ sealed class RelationBlockViewHolder(
         override val selected = binding.selected
         override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name, item.isReadOnly)
+        fun bind(item: ObjectRelationView) {
+            applyRelationName(item.name, item.readOnly)
             applyRelationValue(item)
         }
 
-        override fun applyRelationValue(item: DocumentRelationView) {
-            if (item is DocumentRelationView.Object) {
+        override fun applyRelationValue(item: ObjectRelationView) {
+            if (item is ObjectRelationView.Object) {
                 if (item.objects.isEmpty()) {
                     placeholder.visible()
                 } else {
@@ -412,13 +412,13 @@ sealed class RelationBlockViewHolder(
         override val selected = binding.selected
         override val relationName: TextView = tvTitle
 
-        fun bind(item: DocumentRelationView) {
-            applyRelationName(item.name, item.isReadOnly)
+        fun bind(item: ObjectRelationView) {
+            applyRelationName(item.name, item.readOnly)
             applyRelationValue(item)
         }
 
-        override fun applyRelationValue(item: DocumentRelationView) {
-            if (item is DocumentRelationView.File) {
+        override fun applyRelationValue(item: ObjectRelationView) {
+            if (item is ObjectRelationView.File) {
                 if (item.files.isEmpty()) {
                     placeholder.visible()
                 } else {
@@ -467,7 +467,7 @@ sealed class RelationBlockViewHolder(
         override val relationName: TextView = binding.tvTitle
 
 
-        override fun applyRelationValue(item: DocumentRelationView) {}
+        override fun applyRelationValue(item: ObjectRelationView) {}
 
         fun bind(item: BlockView.Relation.Deleted) {
             indentize(item)

@@ -59,6 +59,7 @@ message Change {
             StoreKeySet storeKeySet = 107;
             StoreKeyUnset storeKeyUnset = 108;
 
+            StoreSliceUpdate storeSliceUpdate = 109;
         }
     }
 
@@ -148,5 +149,28 @@ message Change {
 
     message StoreKeyUnset {
         repeated string path = 1;
+    }
+
+    message StoreSliceUpdate {
+        string key = 1;
+        oneof operation {
+            Add add = 2;
+            Remove remove = 3;
+            Move move = 4;
+        }
+
+        message Add {
+            string afterId = 1;
+            repeated string ids = 2;
+        }
+
+        message Remove {
+            repeated string ids = 1;
+        }
+
+        message Move {
+            string afterId = 1;
+            repeated string ids = 2;
+        }
     }
 }

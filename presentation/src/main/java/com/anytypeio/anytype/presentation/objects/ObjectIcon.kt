@@ -72,6 +72,7 @@ sealed class ObjectIcon {
                 ObjectType.Layout.SPACE -> None
                 ObjectType.Layout.DATABASE -> None
                 null -> None
+                ObjectType.Layout.COLLECTION -> None
             }
         }
 
@@ -123,6 +124,7 @@ sealed class ObjectIcon {
                 ObjectType.Layout.SPACE -> None
                 ObjectType.Layout.DATABASE -> None
                 null -> None
+                ObjectType.Layout.COLLECTION -> None
             }
         }
     }

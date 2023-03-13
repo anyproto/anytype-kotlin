@@ -15,7 +15,7 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
 
     override fun startWithParams() {
         vm.onStart(
-            isWithSet = false,
+            isWithCollection = false,
             isWithBookmark = false,
             isSetSource = false
         )

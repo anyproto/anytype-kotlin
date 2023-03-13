@@ -43,7 +43,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_COLLECTION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_DELETED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_SET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -72,7 +74,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 
 /**
  * UI-models for different types of blocks.
@@ -1247,7 +1249,7 @@ sealed class BlockView : ViewType {
 
     data class FeaturedRelation(
         override val id: String,
-        val relations: List<DocumentRelationView>,
+        val relations: List<ObjectRelationView>,
         val allowChangingObjectType: Boolean = true
     ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
@@ -1272,20 +1274,22 @@ sealed class BlockView : ViewType {
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            val view: DocumentRelationView,
+            val view: ObjectRelationView,
             override val decorations: List<Decoration>
         ) : Relation() {
             override fun getViewType(): Int = when (view) {
-                is DocumentRelationView.Default -> HOLDER_RELATION_DEFAULT
-                is DocumentRelationView.Checkbox -> HOLDER_RELATION_CHECKBOX
-                is DocumentRelationView.Status -> HOLDER_RELATION_STATUS
-                is DocumentRelationView.Tags -> HOLDER_RELATION_TAGS
-                is DocumentRelationView.Object -> HOLDER_RELATION_OBJECT
-                is DocumentRelationView.File -> HOLDER_RELATION_FILE
-                is DocumentRelationView.ObjectType.Base -> HOLDER_OBJECT_TYPE
-                is DocumentRelationView.Source.Base -> HOLDER_RELATION_SOURCE
-                is DocumentRelationView.Source.Deleted -> HOLDER_RELATION_SOURCE_DELETED
-                is DocumentRelationView.ObjectType.Deleted -> HOLDER_OBJECT_TYPE_DELETED
+                is ObjectRelationView.Default -> HOLDER_RELATION_DEFAULT
+                is ObjectRelationView.Checkbox -> HOLDER_RELATION_CHECKBOX
+                is ObjectRelationView.Status -> HOLDER_RELATION_STATUS
+                is ObjectRelationView.Tags -> HOLDER_RELATION_TAGS
+                is ObjectRelationView.Object -> HOLDER_RELATION_OBJECT
+                is ObjectRelationView.File -> HOLDER_RELATION_FILE
+                is ObjectRelationView.ObjectType.Base -> HOLDER_OBJECT_TYPE
+                is ObjectRelationView.Source.Base -> HOLDER_RELATION_SOURCE
+                is ObjectRelationView.Source.Deleted -> HOLDER_RELATION_SOURCE_DELETED
+                is ObjectRelationView.ObjectType.Deleted -> HOLDER_OBJECT_TYPE_DELETED
+                is ObjectRelationView.ObjectType.Collection -> HOLDER_OBJECT_TYPE_COLLECTION
+                is ObjectRelationView.ObjectType.Set -> HOLDER_OBJECT_TYPE_SET
             }
         }
 

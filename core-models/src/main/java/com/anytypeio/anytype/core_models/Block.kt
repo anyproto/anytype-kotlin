@@ -285,10 +285,8 @@ data class Block(
 
         data class DataView(
             val viewers: List<Viewer>,
-            @Deprecated("To be deleted")
-            val relations: List<Relation>,
-            val relationsIndex: List<RelationLink> = emptyList(),
-            val targetObjectId: Id = "",
+            val relationLinks: List<RelationLink> = emptyList(),
+            val targetObjectId: Id = ""
         ) : Content() {
 
             data class Viewer(

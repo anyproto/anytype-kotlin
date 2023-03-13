@@ -50,6 +50,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -273,6 +274,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var fillTableRow: FillTableRow
 
+    @Mock
+    lateinit var convertObjectToCollection: ConvertObjectToCollection
+
     lateinit var tableDelegate: EditorTableDelegate
 
     lateinit var dispatcher: Dispatcher<Payload>
@@ -449,7 +453,8 @@ open class EditorPresentationTestSetup {
             storeOfObjectTypes = storeOfObjectTypes,
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
-            getObjectTypes = getObjectTypes
+            getObjectTypes = getObjectTypes,
+            objectToCollection = convertObjectToCollection
         )
     }
 

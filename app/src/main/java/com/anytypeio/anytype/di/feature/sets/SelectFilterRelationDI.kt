@@ -2,14 +2,14 @@ package com.anytypeio.anytype.di.feature.sets
 
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.SelectFilterRelationViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.ui.sets.modals.filter.SelectFilterRelationFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [SelectFilterRelationModule::class])
 @PerModal
@@ -29,11 +29,11 @@ object SelectFilterRelationModule {
     @Provides
     @PerModal
     fun provideSelectSortRelationViewModelFactory(
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         storeOfRelations: StoreOfRelations
     ): SelectFilterRelationViewModel.Factory = SelectFilterRelationViewModel.Factory(
-        state = state,
+        objectState = state,
         session = session,
         storeOfRelations = storeOfRelations
     )

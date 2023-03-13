@@ -40,12 +40,10 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.presentation.sets.ObjectSet
-import com.anytypeio.anytype.presentation.sets.ObjectSetViewState
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
+import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -54,14 +52,9 @@ import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
-
-fun ObjectSet.tabs(activeViewerId: String? = null): List<ViewerTabView> {
-    val block = blocks.first { it.content is DV }
-    val dv = block.content as DV
-    return dv.tabs(activeViewerId)
-}
 
 fun DV.tabs(activeViewerId: String? = null): List<ViewerTabView> {
     return viewers.mapIndexed { index, viewer ->
@@ -84,7 +77,7 @@ suspend fun DVViewer.render(
     details: Map<Id, Block.Fields>,
     dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore
-): ObjectSetViewState {
+): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
             buildGridView(
@@ -96,20 +89,18 @@ suspend fun DVViewer.render(
             )
         }
         DVViewerType.GALLERY -> {
-            ObjectSetViewState(
-                viewer = Viewer.GalleryView(
-                    id = id,
-                    items = buildGalleryViews(
-                        objectIds = objects,
-                        details = details,
-                        relations = dataViewRelations,
-                        coverImageHashProvider = coverImageHashProvider,
-                        urlBuilder = builder,
-                        objectStore = store
-                    ),
-                    title = name,
-                    largeCards = cardSize != DVViewerCardSize.SMALL
-                )
+            Viewer.GalleryView(
+                id = id,
+                items = buildGalleryViews(
+                    objectIds = objects,
+                    details = details,
+                    relations = dataViewRelations,
+                    coverImageHashProvider = coverImageHashProvider,
+                    urlBuilder = builder,
+                    objectStore = store
+                ),
+                title = name,
+                largeCards = cardSize != DVViewerCardSize.SMALL
             )
         }
         DVViewerType.LIST -> {
@@ -118,18 +109,16 @@ suspend fun DVViewer.render(
                 val vr = vmap[relation.key]
                 vr?.isVisible ?: false
             }
-            ObjectSetViewState(
-                viewer = Viewer.ListView(
-                    id = id,
-                    items = buildListViews(
-                        objects = objects,
-                        details = details,
-                        relations = visibleRelations,
-                        urlBuilder = builder,
-                        store = store
-                    ),
-                    title = name
-                )
+            Viewer.ListView(
+                id = id,
+                items = buildListViews(
+                    objects = objects,
+                    details = details,
+                    relations = visibleRelations,
+                    urlBuilder = builder,
+                    store = store
+                ),
+                title = name
             )
         }
         else -> {
@@ -142,12 +131,10 @@ suspend fun DVViewer.render(
                     store = store
                 )
             } else {
-                ObjectSetViewState(
-                    viewer = Viewer.Unsupported(
-                        id = id,
-                        title = name,
-                        error = "This view type (${type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
-                    )
+                Viewer.Unsupported(
+                    id = id,
+                    title = name,
+                    error = "This view type (${type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
                 )
             }
         }
@@ -160,7 +147,7 @@ private suspend fun DVViewer.buildGridView(
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
     store: ObjectStore
-): ObjectSetViewState {
+): Viewer {
     val vmap = viewerRelations.associateBy { it.key }
     val visibleRelations = dataViewRelations.filter { relation ->
         val vr = vmap[relation.key]
@@ -182,13 +169,11 @@ private suspend fun DVViewer.buildGridView(
             )
         )
     }
-    return ObjectSetViewState(
-        viewer = Viewer.GridView(
-            id = id,
-            name = name,
-            columns = columns,
-            rows = rows
-        )
+    return Viewer.GridView(
+        id = id,
+        name = name,
+        columns = columns,
+        rows = rows
     )
 }
 
@@ -220,22 +205,18 @@ fun title(
     )
 }
 
-suspend fun ObjectSet.simpleRelations(
+suspend fun ObjectState.simpleRelations(
     viewerId: Id?,
     storeOfRelations: StoreOfRelations
 ): ArrayList<SimpleRelationView> {
-    return if (isInitialized) {
-        val block = blocks.first { it.content is DV }
-        val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
-        viewer.viewerRelations.toSimpleRelationView(
-            dv.relationsIndex.mapNotNull {
-                storeOfRelations.getByKey(it.key)
-            }
-        )
-    } else {
-        arrayListOf()
-    }
+    val state = dataViewState() ?: return arrayListOf()
+    val dv = state.dataViewContent
+    val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
+    return viewer.viewerRelations.toSimpleRelationView(
+        dv.relationLinks.mapNotNull {
+            storeOfRelations.getByKey(it.key)
+        }
+    )
 }
 
 fun DVViewer.toViewRelation(relation: ObjectWrapper.Relation): SimpleRelationView {
@@ -386,31 +367,9 @@ private val quickOptionToNameMapping: Map<DVFilterQuickOption, String> by lazy {
 
 fun DVFilterQuickOption.toName() = quickOptionToNameMapping.getOrDefault(this, "Error")
 
-fun ObjectSet.columns(
-    viewerId: Id
-): ArrayList<ColumnView> {
-    // TODO use relation stores here
-    val block = blocks.first { it.content is DV }
-
-    val dv = block.content as DV
-
-    val viewer = dv.viewers.first { it.id == viewerId }
-
-    val columns = viewer.viewerRelations.toViewerColumns(
-//        relations = dv.relations,
-        relations = emptyList(),
-        filterBy = listOf()
-    )
-    return ArrayList(columns)
-}
-
-fun ObjectSet.filterExpression(viewerId: Id?): List<DVFilter> {
-
-    val block = blocks.first { it.content is DV }
-
-    val dv = block.content as DV
-
-    val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
+fun ObjectState.DataView.filterExpression(viewerId: Id?): List<DVFilter> {
+    val viewer =
+        dataViewContent.viewers.find { it.id == viewerId } ?: dataViewContent.viewers.first()
     return viewer.filters
 }
 

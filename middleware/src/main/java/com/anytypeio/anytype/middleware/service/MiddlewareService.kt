@@ -128,6 +128,15 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectToSet(request: Rpc.Object.ToSet.Request): Rpc.Object.ToSet.Response
 
+    @Throws(Exception::class)
+    fun objectToCollection(request: Rpc.Object.ToCollection.Request): Rpc.Object.ToCollection.Response
+
+    @Throws(Exception::class)
+    fun addObjectToCollection(request : Rpc.ObjectCollection.Add.Request): Rpc.ObjectCollection.Add.Response
+
+    @Throws(Exception::class)
+    fun setObjectSource(request: Rpc.Object.SetSource.Request): Rpc.Object.SetSource.Response
+
     //endregion
 
     //region OBJECT'S RELATIONS command
@@ -400,15 +409,15 @@ interface MiddlewareService {
     //endregion
 
     //region DEBUG commands
-
-    @Throws(Exception::class)
-    fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response
-
-    @Throws(Exception::class)
-    fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response
-
-    @Throws(Exception::class)
-    fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
+//todo revive debug methods
+//    @Throws(Exception::class)
+//    fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response
+//
+//    @Throws(Exception::class)
+//    fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response
+//
+//    @Throws(Exception::class)
+//    fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
 
     //endregion
 

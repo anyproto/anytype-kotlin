@@ -318,7 +318,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         beforeId: Id?,
         afterId: Id?,
         ignoreWorkspace: Boolean?,
-        noDepSubscription: Boolean?
+        noDepSubscription: Boolean?,
+        collection: Id?
     ): SearchResult = remote.searchObjectsWithSubscription(
         subscription = subscription,
         sorts = sorts,
@@ -330,7 +331,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         afterId = afterId,
         beforeId = beforeId,
         ignoreWorkspace = ignoreWorkspace,
-        noDepSubscription = noDepSubscription
+        noDepSubscription = noDepSubscription,
+        collection = collection
     )
 
     override suspend fun searchObjectsByIdWithSubscription(
@@ -465,6 +467,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun objectToSet(ctx: Id, source: List<String>): Id {
         return remote.objectToSet(ctx, source)
+    }
+
+    override suspend fun objectToCollection(ctx: Id): Id {
+        return remote.objectToCollection(ctx)
     }
 
     override suspend fun blockDataViewSetSource(
@@ -715,5 +721,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload {
         return remote.sortDataViewViewRelation(command)
+    }
+
+    override suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload {
+        return remote.addObjectToCollection(command)
+    }
+
+    override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
+        return remote.setQueryToSet(command)
     }
 }

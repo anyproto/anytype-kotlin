@@ -83,7 +83,7 @@ class ObjectTypeChangeViewModel(
     }
 
     fun onStart(
-        isWithSet: Boolean,
+        isWithCollection: Boolean,
         isWithBookmark: Boolean,
         excludeTypes: List<Id>,
         selectedTypes: List<Id>,
@@ -92,7 +92,7 @@ class ObjectTypeChangeViewModel(
         viewModelScope.launch {
             setup.emit(
                 Setup(
-                    isWithSet = isWithSet,
+                    isWithCollection = isWithCollection,
                     isWithBookmark = isWithBookmark,
                     excludeTypes = excludeTypes,
                     selectedTypes = selectedTypes,
@@ -103,7 +103,7 @@ class ObjectTypeChangeViewModel(
     }
 
     fun onStart(
-        isWithSet: Boolean,
+        isWithCollection: Boolean,
         isWithBookmark: Boolean,
         isSetSource: Boolean
     ) {
@@ -115,7 +115,7 @@ class ObjectTypeChangeViewModel(
                 onSuccess = {
                     setup.emit(
                         Setup(
-                            isWithSet = isWithSet,
+                            isWithCollection = isWithCollection,
                             isWithBookmark = isWithBookmark,
                             excludeTypes = listOf(it.type.orEmpty()),
                             selectedTypes = emptyList(),
@@ -168,7 +168,7 @@ class ObjectTypeChangeViewModel(
     ) = buildList {
         if (myTypes.isNotEmpty()) {
             val views = myTypes.getObjectTypeViewsForSBPage(
-                isWithSet = setup.isWithSet,
+                isWithCollection = setup.isWithCollection,
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes
@@ -182,7 +182,7 @@ class ObjectTypeChangeViewModel(
         }
         if (marketplaceTypes.isNotEmpty()) {
             val views = marketplaceTypes.getObjectTypeViewsForSBPage(
-                isWithSet = setup.isWithSet,
+                isWithCollection = setup.isWithCollection,
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes
@@ -252,7 +252,7 @@ class ObjectTypeChangeViewModel(
     }
 
     data class Setup(
-        val isWithSet: Boolean,
+        val isWithCollection: Boolean,
         val isWithBookmark: Boolean,
         val excludeTypes: List<Id>,
         val selectedTypes: List<Id>,

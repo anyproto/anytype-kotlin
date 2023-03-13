@@ -47,7 +47,8 @@ class ObjectSearchSubscriptionContainer(
                 source = source,
                 //todo we need to clarify these options
                 ignoreWorkspace = null,
-                noDepSubscription = null
+                noDepSubscription = null,
+                collection = null
             )
 
             store.merge(

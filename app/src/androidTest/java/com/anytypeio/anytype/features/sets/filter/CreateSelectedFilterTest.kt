@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -27,11 +26,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils
@@ -77,7 +75,7 @@ class CreateSelectedFilterTest {
 
     private val root = MockDataFactory.randomUuid()
     private val session = ObjectSetSession()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
@@ -104,7 +102,7 @@ class CreateSelectedFilterTest {
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             searchObjects = searchObjects,
-            objectSetState = state,
+            objectState = state,
             analytics = analytics,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
@@ -117,13 +115,6 @@ class CreateSelectedFilterTest {
     @Test
     fun shouldShowNonSelectedCheckedAndSelectedNotChecked() {
         val relationKey = MockDataFactory.randomUuid()
-
-        val target = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to emptyList<String>()
-        )
 
         // Defining viewer containing one filter
 
@@ -148,37 +139,18 @@ class CreateSelectedFilterTest {
             type = Block.Content.DataView.Viewer.Type.values().random()
         )
 
-        val relation = Relation(
-            key = relationKey,
-            defaultValue = null,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = true,
-            name = "Is read",
-            source = Relation.Source.values().random(),
-            format = Relation.Format.CHECKBOX,
-            selections = emptyList()
-        )
-
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer),
-                
-            )
+
+                )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+        state.value = ObjectState.DataView.Set(
+            blocks = listOf(dv)
         )
 
         // Launching fragment
@@ -213,11 +185,6 @@ class CreateSelectedFilterTest {
 
         val target = MockDataFactory.randomUuid()
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to emptyList<String>()
-        )
-
         // Defining viewer containing one filter
 
         val filter = DVFilter(
@@ -241,37 +208,18 @@ class CreateSelectedFilterTest {
             type = Block.Content.DataView.Viewer.Type.values().random()
         )
 
-        val relation = Relation(
-            key = relationKey,
-            defaultValue = null,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = true,
-            name = "Is read",
-            source = Relation.Source.values().random(),
-            format = Relation.Format.CHECKBOX,
-            selections = emptyList()
-        )
-
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer),
-                
-            )
+
+                )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+        state.value = ObjectState.DataView.Set(
+            blocks = listOf(dv)
         )
 
         // Launching fragment

@@ -256,7 +256,7 @@ message Rpc {
                     string avatarLocalPath = 2; // Path to an image, that will be used as an avatar of this account
                 }
                 string storePath = 3; // Path to local storage
-
+                int64 icon = 4; // Option of pre-installed icon
 
                 string alphaInviteCode = 20;
             }
@@ -519,6 +519,30 @@ message Rpc {
                 message Request {
                 }
 
+            }
+        }
+
+        message RecoverFromLegacyExport {
+            option (no_auth) = true;
+            message Request {
+                string path = 1;
+                string rootPath = 2;
+            }
+
+            message Response {
+                string address = 1;
+                Error error = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
             }
         }
     }
@@ -1235,6 +1259,7 @@ message Rpc {
                 string ignoreWorkspace = 12;
                 // disable dependent subscription
                 bool noDepSubscription = 13;
+                string collectionId = 14;
             }
 
             message Response {
@@ -1443,6 +1468,31 @@ message Rpc {
             }
         }
 
+        message WorkspaceSetDashboard {
+
+            message Request {
+                string contextId = 1;
+                string objectId = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+                string objectId = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
         message SetObjectType {
             message Request {
                 string contextId = 1;
@@ -1525,6 +1575,29 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string setId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ToCollection {
+            message Request {
+                string contextId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                string collectionId = 2;
 
                 message Error {
                     Code code = 1;
@@ -1756,15 +1829,20 @@ message Rpc {
 
         message Import {
             message Request {
+                option (no_auth) = true;
                 oneof params {
                     NotionParams notionParams = 1;
                     BookmarksParams bookmarksParams = 2; //for internal use
                     MarkdownParams markdownParams = 3;
+                    MigrationParams migrationParams = 4;
+                    HtmlParams htmlParams = 5;
+                    TxtParams txtParams = 6;
+                    PbParams pbParams = 7;
                 }
-                repeated Snapshot snapshots = 4; // optional, for external developers usage
-                bool updateExistingObjects = 5;
-                Type type = 6;
-                Mode mode = 7;
+                repeated Snapshot snapshots = 8; // optional, for external developers usage
+                bool updateExistingObjects = 9;
+                Type type = 10;
+                Mode mode = 11;
 
                 message NotionParams {
                     string apiKey = 1;
@@ -1776,6 +1854,23 @@ message Rpc {
 
                 message BookmarksParams {
                     string url = 1;
+                }
+
+                message HtmlParams {
+                    repeated string path = 1;
+                }
+
+                message MigrationParams {
+                    string address = 1;
+                    string path = 2;
+                }
+
+                message TxtParams {
+                    repeated string path = 1;
+                }
+
+                message PbParams {
+                    string path = 1;
                 }
 
                 enum Mode {
@@ -1791,6 +1886,9 @@ message Rpc {
                     Notion = 0;
                     Markdown = 1; 
                     External = 2; // external developers use it
+                    Migration = 3;
+                    Html = 4;
+                    Txt = 5;
                 };
 
             }
@@ -1835,6 +1933,7 @@ message Rpc {
                     }
                 }
             }
+
         }
         message ImportList {
             message Request {}
@@ -1861,7 +1960,80 @@ message Rpc {
                 enum Type {
                     Notion = 0;
                     Markdown = 1;
+                    Html = 2;
+                    Txt = 3;
                 };
+            }
+        }
+    }
+
+
+    message ObjectCollection {
+        message Add {
+            message Request {
+                string contextId = 1;
+                string afterId = 2;
+                repeated string objectIds = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message Remove {
+            message Request {
+                string contextId = 1;
+                repeated string objectIds = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message Sort {
+            message Request {
+                string contextId = 1;
+                repeated string objectIds = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
             }
         }
     }
@@ -4877,79 +5049,21 @@ message Rpc {
     }
 
     message Debug {
-        message logInfo {
-            string id = 1;
-            string head = 2;
-            bool headDownloaded = 3;
-            int32 totalRecords = 4;
-            int32 totalSize = 5;
-            int32 firstRecordTs = 6;
-            int32 firstRecordVer = 7;
-            int32 lastRecordTs = 8;
-            int32 lastRecordVer = 9;
-            int32 lastPullSecAgo = 10;
-            string upStatus = 11;
-            string downStatus = 12;
-            string error = 13;
+
+        message TreeInfo {
+            string treeId = 1;
+            repeated string headIds = 2;
         }
 
-        message threadInfo {
-            string id = 1;
-            int32 logsWithDownloadedHead = 2;
-            int32 logsWithWholeTreeDownloaded = 3;
-
-            repeated logInfo logs = 4;
-            bool ownLogHasCafeReplicator = 5;
-            int32 cafeLastPullSecAgo = 6;
-            string cafeUpStatus = 7;
-            string cafeDownStatus = 8;
-            int32 totalRecords = 9;
-            int32 totalSize = 10;
-            string error = 11;
-
-        }
-
-        message Sync {
+        message TreeHeads {
             message Request {
-                int32 recordsTraverseLimit = 1; // 0 means no limit
-                bool skipEmptyLogs = 2; // do not set if you want the whole picture
-                bool tryToDownloadRemoteRecords = 3; // if try we will try to download remote records in case missing
+                string treeId = 1;
             }
 
             message Response {
                 Error error = 1;
-                repeated threadInfo threads = 2;
-                string deviceId = 3;
-                int32 totalThreads = 4;
-                int32 threadsWithoutReplInOwnLog = 5;
-                int32 threadsWithoutHeadDownloaded = 6;
-                int32 totalRecords = 7;
-                int32 totalSize = 8;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-
-        message Thread {
-            message Request {
-                string threadId = 1;
-                bool skipEmptyLogs = 2; // do not set if you want the whole picture
-                bool tryToDownloadRemoteRecords = 3; // if try we will try to download remote records in case missing
-            }
-
-            message Response {
-                Error error = 1;
-                threadInfo info = 2;
+                string spaceId = 2;
+                TreeInfo info = 3;
 
                 message Error {
                     Code code = 1;
@@ -4967,7 +5081,7 @@ message Rpc {
 
         message Tree {
             message Request {
-                string objectId = 1;
+                string treeId = 1;
                 string path = 2;
                 bool unanonymized = 3; // set to true to disable mocking of the actual data inside changes
                 bool generateSvg = 4; // set to true to write both ZIP and SVG files
@@ -4976,6 +5090,29 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string filename = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message SpaceSummary {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+                string spaceId = 2;
+                repeated TreeInfo infos = 3;
 
                 message Error {
                     Code code = 1;
@@ -5136,6 +5273,29 @@ message Rpc {
                 UNKNOWN_ERROR = 1;
                 BAD_INPUT = 2;
                 // ...
+            }
+        }
+    }
+
+    message UserData {
+        message Dump {
+            message Request {
+                string path = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
             }
         }
     }

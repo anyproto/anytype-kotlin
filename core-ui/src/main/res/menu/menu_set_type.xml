@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/turn_into"
+        android:title="@string/menu_turn_to_collection" />
+    <item
+        android:id="@+id/change_query"
+        android:title="@string/menu_change_query" />
+</menu>

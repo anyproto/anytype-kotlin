@@ -22,6 +22,7 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import timber.log.Timber
 
 suspend fun List<ColumnView>.buildGridRow(
@@ -388,4 +389,13 @@ fun Any?.filterIdsById(filter: Id): List<Id> {
         }
     }
     return remaining.toList()
+}
+
+fun ObjectState.dataViewState(): ObjectState.DataView? {
+    val state = this as? ObjectState.DataView
+    if (state == null || !state.isInitialized) {
+        Timber.e("State was not initialized or null")
+        return null
+    }
+    return state
 }

@@ -745,7 +745,7 @@ fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList())
         isSelected = selectedSources.contains(id)
     )
 
-fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
+fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = mapNotNull { layout ->
     when (layout) {
         ObjectType.Layout.BASIC -> ObjectLayoutView.Basic(id = layout.code, isSelected = false)
         ObjectType.Layout.PROFILE -> ObjectLayoutView.Profile(id = layout.code, isSelected = false)
@@ -775,6 +775,7 @@ fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
             id = layout.code,
             isSelected = false
         )
+        else -> null
     }
 }
 

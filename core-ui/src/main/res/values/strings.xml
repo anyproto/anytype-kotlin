@@ -276,6 +276,8 @@
         <item quantity="one">%d page selected</item>
         <item quantity="other">%d pages selected</item>
     </plurals>
+    <string name="button_new">New</string>
+    <string name="viewer_default_title">All</string>
 
     <string name="sync_status_unknown">Preparing…</string>
     <string name="sync_status_offline">No connection</string>
@@ -481,6 +483,7 @@
     <string name="name_layout_profile">Profile</string>
     <string name="name_layout_todo">Task</string>
     <string name="name_layout_set">Set</string>
+    <string name="name_layout_collection">Collection</string>
     <string name="name_layout_note">Note</string>
     <string name="name_type_note">Note</string>
     <string name="name_type_note_icon">🗒</string>
@@ -601,5 +604,19 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
 
     <string name="object_search_recently_opened_section_title">Recently opened</string>
+
+    <string name="content_description_customize_view_button">Customize-view button</string>
+    <string name="collection_no_items_title">No objects</string>
+    <string name="collection_no_items_description">Add objects or turn into set to aggregate objects with\n equal types or relations</string>
+    <string name="collection_no_items_button">Create object</string>
+    <string name="set_no_query_title">No query selected</string>
+    <string name="set_no_query_description">All objects satisfying query will be displayed in Set</string>
+    <string name="set_no_query_button">Select query</string>
+    <string name="set_no_items_title">No objects</string>
+    <string name="set_no_items_description">No objects of type \"%1$s\" found in your account, please create the first object</string>
+    <string name="set_no_items_button">Create object</string>
+    <string name="set_collection_view_not_present">View is not present in set or collection, please recreate object</string>
+    <string name="menu_turn_to_collection">Turn into collection</string>
+    <string name="menu_change_query">Change query</string>
 
 </resources>

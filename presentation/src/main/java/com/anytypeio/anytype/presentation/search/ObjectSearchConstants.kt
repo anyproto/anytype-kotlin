@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -451,7 +452,24 @@ object ObjectSearchConstants {
         Relations.PAGE_COVER
     )
 
-    val defaultDataViewKeys = defaultKeys + objectCoverKeys + defaultOptionKeys
+    val defaultDataViewKeys = listOf(
+        Relations.ID,
+        Relations.NAME,
+        Relations.ICON_IMAGE,
+        Relations.ICON_EMOJI,
+        Relations.TYPE,
+        Relations.LAYOUT,
+        Relations.IS_ARCHIVED,
+        Relations.IS_DELETED,
+        Relations.IS_HIDDEN,
+        Relations.DESCRIPTION,
+        Relations.SNIPPET,
+        Relations.DONE,
+        Relations.RELATION_OPTION_COLOR,
+        Relations.COVER_TYPE,
+        Relations.COVER_ID,
+        Relations.PAGE_COVER
+    )
 
     //endregion
 
@@ -499,6 +517,29 @@ object ObjectSearchConstants {
             relation = Relations.IS_ARCHIVED,
             condition = Condition.NOT_EQUAL,
             value = true
+        )
+    )
+
+    fun defaultDataViewFilters(workspaceId: String) = listOf(
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = Condition.NOT_EQUAL,
+            value = true,
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = Condition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = Condition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = workspaceId
         )
     )
 

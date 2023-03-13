@@ -16,7 +16,8 @@ import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -30,8 +31,8 @@ class ObjectSetMenuViewModel(
     delegator: Delegator<Action>,
     urlBuilder: UrlBuilder,
     dispatcher: Dispatcher<Payload>,
-    state: StateFlow<ObjectSet>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
+    private val objectState: StateFlow<ObjectState>,
     private val analytics: Analytics,
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
@@ -46,8 +47,6 @@ class ObjectSetMenuViewModel(
     menuOptionsProvider = menuOptionsProvider,
 ) {
 
-    private val objectRestrictions = state.value.objectRestrictions
-
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val setObjectIsArchived: SetObjectIsArchived,
@@ -59,7 +58,7 @@ class ObjectSetMenuViewModel(
         private val urlBuilder: UrlBuilder,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
-        private val state: StateFlow<ObjectSet>,
+        private val objectState: StateFlow<ObjectState>,
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -72,7 +71,7 @@ class ObjectSetMenuViewModel(
                 delegator = delegator,
                 urlBuilder = urlBuilder,
                 analytics = analytics,
-                state = state,
+                objectState = objectState,
                 dispatcher = dispatcher,
                 menuOptionsProvider = menuOptionsProvider
             ) as T
@@ -80,8 +79,9 @@ class ObjectSetMenuViewModel(
     }
 
     override fun onIconClicked(ctx: Id) {
+        val dataViewState = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
-            if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
+            if (dataViewState.objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
             } else {
                 commands.emit(Command.OpenSetIcons)
@@ -90,8 +90,9 @@ class ObjectSetMenuViewModel(
     }
 
     override fun onCoverClicked(ctx: Id) {
+        val dataViewState = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
-            if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
+            if (dataViewState.objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
             } else {
                 commands.emit(Command.OpenSetCover)
@@ -100,8 +101,9 @@ class ObjectSetMenuViewModel(
     }
 
     override fun onLayoutClicked(ctx: Id) {
+        val dataViewState = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
-            if (objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
+            if (dataViewState.objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
                 _toasts.emit(NOT_ALLOWED)
             } else {
                 commands.emit(Command.OpenSetLayout)
@@ -110,8 +112,9 @@ class ObjectSetMenuViewModel(
     }
 
     override fun onRelationsClicked() {
+        val dataViewState = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
-            if (objectRestrictions.contains(ObjectRestriction.RELATIONS)) {
+            if (dataViewState.objectRestrictions.contains(ObjectRestriction.RELATIONS)) {
                 _toasts.emit(NOT_ALLOWED)
             } else {
                 commands.emit(Command.OpenSetRelations)
@@ -135,7 +138,8 @@ class ObjectSetMenuViewModel(
         } else {
             add(ObjectAction.ADD_TO_FAVOURITE)
         }
-        if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
+        val dataViewState = objectState.value.dataViewState()
+        if (dataViewState != null && !dataViewState.objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
             add(ObjectAction.DUPLICATE)
         }
         add(ObjectAction.LINK_TO)

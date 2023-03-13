@@ -23,9 +23,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
@@ -51,7 +51,7 @@ class ObjectRelationDateValueTest {
 
     val root = MockDataFactory.randomUuid()
 
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val store: ObjectStore = DefaultObjectStore()
     private val db = ObjectSetDatabase(store)
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
@@ -61,7 +61,7 @@ class ObjectRelationDateValueTest {
         MockitoAnnotations.openMocks(this)
         TestRelationDateValueFragment.testVmFactory = RelationDateValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(
-                objectSetState = state,
+                objectState = state,
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(db = db)
@@ -94,30 +94,18 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relation.key to valueDate
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         launchFragment(
@@ -168,25 +156,18 @@ class ObjectRelationDateValueTest {
             relation.key to valueDate
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         launchFragment(
@@ -233,30 +214,18 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relation.key to valueDate
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         launchFragment(
@@ -308,25 +277,18 @@ class ObjectRelationDateValueTest {
             relation.key to valueDate
         )
 
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         launchFragment(
@@ -373,30 +335,18 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relation.key to valueDate
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         launchFragment(
@@ -444,30 +394,18 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relation.key to valueDate
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         val fragment = launchFragment(
@@ -528,30 +466,18 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relation.key to valueDate
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         val fragment = launchFragment(

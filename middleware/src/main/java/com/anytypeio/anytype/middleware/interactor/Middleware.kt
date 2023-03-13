@@ -741,29 +741,17 @@ class Middleware(
 
     @Throws(Exception::class)
     fun debugExportLocalStore(path: String): String {
-        val request = Rpc.Debug.ExportLocalstore.Request(path = path)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugExportLocalStore(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.path
+        TODO()
     }
 
     @Throws(Exception::class)
     fun debugSync(): String {
-        val request = Rpc.Debug.Sync.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugSync(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return protobufConverter.provideConverter().toJson(response)
+        TODO()
     }
 
     @Throws(Exception::class)
     fun debugTree(objectId: Id, path: String): String {
-        val request = Rpc.Debug.Tree.Request(objectId = objectId, path = path)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugTree(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.filename
+        TODO()
     }
 
     @Throws(Exception::class)
@@ -1225,7 +1213,8 @@ class Middleware(
         beforeId: Id?,
         afterId: Id?,
         ignoreWorkspace: Boolean?,
-        noDepSubscription: Boolean?
+        noDepSubscription: Boolean?,
+        collection: Id?
     ): SearchResult {
         val request = Rpc.Object.SearchSubscribe.Request(
             subId = subscription,
@@ -1238,7 +1227,8 @@ class Middleware(
             afterId = afterId.orEmpty(),
             source = source,
             ignoreWorkspace = ignoreWorkspace?.toString() ?: "",
-            noDepSubscription = noDepSubscription ?: false
+            noDepSubscription = noDepSubscription ?: false,
+            collectionId = collection.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSearchSubscribe(request)
@@ -1640,6 +1630,17 @@ class Middleware(
         val response = service.objectToSet(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.setId
+    }
+
+    @Throws(Exception::class)
+    fun objectToCollection(ctx: Id): String {
+        val request = Rpc.Object.ToCollection.Request(
+            contextId = ctx
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectToCollection(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.collectionId
     }
 
     @Throws(Exception::class)
@@ -2116,6 +2117,29 @@ class Middleware(
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewSortViewRelation(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    fun addObjectToCollection(command: Command.AddObjectToCollection): Payload {
+        val request = Rpc.ObjectCollection.Add.Request(
+            contextId = command.ctx,
+            afterId = command.afterId,
+            objectIds = command.ids
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.addObjectToCollection(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    fun setQueryToSet(command: Command.SetQueryToSet): Payload {
+        val request = Rpc.Object.SetSource.Request(
+            contextId = command.ctx,
+            source = listOf(command.query)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.setObjectSource(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }

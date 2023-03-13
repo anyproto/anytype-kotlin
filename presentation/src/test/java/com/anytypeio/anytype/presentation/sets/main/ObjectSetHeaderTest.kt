@@ -1,159 +1,143 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVViewer
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import com.anytypeio.anytype.test_utils.MockDataFactory
+import app.cash.turbine.test
+import com.anytypeio.anytype.presentation.collections.MockSet
+import com.anytypeio.anytype.presentation.sets.DataViewViewState
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
 
 class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
 
-    val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
-            style = Block.Content.Text.Style.TITLE,
-            text = MockDataFactory.randomString(),
-            marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
-    )
-
-    val header = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Layout(
-            type = Block.Content.Layout.Type.HEADER
-        ),
-        fields = Block.Fields.empty(),
-        children = listOf(title.id)
-    )
+    private lateinit var viewModel: ObjectSetViewModel
+    private lateinit var mockObjectSet: MockSet
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        initDataViewSubscriptionContainer()
+        viewModel = givenViewModel()
+        mockObjectSet = MockSet(context = root)
+    }
+
+    @After
+    fun after() {
+        rule.advanceTime(100)
     }
 
     @Test
-    fun `should return header with title but without emoji`() {
+    fun `should return header with title but without emoji`() = runTest {
 
-        // SETUP
-
-        val viewer = DVViewer(
-            id = MockDataFactory.randomUuid(),
-            filters = emptyList(),
-            sorts = emptyList(),
-            type = Block.Content.DataView.Viewer.Type.GRID,
-            name = MockDataFactory.randomString(),
-            viewerRelations = emptyList()
-        )
-
-        val dv = Block(
-            id = MockDataFactory.randomUuid(),
-            content = DV(
-                relations = emptyList(),
-                viewers = listOf(viewer)
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
+        stubWorkspaceManager(mockObjectSet.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSubscriptionEventChannel()
-        stubSearchWithSubscription()
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title,
-                dv
+        stubOpenObject(
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            details = mockObjectSet.details
+        )
+        storeOfRelations.merge(
+            listOf(
+                mockObjectSet.relationObject1,
+                mockObjectSet.relationObject2,
+                mockObjectSet.relationObject3,
+                mockObjectSet.relationObject4
             )
         )
-
-        val vm = givenViewModel()
+        stubSubscriptionResults(
+            subscription = mockObjectSet.subscriptionId,
+            workspace = mockObjectSet.workspaceId,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectSet.dvKeys,
+            sources = listOf(mockObjectSet.setOf),
+            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
+            dvFilters = mockObjectSet.filters
+        )
 
         // TESTING
+        viewModel.onStart(ctx = root)
 
-        vm.onStart(root)
+        // ASSERT DATA VIEW STATE
+        viewModel.currentViewer.test {
+            val first = awaitItem()
+            assertIs<DataViewViewState.Init>(first)
 
-        assertEquals(
-            expected = title.id,
-            actual = vm.header.value?.id
-        )
+            val second = awaitItem()
+            assertIs<DataViewViewState.Set.NoItems>(second)
 
-        assertEquals(
-            expected = null,
-            actual = vm.header.value?.emoji
-        )
+            val third = awaitItem()
+            assertIs<DataViewViewState.Set.Default>(third)
+
+            assertEquals(
+                expected = mockObjectSet.title.id,
+                actual = viewModel.header.value?.id
+            )
+
+            assertEquals(
+                expected = null,
+                actual = mockObjectSet.header.fields.iconEmoji
+            )
+        }
     }
 
     @Test
-    fun `should return header with title but with emoji`() {
+    fun `should return header with title but with emoji`() = runTest {
 
-        // SETUP
-
-        val emoji = MockDataFactory.randomString()
-
-        val viewer = DVViewer(
-                id = MockDataFactory.randomUuid(),
-                filters = emptyList(),
-                sorts = emptyList(),
-                type = Block.Content.DataView.Viewer.Type.GRID,
-                name = MockDataFactory.randomString(),
-                viewerRelations = emptyList()
-        )
-
-        val dv = Block(
-                id = MockDataFactory.randomUuid(),
-                content = DV(
-                        relations = emptyList(),
-                        viewers = listOf(viewer)
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-        )
-
+        stubWorkspaceManager(mockObjectSet.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSubscriptionEventChannel()
-        stubSearchWithSubscription()
-        stubOpenObjectSet(
+        stubOpenObject(
             doc = listOf(
-                header,
-                title,
-                dv
+                mockObjectSet.headerWithEmoji,
+                mockObjectSet.title,
+                mockObjectSet.dataView
             ),
-            details = Block.Details(
-                mapOf(
-                    root to Block.Fields(
-                        mapOf(
-                            "iconEmoji" to emoji
-                        )
-                    )
-                )
+            details = mockObjectSet.details
+        )
+        storeOfRelations.merge(
+            listOf(
+                mockObjectSet.relationObject1,
+                mockObjectSet.relationObject2,
+                mockObjectSet.relationObject3,
+                mockObjectSet.relationObject4
             )
         )
-
-        val vm = givenViewModel()
+        stubSubscriptionResults(
+            subscription = mockObjectSet.subscriptionId,
+            workspace = mockObjectSet.workspaceId,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectSet.dvKeys,
+            sources = listOf(mockObjectSet.setOf),
+            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
+            dvFilters = mockObjectSet.filters
+        )
 
         // TESTING
+        viewModel.onStart(ctx = root)
 
-        vm.onStart(root)
+        // ASSERT DATA VIEW STATE
+        viewModel.currentViewer.test {
+            val first = awaitItem()
+            assertIs<DataViewViewState.Init>(first)
 
-        assertEquals(
-                expected = title.id,
-                actual = vm.header.value?.id
-        )
+            val second = awaitItem()
+            assertIs<DataViewViewState.Set.NoItems>(second)
 
-        assertEquals(
-                expected = emoji,
-                actual = vm.header.value?.emoji
-        )
+            val third = awaitItem()
+            assertIs<DataViewViewState.Set.Default>(third)
+
+            assertEquals(
+                expected = mockObjectSet.title.id,
+                actual = viewModel.header.value?.id
+            )
+
+            assertEquals(
+                expected = mockObjectSet.emoji,
+                actual = mockObjectSet.headerWithEmoji.fields.iconEmoji
+            )
+        }
     }
 }

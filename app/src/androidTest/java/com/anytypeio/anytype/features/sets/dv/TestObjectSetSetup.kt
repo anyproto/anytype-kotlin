@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -38,6 +40,7 @@ import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -50,9 +53,10 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
-import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
+import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
@@ -109,6 +113,13 @@ abstract class TestObjectSetSetup {
     lateinit var analytics: Analytics
     @Mock
     lateinit var cancelSearchSubscription: CancelSearchSubscription
+    @Mock
+    lateinit var convertObjectToCollection: ConvertObjectToCollection
+    @Mock
+    lateinit var setQueryToObjectSet: SetQueryToObjectSet
+
+    @Mock
+    lateinit var addObjectToCollection: AddObjectToCollection
 
     @Mock
     lateinit var createObject: CreateObject
@@ -117,7 +128,6 @@ abstract class TestObjectSetSetup {
     private lateinit var getDefaultPageType: GetDefaultPageType
 
     private val session = ObjectSetSession()
-    private val reducer = ObjectSetReducer()
     private val dispatcher: Dispatcher<Payload> = Dispatcher.Default()
     private val paginator = ObjectSetPaginator()
     private val store: ObjectStore = DefaultObjectStore()
@@ -149,6 +159,8 @@ abstract class TestObjectSetSetup {
             )
         )
     )
+
+    private val objectStore: ObjectStore = DefaultObjectStore()
 
     private val delegator = Delegator.Default<Action>()
 
@@ -209,18 +221,23 @@ abstract class TestObjectSetSetup {
             coverImageHashProvider = coverImageHashProvider,
             session = session,
             dispatcher = dispatcher,
-            reducer = reducer,
             analytics = analytics,
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             delegator = delegator,
             createObject = createObject,
-            setDataViewQuery = setDataViewQuery,
             cancelSearchSubscription = cancelSearchSubscription,
             paginator = paginator,
             database = database,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            objectStateReducer = DefaultObjectStateReducer(),
+            dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer),
+            workspaceManager = workspaceManager,
+            objectToCollection = convertObjectToCollection,
+            setQueryToObjectSet = setQueryToObjectSet,
+            objectStore = objectStore,
+            addObjectToCollection = addObjectToCollection
         )
     }
 
@@ -298,7 +315,8 @@ abstract class TestObjectSetSetup {
                     limit = any(),
                     offset = any(),
                     ignoreWorkspace = any(),
-                    noDepSubscription = any()
+                    noDepSubscription = any(),
+                    collection = any()
                 )
             } doReturn SearchResult(
                 results = emptyList(),

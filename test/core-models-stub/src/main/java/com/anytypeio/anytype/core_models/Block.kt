@@ -5,13 +5,14 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubHeader(
     id: Id = MockDataFactory.randomUuid(),
-    children: List<Id> = emptyList()
+    children: List<Id> = emptyList(),
+    fields: Block.Fields = Block.Fields.empty()
 ): Block = Block(
     id = id,
     content = Block.Content.Layout(
         type = Block.Content.Layout.Type.HEADER
     ),
-    fields = Block.Fields.empty(),
+    fields = fields,
     children = children
 )
 
@@ -325,15 +326,13 @@ fun StubDataViewBlock(
     backgroundColor: String? = null,
     targetObjectId: Id = "",
     viewers: List<Block.Content.DataView.Viewer> = emptyList(),
-    relations: List<Relation> = emptyList(),
     relationsIndex: List<RelationLink> = emptyList(),
 ): Block = Block(
     id = id,
     content = Block.Content.DataView(
-        targetObjectId = targetObjectId,
-        relationsIndex = relationsIndex,
         viewers = viewers,
-        relations = relations
+        relationLinks = relationsIndex,
+        targetObjectId = targetObjectId
     ),
     children = children,
     fields = fields,

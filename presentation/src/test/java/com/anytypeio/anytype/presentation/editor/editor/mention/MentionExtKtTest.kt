@@ -320,6 +320,7 @@ class MentionExtTest {
                 ObjectType.Layout.PROFILE -> equalsMentionProfile(mark, layout)
                 ObjectType.Layout.TODO -> equalsMentionTodo(mark, layout)
                 ObjectType.Layout.SET -> equalsMentionNoIcon(mark, layout)
+                ObjectType.Layout.COLLECTION -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.OBJECT_TYPE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.RELATION -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.FILE -> equalsMentionNoIcon(mark, layout)

@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.presentation.sets
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubDataViewView
 import com.anytypeio.anytype.core_models.StubDataViewViewRelation
@@ -11,25 +12,45 @@ import com.anytypeio.anytype.core_models.StubFilter
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubSort
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Rule
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 class ObjectSetReducerTest {
 
-    private lateinit var reducer: ObjectSetReducer
+    val context = MockDataFactory.randomUuid()
+
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val coroutineTestRule = DefaultCoroutineTestRule()
+
+    private lateinit var reducer: ObjectStateReducer
 
     @Before
     fun reduce() {
-        reducer = ObjectSetReducer()
+        reducer = DefaultObjectStateReducer()
+    }
+
+    @After
+    fun after() {
+        reducer.clear()
+        coroutineTestRule.advanceTime(200)
     }
 
     @Test
-    fun `should update sorts in viewer`() {
-
-        val context = MockDataFactory.randomUuid()
+    fun `should update sorts in viewer`() = runTest {
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -65,64 +86,6 @@ class ObjectSetReducerTest {
             )
         )
 
-        val dataViewRelations = listOf(
-            Relation(
-                key = viewerRelations[0].key,
-                name = "Name",
-                format = Relation.Format.LONG_TEXT,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
-            ),
-            Relation(
-                key = viewerRelations[1].key,
-                name = "Author",
-                format = Relation.Format.LONG_TEXT,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
-            ),
-            Relation(
-                key = viewerRelations[2].key,
-                name = "Last modified date",
-                format = Relation.Format.DATE,
-                isReadOnly = true,
-                isHidden = true,
-                isMulti = false,
-                source = Relation.Source.DERIVED,
-                selections = listOf(),
-                defaultValue = null
-            ),
-            Relation(
-                key = viewerRelations[3].key,
-                name = "Year",
-                format = Relation.Format.NUMBER,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
-            ),
-            Relation(
-                key = viewerRelations[4].key,
-                name = "Country",
-                format = Relation.Format.LONG_TEXT,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
-            )
-        )
-
         val viewerGrid = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -141,8 +104,7 @@ class ObjectSetReducerTest {
             id = MockDataFactory.randomUuid(),
             content = Block.Content.DataView(
 
-                viewers = listOf(viewerGrid),
-                relations = dataViewRelations
+                viewers = listOf(viewerGrid)
             ),
             fields = Block.Fields.empty(),
             children = listOf()
@@ -150,9 +112,14 @@ class ObjectSetReducerTest {
 
         val blocks = listOf(title, dataView)
 
-        val objectSet = ObjectSet(blocks = blocks)
-
         // TESTING
+
+        val eventOpen = Event.Command.ShowObject(
+            context = context,
+            root = context,
+            blocks = blocks,
+            details = details
+        )
 
         val event = Event.Command.DataView.SetView(
             context = context,
@@ -177,7 +144,13 @@ class ObjectSetReducerTest {
             )
         )
 
-        val result = reducer.reduce(state = objectSet, events = listOf(event))
+        val stateOpen = reducer.reduce(
+            state = ObjectState.Init, events = listOf(eventOpen)
+        ).state
+
+        val stateSetView = reducer.reduce(
+            state = stateOpen, events = listOf(event)
+        ).state
 
         val expectedDataView = Block(
             id = dataView.id,
@@ -200,25 +173,22 @@ class ObjectSetReducerTest {
                         ),
                         filters = listOf()
                     )
-                ),
-                relations = dataViewRelations
+                )
             ),
             fields = Block.Fields.empty(),
             children = listOf()
         )
 
-        val expected = ObjectSetReducer.Transformation(
-            state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = emptyList()
+        val expected = ObjectState.DataView.Set(
+            blocks = listOf(title, expectedDataView), details = details.details
         )
 
-        assertEquals(expected, result)
+        assertEquals(expected, stateSetView)
     }
 
     @Test
-    fun `should update list viewer`() {
+    fun `should update list viewer`() = runTest {
 
-        val context = MockDataFactory.randomUuid()
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -239,31 +209,6 @@ class ObjectSetReducerTest {
             Block.Content.DataView.Viewer.ViewerRelation(
                 key = MockDataFactory.randomUuid(),
                 isVisible = true
-            )
-        )
-
-        val dataViewRelations = listOf(
-            Relation(
-                key = viewerRelations[0].key,
-                name = "Name",
-                format = Relation.Format.LONG_TEXT,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
-            ),
-            Relation(
-                key = viewerRelations[1].key,
-                name = "Author",
-                format = Relation.Format.LONG_TEXT,
-                isReadOnly = true,
-                isHidden = false,
-                isMulti = false,
-                source = Relation.Source.DETAILS,
-                selections = listOf(),
-                defaultValue = null
             )
         )
 
@@ -293,8 +238,7 @@ class ObjectSetReducerTest {
         val dataView = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.DataView(
-                viewers = listOf(viewerGrid, viewerList),
-                relations = dataViewRelations
+                viewers = listOf(viewerGrid, viewerList)
             ),
             fields = Block.Fields.empty(),
             children = listOf()
@@ -302,9 +246,14 @@ class ObjectSetReducerTest {
 
         val blocks = listOf(title, dataView)
 
-        val objectSet = ObjectSet(blocks = blocks)
-
         // TESTING
+
+        val eventOpen = Event.Command.ShowObject(
+            context = context,
+            root = context,
+            blocks = blocks,
+            details = details
+        )
 
         val event = Event.Command.DataView.SetView(
             context = context,
@@ -325,7 +274,13 @@ class ObjectSetReducerTest {
             )
         )
 
-        val result = reducer.reduce(state = objectSet, events = listOf(event))
+        val stateOpen = reducer.reduce(
+            state = ObjectState.Init, events = listOf(eventOpen)
+        ).state
+
+        val stateSetView = reducer.reduce(
+            state = stateOpen, events = listOf(event)
+        ).state
 
         val expectedDataView = Block(
             id = dataView.id,
@@ -352,25 +307,23 @@ class ObjectSetReducerTest {
                         ),
                         filters = listOf()
                     )
-                ),
-                relations = dataViewRelations
+                )
             ),
             fields = Block.Fields.empty(),
             children = listOf()
         )
 
-        val expected = ObjectSetReducer.Transformation(
-            state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = emptyList()
+        val expected = ObjectState.DataView.Set(
+            blocks = listOf(title, expectedDataView),
+            details = details.details
         )
 
-        assertEquals(expected, result)
+        assertEquals(expected, stateSetView)
     }
 
     @Test
-    fun `when getting add, move, update, remove sorts events, should proper update viewer`() {
+    fun `when getting add, move, update, remove sorts events, should proper update viewer`() = runTest {
 
-        val context = MockDataFactory.randomUuid()
         val title = StubTitle()
 
         val relationKey1 = MockDataFactory.randomUuid()
@@ -404,8 +357,6 @@ class ObjectSetReducerTest {
 
         val blocks = listOf(title, dataView)
 
-        val objectSet = ObjectSet(blocks = blocks)
-
         // TESTING
 
         val event = Event.Command.DataView.UpdateView(
@@ -434,7 +385,17 @@ class ObjectSetReducerTest {
             fields = null
         )
 
-        val result = reducer.reduce(state = objectSet, events = listOf(event))
+        val eventOpen = Event.Command.ShowObject(
+            context = context, root = context, blocks = blocks, details = details
+        )
+
+        val stateOpen = reducer.reduce(
+            state = ObjectState.Init, events = listOf(eventOpen)
+        ).state
+
+        val stateUpdateView = reducer.reduce(
+            state = stateOpen, events = listOf(event)
+        ).state
 
         val expectedSorts = listOf(
             DVSort(
@@ -479,25 +440,22 @@ class ObjectSetReducerTest {
                         filters = listOf()
                     )
                 ),
-                relations = listOf(),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()
         )
 
-        val expected = ObjectSetReducer.Transformation(
-            state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = emptyList()
+        val expected = ObjectState.DataView.Set(
+            blocks = listOf(title, expectedDataView), details = details.details
         )
 
-        assertEquals(expected, result)
+        assertEquals(expected, stateUpdateView)
     }
 
     @Test
-    fun `when getting add, move, update, remove filters events, should proper update viewer`() {
+    fun `when getting add, move, update, remove filters events, should proper update viewer`() = runTest {
 
-        val context = MockDataFactory.randomUuid()
         val title = StubTitle()
 
         val filterId1 = MockDataFactory.randomUuid()
@@ -526,8 +484,6 @@ class ObjectSetReducerTest {
         )
 
         val blocks = listOf(title, dataView)
-
-        val objectSet = ObjectSet(blocks = blocks)
 
         // TESTING
 
@@ -560,7 +516,17 @@ class ObjectSetReducerTest {
             fields = null
         )
 
-        val result = reducer.reduce(state = objectSet, events = listOf(event))
+        val eventOpen = Event.Command.ShowObject(
+            context = context, root = context, blocks = blocks, details = details
+        )
+
+        val stateOpen = reducer.reduce(
+            state = ObjectState.Init, events = listOf(eventOpen)
+        ).state
+
+        val stateUpdateView = reducer.reduce(
+            state = stateOpen, events = listOf(event)
+        ).state
 
         val expectedFilters = listOf(
             filter3,
@@ -584,25 +550,23 @@ class ObjectSetReducerTest {
                         filters = expectedFilters
                     )
                 ),
-                relations = listOf(),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()
         )
 
-        val expected = ObjectSetReducer.Transformation(
-            state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = emptyList()
+        val expected = ObjectState.DataView.Set(
+            blocks = listOf(title, expectedDataView),
+            details = details.details
         )
 
-        assertEquals(expected, result)
+        assertEquals(expected, stateUpdateView)
     }
 
     @Test
-    fun `when getting add, move, update, remove relations events, should proper update viewer`() {
+    fun `when getting add, move, update, remove relations events, should proper update viewer`() = runTest {
 
-        val context = MockDataFactory.randomUuid()
         val title = StubTitle()
 
         val relationKey1 = MockDataFactory.randomUuid()
@@ -626,8 +590,6 @@ class ObjectSetReducerTest {
         )
 
         val blocks = listOf(title, dataView)
-
-        val objectSet = ObjectSet(blocks = blocks)
 
         // TESTING
 
@@ -660,7 +622,17 @@ class ObjectSetReducerTest {
             fields = null
         )
 
-        val result = reducer.reduce(state = objectSet, events = listOf(event))
+        val eventOpen = Event.Command.ShowObject(
+            context = context, root = context, blocks = blocks, details = details
+        )
+
+        val stateOpen = reducer.reduce(
+            state = ObjectState.Init, events = listOf(eventOpen)
+        ).state
+
+        val stateUpdateView = reducer.reduce(
+            state = stateOpen, events = listOf(event)
+        ).state
 
         val expectedRelations = listOf(
             relation3,
@@ -684,24 +656,21 @@ class ObjectSetReducerTest {
                         filters = viewer1.filters
                     )
                 ),
-                relations = listOf(),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()
         )
 
-        val expected = ObjectSetReducer.Transformation(
-            state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = emptyList()
+        val expected = ObjectState.DataView.Set(
+            blocks = listOf(title, expectedDataView), details = details.details
         )
 
-        assertEquals(expected, result)
+        assertEquals(expected, stateUpdateView)
     }
 
     @Test
-    fun `should update fields for viewer, with new fields`() {
-        val context = MockDataFactory.randomUuid()
+    fun `should update fields for viewer, with new fields`() = runTest {
         val title = StubTitle()
 
         val relationKey1 = MockDataFactory.randomUuid()
@@ -732,8 +701,6 @@ class ObjectSetReducerTest {
 
         val blocks = listOf(title, dataView)
 
-        val objectSet = ObjectSet(blocks = blocks)
-
         // TESTING
 
         val newViewerName = MockDataFactory.randomString()
@@ -757,7 +724,17 @@ class ObjectSetReducerTest {
             )
         )
 
-        val result = reducer.reduce(state = objectSet, events = listOf(event))
+        val eventOpen = Event.Command.ShowObject(
+            context = context, root = context, blocks = blocks, details = details
+        )
+
+        val stateOpen = reducer.reduce(
+            state = ObjectState.Init, events = listOf(eventOpen)
+        ).state
+
+        val stateUpdateView = reducer.reduce(
+            state = stateOpen, events = listOf(event)
+        ).state
 
         val expectedDataView = Block(
             id = dataView.id,
@@ -775,24 +752,21 @@ class ObjectSetReducerTest {
                         coverRelationKey = relationKey1
                     )
                 ),
-                relations = listOf(),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()
         )
 
-        val expected = ObjectSetReducer.Transformation(
-            state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = emptyList()
+        val expected = ObjectState.DataView.Set(
+            blocks = listOf(title, expectedDataView), details = details.details
         )
 
-        assertEquals(expected, result)
+        assertEquals(expected, stateUpdateView)
     }
 
     @Test
     fun `when relation deleted from dataview, should delete it from relationLinks`() {
-        val context = MockDataFactory.randomUuid()
         val title = StubTitle()
 
         val relationKey1 = MockDataFactory.randomUuid()
@@ -815,22 +789,30 @@ class ObjectSetReducerTest {
         val dataView = StubDataView(
             id = MockDataFactory.randomUuid(),
             views = listOf(viewer),
-            relations = listOf(relationLink1, relationLink2, relationLink3)
+            relationLinks = listOf(relationLink1, relationLink2, relationLink3)
         )
 
         val blocks = listOf(title, dataView)
 
-        val objectSet = ObjectSet(blocks = blocks)
-
         // TESTING
 
-        val event = Event.Command.DataView.DeleteRelation(
+        val eventDeleteRelation = Event.Command.DataView.DeleteRelation(
             context = context,
             dv = dataView.id,
             keys = listOf(relationKey2)
         )
 
-        val result = reducer.reduce(state = objectSet, events = listOf(event))
+        val eventOpen = Event.Command.ShowObject(
+            context = context, root = context, blocks = blocks, details = details
+        )
+
+        val stateOpen = reducer.reduce(
+            state = ObjectState.Init, events = listOf(eventOpen)
+        ).state
+
+        val stateDeleteRelation = reducer.reduce(
+            state = stateOpen, events = listOf(eventDeleteRelation)
+        ).state
 
         val expectedDataView = Block(
             id = dataView.id,
@@ -846,19 +828,25 @@ class ObjectSetReducerTest {
                         coverRelationKey = viewer.coverRelationKey
                     )
                 ),
-                relationsIndex = listOf(relationLink1, relationLink3),
-                targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId,
-                relations = emptyList()
+                relationLinks = listOf(relationLink1, relationLink3),
+                targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
             ),
             fields = Block.Fields.empty(),
             children = listOf()
         )
 
-        val expected = ObjectSetReducer.Transformation(
-            state = ObjectSet(blocks = listOf(title, expectedDataView)),
-            effects = emptyList()
+        val expected = ObjectState.DataView.Set(
+            blocks = listOf(title, expectedDataView), details = details.details
         )
 
-        assertEquals(expected, result)
+        assertEquals(expected, stateDeleteRelation)
     }
+
+    val details = Block.Details(
+        details = mapOf(
+            context to Block.Fields(
+                mapOf(Relations.ID to context, Relations.LAYOUT to 3.0)
+            )
+        )
+    )
 }

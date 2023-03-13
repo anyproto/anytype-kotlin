@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveViewEvent
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,7 @@ class EditDataViewViewerViewModel(
     private val duplicateDataViewViewer: DuplicateDataViewViewer,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val dispatcher: Dispatcher<Payload>,
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val objectSetSession: ObjectSetSession,
     private val paginator: ObjectSetPaginator,
     private val analytics: Analytics
@@ -39,7 +40,8 @@ class EditDataViewViewerViewModel(
     private var viewerName: String = ""
 
     fun onStart(viewerId: Id) {
-        val viewer = objectSetState.value.viewers.firstOrNull { it.id == viewerId }
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewers.firstOrNull { it.id == viewerId }
         if (viewer != null) {
             initialName = viewer.name
             initialType = viewer.type
@@ -55,12 +57,13 @@ class EditDataViewViewerViewModel(
     }
 
     fun onDuplicateClicked(ctx: Id, viewer: Id) {
+        val state = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
             duplicateDataViewViewer(
                 DuplicateDataViewViewer.Params(
                     context = ctx,
-                    target = objectSetState.value.dataview.id,
-                    viewer = objectSetState.value.viewers.first { it.id == viewer }
+                    target = state.dataViewBlock.id,
+                    viewer = state.viewers.first { it.id == viewer }
                 )
             ).process(
                 failure = { e ->
@@ -75,7 +78,7 @@ class EditDataViewViewerViewModel(
     }
 
     fun onDeleteClicked(ctx: Id, viewer: Id) {
-        val state = objectSetState.value
+        val state = objectState.value.dataViewState() ?: return
         if (state.viewers.size > 1) {
             val targetIdx = state.viewers.indexOfFirst { it.id == viewer }
             val isActive = if (objectSetSession.currentViewerId.value != null) {
@@ -92,10 +95,9 @@ class EditDataViewViewerViewModel(
             }
             proceedWithDeletion(
                 ctx = ctx,
-                dv = state.dataview.id,
+                dv = state.dataViewBlock.id,
                 viewer = viewer,
-                nextViewerId = nextViewerId,
-                state = state
+                nextViewerId = nextViewerId
             )
         } else {
             viewModelScope.launch {
@@ -108,8 +110,7 @@ class EditDataViewViewerViewModel(
         ctx: Id,
         dv: Id,
         viewer: Id,
-        nextViewerId: Id?,
-        state: ObjectSet
+        nextViewerId: Id?
     ) {
         viewModelScope.launch {
             deleteDataViewViewer(
@@ -129,7 +130,8 @@ class EditDataViewViewerViewModel(
                         analytics = analytics
                     )
                     if (nextViewerId != null) {
-                        proceedWithSettingActiveView(ctx, state, nextViewerId)
+                        objectSetSession.currentViewerId.value = nextViewerId
+                        paginator.offset.value = 0
                     }
                     isDismissed.emit(true)
                 }
@@ -137,21 +139,11 @@ class EditDataViewViewerViewModel(
         }
     }
 
-    private fun proceedWithSettingActiveView(
-        ctx: Id,
-        state: ObjectSet,
-        nextViewerId: Id
-    ) {
-        viewModelScope.launch {
-            objectSetSession.currentViewerId.value = nextViewerId
-            paginator.offset.value = 0
-        }
-    }
-
     fun onMenuClicked() {
+        val state = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
             popupCommands.emit(
-                PopupMenuCommand(isDeletionAllowed = objectSetState.value.viewers.size > 1)
+                PopupMenuCommand(isDeletionAllowed = state.viewers.size > 1)
             )
         }
     }
@@ -177,7 +169,7 @@ class EditDataViewViewerViewModel(
     }
 
     private fun updateDVViewerType(ctx: Id, viewerId: Id, type: DVViewerType, name: String) {
-        val state = objectSetState.value
+        val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewers.find { it.id == viewerId }
         if (viewer != null) {
             viewModelScope.launch {
@@ -185,7 +177,7 @@ class EditDataViewViewerViewModel(
                 updateDataViewViewer(
                     UpdateDataViewViewer.Params.Fields(
                         context = ctx,
-                        target = state.dataview.id,
+                        target = state.dataViewBlock.id,
                         viewer = viewer.copy(type = type, name = name)
                     )
                 ).process(
@@ -222,7 +214,7 @@ class EditDataViewViewerViewModel(
         private val duplicateDataViewViewer: DuplicateDataViewViewer,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val dispatcher: Dispatcher<Payload>,
-        private val objectSetState: StateFlow<ObjectSet>,
+        private val objectState: StateFlow<ObjectState>,
         private val objectSetSession: ObjectSetSession,
         private val paginator: ObjectSetPaginator,
         private val analytics: Analytics
@@ -235,7 +227,7 @@ class EditDataViewViewerViewModel(
                 duplicateDataViewViewer = duplicateDataViewViewer,
                 updateDataViewViewer = updateDataViewViewer,
                 dispatcher = dispatcher,
-                objectSetState = objectSetState,
+                objectState = objectState,
                 objectSetSession = objectSetSession,
                 paginator = paginator,
                 analytics = analytics

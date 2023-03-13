@@ -4,17 +4,15 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.dataview.interactor.*
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -100,7 +98,6 @@ class ObjectSetViewerDeleteTest {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                relations = emptyList(),
                 viewers = listOf(firstViewer, secondViewer, thirdViewer)
             ),
             children = emptyList(),
@@ -108,7 +105,7 @@ class ObjectSetViewerDeleteTest {
         )
 
         val objectSetState = MutableStateFlow(
-            ObjectSet(
+            ObjectState.DataView.Set(
                 blocks = listOf(
                     header,
                     title,
@@ -144,7 +141,6 @@ class ObjectSetViewerDeleteTest {
                 )
             )
         }
-//        verifyNoMoreInteractions(setActiveViewer)
     }
 
     @Test
@@ -173,7 +169,6 @@ class ObjectSetViewerDeleteTest {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                relations = emptyList(),
                 viewers = listOf(firstViewer, secondViewer, thirdViewer)
             ),
             children = emptyList(),
@@ -181,7 +176,7 @@ class ObjectSetViewerDeleteTest {
         )
 
         val objectSetState = MutableStateFlow(
-            ObjectSet(
+            ObjectState.DataView.Set(
                 blocks = listOf(
                     header,
                     title,
@@ -217,17 +212,6 @@ class ObjectSetViewerDeleteTest {
                 )
             )
         }
-//        verifyBlocking(setActiveViewer, times(1)) {
-//            invoke(
-//                SetActiveViewer.Params(
-//                    context = ctx,
-//                    block = dv.id,
-//                    view = secondViewer.id,
-//                    offset = 0,
-//                    limit = ObjectSetConfig.DEFAULT_LIMIT
-//                )
-//            )
-//        }
     }
 
     @Test
@@ -256,7 +240,6 @@ class ObjectSetViewerDeleteTest {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                relations = emptyList(),
                 viewers = listOf(firstViewer, secondViewer, thirdViewer)
             ),
             children = emptyList(),
@@ -264,7 +247,7 @@ class ObjectSetViewerDeleteTest {
         )
 
         val objectSetState = MutableStateFlow(
-            ObjectSet(
+            ObjectState.DataView.Set(
                 blocks = listOf(
                     header,
                     title,
@@ -300,22 +283,11 @@ class ObjectSetViewerDeleteTest {
                 )
             )
         }
-//        verifyBlocking(setActiveViewer, times(1)) {
-//            invoke(
-//                SetActiveViewer.Params(
-//                    context = ctx,
-//                    block = dv.id,
-//                    view = secondViewer.id,
-//                    offset = 0,
-//                    limit = ObjectSetConfig.DEFAULT_LIMIT
-//                )
-//            )
-//        }
     }
 
     fun buildViewModel(
         updateDataViewViewer: UpdateDataViewViewer,
-        objectSetState: StateFlow<ObjectSet>,
+        objectSetState: StateFlow<ObjectState>,
         objectSetSession: ObjectSetSession
     ): EditDataViewViewerViewModel {
         return EditDataViewViewerViewModel(
@@ -323,7 +295,7 @@ class ObjectSetViewerDeleteTest {
             deleteDataViewViewer = deleteDataViewViewer,
             duplicateDataViewViewer = duplicateDataViewViewer,
             objectSetSession = objectSetSession,
-            objectSetState = objectSetState,
+            objectState = objectSetState,
             dispatcher = dispatcher,
             updateDataViewViewer = updateDataViewViewer,
             analytics = analytics,

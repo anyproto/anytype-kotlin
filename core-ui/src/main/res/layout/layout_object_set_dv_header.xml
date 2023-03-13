@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_collection_dv_header_height">
+
+    <TextView
+        android:id="@+id/tvCurrentViewerName"
+        style="@style/ViewerTitleStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:drawablePadding="2dp"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/dp_20"
+        app:drawableEndCompat="@drawable/ic_arrow_expand_dv_viewer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:enabled="false"
+        tools:text="All" />
+
+    <ImageView
+        android:id="@+id/customizeViewButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:contentDescription="@string/content_description_customize_view_button"
+        android:paddingStart="@dimen/dp_20"
+        android:src="@drawable/bg_viewer_settings_icon_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/addNewButton"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:enabled="true" />
+
+    <TextView
+        android:id="@+id/addNewButton"
+        style="@style/DSXSmallButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/ds_button_primary_background_selector"
+        android:clickable="true"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="5dp"
+        android:text="@string/button_new"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:enabled="false" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/shape_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

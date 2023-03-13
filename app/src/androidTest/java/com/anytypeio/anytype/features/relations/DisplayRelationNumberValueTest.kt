@@ -13,7 +13,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -21,12 +20,11 @@ import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils
@@ -68,7 +66,7 @@ class DisplayRelationNumberValueTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     private val root = MockDataFactory.randomUuid()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val store: ObjectStore = DefaultObjectStore()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val db = ObjectSetDatabase(store = store)
@@ -78,7 +76,7 @@ class DisplayRelationNumberValueTest {
         MockitoAnnotations.openMocks(this)
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
             relations = DataViewObjectRelationProvider(
-                objectSetState = state,
+                objectState = state,
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(db = db),
@@ -94,13 +92,6 @@ class DisplayRelationNumberValueTest {
 
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
-        val relationText = "Number"
-        val valueText = 345.09
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to valueText
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -111,32 +102,18 @@ class DisplayRelationNumberValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        val relation = Relation(
-            key = relationKey,
-            name = relationText,
-            source = Relation.Source.values().random(),
-            format = Relation.Format.NUMBER
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -165,13 +142,6 @@ class DisplayRelationNumberValueTest {
 
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
-        val relationText = "Number"
-        val valueText = 345.0
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to valueText
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -182,32 +152,18 @@ class DisplayRelationNumberValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        val relation = Relation(
-            key = relationKey,
-            name = relationText,
-            source = Relation.Source.values().random(),
-            format = Relation.Format.NUMBER
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING
@@ -236,13 +192,6 @@ class DisplayRelationNumberValueTest {
 
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
-        val relationText = "Number"
-        val valueText = null
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to valueText
-        )
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -253,32 +202,18 @@ class DisplayRelationNumberValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        val relation = Relation(
-            key = relationKey,
-            name = relationText,
-            source = Relation.Source.values().random(),
-            format = Relation.Format.NUMBER
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
                     )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // TESTING

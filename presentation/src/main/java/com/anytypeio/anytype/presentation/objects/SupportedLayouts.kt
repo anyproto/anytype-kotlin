@@ -9,6 +9,7 @@ object SupportedLayouts {
         ObjectType.Layout.IMAGE,
         ObjectType.Layout.PROFILE,
         ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.BOOKMARK

@@ -2086,11 +2086,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onProceedWithUpdateType(id: Id) {
-        vm.onObjectTypeChanged(type = id, isObjectDraft = false)
+        vm.onObjectTypeChanged(type = id, applyTemplate = false)
     }
 
     override fun onProceedWithDraftUpdateType(id: Id) {
-        vm.onObjectTypeChanged(type = id, isObjectDraft = true)
+        vm.onObjectTypeChanged(type = id, applyTemplate = true)
     }
 
     private fun observeNavBackStack() {

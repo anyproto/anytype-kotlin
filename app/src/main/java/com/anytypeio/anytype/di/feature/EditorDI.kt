@@ -54,6 +54,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -259,7 +260,8 @@ object EditorSessionModule {
         featureToggles: FeatureToggles,
         tableDelegate: EditorTableDelegate,
         workspaceManager: WorkspaceManager,
-        getObjectTypes: GetObjectTypes
+        getObjectTypes: GetObjectTypes,
+        objectToCollection: ConvertObjectToCollection
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -294,8 +296,11 @@ object EditorSessionModule {
         featureToggles = featureToggles,
         tableDelegate = tableDelegate,
         workspaceManager = workspaceManager,
-        getObjectTypes = getObjectTypes
+        getObjectTypes = getObjectTypes,
+        objectToCollection = objectToCollection
     )
+
+
 
     @JvmStatic
     @Provides
@@ -855,6 +860,17 @@ object EditorUseCaseModule {
         repo: BlockRepository
     ): ConvertObjectToSet = ConvertObjectToSet(
         repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideConvertObjectToCollection(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): ConvertObjectToCollection = ConvertObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

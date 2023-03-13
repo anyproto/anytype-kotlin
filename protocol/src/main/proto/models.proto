@@ -26,6 +26,7 @@ enum SmartBlockType {
     Archive = 0x30;
     Database = 0x40;
     Set = 0x41; // only have dataview simpleblock
+    Collection = 0x42;
     STObjectType = 0x60; // have relations list
     Widget = 0x70;
 
@@ -676,6 +677,7 @@ message ObjectType {
         bookmark = 11;
         relationOptionsList = 12;
         relationOption = 13;
+        collection = 14;
 
         database = 20; // to be released later
     }

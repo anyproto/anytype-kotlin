@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubRelationObject
@@ -14,11 +13,10 @@ import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.mapper.toView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.jraska.livedata.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -133,13 +131,13 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.Relation.Related(
                     id = b.id,
-                    view = DocumentRelationView.Default(
-                        relationId = relation.id,
-                        relationKey = relation.key,
+                    view = ObjectRelationView.Default(
+                        id = relation.id,
+                        key = relation.key,
                         name = relation.name.orEmpty(),
                         value = value,
                         format = relation.format,
-                        isSystem = false
+                        system = false
                     ),
                     decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                         listOf(
@@ -395,14 +393,14 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                 id = relationBlock.id,
                 indent = 0,
                 isSelected = false,
-                view = DocumentRelationView.Default(
-                    relationId = r2.id,
-                    relationKey = r2.key,
+                view = ObjectRelationView.Default(
+                    id = r2.id,
+                    key = r2.key,
                     name = r2.name.orEmpty(),
                     value = value2,
-                    isFeatured = false,
+                    featured = false,
                     format = r2.format,
-                    isSystem = false
+                    system = false
                 ),
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
                     listOf(

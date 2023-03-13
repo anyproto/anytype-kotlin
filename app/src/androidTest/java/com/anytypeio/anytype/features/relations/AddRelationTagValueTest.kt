@@ -31,8 +31,8 @@ import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvid
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -91,7 +91,7 @@ class AddRelationTagValueTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     private val ctx = MockDataFactory.randomUuid()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val store : ObjectStore = DefaultObjectStore()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val db = ObjectSetDatabase(store = store)
@@ -105,7 +105,7 @@ class AddRelationTagValueTest {
         urlBuilder = UrlBuilder(gateway)
         TestRelationOptionValueDVAddFragment.testVmFactory = AddOptionsRelationDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(
-                objectSetState = state,
+                objectState = state,
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(db = db),
@@ -157,20 +157,11 @@ class AddRelationTagValueTest {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer)
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
-        )
+        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
 
         stubCreateRelationOption()
 
@@ -267,20 +258,11 @@ class AddRelationTagValueTest {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer)
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
-        )
+        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
 
         // TESTING
 
@@ -358,20 +340,11 @@ class AddRelationTagValueTest {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer)
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
-        )
+        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
 
         // TESTING
 
@@ -458,20 +431,11 @@ class AddRelationTagValueTest {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer)
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
-        )
+        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
 
         // TESTING
 

@@ -30,7 +30,7 @@ class ViewerCardSizeSelectFragment : BaseBottomSheetFragment<FragmentViewerCardS
             vm.onLargeCardClicked(ctx)
         }
         with(lifecycleScope) {
-            subscribe(vm.state) { state ->
+            subscribe(vm.viewState) { state ->
                 when (state) {
                     ViewerCardSizeSelectViewModel.STATE_DISMISSED -> dismiss()
                     ViewerCardSizeSelectViewModel.STATE_LARGE_CARD_SELECTED -> {

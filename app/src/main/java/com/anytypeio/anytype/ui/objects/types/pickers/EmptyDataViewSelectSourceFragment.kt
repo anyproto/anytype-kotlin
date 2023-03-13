@@ -14,7 +14,7 @@ class EmptyDataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
 
     override fun startWithParams() {
         vm.onStart(
-            isWithSet = false,
+            isWithCollection = false,
             isWithBookmark = true,
             excludeTypes = emptyList(),
             selectedTypes = emptyList(),

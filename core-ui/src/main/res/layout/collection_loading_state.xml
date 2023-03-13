@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/shimmerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:shimmer_base_alpha="0.5"
+    app:shimmer_colored="false"
+    app:shimmer_duration="1000"
+    app:shimmer_highlight_alpha="0.9"
+    app:shimmer_repeat_delay="100"
+    app:shimmer_tilt="0">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/view18"
+            android:layout_width="48dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintBottom_toBottomOf="@+id/view16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/view16" />
+
+        <View
+            android:id="@+id/view17"
+            android:layout_width="0.5dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintBottom_toBottomOf="@+id/view14"
+            app:layout_constraintEnd_toStartOf="@+id/view18"
+            app:layout_constraintTop_toTopOf="@+id/view14"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <View
+            android:id="@+id/view15"
+            android:layout_width="0.5dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="63dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintBottom_toBottomOf="@+id/view14"
+            app:layout_constraintStart_toEndOf="@+id/view14"
+            app:layout_constraintTop_toTopOf="@+id/view14"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <View
+            android:id="@+id/view14"
+            android:layout_width="73dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view13" />
+
+        <View
+            android:id="@+id/view13"
+            android:layout_width="104dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="19dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view12" />
+
+        <View
+            android:id="@+id/view12"
+            android:layout_width="wrap_content"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view11" />
+
+        <View
+            android:id="@+id/view11"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintBottom_toBottomOf="@+id/view10"
+            app:layout_constraintEnd_toStartOf="@+id/view10"
+            app:layout_constraintTop_toTopOf="@+id/view10" />
+
+        <View
+            android:id="@+id/view10"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintBottom_toBottomOf="@+id/view9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/view9" />
+
+        <View
+            android:id="@+id/view9"
+            android:layout_width="102dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view6" />
+
+        <View
+            android:id="@+id/view8"
+            android:layout_width="97dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="17dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toEndOf="@+id/view7"
+            app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+        <View
+            android:id="@+id/view7"
+            android:layout_width="30dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="17dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toEndOf="@+id/view6"
+            app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="36dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+        <View
+            android:id="@+id/view5"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_14"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="26dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view4" />
+
+        <View
+            android:id="@+id/view4"
+            android:layout_width="282dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="11dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view3" />
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="220dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="216dp" />
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_cover_height"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/docEmojiIconContainer"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/bg_object_icon_loading_state"
+            app:layout_constraintBottom_toTopOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view16"
+            android:layout_width="48dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/bg_object_loading_state"
+            app:layout_constraintBottom_toBottomOf="@+id/view14"
+            app:layout_constraintStart_toEndOf="@+id/view15"
+            app:layout_constraintTop_toTopOf="@+id/view14" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

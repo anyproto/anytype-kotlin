@@ -15,8 +15,8 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
@@ -24,8 +24,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [RelationAddToObjectModule::class])
 @PerDialog
@@ -107,7 +106,7 @@ object RelationAddToDataViewModule {
     fun provideViewModelFactory(
         addRelationToDataView: AddRelationToDataView,
         dispatcher: Dispatcher<Payload>,
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
         analytics: Analytics,

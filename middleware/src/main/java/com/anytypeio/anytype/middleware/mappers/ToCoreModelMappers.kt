@@ -352,8 +352,7 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
     val content = checkNotNull(dataview)
     return Block.Content.DataView(
         viewers = content.views.map { it.toCoreModels() },
-        relations = content.relations.map { it.toCoreModels() },
-        relationsIndex = content.relationLinks.map { it.toCoreModels() },
+        relationLinks = content.relationLinks.map { it.toCoreModels() },
         targetObjectId = content.TargetObjectId
     )
 }
@@ -622,6 +621,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.bookmark -> ObjectType.Layout.BOOKMARK
     anytype.model.ObjectType.Layout.relationOptionsList -> TODO()
     anytype.model.ObjectType.Layout.relationOption -> TODO()
+    MOTypeLayout.collection -> ObjectType.Layout.COLLECTION
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {
@@ -707,6 +707,7 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.WorkspaceOld -> SmartBlockType.WORKSPACE_OLD
     MSmartBlockType.AccountOld -> SmartBlockType.ACCOUNT_OLD
     MSmartBlockType.Widget -> SmartBlockType.WIDGET
+    MSmartBlockType.Collection -> SmartBlockType.COLLECTION
 }
 
 // ---------------------- RESTRICTIONS ------------------------

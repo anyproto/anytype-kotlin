@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("Legacy, is not used")
 class PageNavigationViewModel(
     private val urlBuilder: UrlBuilder,
     private val getObjectInfoWithLinks: GetObjectInfoWithLinks,

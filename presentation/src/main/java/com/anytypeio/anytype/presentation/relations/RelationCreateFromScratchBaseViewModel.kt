@@ -16,8 +16,10 @@ import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -84,7 +86,7 @@ class RelationCreateFromScratchForObjectViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-): RelationCreateFromScratchBaseViewModel() {
+) : RelationCreateFromScratchBaseViewModel() {
 
     override val createFromScratchSession get() = createFromScratchState.state
 
@@ -252,7 +254,7 @@ class RelationCreateFromScratchForObjectBlockViewModel(
 }
 
 class RelationCreateFromScratchForDataViewViewModel(
-    private val state: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
@@ -325,14 +327,12 @@ class RelationCreateFromScratchForDataViewViewModel(
     }
 
     private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relationKey: Key) {
-        val state = state.value
-        val block = state.dataview
-        val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId.value } ?: dv.viewers.first()
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         updateDataViewViewer(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
                 ctx = ctx,
-                dv = block.id,
+                dv = state.dataViewBlock.id,
                 view = viewer.id,
                 relation = DVViewerRelation(
                     key = relationKey,
@@ -346,7 +346,7 @@ class RelationCreateFromScratchForDataViewViewModel(
     }
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val objectState: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addRelationToDataView: AddRelationToDataView,
@@ -361,7 +361,7 @@ class RelationCreateFromScratchForDataViewViewModel(
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
-                state = state,
+                objectState = objectState,
                 analytics = analytics,
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,

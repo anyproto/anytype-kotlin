@@ -140,13 +140,6 @@ abstract class RelationAddViewModelBase(
                 }
                 add(
                     DVFilter(
-                        relation = Relations.IS_HIDDEN,
-                        condition = DVFilterCondition.EQUAL,
-                        value = false
-                    )
-                )
-                add(
-                    DVFilter(
                         relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = MARKETPLACE_ID
@@ -174,13 +167,6 @@ abstract class RelationAddViewModelBase(
             sorts = defaultObjectSearchSorts(),
             filters = buildList {
                 addAll(filterMyRelations())
-                add(
-                    DVFilter(
-                        relation = Relations.IS_HIDDEN,
-                        condition = DVFilterCondition.EQUAL,
-                        value = false
-                    )
-                )
                 add(
                     DVFilter(
                         relation = Relations.WORKSPACE_ID,

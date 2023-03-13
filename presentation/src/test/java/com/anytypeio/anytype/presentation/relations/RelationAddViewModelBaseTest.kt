@@ -16,7 +16,7 @@ import com.anytypeio.anytype.presentation.relations.model.Section
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,12 +33,12 @@ import org.mockito.kotlin.stub
 class RelationAddViewModelBaseTest {
 
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     private val appCoroutineDispatchers = AppCoroutineDispatchers(
-        io = coroutineTestRule.testDispatcher,
-        main = coroutineTestRule.testDispatcher,
-        computation = coroutineTestRule.testDispatcher
+        io = coroutineTestRule.dispatcher,
+        main = coroutineTestRule.dispatcher,
+        computation = coroutineTestRule.dispatcher
     )
 
     @Mock
@@ -79,13 +79,6 @@ class RelationAddViewModelBaseTest {
                         addAll(ObjectSearchConstants.filterMyRelations())
                         add(
                             DVFilter(
-                                relation = Relations.IS_HIDDEN,
-                                condition = DVFilterCondition.EQUAL,
-                                value = false
-                            )
-                        )
-                        add(
-                            DVFilter(
                                 relation = Relations.WORKSPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
                                 value = workspaceId
@@ -121,13 +114,6 @@ class RelationAddViewModelBaseTest {
                         )
                         add(
                             DVFilter(
-                                relation = Relations.IS_HIDDEN,
-                                condition = DVFilterCondition.EQUAL,
-                                value = false
-                            )
-                        )
-                        add(
-                            DVFilter(
                                 relation = Relations.WORKSPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
                                 value = MARKETPLACE_ID
@@ -152,11 +138,11 @@ class RelationAddViewModelBaseTest {
 
         // TESTING
 
-        coroutineTestRule.testDispatcher.scheduler.runCurrent()
+        coroutineTestRule.dispatcher.scheduler.runCurrent()
 
         vm.results.test {
             assertEquals(
-                actual = awaitItem(),
+                actual = expectMostRecentItem(),
                 expected = listOf(
                     Section.Library,
                     RelationView.Existing(
@@ -218,13 +204,6 @@ class RelationAddViewModelBaseTest {
                             addAll(ObjectSearchConstants.filterMyRelations())
                             add(
                                 DVFilter(
-                                    relation = Relations.IS_HIDDEN,
-                                    condition = DVFilterCondition.EQUAL,
-                                    value = false
-                                )
-                            )
-                            add(
-                                DVFilter(
                                     relation = Relations.WORKSPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
                                     value = workspaceId
@@ -260,13 +239,6 @@ class RelationAddViewModelBaseTest {
                             )
                             add(
                                 DVFilter(
-                                    relation = Relations.IS_HIDDEN,
-                                    condition = DVFilterCondition.EQUAL,
-                                    value = false
-                                )
-                            )
-                            add(
-                                DVFilter(
                                     relation = Relations.WORKSPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
                                     value = MARKETPLACE_ID
@@ -291,11 +263,11 @@ class RelationAddViewModelBaseTest {
 
             // TESTING
 
-            coroutineTestRule.testDispatcher.scheduler.runCurrent()
+            coroutineTestRule.dispatcher.scheduler.runCurrent()
 
             vm.results.test {
                 assertEquals(
-                    actual = awaitItem(),
+                    actual = expectMostRecentItem(),
                     expected = listOf(
                         Section.Library,
                         RelationView.Existing(

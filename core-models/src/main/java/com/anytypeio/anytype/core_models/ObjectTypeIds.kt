@@ -13,6 +13,7 @@ object ObjectTypeIds {
     const val VIDEO = "ot-video"
     const val AUDIO = "ot-audio"
     const val SET = "ot-set"
+    const val COLLECTION = "ot-collection"
     const val TASK = "ot-task"
     const val DATE = "ot-date"
     const val PROFILE = "ot-profile" //contains User Profile page and Anytype Person page

@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -33,11 +32,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils
@@ -66,10 +64,9 @@ class ModifyTagFilterTest {
 
     @Mock
     lateinit var repo: BlockRepository
+
     @Mock
     lateinit var gateway: Gateway
-    @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
     lateinit var analytics: Analytics
@@ -81,7 +78,7 @@ class ModifyTagFilterTest {
 
     private val root = MockDataFactory.randomUuid()
     private val session = ObjectSetSession()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
@@ -103,7 +100,7 @@ class ModifyTagFilterTest {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
         TestModifyFilterFromSelectedValueFragment.testVmFactory = FilterViewModel.Factory(
-            objectSetState = state,
+            objectState = state,
             session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
@@ -144,11 +141,6 @@ class ModifyTagFilterTest {
             color = MockDataFactory.randomString()
         )
 
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to emptyList<String>()
-        )
-
         // Defining viewer containing one filter
 
         val viewer = Block.Content.DataView.Viewer(
@@ -171,37 +163,18 @@ class ModifyTagFilterTest {
             type = Block.Content.DataView.Viewer.Type.values().random()
         )
 
-        val relation = Relation(
-            key = relationKey,
-            defaultValue = null,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = true,
-            name = MockDataFactory.randomString(),
-            source = Relation.Source.values().random(),
-            format = Relation.Format.TAG,
-            selections = listOf(option1, option2, option3)
-        )
-
-        state.value = ObjectSet(
+        state.value = ObjectState.DataView.Set(
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
                     children = emptyList(),
                     fields = Block.Fields.empty(),
                     content = Block.Content.DataView(
-                        relations = listOf(relation),
                         viewers = listOf(viewer),
 
-                    )
+                        )
                 )
-            ),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+            )
         )
 
         // Launching fragment

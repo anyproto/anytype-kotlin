@@ -16,7 +16,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -119,14 +119,14 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         vm.onSlashItemClicked(
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
-                    view = DocumentRelationView.Default(
-                        relationId = r2.id,
-                        relationKey = r2.key,
+                    view = ObjectRelationView.Default(
+                        id = r2.id,
+                        key = r2.key,
                         name = r2.name.orEmpty(),
                         value = value2,
-                        isFeatured = true,
+                        featured = true,
                         format = Relation.Format.SHORT_TEXT,
-                        isSystem = false
+                        system = false
                     )
                 )
             )
@@ -237,14 +237,14 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         vm.onSlashItemClicked(
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
-                    view = DocumentRelationView.Default(
-                        relationKey = r3.key,
-                        relationId = r3.id,
+                    view = ObjectRelationView.Default(
+                        key = r3.key,
+                        id = r3.id,
                         name = r3.name.orEmpty(),
                         value = value3,
-                        isFeatured = true,
+                        featured = true,
                         format = Relation.Format.SHORT_TEXT,
-                        isSystem = false
+                        system = false
                     )
                 )
             )
@@ -352,14 +352,14 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         vm.onSlashItemClicked(
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
-                    view = DocumentRelationView.Default(
-                        relationId = r3.id,
-                        relationKey = r3.key,
+                    view = ObjectRelationView.Default(
+                        id = r3.id,
+                        key = r3.key,
                         name = r3.name.orEmpty(),
                         value = value3,
-                        isFeatured = true,
+                        featured = true,
                         format = Relation.Format.SHORT_TEXT,
-                        isSystem = false
+                        system = false
                     )
                 )
             )
@@ -433,14 +433,14 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         vm.onSlashItemClicked(
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
-                    view = DocumentRelationView.Default(
-                        relationKey = r2.key,
-                        relationId = r2.id,
+                    view = ObjectRelationView.Default(
+                        key = r2.key,
+                        id = r2.id,
                         name = r2.name.orEmpty(),
                         value = value2,
-                        isFeatured = true,
+                        featured = true,
                         format = Relation.Format.SHORT_TEXT,
-                        isSystem = false
+                        system = false
                     )
                 )
             )

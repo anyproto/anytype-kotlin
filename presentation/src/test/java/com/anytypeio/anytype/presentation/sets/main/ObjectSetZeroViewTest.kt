@@ -43,7 +43,6 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        initDataViewSubscriptionContainer()
     }
 
     @Test
@@ -54,7 +53,6 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             content = DV(
-                relations = emptyList(),
                 viewers = emptyList()
             ),
             children = emptyList(),
@@ -62,7 +60,7 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
         )
 
         stubInterceptEvents()
-        stubOpenObjectSet(
+        stubOpenObject(
             doc = listOf(
                 header,
                 title,

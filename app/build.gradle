@@ -203,6 +203,7 @@ dependencies {
     implementation libs.zxing
 
     implementation libs.androidxSecurityCrypto
+    implementation libs.middleware
 
     //Unit/Integration tests dependencies
     testImplementation libs.androidXTestCore

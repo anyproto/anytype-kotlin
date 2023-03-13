@@ -61,7 +61,6 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = emptyList(),
                 viewers = listOf(viewer),
                 
             )

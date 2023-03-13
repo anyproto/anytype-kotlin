@@ -5,17 +5,17 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.ViewerFilterFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Scope
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [ViewerFilterModule::class])
 @ViewerFilterByScope
@@ -36,7 +36,7 @@ object ViewerFilterModule {
     @Provides
     @ViewerFilterByScope
     fun provideViewerFilterViewModelFactory(
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,

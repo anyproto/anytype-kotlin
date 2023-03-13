@@ -57,7 +57,7 @@ import javax.inject.Singleton
         EmojiModule::class,
         ClipboardModule::class,
         AnalyticsModule::class,
-        LocalNetworkAddressModule::class,
+        LocalNetworkProviderModule::class,
         SubscriptionsModule::class
     ]
 )

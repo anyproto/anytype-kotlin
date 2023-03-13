@@ -35,7 +35,8 @@ class ObjectTypesSubscriptionContainer(
                 noDepSubscription = true,
                 ignoreWorkspace = params.ignoreWorkspace,
                 afterId = null,
-                beforeId = null
+                beforeId = null,
+                collection = null
             )
             store.merge(
                 types = initial.results.map { ObjectWrapper.Type(it.map) }

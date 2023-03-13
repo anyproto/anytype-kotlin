@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -75,7 +76,8 @@ open class  EditorViewModelFactory(
     private val featureToggles: FeatureToggles,
     private val tableDelegate: EditorTableDelegate,
     private val workspaceManager: WorkspaceManager,
-    private val getObjectTypes: GetObjectTypes
+    private val getObjectTypes: GetObjectTypes,
+    private val objectToCollection: ConvertObjectToCollection
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -114,7 +116,8 @@ open class  EditorViewModelFactory(
             featureToggles = featureToggles,
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
-            getObjectTypes = getObjectTypes
+            getObjectTypes = getObjectTypes,
+            objectToCollection = objectToCollection
         ) as T
     }
 }

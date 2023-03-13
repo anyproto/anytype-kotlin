@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 class ObjectSearchExtensionsTest {
 
     @Test
-    fun `should return sorted views with set, without bookmark and page`() {
+    fun `should return sorted views with set and collection, without bookmark and page`() {
 
         val searchObjectsResponse = MockObjectTypes.objectTypeList
         val excludeTypes = listOf(MockObjectTypes.objectTypePage.id)
@@ -19,15 +19,16 @@ class ObjectSearchExtensionsTest {
 
         val expected = listOf(
             MockObjectTypes.objectTypeNote,
-            MockObjectTypes.objectTypeSet,
+            MockObjectTypes.objectTypeCollection,
             MockObjectTypes.objectTypeTask,
             MockObjectTypes.objectTypeCustom,
             MockObjectTypes.objectTypeHuman,
+            MockObjectTypes.objectTypeSet
         )
             .map { it.toObjectTypeView(selectedSources = selectedTypes) }
 
         val actual = searchObjectsResponse.getObjectTypeViewsForSBPage(
-            isWithSet = true,
+            isWithCollection = true,
             isWithBookmark = false,
             excludeTypes = excludeTypes,
             selectedTypes = selectedTypes
@@ -64,7 +65,7 @@ class ObjectSearchExtensionsTest {
             .map { it.toObjectTypeView(selectedSources = selectedTypes) }
 
         val actual = searchObjectsResponse.getObjectTypeViewsForSBPage(
-            isWithSet = false,
+            isWithCollection = false,
             isWithBookmark = true,
             excludeTypes = excludeTypes,
             selectedTypes = selectedTypes

@@ -6,26 +6,31 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
-    private val reducer: ObjectSetReducer,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
     private val setObjectDetails: UpdateDetail,
@@ -44,15 +49,20 @@ class ObjectSetViewModelFactory(
     private val createObject: CreateObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
-    private val setDataViewQuery: SetDataViewQuery,
+    private val setQueryToObjectSet: SetQueryToObjectSet,
     private val database: ObjectSetDatabase,
     private val paginator: ObjectSetPaginator,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val objectStateReducer: ObjectStateReducer,
+    private val dataViewSubscription: DataViewSubscription,
+    private val workspaceManager: WorkspaceManager,
+    private val objectStore: ObjectStore,
+    private val addObjectToCollection: AddObjectToCollection,
+    private val objectToCollection: ConvertObjectToCollection
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectSetViewModel(
-            reducer = reducer,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
             setObjectDetails = setObjectDetails,
@@ -71,10 +81,16 @@ class ObjectSetViewModelFactory(
             createObject = createObject,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,
-            setDataViewQuery = setDataViewQuery,
+            setQueryToObjectSet = setQueryToObjectSet,
             database = database,
             paginator = paginator,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            stateReducer = objectStateReducer,
+            dataViewSubscription = dataViewSubscription,
+            workspaceManager = workspaceManager,
+            objectStore = objectStore,
+            addObjectToCollection = addObjectToCollection,
+            objectToCollection = objectToCollection
         ) as T
     }
 }

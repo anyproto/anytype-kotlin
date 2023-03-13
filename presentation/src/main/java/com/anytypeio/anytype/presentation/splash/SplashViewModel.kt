@@ -170,7 +170,7 @@ class SplashViewModel(
                             if (SupportedLayouts.layouts.contains(response.obj.layout)) {
                                 val id = response.obj.id
                                 when (response.obj.layout) {
-                                    ObjectType.Layout.SET ->
+                                    ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
                                         commands.emit(Command.NavigateToObjectSet(id))
                                     else ->
                                         commands.emit(Command.NavigateToObject(id))

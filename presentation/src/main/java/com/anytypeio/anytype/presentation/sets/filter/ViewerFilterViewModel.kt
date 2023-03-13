@@ -12,11 +12,12 @@ import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFilterEvent
 import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.relations.filterExpression
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand.Modal
 import com.anytypeio.anytype.presentation.sets.model.FilterView
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.*
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ViewerFilterViewModel(
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
@@ -40,7 +41,7 @@ class ViewerFilterViewModel(
 
     init {
         viewModelScope.launch {
-            objectSetState.filter { it.isInitialized }.collect { objectSet ->
+            objectState.filterIsInstance<ObjectState.DataView>().collect { objectSet ->
                 val filterExpression = objectSet.filterExpression(session.currentViewerId.value)
                 if (filterExpression.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
@@ -157,8 +158,8 @@ class ViewerFilterViewModel(
     }
 
     private fun onRemoveFilterClicked(ctx: Id, filterIndex: Int) {
-        val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
-        val block = objectSetState.value.blocks.first { it.content is DV }
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val filter = viewer.filters.getOrNull(filterIndex)
         if (filter == null) {
             Timber.e("Filter with index $filterIndex not found")
@@ -167,7 +168,7 @@ class ViewerFilterViewModel(
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Filter.Remove(
                 ctx = ctx,
-                dv = block.id,
+                dv = state.dataViewBlock.id,
                 view = viewer.id,
                 ids = listOf(filter.id),
             )
@@ -186,7 +187,7 @@ class ViewerFilterViewModel(
     }
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val state: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
@@ -198,7 +199,7 @@ class ViewerFilterViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerFilterViewModel(
-                objectSetState = state,
+                objectState = state,
                 session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,

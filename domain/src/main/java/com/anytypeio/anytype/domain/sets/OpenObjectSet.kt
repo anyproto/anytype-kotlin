@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+@Deprecated("Legacy. Need to migrate to OpenObject useCase")
 class OpenObjectSet(
     private val repo: BlockRepository,
     private val auth: AuthRepository

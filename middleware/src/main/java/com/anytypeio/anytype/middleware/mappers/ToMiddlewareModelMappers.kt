@@ -444,6 +444,7 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.NOTE -> MOTypeLayout.note
     ObjectType.Layout.SPACE -> MOTypeLayout.space
     ObjectType.Layout.BOOKMARK -> MOTypeLayout.bookmark
+    ObjectType.Layout.COLLECTION -> MOTypeLayout.collection
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

@@ -35,7 +35,8 @@ class RelationsSubscriptionContainer(
                 noDepSubscription = true,
                 ignoreWorkspace = params.ignoreWorkspace,
                 afterId = null,
-                beforeId = null
+                beforeId = null,
+                collection = null
             )
             store.merge(
                 relations = initial.results.map { ObjectWrapper.Relation(it.map) }

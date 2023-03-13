@@ -1,161 +1,151 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.StubDataView
-import com.anytypeio.anytype.core_models.StubDataViewView
-import com.anytypeio.anytype.core_models.StubDataViewViewRelation
-import com.anytypeio.anytype.core_models.StubHeader
-import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.core_models.StubTitle
+import app.cash.turbine.test
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.presentation.collections.MockSet
+import com.anytypeio.anytype.presentation.sets.DataViewViewState
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import kotlin.test.assertIs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SetByRelationTest : ObjectSetViewModelTestSetup() {
 
-    private val title = StubTitle()
-    private val header = StubHeader(children = listOf(title.id))
-
-    private val relations = listOf(
-        StubRelationObject(),
-        StubRelationObject(),
-        StubRelationObject()
-    )
-
-    private val viewer = StubDataViewView(
-        viewerRelations = relations.map {
-            StubDataViewViewRelation(
-                key = it.key
-            )
-        }
-    )
-
-    private val dv = StubDataView(
-        views = listOf(viewer),
-        relations = relations.map {
-            RelationLink(
-                key = it.key,
-                format = it.relationFormat
-            )
-        }
-    )
+    private lateinit var closable: AutoCloseable
+    private lateinit var viewModel: ObjectSetViewModel
+    private lateinit var mockObjectSet: MockSet
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
-        initDataViewSubscriptionContainer()
+        closable = MockitoAnnotations.openMocks(this)
+        viewModel = givenViewModel()
+        mockObjectSet = MockSet(context = root)
+    }
+
+    @After
+    fun after() {
+        rule.advanceTime()
+        closable.close()
     }
 
     @Test
-    fun `should create new object with source object type if given set is aggregated by specific object type`() {
-
+    fun `should create new object with source object type if given set is aggregated by specific object type`() = runTest{
         // SETUP
-
-        val givenSourceType = MockDataFactory.randomUuid()
-
+        stubWorkspaceManager(mockObjectSet.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSearchWithSubscription()
-        stubSubscriptionEventChannel()
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title,
-                dv
-            ),
-            details = Block.Details(
-                mapOf(
-                    root to Block.Fields(
-                        map = mapOf(Relations.SET_OF to listOf(givenSourceType))
-                    ),
-                    givenSourceType to Block.Fields(
-                        map = mapOf(Relations.TYPE to ObjectTypeIds.OBJECT_TYPE)
-                    )
-                )
+        stubStoreOfRelations(mockObjectSet)
+        stubOpenObject(
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            details = mockObjectSet.details
+        )
+        stubGetTemplates(type = mockObjectSet.setOf)
+        stubSubscriptionResults(
+            subscription = mockObjectSet.subscriptionId,
+            workspace = mockObjectSet.workspaceId,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectSet.dvKeys,
+            sources = listOf(mockObjectSet.setOf),
+            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
+            dvFilters = mockObjectSet.filters
+        )
+        doReturn(Unit).`when`(createDataViewObject).invoke(
+            CreateDataViewObject.Params.SetByType(
+                type = mockObjectSet.setOf,
+                filters = mockObjectSet.filters
             )
         )
-        stubGetTemplates(type = givenSourceType)
-
-        val vm = givenViewModel()
-
 
         // TESTING
+        viewModel.onStart(ctx = root)
 
-        with(vm) {
-            onStart(root)
-            onCreateNewDataViewObject()
-        }
+        // ASSERT DATA VIEW STATE
+        viewModel.currentViewer.test {
+            val first = awaitItem()
+            assertIs<DataViewViewState.Init>(first)
 
-        verifyBlocking(createDataViewObject, times(1)) {
-            invoke(
-                CreateDataViewObject.Params.SetByType(
-                    type = givenSourceType,
-                    filters = viewer.filters
+            val second = awaitItem()
+            assertIs<DataViewViewState.Set.NoItems>(second)
+
+            val third = awaitItem()
+            assertIs<DataViewViewState.Set.Default>(third)
+
+            viewModel.onCreateNewDataViewObject()
+
+            advanceUntilIdle()
+            verifyBlocking(createDataViewObject, times(1)) {
+                invoke(
+                    CreateDataViewObject.Params.SetByType(
+                        type = mockObjectSet.setOf,
+                        filters = mockObjectSet.filters
+                    )
                 )
-            )
+            }
         }
     }
 
     @Test
-    fun `should create new object with default object type if given set is aggregated by relations`() {
-
+    fun `should create new object with default object type if given set is aggregated by relations`() = runTest {
         // SETUP
-
-        val givenSourceRelation = relations.random()
-
+        stubWorkspaceManager(mockObjectSet.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSearchWithSubscription()
-        stubSubscriptionEventChannel()
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title,
-                dv
-            ),
-            details = Block.Details(
-                mapOf(
-                    root to Block.Fields(
-                        map = mapOf(
-                            Relations.SET_OF to listOf(givenSourceRelation.id)
-                        )
-                    ),
-                    givenSourceRelation.id to Block.Fields(
-                        map = mapOf(
-                            Relations.ID to givenSourceRelation.id,
-                            Relations.RELATION_KEY to givenSourceRelation.key,
-                            Relations.TYPE to ObjectTypeIds.RELATION
-                        )
-                    )
-                )
+        stubStoreOfRelations(mockObjectSet)
+        stubOpenObject(
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            details = mockObjectSet.detailsSetByRelation
+        )
+        stubGetTemplates(type = mockObjectSet.setOf)
+        stubSubscriptionResults(
+            subscription = mockObjectSet.subscriptionId,
+            workspace = mockObjectSet.workspaceId,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectSet.dvKeys,
+            sources = listOf(mockObjectSet.relationObject3.id),
+            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
+            dvFilters = mockObjectSet.filters
+        )
+        doReturn(Unit).`when`(createDataViewObject).invoke(
+            CreateDataViewObject.Params.SetByRelation(
+                relations = listOf(mockObjectSet.relationObject3.id),
+                filters = mockObjectSet.filters
             )
         )
 
-        val vm = givenViewModel()
-
         // TESTING
+        viewModel.onStart(ctx = root)
 
-        with(vm) {
-            onStart(root)
-            onCreateNewDataViewObject()
-        }
+        // ASSERT DATA VIEW STATE
+        viewModel.currentViewer.test {
+            val first = awaitItem()
+            assertIs<DataViewViewState.Init>(first)
 
-        verifyBlocking(createDataViewObject, times(1)) {
-            invoke(
-                CreateDataViewObject.Params.SetByRelation(
-                    filters = viewer.filters,
-                    relations = listOf(givenSourceRelation.id)
+            val second = awaitItem()
+            assertIs<DataViewViewState.Set.NoItems>(second)
+
+            val third = awaitItem()
+            assertIs<DataViewViewState.Set.Default>(third)
+
+            viewModel.onCreateNewDataViewObject()
+
+            advanceUntilIdle()
+            verifyBlocking(createDataViewObject, times(1)) {
+                invoke(
+                    CreateDataViewObject.Params.SetByRelation(
+                        relations = listOf(mockObjectSet.relationObject3.id),
+                        filters = mockObjectSet.filters
+                    )
                 )
-            )
+            }
         }
     }
 }

@@ -4,14 +4,14 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [ManageViewerModule::class])
 @PerModal
@@ -31,12 +31,12 @@ object ManageViewerModule {
     @Provides
     @PerModal
     fun provideManageViewerViewModelFactory(
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics
     ): ManageViewerViewModel.Factory = ManageViewerViewModel.Factory(
-        state = state,
+        objectState = state,
         session = session,
         dispatcher = dispatcher,
         analytics = analytics

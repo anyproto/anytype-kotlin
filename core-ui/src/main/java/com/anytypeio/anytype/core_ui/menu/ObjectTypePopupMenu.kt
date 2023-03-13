@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.menu
 
 import android.content.Context
+import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
 import com.anytypeio.anytype.core_ui.R
@@ -12,7 +13,7 @@ class ObjectTypePopupMenu(
     onOpenSetClicked: () -> Unit,
     allowChangingObjectType: Boolean = false,
     allowOnlyChangingType: Boolean = false
-) : PopupMenu(context, view) {
+) : PopupMenu(context, view, Gravity.BOTTOM, 0, R.style.DefaultPopupMenuStyle) {
     init {
         if (allowOnlyChangingType) {
             menuInflater.inflate(R.menu.menu_object_type_only, menu)

@@ -9,16 +9,17 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ManageViewerViewModel(
-    private val state: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics
@@ -30,7 +31,7 @@ class ManageViewerViewModel(
 
     init {
         viewModelScope.launch {
-            state.filter { it.isInitialized }.collect { s ->
+            objectState.filterIsInstance<ObjectState.DataView>().collect { s ->
                 _views.value = s.viewers.mapIndexed { index, viewer ->
                     ViewerView(
                         id = viewer.id,
@@ -89,7 +90,7 @@ class ManageViewerViewModel(
     }
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val objectState: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics
@@ -97,7 +98,7 @@ class ManageViewerViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ManageViewerViewModel(
-                state = state,
+                objectState = objectState,
                 session = session,
                 dispatcher = dispatcher,
                 analytics = analytics

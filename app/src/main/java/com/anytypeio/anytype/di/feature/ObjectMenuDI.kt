@@ -20,10 +20,11 @@ import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProviderImpl
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.menu.ObjectSetMenuViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
@@ -31,7 +32,10 @@ import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 
 
@@ -147,7 +151,7 @@ object ObjectSetMenuModule {
         delegator: Delegator<Action>,
         urlBuilder: UrlBuilder,
         analytics: Analytics,
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         featureToggles: FeatureToggles,
         dispatcher: Dispatcher<Payload>
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
@@ -159,7 +163,7 @@ object ObjectSetMenuModule {
         urlBuilder = urlBuilder,
         delegator = delegator,
         analytics = analytics,
-        state = state,
+        objectState = state,
         dispatcher = dispatcher,
         menuOptionsProvider = createMenuOptionsProvider(state, featureToggles)
     )
@@ -186,12 +190,20 @@ object ObjectSetMenuModule {
 
     @JvmStatic
     private fun createMenuOptionsProvider(
-        state: StateFlow<ObjectSet>,
+        state: StateFlow<ObjectState>,
         featureToggles: FeatureToggles
-    ) =
-        ObjectMenuOptionsProviderImpl(
-            details = state.map { it.details },
-            restrictions = state.map { it.objectRestrictions },
-            featureToggles = featureToggles
-        )
+    ): ObjectMenuOptionsProvider {
+        return when (val currentState = state.value) {
+            is ObjectState.DataView -> ObjectMenuOptionsProviderImpl(
+                details = state.map { currentState.details }.distinctUntilChanged(),
+                restrictions = state.map { currentState.objectRestrictions }.distinctUntilChanged(),
+                featureToggles = featureToggles
+            )
+            else -> ObjectMenuOptionsProviderImpl(
+                details = emptyFlow(),
+                restrictions = emptyFlow(),
+                featureToggles = featureToggles
+            )
+        }
+    }
 }

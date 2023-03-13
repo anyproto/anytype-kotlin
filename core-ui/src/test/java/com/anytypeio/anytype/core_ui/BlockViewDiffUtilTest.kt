@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
@@ -1046,14 +1046,14 @@ class BlockViewDiffUtilTest {
 
         val index = 0
 
-        val view = DocumentRelationView.Default(
-            relationId = MockDataFactory.randomUuid(),
-            relationKey = Relations.TYPE,
+        val view = ObjectRelationView.Default(
+            id = MockDataFactory.randomUuid(),
+            key = Relations.TYPE,
             value = null,
             format = RelationFormat.values().random(),
             name = MockDataFactory.randomString(),
-            isSystem = false,
-            isReadOnly = false
+            system = false,
+            readOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1093,14 +1093,14 @@ class BlockViewDiffUtilTest {
 
         val index = 0
 
-        val view = DocumentRelationView.Default(
-            relationId = MockDataFactory.randomUuid(),
-            relationKey = Relations.TYPE,
+        val view = ObjectRelationView.Default(
+            id = MockDataFactory.randomUuid(),
+            key = Relations.TYPE,
             value = null,
             format = RelationFormat.values().random(),
             name = MockDataFactory.randomString(),
-            isSystem = false,
-            isReadOnly = false
+            system = false,
+            readOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1140,13 +1140,13 @@ class BlockViewDiffUtilTest {
 
         val index = 0
 
-        val view = DocumentRelationView.Checkbox(
-            relationId = MockDataFactory.randomUuid(),
-            relationKey = Relations.TYPE,
+        val view = ObjectRelationView.Checkbox(
+            id = MockDataFactory.randomUuid(),
+            key = Relations.TYPE,
             name = MockDataFactory.randomString(),
             isChecked = MockDataFactory.randomBoolean(),
-            isSystem = false,
-            isReadOnly = false
+            system = false,
+            readOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1198,13 +1198,13 @@ class BlockViewDiffUtilTest {
             color = ""
         )
 
-        val oldView = DocumentRelationView.Status(
-            relationId = MockDataFactory.randomUuid(),
-            relationKey = Relations.TYPE,
+        val oldView = ObjectRelationView.Status(
+            id = MockDataFactory.randomUuid(),
+            key = Relations.TYPE,
             name = MockDataFactory.randomString(),
             status = listOf(oldStatus),
-            isSystem = false,
-            isReadOnly = false
+            system = false,
+            readOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1256,13 +1256,13 @@ class BlockViewDiffUtilTest {
             color = ""
         )
 
-        val oldView = DocumentRelationView.Tags(
-            relationId = MockDataFactory.randomUuid(),
-            relationKey = Relations.TYPE,
+        val oldView = ObjectRelationView.Tags(
+            id = MockDataFactory.randomUuid(),
+            key = Relations.TYPE,
             name = MockDataFactory.randomString(),
             tags = listOf(oldTag),
-            isSystem = true,
-            isReadOnly = false
+            system = true,
+            readOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1313,13 +1313,13 @@ class BlockViewDiffUtilTest {
             name = MockDataFactory.randomString()
         )
 
-        val oldView = DocumentRelationView.Object(
-            relationId = MockDataFactory.randomUuid(),
-            relationKey = Relations.TYPE,
+        val oldView = ObjectRelationView.Object(
+            id = MockDataFactory.randomUuid(),
+            key = Relations.TYPE,
             name = MockDataFactory.randomString(),
             objects = listOf(oldObject),
-            isSystem = true,
-            isReadOnly = false
+            system = true,
+            readOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(
@@ -1370,13 +1370,13 @@ class BlockViewDiffUtilTest {
             name = MockDataFactory.randomString()
         )
 
-        val oldView = DocumentRelationView.File(
-            relationKey = MockDataFactory.randomUuid(),
-            relationId = MockDataFactory.randomUuid(),
+        val oldView = ObjectRelationView.File(
+            key = MockDataFactory.randomUuid(),
+            id = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
             files = listOf(oldFile),
-            isSystem = false,
-            isReadOnly = false
+            system = false,
+            readOnly = false
         )
 
         val oldBlock = BlockView.Relation.Related(

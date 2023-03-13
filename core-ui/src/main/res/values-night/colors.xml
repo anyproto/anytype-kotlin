@@ -23,6 +23,9 @@
     <color name="glyph_white">#FFFFFF</color>
     <color name="glyph_label">#000000</color>
 
+    <color name="button_text">#000000</color>
+    <color name="button_pressed">#BEBCB1</color>
+
     <color name="dashboard_card_background">#99000000</color>
     <color name="dashboard_background">#99252525</color>
 
@@ -67,5 +70,6 @@
     <color name="object_loading_state_gradient_end_color">#1F1E1D</color>
 
     <color name="library_action_btn_text_color">#000000</color>
+    <color name="set_new_btn_text">#000000</color>
 
 </resources>

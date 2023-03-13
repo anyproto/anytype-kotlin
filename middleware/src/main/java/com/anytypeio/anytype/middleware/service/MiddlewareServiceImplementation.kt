@@ -580,40 +580,41 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response {
-        val encoded = Service.debugExportLocalstore(
-            Rpc.Debug.ExportLocalstore.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.Debug.ExportLocalstore.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Debug.ExportLocalstore.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response {
-        val encoded = Service.debugTree(Rpc.Debug.Tree.Request.ADAPTER.encode(request))
-        val response = Rpc.Debug.Tree.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Debug.Tree.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response {
-        val encoded = Service.debugSync(Rpc.Debug.Sync.Request.ADAPTER.encode(request))
-        val response = Rpc.Debug.Sync.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Debug.Sync.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
+//todo revive debug methods
+//    override fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response {
+//        val encoded = Service.debugExportLocalstore(
+//            Rpc.Debug.ExportLocalstore.Request.ADAPTER.encode(request)
+//        )
+//        val response = Rpc.Debug.ExportLocalstore.Response.ADAPTER.decode(encoded)
+//        val error = response.error
+//        if (error != null && error.code != Rpc.Debug.ExportLocalstore.Response.Error.Code.NULL) {
+//            throw Exception(error.description)
+//        } else {
+//            return response
+//        }
+//    }
+//
+//    override fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response {
+//        val encoded = Service.debugTree(Rpc.Debug.Tree.Request.ADAPTER.encode(request))
+//        val response = Rpc.Debug.Tree.Response.ADAPTER.decode(encoded)
+//        val error = response.error
+//        if (error != null && error.code != Rpc.Debug.Tree.Response.Error.Code.NULL) {
+//            throw Exception(error.description)
+//        } else {
+//            return response
+//        }
+//    }
+//
+//    override fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response {
+//        val encoded = Service.debugSync(Rpc.Debug.Sync.Request.ADAPTER.encode(request))
+//        val response = Rpc.Debug.Sync.Response.ADAPTER.decode(encoded)
+//        val error = response.error
+//        if (error != null && error.code != Rpc.Debug.Sync.Response.Error.Code.NULL) {
+//            throw Exception(error.description)
+//        } else {
+//            return response
+//        }
+//    }
 
     override fun fileListOffload(request: Rpc.File.ListOffload.Request): Rpc.File.ListOffload.Response {
         val encoded = Service.fileListOffload(
@@ -800,6 +801,39 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Object.ToSet.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.ToSet.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectToCollection(request: Rpc.Object.ToCollection.Request): Rpc.Object.ToCollection.Response {
+        val encoded = Service.objectToCollection(Rpc.Object.ToCollection.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.ToCollection.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.ToCollection.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun addObjectToCollection(request: Rpc.ObjectCollection.Add.Request): Rpc.ObjectCollection.Add.Response {
+        val encoded = Service.objectCollectionAdd(Rpc.ObjectCollection.Add.Request.ADAPTER.encode(request))
+        val response = Rpc.ObjectCollection.Add.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectCollection.Add.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun setObjectSource(request: Rpc.Object.SetSource.Request): Rpc.Object.SetSource.Response {
+        val encoded = Service.objectSetSource(Rpc.Object.SetSource.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.SetSource.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.SetSource.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

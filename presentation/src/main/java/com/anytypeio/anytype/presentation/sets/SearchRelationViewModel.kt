@@ -8,6 +8,7 @@ import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
  * Inherit this class in order to enable search-for-relations feature.
  */
 abstract class SearchRelationViewModel(
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val storeOfRelations: StoreOfRelations
 ) : BaseListViewModel<SimpleRelationView>() {
@@ -38,7 +39,7 @@ abstract class SearchRelationViewModel(
         viewModelScope.launch {
             _views.value =
                 filterRelationsFromAlreadyInUse(
-                    set = objectSetState.value,
+                    objectState = objectState.value,
                     viewerId = session.currentViewerId.value,
                     storeOfRelations = storeOfRelations
                 )
@@ -48,9 +49,9 @@ abstract class SearchRelationViewModel(
         viewModelScope.launch {
             query
                 .consumeAsFlow()
-                .withLatestFrom(objectSetState) { query, state ->
+                .withLatestFrom(objectState) { query, state ->
                     val relations = filterRelationsFromAlreadyInUse(
-                        set = state,
+                        objectState = state,
                         viewerId = session.currentViewerId.value,
                         storeOfRelations = storeOfRelations
                     )
@@ -70,11 +71,11 @@ abstract class SearchRelationViewModel(
     }
 
     protected open suspend fun filterRelationsFromAlreadyInUse(
-        set: ObjectSet,
+        objectState: ObjectState,
         viewerId: String?,
         storeOfRelations: StoreOfRelations
     ): List<SimpleRelationView> {
-        return set.simpleRelations(
+        return objectState.simpleRelations(
             viewerId = viewerId,
             storeOfRelations = storeOfRelations
         )

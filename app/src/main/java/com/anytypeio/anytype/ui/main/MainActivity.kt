@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
+import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.main.MainViewModel
@@ -31,10 +32,10 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
 
@@ -53,6 +54,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     @Inject
     lateinit var themeApplicator: ThemeApplicator
+
+    @Inject
+    lateinit var mdnsProvider: MDNSProvider
 
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
@@ -159,16 +163,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onResume() {
         super.onResume()
+        mdnsProvider.start()
         navigator.bind(findNavController(R.id.fragment))
     }
 
     override fun onPause() {
         super.onPause()
+        mdnsProvider.stop()
         navigator.unbind()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        mdnsProvider.stop()
         release()
     }
 

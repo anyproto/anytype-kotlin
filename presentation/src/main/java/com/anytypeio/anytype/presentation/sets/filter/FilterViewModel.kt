@@ -40,25 +40,26 @@ import com.anytypeio.anytype.presentation.relations.toCreateFilterTagView
 import com.anytypeio.anytype.presentation.relations.toFilterValue
 import com.anytypeio.anytype.presentation.relations.toViewRelation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 open class FilterViewModel(
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
@@ -90,7 +91,6 @@ open class FilterViewModel(
         jobs += viewModelScope.launch {
             conditionState.collect { condition ->
                 setValueStates(
-                    objectSet = objectSetState.value,
                     condition = condition?.condition,
                     index = filterIndex
                 )
@@ -113,8 +113,8 @@ open class FilterViewModel(
 
     private fun initStates() {
         jobs += viewModelScope.launch {
-            objectSetState.filter { it.isInitialized }.collect { state ->
-                val viewer = state.viewerById(session.currentViewerId.value)
+            objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
+                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
                 val key = relationKey
                 if (key != null) {
                     val relation = storeOfRelations.getByKey(key)
@@ -126,7 +126,6 @@ open class FilterViewModel(
                         )
                         setConditionState(viewer, relation, filterIndex)
                         setValueStates(
-                            objectSet = objectSetState.value,
                             condition = conditionState.value?.condition,
                             index = filterIndex
                         )
@@ -214,7 +213,6 @@ open class FilterViewModel(
     }
 
     private suspend fun setValueStates(
-        objectSet: ObjectSet,
         condition: Viewer.Filter.Condition?,
         index: Int?
     ) {
@@ -224,14 +222,15 @@ open class FilterViewModel(
             return
         }
 
-        val viewer = objectSet.viewerById(session.currentViewerId.value)
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val key = relationKey
         if (key != null) {
             val relation = storeOfRelations.getByKey(key) ?: return
             if (index == null) {
                 filterValueState.value = relation.toFilterValue(
                     value = null,
-                    details = objectSet.details,
+                    details = state.details,
                     urlBuilder = urlBuilder,
                     store = objectSetDatabase.store
                 )
@@ -245,7 +244,7 @@ open class FilterViewModel(
                 check(filter.relation == relation.key) { "Incorrect filter state" }
                 filterValueState.value = relation.toFilterValue(
                     value = filter.value,
-                    details = objectSet.details,
+                    details = state.details,
                     urlBuilder = urlBuilder,
                     store = objectSetDatabase.store
                 )
@@ -586,9 +585,9 @@ open class FilterViewModel(
             condition = condition,
             format = format
         )
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         viewModelScope.launch {
-            val block = objectSetState.value.dataview
-            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
             val filterId = viewer.filters.getOrNull(idx)?.id
             if (filterId == null) {
                 commands.emit(Commands.Toast("Filter with index $idx not found"))
@@ -597,7 +596,7 @@ open class FilterViewModel(
             }
             proceedWithUpdatingFilter(
                 ctx = ctx,
-                target = block.id,
+                target = state.dataViewBlock.id,
                 viewer = viewer,
                 updatedFilter = DVFilter(
                     id = filterId,
@@ -620,9 +619,9 @@ open class FilterViewModel(
         checkNotNull(relation)
         val idx = filterIndex
         checkNotNull(idx)
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         viewModelScope.launch {
-            val block = objectSetState.value.dataview
-            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
             val filterId = viewer.filters.getOrNull(idx)?.id
             if (filterId == null) {
                 commands.emit(Commands.Toast("Filter with index $idx not found"))
@@ -641,7 +640,7 @@ open class FilterViewModel(
                         }
                         proceedWithUpdatingFilter(
                             ctx = ctx,
-                            target = block.id,
+                            target = state.dataViewBlock.id,
                             viewer = viewer,
                             updatedFilter = DVFilter(
                                 id = filterId,
@@ -664,7 +663,7 @@ open class FilterViewModel(
                         }
                         proceedWithUpdatingFilter(
                             ctx = ctx,
-                            target = block.id,
+                            target = state.dataViewBlock.id,
                             viewer = viewer,
                             updatedFilter = DVFilter(
                                 id = filterId,
@@ -684,7 +683,7 @@ open class FilterViewModel(
                             .firstOrNull { it.isSelected }
                         proceedWithUpdatingFilter(
                             ctx = ctx,
-                            target = block.id,
+                            target = state.dataViewBlock.id,
                             viewer = viewer,
                             updatedFilter = DVFilter(
                                 id = filterId,
@@ -708,7 +707,7 @@ open class FilterViewModel(
                         }
                         proceedWithUpdatingFilter(
                             ctx = ctx,
-                            target = block.id,
+                            target = state.dataViewBlock.id,
                             viewer = viewer,
                             updatedFilter = DVFilter(
                                 id = filterId,
@@ -726,7 +725,7 @@ open class FilterViewModel(
                         val value = filterValueListState.value.checkboxFilterValue()
                         proceedWithUpdatingFilter(
                             ctx = ctx,
-                            target = block.id,
+                            target = state.dataViewBlock.id,
                             viewer = viewer,
                             updatedFilter = DVFilter(
                                 id = filterId,
@@ -775,11 +774,11 @@ open class FilterViewModel(
         quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
         value: Any? = null
     ) {
-        val block = objectSetState.value.dataview
-        val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val params = UpdateDataViewViewer.Params.Filter.Add(
             ctx = ctx,
-            dv = block.id,
+            dv = state.dataViewBlock.id,
             view = viewer.id,
             relationKey = relationKey,
             relationFormat = relationFormat,
@@ -852,7 +851,7 @@ open class FilterViewModel(
     }
 
     class Factory(
-        private val objectSetState: StateFlow<ObjectSet>,
+        private val objectState: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
@@ -868,7 +867,7 @@ open class FilterViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return FilterViewModel(
-                objectSetState = objectSetState,
+                objectState = objectState,
                 session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,

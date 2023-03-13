@@ -13,11 +13,14 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.children
@@ -44,6 +47,7 @@ import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -64,6 +68,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
@@ -104,6 +109,9 @@ open class ObjectSetFragment :
     private val title: TextInputWidget
         get() = binding.objectHeader.root.findViewById(R.id.tvSetTitle)
 
+    private val header: LinearLayout
+        get() = binding.objectHeader.root
+
     private val topToolbarTitle: TextView
         get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
 
@@ -120,13 +128,13 @@ open class ObjectSetFragment :
         get() = binding.topToolbar.root.findViewById(R.id.tvStatus)
 
     private val addNewButton: TextView
-        get() = binding.dataViewHeader.root.findViewById(R.id.addNewButton)
+        get() = binding.dataViewHeader.addNewButton
 
     private val customizeViewButton: ImageView
-        get() = binding.dataViewHeader.root.findViewById(R.id.customizeViewButton)
+        get() = binding.dataViewHeader.customizeViewButton
 
     private val tvCurrentViewerName: TextView
-        get() = binding.dataViewHeader.root.findViewById(R.id.tvCurrentViewerName)
+        get() = binding.dataViewHeader.tvCurrentViewerName
 
     private val menuButton: FrameLayout
         get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
@@ -134,6 +142,14 @@ open class ObjectSetFragment :
     private val featuredRelations: FeaturedRelationGroupWidget
         get() = binding.objectHeader.root.findViewById(R.id.featuredRelationsWidget)
 
+    private val dataViewHeader: ConstraintLayout
+        get() = binding.dataViewHeader.root
+
+    private val viewerTitle: TextView
+        get() = binding.dataViewHeader.root.findViewById(R.id.tvCurrentViewerName)
+
+    private val initView: View get() = binding.initState.root
+    private val dataViewInfo: DataViewInfo get() = binding.dataViewInfo
     private val rvHeaders: RecyclerView get() = binding.root.findViewById(R.id.rvHeader)
     private val rvRows: RecyclerView get() = binding.root.findViewById(R.id.rvRows)
 
@@ -189,6 +205,14 @@ open class ObjectSetFragment :
 
         with(lifecycleScope) {
             subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewDataViewObject() }
+            subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
+                when (type) {
+                    DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()
+                    DataViewInfo.TYPE.SET_NO_QUERY -> vm.onSelectQueryButtonClicked()
+                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.onCreateNewDataViewObject()
+                    DataViewInfo.TYPE.INIT -> {}
+                }
+            }
             subscribe(title.editorActionEvents(actionHandler)) {
                 title.apply {
                     hideKeyboard()
@@ -264,11 +288,11 @@ open class ObjectSetFragment :
         )
 
         setFragmentResultListener(BaseObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
-            val source = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
-            if (source != null) {
-                vm.onDataViewQueryPicked(source = source)
+            val query = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
+            if (query != null) {
+                vm.onObjectSetQueryPicked(query = query)
             } else {
-                toast("Error while setting Set source. Source is empty")
+                toast("Error while setting the Set query. The query is empty")
             }
         }
     }
@@ -340,7 +364,7 @@ open class ObjectSetFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        lifecycleScope.subscribe(vm.toasts.stream()) { toast(it) }
+        lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.status) { setStatus(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
@@ -359,13 +383,106 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setupViewer(viewer: Viewer?) {
-        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text =
-            viewer?.title
+    private fun setupDataViewViewState(state: DataViewViewState) {
+        when (state) {
+            DataViewViewState.Collection.NoView, DataViewViewState.Set.NoView -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                dataViewHeader.gone()
+                dataViewInfo.hide()
+                toast(getString(R.string.set_collection_view_not_present))
+                setViewer(viewer = null)
+            }
+            is DataViewViewState.Collection.NoItems -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                header.visible()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = true
+                addNewButton.isEnabled = true
+                customizeViewButton.isEnabled = true
+                viewerTitle.text = state.title
+                dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
+                setViewer(viewer = null)
+            }
+            is DataViewViewState.Collection.Default -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = true
+                addNewButton.isEnabled = true
+                customizeViewButton.isEnabled = true
+                viewerTitle.text = state.viewer?.title ?: getString(R.string.viewer_default_title)
+                dataViewInfo.hide()
+                setViewer(viewer = state.viewer)
+            }
+            DataViewViewState.Set.NoQuery -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                header.visible()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = false
+                addNewButton.isEnabled = false
+                customizeViewButton.isEnabled = false
+                viewerTitle.text = getString(R.string.viewer_default_title)
+                dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_QUERY)
+                setViewer(viewer = null)
+            }
+            is DataViewViewState.Set.NoItems -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                header.visible()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = true
+                addNewButton.isEnabled = true
+                customizeViewButton.isEnabled = true
+                viewerTitle.text = state.title
+                dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS, extra = state.type)
+                setViewer(viewer = null)
+
+            }
+            is DataViewViewState.Set.Default -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                header.visible()
+                viewerTitle.isEnabled = true
+                addNewButton.isEnabled = true
+                customizeViewButton.isEnabled = true
+                viewerTitle.text = state.viewer?.title ?: getString(R.string.viewer_default_title)
+                setViewer(viewer = state.viewer)
+                dataViewInfo.hide()
+            }
+            DataViewViewState.Init -> {
+                topToolbarThreeDotsButton.invisible()
+                topToolbarStatusContainer.invisible()
+                header.gone()
+                dataViewHeader.invisible()
+                initView.visible()
+                dataViewInfo.hide()
+                setViewer(viewer = null)
+            }
+            is DataViewViewState.Error -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                dataViewHeader.gone()
+                toast(state.msg)
+                dataViewInfo.hide()
+                setViewer(viewer = null)
+            }
+        }
+    }
+
+    private fun setViewer(viewer: Viewer?) {
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
-                    dataViewHeader.root.visible()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                     galleryView.clear()
@@ -380,7 +497,6 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
-                    dataViewHeader.root.visible()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                     listView.gone()
@@ -396,7 +512,6 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
-                    dataViewHeader.root.visible()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                     galleryView.gone()
@@ -409,7 +524,6 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
-                    dataViewHeader.root.visible()
                     galleryView.gone()
                     galleryView.clear()
                     listView.gone()
@@ -422,7 +536,6 @@ open class ObjectSetFragment :
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
                 with(binding) {
-                    dataViewHeader.root.invisible()
                     galleryView.gone()
                     galleryView.clear()
                     listView.gone()
@@ -784,7 +897,7 @@ open class ObjectSetFragment :
         super.onStart()
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { bindHeader(it) }
-        jobs += lifecycleScope.subscribe(vm.currentViewer) { setupViewer(it) }
+        jobs += lifecycleScope.subscribe(vm.currentViewer) { setupDataViewViewState(it) }
         jobs += lifecycleScope.subscribe(vm.error) { err ->
             if (err.isNullOrEmpty())
                 binding.tvError.gone()
@@ -801,20 +914,12 @@ open class ObjectSetFragment :
                 binding.paginatorToolbar.gone()
             }
         }
-        jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading ->
-            if (isLoading) {
-                binding.dvProgressBar.show()
-            } else {
-                binding.dvProgressBar.hide()
-            }
-        }
         jobs += lifecycleScope.subscribe(vm.featured) { featured ->
             if (featured != null) {
                 featuredRelations.visible()
                 featuredRelations.set(
                     item = featured,
-                    click = vm::onClickListener,
-                    isObjectSet = true
+                    click = vm::onClickListener
                 )
             } else {
                 featuredRelations.clear()
@@ -880,7 +985,7 @@ open class ObjectSetFragment :
     }
 
     override fun onProceedWithSelectSource(id: Id) {
-        vm.onDataViewQueryPicked(source = id)
+        vm.onObjectSetQueryPicked(query = id)
     }
 
     override fun injectDependencies() {

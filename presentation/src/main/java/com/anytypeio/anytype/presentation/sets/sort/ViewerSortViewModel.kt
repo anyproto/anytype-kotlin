@@ -11,8 +11,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveSortEvent
 import com.anytypeio.anytype.presentation.extension.toView
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ViewerSortViewModel(
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
@@ -35,8 +36,8 @@ class ViewerSortViewModel(
 
     fun onStart() {
         jobs += viewModelScope.launch {
-            objectSetState.filter { it.isInitialized }.collect { state ->
-                val viewer = state.viewerById(session.currentViewerId.value)
+            objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
+                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
                 val sorts = viewer.sorts
                 if (sorts.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
@@ -84,12 +85,12 @@ class ViewerSortViewModel(
     }
 
     fun onRemoveViewerSortClicked(ctx: Id, view: ViewerSortView) {
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         viewModelScope.launch {
-            val state = objectSetState.value
-            val viewer = state.viewerById(session.currentViewerId.value)
             val params = UpdateDataViewViewer.Params.Sort.Remove(
                 ctx = ctx,
-                dv = state.dataview.id,
+                dv = state.dataViewBlock.id,
                 view = viewer.id,
                 ids = listOf(view.sortId)
             )
@@ -134,7 +135,7 @@ class ViewerSortViewModel(
     enum class ScreenState { READ, EDIT, EMPTY }
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val state: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
@@ -144,7 +145,7 @@ class ViewerSortViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerSortViewModel(
-                objectSetState = state,
+                objectState = state,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 dispatcher = dispatcher,

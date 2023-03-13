@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -25,7 +24,7 @@ fun List<ObjectWrapper.Relation>.views(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList()
-): List<DocumentRelationView> = mapNotNull { relation ->
+): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         context = context,
         details = details,
@@ -41,7 +40,7 @@ fun ObjectWrapper.Relation.view(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false
-): DocumentRelationView? {
+): ObjectRelationView? {
     val relation = this
     val relationFormat = relation.relationFormat
     if (relation.isHidden == true || relation.isArchived == true || relation.isDeleted == true) {
@@ -54,14 +53,14 @@ fun ObjectWrapper.Relation.view(
                 details = details.details,
                 builder = urlBuilder
             )
-            DocumentRelationView.Object(
-                relationId = relation.id,
-                relationKey = relation.key,
+            ObjectRelationView.Object(
+                id = relation.id,
+                key = relation.key,
                 name = relation.name.orEmpty(),
                 objects = objects,
-                isFeatured = isFeatured,
-                isReadOnly = relation.isReadonlyValue,
-                isSystem = relation.key.isSystemKey()
+                featured = isFeatured,
+                readOnly = relation.isReadonlyValue,
+                system = relation.key.isSystemKey()
             )
         }
         RelationFormat.FILE -> {
@@ -69,14 +68,14 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 details = details.details
             )
-            DocumentRelationView.File(
-                relationId = relation.id,
-                relationKey = relation.key,
+            ObjectRelationView.File(
+                id = relation.id,
+                key = relation.key,
                 name = relation.name.orEmpty(),
                 files = files,
-                isFeatured = isFeatured,
-                isReadOnly = relation.isReadonlyValue,
-                isSystem = relation.key.isSystemKey()
+                featured = isFeatured,
+                readOnly = relation.isReadonlyValue,
+                system = relation.key.isSystemKey()
             )
         }
         RelationFormat.DATE -> {
@@ -92,15 +91,15 @@ fun ObjectWrapper.Relation.view(
             } else {
                 null
             }
-            DocumentRelationView.Default(
-                relationId = relation.id,
-                relationKey = relation.key,
+            ObjectRelationView.Default(
+                id = relation.id,
+                key = relation.key,
                 name = relation.name.orEmpty(),
                 value = formattedDate,
-                isFeatured = isFeatured,
+                featured = isFeatured,
                 format = relationFormat,
-                isReadOnly = relation.isReadonlyValue,
-                isSystem = relation.key.isSystemKey()
+                readOnly = relation.isReadonlyValue,
+                system = relation.key.isSystemKey()
             )
         }
         RelationFormat.STATUS -> {
@@ -120,27 +119,27 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.CHECKBOX -> {
-            DocumentRelationView.Checkbox(
-                relationId = relation.id,
-                relationKey = relation.key,
+            ObjectRelationView.Checkbox(
+                id = relation.id,
+                key = relation.key,
                 name = relation.name.orEmpty(),
                 isChecked = values[relation.key] as? Boolean ?: false,
-                isFeatured = isFeatured,
-                isReadOnly = relation.isReadonlyValue,
-                isSystem = relation.key.isSystemKey()
+                featured = isFeatured,
+                readOnly = relation.isReadonlyValue,
+                system = relation.key.isSystemKey()
             )
         }
         RelationFormat.NUMBER -> {
             val value = values[relation.key]
-            DocumentRelationView.Default(
-                relationId = relation.id,
-                relationKey = relation.key,
+            ObjectRelationView.Default(
+                id = relation.id,
+                key = relation.key,
                 name = relation.name.orEmpty(),
                 value = NumberParser.parse(value),
-                isFeatured = isFeatured,
-                isReadOnly = relation.isReadonlyValue,
+                featured = isFeatured,
+                readOnly = relation.isReadonlyValue,
                 format = relationFormat,
-                isSystem = relation.key.isSystemKey()
+                system = relation.key.isSystemKey()
             )
         }
         RelationFormat.LONG_TEXT,
@@ -149,15 +148,15 @@ fun ObjectWrapper.Relation.view(
         RelationFormat.EMAIL,
         RelationFormat.PHONE -> {
             val value = values[relation.key]
-            DocumentRelationView.Default(
-                relationId = relation.id,
-                relationKey = relation.key,
+            ObjectRelationView.Default(
+                id = relation.id,
+                key = relation.key,
                 name = relation.name.orEmpty(),
                 value = value as? String,
-                isFeatured = isFeatured,
-                isReadOnly = relation.isReadonlyValue,
+                featured = isFeatured,
+                readOnly = relation.isReadonlyValue,
                 format = relationFormat,
-                isSystem = relation.key.isSystemKey()
+                system = relation.key.isSystemKey()
             )
         }
         else -> null
@@ -169,7 +168,7 @@ fun statusRelation(
     relationDetails: ObjectWrapper.Relation,
     details: Block.Details,
     isFeatured: Boolean
-): DocumentRelationView? {
+): ObjectRelationView? {
     val objectDetails = details.details[context]?.map ?: return null
     val optionId = StatusParser.parse(objectDetails[relationDetails.key])
     val statuses = buildList {
@@ -185,14 +184,14 @@ fun statusRelation(
             )
         }
     }
-    return DocumentRelationView.Status(
-        relationId = relationDetails.id,
-        relationKey = relationDetails.key,
+    return ObjectRelationView.Status(
+        id = relationDetails.id,
+        key = relationDetails.key,
         name = relationDetails.name.orEmpty(),
-        isFeatured = isFeatured,
-        isReadOnly = relationDetails.isReadonlyValue,
+        featured = isFeatured,
+        readOnly = relationDetails.isReadonlyValue,
         status = statuses,
-        isSystem = relationDetails.key.isSystemKey()
+        system = relationDetails.key.isSystemKey()
     )
 }
 
@@ -201,7 +200,7 @@ fun tagRelation(
     relationDetails: ObjectWrapper.Relation,
     details: Block.Details,
     isFeatured: Boolean
-): DocumentRelationView? {
+): ObjectRelationView? {
     val objectDetails = details.details[context]?.map ?: return null
     val tagViews = mutableListOf<TagView>()
     val tagIds = TagParser.parse(objectDetails[relationDetails.key])
@@ -215,14 +214,14 @@ fun tagRelation(
         )
         tagViews.add(tagView)
     }
-    return DocumentRelationView.Tags(
-        relationId = relationDetails.id,
-        relationKey = relationDetails.key,
+    return ObjectRelationView.Tags(
+        id = relationDetails.id,
+        key = relationDetails.key,
         name = relationDetails.name.orEmpty(),
-        isFeatured = isFeatured,
-        isReadOnly = relationDetails.isReadonlyValue,
+        featured = isFeatured,
+        readOnly = relationDetails.isReadonlyValue,
         tags = tagViews,
-        isSystem = relationDetails.key.isSystemKey()
+        system = relationDetails.key.isSystemKey()
     )
 }
 
@@ -230,7 +229,7 @@ fun Block.Details.objectTypeRelation(
     relationKey: Key,
     isFeatured: Boolean,
     objectTypeId: Id
-): DocumentRelationView {
+): ObjectRelationView {
     val typeDetails = details[objectTypeId]?.map
     val objectType = if (typeDetails != null) {
         ObjectWrapper.Type(typeDetails)
@@ -238,22 +237,22 @@ fun Block.Details.objectTypeRelation(
         null
     }
     return if (objectType == null || objectType.isDeleted == true) {
-        DocumentRelationView.ObjectType.Deleted(
-            relationId = objectTypeId,
-            relationKey = relationKey,
-            isFeatured = isFeatured,
-            isReadOnly = false,
-            isSystem = relationKey.isSystemKey()
+        ObjectRelationView.ObjectType.Deleted(
+            id = objectTypeId,
+            key = relationKey,
+            featured = isFeatured,
+            readOnly = false,
+            system = relationKey.isSystemKey()
         )
     } else {
-        DocumentRelationView.ObjectType.Base(
-            relationId = objectTypeId,
-            relationKey = relationKey,
+        ObjectRelationView.ObjectType.Base(
+            id = objectTypeId,
+            key = relationKey,
             name = details[objectTypeId]?.name.orEmpty(),
-            isFeatured = isFeatured,
-            isReadOnly = false,
+            featured = isFeatured,
+            readOnly = false,
             type = objectTypeId,
-            isSystem = relationKey.isSystemKey()
+            system = relationKey.isSystemKey()
         )
     }
 }

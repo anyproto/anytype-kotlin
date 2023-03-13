@@ -153,7 +153,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="hint_type_name_for_new_relation">Name for new relation</string>
     <string name="dv_create_new_object">New</string>
     <string name="content_description_plus_button">Plus button</string>
-    <string name="content_description_customize_view_button">Customize-view button</string>
     <string name="content_description_image_icon">Image icon</string>
     <string name="content_description_emoji_icon">Emoji icon</string>
     <string name="sort_by">Sort by</string>
@@ -219,6 +218,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Unknown type</string>
     <string name="set">Set</string>
+    <string name="collection">Collection</string>
     <string name="layout">Layout</string>
     <string name="restore_from_archive">Restore from archive</string>
     <string name="icon">Icon</string>

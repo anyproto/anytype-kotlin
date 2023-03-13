@@ -5,13 +5,12 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 fun StubDataView(
     id: Id = MockDataFactory.randomUuid(),
     views: List<DVViewer> = emptyList(),
-    relations: List<RelationLink> = emptyList(),
+    relationLinks: List<RelationLink> = emptyList(),
     targetObjectId: Id = MockDataFactory.randomUuid()
 ): Block = Block(
     id = id,
     content = DV(
-        relations = emptyList(),
-        relationsIndex = relations,
+        relationLinks = relationLinks,
         viewers = views,
         targetObjectId = targetObjectId
     ),

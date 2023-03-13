@@ -24,6 +24,7 @@ suspend fun DVViewer.buildListViews(
         when (obj.layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.SET,
+            ObjectType.Layout.COLLECTION,
             ObjectType.Layout.OBJECT_TYPE,
             ObjectType.Layout.RELATION,
             ObjectType.Layout.FILE,

@@ -121,7 +121,6 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer),
                 
             )

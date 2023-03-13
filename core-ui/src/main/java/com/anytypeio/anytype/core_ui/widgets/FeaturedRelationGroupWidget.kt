@@ -13,14 +13,17 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.px
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
 class FeaturedRelationGroupWidget : ConstraintLayout {
@@ -33,14 +36,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         defStyleAttr: Int
     ) : super(context, attrs, defStyleAttr)
 
-    private val defaultTextSize: Float = context.dimen(R.dimen.sp_13)
+    private val defaultTextSize: Float = context.dimen(R.dimen.sp_15)
     private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
     private val defaultTextColor = resources.getColor(R.color.text_secondary, null)
 
     fun set(
         item: BlockView.FeaturedRelation,
-        click: (ListenerType.Relation) -> Unit,
-        isObjectSet: Boolean = false
+        click: (ListenerType.Relation) -> Unit
     ) {
         clear()
 
@@ -60,7 +62,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
 
         item.relations.forEachIndexed { index, relation ->
             when (relation) {
-                is DocumentRelationView.Default -> {
+                is ObjectRelationView.Default -> {
                     val view = TextView(context).apply {
                         id = generateViewId()
                         text = relation.value ?: getPlaceholderHint(relation)
@@ -77,7 +79,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     addView(view)
                     ids.add(view.id)
                 }
-                is DocumentRelationView.Checkbox -> {
+                is ObjectRelationView.Checkbox -> {
                     val view = View(context).apply {
                         id = generateViewId()
                         val size = context.dimen(R.dimen.dp_16).toInt()
@@ -89,7 +91,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     addView(view)
                     ids.add(view.id)
                 }
-                is DocumentRelationView.File -> {
+                is ObjectRelationView.File -> {
                     relation.files.forEach { file ->
                         val view = TextView(context).apply {
                             id = generateViewId()
@@ -113,7 +115,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(placeholder.id)
                     }
                 }
-                is DocumentRelationView.Object -> {
+                is ObjectRelationView.Object -> {
                     relation.objects.forEach { obj ->
                         if (obj is ObjectView.Default) {
                             val view = TextView(context).apply {
@@ -152,7 +154,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(placeholder.id)
                     }
                 }
-                is DocumentRelationView.Status -> {
+                is ObjectRelationView.Status -> {
                     relation.status.forEach { status ->
                         val color = ThemeColor.values().find { v -> v.code == status.color }
                         val view = TextView(context).apply {
@@ -181,7 +183,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(placeholder.id)
                     }
                 }
-                is DocumentRelationView.Tags -> {
+                is ObjectRelationView.Tags -> {
                     relation.tags.forEach { tag ->
                         val color = ThemeColor.values().find { v -> v.code == tag.color }
                         val defaultBackground = resources.getColor(R.color.shape_primary, null)
@@ -219,39 +221,26 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(placeholder.id)
                     }
                 }
-                is DocumentRelationView.ObjectType.Base -> {
-                    val view = TextView(context).apply {
-                        id = generateViewId()
-                        if (relation.name.isEmpty()) {
-                            hint = context.resources.getString(R.string.untitled)
-                        }
-                        text = relation.name
-                        isSingleLine = true
-                        maxLines = 1
-                        ellipsize = TextUtils.TruncateAt.END
-                        setTextColor(defaultTextColor)
-                        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                    }
+                is ObjectRelationView.ObjectType.Base -> {
+                    val view = inflateObjectTypeTextView(name = relation.name)
                     view.setOnClickListener {
-                        if (!isObjectSet) {
-                            val popup = ObjectTypePopupMenu(
-                                context = context,
-                                view = it,
-                                onChangeTypeClicked = {
-                                    click(ListenerType.Relation.ChangeObjectType(type = relation.relationId))
-                                },
-                                onOpenSetClicked = {
-                                    click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
-                                },
-                                allowChangingObjectType = item.allowChangingObjectType
-                            )
-                            popup.show()
-                        }
+                        val popup = ObjectTypePopupMenu(
+                            context = context,
+                            view = it,
+                            onChangeTypeClicked = {
+                                click(ListenerType.Relation.ChangeObjectType(type = relation.id))
+                            },
+                            onOpenSetClicked = {
+                                click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
+                            },
+                            allowChangingObjectType = item.allowChangingObjectType
+                        )
+                        popup.show()
                     }
                     addView(view)
                     ids.add(view.id)
                 }
-                is DocumentRelationView.Source.Base -> {
+                is ObjectRelationView.Source.Base -> {
                     if (relation.sources.isEmpty()) {
                         inflateEmptySourcePlaceholderTextView(
                             click = click,
@@ -273,13 +262,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         }
                     }
                 }
-                is DocumentRelationView.Source.Deleted -> {
+                is ObjectRelationView.Source.Deleted -> {
                     inflateDeletedSourceTextView(
                         click = click,
                         ids = ids
                     )
                 }
-                is DocumentRelationView.ObjectType.Deleted -> {
+                is ObjectRelationView.ObjectType.Deleted -> {
                     val view = TextView(context).apply {
                         id = generateViewId()
                         text = context.resources.getString(R.string.deleted_type)
@@ -294,11 +283,36 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             context = context,
                             view = it,
                             onChangeTypeClicked = {
-                                click(ListenerType.Relation.ChangeObjectType(type = relation.relationId))
+                                click(ListenerType.Relation.ChangeObjectType(type = relation.id))
                             },
                             onOpenSetClicked = {},
                             allowOnlyChangingType = true
                         )
+                        popup.show()
+                    }
+                    addView(view)
+                    ids.add(view.id)
+                }
+                is ObjectRelationView.ObjectType.Collection -> {
+                    val view = inflateObjectTypeTextView(name = relation.name)
+                    addView(view)
+                    ids.add(view.id)
+                }
+                is ObjectRelationView.ObjectType.Set -> {
+                    val view = inflateObjectTypeTextView(name = relation.name)
+                    view.setOnClickListener {
+                        val popup = ObjectSetTypePopupMenu(
+                            context = context,
+                            view = it,
+                            onChangeTypeClicked = {
+                                click(ListenerType.Relation.SetQuery(queries = emptyList()))
+                            },
+                            onConvertToCollection = {
+                                click(ListenerType.Relation.TurnIntoCollection)
+                            }
+                        )
+                        popup.setOnDismissListener { view.background = null }
+                        view.background = context.drawable(R.drawable.bg_featured_relation)
                         popup.show()
                     }
                     addView(view)
@@ -320,6 +334,24 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         flow.referencedIds = ids.toIntArray()
     }
 
+    private fun inflateObjectTypeTextView(name: String): TextView {
+        val textView = TextView(context).apply {
+            id = View.generateViewId()
+            isSingleLine = true
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
+            setPadding(4.px, 2.px, 4.px, 2.px)
+            setTextColor(defaultTextColor)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+        }
+        if (name.isEmpty()) {
+            textView.hint = context.resources.getString(R.string.untitled)
+        } else {
+            textView.text = name
+        }
+        return textView
+    }
+
     private fun inflateEmptySourcePlaceholderTextView(
         click: (ListenerType.Relation) -> Unit,
         ids: MutableList<Int>
@@ -337,7 +369,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     }
 
     private fun inflateDefaultSourceTextView(
-        relation: DocumentRelationView.Source.Base,
+        relation: ObjectRelationView.Source.Base,
         click: (ListenerType.Relation) -> Unit,
         ids: MutableList<Int>
     ) {
@@ -376,7 +408,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     }
 
     private fun inflateSourceByRelationTextView(
-        relation: DocumentRelationView.Source.Base,
+        relation: ObjectRelationView.Source.Base,
         click: (ListenerType.Relation) -> Unit,
         ids: MutableList<Int>
     ) {
@@ -431,7 +463,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             ids.add(view.id)
     }
 
-    private fun getPlaceholderHint(relation: DocumentRelationView.Default): String {
+    private fun getPlaceholderHint(relation: ObjectRelationView.Default): String {
         return when (relation.format) {
             Relation.Format.SHORT_TEXT -> resources.getString(R.string.enter_text)
             Relation.Format.LONG_TEXT -> resources.getString(R.string.enter_text)

@@ -15,9 +15,10 @@ import com.anytypeio.anytype.di.common.HasComponentDependencies
 import com.anytypeio.anytype.di.main.ContextModule
 import com.anytypeio.anytype.di.main.DaggerMainComponent
 import com.anytypeio.anytype.di.main.MainComponent
-import com.anytypeio.anytype.middleware.interactor.LocalNetworkAddressHandler
-import timber.log.Timber
+import com.anytypeio.anytype.middleware.discovery.MDNSProvider
+import com.anytypeio.anytype.middleware.discovery.adresshandler.LocalNetworkAddressProvider
 import javax.inject.Inject
+import timber.log.Timber
 
 class AndroidApplication : Application(), HasComponentDependencies {
 
@@ -25,7 +26,10 @@ class AndroidApplication : Application(), HasComponentDependencies {
     lateinit var amplitudeTracker: AmplitudeTracker
 
     @Inject
-    lateinit var localNetworkAddressHandler: LocalNetworkAddressHandler
+    lateinit var localNetworkAddressHandler: LocalNetworkAddressProvider
+
+    @Inject
+    lateinit var discoveryManager: MDNSProvider
 
     @Inject
     override lateinit var dependencies: ComponentDependenciesProvider
@@ -75,5 +79,6 @@ class AndroidApplication : Application(), HasComponentDependencies {
 
     private fun setupLocalNetworkAddressHandler() {
         localNetworkAddressHandler.start()
+        discoveryManager.setup()
     }
 }

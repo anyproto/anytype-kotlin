@@ -15,7 +15,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.mapper.toView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
@@ -146,22 +146,22 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
                 relations = listOf(
-                    DocumentRelationView.ObjectType.Base(
-                        relationId = objectTypeId,
-                        relationKey = Relations.TYPE,
+                    ObjectRelationView.ObjectType.Base(
+                        id = objectTypeId,
+                        key = Relations.TYPE,
                         name = objectTypeName,
-                        isFeatured = true,
+                        featured = true,
                         type = objectTypeId,
-                        isSystem = true
+                        system = true
                     ),
-                    DocumentRelationView.Default(
-                        relationId = r3.id,
-                        relationKey = r3.key,
+                    ObjectRelationView.Default(
+                        id = r3.id,
+                        key = r3.key,
                         name = r3.name.orEmpty(),
                         value = value3,
-                        isFeatured = true,
+                        featured = true,
                         format = Relation.Format.SHORT_TEXT,
-                        isSystem = false
+                        system = false
                     )
                 )
             ),
@@ -494,13 +494,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
                     relations = listOf(
-                        DocumentRelationView.ObjectType.Base(
-                            relationId = objectTypeId,
-                            relationKey = Relations.TYPE,
+                        ObjectRelationView.ObjectType.Base(
+                            id = objectTypeId,
+                            key = Relations.TYPE,
                             name = objectTypeName,
-                            isFeatured = true,
+                            featured = true,
                             type = objectTypeId,
-                            isSystem = true
+                            system = true
                         )
                     )
                 ),
@@ -625,22 +625,22 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
                     relations = listOf(
-                        DocumentRelationView.ObjectType.Base(
-                            relationId = objectTypeId,
-                            relationKey = Relations.TYPE,
+                        ObjectRelationView.ObjectType.Base(
+                            id = objectTypeId,
+                            key = Relations.TYPE,
                             name = objectTypeName,
-                            isFeatured = true,
+                            featured = true,
                             type = objectTypeId,
-                            isSystem = true
+                            system = true
                         ),
-                        DocumentRelationView.Default(
-                            relationId = r1.id,
-                            relationKey = r1.key,
+                        ObjectRelationView.Default(
+                            id = r1.id,
+                            key = r1.key,
                             name = r1.name.orEmpty(),
                             value = value1,
-                            isFeatured = true,
+                            featured = true,
                             format = Relation.Format.SHORT_TEXT,
-                            isSystem = false
+                            system = false
                         )
                     )
                 ),
@@ -749,20 +749,20 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
                     relations = listOf(
-                        DocumentRelationView.ObjectType.Deleted(
-                            relationId = objectTypeId,
-                            relationKey = Relations.TYPE,
-                            isFeatured = true,
-                            isSystem = true
+                        ObjectRelationView.ObjectType.Deleted(
+                            id = objectTypeId,
+                            key = Relations.TYPE,
+                            featured = true,
+                            system = true
                         ),
-                        DocumentRelationView.Default(
-                            relationId = r3.id,
-                            relationKey = r3.key,
+                        ObjectRelationView.Default(
+                            id = r3.id,
+                            key = r3.key,
                             name = r3.name.orEmpty(),
                             value = value3,
-                            isFeatured = true,
+                            featured = true,
                             format = Relation.Format.SHORT_TEXT,
-                            isSystem = false
+                            system = false
                         )
                     )
                 ),
@@ -877,20 +877,20 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
                 relations = listOf(
-                    DocumentRelationView.ObjectType.Deleted(
-                        relationId = objectTypeId,
-                        relationKey = Relations.TYPE,
-                        isFeatured = true,
-                        isSystem = true
+                    ObjectRelationView.ObjectType.Deleted(
+                        id = objectTypeId,
+                        key = Relations.TYPE,
+                        featured = true,
+                        system = true
                     ),
-                    DocumentRelationView.Default(
-                        relationId = r3.id,
-                        relationKey = r3.key,
+                    ObjectRelationView.Default(
+                        id = r3.id,
+                        key = r3.key,
                         name = r3.name.orEmpty(),
                         value = value3,
-                        isFeatured = true,
+                        featured = true,
                         format = Relation.Format.SHORT_TEXT,
-                        isSystem = false
+                        system = false
                     )
                 )
             ),

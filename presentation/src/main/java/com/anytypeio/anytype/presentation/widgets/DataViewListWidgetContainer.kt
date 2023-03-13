@@ -98,7 +98,7 @@ class DataViewListWidgetContainer(
         val block = blocks.find { it.content is DV } ?: return null
         val dv = block.content<DV>()
         val view = dv.viewers.find { it.id == viewer } ?: dv.viewers.firstOrNull() ?: return null
-        val dataViewKeys = dv.relationsIndex.map { it.key }
+        val dataViewKeys = dv.relationLinks.map { it.key }
         val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
         return StoreSearchParams(
             subscription = widget.id,

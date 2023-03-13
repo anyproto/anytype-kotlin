@@ -2,10 +2,8 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.MockObjectTypes
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
@@ -16,8 +14,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.test.runTest
@@ -499,33 +496,33 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashRelationView.Section.SubheaderWithBack,
             SlashRelationView.RelationNew,
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = relation1.id,
-                    relationKey = relation1.key,
+                view = ObjectRelationView.Default(
+                    id = relation1.id,
+                    key = relation1.key,
                     name = relation1.name.orEmpty(),
                     value = value1,
                     format = relation1.format,
-                    isSystem = false
+                    system = false
                 )
             ),
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = relation2.id,
-                    relationKey = relation2.key,
+                view = ObjectRelationView.Default(
+                    id = relation2.id,
+                    key = relation2.key,
                     name = relation2.name.orEmpty(),
                     value = NumberParser.parse(value2),
                     format = relation2.format,
-                    isSystem = false
+                    system = false
                 )
             ),
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = relation3.id,
-                    relationKey = relation3.key,
+                view = ObjectRelationView.Default(
+                    id = relation3.id,
+                    key = relation3.key,
                     name = relation3.name.orEmpty(),
                     value = value3,
                     format = relation3.format,
-                    isSystem = false
+                    system = false
                 )
             )
         )

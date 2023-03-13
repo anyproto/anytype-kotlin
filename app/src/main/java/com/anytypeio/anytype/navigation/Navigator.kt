@@ -225,7 +225,7 @@ class Navigator : AppNavigation {
                 R.id.dataViewNavigation,
                 bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target),
                 navOptions {
-                    popUpTo(R.id.objectNavigation) { inclusive = true }
+                    popUpTo(R.id.main_navigation) { inclusive = true }
                 }
             )
         } else {

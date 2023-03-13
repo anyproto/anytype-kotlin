@@ -5,7 +5,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Indentable
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import timber.log.Timber
 
 class BlockViewDiffUtil(
@@ -198,33 +198,33 @@ class BlockViewDiffUtil(
             }
 
             when {
-                newRelationView is DocumentRelationView.Default && oldRelationView is DocumentRelationView.Default -> {
+                newRelationView is ObjectRelationView.Default && oldRelationView is ObjectRelationView.Default -> {
                     if (newBlock.view.value != oldBlock.view.value) {
                         changes.add(RELATION_VALUE_CHANGED)
                     }
                 }
-                newRelationView is DocumentRelationView.Checkbox && oldRelationView is DocumentRelationView.Checkbox -> {
+                newRelationView is ObjectRelationView.Checkbox && oldRelationView is ObjectRelationView.Checkbox -> {
                     if (newRelationView.isChecked != oldRelationView.isChecked) {
                         changes.add(RELATION_VALUE_CHANGED)
                     }
                 }
-                newRelationView is DocumentRelationView.Status && oldRelationView is DocumentRelationView.Status -> {
+                newRelationView is ObjectRelationView.Status && oldRelationView is ObjectRelationView.Status -> {
                     if (newRelationView.status != oldRelationView.status) {
                         changes.add(RELATION_VALUE_CHANGED)
                     }
                 }
-                newRelationView is DocumentRelationView.Tags && oldRelationView is DocumentRelationView.Tags -> {
+                newRelationView is ObjectRelationView.Tags && oldRelationView is ObjectRelationView.Tags -> {
                     if (newRelationView.tags != oldRelationView.tags) {
                         changes.add(RELATION_VALUE_CHANGED)
                     }
                 }
-                newRelationView is DocumentRelationView.Object && oldRelationView is DocumentRelationView.Object -> {
+                newRelationView is ObjectRelationView.Object && oldRelationView is ObjectRelationView.Object -> {
                     if (newRelationView.objects != oldRelationView.objects) {
                         changes.add(RELATION_VALUE_CHANGED)
                     }
                 }
 
-                newRelationView is DocumentRelationView.File && oldRelationView is DocumentRelationView.File -> {
+                newRelationView is ObjectRelationView.File && oldRelationView is ObjectRelationView.File -> {
                     if (newRelationView.files != oldRelationView.files) {
                         changes.add(RELATION_VALUE_CHANGED)
                     }

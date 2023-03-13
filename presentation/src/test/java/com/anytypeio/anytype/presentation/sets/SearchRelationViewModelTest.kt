@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.MockRelationFactory.relationStatus
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationTag
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -70,7 +71,7 @@ class SearchRelationViewModelTest {
         val relations = MockRelationFactory.getAllRelations()
 
         val state = MutableStateFlow(
-            MockObjectSetFactory.makeDefaultObjectSet(
+            MockObjectSetFactory.makeDefaultSetObjectState(
                 dataViewId = dataViewId,
                 relations = relations,
                 viewerRelations = listOf(
@@ -194,7 +195,7 @@ class SearchRelationViewModelTest {
         val relations = MockRelationFactory.getAllRelations()
 
         val state = MutableStateFlow(
-            MockObjectSetFactory.makeDefaultObjectSet(
+            MockObjectSetFactory.makeDefaultSetObjectState(
                 dataViewId = dataViewId,
                 relations = relations,
                 viewerRelations = listOf(
@@ -269,9 +270,9 @@ class SearchRelationViewModelTest {
         }
     }
 
-    private fun buildViewModel(state: MutableStateFlow<ObjectSet>): SelectSortRelationViewModel {
+    private fun buildViewModel(state: MutableStateFlow<ObjectState>): SelectSortRelationViewModel {
         return SelectSortRelationViewModel(
-            objectSetState = state,
+            objectState = state,
             session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,

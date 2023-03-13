@@ -1,169 +1,69 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.StubDataView
-import com.anytypeio.anytype.core_models.StubDataViewView
-import com.anytypeio.anytype.core_models.StubHeader
-import com.anytypeio.anytype.core_models.StubRelationLink
-import com.anytypeio.anytype.core_models.StubTitle
-import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.presentation.collections.MockSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
 
-    private val title = StubTitle()
-    private val header = StubHeader(children = listOf(title.id))
+    private lateinit var viewModel: ObjectSetViewModel
+    private lateinit var mockObjectSet: MockSet
 
-    private val ctx: Id = MockDataFactory.randomUuid()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        initDataViewSubscriptionContainer()
+        viewModel = givenViewModel()
+        mockObjectSet = MockSet(context = root)
+    }
+
+    @After
+    fun after() {
+        rule.advanceTime(100)
     }
 
     @Test
-    fun `should not start creating new record if dv is not initialized yet`() {
-
+    fun `should not start creating new record if dv is not initialized yet`() = runTest {
         // SETUP
-
+        stubWorkspaceManager(mockObjectSet.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubSearchWithSubscription()
-        stubSubscriptionEventChannel()
-        stubOpenObjectSet(
-            doc = listOf(
-                header,
-                title
-            )
+        stubOpenObject(
+            doc = listOf(mockObjectSet.header, mockObjectSet.title),
+            details = mockObjectSet.details
         )
 
-        openObjectSet.stub {
-            onBlocking {
-                invoke(any())
-            } doReturn Either.Left(
-                Exception("Error while opening object set")
-            )
-        }
-
-        val vm = givenViewModel()
-
         // TESTING
+        viewModel.onStart(ctx = root)
+        viewModel.onCreateNewDataViewObject()
 
-        vm.onStart(ctx = ctx)
-        vm.onCreateNewDataViewObject()
-
+        // ASSERT
         verifyNoInteractions(createObject)
     }
 
     @Test
-    fun `when open object set, should start subscription to the records by object setOf details`() {
-
-        stubInterceptEvents()
-        stubInterceptThreadStatus(InterceptThreadStatus.Params(ctx))
-        initDataViewSubscriptionContainer()
-        stubSearchWithSubscription()
-        stubSubscriptionEventChannel()
-
-        val view = StubDataViewView()
-        val relLink1 = StubRelationLink()
-        val relLink2 = StubRelationLink()
-
-        val dataView = StubDataView(
-            id = MockDataFactory.randomUuid(),
-            views = listOf(view),
-            relations = listOf(relLink1, relLink2),
-            targetObjectId = MockDataFactory.randomUuid()
-        )
-
-        val type = MockDataFactory.randomString()
-        stubOpenObjectSet(
-            doc = listOf(header, title, dataView),
-            details = Block.Details(
-                mapOf(
-                    root to Block.Fields(
-                        mapOf(Relations.SET_OF to listOf(type))
-                    )
-                )
+    fun `when open object set and setOf has empty value, should not start subscription to the records`() =
+        runTest {
+            // SETUP
+            stubWorkspaceManager(mockObjectSet.workspaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                details = mockObjectSet.detailsEmptySetOf
             )
-        )
 
-        val vm = givenViewModel()
+            // TESTING
+            viewModel.onStart(ctx = root)
 
-        vm.onStart(ctx = root)
-
-        verifyBlocking(repo, times(1)) {
-            searchObjectsWithSubscription(
-                subscription = root,
-                sorts = listOf(),
-                filters = buildList { addAll(ObjectSearchConstants.defaultDataViewFilters()) },
-                keys = ObjectSearchConstants.defaultDataViewKeys.distinct() + listOf(
-                    relLink1,
-                    relLink2
-                ).map { it.key },
-                source = arrayListOf(type),
-                offset = 0,
-                limit = ObjectSetConfig.DEFAULT_LIMIT,
-                beforeId = null,
-                afterId = null,
-                ignoreWorkspace = null,
-                noDepSubscription = null
-            )
+            // ASSERT SUBSCRIPTION START
+            verifyNoInteractions(repo)
         }
-
-        coroutineTestRule.advanceTime(100L)
-    }
-
-    @Test
-    fun `when open object set and setOf has empty value, should not start subscription to the records`() {
-
-        stubInterceptThreadStatus(InterceptThreadStatus.Params(ctx))
-        initDataViewSubscriptionContainer()
-        stubSearchWithSubscription()
-        stubSubscriptionEventChannel()
-
-        val view = StubDataViewView()
-        val relLink1 = StubRelationLink()
-        val relLink2 = StubRelationLink()
-
-        val dataView = StubDataView(
-            id = MockDataFactory.randomUuid(),
-            views = listOf(view),
-            relations = listOf(relLink1, relLink2),
-            targetObjectId = MockDataFactory.randomUuid()
-        )
-
-        stubOpenObjectSet(
-            doc = listOf(header, title, dataView),
-            details = Block.Details(
-                mapOf(
-                    root to Block.Fields(
-                        mapOf(Relations.SET_OF to emptyList<String>())
-                    )
-                )
-            )
-        )
-
-        val vm = givenViewModel()
-
-        vm.onStart(ctx = root)
-
-        verifyNoInteractions(repo)
-
-        coroutineTestRule.advanceTime(100L)
-    }
 }

@@ -36,7 +36,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
@@ -2111,7 +2111,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         ctx: Id,
         keys: List<Key>,
         details: Block.Details
-    ): List<DocumentRelationView> = keys.mapNotNull { key ->
+    ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
             Relations.TYPE -> {

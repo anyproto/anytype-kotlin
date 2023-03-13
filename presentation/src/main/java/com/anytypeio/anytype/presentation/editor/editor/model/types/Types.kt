@@ -64,6 +64,8 @@ object Types {
     const val HOLDER_FEATURED_RELATION = 47
     const val HOLDER_OBJECT_TYPE = 48
     const val HOLDER_OBJECT_TYPE_DELETED = 149
+    const val HOLDER_OBJECT_TYPE_SET = 150
+    const val HOLDER_OBJECT_TYPE_COLLECTION = 151
 
     const val HOLDER_UNSUPPORTED = 49
     const val HOLDER_LATEX = 51

@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -35,11 +34,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.ui.sets.modals.filter.ModifyFilterFromInputFieldValueFragment
@@ -82,7 +80,7 @@ class ModifyInputValueFilterTest {
 
     private val root = MockDataFactory.randomUuid()
     private val session = ObjectSetSession()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
@@ -103,7 +101,7 @@ class ModifyInputValueFilterTest {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
         TestModifyFilterFromInputFieldValueFragment.testVmFactory = FilterViewModel.Factory(
-            objectSetState = state,
+            objectState = state,
             session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
@@ -122,13 +120,6 @@ class ModifyInputValueFilterTest {
     fun shouldTypeTextThenClickActionButtonToApplyChanges() {
 
         val relationKey = MockDataFactory.randomUuid()
-
-        val target = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to emptyList<String>()
-        )
 
         // Defining viewer containing one filter
 
@@ -155,36 +146,17 @@ class ModifyInputValueFilterTest {
             type = Block.Content.DataView.Viewer.Type.values().random()
         )
 
-        val relation = Relation(
-            key = relationKey,
-            defaultValue = null,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = true,
-            name = MockDataFactory.randomString(),
-            source = Relation.Source.values().random(),
-            format = Relation.Format.LONG_TEXT,
-            selections = emptyList()
-        )
-
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer),
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+        state.value = ObjectState.DataView.Set(
+            blocks = listOf(dv)
         )
 
         // Launching fragment
@@ -244,13 +216,6 @@ class ModifyInputValueFilterTest {
 
         val relationKey = MockDataFactory.randomUuid()
 
-        val target = MockDataFactory.randomUuid()
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to emptyList<String>()
-        )
-
         // Defining viewer containing one filter
 
         val initialFilterText = "1"
@@ -276,36 +241,17 @@ class ModifyInputValueFilterTest {
             type = Block.Content.DataView.Viewer.Type.values().random()
         )
 
-        val relation = Relation(
-            key = relationKey,
-            defaultValue = null,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = true,
-            name = MockDataFactory.randomString(),
-            source = Relation.Source.values().random(),
-            format = Relation.Format.NUMBER,
-            selections = emptyList()
-        )
-
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer),
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+        state.value = ObjectState.DataView.Set(
+            blocks = listOf(dv)
         )
 
         // Launching fragment
@@ -326,8 +272,14 @@ class ModifyInputValueFilterTest {
 
         // Checking input type
 
-        inputFieldInteraction.check(matches(withInputType(InputType.TYPE_CLASS_NUMBER
-                or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED)))
+        inputFieldInteraction.check(
+            matches(
+                withInputType(
+                    InputType.TYPE_CLASS_NUMBER
+                            or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
+                )
+            )
+        )
 
         // Typing additional text before pressing action button
 
@@ -362,7 +314,7 @@ class ModifyInputValueFilterTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestModifyFilterFromInputFieldValueFragment> {
-        return launchFragmentInContainer<TestModifyFilterFromInputFieldValueFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

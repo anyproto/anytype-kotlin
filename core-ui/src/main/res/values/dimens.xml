@@ -82,6 +82,7 @@
 
     <dimen name="sp_12">12sp</dimen>
     <dimen name="sp_13">13sp</dimen>
+    <dimen name="sp_15">15sp</dimen>
     <dimen name="dp_2">2dp</dimen>
     <dimen name="dp_4">4dp</dimen>
     <dimen name="dp_6">6dp</dimen>
@@ -309,5 +310,6 @@
     <dimen name="block_data_view_height">96dp</dimen>
 
     <dimen name="default_dv_gallery_first_line_margin_start">22dp</dimen>
+    <dimen name="default_collection_dv_header_height">56dp</dimen>
 
 </resources>

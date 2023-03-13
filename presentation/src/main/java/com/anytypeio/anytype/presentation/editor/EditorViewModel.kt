@@ -68,6 +68,7 @@ import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -210,7 +211,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.toView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -267,6 +268,7 @@ class EditorViewModel(
     private val templateDelegate: EditorTemplateDelegate,
     private val createObject: CreateObject,
     private val objectToSet: ConvertObjectToSet,
+    private val objectToCollection: ConvertObjectToCollection,
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val featureToggles: FeatureToggles,
@@ -3071,7 +3073,7 @@ class EditorViewModel(
             ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningObject(target = target)
             }
-            ObjectType.Layout.SET -> {
+            ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 proceedWithOpeningSet(target = target)
             }
             else -> {
@@ -3788,7 +3790,7 @@ class EditorViewModel(
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
                         viewModelScope.launch {
-                            val relationId = clicked.relation.relationId
+                            val relationId = clicked.relation.id
                             val relation = storeOfRelations.getById(relationId)
                             if (relation != null) {
                                 if (relation.isReadOnly == true || relation.isReadonlyValue) {
@@ -3813,7 +3815,7 @@ class EditorViewModel(
                                     }
                                     Relation.Format.CHECKBOX -> {
                                         val view = clicked.relation
-                                        if (view is DocumentRelationView.Checkbox) {
+                                        if (view is ObjectRelationView.Checkbox) {
                                             proceedWithSetObjectDetails(
                                                 ctx = context,
                                                 key = relationId,
@@ -3970,7 +3972,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithTogglingBlockRelationCheckbox(
-        view: DocumentRelationView.Checkbox,
+        view: ObjectRelationView.Checkbox,
         relation: Id
     ) {
         proceedWithSetObjectDetails(
@@ -4254,43 +4256,69 @@ class EditorViewModel(
         )
     }
 
-    fun onObjectTypeChanged(type: Id, isObjectDraft: Boolean) {
-        Timber.d("onObjectTypeChanged, typeId:[$type], isObjectDraft:[$isObjectDraft]")
-        if (type == ObjectTypeIds.SET) {
-            viewModelScope.launch {
-                val params = ConvertObjectToSet.Params(
-                    ctx = context,
-                    sources = emptyList()
-                )
-                objectToSet.invoke(params).proceed(
-                    failure = { error -> Timber.e(error, "Error convert object to set") },
-                    success = { setId ->
-                        proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
-                    }
-                )
-            }
-        } else {
-            viewModelScope.launch {
-                orchestrator.proxies.intents.send(
-                    Intent.Document.SetObjectType(
-                        context = context,
-                        typeId = type
+    fun onObjectTypeChanged(type: Id, applyTemplate: Boolean) {
+        Timber.d("onObjectTypeChanged, type:[$type], applyTemplate:[$applyTemplate]")
+        proceedWithObjectTypeChange(type = type, applyTemplate = applyTemplate)
+    }
+
+    private fun proceedWithObjectTypeChange(type: Id, applyTemplate: Boolean) {
+        viewModelScope.launch {
+            when (type) {
+                ObjectTypeIds.SET -> {
+                    proceedWithConvertingToSet()
+                }
+                ObjectTypeIds.COLLECTION -> {
+                    proceedWithConvertingToCollection()
+                }
+                else -> {
+                    proceedWithUpdateObjectType(type = type)
+                    sendAnalyticsObjectTypeChangeEvent(
+                        analytics = analytics,
+                        typeId = type,
+                        context = analyticsContext
                     )
-                )
-                sendAnalyticsObjectTypeChangeEvent(
-                    analytics = analytics,
-                    typeId = type,
-                    context = analyticsContext
-                )
-            }
-            if (isObjectTypesWidgetVisible) {
-                dispatchObjectCreateEvent()
-                proceedWithHidingObjectTypeWidget()
-            }
-            if (isObjectDraft) {
-                proceedWithTemplateSelection(type)
+                    if (isObjectTypesWidgetVisible) {
+                        dispatchObjectCreateEvent()
+                        proceedWithHidingObjectTypeWidget()
+                    }
+                    if (applyTemplate) {
+                        proceedWithTemplateSelection(type)
+                    }
+                }
             }
         }
+    }
+
+    private suspend fun proceedWithConvertingToSet() {
+        val params = ConvertObjectToSet.Params(
+            ctx = context,
+            sources = emptyList()
+        )
+        objectToSet.invoke(params).proceed(
+            failure = { error -> Timber.e(error, "Error convert object to set") },
+            success = { setId ->
+                proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
+            }
+        )
+    }
+
+    private suspend fun proceedWithConvertingToCollection() {
+        val params = ConvertObjectToCollection.Params(ctx = context)
+        objectToCollection.execute(params).fold(
+            onFailure = { error -> Timber.e(error, "Error convert object to collection") },
+            onSuccess = { setId ->
+                proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
+            }
+        )
+    }
+
+    private suspend fun proceedWithUpdateObjectType(type: Id) {
+        orchestrator.proxies.intents.send(
+            Intent.Document.SetObjectType(
+                context = context,
+                typeId = type
+            )
+        )
     }
 
     companion object {
@@ -4597,7 +4625,7 @@ class EditorViewModel(
             }
             is SlashItem.Relation -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)
-                val relationKey = item.relation.view.relationKey
+                val relationKey = item.relation.view.key
                 if (relationKey != null) {
                     onSlashRelationItemClicked(
                         relationKey = relationKey,
@@ -4759,7 +4787,7 @@ class EditorViewModel(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
                     val views = types.getObjectTypeViewsForSBPage(
-                        isWithSet = true,
+                        isWithCollection = true,
                         isWithBookmark = false,
                         selectedTypes = emptyList(),
                         excludeTypes = emptyList()
@@ -5795,33 +5823,10 @@ class EditorViewModel(
             controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
 
     fun onObjectTypesWidgetItemClicked(typeId: Id) {
-        Timber.d("onObjectTypesWidgetItemClicked, id:[$typeId]")
+        Timber.d("onObjectTypesWidgetItemClicked, type:[$typeId]")
         dispatchObjectCreateEvent(typeId)
         proceedWithHidingObjectTypeWidget()
-        if (typeId == ObjectTypeIds.SET) {
-            viewModelScope.launch {
-                val params = ConvertObjectToSet.Params(
-                    ctx = context,
-                    sources = emptyList()
-                )
-                objectToSet.invoke(params).proceed(
-                    failure = { error -> Timber.e(error, "Error convert object to set") },
-                    success = { setId ->
-                        proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
-                    }
-                )
-            }
-        } else {
-            viewModelScope.launch {
-                orchestrator.proxies.intents.send(
-                    Intent.Document.SetObjectType(
-                        context = context,
-                        typeId = typeId
-                    )
-                )
-            }
-            proceedWithTemplateSelection(typeId)
-        }
+        proceedWithObjectTypeChange(type = typeId, applyTemplate = true)
     }
 
     fun onObjectTypesWidgetSearchClicked() {
@@ -5883,7 +5888,7 @@ class EditorViewModel(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
                     val views = types.getObjectTypeViewsForSBPage(
-                        isWithSet = true,
+                        isWithCollection = true,
                         isWithBookmark = false,
                         selectedTypes = emptyList(),
                         excludeTypes = excludeTypes ?: emptyList()
@@ -6746,9 +6751,9 @@ class EditorViewModel(
 
     //region RELATIONS
     private fun proceedWithRelationBlockClicked(
-        relationView: DocumentRelationView
+        relationView: ObjectRelationView
     ) {
-        val relationId = relationView.relationId
+        val relationId = relationView.id
         viewModelScope.launch {
             val relation = storeOfRelations.getById(relationId)
             if (relation == null) {
@@ -6777,7 +6782,7 @@ class EditorViewModel(
                     )
                 }
                 RelationFormat.CHECKBOX -> {
-                    check(relationView is DocumentRelationView.Checkbox)
+                    check(relationView is ObjectRelationView.Checkbox)
                     proceedWithSetObjectDetails(
                         ctx = context,
                         key = relation.key,

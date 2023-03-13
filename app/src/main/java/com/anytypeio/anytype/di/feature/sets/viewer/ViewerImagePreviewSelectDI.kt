@@ -3,14 +3,16 @@ package com.anytypeio.anytype.di.feature.sets.viewer
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerImagePreviewSelectViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Subcomponent(modules = [ViewerImagePreviewSelectModule::class])
@@ -32,14 +34,16 @@ object ViewerImagePreviewSelectModule {
     @Provides
     @PerModal
     fun provideViewModelFactory(
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
-        updateDataViewViewer: UpdateDataViewViewer
+        updateDataViewViewer: UpdateDataViewViewer,
+        storeOfRelations: StoreOfRelations
     ): ViewerImagePreviewSelectViewModel.Factory = ViewerImagePreviewSelectViewModel.Factory(
-        objectSetState = state,
+        objectState = state,
         session = session,
         dispatcher = dispatcher,
-        updateDataViewViewer = updateDataViewViewer
+        updateDataViewViewer = updateDataViewViewer,
+        storeOfRelations = storeOfRelations
     )
 }

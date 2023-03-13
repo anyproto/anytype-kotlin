@@ -9,6 +9,7 @@ enum class SmartBlockType(val code: Int) {
     ARCHIVE(code = 48),
     DATABASE(code = 64),
     SET(code = 65),
+    COLLECTION(code = 66),
     CUSTOM_OBJECT_TYPE(code = 96),
     FILE(code = 256),
     TEMPLATE(code = 288),

@@ -16,8 +16,8 @@ import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchFor
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForDataViewFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment
@@ -26,7 +26,7 @@ import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerF
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [RelationCreateFromScratchForObjectModule::class])
 @CreateFromScratch
@@ -107,7 +107,7 @@ object RelationCreateFromScratchForDataViewModule {
     @Provides
     @CreateFromScratch
     fun provideViewModelFactory(
-        state: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
         dispatcher: Dispatcher<Payload>,
@@ -118,7 +118,7 @@ object RelationCreateFromScratchForDataViewModule {
     ) = RelationCreateFromScratchForDataViewViewModel.Factory(
             addRelationToDataView = addRelationToDataView,
             dispatcher = dispatcher,
-            state = state,
+            objectState = state,
             session = session,
             updateDataViewViewer = updateDataViewViewer,
             analytics = analytics,

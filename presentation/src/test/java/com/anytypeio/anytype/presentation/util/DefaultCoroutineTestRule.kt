@@ -23,7 +23,7 @@ class DefaultCoroutineTestRule() : TestWatcher() {
         Dispatchers.resetMain()
     }
 
-    fun advanceTime(millis: Long) {
+    fun advanceTime(millis: Long = 100L) {
         dispatcher.scheduler.advanceTimeBy(millis)
     }
 

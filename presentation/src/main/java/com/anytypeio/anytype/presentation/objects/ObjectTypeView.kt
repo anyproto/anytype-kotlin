@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.NOTE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
-import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectTypeIds.TASK
 
 sealed class ObjectTypeItemView {
@@ -24,7 +24,7 @@ data class ObjectTypeView(
 class ObjectTypeViewComparator : Comparator<ObjectTypeView> {
 
     /**
-     * Sort object types by PAGE, NOTE, SET, TASK ids and others
+     * Sort object types by PAGE, NOTE, COLLECTION, TASK ids and others
      */
     override fun compare(o1: ObjectTypeView, o2: ObjectTypeView): Int {
         val o1Url = o1.id
@@ -37,8 +37,8 @@ class ObjectTypeViewComparator : Comparator<ObjectTypeView> {
         if (o1Url == NOTE && o2Url != NOTE) return -1
         if (o1Url != NOTE && o2Url == NOTE) return 1
 
-        if (o1Url == SET && o2Url != SET) return -1
-        if (o1Url != SET && o2Url == SET) return 1
+        if (o1Url == COLLECTION && o2Url != COLLECTION) return -1
+        if (o1Url != COLLECTION && o2Url == COLLECTION) return 1
 
         if (o1Url == TASK && o2Url != TASK) return -1
         if (o1Url != TASK && o2Url == TASK) return 1

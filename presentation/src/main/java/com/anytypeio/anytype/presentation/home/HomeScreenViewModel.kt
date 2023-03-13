@@ -622,6 +622,7 @@ class HomeScreenViewModel(
             ObjectType.Layout.FILE,
             ObjectType.Layout.BOOKMARK -> navigate(Navigation.OpenObject(obj.id))
             ObjectType.Layout.SET -> navigate(Navigation.OpenSet(obj.id))
+            ObjectType.Layout.COLLECTION -> navigate(Navigation.OpenSet(obj.id))
             else -> sendToast("Unexpected layout: ${obj.layout}")
         }
     }

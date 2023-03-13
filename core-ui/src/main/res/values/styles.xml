@@ -756,6 +756,26 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ViewerNewButtonStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textColor">@color/set_new_btn_text</item>
+        <item name="android:text">@string/button_new</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">6dp</item>
+    </style>
+
+    <style name="ViewerTitleStyle">
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:textColor">@color/selector_viewer_header</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:maxWidth">250dp</item>
+    </style>
+
     <style name="EditorMultiSelectSelectAllButtonTextStyle">
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textSize">17sp</item>
@@ -1192,6 +1212,22 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="DefaultPopupMenuStyle" parent="@style/Widget.Material3.PopupMenu">
+        <item name="android:popupBackground">@drawable/bg_menu_default</item>
+    </style>
+
+    <!--https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Mobile-Design-System?node-id=1588%3A59&t=9DPtsMxKLupkwVfY-1-->
+    <style name="DSXSmallButtonStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textColor">@color/ds_button_primary_text</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="rippleColor">@null</item>
     </style>
 
 </resources>

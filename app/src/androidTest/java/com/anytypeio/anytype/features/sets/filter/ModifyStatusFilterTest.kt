@@ -32,11 +32,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils
@@ -80,7 +79,7 @@ class ModifyStatusFilterTest {
 
     private val root = MockDataFactory.randomUuid()
     private val session = ObjectSetSession()
-    private val state = MutableStateFlow(ObjectSet.init())
+    private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
@@ -102,7 +101,7 @@ class ModifyStatusFilterTest {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
         TestModifyFilterFromSelectedValueFragment.testVmFactory = FilterViewModel.Factory(
-            objectSetState = state,
+            objectState = state,
             session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
@@ -121,7 +120,6 @@ class ModifyStatusFilterTest {
     fun shouldSelectSecondStatusAndApplyChangesOnClick() {
 
         val relationKey = MockDataFactory.randomUuid()
-        val target = MockDataFactory.randomUuid()
 
         // Defining three different statuses:
 
@@ -141,11 +139,6 @@ class ModifyStatusFilterTest {
             id = MockDataFactory.randomUuid(),
             text = "Done",
             color = MockDataFactory.randomString()
-        )
-
-        val record: Map<String, Any?> = mapOf(
-            ObjectSetConfig.ID_KEY to target,
-            relationKey to emptyList<String>()
         )
 
         // Defining viewer containing one filter
@@ -170,36 +163,17 @@ class ModifyStatusFilterTest {
             type = Block.Content.DataView.Viewer.Type.values().random()
         )
 
-        val relation = Relation(
-            key = relationKey,
-            defaultValue = null,
-            isHidden = false,
-            isReadOnly = false,
-            isMulti = true,
-            name = MockDataFactory.randomString(),
-            source = Relation.Source.values().random(),
-            format = Relation.Format.STATUS,
-            selections = listOf(option1, option2, option3)
-        )
-
         val dv = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
-                relations = listOf(relation),
                 viewers = listOf(viewer)
             )
         )
 
-        state.value = ObjectSet(
-            blocks = listOf(dv),
-//            viewerDb = mapOf(
-//                viewer.id to ObjectSet.ViewerData(
-//                    records = listOf(record),
-//                    total = 1
-//                )
-//            )
+        state.value = ObjectState.DataView.Set(
+            blocks = listOf(dv)
         )
 
         // Launching fragment

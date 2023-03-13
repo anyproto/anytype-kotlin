@@ -1,0 +1,18 @@
+syntax = "proto3";
+package anytype;
+option go_package = "pb";
+
+import "models.proto";
+import "changes.proto";
+
+message MigrationObject {
+  anytype.model.SmartBlockType sbType = 1;
+  anytype.Change.Snapshot snapshot = 2;
+}
+
+message Profile {
+  string mnemonic = 1;
+  string name = 2;
+  string avatar = 3;
+  string address = 4;
+}

@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -157,7 +158,7 @@ class FilterViewModelInputFieldValueCreateTest {
     )
 
     private val state = MutableStateFlow(
-        MockObjectSetFactory.makeDefaultObjectSet(
+        MockObjectSetFactory.makeDefaultSetObjectState(
             dataViewId = dataViewId,
             relations = relations,
             viewerRelations = listOf(
@@ -185,7 +186,7 @@ class FilterViewModelInputFieldValueCreateTest {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
         viewModel = FilterViewModel(
-            objectSetState = state,
+            objectState = state,
             session = session,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
@@ -934,7 +935,7 @@ class FilterViewModelInputFieldValueCreateTest {
             input = textInput
         )
 
-        val viewer = state.value.viewers[0]
+        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
@@ -972,7 +973,7 @@ class FilterViewModelInputFieldValueCreateTest {
             input = textInput
         )
 
-        val viewer = state.value.viewers[0]
+        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
@@ -1011,7 +1012,7 @@ class FilterViewModelInputFieldValueCreateTest {
             input = textInput
         )
 
-        val viewer = state.value.viewers[0]
+        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(

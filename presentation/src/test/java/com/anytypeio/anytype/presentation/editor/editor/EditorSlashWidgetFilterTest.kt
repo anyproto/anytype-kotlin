@@ -20,7 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.test.runTest
@@ -587,23 +587,23 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val expectedItems = listOf(
             SlashRelationView.Section.Subheader,
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = r1.id,
-                    relationKey = r1.key,
+                view = ObjectRelationView.Default(
+                    id = r1.id,
+                    key = r1.key,
                     name = r1.name.orEmpty(),
                     value = value1,
                     format = Relation.Format.SHORT_TEXT,
-                    isSystem = false
+                    system = false
                 )
             ),
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = r2.id,
-                    relationKey = r2.key,
+                view = ObjectRelationView.Default(
+                    id = r2.id,
+                    key = r2.key,
                     name = r2.name.orEmpty(),
                     value = value2,
                     format = Relation.Format.SHORT_TEXT,
-                    isSystem = false
+                    system = false
                 )
             ),
         )
@@ -1634,33 +1634,33 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val expectedItems = listOf(
             SlashRelationView.Section.Subheader,
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = r1.id,
-                    relationKey = r1.key,
+                view = ObjectRelationView.Default(
+                    id = r1.id,
+                    key = r1.key,
                     name = r1.name.orEmpty(),
                     value = value1,
                     format = Relation.Format.SHORT_TEXT,
-                    isSystem = false
+                    system = false
                 )
             ),
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = r2.id,
-                    relationKey = r2.key,
+                view = ObjectRelationView.Default(
+                    id = r2.id,
+                    key = r2.key,
                     name = r2.name.orEmpty(),
                     value = value2,
                     format = Relation.Format.SHORT_TEXT,
-                    isSystem = false
+                    system = false
                 )
             ),
             SlashRelationView.Item(
-                view = DocumentRelationView.Default(
-                    relationId = r3.id,
-                    relationKey = r3.key,
+                view = ObjectRelationView.Default(
+                    id = r3.id,
+                    key = r3.key,
                     name = r3.name.orEmpty(),
                     value = value3,
                     format = Relation.Format.SHORT_TEXT,
-                    isSystem = false
+                    system = false
                 )
             )
         )

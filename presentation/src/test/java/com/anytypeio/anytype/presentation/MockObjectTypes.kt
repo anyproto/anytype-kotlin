@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
+import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.DASHBOARD
 import com.anytypeio.anytype.core_models.ObjectTypeIds.DATE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.FILE
@@ -28,6 +29,16 @@ object MockObjectTypes {
         name = "Set",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.SET.code.toDouble()),
+        layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+        description = "Set of objects with equal types and relations. Database experience based on all objects in Anytype",
+        isReadOnly = true
+    )
+
+    val objectTypeCollection = StubObjectType(
+        id = COLLECTION,
+        name = "Collection",
+        objectType = OBJECT_TYPE,
+        smartBlockTypes = listOf(SmartBlockType.COLLECTION.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
         description = "Collection of objects with equal types and relations. Database experience based on all objects in Anytype",
         isReadOnly = true
@@ -249,7 +260,7 @@ object MockObjectTypes {
         objectTypeSpace, objectTypeBookmark, objectTypeCustom,
         objectTypeDashboard, objectTypeFile, objectTypeHuman,
         objectTypeNote, objectTypePage, objectTypeRelation,
-        objectTypeRelationOption, objectTypeSet, objectTypeTask,
+        objectTypeRelationOption, objectTypeCollection, objectTypeSet, objectTypeTask,
         objectTypeTemplate, objectTypeVideo,
         objectTypeCustomArchived, objectTypeCustomDeleted
     )

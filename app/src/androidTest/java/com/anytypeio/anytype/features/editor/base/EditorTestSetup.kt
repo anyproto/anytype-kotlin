@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -261,6 +262,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var tableDelegate: EditorTableDelegate
 
+    @Mock
+    lateinit var objectToCollection: ConvertObjectToCollection
+
     val root: String = "rootId123"
     val workspaceId = MockDataFactory.randomString()
 
@@ -450,7 +454,8 @@ open class EditorTestSetup {
             featureToggles = featureToggles,
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
-            getObjectTypes = getObjectTypes
+            getObjectTypes = getObjectTypes,
+            objectToCollection = objectToCollection
         )
     }
 

@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.scan
 class DataViewSubscriptionContainer(
     private val repo: BlockRepository,
     private val channel: SubscriptionEventChannel,
-    val store: ObjectStore,
+    private val store: ObjectStore,
     private val dispatchers: AppCoroutineDispatchers
 ) {
 
@@ -47,7 +47,8 @@ class DataViewSubscriptionContainer(
                 beforeId = null,
                 source = params.sources,
                 ignoreWorkspace = null,
-                noDepSubscription = null
+                noDepSubscription = null,
+                collection = params.collection
             )
             store.merge(
                 objects = initial.results,
@@ -176,10 +177,11 @@ class DataViewSubscriptionContainer(
         val subscription: Id,
         val sorts: List<DVSort>,
         val filters: List<DVFilter>,
-        val sources: List<String>,
         val offset: Long,
         val limit: Int,
-        val keys: List<Key>
+        val keys: List<Key>,
+        val sources: List<String> = emptyList(),
+        val collection: Id? = null
     )
 
     /**

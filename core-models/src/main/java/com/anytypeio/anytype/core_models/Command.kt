@@ -418,4 +418,7 @@ sealed class Command {
     data class UpdateRelation(val ctx: Id, val dv: Id, val view: Id, val relation: DVViewerRelation)
     data class DeleteRelation(val ctx: Id, val dv: Id, val view: Id, val keys: List<Key>)
     data class SortRelations(val ctx: Id, val dv: Id, val view: Id, val keys: List<Key>)
+
+    data class AddObjectToCollection(val ctx: Id, val afterId: Id, val ids: List<Id>)
+    data class SetQueryToSet(val ctx: Id, val query: String)
 }

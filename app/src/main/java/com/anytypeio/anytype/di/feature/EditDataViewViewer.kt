@@ -6,14 +6,15 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Subcomponent(modules = [EditDataViewViewerModule::class])
@@ -40,7 +41,7 @@ object EditDataViewViewerModule {
         duplicateDataViewViewer: DuplicateDataViewViewer,
         updateDataViewViewer: UpdateDataViewViewer,
         dispatcher: Dispatcher<Payload>,
-        objectSetState: StateFlow<ObjectSet>,
+        state: MutableStateFlow<ObjectState>,
         objectSetSession: ObjectSetSession,
         paginator: ObjectSetPaginator,
         analytics: Analytics
@@ -50,7 +51,7 @@ object EditDataViewViewerModule {
         duplicateDataViewViewer = duplicateDataViewViewer,
         updateDataViewViewer = updateDataViewViewer,
         dispatcher = dispatcher,
-        objectSetState = objectSetState,
+        objectState = state,
         objectSetSession = objectSetSession,
         paginator = paginator,
         analytics = analytics

@@ -5,32 +5,31 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
-import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ObjectSetSettingsViewModel(
-    private val objectSetState: StateFlow<ObjectSet>,
+    private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
@@ -43,10 +42,10 @@ class ObjectSetSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            objectSetState.filter { it.isInitialized }.collect { objectSet ->
+            objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
                 Timber.d("New update")
                 val result = mutableListOf<ViewerRelationListView>()
-                val viewer = objectSet.viewerById(session.currentViewerId.value)
+                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
                 when (viewer.type) {
                     Block.Content.DataView.Viewer.Type.GALLERY -> {
                         result.add(ViewerRelationListView.Section.Settings)
@@ -63,19 +62,20 @@ class ObjectSetSettingsViewModel(
                         }
 
                         val coverRelationKey = viewer.coverRelationKey
-                        result.add(when {
-                            coverRelationKey.isNullOrBlank() -> ViewerRelationListView.Setting.ImagePreview.None
-                            coverRelationKey == Relations.PAGE_COVER -> ViewerRelationListView.Setting.ImagePreview.Cover
-                            else -> {
-                                val dv = objectSet.dataview.content<DV>()
-                                val preview = dv.relations.find { it.key == coverRelationKey }
-                                if (preview != null) {
-                                    ViewerRelationListView.Setting.ImagePreview.Custom(preview.name)
-                                } else {
-                                    ViewerRelationListView.Setting.ImagePreview.None
+                        result.add(
+                            when {
+                                coverRelationKey.isNullOrBlank() -> ViewerRelationListView.Setting.ImagePreview.None
+                                coverRelationKey == Relations.PAGE_COVER -> ViewerRelationListView.Setting.ImagePreview.Cover
+                                else -> {
+                                    val preview = storeOfRelations.getByKey(coverRelationKey)
+                                    if (preview != null) {
+                                        ViewerRelationListView.Setting.ImagePreview.Custom(preview.name.orEmpty())
+                                    } else {
+                                        ViewerRelationListView.Setting.ImagePreview.None
+                                    }
                                 }
                             }
-                        })
+                        )
 
                         result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
                         result.add(ViewerRelationListView.Setting.Toggle.FitImage(toggled = viewer.coverFit))
@@ -91,14 +91,14 @@ class ObjectSetSettingsViewModel(
                     else -> {}
                 }
 
-                Timber.d("Relation index: ${objectSet.dv.relationsIndex}")
+                Timber.d("Relation index: ${state.dataViewContent.relationLinks}")
 
-                val inStore = objectSet.dv.relationsIndex.mapNotNull {
+                val inStore = state.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
 
 
-                Timber.d("Found in store: ${inStore.size}, available in index: ${objectSet.dv.relationsIndex.size}")
+                Timber.d("Found in store: ${inStore.size}, available in index: ${state.dataViewContent.relationLinks.size}")
 
                 val relations = viewer.viewerRelations.toSimpleRelationView(inStore)
                     .filterHiddenRelations()
@@ -131,36 +131,27 @@ class ObjectSetSettingsViewModel(
         toggle: ViewerRelationListView.Setting.Toggle,
         isChecked: Boolean
     ) {
-        val state = objectSetState.value
-        if (state.isInitialized) {
-            viewModelScope.launch {
-                val viewer = state.viewerById(session.currentViewerId.value)
-                val block = state.dataview
-
-                val updated = when (toggle) {
-                    is ViewerRelationListView.Setting.Toggle.FitImage -> {
-                        viewer.copy(
-                            coverFit = isChecked
-                        )
-                    }
-                    is ViewerRelationListView.Setting.Toggle.HideIcon -> {
-                        viewer.copy(
-                            hideIcon = isChecked
-                        )
-                    }
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        viewModelScope.launch {
+            val updated = when (toggle) {
+                is ViewerRelationListView.Setting.Toggle.FitImage -> {
+                    viewer.copy(coverFit = isChecked)
                 }
-
-                updateDataViewViewer(
-                    UpdateDataViewViewer.Params.Fields(
-                        context = ctx,
-                        target = block.id,
-                        viewer = updated
-                    )
-                ).process(
-                    success = { dispatcher.send(it) },
-                    failure = { Timber.w("Error while updating") }
-                )
+                is ViewerRelationListView.Setting.Toggle.HideIcon -> {
+                    viewer.copy(hideIcon = isChecked)
+                }
             }
+            updateDataViewViewer(
+                UpdateDataViewViewer.Params.Fields(
+                    context = ctx,
+                    target = state.dataViewBlock.id,
+                    viewer = updated
+                )
+            ).process(
+                success = { dispatcher.send(it) },
+                failure = { Timber.w("Error while updating") }
+            )
         }
     }
 
@@ -169,13 +160,13 @@ class ObjectSetSettingsViewModel(
     }
 
     private fun proceedWithDeletingRelationFromViewer(ctx: Id, relation: Id) {
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         viewModelScope.launch {
-            val state = objectSetState.value
-            val dv = state.dataview
             val params = UpdateDataViewViewer.Params.ViewerRelation.Remove(
                 ctx = ctx,
-                dv = dv.id,
-                view = state.viewerById(session.currentViewerId.value).id,
+                dv = state.dataViewBlock.id,
+                view = viewer.id,
                 keys = listOf(relation)
             )
             updateDataViewViewer(params).process(
@@ -194,12 +185,11 @@ class ObjectSetSettingsViewModel(
     }
 
     private fun proceedWithDeletingRelationFromDataView(ctx: Id, relation: Id) {
+        val state = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
-            val state = objectSetState.value
-            val dv = state.dataview
             val params = DeleteRelationFromDataView.Params(
                 ctx = ctx,
-                dv = dv.id,
+                dv = state.dataViewBlock.id,
                 relation = relation
             )
             deleteRelationFromDataView(params).process(
@@ -210,9 +200,9 @@ class ObjectSetSettingsViewModel(
     }
 
     private fun proceedWithUpdatingCurrentViewAfterRelationDeletion(ctx: Id, relation: Id) {
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         viewModelScope.launch {
-            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
-            val block = objectSetState.value.blocks.first { it.content is DV }
             val updated = viewer.copy(
                 viewerRelations = viewer.viewerRelations.filter { it.key != relation },
                 filters = viewer.filters.filter { it.relation != relation },
@@ -220,7 +210,7 @@ class ObjectSetSettingsViewModel(
             )
             val params = UpdateDataViewViewer.Params.Fields(
                 context = ctx,
-                target = block.id,
+                target = state.dataViewBlock.id,
                 viewer = updated
             )
             updateDataViewViewer(params).process(
@@ -241,11 +231,12 @@ class ObjectSetSettingsViewModel(
     }
 
     private fun proceedWithChangeOrderUpdate(ctx: Id, order: List<String>) {
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         viewModelScope.launch {
-            val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
             val params = UpdateDataViewViewer.Params.ViewerRelation.Sort(
                 ctx = ctx,
-                dv = objectSetState.value.dataview.id,
+                dv = state.dataViewBlock.id,
                 view = viewer.id,
                 keys = order
             )
@@ -260,15 +251,15 @@ class ObjectSetSettingsViewModel(
     }
 
     private fun proceedWithVisibilityUpdate(ctx: Id, item: SimpleRelationView) {
-        val viewer = objectSetState.value.viewerById(session.currentViewerId.value)
-        val block = objectSetState.value.blocks.first { it.content is DV }
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val viewerRelation = viewer.viewerRelations
             .find { it.key == item.key }
             ?.copy(isVisible = item.isVisible)
             ?: return
         val params = UpdateDataViewViewer.Params.ViewerRelation.Replace(
             ctx = ctx,
-            dv = block.id,
+            dv = state.dataViewBlock.id,
             view = viewer.id,
             key = item.key,
             relation = viewerRelation
@@ -282,7 +273,7 @@ class ObjectSetSettingsViewModel(
     }
 
     class Factory(
-        private val state: StateFlow<ObjectSet>,
+        private val objectState: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
@@ -293,7 +284,7 @@ class ObjectSetSettingsViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetSettingsViewModel(
-                objectSetState = state,
+                objectState = objectState,
                 session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,

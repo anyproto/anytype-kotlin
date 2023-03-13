@@ -157,7 +157,8 @@ interface BlockRemote {
         beforeId: Id?,
         afterId: Id?,
         ignoreWorkspace: Boolean?,
-        noDepSubscription: Boolean?
+        noDepSubscription: Boolean?,
+        collection: Id?
     ): SearchResult
 
     suspend fun searchObjectsByIdWithSubscription(
@@ -224,6 +225,7 @@ interface BlockRemote {
     suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload
 
     suspend fun objectToSet(ctx: Id, source: List<String>): Id
+    suspend fun objectToCollection(ctx: Id): Id
 
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
@@ -338,4 +340,6 @@ interface BlockRemote {
     suspend fun removeDataViewViewRelation(command: Command.DeleteRelation): Payload
     suspend fun replaceDataViewViewRelation(command: Command.UpdateRelation): Payload
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
+    suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
+    suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
 }

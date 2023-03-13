@@ -111,7 +111,7 @@ class ObjectTypeChangeViewModelTest {
 
         vm.onStart(
             isWithBookmark = false,
-            isWithSet = false,
+            isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
             selectedTypes = emptyList()
@@ -181,7 +181,7 @@ class ObjectTypeChangeViewModelTest {
 
         vm.onStart(
             isWithBookmark = false,
-            isWithSet = false,
+            isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
             selectedTypes = emptyList()
@@ -309,7 +309,7 @@ class ObjectTypeChangeViewModelTest {
 
         vm.onStart(
             isWithBookmark = false,
-            isWithSet = false,
+            isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
             selectedTypes = emptyList()
@@ -446,7 +446,7 @@ class ObjectTypeChangeViewModelTest {
 
         vm.onStart(
             isWithBookmark = false,
-            isWithSet = false,
+            isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
             selectedTypes = emptyList()
@@ -537,7 +537,7 @@ class ObjectTypeChangeViewModelTest {
 
         vm.onStart(
             isWithBookmark = false,
-            isWithSet = false,
+            isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
             selectedTypes = emptyList()

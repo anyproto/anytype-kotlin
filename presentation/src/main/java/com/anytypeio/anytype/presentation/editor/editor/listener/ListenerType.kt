@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor.listener
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
 sealed interface ListenerType {
@@ -68,9 +68,10 @@ sealed interface ListenerType {
         data class Related(val value: BlockView.Relation) : Relation()
         data class ChangeObjectType(val type: String) : Relation()
         data class ObjectTypeOpenSet(val type: String) : Relation()
-        data class Featured(val relation: DocumentRelationView) : Relation()
+        data class Featured(val relation: ObjectRelationView) : Relation()
         data class SetQuery(val queries: List<ObjectView>) : Relation()
         object ChangeQueryByRelation : Relation()
+        object TurnIntoCollection : Relation()
     }
 
     data class TableOfContentsItem(val target: Id, val item: Id) : ListenerType

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
@@ -10,14 +9,13 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
@@ -28,17 +26,21 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSor
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
-fun ObjectSet.featuredRelations(
+fun ObjectState.DataView.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder,
     relations: List<ObjectWrapper.Relation>
 ): BlockView.FeaturedRelation? {
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
-        val views = mutableListOf<DocumentRelationView>()
+        val views = mutableListOf<ObjectRelationView>()
         val ids = details[ctx]?.featuredRelations ?: emptyList()
         views.addAll(
             mapFeaturedRelations(
@@ -58,25 +60,47 @@ fun ObjectSet.featuredRelations(
     }
 }
 
-private fun mapFeaturedRelations(
+private fun ObjectState.DataView.mapFeaturedRelations(
     ctx: Id,
     keys: List<String>,
     details: Block.Details,
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder
-): List<DocumentRelationView> = keys.mapNotNull { key ->
+): List<ObjectRelationView> = keys.mapNotNull { key ->
     when (key) {
         Relations.DESCRIPTION -> null
-        Relations.TYPE -> {
-            val objectTypeId = details.details[ctx]?.type?.firstOrNull()
-            if (objectTypeId != null) {
-                details.objectTypeRelation(
-                    relationKey = key,
-                    isFeatured = true,
-                    objectTypeId = objectTypeId
+        Relations.TYPE -> details.details[ctx]?.type?.firstOrNull()?.let { typeId ->
+            val objectType = details.details[typeId]?.map?.let { ObjectWrapper.Type(it) }
+            if (objectType?.isDeleted == true) {
+                ObjectRelationView.ObjectType.Deleted(
+                    id = typeId,
+                    key = key,
+                    featured = true,
+                    readOnly = false,
+                    system = key.isSystemKey()
                 )
             } else {
-                null
+                when (this) {
+                    is ObjectState.DataView.Collection -> ObjectRelationView.ObjectType.Collection(
+                        id = typeId,
+                        key = key,
+                        name = objectType?.name.orEmpty(),
+                        featured = true,
+                        readOnly = false,
+                        type = typeId,
+                        system = key.isSystemKey()
+                    )
+                    is ObjectState.DataView.Set -> ObjectRelationView.ObjectType.Set(
+                        id = typeId,
+                        key = key,
+                        name = objectType?.name.orEmpty(),
+                        featured = true,
+                        readOnly = false,
+                        type = typeId,
+                        system = key.isSystemKey()
+                    )
+                    else -> null
+                }
             }
         }
         Relations.SET_OF -> {
@@ -87,46 +111,46 @@ private fun mapFeaturedRelations(
                 val wrapper = ObjectWrapper.Basic(details.details[source]?.map.orEmpty())
                 if (!wrapper.isEmpty()) {
                     if (wrapper.isDeleted == true) {
-                        DocumentRelationView.Source.Deleted(
-                            relationId = details.details[ctx]?.id.orEmpty(),
-                            relationKey = key,
+                        ObjectRelationView.Source.Deleted(
+                            id = details.details[ctx]?.id.orEmpty(),
+                            key = key,
                             name = Relations.RELATION_NAME_EMPTY,
-                            isFeatured = true,
-                            isReadOnly = false,
-                            isSystem = key.isSystemKey()
+                            featured = true,
+                            readOnly = false,
+                            system = key.isSystemKey()
                         )
                     } else {
                         sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
-                        DocumentRelationView.Source.Base(
-                            relationId = details.details[ctx]?.id.orEmpty(),
-                            relationKey = key,
+                        ObjectRelationView.Source.Base(
+                            id = details.details[ctx]?.id.orEmpty(),
+                            key = key,
                             name = Relations.RELATION_NAME_EMPTY,
-                            isFeatured = true,
-                            isReadOnly = wrapper.relationReadonlyValue ?: false,
+                            featured = true,
+                            readOnly = wrapper.relationReadonlyValue ?: false,
                             sources = sources,
-                            isSystem = key.isSystemKey()
+                            system = key.isSystemKey()
                         )
                     }
                 } else {
-                    DocumentRelationView.Source.Base(
-                        relationId = details.details[ctx]?.id.orEmpty(),
-                        relationKey = key,
+                    ObjectRelationView.Source.Base(
+                        id = details.details[ctx]?.id.orEmpty(),
+                        key = key,
                         name = Relations.RELATION_NAME_EMPTY,
-                        isFeatured = true,
-                        isReadOnly = wrapper.relationReadonlyValue ?: false,
+                        featured = true,
+                        readOnly = wrapper.relationReadonlyValue ?: false,
                         sources = sources,
-                        isSystem = key.isSystemKey()
+                        system = key.isSystemKey()
                     )
                 }
             } else {
-                DocumentRelationView.Source.Base(
-                    relationId = details.details[ctx]?.id.orEmpty(),
-                    relationKey = key,
+                ObjectRelationView.Source.Base(
+                    id = details.details[ctx]?.id.orEmpty(),
+                    key = key,
                     name = Relations.RELATION_NAME_EMPTY,
-                    isFeatured = true,
-                    isReadOnly = false,
+                    featured = true,
+                    readOnly = false,
                     sources = sources,
-                    isSystem = key.isSystemKey()
+                    system = key.isSystemKey()
                 )
             }
         }
@@ -165,21 +189,25 @@ fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {
     return result
 }
 
-fun ObjectSet.viewerById(currentViewerId: String?): Block.Content.DataView.Viewer {
-    val block = dataview.content
-    val dv = block as DV
-    return dv.viewers.find { it.id == currentViewerId } ?: dv.viewers.first()
+fun ObjectState.DataView.viewerById(currentViewerId: String?): DVViewer? {
+    if (!isInitialized) return null
+    return dataViewContent.viewers.find { it.id == currentViewerId }
+        ?: dataViewContent.viewers.firstOrNull()
+}
+
+suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
+    return map { f: DVFilter ->
+        val r = storeOfRelations.getByKey(f.relation)
+        if (r != null && r.relationFormat == RelationFormat.DATE) {
+            f.copy(relationFormat = r.relationFormat)
+        } else {
+            f
+        }
+    }
 }
 
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
-
-fun DV.getRelation(relationKey: Id): Relation? = relations.firstOrNull { it.key == relationKey }
-
-fun DV.isRelationReadOnly(relationKey: Id): Boolean {
-    val relation = getRelation(relationKey)
-    return relation != null && relation.isReadOnly
-}
 
 fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when (isDeleted) {
     true -> ObjectView.Deleted(id)
@@ -289,11 +317,12 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
     return relations
 }
 
-fun ObjectSet.getSetOf(ctx: Id): List<Id> {
+fun ObjectState.DataView.Set.getSetOf(ctx: Id): List<Id> {
     return ObjectWrapper.Basic(details[ctx]?.map.orEmpty()).setOf
 }
 
-fun DVViewer.updateFields(fields: DVViewerFields): DVViewer {
+fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {
+    if (fields == null) return this
     return copy(
         name = fields.name,
         type = fields.type,
@@ -303,3 +332,11 @@ fun DVViewer.updateFields(fields: DVViewerFields): DVViewer {
         coverFit = fields.coverFit
     )
 }
+
+fun Viewer.isEmpty(): Boolean =
+    when (this) {
+        is Viewer.GalleryView -> this.items.isEmpty()
+        is Viewer.GridView -> this.rows.isEmpty()
+        is Viewer.ListView -> this.items.isEmpty()
+        is Viewer.Unsupported -> false
+    }

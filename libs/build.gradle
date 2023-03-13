@@ -9,7 +9,7 @@ afterEvaluate {
                 artifact(file('lib.aar'))
                 groupId 'io.anytype'
                 artifactId 'android-mw'
-                version = '9.9.13'
+                version = '2.3.0'
             }
         }
     }

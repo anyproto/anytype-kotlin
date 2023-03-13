@@ -146,7 +146,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                         ctx = command.ctx,
                         widget = command.widget,
                         source = command.source,
-                        type = command.type
+                        type = command.type,
+                        layout = command.layout
                     )
                 )
             }

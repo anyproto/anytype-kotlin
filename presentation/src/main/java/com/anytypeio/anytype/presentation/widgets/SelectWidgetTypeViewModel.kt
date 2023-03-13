@@ -34,7 +34,11 @@ class SelectWidgetTypeViewModel(
 
     val isDismissed = MutableStateFlow(false)
 
-    fun onStartForExistingWidget(currentType: Int, source: Id) {
+    fun onStartForExistingWidget(
+        currentType: Int,
+        sourceLayout: Int,
+        source: Id
+    ) {
         Timber.d("onStart for existing widget")
         if (BundledWidgetSourceIds.ids.contains(source)) {
             views.value = listOf(
@@ -42,7 +46,15 @@ class SelectWidgetTypeViewModel(
                 WidgetTypeView.List().setIsSelected(currentType)
             )
         } else {
-            views.value = views.value.map { view -> view.setIsSelected(currentType) }
+            val objectLayout = ObjectType.Layout.values().find { it.code == sourceLayout }
+            if (objectLayout == ObjectType.Layout.SET) {
+                views.value = listOf(
+                    WidgetTypeView.List().setIsSelected(currentType),
+                    WidgetTypeView.Link().setIsSelected(currentType)
+                )
+            } else {
+                views.value = views.value.map { view -> view.setIsSelected(currentType) }
+            }
         }
     }
 
@@ -80,7 +92,7 @@ class SelectWidgetTypeViewModel(
                         type = when (view) {
                             is WidgetTypeView.Link -> WidgetLayout.LINK
                             is WidgetTypeView.Tree -> WidgetLayout.TREE
-                            is WidgetTypeView.List -> WidgetLayout.LINK
+                            is WidgetTypeView.List -> WidgetLayout.LIST
                         }
                     )
                 ).flowOn(appCoroutineDispatchers.io).collect { result ->

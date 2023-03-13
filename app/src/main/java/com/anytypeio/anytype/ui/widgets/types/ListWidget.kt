@@ -54,8 +54,7 @@ fun ListWidgetCard(
             .then(
                 if (mode is InteractionMode.Edit)
                     Modifier.noRippleClickable {
-                        // TODO
-//                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
                     }
                 else
                     Modifier
@@ -81,7 +80,7 @@ fun ListWidgetCard(
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isInEditMode = false,
+                isInEditMode = mode is InteractionMode.Edit,
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.elements.isNotEmpty()) {
@@ -113,9 +112,7 @@ fun ListWidgetCard(
         WidgetMenu(
             isExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction,
-            canChangeSource = false,
-            canChangeType = false,
-            canRemove = false
+            canEditWidgets = mode !is InteractionMode.Edit
         )
     }
 }

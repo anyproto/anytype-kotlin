@@ -65,9 +65,14 @@ fun DataViewListWidgetCard(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .noRippleClickable {
-                isCardMenuExpanded.value = !isCardMenuExpanded.value
-            }
+            .then(
+                if (mode is InteractionMode.Edit)
+                    Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                else
+                    Modifier
+            )
     ) {
         Column(
             modifier = Modifier
@@ -83,9 +88,14 @@ fun DataViewListWidgetCard(
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.source) },
+                onWidgetHeaderClicked = {
+                    if (mode is InteractionMode.Default) {
+                        onWidgetSourceClicked(item.source)
+                    }
+                },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
+                isInEditMode = mode is InteractionMode.Edit,
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.tabs.isNotEmpty() && item.isExpanded) {

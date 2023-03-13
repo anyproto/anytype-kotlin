@@ -31,13 +31,16 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -170,14 +173,25 @@ class HomeScreenViewModel(
                             dispatchers = appCoroutineDispatchers,
                             workspace = config.workspace
                         )
-                        is Widget.List -> DataViewListWidgetContainer(
-                            widget = widget,
-                            storage = storelessSubscriptionContainer,
-                            getObject = getObject,
-                            activeView = observeCurrentWidgetView(widget.id),
-                            isWidgetCollapsed = isCollapsed(widget.id),
-                            urlBuilder = urlBuilder
-                        )
+                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
+                            ListWidgetContainer(
+                                widget = widget,
+                                subscription  = widget.source.id,
+                                workspace = config.workspace,
+                                storage = storelessSubscriptionContainer,
+                                isWidgetCollapsed = isCollapsed(widget.id),
+                                urlBuilder = urlBuilder
+                            )
+                        } else {
+                            DataViewListWidgetContainer(
+                                widget = widget,
+                                storage = storelessSubscriptionContainer,
+                                getObject = getObject,
+                                activeView = observeCurrentWidgetView(widget.id),
+                                isWidgetCollapsed = isCollapsed(widget.id),
+                                urlBuilder = urlBuilder
+                            )
+                        }
                     }
                 }
             }.collect {
@@ -302,7 +316,7 @@ class HomeScreenViewModel(
                     type = when (type) {
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LINK
+                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
                         else -> WidgetLayout.LINK
                     }
                 )
@@ -342,6 +356,7 @@ class HomeScreenViewModel(
                     type = when (type) {
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
                         else -> throw IllegalStateException("Unexpected type: $type")
                     }
                 )
@@ -511,7 +526,13 @@ class HomeScreenViewModel(
                         ctx = configStorage.get().widgets,
                         widget = widget,
                         source = curr.source.id,
-                        type = parseWidgetType(curr)
+                        type = parseWidgetType(curr),
+                        layout = when(val source = curr.source) {
+                            is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
+                            is Widget.Source.Default ->  {
+                                source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
+                            }
+                        }
                     )
                 )
             }
@@ -754,12 +775,14 @@ sealed class Command {
         val ctx: Id,
         val widget: Id,
         val source: Id,
-        val type: Int
+        val type: Int,
+        val layout: Int
     ) : Command() {
         companion object {
             const val TYPE_TREE = 0
             const val TYPE_LINK = 1
             const val TYPE_LIST = 2
+            const val UNDEFINED_LAYOUT_CODE = -1
         }
     }
 }

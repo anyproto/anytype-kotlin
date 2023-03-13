@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class ListWidgetContainer(
+    private val widget: Widget.List,
     private val workspace: Id,
     private val subscription: Id,
     private val storage: StorelessSubscriptionContainer,
@@ -24,7 +25,7 @@ class ListWidgetContainer(
         if (isCollapsed) {
             flowOf(
                 WidgetView.ListOfObjects(
-                    id = subscription,
+                    id = widget.id,
                     type = resolveType(),
                     elements = emptyList(),
                     isExpanded = false
@@ -33,7 +34,7 @@ class ListWidgetContainer(
         } else {
             storage.subscribe(buildParams()).map { objects ->
                 WidgetView.ListOfObjects(
-                    id = subscription,
+                    id = widget.id,
                     type = resolveType(),
                     elements = objects.map { obj ->
                         WidgetView.ListOfObjects.Element(

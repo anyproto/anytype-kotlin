@@ -85,7 +85,8 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
         if (forExistingWidget) {
             vm.onStartForExistingWidget(
                 currentType = currentType,
-                source = source
+                source = source,
+                sourceLayout = sourceLayout
             )
         } else {
             vm.onStartForNewWidget(
@@ -115,13 +116,15 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
             ctx: Id,
             widget: Id,
             source: Id,
-            type: Int
+            type: Int,
+            layout: Int
         ) = bundleOf(
             CTX_KEY to ctx,
             WIDGET_ID_KEY to widget,
             WIDGET_SOURCE_KEY to source,
             WIDGET_TYPE_KEY to type,
-            IS_FOR_EXISTING_WIDGET to true
+            IS_FOR_EXISTING_WIDGET to true,
+            WIDGET_SOURCE_LAYOUT to layout,
         )
 
         fun args(

@@ -47,7 +47,7 @@ sealed class ObjectIcon {
                 } else {
                     Profile.Avatar(name = obj.name.orEmpty())
                 }
-                ObjectType.Layout.SET -> if (!img.isNullOrBlank()) {
+                ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> if (!img.isNullOrBlank()) {
                     Basic.Image(hash = builder.thumbnail(img))
                 } else if (!emoji.isNullOrBlank()) {
                     Basic.Emoji(unicode = emoji)
@@ -72,7 +72,6 @@ sealed class ObjectIcon {
                 ObjectType.Layout.SPACE -> None
                 ObjectType.Layout.DATABASE -> None
                 null -> None
-                ObjectType.Layout.COLLECTION -> None
             }
         }
 

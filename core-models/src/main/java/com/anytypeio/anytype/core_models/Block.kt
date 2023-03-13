@@ -373,7 +373,7 @@ data class Block(
             val layout: Layout
         ) : Content() {
             enum class Layout {
-                TREE, LINK
+                TREE, LINK, LIST
             }
         }
     }

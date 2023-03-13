@@ -377,6 +377,7 @@ fun MBlock.toCoreWidget(): Block.Content.Widget {
         layout = when (content.layout) {
             MWidgetLayout.Link -> Block.Content.Widget.Layout.LINK
             MWidgetLayout.Tree -> Block.Content.Widget.Layout.TREE
+            MWidgetLayout.List -> Block.Content.Widget.Layout.LIST
         }
     )
 }

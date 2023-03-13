@@ -115,6 +115,9 @@ fun List<Block>.parseWidgets(
                                     )
                                 )
                             }
+                            Block.Content.Widget.Layout.LIST -> {
+                                // TODO handle in the next PR
+                            }
                         }
                     }
                 }

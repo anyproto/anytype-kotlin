@@ -506,6 +506,7 @@ message Block {
             enum Layout {
                 Link = 0;
                 Tree = 1;
+                List = 2;
             }
         }
     }
@@ -647,6 +648,12 @@ message ThreadDeeplinkPayload {
 message ThreadCreateQueueEntry {
     string collectionThread = 1;
     string threadId = 2;
+}
+
+message Object {
+    message ChangePayload {
+        SmartBlockType smartBlockType = 1;
+    }
 }
 
 message ObjectType {

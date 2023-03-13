@@ -476,4 +476,5 @@ fun List<InternalFlags>.toMiddlewareModel(): List<InternalFlag> = map {
 fun Block.Content.Widget.Layout.mw() : MWidgetLayout = when(this) {
     Block.Content.Widget.Layout.TREE -> MWidgetLayout.Tree
     Block.Content.Widget.Layout.LINK -> MWidgetLayout.Link
+    Block.Content.Widget.Layout.LIST -> MWidgetLayout.List
 }

@@ -6,6 +6,9 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -20,6 +23,13 @@ interface StoreOfRelations {
     suspend fun set(target: Id, data: Struct)
     suspend fun remove(target: Id)
     suspend fun clear()
+
+    fun trackChanges() : Flow<TrackedEvent>
+
+    sealed class TrackedEvent {
+        object Init : TrackedEvent()
+        object Change: TrackedEvent()
+    }
 }
 
 class DefaultStoreOfRelations : StoreOfRelations {
@@ -27,6 +37,8 @@ class DefaultStoreOfRelations : StoreOfRelations {
     private val mutex = Mutex()
     private val store = mutableMapOf<Id, ObjectWrapper.Relation>()
     private val keysToIds = mutableMapOf<Key, Id>()
+
+    private val updates = MutableSharedFlow<StoreOfRelations.TrackedEvent>()
 
     override val size: Int get() = store.size
 
@@ -55,6 +67,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
                 store[o.id] = current.amend(o.map)
             }
         }
+        updates.emit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override suspend fun amend(target: Id, diff: Map<Id, Any?>): Unit = mutex.withLock {
@@ -64,6 +77,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
         } else {
             store[target] = ObjectWrapper.Relation(diff).also { keysToIds[it.key] = target }
         }
+        updates.emit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override suspend fun set(
@@ -71,6 +85,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
         data: Map<String, Any?>
     ): Unit = mutex.withLock {
         store[target] = ObjectWrapper.Relation(data).also { keysToIds[it.key] = target }
+        updates.emit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override suspend fun unset(
@@ -81,6 +96,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
         if (current != null) {
             store[target] = current.unset(keys)
         }
+        updates.emit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override suspend fun remove(target: Id) : Unit = mutex.withLock {
@@ -89,10 +105,15 @@ class DefaultStoreOfRelations : StoreOfRelations {
             keysToIds.remove(current.key)
             store.remove(target)
         }
+        updates.emit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override suspend fun clear(): Unit = mutex.withLock {
         keysToIds.clear()
         store.clear()
+    }
+
+    override fun trackChanges(): Flow<StoreOfRelations.TrackedEvent> = updates.onStart {
+        emit(StoreOfRelations.TrackedEvent.Init)
     }
 }

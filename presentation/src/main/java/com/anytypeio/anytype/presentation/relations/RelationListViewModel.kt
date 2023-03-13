@@ -65,9 +65,10 @@ class RelationListViewModel(
         )
         jobs += viewModelScope.launch {
             combine(
+                storeOfRelations.trackChanges(),
                 relationListProvider.links,
                 relationListProvider.details
-            ) { relationLinks, details ->
+            ) { _, relationLinks, details ->
                 val relations = relationLinks.mapNotNull { storeOfRelations.getByKey(it.key) }
                 val detail = details.details[ctx]
                 val values = detail?.map ?: emptyMap()

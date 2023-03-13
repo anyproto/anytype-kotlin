@@ -28,9 +28,9 @@ import com.anytypeio.anytype.presentation.keychain.KeychainViewState
 import com.anytypeio.anytype.ui.profile.RoundedBackgroundColorSpan
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T>() {
 
@@ -61,8 +61,6 @@ abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T
         binding.root.clicks().onEach { vm.onRootClicked() }.launchIn(lifecycleScope)
 
         vm.state.observe(viewLifecycleOwner) { render(it) }
-
-        setupFullHeight()
     }
 
     private fun render(state: KeychainViewState) {

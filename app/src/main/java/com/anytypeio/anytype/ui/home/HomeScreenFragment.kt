@@ -19,6 +19,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -35,6 +36,10 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeScreenFragment : BaseComposeFragment() {
+
+    private var isMnemonicReminderDialogNeeded: Boolean
+        get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
+        set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
 
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
@@ -111,6 +116,11 @@ class HomeScreenFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (isMnemonicReminderDialogNeeded) showMnemonicReminderAlert()
+    }
+
     private fun proceed(command: Command) {
         when (command) {
             is Command.ChangeWidgetSource -> {
@@ -160,6 +170,11 @@ class HomeScreenFragment : BaseComposeFragment() {
             is Navigation.OpenSet -> navigation().openObjectSet(destination.ctx)
             is Navigation.ExpandWidget -> navigation().launchCollections(destination.subscription)
         }
+    }
+
+    private fun showMnemonicReminderAlert() {
+        isMnemonicReminderDialogNeeded = false
+        findNavController().navigate(R.id.dashboardKeychainDialog)
     }
 
     override fun injectDependencies() {

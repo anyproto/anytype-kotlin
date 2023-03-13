@@ -603,7 +603,12 @@ class HomeScreenViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        proceedWithClosingWidgetObject(widgetObject = configStorage.get().widgets)
+        // Temporary workaround for app crash when user is logged out and config storage is not initialized.
+        try {
+            proceedWithClosingWidgetObject(widgetObject = configStorage.get().widgets)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while closing widget object")
+        }
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {

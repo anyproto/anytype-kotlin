@@ -57,6 +57,7 @@ sealed class WidgetView {
 
     data class ListOfObjects(
         override val id: Id,
+        val source: Widget.Source,
         val type: Type,
         val elements: List<Element>,
         val isExpanded: Boolean

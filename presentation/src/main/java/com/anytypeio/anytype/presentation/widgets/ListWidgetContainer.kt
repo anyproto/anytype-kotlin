@@ -26,6 +26,7 @@ class ListWidgetContainer(
             flowOf(
                 WidgetView.ListOfObjects(
                     id = widget.id,
+                    source = widget.source,
                     type = resolveType(),
                     elements = emptyList(),
                     isExpanded = false
@@ -35,6 +36,7 @@ class ListWidgetContainer(
             storage.subscribe(buildParams()).map { objects ->
                 WidgetView.ListOfObjects(
                     id = widget.id,
+                    source = widget.source,
                     type = resolveType(),
                     elements = objects.map { obj ->
                         WidgetView.ListOfObjects.Element(

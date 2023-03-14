@@ -13,6 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -27,12 +29,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-class CreateBookmarkFragment : BaseBottomSheetImeOffsetFragment<DialogCreateBookmarkBinding>(), Observer<ViewState> {
+class CreateBookmarkFragment : BaseBottomSheetImeOffsetFragment<DialogCreateBookmarkBinding>(),
+    Observer<ViewState> {
 
     private val target: String
-        get() = requireArguments()
-            .getString(ARG_TARGET)
-            ?: throw IllegalStateException(MISSING_TARGET_ERROR)
+        get() = argString(ARG_TARGET)
+    private val url: String?
+        get() = argOrNull<String>(ARG_URL)
 
     @Inject
     lateinit var factory: CreateBookmarkViewModel.Factory
@@ -41,13 +44,18 @@ class CreateBookmarkFragment : BaseBottomSheetImeOffsetFragment<DialogCreateBook
     companion object {
 
         private const val ARG_TARGET = "arg.create.bookmark.target"
+        private const val ARG_URL = "arg.create.bookmark.url"
 
         private const val MISSING_TARGET_ERROR = "Target missing in args"
 
         fun newInstance(
-            target: String
+            target: String,
+            url: String?
         ): CreateBookmarkFragment = CreateBookmarkFragment().apply {
-            arguments = bundleOf(ARG_TARGET to target)
+            arguments = bundleOf(
+                ARG_TARGET to target,
+                ARG_URL to url
+            )
         }
     }
 
@@ -63,6 +71,10 @@ class CreateBookmarkFragment : BaseBottomSheetImeOffsetFragment<DialogCreateBook
         binding.cancelBookmarkButton.setOnClickListener {
             it.hideKeyboard()
             this.dismiss()
+        }
+
+        url?.let {
+            binding.urlInput.setText(it)
         }
 
         binding.createBookmarkButton

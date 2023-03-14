@@ -900,7 +900,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(
-                        target = command.target
+                        target = command.target,
+                        url = command.url
                     ).showChildFragment()
                 }
                 is Command.OpenGallery -> {

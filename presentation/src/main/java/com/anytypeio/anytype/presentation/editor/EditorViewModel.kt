@@ -3259,11 +3259,12 @@ class EditorViewModel(
         proceedWithBookmarkSetter(target)
     }
 
-    private fun proceedWithBookmarkSetter(target: String) {
+    private fun proceedWithBookmarkSetter(target: String, currentValue: String? = null) {
         dispatch(
             command = Command.OpenBookmarkSetter(
                 context = context,
-                target = target
+                target = target,
+                url = currentValue
             )
         )
     }
@@ -3275,7 +3276,7 @@ class EditorViewModel(
         if (view.url.isBlank()) {
             proceedWithBookmarkSetter(target = view.id)
         } else {
-            dispatch(command = Command.Browse(view.url))
+            proceedWithBookmarkSetter(target = view.id, view.url)
         }
     }
 

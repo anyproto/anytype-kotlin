@@ -20,7 +20,8 @@ sealed class Command {
 
     data class OpenBookmarkSetter(
         val target: String,
-        val context: String
+        val context: String,
+        val url: String?
     ) : Command()
 
     data class ScrollToActionMenu(val target: Id?) : Command()

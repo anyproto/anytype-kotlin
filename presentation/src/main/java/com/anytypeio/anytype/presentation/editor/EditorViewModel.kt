@@ -4787,7 +4787,7 @@ class EditorViewModel(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
                     val views = types.getObjectTypeViewsForSBPage(
-                        isWithCollection = true,
+                        isWithCollection = false,
                         isWithBookmark = false,
                         selectedTypes = emptyList(),
                         excludeTypes = emptyList()

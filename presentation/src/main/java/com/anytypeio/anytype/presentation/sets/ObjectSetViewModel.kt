@@ -46,7 +46,6 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
@@ -62,6 +61,7 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -74,10 +74,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -288,31 +291,62 @@ class ObjectSetViewModel(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToObjectState() {
         Timber.d("subscribeToObjectState, ctx:[$context]")
         viewModelScope.launch {
             combine(
                 stateReducer.state,
                 paginator.offset
-            ) { state, offset ->
-                when (state) {
-                    is ObjectState.DataView.Collection -> {
-                        Timber.d("subscribeToObjectState, NEW STATE COLLECTION")
-                        if (state.isInitialized) {
-                            subscribeToCollectionRecords(state, session, offset)
+            ) { state, offset -> state to offset }
+                .flatMapLatest { (state, offset) ->
+                    when (state) {
+                        is ObjectState.DataView.Collection -> {
+                            Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
+                            if (state.isInitialized) {
+                                dataViewSubscription.startObjectCollectionSubscription(
+                                    collection = context,
+                                    state = state,
+                                    session = session,
+                                    offset = offset,
+                                    context = context,
+                                    workspaceId = workspaceManager.getCurrentWorkspace(),
+                                    storeOfRelations = storeOfRelations
+                                )
+                            } else {
+                                emptyFlow()
+                            }
+                        }
+                        is ObjectState.DataView.Set -> {
+                            Timber.d("subscribeToObjectState, NEW SET STATE")
+                            if (state.isInitialized) {
+                                dataViewSubscription.startObjectSetSubscription(
+                                    state = state,
+                                    session = session,
+                                    offset = offset,
+                                    context = context,
+                                    workspaceId = workspaceManager.getCurrentWorkspace(),
+                                    storeOfRelations = storeOfRelations
+                                )
+                            } else {
+                                emptyFlow()
+                            }
+                        }
+                        else -> {
+                            Timber.d("subscribeToObjectState, NEW STATE, $state")
+                            emptyFlow()
                         }
                     }
-                    is ObjectState.DataView.Set -> {
-                        Timber.d("subscribeToObjectState, NEW STATE SET")
-                        if (state.isInitialized) {
-                            subscribeToSetRecords(state, session, offset)
-                        }
-                    }
-                    else -> {
-                        Timber.d("subscribeToObjectState, NEW STATE :$state")
-                    }
+                }.onEach { index ->
+                    Timber.d("subscribeToObjectState, New index size: ${index.objects.size}")
+                    database.update(index)
                 }
-            }.collect()
+                .catch { error ->
+                    Timber.e("subscribeToObjectState error : $error")
+                    _currentViewer.value =
+                        DataViewViewState.Error("Error while getting objects:\n${error.message}")
+                }
+                .collect()
         }
     }
 
@@ -349,57 +383,6 @@ class ObjectSetViewModel(
                 }
             )
         }
-    }
-
-    private suspend fun subscribeToCollectionRecords(
-        state: ObjectState.DataView.Collection,
-        session: ObjectSetSession,
-        offset: Long
-    ) {
-        Timber.d("subscribeToCollectionRecords, ")
-        dataViewSubscription.startObjectCollectionSubscription(
-            collection = context,
-            state = state,
-            session = session,
-            offset = offset,
-            context = context,
-            workspaceId = workspaceManager.getCurrentWorkspace(),
-            storeOfRelations = storeOfRelations
-        )
-            .catch { error ->
-                Timber.e("subscribeToCollectionRecords error : ${error.message}")
-                _currentViewer.value =
-                    DataViewViewState.Error("Error while getting collection objects:\n${error.message}")
-            }
-            .collect { index ->
-                Timber.d("subscribeToCollectionRecords, New index size: ${index.objects.size},\nIndex objects:${index.objects}")
-                database.update(update = index)
-            }
-    }
-
-    private suspend fun subscribeToSetRecords(
-        state: ObjectState.DataView.Set,
-        session: ObjectSetSession,
-        offset: Long
-    ) {
-        Timber.d("subscribeToSetRecords, ")
-        dataViewSubscription.startObjectSetSubscription(
-            state = state,
-            session = session,
-            offset = offset,
-            context = context,
-            workspaceId = workspaceManager.getCurrentWorkspace(),
-            storeOfRelations = storeOfRelations
-        )
-            .catch { error ->
-                Timber.e("subscribeToSetRecords error : ${error.message}")
-                _currentViewer.value =
-                    DataViewViewState.Error("Error while getting set objects:\n${error.message}")
-            }
-            .collect { index ->
-                Timber.d("subscribeToSetRecords, New index: ${index.objects.map { it.takeLast(5) }.joinToString { it }}")
-                database.update(update = index)
-            }
     }
 
     private fun subscribeToDataViewViewer() {

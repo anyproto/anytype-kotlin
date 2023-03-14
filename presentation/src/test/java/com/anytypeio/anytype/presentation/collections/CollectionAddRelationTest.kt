@@ -14,7 +14,9 @@ import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -31,6 +33,9 @@ import org.mockito.MockitoAnnotations
 @OptIn(ExperimentalCoroutinesApi::class)
 class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
 
+    private lateinit var viewModel: ObjectSetViewModel
+    private lateinit var objectCollection: MockCollection
+
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
         .minPriority(Log.DEBUG)
@@ -42,28 +47,31 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        viewModel = givenViewModel()
+        objectCollection = MockCollection(context = root)
     }
 
     @After
     fun after() {
-        rule.advanceTime(100)
+        rule.advanceTime()
     }
 
     private val COLLECTION_LAYOUT = ObjectType.Layout.COLLECTION.code.toDouble()
 
     @Test
-    fun `should add relation and update value of new relation`() = runTest {
+    fun `should add new relation to data view`() = runTest {
         // SETUP
-        val objectCollection = MockCollection(root)
 
         stubWorkspaceManager(objectCollection.workspaceId)
+        stubStoreOfRelations(objectCollection)
         stubSubscriptionResults(
             subscription = objectCollection.subscriptionId,
             collection = root,
             workspace = objectCollection.workspaceId,
             storeOfRelations = storeOfRelations,
             keys = objectCollection.dvKeys,
-            objects = listOf(objectCollection.obj1, objectCollection.obj2)
+            objects = listOf(objectCollection.obj1, objectCollection.obj2),
+            dvSorts = objectCollection.sorts
         )
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -79,27 +87,25 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             details = objectCollection.details
         )
 
-        val vm = givenViewModel()
-
         // TESTING
-        vm.onStart(ctx = root)
+        viewModel.onStart(ctx = root)
 
-        val relationId3 = "rel-newRelationKey"
-        val relationKey3 = "newRelationKey"
-        val relationName3 = "NEW RELATION"
-        val relationObject3 = StubRelationObject(
-            id = relationId3,
-            key = relationKey3,
-            name = relationName3,
+        val relationId4 = "rel-newRelationKey"
+        val relationKey4 = "newRelationKey"
+        val relationName4 = "NEW RELATION"
+        val relationObject4 = StubRelationObject(
+            id = relationId4,
+            key = relationKey4,
+            name = relationName4,
             workspaceId = objectCollection.workspaceId
         )
-        val relationLink3 = RelationLink(relationKey3, relationObject3.format)
-        val dvViewerRelation3 = DVViewerRelation(
-            key = relationKey3,
+        val relationLink4 = RelationLink(relationKey4, relationObject4.format)
+        val dvViewerRelation4 = DVViewerRelation(
+            key = relationKey4,
             isVisible = true
         )
 
-        vm.currentViewer.test {
+        viewModel.currentViewer.test {
 
             val initState = awaitItem()
             assertEquals(
@@ -126,7 +132,23 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 description = objectCollection.obj1.description,
                                 hideIcon = false,
                                 icon = ObjectIcon.Basic.Avatar(name = objectCollection.obj1.name!!),
-                                relations = listOf()
+                                relations = listOf(
+                                    DefaultObjectRelationValueView.Text(
+                                        objectId = objectCollection.obj1.id,
+                                        relationKey = objectCollection.relationObject1.key,
+                                        text = null
+                                    ),
+                                    DefaultObjectRelationValueView.Text(
+                                        objectId = objectCollection.obj1.id,
+                                        relationKey = objectCollection.relationObject2.key,
+                                        text = null
+                                    ),
+                                    DefaultObjectRelationValueView.Tag(
+                                        objectId = objectCollection.obj1.id,
+                                        relationKey = objectCollection.relationObject3.key,
+                                        tags = emptyList()
+                                    )
+                                )
                             ),
                             Viewer.ListView.Item.Default(
                                 objectId = objectCollection.obj2.id,
@@ -134,7 +156,23 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 description = objectCollection.obj2.description,
                                 hideIcon = false,
                                 icon = ObjectIcon.Basic.Avatar(name = objectCollection.obj2.name!!),
-                                relations = listOf()
+                                relations = listOf(
+                                    DefaultObjectRelationValueView.Text(
+                                        objectId = objectCollection.obj2.id,
+                                        relationKey = objectCollection.relationObject1.key,
+                                        text = null
+                                    ),
+                                    DefaultObjectRelationValueView.Text(
+                                        objectId = objectCollection.obj2.id,
+                                        relationKey = objectCollection.relationObject2.key,
+                                        text = null
+                                    ),
+                                    DefaultObjectRelationValueView.Tag(
+                                        objectId = objectCollection.obj2.id,
+                                        relationKey = objectCollection.relationObject3.key,
+                                        tags = emptyList()
+                                    )
+                                )
                             )
                         )
                     )
@@ -169,13 +207,13 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             //Add new relation from marketplace to object and view
             val eventObjectDetailsSet = Event.Command.Details.Set(
                 context = root,
-                target = relationId3,
-                details = Block.Fields(relationObject3.map)
+                target = relationId4,
+                details = Block.Fields(relationObject4.map)
             )
             val eventDataViewRelationSet = Event.Command.DataView.SetRelation(
                 context = root,
                 dv = objectCollection.dataView.id,
-                links = listOf(relationLink3)
+                links = listOf(relationLink4)
             )
 
             val eventDataViewUpdateView = Event.Command.DataView.UpdateView(
@@ -184,8 +222,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 viewerId = objectCollection.viewer.id,
                 relationUpdates = listOf(
                     Event.Command.DataView.UpdateView.DVViewerRelationUpdate.Add(
-                        afterId = objectCollection.relationKey2,
-                        relations = listOf(dvViewerRelation3)
+                        afterId = objectCollection.relationObject2.id,
+                        relations = listOf(dvViewerRelation4)
                     )
                 ),
                 fields = null,
@@ -209,7 +247,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 viewerRelations = listOf(
                     objectCollection.dvViewerRelation1,
                     objectCollection.dvViewerRelation2,
-                    dvViewerRelation3
+                    objectCollection.dvViewerRelation3,
+                    dvViewerRelation4
                 )
             )
 
@@ -220,7 +259,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                     relationLinks = listOf(
                         objectCollection.relationLink1,
                         objectCollection.relationLink2,
-                        relationLink3
+                        objectCollection.relationLink3,
+                        relationLink4
                     )
                 )
             )
@@ -234,38 +274,15 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                     ),
                     details = mapOf(
                         rootObject.id to Block.Fields(rootObject.map),
-                        relationObject3.id to Block.Fields(relationObject3.map)
+                        relationObject4.id to Block.Fields(relationObject4.map)
                     ),
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()
                 ),
                 actual = second
             )
-            expectNoEvents()
 
-           // TODO ADD LOGIC : SET VALUE TO NEW RELATION
-//            //set value to new relation3 to object1
-//
-//            val eventRelationLinksAmend = Event.Command.ObjectRelationLinks.Amend(
-//                context = root,
-//                id = obj1.id,
-//                relationLinks = listOf(relationLink3)
-//            )
-//
-//            val eventObjectDetailsAmend = Event.Command.Details.Amend(
-//                context = root,
-//                target = obj1.id,
-//                details = mapOf(relationKey3 to "Foobar")
-//            )
-//
-//            dispatcher.send(
-//                Payload(
-//                    context = root,
-//                    events = listOf(eventRelationLinksAmend, eventObjectDetailsAmend)
-//                )
-//            )
-//            expectNoEvents()
-//            awaitComplete()
+            expectNoEvents()
         }
     }
 }

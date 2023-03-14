@@ -9,6 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -58,9 +59,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         }
 
-        // ASSERT NO SUBSCRIPTION TO COLLECTION RECORDS
-        verifyNoInteractions(repo)
-
         // ASSERT HEADER STATE
         viewModel.header.test {
             val first = awaitItem()
@@ -80,6 +78,10 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
             expectNoEvents()
         }
+
+        // ASSERT NO SUBSCRIPTION TO COLLECTION RECORDS
+        advanceUntilIdle()
+        verifyNoInteractions(repo)
     }
 
     @Test
@@ -110,9 +112,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             expectNoEvents()
         }
 
-        // ASSERT SUBSCRIPTION TO COLLECTION RECORDS
-        verifyNoInteractions(repo)
-
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
             val first = awaitItem()
@@ -122,6 +121,10 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Collection.NoView>(second)
             expectNoEvents()
         }
+
+        // ASSERT SUBSCRIPTION TO COLLECTION RECORDS
+        advanceUntilIdle()
+        verifyNoInteractions(repo)
     }
 
 
@@ -139,12 +142,13 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             ),
             details = mockObjectCollection.details
         )
+        stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
             workspace = mockObjectCollection.workspaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
-            keys = listOf(mockObjectCollection.relationKey1, mockObjectCollection.relationKey2)
+            keys = mockObjectCollection.dvKeys
         )
 
         // TESTING
@@ -185,13 +189,15 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             ),
             details = mockObjectCollection.details
         )
+        stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
             workspace = mockObjectCollection.workspaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
-            keys = listOf(mockObjectCollection.relationKey1, mockObjectCollection.relationKey2),
-            objects = listOf(mockObjectCollection.obj1, mockObjectCollection.obj2)
+            keys = mockObjectCollection.dvKeys,
+            objects = listOf(mockObjectCollection.obj1, mockObjectCollection.obj2),
+            dvSorts = mockObjectCollection.sorts
         )
 
         // TESTING

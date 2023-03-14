@@ -270,10 +270,10 @@ sealed class Event {
                 override val context: Id,
                 val block: Id,
                 val viewerId: Id,
-                val filterUpdates: List<DVFilterUpdate>,
-                val sortUpdates: List<DVSortUpdate>,
-                val relationUpdates: List<DVViewerRelationUpdate>,
-                val fields: DVViewerFields?
+                val filterUpdates: List<DVFilterUpdate> = emptyList(),
+                val sortUpdates: List<DVSortUpdate> = emptyList(),
+                val relationUpdates: List<DVViewerRelationUpdate> = emptyList(),
+                val fields: DVViewerFields? = null
             ) : DataView() {
 
                 sealed class DVFilterUpdate {

@@ -41,6 +41,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -317,6 +318,16 @@ open class ObjectSetViewModelTestSetup {
                 emit(listOf())
             }
         }
+    }
+
+    protected suspend fun stubStoreOfRelations(mockObjectCollection: MockCollection) {
+        storeOfRelations.merge(
+            listOf(
+                mockObjectCollection.relationObject1,
+                mockObjectCollection.relationObject2,
+                mockObjectCollection.relationObject3
+            )
+        )
     }
 
     protected suspend fun stubStoreOfRelations(mockObjectSet: MockSet) {

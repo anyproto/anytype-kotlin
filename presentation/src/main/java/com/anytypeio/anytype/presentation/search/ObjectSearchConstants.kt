@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -468,7 +467,9 @@ object ObjectSearchConstants {
         Relations.RELATION_OPTION_COLOR,
         Relations.COVER_TYPE,
         Relations.COVER_ID,
-        Relations.PAGE_COVER
+        Relations.PAGE_COVER,
+        Relations.FILE_EXT,
+        Relations.FILE_MIME_TYPE
     )
 
     //endregion

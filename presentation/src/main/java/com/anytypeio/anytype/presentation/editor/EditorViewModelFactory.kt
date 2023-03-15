@@ -7,8 +7,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -19,12 +17,14 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -34,7 +34,6 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -59,7 +58,6 @@ open class  EditorViewModelFactory(
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
-    private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val searchObjects: SearchObjects,
     private val getDefaultPageType: GetDefaultPageType,
@@ -98,7 +96,6 @@ open class  EditorViewModelFactory(
             analytics = analytics,
             dispatcher = dispatcher,
             delegator = delegator,
-            detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
             searchObjects = searchObjects,
             getDefaultPageType = getDefaultPageType,

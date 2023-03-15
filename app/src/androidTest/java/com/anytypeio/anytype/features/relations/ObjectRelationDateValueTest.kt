@@ -30,6 +30,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
+import java.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
@@ -37,7 +38,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
-import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -64,7 +64,7 @@ class ObjectRelationDateValueTest {
                 objectState = state,
                 storeOfRelations = storeOfRelations
             ),
-            values = DataViewObjectValueProvider(db = db)
+            values = DataViewObjectValueProvider(db = db, objectState = state)
         )
     }
 

@@ -20,7 +20,6 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
@@ -41,7 +40,6 @@ class RelationListViewModel(
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDetail: UpdateDetail,
-    private val detailModificationManager: DetailModificationManager,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val deleteRelationFromObject: DeleteRelationFromObject,
@@ -135,7 +133,7 @@ class RelationListViewModel(
         view: ObjectRelationView,
         ctx: Id
     ) {
-        val relationKey = view.key ?: return
+        val relationKey = view.key
         viewModelScope.launch {
             if (view.featured) {
                 viewModelScope.launch {
@@ -317,7 +315,7 @@ class RelationListViewModel(
             check(view is ObjectRelationView.Checkbox)
             updateDetail(
                 UpdateDetail.Params(
-                    ctx = ctx,
+                    target = ctx,
                     key = view.key,
                     value = !view.isChecked
                 )
@@ -352,18 +350,13 @@ class RelationListViewModel(
         viewModelScope.launch {
             updateDetail(
                 UpdateDetail.Params(
-                    ctx = ctx,
+                    target = ctx,
                     key = relationKey,
                     value = value
                 )
             ).process(
                 success = { payload ->
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    detailModificationManager.updateRelationValue(
-                        target = ctx,
-                        key = relationKey,
-                        value = value
-                    )
                     sendAnalyticsRelationValueEvent(analytics)
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }

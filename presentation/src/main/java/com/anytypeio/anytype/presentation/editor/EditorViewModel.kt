@@ -67,8 +67,8 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -90,7 +90,6 @@ import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Intent
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Media
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
@@ -255,7 +254,6 @@ class EditorViewModel(
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
-    private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val searchObjects: SearchObjects,
     private val getDefaultPageType: GetDefaultPageType,
@@ -372,7 +370,6 @@ class EditorViewModel(
         startHandlingTextChanges()
         startProcessingFocusChanges()
         startProcessingControlPanelViewState()
-        startProcessingInternalDetailModifications()
         startObservingPayload()
         startObservingErrors()
         processRendering()
@@ -460,10 +457,6 @@ class EditorViewModel(
                 )
             }
         )
-    }
-
-    private fun startProcessingInternalDetailModifications() {
-        detailModificationManager.modifications.onEach { refresh() }.launchIn(viewModelScope)
     }
 
     private fun startProcessingFocusChanges() {
@@ -4171,7 +4164,7 @@ class EditorViewModel(
         viewModelScope.launch {
             updateDetail(
                 UpdateDetail.Params(
-                    ctx = ctx,
+                    target = ctx,
                     key = key,
                     value = value
                 )

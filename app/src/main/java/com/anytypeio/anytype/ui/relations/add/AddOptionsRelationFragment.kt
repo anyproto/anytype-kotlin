@@ -25,6 +25,7 @@ class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
 
     override fun onCreateOptionClicked(name: String) {
         vm.onCreateObjectRelationOptionClicked(
+            ctx = ctx,
             relationKey = relationKey,
             obj = target,
             name = name
@@ -33,6 +34,7 @@ class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
 
     override fun onAddButtonClicked() {
         vm.onAddSelectedValuesToObjectClicked(
+            ctx = ctx,
             obj = target,
             relationKey = relationKey
         )

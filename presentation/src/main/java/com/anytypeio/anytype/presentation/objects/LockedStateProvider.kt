@@ -13,4 +13,8 @@ interface LockedStateProvider {
             return doc?.fields?.isLocked ?: false
         }
     }
+    object DataViewLockedStateProvider : LockedStateProvider {
+        // Sets or Collections can't be locked currently.
+        override fun isLocked(ctx: Id): Boolean = false
+    }
 }

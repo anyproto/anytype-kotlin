@@ -66,14 +66,20 @@ abstract class RelationValueBaseViewModel(
     val commands = MutableSharedFlow<ObjectRelationValueCommand>(replay = 0)
     val isLoading = MutableStateFlow(false)
 
-    fun onStart(objectId: Id, relationKey: Key) {
+    fun onStart(
+        ctx: Id,
+        objectId: Id,
+        relationKey: Key
+    ) {
         Timber.d("onStart")
         jobs += viewModelScope.launch {
             combine(
                 relations.observe(relationKey),
-                values.subscribe(objectId)
+                values.subscribe(ctx = ctx, target = objectId)
             ) { relation, record ->
                 initViewState(
+                    ctx = ctx,
+                    target = objectId,
                     relation = relation,
                     record = record,
                     relationKey = relationKey
@@ -88,7 +94,9 @@ abstract class RelationValueBaseViewModel(
     }
 
     private suspend fun initViewState(
+        ctx: Id,
         relation: ObjectWrapper.Relation,
+        target: Id,
         record: Map<String, Any?>,
         relationKey: Key
     ) {
@@ -106,6 +114,8 @@ abstract class RelationValueBaseViewModel(
                 }
                 items.addAll(
                     parseTagRelationValues(
+                        ctx = ctx,
+                        target = target,
                         ids = ids,
                         isRemovable = isRemovable,
                         relationKey = relationKey
@@ -121,6 +131,8 @@ abstract class RelationValueBaseViewModel(
                 }
                 items.addAll(
                     parseStatusRelationValues(
+                        ctx = ctx,
+                        target = target,
                         ids = ids,
                         relationKey = relationKey
                     )
@@ -130,9 +142,16 @@ abstract class RelationValueBaseViewModel(
                 val isRemovable = isEditing.value
                 relationFormat = Relation.Format.OBJECT
                 val value = record.getOrDefault(relationKey, null)
+                // TODO remove code duplication below
                 if (value is List<*>) {
                     value.typeOf<Id>().forEach { id ->
-                        val wrapper = resolveWrapperForObject(id)
+                        val wrapper = if (ctx == target) {
+                            ObjectWrapper.Basic(
+                                details.provide()[id]?.map ?: emptyMap()
+                            )
+                        } else {
+                            resolveWrapperForObject(ctx = ctx, target = id)
+                        }
                         val type = wrapper.type.firstOrNull()
                         val objectType = type?.let { storeOfObjectTypes.get(it) }
                         if (wrapper.isDeleted == true) {
@@ -161,7 +180,13 @@ abstract class RelationValueBaseViewModel(
                         }
                     }
                 } else if (value is Id) {
-                    val wrapper = resolveWrapperForObject(value)
+                    val wrapper = if (ctx == target) {
+                        ObjectWrapper.Basic(
+                            details.provide()[value]?.map ?: emptyMap()
+                        )
+                    } else {
+                        resolveWrapperForObject(ctx = ctx, target = value)
+                    }
                     val type = wrapper.type.firstOrNull()
                     val objectType = type?.let { storeOfObjectTypes.get(it) }
                     if (wrapper.isDeleted == true) {
@@ -202,14 +227,20 @@ abstract class RelationValueBaseViewModel(
                         }
                     }
                     ids.forEach { id ->
-                        val detail = details.provide()[id]
+                        val wrapper = if (ctx == target) {
+                            ObjectWrapper.Basic(
+                                details.provide()[id]?.map ?: emptyMap()
+                            )
+                        } else {
+                            resolveWrapperForObject(ctx = ctx, target = id)
+                        }
                         items.add(
                             RelationValueView.File(
                                 id = id,
-                                name = detail?.name.orEmpty(),
-                                mime = detail?.fileMimeType.orEmpty(),
-                                ext = detail?.fileExt.orEmpty(),
-                                image = detail?.iconImage,
+                                name = wrapper.name.orEmpty(),
+                                mime = wrapper.fileMimeType.orEmpty(),
+                                ext = wrapper.fileExt.orEmpty(),
+                                image = wrapper.iconImage,
                                 removable = isRemovable
                             )
                         )
@@ -229,21 +260,37 @@ abstract class RelationValueBaseViewModel(
         name.value = relation.name.orEmpty()
     }
 
+    /**
+     * [ctx] operational context
+     * [target] targeted object
+     * [ids] status options ids
+     */
     abstract suspend fun parseStatusRelationValues(
+        ctx: Id,
+        target: Id,
         ids: List<Id>,
         relationKey: Key
     ): List<RelationValueView.Option.Status>
 
+    /**
+     * [ctx] operational context
+     * [target] targeted object
+     * [ids] tags options ids
+     */
     abstract suspend fun parseTagRelationValues(
+        ctx: Id,
+        target: Id,
         ids: List<Id>,
         isRemovable: Boolean,
         relationKey: Key
     ): List<RelationValueView.Option.Tag>
 
-    open suspend fun resolveWrapperForObject(id: Id): ObjectWrapper.Basic {
-        val detail = details.provide()[id]
+    open suspend fun resolveWrapperForObject(
+        ctx: Id, target: Id
+    ): ObjectWrapper.Basic {
+        val detail = details.provide()[target]
         if (detail == null || detail.map.isEmpty()) {
-            Timber.w("Could not found data for object: $id")
+            Timber.w("Could not found data for object: $target")
         }
         return ObjectWrapper.Basic(detail?.map ?: emptyMap())
     }
@@ -294,16 +341,17 @@ abstract class RelationValueBaseViewModel(
     }
 
     fun onRemoveTagFromObjectClicked(
+        ctx: Id,
         target: Id,
         relationKey: Key,
         tag: Id
     ) {
         viewModelScope.launch {
-            val obj = values.get(target)
+            val obj = values.get(ctx = ctx, target = target)
             val remaining = obj[relationKey].filterIdsById(tag)
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = relationKey,
                     value = remaining
                 )
@@ -318,6 +366,7 @@ abstract class RelationValueBaseViewModel(
     }
 
     fun onRemoveStatusFromObjectClicked(
+        ctx: Id,
         target: Id,
         relationKey: Key,
         status: Id? = null
@@ -326,11 +375,11 @@ abstract class RelationValueBaseViewModel(
             val statusId = status ?: ((views.value.first {
                 it is RelationValueView.Option.Status
             }) as? RelationValueView.Option.Status)?.id ?: return@launch
-            val obj = values.get(target)
+            val obj = values.get(ctx = ctx, target = target)
             val remaining = obj[relationKey].filterIdsById(statusId)
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = relationKey,
                     value = remaining
                 )
@@ -345,16 +394,17 @@ abstract class RelationValueBaseViewModel(
     }
 
     fun onRemoveObjectFromObjectClicked(
+        ctx: Id,
         target: Id,
         relationKey: Key,
         objectId: Id
     ) {
         viewModelScope.launch {
-            val obj = values.get(target)
+            val obj = values.get(ctx = ctx, target = target)
             val remaining = obj[relationKey].filterIdsById(objectId)
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = relationKey,
                     value = remaining
                 )
@@ -369,16 +419,17 @@ abstract class RelationValueBaseViewModel(
     }
 
     fun onRemoveFileFromObjectClicked(
+        ctx: Id,
         target: Id,
         relationKey: Key,
         fileId: Id
     ) {
         viewModelScope.launch {
-            val obj = values.get(target)
+            val obj = values.get(ctx = ctx, target = target)
             val remaining = obj[relationKey].filterIdsById(fileId)
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = relationKey,
                     value = remaining
                 )
@@ -400,7 +451,7 @@ abstract class RelationValueBaseViewModel(
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = relationKey,
                     value = order
                 )
@@ -473,7 +524,7 @@ abstract class RelationValueBaseViewModel(
     ) {
         viewModelScope.launch {
             isLoading.emit(true)
-            val obj = values.get(target)
+            val obj = values.get(ctx = ctx, target = target)
             addFileToObject(
                 params = AddFileToObject.Params(
                     ctx = target,
@@ -569,11 +620,13 @@ class RelationValueDVViewModel(
 ) {
 
     override suspend fun parseStatusRelationValues(
+        ctx: Id,
+        target: Id,
         ids: List<Id>,
         relationKey: Key
     ) = buildList {
         ids.forEach { id ->
-            val option = values.get(id)
+            val option = values.get(ctx = ctx, target = id)
             if (option.isNotEmpty()) {
                 val wrapper = ObjectWrapper.Option(option)
                 add(
@@ -590,12 +643,20 @@ class RelationValueDVViewModel(
     }
 
     override suspend fun parseTagRelationValues(
+        ctx: Id,
+        target: Id,
         ids: List<Id>,
         isRemovable: Boolean,
         relationKey: Key
     ) = buildList {
         ids.forEach { id ->
-            val option = values.get(id)
+            val option = if (ctx == target)
+                details.provide()[id]?.map ?: emptyMap()
+            else
+                values.get(
+                    ctx = ctx,
+                    target = id
+                )
             if (option.isNotEmpty()) {
                 val wrapper = ObjectWrapper.Option(option)
                 add(
@@ -615,29 +676,36 @@ class RelationValueDVViewModel(
     }
 
     fun onAddObjectsOrFilesValueToRecord(
+        ctx: Id,
         record: Id,
         relationKey: Key,
         ids: List<Id>
     ) {
         viewModelScope.launch {
-            val rec = values.get(record)
+            val rec = if (ctx == record)
+                details.provide()[record]?.map ?: emptyMap()
+            else
+                values.get(ctx = ctx, target = record)
             val value = rec[relationKey].addIds(ids)
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = record,
+                    target = record,
                     key = relationKey,
                     value = value
                 )
             ).process(
                 failure = { Timber.e(it, "Error while add objects or files value to record") },
-                success = { Timber.d("Successfully add objects or files value to record") }
+                success = { dispatcher.send(it) }
             )
         }
     }
 
-    override suspend fun resolveWrapperForObject(id: Id): ObjectWrapper.Basic {
+    override suspend fun resolveWrapperForObject(
+        ctx: Id,
+        target: Id
+    ): ObjectWrapper.Basic {
         // For sets, we need to take values from db / store, and not from details.
-        return ObjectWrapper.Basic(values.get(target = id))
+        return ObjectWrapper.Basic(values.get(ctx = ctx, target = target))
     }
 
     class Factory(
@@ -693,6 +761,8 @@ class RelationValueViewModel(
 ) {
 
     override suspend fun parseStatusRelationValues(
+        ctx: Id,
+        target: Id,
         ids: List<Id>,
         relationKey: Key
     ) = buildList {
@@ -714,6 +784,8 @@ class RelationValueViewModel(
     }
 
     override suspend fun parseTagRelationValues(
+        ctx: Id,
+        target: Id,
         ids: List<Id>,
         isRemovable: Boolean,
         relationKey: Key
@@ -745,11 +817,11 @@ class RelationValueViewModel(
         ids: List<Id>
     ) {
         viewModelScope.launch {
-            val obj = values.get(target)
+            val obj = values.get(ctx = ctx, target = target)
             val remaining = obj[relationKey].addIds(ids)
             updateDetail(
                 UpdateDetail.Params(
-                    ctx = ctx,
+                    target = ctx,
                     key = relationKey,
                     value = remaining
                 )

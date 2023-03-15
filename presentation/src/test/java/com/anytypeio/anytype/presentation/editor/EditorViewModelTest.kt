@@ -60,8 +60,8 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -96,7 +96,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
-import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
@@ -4024,7 +4023,6 @@ open class EditorViewModelTest {
             analytics = analytics,
             dispatcher = Dispatcher.Default(),
             delegator = delegator,
-            detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             searchObjects = searchObjects,
             getDefaultPageType = getDefaultPageType,

@@ -117,7 +117,12 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         }
         super.onStart()
         setupAppearance()
-        vm.onStart(objectId = objectId, relationKey = relationKey, targetTypes = types)
+        vm.onStart(
+            ctx = ctx,
+            objectId = objectId,
+            relationKey = relationKey,
+            targetTypes = types
+        )
     }
 
     override fun onStop() {

@@ -53,8 +53,8 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -101,9 +101,7 @@ import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
-import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.editor.editor.table.DefaultEditorTableDelegate
@@ -243,7 +241,6 @@ object EditorSessionModule {
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>,
         delegator: Delegator<Action>,
-        detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
         searchObjects: SearchObjects,
         getDefaultPageType: GetDefaultPageType,
@@ -278,7 +275,6 @@ object EditorSessionModule {
         analytics = analytics,
         dispatcher = dispatcher,
         delegator = delegator,
-        detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
         searchObjects = searchObjects,
         getDefaultPageType = getDefaultPageType,
@@ -909,15 +905,6 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideDelegator(): Delegator<Action> = Delegator.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideDetailManager(
-        storage: Editor.Storage
-    ): DetailModificationManager = InternalDetailModificationManager(
-        store = storage.details
-    )
 
     @JvmStatic
     @Provides

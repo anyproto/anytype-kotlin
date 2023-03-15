@@ -33,6 +33,7 @@ import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueAction
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
+import timber.log.Timber
 import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID
 
 open class RelationTextValueFragment :
@@ -135,7 +136,9 @@ open class RelationTextValueFragment :
                 name = name, value = value
             )
         } else {
+            Timber.d("object id: $objectId, context: $ctx")
             vm.onStart(
+                ctx = ctx,
                 relationKey = relationKey,
                 recordId = objectId,
                 isLocked = isLocked,
@@ -209,7 +212,6 @@ open class RelationTextValueFragment :
     )
 
     companion object {
-
         fun new(
             ctx: Id,
             relationKey: Key,

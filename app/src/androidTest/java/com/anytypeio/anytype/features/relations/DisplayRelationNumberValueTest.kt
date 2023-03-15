@@ -13,9 +13,9 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -79,7 +79,7 @@ class DisplayRelationNumberValueTest {
                 objectState = state,
                 storeOfRelations = storeOfRelations
             ),
-            values = DataViewObjectValueProvider(db = db),
+            values = DataViewObjectValueProvider(db = db, objectState = state),
             reloadObject = reloadObject,
             analytics = analytics
         )

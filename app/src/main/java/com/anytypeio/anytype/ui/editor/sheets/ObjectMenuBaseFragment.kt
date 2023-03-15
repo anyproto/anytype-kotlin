@@ -120,7 +120,7 @@ abstract class ObjectMenuBaseFragment :
             ObjectMenuViewModelBase.Command.OpenSetCover -> openSetCover()
             ObjectMenuViewModelBase.Command.OpenSetIcons -> openSetIcons()
             ObjectMenuViewModelBase.Command.OpenSetLayout -> toast(COMING_SOON_MSG)
-            ObjectMenuViewModelBase.Command.OpenSetRelations -> toast(COMING_SOON_MSG)
+            ObjectMenuViewModelBase.Command.OpenSetRelations -> openDataViewRelations()
             ObjectMenuViewModelBase.Command.OpenLinkToChooser -> openLinkChooser()
             is ObjectMenuViewModelBase.Command.OpenSnackbar -> openSnackbar(command)
             is ObjectMenuViewModelBase.Command.ShareDebugTree -> shareFile(command.uri)
@@ -155,7 +155,21 @@ abstract class ObjectMenuBaseFragment :
                 ObjectRelationListFragment.ARG_CTX to ctx,
                 ObjectRelationListFragment.ARG_TARGET to null,
                 ObjectRelationListFragment.ARG_LOCKED to isLocked,
-                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST
+                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
+                ObjectRelationListFragment.ARG_DATA_VIEW_FLOW to false
+            )
+        )
+    }
+
+    private fun openDataViewRelations() {
+        findNavController().navigate(
+            R.id.objectRelationListScreen,
+            bundleOf(
+                ObjectRelationListFragment.ARG_CTX to ctx,
+                ObjectRelationListFragment.ARG_TARGET to null,
+                ObjectRelationListFragment.ARG_LOCKED to isLocked,
+                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
+                ObjectRelationListFragment.ARG_DATA_VIEW_FLOW to true
             )
         )
     }

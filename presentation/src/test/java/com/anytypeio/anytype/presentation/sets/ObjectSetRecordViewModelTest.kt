@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -20,7 +21,6 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
-import kotlin.test.assertEquals
 
 class ObjectSetRecordViewModelTest {
 
@@ -50,7 +50,7 @@ class ObjectSetRecordViewModelTest {
         val input = MockDataFactory.randomString()
 
         val params = UpdateDetail.Params(
-            ctx = obj.id,
+            target = obj.id,
             key = Relations.NAME,
             value = input
         )
@@ -77,7 +77,7 @@ class ObjectSetRecordViewModelTest {
         val input = MockDataFactory.randomString()
 
         val params = UpdateDetail.Params(
-            ctx = obj.id,
+            target = obj.id,
             key = Relations.NAME,
             value = input
         )
@@ -114,7 +114,7 @@ class ObjectSetRecordViewModelTest {
         val emptyInput = ""
 
         val params = UpdateDetail.Params(
-            ctx = obj.id,
+            target = obj.id,
             key = Relations.NAME,
             value = emptyInput
         )

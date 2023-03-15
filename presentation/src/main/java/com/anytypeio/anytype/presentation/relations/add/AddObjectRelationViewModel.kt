@@ -47,13 +47,18 @@ class AddObjectRelationViewModel(
     val commands = MutableSharedFlow<ObjectValueAddCommand>(0)
     val viewsFiltered: StateFlow<ObjectValueAddView> = _viewsFiltered
 
-    fun onStart(relationKey: Key, objectId: String, targetTypes: List<Id>) {
+    fun onStart(
+        ctx: Id,
+        relationKey: Key,
+        objectId: String,
+        targetTypes: List<Id>
+    ) {
         Timber.d("key: $relationKey, object: ${objectId}, types: $targetTypes")
         processingViewsSelectionsAndFilter()
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.observe(relationKey),
-                values.subscribe(objectId)
+                values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
                 when (val ids = value[relation.key]) {
                     is List<*> -> {

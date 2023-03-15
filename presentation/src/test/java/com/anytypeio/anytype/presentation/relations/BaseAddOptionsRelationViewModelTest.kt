@@ -7,8 +7,8 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubRelationOptionObject
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.presentation.relations.RelationValueView.Option.Tag
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvid
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -29,7 +30,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class BaseAddOptionsRelationViewModelTest {
@@ -42,14 +42,16 @@ class BaseAddOptionsRelationViewModelTest {
     private val relation = StubRelationObject(
         format = Relation.Format.TAG
     )
-    private val relationId = relation.key
+    private val relationKey = relation.key
     private val targetId = "stubTargetId"
     private val relationsProvider = FakeObjectRelationProvider()
     private val valuesProvider = FakeObjectValueProvider(
         mapOf(
-            targetId to mapOf(relationId to listOf(selectedOption.id))
+            targetId to mapOf(relationKey to listOf(selectedOption.id))
         )
     )
+
+    private val ctx = MockDataFactory.randomUuid()
 
     @Mock
     lateinit var setObjectDetails: UpdateDetail
@@ -91,7 +93,11 @@ class BaseAddOptionsRelationViewModelTest {
         // TESTING
 
         viewModel.ui.test {
-            viewModel.onStart(targetId, relationId)
+            viewModel.onStart(
+                ctx = ctx,
+                target = targetId,
+                relationKey = relationKey
+            )
             // first item is emmit in constructor
             val actual = listOf(awaitItem(), awaitItem())[1]
             assertEquals(
@@ -122,7 +128,11 @@ class BaseAddOptionsRelationViewModelTest {
         // TESTING
 
         viewModel.ui.test {
-            viewModel.onStart(targetId, relationId)
+            viewModel.onStart(
+                ctx = ctx,
+                target = targetId,
+                relationKey = relationKey
+            )
             val query = MockDataFactory.randomString() + notSelectedOption.name.orEmpty()
             viewModel.onFilterInputChanged(query)
             // first item is emmit in constructor, second - at onStart
@@ -157,7 +167,11 @@ class BaseAddOptionsRelationViewModelTest {
         // TESTING
 
         viewModel.ui.test {
-            viewModel.onStart(targetId, relationId)
+            viewModel.onStart(
+                ctx = ctx,
+                target = targetId,
+                relationKey = relationKey
+            )
 
             val query = notSelectedOption.name.orEmpty().substring(1)
             viewModel.onFilterInputChanged(query)
@@ -194,7 +208,11 @@ class BaseAddOptionsRelationViewModelTest {
         // TESTING
 
         viewModel.ui.test {
-            viewModel.onStart(targetId, relationId)
+            viewModel.onStart(
+                ctx = ctx,
+                target = targetId,
+                relationKey = relationKey
+            )
             // first item is emmit in constructor, second - at onStart
             val actual = listOf(awaitItem(), awaitItem())[1]
             assertEquals(
@@ -231,7 +249,11 @@ class BaseAddOptionsRelationViewModelTest {
         // TESTING
 
         viewModel.ui.test {
-            viewModel.onStart(targetId, relationId)
+            viewModel.onStart(
+                ctx = ctx,
+                target = targetId,
+                relationKey = relationKey
+            )
             val actual = listOf(awaitItem(), awaitItem())[1]
 
             assertEquals(

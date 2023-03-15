@@ -10,7 +10,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -21,7 +20,6 @@ class ObjectRelationListViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDetail: UpdateDetail,
-    private val detailModificationManager: DetailModificationManager,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val deleteRelationFromObject: DeleteRelationFromObject,
@@ -37,7 +35,6 @@ class ObjectRelationListViewModelFactory(
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
             updateDetail = updateDetail,
-            detailModificationManager = detailModificationManager,
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
             deleteRelationFromObject = deleteRelationFromObject,

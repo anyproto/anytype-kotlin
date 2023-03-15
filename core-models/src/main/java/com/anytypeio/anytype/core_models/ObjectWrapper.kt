@@ -9,10 +9,12 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
  */
 sealed class ObjectWrapper {
 
+    abstract val map: Struct
+
     /**
      * @property map [map] map with raw data containing relations.
      */
-    data class Basic(val map: Map<String, Any?>) : ObjectWrapper() {
+    data class Basic(override val map: Struct) : ObjectWrapper() {
 
         private val default = map.withDefault { null }
 
@@ -36,19 +38,9 @@ sealed class ObjectWrapper {
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
 
-        val type: List<Id>
-            get() = when (val value = map[Relations.TYPE]) {
-                is Id -> listOf(value)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
-            }
-
-        val setOf: List<Id>
-            get() = when (val value = map[Relations.SET_OF]) {
-                is Id -> listOf(value)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
-            }
+        val type: List<Id> get() = getValues(Relations.TYPE)
+        val setOf: List<Id> get() = getValues(Relations.SET_OF)
+        val links: List<Id> get() = getValues(Relations.LINKS)
 
         val layout: ObjectType.Layout?
             get() = when (val value = map[Relations.LAYOUT]) {
@@ -56,13 +48,6 @@ sealed class ObjectWrapper {
                     layout.code == value.toInt()
                 }
                 else -> null
-            }
-
-        val links: List<Id>
-            get() = when (val value = map[Relations.LINKS]) {
-                is Id -> listOf(value)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
             }
 
         val id: Id by default
@@ -74,14 +59,6 @@ sealed class ObjectWrapper {
         val fileExt: String? by default
 
         val fileMimeType: String? by default
-
-        inline fun <reified T> getValue(relation: Id): T? {
-            val value = map.getOrDefault(relation, null)
-            return if (value is T)
-                value
-            else
-                null
-        }
 
         val description: String? by default
 
@@ -129,7 +106,7 @@ sealed class ObjectWrapper {
     /**
      * Wrapper for bookmark objects
      */
-    data class Bookmark(val map: Map<String, Any?>) : ObjectWrapper() {
+    data class Bookmark(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val name: String? by default
         val description: String? by default
@@ -144,7 +121,7 @@ sealed class ObjectWrapper {
     /**
      * Wrapper for object types
      */
-    data class Type(val map: Map<String, Any?>) : ObjectWrapper() {
+    data class Type(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
         val name: String? by default
@@ -165,7 +142,7 @@ sealed class ObjectWrapper {
             }
     }
 
-    data class Relation(val map: Struct) : ObjectWrapper() {
+    data class Relation(override val map: Struct) : ObjectWrapper() {
 
         private val default = map.withDefault { null }
 
@@ -208,29 +185,35 @@ sealed class ObjectWrapper {
                 else -> emptyList()
             }
 
-        val relationFormatObjectTypes
-            get() = when (val value = map[RELATION_FORMAT_OBJECT_TYPES]) {
-                is Id -> listOf(value)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
-            }
+        val relationFormatObjectTypes get() = getValues<Id>(RELATION_FORMAT_OBJECT_TYPES)
 
-        val type: List<Id>
-            get() = when (val value = map[Relations.TYPE]) {
-                is Id -> listOf(value)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
-            }
+        val type: List<Id> get() = getValues(Relations.TYPE)
 
         val isValid get() = map.containsKey(Relations.RELATION_KEY) && map.containsKey(Relations.ID)
     }
 
-    data class Option(val map: Struct) {
+    data class Option(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         private val relationOptionColor : String? by default
 
         val id: Id by default
         val name: String? by default
         val color: String = relationOptionColor.orEmpty()
+    }
+
+    inline fun <reified T> getValue(relation: Key): T? {
+        val value = map.getOrDefault(relation, null)
+        return if (value is T)
+            value
+        else
+            null
+    }
+
+    inline fun <reified T> getValues(relation: Key): List<T> {
+        return when (val value = map.getOrDefault(relation, emptyList<T>())) {
+            is T -> listOf(value)
+            is List<*> -> value.typeOf()
+            else -> emptyList()
+        }
     }
 }

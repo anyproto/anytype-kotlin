@@ -28,7 +28,6 @@ import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
@@ -73,9 +72,6 @@ class ObjectRelationListTest {
     lateinit var dispatcher: Dispatcher<Payload>
 
     @Mock
-    lateinit var detailModificationManager: DetailModificationManager
-
-    @Mock
     lateinit var analytics: Analytics
 
     @Mock
@@ -110,7 +106,6 @@ class ObjectRelationListTest {
             relationListProvider = relationListProvider,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
-            detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,

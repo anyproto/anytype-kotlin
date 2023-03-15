@@ -10,7 +10,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
@@ -44,7 +43,6 @@ object ObjectRelationListModule {
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
-        detailModificationManager: DetailModificationManager,
         addToFeaturedRelations: AddToFeaturedRelations,
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
         deleteRelationFromObject: DeleteRelationFromObject,
@@ -57,7 +55,6 @@ object ObjectRelationListModule {
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
             updateDetail = updateDetail,
-            detailModificationManager = detailModificationManager,
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
             deleteRelationFromObject = deleteRelationFromObject,

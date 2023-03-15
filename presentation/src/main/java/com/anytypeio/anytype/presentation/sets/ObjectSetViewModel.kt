@@ -522,7 +522,7 @@ class ObjectSetViewModel(
                 viewModelScope.launch {
                     setObjectDetails(
                         UpdateDetail.Params(
-                            ctx = context,
+                            target = context,
                             key = Relations.NAME,
                             value = txt
                         )
@@ -632,7 +632,7 @@ class ObjectSetViewModel(
                 is CellView.Checkbox -> {
                     setObjectDetails(
                         UpdateDetail.Params(
-                            ctx = cell.id,
+                            target = cell.id,
                             key = cell.relationKey,
                             value = !cell.isChecked
                         )
@@ -689,7 +689,7 @@ class ObjectSetViewModel(
             if (obj != null) {
                 setObjectDetails(
                     UpdateDetail.Params(
-                        ctx = target,
+                        target = target,
                         key = Relations.DONE,
                         value = !(obj.done ?: false)
                     )
@@ -717,7 +717,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = objectId,
+                    target = objectId,
                     key = relationKey,
                     value = value
                 )

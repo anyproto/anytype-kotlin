@@ -53,6 +53,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     private val target: String? get() = argStringOrNull(ARG_TARGET)
     private val mode: Int get() = argInt(ARG_MODE)
     private val isLocked: Boolean get() = arg(ARG_LOCKED)
+    private val isDataViewFLow: Boolean get() = arg(ARG_DATA_VIEW_FLOW)
 
     private val docRelationAdapter by lazy {
         DocumentRelationAdapter(
@@ -116,7 +117,11 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     ctx = ctx,
                     relationKey = command.relationKey,
                     objectId = command.target,
-                    isLocked = command.isLocked
+                    isLocked = command.isLocked,
+                    flow = if (isDataViewFLow)
+                        RelationTextValueFragment.FLOW_DATAVIEW
+                    else
+                        RelationTextValueFragment.FLOW_DEFAULT
                 )
                 fr.showChildFragment()
             }
@@ -129,14 +134,27 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 fr.showChildFragment()
             }
             is Command.EditRelationValue -> {
-                val fr = RelationValueFragment.new(
-                    ctx = ctx,
-                    target = command.target,
-                    relationKey = command.relationKey,
-                    targetObjectTypes = command.targetObjectTypes,
-                    isLocked = command.isLocked
-                )
-                fr.showChildFragment()
+                if (isDataViewFLow) {
+                    val fr = RelationValueDVFragment().apply {
+                        arguments = bundleOf(
+                            RelationValueBaseFragment.CTX_KEY to command.ctx,
+                            RelationValueBaseFragment.TARGET_KEY to command.target,
+                            RelationValueBaseFragment.RELATION_KEY to command.relationKey,
+                            RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
+                            RelationValueBaseFragment.IS_LOCKED_KEY to false
+                        )
+                    }
+                    fr.showChildFragment()
+                } else {
+                    val fr = RelationValueFragment.new(
+                        ctx = ctx,
+                        target = command.target,
+                        relationKey = command.relationKey,
+                        targetObjectTypes = command.targetObjectTypes,
+                        isLocked = command.isLocked
+                    )
+                    fr.showChildFragment()
+                }
             }
             is Command.SetRelationKey -> {
                 withParent<OnFragmentInteractionListener> {
@@ -148,14 +166,27 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 dismiss()
             }
             is Command.EditStatusRelationValue -> {
-                val fr = RelationStatusValueFragment.new(
-                    ctx = ctx,
-                    target = command.target,
-                    relationKey = command.relationKey,
-                    targetObjectTypes = command.targetObjectTypes,
-                    isLocked = command.isLocked
-                )
-                fr.showChildFragment()
+                if (isDataViewFLow) {
+                    val fr = RelationValueDVFragment().apply {
+                        arguments = bundleOf(
+                            RelationValueBaseFragment.CTX_KEY to command.ctx,
+                            RelationValueBaseFragment.TARGET_KEY to command.target,
+                            RelationValueBaseFragment.RELATION_KEY to command.relationKey,
+                            RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
+                            RelationValueBaseFragment.IS_LOCKED_KEY to false
+                        )
+                    }
+                    fr.showChildFragment()
+                } else {
+                    val fr = RelationStatusValueFragment.new(
+                        ctx = ctx,
+                        target = command.target,
+                        relationKey = command.relationKey,
+                        targetObjectTypes = command.targetObjectTypes,
+                        isLocked = command.isLocked
+                    )
+                    fr.showChildFragment()
+                }
             }
         }
     }
@@ -240,11 +271,19 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     }
 
     override fun injectDependencies() {
-        componentManager().objectRelationListComponent.get(ctx).inject(this)
+        if (isDataViewFLow) {
+            componentManager().dataViewRelationListComponent.get(ctx).inject(this)
+        } else {
+            componentManager().objectRelationListComponent.get(ctx).inject(this)
+        }
     }
 
     override fun releaseDependencies() {
-        componentManager().objectRelationListComponent.release(ctx)
+        if (isDataViewFLow) {
+            componentManager().dataViewRelationListComponent.release(ctx)
+        } else {
+            componentManager().objectRelationListComponent.release(ctx)
+        }
     }
 
     override fun inflateBinding(
@@ -259,13 +298,15 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             ctx: String,
             target: String?,
             mode: Int,
-            locked: Boolean = false
+            locked: Boolean = false,
+            isDataViewFlow: Boolean = false,
         ) = ObjectRelationListFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_TARGET to target,
                 ARG_MODE to mode,
-                ARG_LOCKED to locked
+                ARG_LOCKED to locked,
+                ARG_DATA_VIEW_FLOW to isDataViewFlow
             )
         }
 
@@ -275,5 +316,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         const val ARG_LOCKED = "arg.document-relation.locked"
         const val MODE_ADD = 1
         const val MODE_LIST = 2
+        const val ARG_DATA_VIEW_FLOW = "arg.document-relation.data-view-flow"
     }
 }

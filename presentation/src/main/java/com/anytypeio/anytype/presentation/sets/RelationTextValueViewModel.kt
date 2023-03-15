@@ -58,6 +58,7 @@ class RelationTextValueViewModel(
     }
 
     fun onStart(
+        ctx: Id,
         relationKey: Key,
         recordId: String,
         isLocked: Boolean = false
@@ -65,7 +66,7 @@ class RelationTextValueViewModel(
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.observe(relationKey),
-                values.subscribe(recordId)
+                values.subscribe(ctx = ctx, target = recordId)
             ) { relation, values ->
                 val obj = ObjectWrapper.Basic(values)
                 val value = values[relationKey]?.toString()

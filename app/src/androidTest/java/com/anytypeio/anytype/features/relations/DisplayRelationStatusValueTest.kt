@@ -19,10 +19,10 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -104,7 +104,8 @@ class DisplayRelationStatusValueTest {
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(
-                db = db
+                db = db,
+                objectState = state
             ),
             details = object : ObjectDetailProvider {
                 override fun provide(): Map<Id, Block.Fields> =

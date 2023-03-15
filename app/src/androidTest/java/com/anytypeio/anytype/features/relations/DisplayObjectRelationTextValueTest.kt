@@ -72,7 +72,7 @@ class DisplayObjectRelationTextValueTest {
                 objectState = state,
                 storeOfRelations = storeOfRelations
             ),
-            values = DataViewObjectValueProvider(db = db),
+            values = DataViewObjectValueProvider(db = db, objectState = state),
             reloadObject = reloadObject,
             analytics = analytics
         )

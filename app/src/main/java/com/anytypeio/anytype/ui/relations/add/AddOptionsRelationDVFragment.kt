@@ -25,6 +25,7 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
 
     override fun onCreateOptionClicked(name: String) {
         vm.onCreateDataViewRelationOptionClicked(
+            ctx = ctx,
             relationKey = relationKey,
             name = name,
             target = target
@@ -33,6 +34,7 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
 
     override fun onAddButtonClicked() {
         vm.onAddSelectedValuesToDataViewClicked(
+            ctx = ctx,
             target = target,
             relationKey = relationKey
         )
@@ -50,16 +52,12 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
         fun new(
             ctx: Id,
             target: Id,
-            relationKey: Key,
-            dataview: Id,
-            viewer: Id
+            relationKey: Key
         ) = AddOptionsRelationDVFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
-                RELATION_KEY to relationKey,
-                DATAVIEW_KEY to dataview,
-                VIEWER_KEY to viewer
+                RELATION_KEY to relationKey
             )
         }
     }

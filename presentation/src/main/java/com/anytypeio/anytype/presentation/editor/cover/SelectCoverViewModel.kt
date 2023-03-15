@@ -12,8 +12,6 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverColor
 import com.anytypeio.anytype.domain.cover.SetDocCoverGradient
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveCoverEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetCoverEvent
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -137,7 +135,6 @@ abstract class SelectCoverViewModel(
                 success = {
                     sendAnalyticsSetCoverEvent(analytics)
                     dispatcher.send(it)
-                    onDetailsColor(ctx, color)
                     isDismissed.emit(true)
                 }
             )
@@ -159,15 +156,11 @@ abstract class SelectCoverViewModel(
                 success = {
                     sendAnalyticsSetCoverEvent(analytics)
                     dispatcher.send(it)
-                    onDetailsGradient(ctx, gradient)
                     isDismissed.emit(true)
                 }
             )
         }
     }
-
-    abstract fun onDetailsColor(ctx: Id, color: CoverColor)
-    abstract fun onDetailsGradient(ctx: Id, gradient: String)
 }
 
 class SelectCoverObjectViewModel(
@@ -176,7 +169,6 @@ class SelectCoverObjectViewModel(
     private val setCoverGradient: SetDocCoverGradient,
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
-    private val details: DetailModificationManager,
     private val getCoverGradientCollection: GetCoverGradientCollection,
     private val analytics: Analytics
 ) : SelectCoverViewModel(
@@ -189,31 +181,12 @@ class SelectCoverObjectViewModel(
     analytics = analytics
 ) {
 
-    override fun onDetailsColor(ctx: Id, color: CoverColor) {
-        viewModelScope.launch {
-            details.setDocCoverColor(
-                target = ctx,
-                color = color.code
-            )
-        }
-    }
-
-    override fun onDetailsGradient(ctx: Id, gradient: String) {
-        viewModelScope.launch {
-            details.setDocCoverGradient(
-                target = ctx,
-                gradient = gradient
-            )
-        }
-    }
-
     class Factory(
         private val setCoverImage: SetDocCoverImage,
         private val setCoverColor: SetDocCoverColor,
         private val setCoverGradient: SetDocCoverGradient,
         private val removeCover: RemoveDocCover,
         private val dispatcher: Dispatcher<Payload>,
-        private val details: DetailModificationManager,
         private val getCoverGradientCollection: GetCoverGradientCollection,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
@@ -226,7 +199,6 @@ class SelectCoverObjectViewModel(
                 setCoverGradient = setCoverGradient,
                 removeCover = removeCover,
                 dispatcher = dispatcher,
-                details = details,
                 getCoverGradientCollection = getCoverGradientCollection,
                 analytics = analytics
             ) as T
@@ -251,9 +223,6 @@ class SelectCoverObjectSetViewModel(
     getCoverGradientCollection = getCoverGradientCollection,
     analytics = analytics
 ) {
-
-    override fun onDetailsColor(ctx: Id, color: CoverColor) {}
-    override fun onDetailsGradient(ctx: Id, gradient: String) {}
 
     class Factory(
         private val setCoverImage: SetDocCoverImage,

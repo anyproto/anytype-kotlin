@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverGradient
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectSetViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectViewModel
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
@@ -65,7 +64,6 @@ object SelectCoverObjectModule {
         setCoverGradient: SetDocCoverGradient,
         removeCover: RemoveDocCover,
         dispatcher: Dispatcher<Payload>,
-        details: DetailModificationManager,
         getCoverGradientCollection: GetCoverGradientCollection,
         analytics: Analytics
     ): SelectCoverObjectViewModel.Factory = SelectCoverObjectViewModel.Factory(
@@ -74,7 +72,6 @@ object SelectCoverObjectModule {
         setCoverGradient = setCoverGradient,
         removeCover = removeCover,
         dispatcher = dispatcher,
-        details = details,
         getCoverGradientCollection = getCoverGradientCollection,
         analytics = analytics
     )

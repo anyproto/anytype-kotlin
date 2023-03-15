@@ -16,10 +16,10 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.StubRelationOptionObject
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -111,7 +111,8 @@ class AddRelationStatusValueTest {
                 storeOfRelations = storeOfRelations
             ),
             values = DataViewObjectValueProvider(
-                db = db
+                db = db,
+                objectState = state
             ),
             dispatcher = dispatcher,
             optionsProvider = AddOptionsRelationProvider(),

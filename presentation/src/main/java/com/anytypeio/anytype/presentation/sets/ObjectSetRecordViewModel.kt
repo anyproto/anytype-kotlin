@@ -20,7 +20,7 @@ class ObjectSetRecordViewModel(
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = Relations.NAME,
                     value = input
                 )
@@ -38,7 +38,7 @@ class ObjectSetRecordViewModel(
             } else {
                 setObjectDetails(
                     UpdateDetail.Params(
-                        ctx = target,
+                        target = target,
                         key = Relations.NAME,
                         value = input
                     )

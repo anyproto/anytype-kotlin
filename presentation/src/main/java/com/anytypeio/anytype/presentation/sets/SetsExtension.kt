@@ -82,10 +82,21 @@ suspend fun List<ColumnView>.buildGridRow(
                         )
                     }
                     ColumnView.Format.FILE -> {
-                        val files = obj.map.buildFileViews(
-                            relationKey = column.key,
-                            details = details
-                        )
+                        val files = buildList {
+                            obj.getValues<Id>(column.key).forEach { id ->
+                                val wrapper = store.get(id)
+                                if (wrapper != null) {
+                                    add(
+                                        FileView(
+                                            id = id,
+                                            name = wrapper.name.orEmpty(),
+                                            mime = wrapper.fileMimeType.orEmpty(),
+                                            ext = wrapper.fileExt.orEmpty()
+                                        )
+                                    )
+                                }
+                            }
+                        }
                         CellView.File(
                             id = obj.id,
                             relationKey = column.key,

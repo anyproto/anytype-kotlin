@@ -10,14 +10,14 @@ class UpdateDetail(private val repo: BlockRepository): BaseUseCase<Payload, Upda
 
     override suspend fun run(params: Params) = safe {
         repo.setObjectDetail(
-            ctx = params.ctx,
+            ctx = params.target,
             key = params.key,
             value = params.value
         )
     }
 
     data class Params(
-        val ctx: Id,
+        val target: Id,
         val key: String,
         val value: Any?
     )

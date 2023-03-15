@@ -9,7 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationDateValueBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -53,7 +58,7 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
         jobs += lifecycleScope.subscribe(vm.views) { observeState(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         super.onStart()
-        vm.onStart(objectId = objectId, relationKey = relationKey)
+        vm.onStart(ctx = ctx, objectId = objectId, relationKey = relationKey)
     }
 
     override fun onStop() {

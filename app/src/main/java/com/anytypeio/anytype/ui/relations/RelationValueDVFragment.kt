@@ -28,7 +28,6 @@ import com.anytypeio.anytype.ui.relations.add.AddFileRelationFragment
 import com.anytypeio.anytype.ui.relations.add.AddObjectRelationFragment
 import com.anytypeio.anytype.ui.relations.add.AddOptionsRelationDVFragment
 import javax.inject.Inject
-import timber.log.Timber
 
 open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationValueBinding>(),
     FileActionsFragment.FileActionReceiver,
@@ -82,6 +81,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
         ids: List<Id>
     ) {
         vm.onAddObjectsOrFilesValueToRecord(
+            ctx = ctx,
             record = objectId,
             relationKey = relationKey,
             ids = ids
@@ -90,6 +90,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
 
     override fun onFileValueChanged(ctx: Id, objectId: Id, relationKey: Key, ids: List<Id>) {
         vm.onAddObjectsOrFilesValueToRecord(
+            ctx = ctx,
             record = objectId,
             relationKey = relationKey,
             ids = ids
@@ -130,9 +131,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
         val fr = AddOptionsRelationDVFragment.new(
             ctx = ctx,
             target = target,
-            relationKey = relationKey,
-            dataview = dataview,
-            viewer = viewer
+            relationKey = relationKey
         )
         fr.showChildFragment()
     }

@@ -79,7 +79,11 @@ class AddFileRelationFragment :
             vm.onFilterTextChanged(it.toString())
         }
         super.onStart()
-        vm.onStart(objectId = objectId, relationKey = relationKey)
+        vm.onStart(
+            ctx = ctx,
+            objectId = objectId,
+            relationKey = relationKey
+        )
     }
 
     override fun onStop() {

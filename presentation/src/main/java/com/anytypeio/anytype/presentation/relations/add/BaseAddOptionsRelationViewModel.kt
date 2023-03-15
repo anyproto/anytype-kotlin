@@ -93,11 +93,15 @@ abstract class BaseAddOptionsRelationViewModel(
         }
     }
 
-    fun onStart(target: Id, relationKey: Key) {
+    fun onStart(
+        ctx: Id,
+        target: Id,
+        relationKey: Key
+    ) {
         jobs += viewModelScope.launch {
             combine(
                 relations.observe(relationKey),
-                values.subscribe(target)
+                values.subscribe(ctx = ctx, target = target)
             ) { relation, record ->
                 if (relation.format == Relation.Format.STATUS) {
                     isAddButtonVisible.value = false
@@ -134,10 +138,10 @@ abstract class BaseAddOptionsRelationViewModel(
         options: List<ObjectWrapper.Option>
     ) {
         allRelationOptions.value = optionsProvider.provideOptions(
-                options = options,
-                relation = relation,
-                record = record,
-                relationKey = relationKey
+            options = options,
+            relation = relation,
+            record = record,
+            relationKey = relationKey
         )
     }
 
@@ -161,13 +165,14 @@ abstract class BaseAddOptionsRelationViewModel(
     }
 
     fun proceedWithAddingTagToObject(
+        ctx: Id,
         target: Id,
         relationKey: Key,
         tags: List<Id>
     ) {
         Timber.d("Relations | Adding tag to object with id: $target")
         viewModelScope.launch {
-            val obj = values.get(target = target)
+            val obj = values.get(target = target, ctx = ctx)
             val result = mutableListOf<Id>()
             val value = obj[relationKey]
             if (value is List<*>) {
@@ -178,7 +183,7 @@ abstract class BaseAddOptionsRelationViewModel(
             result.addAll(tags)
             setObjectDetail(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = relationKey,
                     value = result
                 )
@@ -202,7 +207,7 @@ abstract class BaseAddOptionsRelationViewModel(
         viewModelScope.launch {
             setObjectDetail(
                 UpdateDetail.Params(
-                    ctx = target,
+                    target = target,
                     key = relationKey,
                     value = listOf(status)
                 )

@@ -42,6 +42,7 @@ class AddOptionsRelationDVViewModel(
 ) {
 
     fun onCreateDataViewRelationOptionClicked(
+        ctx: Id,
         relationKey: Key,
         target: Id,
         name: String
@@ -59,6 +60,7 @@ class AddOptionsRelationDVViewModel(
                     when (relations.get(relation = relationKey).format) {
                         RelationFormat.TAG -> {
                             proceedWithAddingTagToObject(
+                                ctx = ctx,
                                 target = target,
                                 relationKey = relationKey,
                                 tags = listOf(option.id)
@@ -92,6 +94,7 @@ class AddOptionsRelationDVViewModel(
     }
 
     fun onAddSelectedValuesToDataViewClicked(
+        ctx: Id,
         target: Id,
         relationKey: Key
     ) {
@@ -102,6 +105,7 @@ class AddOptionsRelationDVViewModel(
                 null
         }
         proceedWithAddingTagToObject(
+            ctx = ctx,
             relationKey = relationKey,
             tags = tags,
             target = target

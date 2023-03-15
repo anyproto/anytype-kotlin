@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -93,10 +92,10 @@ import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
+import javax.inject.Inject
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 open class ObjectSetFragment :
     NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
@@ -720,7 +719,7 @@ open class ObjectSetFragment :
                     bundleOf(
                         RelationValueBaseFragment.CTX_KEY to command.ctx,
                         RelationValueBaseFragment.TARGET_KEY to command.target,
-                        RelationValueBaseFragment.DATAVIEW_KEY to command.dataview,
+                        RelationValueBaseFragment.DV_KEY to command.dataview,
                         RelationValueBaseFragment.RELATION_KEY to command.relationKey,
                         RelationValueBaseFragment.VIEWER_KEY to command.viewer,
                         RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,

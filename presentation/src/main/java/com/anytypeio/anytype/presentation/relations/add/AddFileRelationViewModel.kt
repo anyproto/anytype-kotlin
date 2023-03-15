@@ -45,12 +45,16 @@ class AddFileRelationViewModel(
     val commands = MutableSharedFlow<FileValueAddCommand>(0)
     val viewsFiltered: StateFlow<FileValueAddView> = _viewsFiltered
 
-    fun onStart(relationKey: Key, objectId: String) {
+    fun onStart(
+        ctx: Id,
+        relationKey: Key,
+        objectId: String
+    ) {
         processingViewsSelectionsAndFilter()
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.observe(relationKey),
-                values.subscribe(objectId)
+                values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
                 when (val ids = value[relation.key]) {
                     is List<*> -> {

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.core_utils.ext.isSameDay
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import java.util.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.util.*
 
 class RelationDateValueViewModel(
     private val relations: ObjectRelationProvider,
@@ -34,11 +35,15 @@ class RelationDateValueViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(relationKey: Key, objectId: String) {
+    fun onStart(
+        ctx: Id,
+        relationKey: Key,
+        objectId: String
+    ) {
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.observe(relationKey),
-                values.subscribe(objectId)
+                values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
                 setName(relation.name)
                 setDate(timeInSeconds = DateParser.parse(value[relationKey]))

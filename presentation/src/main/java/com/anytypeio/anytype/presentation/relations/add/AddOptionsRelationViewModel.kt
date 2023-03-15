@@ -52,6 +52,7 @@ class AddOptionsRelationViewModel(
     )
 
     fun onAddSelectedValuesToObjectClicked(
+        ctx: Id,
         obj: Id,
         relationKey: Key,
     ) {
@@ -62,6 +63,7 @@ class AddOptionsRelationViewModel(
                 null
         }
         proceedWithAddingTagToObject(
+            ctx =  ctx,
             target = obj,
             relationKey = relationKey,
             tags = tags
@@ -69,6 +71,7 @@ class AddOptionsRelationViewModel(
     }
 
     fun onCreateObjectRelationOptionClicked(
+        ctx: Id,
         relationKey: Key,
         name: String,
         obj: Id
@@ -85,6 +88,7 @@ class AddOptionsRelationViewModel(
                     when (val format = relations.get(relationKey).format) {
                         RelationFormat.TAG -> {
                             proceedWithAddingTagToObject(
+                                ctx = ctx,
                                 relationKey = relationKey,
                                 target = obj,
                                 tags = listOf(option.id)

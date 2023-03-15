@@ -380,6 +380,14 @@ class ComponentManager(
             .build()
     }
 
+    val dataViewRelationListComponent = DependentComponentMap { id ->
+        objectSetComponent
+            .get(id)
+            .objectRelationListComponent()
+            .module(ObjectRelationListModule)
+            .build()
+    }
+
     val relationTextValueDVComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)

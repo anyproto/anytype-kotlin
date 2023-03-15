@@ -49,6 +49,9 @@ object Relations {
     const val NUMBER_DEFAULT_VALUE = "0"
     const val RELATION_NAME_EMPTY = "Untitled"
 
+    const val FILE_EXT = "fileExt"
+    const val FILE_MIME_TYPE = "fileMimeType"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

@@ -13,8 +13,6 @@ import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectSubcomponent
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubcomponent
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
@@ -30,6 +28,8 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -54,11 +54,13 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -75,8 +77,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Named
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [ObjectSetModule::class])
@@ -116,6 +118,8 @@ interface ObjectSetSubComponent {
     fun objectSetIconPickerComponent(): ObjectSetIconPickerComponent.Builder
     fun objectSetCoverComponent(): SelectCoverObjectSetSubComponent.Builder
     fun objectUnsplashComponent(): UnsplashSubComponent.Builder
+
+    fun objectRelationListComponent(): ObjectRelationListComponent.Builder
 }
 
 @Module(
@@ -354,9 +358,11 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideDataViewObjectValueProvider(
-        db: ObjectSetDatabase
+    fun dataViewObjectValueProvider(
+        db: ObjectSetDatabase,
+        objectState: MutableStateFlow<ObjectState>,
     ): ObjectValueProvider = DataViewObjectValueProvider(
+        objectState = objectState,
         db = db
     )
 
@@ -505,6 +511,20 @@ object ObjectSetModule {
     ): AddObjectToCollection = AddObjectToCollection(
         repo = repo,
         dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun lockedStateProvider() : LockedStateProvider = LockedStateProvider.DataViewLockedStateProvider
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun dataViewRelationListProvider(
+        objectStateFlow: MutableStateFlow<ObjectState>
+    ) : RelationListProvider = RelationListProvider.DataViewRelationListProvider(
+        objectStates = objectStateFlow
     )
 
     @Module

@@ -62,7 +62,7 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
     protected val ctx get() = argString(CTX_KEY)
     protected val relationKey get() = argString(RELATION_KEY)
     protected val target get() = argString(TARGET_KEY)
-    protected val dataview get() = argString(DATAVIEW_KEY)
+    protected val dv get() = argString(DV_KEY)
     protected val viewer get() = argString(VIEWER_KEY)
     protected val types get() = arg<List<String>>(TARGET_TYPES_KEY)
     protected val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
@@ -114,6 +114,7 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
             onStatusClicked = onStatusClickedCallback,
             onRemoveStatusClicked = { status ->
                 vm.onRemoveStatusFromObjectClicked(
+                    ctx = ctx,
                     target = target,
                     relationKey = relationKey,
                     status = status.id
@@ -121,6 +122,7 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
             },
             onRemoveTagClicked = { tag ->
                 vm.onRemoveTagFromObjectClicked(
+                    ctx = ctx,
                     target = target,
                     relationKey = relationKey,
                     tag = tag.id
@@ -142,6 +144,7 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
             },
             onRemoveObjectClicked = { obj ->
                 vm.onRemoveObjectFromObjectClicked(
+                    ctx = ctx,
                     target = target,
                     relationKey = relationKey,
                     objectId = obj
@@ -150,6 +153,7 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
             onFileClicked = { o -> vm.onFileClicked(o.id) },
             onRemoveFileClicked = { file ->
                 vm.onRemoveFileFromObjectClicked(
+                    ctx = ctx,
                     target = target,
                     relationKey = relationKey,
                     fileId = file
@@ -170,8 +174,9 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
         jobs += lifecycleScope.subscribe(vm.copyFileStatus) { command -> onCopyFileCommand(command) }
         super.onStart()
         vm.onStart(
+            ctx = ctx,
             relationKey = relationKey,
-            objectId = target
+            objectId = target,
         )
     }
 
@@ -442,7 +447,7 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
         const val IS_LOCKED_KEY = "arg.edit-cell-tag.locked"
         const val RELATION_KEY = "arg.edit-cell-tag.relation.key"
         const val TARGET_KEY = "arg.edit-cell-tag.target"
-        const val DATAVIEW_KEY = "arg.edit-cell-tag.dataview"
+        const val DV_KEY = "arg.edit-cell-tag.dataview"
         const val VIEWER_KEY = "arg.edit-cell-tag.viewer"
         const val TARGET_TYPES_KEY = "arg.relation-value.target-types"
     }

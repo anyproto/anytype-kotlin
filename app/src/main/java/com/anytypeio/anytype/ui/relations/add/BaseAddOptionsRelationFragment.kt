@@ -177,6 +177,7 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
         super.onStart()
         setupAppearance()
         vm.onStart(
+            ctx = ctx,
             target = target,
             relationKey = relationKey
         )

@@ -73,6 +73,7 @@ class RelationStatusValueFragment :
         proceed(btnAddValue.clicks()) { vm.onAddValueClicked(isLocked) }
         proceed(btnClear.clicks()) {
             vm.onRemoveStatusFromObjectClicked(
+                ctx = ctx,
                 target = target,
                 relationKey = relationKey,
             )

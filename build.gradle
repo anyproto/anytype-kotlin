@@ -2,7 +2,7 @@ import com.android.build.gradle.LibraryPlugin
 
 buildscript {
     ext.compile_sdk = 33
-    ext.target_sdk = 31
+    ext.target_sdk = 32
     ext.min_sdk = 26
 
     ext.application_id = 'com.anytypeio.anytype'

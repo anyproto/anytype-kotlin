@@ -156,18 +156,22 @@ interface PickerDelegate : PickiTCallbacks {
         }
 
         private fun takeReadStoragePermission() {
-            if (fragment.requireActivity()
-                    .shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)
-            ) {
-                fragment.binding.root.showSnackbar(
-                    R.string.permission_read_rationale,
-                    Snackbar.LENGTH_INDEFINITE,
-                    R.string.button_ok
+            try {
+                if (fragment.requireActivity()
+                        .shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)
                 ) {
+                    snackbar = fragment.binding.root.showSnackbar(
+                        R.string.permission_read_rationale,
+                        Snackbar.LENGTH_INDEFINITE,
+                        R.string.button_ok
+                    ) {
+                        permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
+                    }
+                } else {
                     permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
                 }
-            } else {
-                permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
+            } catch (e: Exception) {
+                Timber.e(e, "Error while requesting permission")
             }
         }
 
@@ -181,7 +185,7 @@ interface PickerDelegate : PickiTCallbacks {
                     }
                     fragment.startFilePicker(type, requestCode)
                 } else {
-                    fragment.binding.root.showSnackbar(
+                    snackbar = fragment.binding.root.showSnackbar(
                         R.string.permission_read_denied,
                         Snackbar.LENGTH_SHORT
                     )

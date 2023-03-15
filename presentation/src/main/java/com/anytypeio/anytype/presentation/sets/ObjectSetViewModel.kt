@@ -426,7 +426,8 @@ class ObjectSetViewModel(
                                 state.dataViewContent.relationLinks.mapNotNull {
                                     storeOfRelations.getByKey(it.key)
                                 }
-                            val setOf = state.getSetOf(ctx = context)
+                            val setOfValue = state.getSetOfValue(ctx = context)
+                            val query = state.filterOutDeletedAndMissingObjects(query = setOfValue)
                             val render = state.viewerById(currentViewId)
                                 ?.render(
                                     coverImageHashProvider = coverImageHashProvider,
@@ -437,13 +438,11 @@ class ObjectSetViewModel(
                                     store = objectStore
                                 )
                             when {
-                                setOf.isEmpty() -> DataViewViewState.Set.NoQuery
+                                query.isEmpty() -> DataViewViewState.Set.NoQuery
+                                setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                                 render == null -> DataViewViewState.Set.NoView
                                 render.isEmpty() -> {
-                                    DataViewViewState.Set.NoItems(
-                                        title = render.title,
-                                        type = state.details[setOf[0]]?.name.orEmpty()
-                                    )
+                                    DataViewViewState.Set.NoItems(title = render.title)
                                 }
                                 else -> DataViewViewState.Set.Default(viewer = render)
                             }

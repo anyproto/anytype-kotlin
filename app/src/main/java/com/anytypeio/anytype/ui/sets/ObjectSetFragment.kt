@@ -442,7 +442,7 @@ open class ObjectSetFragment :
                 addNewButton.isEnabled = true
                 customizeViewButton.isEnabled = true
                 viewerTitle.text = state.title
-                dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS, extra = state.type)
+                dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
                 setViewer(viewer = null)
 
             }

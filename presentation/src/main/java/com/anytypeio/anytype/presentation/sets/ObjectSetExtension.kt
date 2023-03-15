@@ -18,7 +18,6 @@ import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.isSystemKey
-import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -317,8 +316,18 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
     return relations
 }
 
-fun ObjectState.DataView.Set.getSetOf(ctx: Id): List<Id> {
+fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> {
     return ObjectWrapper.Basic(details[ctx]?.map.orEmpty()).setOf
+}
+
+fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
+    return query.filter(::isValidObject)
+}
+
+private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {
+    val objectDetails = details[objectId] ?: return false
+    val objectWrapper = ObjectWrapper.Basic(objectDetails.map)
+    return objectWrapper.isDeleted != true
 }
 
 fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {

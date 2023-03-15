@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.collections
 
-import app.cash.turbine.test
+import app.cash.turbine.testIn
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -49,35 +49,21 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         // TESTING
         viewModel.onStart(ctx = root)
 
-        // ASSERT COLLECTION OBJECT STATE
-        stateReducer.state.test {
-            val first = awaitItem()
-            assertIs<ObjectState.Init>(first)
+        val headerFlow = viewModel.header.testIn(backgroundScope)
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-            val second = awaitItem()
-            assertIs<ObjectState.DataView.Collection>(second)
+        assertNull(headerFlow.awaitItem())
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        }
+        assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
 
-        // ASSERT HEADER STATE
-        viewModel.header.test {
-            val first = awaitItem()
-            assertNull(first)
-
-            val second = awaitItem()
-            assertEquals(
-                expected = mockObjectCollection.title.content.asText().text,
-                actual = second?.text
-            )
-            expectNoEvents()
-        }
-
-        // ASSERT DATA VIEW STATE
-        viewModel.currentViewer.test {
-            val first = awaitItem()
-            assertIs<DataViewViewState.Init>(first)
-            expectNoEvents()
-        }
+        assertEquals(
+            expected = mockObjectCollection.title.content.asText().text,
+            actual = headerFlow.awaitItem()?.text
+        )
+        viewerFlow.expectNoEvents()
 
         // ASSERT NO SUBSCRIPTION TO COLLECTION RECORDS
         advanceUntilIdle()
@@ -102,27 +88,16 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         // TESTING
         viewModel.onStart(ctx = root)
 
-        // ASSERT COLLECTION OBJECT STATE
-        stateReducer.state.test {
-            val first = awaitItem()
-            assertIs<ObjectState.Init>(first)
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-            val second = awaitItem()
-            assertIs<ObjectState.DataView.Collection>(second)
-            expectNoEvents()
-        }
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        // ASSERT DATA VIEW STATE
-        viewModel.currentViewer.test {
-            val first = awaitItem()
-            assertIs<DataViewViewState.Init>(first)
+        assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Collection.NoView>(viewerFlow.awaitItem())
 
-            val second = awaitItem()
-            assertIs<DataViewViewState.Collection.NoView>(second)
-            expectNoEvents()
-        }
-
-        // ASSERT SUBSCRIPTION TO COLLECTION RECORDS
+        // ASSERT NO SUBSCRIPTION TO COLLECTION RECORDS
         advanceUntilIdle()
         verifyNoInteractions(repo)
     }
@@ -154,25 +129,15 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         // TESTING
         viewModel.onStart(ctx = root)
 
-        // ASSERT COLLECTION OBJECT STATE
-        stateReducer.state.test {
-            val first = awaitItem()
-            assertIs<ObjectState.Init>(first)
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-            val second = awaitItem()
-            assertIs<ObjectState.DataView.Collection>(second)
-            expectNoEvents()
-        }
+        // ASSERT STATES
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        // ASSERT DATA VIEW STATE
-        viewModel.currentViewer.test {
-            val first = awaitItem()
-            assertIs<DataViewViewState.Init>(first)
-
-            val second = awaitItem()
-            assertIs<DataViewViewState.Collection.NoItems>(second)
-            expectNoEvents()
-        }
+        assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
     }
 
     @Test
@@ -203,27 +168,15 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         // TESTING
         viewModel.onStart(ctx = root)
 
-        // ASSERT COLLECTION OBJECT STATE
-        stateReducer.state.test {
-            val first = awaitItem()
-            assertIs<ObjectState.Init>(first)
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-            val second = awaitItem()
-            assertIs<ObjectState.DataView.Collection>(second)
-            expectNoEvents()
-        }
+        // ASSERT STATES
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        // ASSERT DATA VIEW STATE
-        viewModel.currentViewer.test {
-            val first = awaitItem()
-            assertIs<DataViewViewState.Init>(first)
-
-            val second = awaitItem()
-            assertIs<DataViewViewState.Collection.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Collection.Default>(third)
-            expectNoEvents()
-        }
+        assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
+        assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem())
     }
 }

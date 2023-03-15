@@ -23,7 +23,7 @@ class DataViewInfo @JvmOverloads constructor(
     val binding = ViewDataviewInfoBinding.inflate(LayoutInflater.from(context), this, true)
     private var type: TYPE = TYPE.INIT
 
-    fun show(type: TYPE, extra: String = "") {
+    fun show(type: TYPE) {
         this.type = type
         visible()
         when (type) {
@@ -46,7 +46,7 @@ class DataViewInfo @JvmOverloads constructor(
             TYPE.SET_NO_ITEMS -> {
                 binding.title.text = resources.getString(R.string.set_no_items_title)
                 binding.description.text =
-                    resources.getString(R.string.set_no_items_description, extra)
+                    resources.getString(R.string.set_no_items_description)
                 binding.button.text = resources.getString(R.string.set_no_items_button)
             }
         }

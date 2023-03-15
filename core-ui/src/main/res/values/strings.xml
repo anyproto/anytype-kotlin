@@ -611,13 +611,13 @@
 
     <string name="content_description_customize_view_button">Customize-view button</string>
     <string name="collection_no_items_title">No objects</string>
-    <string name="collection_no_items_description">Add objects or turn into set to aggregate objects with\n equal types or relations</string>
+    <string name="collection_no_items_description">Create first object to continue</string>
     <string name="collection_no_items_button">Create object</string>
     <string name="set_no_query_title">No query selected</string>
-    <string name="set_no_query_description">All objects satisfying query will be displayed in Set</string>
+    <string name="set_no_query_description">Add search query to aggregate objects with equal types and relations in a live mode</string>
     <string name="set_no_query_button">Select query</string>
     <string name="set_no_items_title">No objects</string>
-    <string name="set_no_items_description">No objects of type \"%1$s\" found in your account, please create the first object</string>
+    <string name="set_no_items_description">Create first object to continue</string>
     <string name="set_no_items_button">Create object</string>
     <string name="set_collection_view_not_present">View is not present in set or collection, please recreate object</string>
     <string name="menu_turn_to_collection">Turn into collection</string>

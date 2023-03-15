@@ -6,7 +6,8 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
-import com.anytypeio.anytype.presentation.sets.getSetOf
+import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
+import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -96,11 +97,22 @@ class DefaultDataViewSubscription(private val dataViewSubscriptionContainer: Dat
             Timber.w("Data view set subscription: active viewer is null")
             return emptyFlow()
         }
-        val source = state.getSetOf(ctx = context)
-        if (source.isEmpty()) {
-            Timber.w("Data view set subscription: source is empty")
+
+        val setOfValue = state.getSetOfValue(ctx = context)
+        if (setOfValue.isEmpty()) {
+            Timber.w("Data view set subscription: setOf value is empty, proceed without subscription")
             return emptyFlow()
         }
+
+        val query = state.filterOutDeletedAndMissingObjects(setOfValue)
+        if (query.isEmpty()) {
+            Timber.w(
+                "Data view set subscription: query has no valid types or relations, " +
+                        "proceed without subscription"
+            )
+            return emptyFlow()
+        }
+
         val filters =
             activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
                 workspaceId = workspaceId
@@ -112,7 +124,7 @@ class DefaultDataViewSubscription(private val dataViewSubscriptionContainer: Dat
             subscription = getSubscriptionId(context),
             sorts = activeViewer.sorts,
             filters = filters,
-            sources = source,
+            sources = query,
             keys = keys,
             limit = ObjectSetConfig.DEFAULT_LIMIT,
             offset = offset

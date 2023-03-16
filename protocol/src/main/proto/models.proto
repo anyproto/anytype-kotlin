@@ -318,6 +318,7 @@ message Block {
             repeated ObjectOrder objectOrders = 13;
             repeated anytype.model.RelationLink relationLinks = 5;
             string TargetObjectId = 6;
+            bool isCollection = 14;
 
             message View {
                 string id = 1;

@@ -1292,6 +1292,7 @@ message Rpc {
                 string relationKey = 2;
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 3;
                 repeated string source = 4;
+                string collectionId = 5;
             }
 
             message Response {
@@ -1838,11 +1839,12 @@ message Rpc {
                     HtmlParams htmlParams = 5;
                     TxtParams txtParams = 6;
                     PbParams pbParams = 7;
+                    CsvParams csvParams = 8;
                 }
-                repeated Snapshot snapshots = 8; // optional, for external developers usage
-                bool updateExistingObjects = 9;
-                Type type = 10;
-                Mode mode = 11;
+                repeated Snapshot snapshots = 9; // optional, for external developers usage
+                bool updateExistingObjects = 10;
+                Type type = 11;
+                Mode mode = 12;
 
                 message NotionParams {
                     string apiKey = 1;
@@ -1873,6 +1875,16 @@ message Rpc {
                     string path = 1;
                 }
 
+                message CsvParams {
+                    repeated string path = 1;
+                    Mode mode = 2;
+
+                    enum Mode {
+                        COLLECTION = 0;
+                        TABLE = 1;
+                    };
+                }
+
                 enum Mode {
                     ALL_OR_NOTHING = 0;
                     IGNORE_ERRORS = 1;
@@ -1889,6 +1901,7 @@ message Rpc {
                     Migration = 3;
                     Html = 4;
                     Txt = 5;
+                    Csv = 6;
                 };
 
             }
@@ -1928,6 +1941,8 @@ message Rpc {
                                 UNAUTHORIZED = 2;
                                 UNKNOWN_ERROR = 3;
                                 BAD_INPUT = 4;
+                                FORBIDDEN = 5;
+                                SERVICE_UNAVAILABLE = 6;
                             }
                         }
                     }
@@ -4668,6 +4683,33 @@ message Rpc {
                     string contextId = 1;
                     string blockId = 2;
                     repeated anytype.model.Block.Content.Dataview.ObjectOrder objectOrders = 3;
+                }
+
+                message Response {
+                    Error error = 1;
+                    ResponseEvent event = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                        }
+                    }
+                }
+            }
+
+            message Move {
+                message Request {
+                    string contextId = 1;
+                    string blockId = 2;
+                    string viewId = 3;
+                    string groupId = 4;
+                    string afterId = 5;
+                    repeated string objectIds = 6;
                 }
 
                 message Response {

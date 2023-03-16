@@ -44,7 +44,7 @@ class CreateDataViewViewerViewModel(
                 },
                 success = {
                     dispatcher.send(it).also {
-                        sendAnalyticsAddViewEvent(analytics, dvType.name)
+                        sendAnalyticsAddViewEvent(analytics, dvType.formattedName)
                         state.value = ViewState.Completed
                     }
                 }

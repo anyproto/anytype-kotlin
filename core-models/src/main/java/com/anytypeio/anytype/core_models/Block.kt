@@ -302,7 +302,12 @@ data class Block(
                 val coverRelationKey: String? = null
             ) {
 
-                enum class Type { GRID, LIST, GALLERY, BOARD }
+                enum class Type(val formattedName: String) {
+                    GRID("Grid"),
+                    LIST("List"),
+                    GALLERY("Gallery"),
+                    BOARD("Board")
+                }
 
                 enum class Size { SMALL, MEDIUM, LARGE }
 

@@ -189,7 +189,8 @@ abstract class TestObjectSetSetup {
             getTemplates = getTemplates,
             repo = repo,
             storeOfRelations = storeOfRelations,
-            getDefaultPageType = getDefaultPageType
+            getDefaultPageType = getDefaultPageType,
+            dispatchers = dispatchers
         )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)

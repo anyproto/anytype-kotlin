@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.main
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
@@ -78,6 +79,9 @@ open class ObjectSetViewModelTestSetup {
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val rule = DefaultCoroutineTestRule()
+
+    @get:Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
 
     @Mock
     lateinit var openObjectSet: OpenObjectSet

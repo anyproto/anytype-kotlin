@@ -11,7 +11,8 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -24,11 +25,12 @@ class CreateDataViewObject(
     private val repo: BlockRepository,
     private val getTemplates: GetTemplates,
     private val getDefaultPageType: GetDefaultPageType,
-    private val storeOfRelations: StoreOfRelations
-) : BaseUseCase<Id, CreateDataViewObject.Params>() {
+    private val storeOfRelations: StoreOfRelations,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<CreateDataViewObject.Params, Id>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        when (params) {
+    override suspend fun doWork(params: Params): Id {
+        return when (params) {
             is Params.SetByType -> {
                 val command = Command.CreateObject(
                     template = resolveTemplateForNewObject(type = params.type),
@@ -36,7 +38,7 @@ class CreateDataViewObject(
                         filters = params.filters,
                         type = params.type
                     ),
-                    internalFlags = listOf()
+                    internalFlags = listOf(InternalFlags.ShouldSelectTemplate)
                 )
                 val result = repo.createObject(command)
                 result.id
@@ -50,7 +52,7 @@ class CreateDataViewObject(
                         relations = params.relations,
                         type = type
                     ),
-                    internalFlags = listOf()
+                    internalFlags = listOf(InternalFlags.ShouldSelectType)
                 )
                 val result = repo.createObject(command)
                 result.id
@@ -64,7 +66,7 @@ class CreateDataViewObject(
                         relations = emptyList(),
                         type = type
                     ),
-                    internalFlags = listOf(InternalFlags.ShouldSelectTemplate)
+                    internalFlags = listOf(InternalFlags.ShouldSelectType)
                 )
                 val result = repo.createObject(command)
                 result.id

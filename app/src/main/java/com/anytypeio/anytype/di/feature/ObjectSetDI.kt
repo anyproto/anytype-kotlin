@@ -277,12 +277,14 @@ object ObjectSetModule {
         repo: BlockRepository,
         storeOfRelations: StoreOfRelations,
         getDefaultPageType: GetDefaultPageType,
-        getTemplates: GetTemplates
+        getTemplates: GetTemplates,
+        dispatchers: AppCoroutineDispatchers
     ): CreateDataViewObject = CreateDataViewObject(
         repo = repo,
         getDefaultPageType = getDefaultPageType,
         getTemplates = getTemplates,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

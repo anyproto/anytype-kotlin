@@ -58,7 +58,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
             dvFilters = mockObjectSet.filters
         )
-        doReturn(Unit).`when`(createDataViewObject).invoke(
+        doReturn(Unit).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.SetByType(
                 type = mockObjectSet.setOf,
                 filters = mockObjectSet.filters
@@ -83,7 +83,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
-                invoke(
+                execute(
                     CreateDataViewObject.Params.SetByType(
                         type = mockObjectSet.setOf,
                         filters = mockObjectSet.filters
@@ -114,7 +114,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
             dvFilters = mockObjectSet.filters
         )
-        doReturn(Unit).`when`(createDataViewObject).invoke(
+        doReturn(Unit).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.SetByRelation(
                 relations = listOf(mockObjectSet.relationObject3.id),
                 filters = mockObjectSet.filters
@@ -139,7 +139,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
-                invoke(
+                execute(
                     CreateDataViewObject.Params.SetByRelation(
                         relations = listOf(mockObjectSet.relationObject3.id),
                         filters = mockObjectSet.filters

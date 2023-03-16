@@ -54,7 +54,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             dvFilters = mockObjectSet.filters,
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
         )
-        doReturn(Unit).`when`(createDataViewObject).invoke(
+        doReturn(Unit).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.SetByType(
                 type = mockObjectSet.setOf,
                 filters = mockObjectSet.filters
@@ -79,7 +79,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
-                invoke(
+                execute(
                     CreateDataViewObject.Params.SetByType(
                         type = mockObjectSet.setOf,
                         filters = mockObjectSet.filters

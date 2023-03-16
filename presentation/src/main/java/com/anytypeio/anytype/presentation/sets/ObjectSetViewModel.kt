@@ -820,18 +820,36 @@ class ObjectSetViewModel(
         action: ((Id) -> Unit)? = null
     ) {
         viewModelScope.launch {
-            createDataViewObject(params).process(
-                failure = { Timber.e(it, "Error while creating new record") },
-                success = { record ->
+            createDataViewObject.execute(params).fold(
+                onFailure = { Timber.e(it, "Error while creating new record") },
+                onSuccess = { newObject ->
+                    proceedWithNewDataViewObject(params, newObject)
+                    action?.invoke(newObject)
+                }
+            )
+        }
+    }
+
+    private suspend fun proceedWithNewDataViewObject(params: CreateDataViewObject.Params, newObject: Id) {
+        when (params) {
+            CreateDataViewObject.Params.Collection -> {
+                proceedWithOpeningObject(newObject)
+            }
+            is CreateDataViewObject.Params.SetByRelation -> {
+                proceedWithOpeningObject(newObject)
+            }
+            is CreateDataViewObject.Params.SetByType -> {
+                if (params.type == ObjectTypeIds.NOTE) {
+                    proceedWithOpeningObject(newObject)
+                } else {
                     dispatch(
                         ObjectSetCommand.Modal.SetNameForCreatedObject(
                             ctx = context,
-                            target = record
+                            target = newObject
                         )
                     )
-                    action?.invoke(record)
                 }
-            )
+            }
         }
     }
 

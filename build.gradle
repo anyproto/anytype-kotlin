@@ -14,6 +14,12 @@ buildscript {
     def githubPropertiesFile = file("$rootDir${File.separator}github.properties")
     githubProperties.load(new FileInputStream(githubPropertiesFile))
 
+    def apiKeysProperties = new Properties()
+    def apiKeysPropertiesFile = file("$rootDir${File.separator}apikeys.properties")
+    apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+
+    ext.sentryApiKey = apiKeysProperties["sentry_dsn"]
+
     repositories {
         mavenLocal()
         google()

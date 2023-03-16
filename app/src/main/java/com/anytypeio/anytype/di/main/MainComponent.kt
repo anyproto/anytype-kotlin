@@ -57,7 +57,8 @@ import javax.inject.Singleton
         ClipboardModule::class,
         AnalyticsModule::class,
         LocalNetworkProviderModule::class,
-        SubscriptionsModule::class
+        SubscriptionsModule::class,
+        CrashReportingModule::class
     ]
 )
 interface MainComponent :

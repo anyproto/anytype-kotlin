@@ -39,6 +39,7 @@ android {
         buildConfigField "boolean", "LOG_DASHBOARD_REDUCER", localProperties.getProperty("LOG_DASHBOARD_REDUCER", "false")
         buildConfigField "boolean", "LOG_EDITOR_VIEWMODEL_EVENTS", localProperties.getProperty("LOG_EDITOR_VIEWMODEL_EVENTS", "false")
         buildConfigField "boolean", "LOG_EDITOR_CONTROL_PANEL", localProperties.getProperty("LOG_EDITOR_CONTROL_PANEL", "false")
+        resValue "string", "SENTRY_DSN", config.sentryApiKey
     }
 
     packagingOptions {
@@ -146,6 +147,7 @@ dependencies {
     implementation project(':library-syntax-highlighter')
     implementation project(':analytics')
     implementation project(':ui-settings')
+    implementation project(':crash-reporting')
 
     //Compile time dependencies
     kapt libs.daggerCompiler

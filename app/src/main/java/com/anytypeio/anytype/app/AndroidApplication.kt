@@ -7,6 +7,7 @@ import androidx.emoji.text.FontRequestEmojiCompatConfig
 import com.amplitude.api.Amplitude
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.SentryCrashReporter
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker
 import com.anytypeio.anytype.core_utils.tools.CrashlyticsTree
 import com.anytypeio.anytype.di.common.ComponentDependenciesProvider
@@ -30,6 +31,9 @@ class AndroidApplication : Application(), HasComponentDependencies {
 
     @Inject
     lateinit var discoveryManager: MDNSProvider
+
+    @Inject
+    lateinit var crashReporter: SentryCrashReporter
 
     @Inject
     override lateinit var dependencies: ComponentDependenciesProvider

@@ -20,6 +20,7 @@ Your Github ID (starting with '#' character) can be found [here](https://caius.g
 ```
 amplitude.debug="AMPLITUDE_DEBUG_KEY"
 amplitude.release="AMPLITUDE_RELEASE_KEY"
+sentry_dsn="SENTRY_DSN_KEY"
 ```
 
 Then build project.

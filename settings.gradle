@@ -56,3 +56,4 @@ include ':app',
         ':libs'
 
 include ':ui-settings'
+include ':crash-reporting'

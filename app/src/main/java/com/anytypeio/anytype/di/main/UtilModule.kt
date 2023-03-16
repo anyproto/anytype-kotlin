@@ -3,8 +3,11 @@ package com.anytypeio.anytype.di.main
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.app.TogglePrefs
 import com.anytypeio.anytype.app.DefaultFeatureToggles
+import com.anytypeio.anytype.core_utils.tools.AppInfo
+import com.anytypeio.anytype.core_utils.tools.DefaultAppInfo
 import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
@@ -32,6 +35,11 @@ object UtilModule {
     fun providesSharedPreferences(
         context: Context
     ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideAppInfo(): AppInfo = DefaultAppInfo(BuildConfig.VERSION_NAME)
 
     @Module
     interface Bindings {

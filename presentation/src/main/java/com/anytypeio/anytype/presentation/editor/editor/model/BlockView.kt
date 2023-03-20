@@ -1393,6 +1393,7 @@ sealed class BlockView : ViewType {
         abstract val title: String?
         abstract val icon: ObjectIcon
         abstract val background: ThemeColor
+        abstract val isCollection: Boolean
 
         /**
          * UI-model for a data view block. There is no master set.
@@ -1404,7 +1405,8 @@ sealed class BlockView : ViewType {
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val title: String?,
             override val icon: ObjectIcon,
-            override val background: ThemeColor
+            override val background: ThemeColor,
+            override val isCollection: Boolean
         ) : DataView() {
             override fun getViewType(): Int = HOLDER_DATA_VIEW_EMPTY_SOURCE
         }
@@ -1419,7 +1421,8 @@ sealed class BlockView : ViewType {
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val title: String?,
             override val icon: ObjectIcon,
-            override val background: ThemeColor
+            override val background: ThemeColor,
+            override val isCollection: Boolean
         ) : DataView() {
             override fun getViewType(): Int = HOLDER_DATA_VIEW_EMPTY_DATA
         }
@@ -1434,7 +1437,8 @@ sealed class BlockView : ViewType {
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val title: String?,
             override val icon: ObjectIcon,
-            override val background: ThemeColor
+            override val background: ThemeColor,
+            override val isCollection: Boolean
         ) : DataView() {
             override fun getViewType(): Int = HOLDER_DATA_VIEW_DEFAULT
         }
@@ -1446,7 +1450,8 @@ sealed class BlockView : ViewType {
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val title: String?,
             override val icon: ObjectIcon,
-            override val background: ThemeColor
+            override val background: ThemeColor,
+            override val isCollection: Boolean
         ) : DataView() {
             override fun getViewType(): Int = HOLDER_DATA_VIEW_SOURCE_DELETED
         }

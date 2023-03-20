@@ -2169,6 +2169,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         schema: NestedDecorationData
     ): BlockView.DataView {
         val targetObjectId = content.targetObjectId
+        val isCollection = content.isCollection
         val isSelected = checkIfSelected(
             mode = mode,
             block = block,
@@ -2190,7 +2191,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 isSelected = isSelected,
                 background = background,
                 icon = ObjectIcon.None,
-                title = null
+                title = null,
+                isCollection = isCollection
             )
         } else {
             val targetSet = ObjectWrapper.Basic(
@@ -2203,7 +2205,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isSelected = isSelected,
                     background = background,
                     icon = ObjectIcon.None,
-                    title = null
+                    title = null,
+                    isCollection = isCollection
                 )
             }
             val icon = ObjectIcon.getEditorLinkToObjectIcon(
@@ -2211,14 +2214,15 @@ class DefaultBlockViewRenderer @Inject constructor(
                 layout = targetSet.layout,
                 builder = urlBuilder
             )
-            if (targetSet.setOf.isEmpty()) {
+            if (targetSet.setOf.isEmpty() && !content.isCollection) {
                 return BlockView.DataView.EmptyData(
                     id = block.id,
                     decorations = decorations,
                     isSelected = isSelected,
                     title = targetSet.name,
                     background = background,
-                    icon = icon
+                    icon = icon,
+                    isCollection = isCollection
                 )
             } else {
                 return BlockView.DataView.Default(
@@ -2227,7 +2231,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isSelected = isSelected,
                     title = targetSet.name,
                     background = background,
-                    icon = icon
+                    icon = icon,
+                    isCollection = isCollection
                 )
             }
         }

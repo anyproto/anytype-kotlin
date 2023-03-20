@@ -269,6 +269,9 @@ class BlockViewDiffUtil(
             if (newBlock.background != oldBlock.background) {
                 changes.add(BACKGROUND_COLOR_CHANGED)
             }
+            if (newBlock.isCollection != oldBlock.isCollection) {
+                changes.add(DATA_VIEW_TYPE_CHANGED)
+            }
         }
 
         return if (changes.isNotEmpty())
@@ -316,6 +319,7 @@ class BlockViewDiffUtil(
         val isDataViewTitleChanged : Boolean get() = changes.contains(DATA_VIEW_TITLE_CHANGED)
         val isDataViewIconChanged : Boolean get() = changes.contains(DATA_VIEW_ICON_CHANGED)
         val isDataViewBackgroundChanged : Boolean get() = changes.contains(DATA_VIEW_BACKGROUND_CHANGED)
+        val isDataViewTypeChanged : Boolean get() = changes.contains(DATA_VIEW_TYPE_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
@@ -371,5 +375,6 @@ class BlockViewDiffUtil(
         const val DATA_VIEW_TITLE_CHANGED = 350
         const val DATA_VIEW_ICON_CHANGED = 351
         const val DATA_VIEW_BACKGROUND_CHANGED = 352
+        const val DATA_VIEW_TYPE_CHANGED = 353
     }
 }

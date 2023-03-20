@@ -353,7 +353,8 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
     return Block.Content.DataView(
         viewers = content.views.map { it.toCoreModels() },
         relationLinks = content.relationLinks.map { it.toCoreModels() },
-        targetObjectId = content.TargetObjectId
+        targetObjectId = content.TargetObjectId,
+        isCollection = content.isCollection
     )
 }
 

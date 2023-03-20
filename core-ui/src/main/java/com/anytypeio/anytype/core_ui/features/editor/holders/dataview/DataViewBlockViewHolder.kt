@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.text.toSpannable
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -40,6 +41,7 @@ class DataViewBlockEmptySourceHolder(binding: ItemBlockDataViewEmptySourceBindin
     override val containerView: ConstraintLayout = binding.containerWithBackground
     override val objectIconView: ObjectIconWidget = binding.cardIcon
     override val titleView: TextView = binding.cardName
+    override val typeView: TextView = binding.cardDescription
     override val descriptionView: TextView = binding.cardDescription
     override val selectedView: View = binding.selected
     override val decoratableCard: CardView = binding.card
@@ -73,6 +75,7 @@ class DataViewBlockEmptyDataHolder(binding: ItemBlockDataViewEmptyDataBinding) :
     override val containerView: ConstraintLayout = binding.containerWithBackground
     override val objectIconView: ObjectIconWidget = binding.cardIcon
     override val titleView: TextView = binding.cardName
+    override val typeView: TextView = binding.cardDescription
     override val descriptionView: TextView = binding.cardDescription
     override val selectedView: View = binding.selected
     override val decoratableCard: CardView = binding.card
@@ -107,6 +110,7 @@ data class DataViewBlockDefaultHolder(
     override val containerView: ConstraintLayout = binding.containerWithBackground
     override val objectIconView: ObjectIconWidget = binding.cardIcon
     override val titleView: TextView = binding.cardName
+    override val typeView: TextView = binding.cardDescription
     override val descriptionView: TextView = binding.cardDescription
     override val selectedView: View = binding.selected
     override val decoratableCard: CardView = binding.card
@@ -141,6 +145,7 @@ data class DataViewBlockDeleteHolder(
     override val containerView: ConstraintLayout = binding.containerWithBackground
     override val objectIconView: ObjectIconWidget = binding.cardIcon
     override val titleView: TextView = binding.cardName
+    override val typeView: TextView = binding.cardDescription
     override val descriptionView: TextView = binding.cardDescription
     override val selectedView: View = binding.selected
     override val decoratableCard: CardView = binding.card
@@ -187,9 +192,13 @@ sealed class DataViewBlockViewHolder(
     protected abstract val rootView: View
     abstract val containerView: ConstraintLayout
 
-    private val untitled = itemView.resources.getString(R.string.untitled_set)
+    private val untitledSet = itemView.resources.getString(R.string.untitled_set)
+    private val untitledCollection = itemView.resources.getString(R.string.untitled_collection)
+    private val typeSet = itemView.resources.getString(R.string.inline_set)
+    private val typeCollection = itemView.resources.getString(R.string.inline_collection)
     abstract val objectIconView: ObjectIconWidget
     abstract val titleView: TextView
+    abstract val typeView: TextView
     abstract val descriptionView: TextView
     abstract val selectedView: View
     abstract override val decoratableCard: CardView
@@ -206,6 +215,8 @@ sealed class DataViewBlockViewHolder(
 
         applyName(item)
 
+        applyType(item)
+
         applyBackground(item.background)
 
         applySearchHighlight(item)
@@ -221,8 +232,20 @@ sealed class DataViewBlockViewHolder(
 
     private fun applyName(item: BlockView.DataView) {
         val name = item.title
-        val sb = if (name.isNullOrBlank()) "" else SpannableString(name)
-        titleView.text = sb
+        if (name.isNullOrBlank()) {
+            titleView.text = SpannableString("")
+            setHint(item)
+        } else {
+            titleView.text = SpannableString(name)
+        }
+    }
+
+    private fun setHint(item: BlockView.DataView) {
+        titleView.hint = if (item.isCollection) untitledCollection else untitledSet
+    }
+
+    private fun applyType(item: BlockView.DataView) {
+        typeView.text = if (item.isCollection) typeCollection else typeSet
     }
 
     private fun applyImageOrEmoji(item: BlockView.DataView) {
@@ -245,7 +268,7 @@ sealed class DataViewBlockViewHolder(
     }
 
     private fun applySearchHighlight(field: BlockView.Searchable.Field, input: TextView) {
-        val content = input.text as Spannable
+        val content = input.text.toSpannable()
         content.removeSpans<SearchHighlightSpan>()
         content.removeSpans<SearchTargetHighlightSpan>()
         field.highlights.forEach { highlight ->
@@ -264,6 +287,7 @@ sealed class DataViewBlockViewHolder(
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
+        input.text = content
     }
 
     private fun clearSearchHighlights() {
@@ -289,6 +313,9 @@ sealed class DataViewBlockViewHolder(
         }
         if (payload.isSearchHighlightChanged) {
             applySearchHighlight(item)
+        }
+        if (payload.isDataViewTypeChanged) {
+            applyType(item)
         }
     }
 

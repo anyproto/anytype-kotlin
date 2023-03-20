@@ -266,6 +266,12 @@ sealed class Event {
                 val keys: List<Key>
             ) : DataView()
 
+            data class SetIsCollection(
+                override val context: Id,
+                val dv: Id,
+                val isCollection: Boolean
+            ) : DataView()
+
             data class UpdateView(
                 override val context: Id,
                 val block: Id,

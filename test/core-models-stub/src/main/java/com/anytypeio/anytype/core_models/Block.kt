@@ -327,12 +327,14 @@ fun StubDataViewBlock(
     targetObjectId: Id = "",
     viewers: List<Block.Content.DataView.Viewer> = emptyList(),
     relationsIndex: List<RelationLink> = emptyList(),
+    isCollection : Boolean = false
 ): Block = Block(
     id = id,
     content = Block.Content.DataView(
         viewers = viewers,
         relationLinks = relationsIndex,
-        targetObjectId = targetObjectId
+        targetObjectId = targetObjectId,
+        isCollection = isCollection
     ),
     children = children,
     fields = fields,

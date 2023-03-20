@@ -286,7 +286,8 @@ data class Block(
         data class DataView(
             val viewers: List<Viewer>,
             val relationLinks: List<RelationLink> = emptyList(),
-            val targetObjectId: Id = ""
+            val targetObjectId: Id = "",
+            val isCollection: Boolean = false
         ) : Content() {
 
             data class Viewer(

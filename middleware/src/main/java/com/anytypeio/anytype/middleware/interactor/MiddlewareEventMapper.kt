@@ -253,5 +253,14 @@ fun anytype.Event.Message.toCoreModels(
             keys = event.relationKeys
         )
     }
+    blockDataviewIsCollectionSet != null -> {
+        val event = blockDataviewIsCollectionSet
+        checkNotNull(event)
+        Event.Command.DataView.SetIsCollection(
+            context = context,
+            dv = event.id,
+            isCollection = event.value_
+        )
+    }
     else -> null
 }

@@ -1083,7 +1083,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         middleString = R.string.snack_move_to
                     ) {
                         if (command.isSet) {
-                            vm.proceedWithOpeningSet(command.id)
+                            vm.proceedWithOpeningDataViewObject(command.id)
                         } else {
                             vm.proceedWithOpeningObject(command.id)
                         }

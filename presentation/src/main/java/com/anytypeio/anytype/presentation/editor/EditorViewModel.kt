@@ -3033,7 +3033,7 @@ class EditorViewModel(
                 }
             }
             is Content.DataView -> {
-                proceedWithOpeningInlineSetTarget(target = content.targetObjectId)
+                proceedWithOpeningDataViewBlock(dv = content)
             }
             else -> {
                 sendToast("Couldn't find the target of the link")
@@ -3041,15 +3041,20 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningInlineSetTarget(target: Id) {
-        if (target.isNotEmpty()) {
-            proceedWithOpeningSet(target)
+    private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
+        if (dv.targetObjectId.isNotEmpty()) {
+            proceedWithOpeningDataViewObject(dv.targetObjectId)
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,
                 type = EventsDictionary.Type.dataView
             )
         } else {
-            sendToast("This inline set doesn’t have a source.")
+            val toastMessage = if (dv.isCollection) {
+                "This inline collection doesn't have a source"
+            } else {
+                "This inline set doesn't have a source"
+            }
+            sendToast(toastMessage)
         }
     }
 
@@ -3067,7 +3072,7 @@ class EditorViewModel(
                 proceedWithOpeningObject(target = target)
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                proceedWithOpeningSet(target = target)
+                proceedWithOpeningDataViewObject(target = target)
             }
             else -> {
                 sendToast("Cannot open object with layout: ${wrapper.layout}")
@@ -3872,7 +3877,7 @@ class EditorViewModel(
                                     snacks.emit(Snack.ObjectSetNotFound(clicked.type))
                                 }
                                 is FindObjectSetForType.Response.Success -> {
-                                    proceedWithOpeningSet(response.obj.id)
+                                    proceedWithOpeningDataViewObject(response.obj.id)
                                 }
                             }
                         }
@@ -4132,7 +4137,7 @@ class EditorViewModel(
         }
     }
 
-    fun proceedWithOpeningSet(target: Id, isPopUpToDashboard: Boolean = false) {
+    fun proceedWithOpeningDataViewObject(target: Id, isPopUpToDashboard: Boolean = false) {
         viewModelScope.launch {
             closePage.execute(context).fold(
                 onFailure = {
@@ -4291,7 +4296,7 @@ class EditorViewModel(
         objectToSet.invoke(params).proceed(
             failure = { error -> Timber.e(error, "Error convert object to set") },
             success = { setId ->
-                proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
             }
         )
     }
@@ -4301,7 +4306,7 @@ class EditorViewModel(
         objectToCollection.execute(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = { setId ->
-                proceedWithOpeningSet(target = setId, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
             }
         )
     }
@@ -5983,7 +5988,7 @@ class EditorViewModel(
         viewModelScope.launch {
             createObjectSet(CreateObjectSet.Params(type = type)).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
-                success = { response -> proceedWithOpeningSet(response.target) }
+                success = { response -> proceedWithOpeningDataViewObject(response.target) }
             )
         }
     }

@@ -175,6 +175,7 @@
 
     <string name="untitled">Untitled</string>
     <string name="untitled_set">Untitled set</string>
+    <string name="untitled_collection">Untitled collection</string>
     <string name="archived">Archived</string>
 
 
@@ -528,6 +529,7 @@
     <string name="inline">Inline</string>
     <string name="set_view">Set View</string>
     <string name="inline_set">Inline set</string>
+    <string name="inline_collection">Inline collection</string>
     <string name="fit_image">Fit image</string>
     <string name="image_preview">Image preview</string>
     <string name="cover">Cover</string>

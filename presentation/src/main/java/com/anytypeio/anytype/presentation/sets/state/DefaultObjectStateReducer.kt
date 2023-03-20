@@ -72,6 +72,9 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is Command.DataView.DeleteRelation -> {
                 handleDeleteRelation(state, event)
             }
+            is Command.DataView.SetIsCollection -> {
+                handleSetIsCollection(state, event)
+            }
             is Command.DataView.SetTargetObjectId -> {
                 handleSetTargetObjectId(state, event)
             }
@@ -235,6 +238,26 @@ class DefaultObjectStateReducer : ObjectStateReducer {
     ): ObjectState {
         val updateBlockContent = { content: Block.Content.DataView ->
             content.copy(targetObjectId = event.targetObjectId)
+        }
+        return when (state) {
+            is ObjectState.DataView.Collection -> state.updateBlockContent(
+                target = event.dv,
+                blockContentUpdate = updateBlockContent
+            )
+            is ObjectState.DataView.Set -> state.updateBlockContent(
+                target = event.dv,
+                blockContentUpdate = updateBlockContent
+            )
+            else -> state
+        }
+    }
+
+    private fun handleSetIsCollection(
+        state: ObjectState,
+        event: Command.DataView.SetIsCollection
+    ): ObjectState {
+        val updateBlockContent = { content: Block.Content.DataView ->
+            content.copy(isCollection = event.isCollection)
         }
         return when (state) {
             is ObjectState.DataView.Collection -> state.updateBlockContent(

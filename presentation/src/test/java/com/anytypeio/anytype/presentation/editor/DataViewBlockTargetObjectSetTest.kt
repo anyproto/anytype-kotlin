@@ -108,6 +108,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                         isSelected = false,
                         icon = ObjectIcon.None,
                         decorations = listOf(BlockView.Decoration(style = BlockView.Decoration.Style.Card)),
+                        isCollection = false
                     )
                 )
             )

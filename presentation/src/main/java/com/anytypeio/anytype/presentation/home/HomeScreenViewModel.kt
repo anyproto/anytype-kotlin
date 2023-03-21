@@ -224,7 +224,7 @@ class HomeScreenViewModel(
                     flowOf(emptyList())
                 }
             }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it + bin + actions
+                views.value = it + listOf(WidgetView.Library, bin) + actions
             }
         }
 
@@ -783,7 +783,6 @@ class HomeScreenViewModel(
 
     companion object {
         val actions = listOf(
-            WidgetView.Action.Library,
             WidgetView.Action.EditWidgets
         )
     }

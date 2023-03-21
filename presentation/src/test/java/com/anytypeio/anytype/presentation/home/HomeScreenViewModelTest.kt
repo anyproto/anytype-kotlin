@@ -241,6 +241,7 @@ class HomeScreenViewModelTest {
                 val secondTimeItem = awaitItem()
                 assertEquals(
                     expected = buildList {
+                        add(WidgetView.Library)
                         add(binWidget)
                         addAll(HomeScreenViewModel.actions)
                     },
@@ -318,6 +319,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
@@ -333,6 +335,7 @@ class HomeScreenViewModelTest {
                             isExpanded = true
                         )
                     )
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
@@ -343,7 +346,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit tree-widget with 2 elements and bin`() = runTest {
+    fun `should emit tree-widget with 2 elements, library and bin`() = runTest {
 
         // SETUP
 
@@ -422,6 +425,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
@@ -452,6 +456,7 @@ class HomeScreenViewModelTest {
                             isExpanded = true
                         )
                     )
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
@@ -461,7 +466,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit three bundled widgets, each having 2 elements, and bin`() = runTest {
+    fun `should emit three bundled widgets, each having 2 elements, library and bin`() = runTest {
 
         // SETUP
 
@@ -599,6 +604,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
@@ -675,6 +681,7 @@ class HomeScreenViewModelTest {
                             isExpanded = true
                         )
                     )
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
@@ -684,7 +691,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit link-widget, bin and actions`() = runTest {
+    fun `should emit link-widget, library, bin and actions`() = runTest {
 
         // SETUP
 
@@ -752,6 +759,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
@@ -766,6 +774,7 @@ class HomeScreenViewModelTest {
                             source = Widget.Source.Default(sourceObject),
                         )
                     )
+                    add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },

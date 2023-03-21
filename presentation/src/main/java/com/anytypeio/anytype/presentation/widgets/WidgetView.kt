@@ -76,13 +76,13 @@ sealed class WidgetView {
 
     data class Bin(override val id: Id) : WidgetView()
 
+    object Library : WidgetView() {
+        override val id: Id get() = "id.button.library"
+    }
+
     sealed class Action : WidgetView() {
         object EditWidgets : Action() {
             override val id: Id get() = "id.action.edit-widgets"
-        }
-        // Will be deleted. For testing only.
-        object Library : Action() {
-            override val id: Id get() = "id.action.library"
         }
     }
 

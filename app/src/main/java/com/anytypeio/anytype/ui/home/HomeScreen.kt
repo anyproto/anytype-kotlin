@@ -58,6 +58,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.LibraryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
@@ -426,32 +427,14 @@ private fun WidgetList(
                         mode = mode
                     )
                 }
-                is WidgetView.Action.Library -> {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp, bottom = 6.dp)
-                            .height(32.dp)
-                            .animateItemPlacement(
-                                spring(
-                                    stiffness = Spring.StiffnessHigh,
-                                    visibilityThreshold = IntOffset.Zero
-                                )
-                            )
-                    ) {
-                        AnimatedVisibility(
-                            visible = mode is InteractionMode.Default,
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            WidgetActionButton(
-                                label = stringResource(R.string.library),
-                                onClick = onLibraryClicked,
-                                modifier = Modifier
-                            )
-                        }
-                    }
+                is WidgetView.Library -> {
+                    LibraryWidgetCard(
+                        onDropDownMenuAction = { action ->
+                            onWidgetMenuAction(item.id, action)
+                        },
+                        onClick = onLibraryClicked,
+                        mode = mode
+                    )
                 }
                 is WidgetView.Action.EditWidgets -> {
                     Box(

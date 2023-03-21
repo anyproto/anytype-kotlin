@@ -523,8 +523,8 @@ message Rpc {
         }
 
         message RecoverFromLegacyExport {
-            option (no_auth) = true;
             message Request {
+                option (no_auth) = true;
                 string path = 1;
                 string rootPath = 2;
             }
@@ -1863,7 +1863,7 @@ message Rpc {
                 }
 
                 message MigrationParams {
-                    string address = 1;
+                    string accountId = 1;
                     string path = 2;
                 }
 
@@ -1878,6 +1878,8 @@ message Rpc {
                 message CsvParams {
                     repeated string path = 1;
                     Mode mode = 2;
+                    bool useFirstColumnForRelations = 3; // use for collection mode
+                    string delimiter = 4;
 
                     enum Mode {
                         COLLECTION = 0;

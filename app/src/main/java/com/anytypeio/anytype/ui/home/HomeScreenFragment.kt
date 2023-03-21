@@ -15,7 +15,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -64,9 +63,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     widgets = vm.views.collectAsState().value,
                     mode = vm.mode.collectAsState().value,
                     onExpand = { path -> vm.onExpand(path) },
-                    onCreateWidget = {
-                        findNavController().navigate(R.id.selectWidgetSourceScreen)
-                    },
+                    onCreateWidget = vm::onCreateWidgetClicked,
                     onEditWidgets = vm::onEditWidgets,
                     onExitEditMode = vm::onExitEditMode,
                     onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
@@ -136,7 +133,8 @@ class HomeScreenFragment : BaseComposeFragment() {
             }
             is Command.SelectWidgetSource -> {
                 findNavController().navigate(
-                    R.id.selectWidgetSourceScreen
+                    R.id.selectWidgetSourceScreen,
+                    args = SelectWidgetSourceFragment.args(command.target)
                 )
             }
             is Command.ChangeWidgetType -> {
@@ -157,7 +155,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     args = SelectWidgetTypeFragment.args(
                         ctx = command.ctx,
                         source = command.source,
-                        layout = command.layout
+                        layout = command.layout,
+                        target = command.target
                     )
                 )
             }

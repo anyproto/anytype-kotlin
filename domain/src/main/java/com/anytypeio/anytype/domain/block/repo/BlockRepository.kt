@@ -371,7 +371,9 @@ interface BlockRepository {
     suspend fun createWidget(
         ctx: Id,
         source: Id,
-        layout: WidgetLayout
+        layout: WidgetLayout,
+        target: Id? = null,
+        position: Position = Position.NONE
     ): Payload
 
     suspend fun updateWidget(

@@ -93,6 +93,7 @@ sealed class DropDownMenuAction {
     object ChangeWidgetType : DropDownMenuAction()
     object ChangeWidgetSource : DropDownMenuAction()
     object RemoveWidget : DropDownMenuAction()
+    object AddBelow: DropDownMenuAction()
     object EditWidgets : DropDownMenuAction()
     object EmptyBin: DropDownMenuAction()
 }

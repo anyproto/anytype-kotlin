@@ -112,8 +112,8 @@ class SelectWidgetTypeViewModel(
     }
 
     fun onWidgetTypeClicked(
-        ctx: Id,
         source: Id,
+        target: Id?,
         view: WidgetTypeView
     ) {
         if (!view.isSelected) {
@@ -121,6 +121,7 @@ class SelectWidgetTypeViewModel(
                 widgetDispatcher.send(
                     WidgetDispatchEvent.TypePicked(
                         source = source,
+                        target = target,
                         widgetType = when (view) {
                             is WidgetTypeView.Link -> Command.ChangeWidgetType.TYPE_LINK
                             is WidgetTypeView.Tree -> Command.ChangeWidgetType.TYPE_TREE

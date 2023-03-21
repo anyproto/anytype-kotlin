@@ -701,11 +701,15 @@ class BlockMiddleware(
     override suspend fun createWidget(
         ctx: Id,
         source: Id,
-        layout: WidgetLayout
+        layout: WidgetLayout,
+        target: Id?,
+        position: Position
     ): Payload = middleware.createWidgetBlock(
         ctx = ctx,
         source = source,
-        layout = layout
+        layout = layout,
+        target = target,
+        position = position
     )
 
     override suspend fun updateWidget(

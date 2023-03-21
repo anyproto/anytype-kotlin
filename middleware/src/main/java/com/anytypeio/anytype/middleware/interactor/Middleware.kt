@@ -1905,7 +1905,9 @@ class Middleware(
     fun createWidgetBlock(
         ctx: Id,
         source: Id,
-        layout: WidgetLayout
+        layout: WidgetLayout,
+        target: Id?,
+        position: Position
     ): Payload {
         val request = Rpc.Block.CreateWidget.Request(
             contextId = ctx,
@@ -1914,7 +1916,9 @@ class Middleware(
                 link = Block.Content.Link(
                     targetBlockId = source
                 )
-            )
+            ),
+            targetId = target.orEmpty(),
+            position = position.toMiddlewareModel()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockCreateWidget(request)

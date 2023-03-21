@@ -319,7 +319,13 @@ interface BlockRemote {
 
     suspend fun createObject(command: Command.CreateObject): CreateObjectResult
 
-    suspend fun createWidget(ctx: Id, source: Id, layout: WidgetLayout): Payload
+    suspend fun createWidget(
+        ctx: Id,
+        source: Id,
+        layout: WidgetLayout,
+        target: Id?,
+        position: Position
+    ): Payload
 
     suspend fun updateWidget(
         ctx: Id,

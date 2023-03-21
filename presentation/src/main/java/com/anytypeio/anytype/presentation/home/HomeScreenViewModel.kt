@@ -293,7 +293,8 @@ class HomeScreenViewModel(
                             Command.SelectWidgetType(
                                 ctx = configStorage.get().widgets,
                                 source = dispatch.source,
-                                layout = dispatch.sourceLayout
+                                layout = dispatch.sourceLayout,
+                                target = dispatch.target
                             )
                         )
                     }
@@ -302,7 +303,8 @@ class HomeScreenViewModel(
                             Command.SelectWidgetType(
                                 ctx = configStorage.get().widgets,
                                 source = dispatch.source,
-                                layout = ObjectType.Layout.SET.code
+                                layout = ObjectType.Layout.SET.code,
+                                target = dispatch.target
                             )
                         )
                     }
@@ -316,7 +318,8 @@ class HomeScreenViewModel(
                     is WidgetDispatchEvent.TypePicked -> {
                         proceedWithCreatingWidget(
                             source = dispatch.source,
-                            type = dispatch.widgetType
+                            type = dispatch.widgetType,
+                            target = dispatch.target
                         )
                     }
                 }
@@ -324,7 +327,11 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithCreatingWidget(source: Id, type: Int) {
+    private fun proceedWithCreatingWidget(
+        source: Id,
+        type: Int,
+        target: Id?
+    ) {
         viewModelScope.launch {
             val config = configStorage.get()
             createWidget(
@@ -336,7 +343,9 @@ class HomeScreenViewModel(
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
                         else -> WidgetLayout.LINK
-                    }
+                    },
+                    target = target,
+                    position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
                 )
             ).flowOn(appCoroutineDispatchers.io).collect { status ->
                 Timber.d("Status while creating widget: $status")
@@ -452,6 +461,12 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onCreateWidgetClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.SelectWidgetSource())
+        }
+    }
+
     fun onEditWidgets() {
         mode.value = InteractionMode.Edit
     }
@@ -518,6 +533,9 @@ class HomeScreenViewModel(
             DropDownMenuAction.EmptyBin -> {
                 proceedWithEmptyingBin()
             }
+            DropDownMenuAction.AddBelow -> {
+                proceedWithAddingWidgetBelow(widget)
+            }
         }
     }
 
@@ -535,6 +553,12 @@ class HomeScreenViewModel(
             Subscriptions.SUBSCRIPTION_FAVORITES -> {
                 navigate(Navigation.ExpandWidget(Subscription.Favorites))
             }
+        }
+    }
+
+    private fun proceedWithAddingWidgetBelow(widget: Id) {
+        viewModelScope.launch {
+            commands.emit(Command.SelectWidgetSource(target = widget))
         }
     }
 
@@ -804,10 +828,16 @@ sealed class InteractionMode {
 }
 
 sealed class Command {
-    object SelectWidgetSource : Command()
+
+    /**
+     * [target] optional target, below which new widget will be created
+     */
+    data class SelectWidgetSource(val target: Id? = null) : Command()
+
     data class SelectWidgetType(
         val ctx: Id,
         val source: Id,
+        val target: Id?,
         val layout: Int
     ) : Command()
 

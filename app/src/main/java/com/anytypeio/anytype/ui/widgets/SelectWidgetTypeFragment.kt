@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -31,6 +32,7 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
     private val source: Id get() = argString(WIDGET_SOURCE_KEY)
     private val currentType: Int get() = arg(WIDGET_TYPE_KEY)
     private val sourceLayout: Int get() = arg(WIDGET_SOURCE_LAYOUT)
+    private val target: Id? get() = argOrNull(TARGET_KEY)
     private val forExistingWidget: Boolean get() = arg(IS_FOR_EXISTING_WIDGET)
 
     private val vm by viewModels<SelectWidgetTypeViewModel> { factory }
@@ -58,9 +60,9 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
                             )
                         } else {
                             vm.onWidgetTypeClicked(
-                                ctx = ctx,
                                 source = source,
-                                view = view
+                                view = view,
+                                target = target
                             )
                         }
                     }
@@ -111,6 +113,7 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
         private const val WIDGET_SOURCE_KEY = "arg.select-widget-type.widget-source"
         private const val WIDGET_SOURCE_LAYOUT = "arg.select-widget-type.widget-source-layout"
         private const val IS_FOR_EXISTING_WIDGET = "arg.select-widget-type.for-existing-widget"
+        private const val TARGET_KEY = "arg.select-widget-type.target"
 
         fun args(
             ctx: Id,
@@ -125,17 +128,20 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
             WIDGET_TYPE_KEY to type,
             IS_FOR_EXISTING_WIDGET to true,
             WIDGET_SOURCE_LAYOUT to layout,
+            TARGET_KEY to null
         )
 
         fun args(
             ctx: Id,
             source: Id,
-            layout: Int
+            layout: Int,
+            target: Id?
         ) = bundleOf(
             CTX_KEY to ctx,
             WIDGET_SOURCE_KEY to source,
             WIDGET_SOURCE_LAYOUT to layout,
-            IS_FOR_EXISTING_WIDGET to false
+            IS_FOR_EXISTING_WIDGET to false,
+            TARGET_KEY to target
         )
     }
 }

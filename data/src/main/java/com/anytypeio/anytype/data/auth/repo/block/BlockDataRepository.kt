@@ -734,11 +734,15 @@ class BlockDataRepository(
     override suspend fun createWidget(
         ctx: Id,
         source: Id,
-        layout: WidgetLayout
+        layout: WidgetLayout,
+        target: Id?,
+        position: Position
     ): Payload = remote.createWidget(
         ctx = ctx,
         source = source,
-        layout = layout
+        layout = layout,
+        target = target,
+        position = position
     )
 
     override suspend fun updateWidget(

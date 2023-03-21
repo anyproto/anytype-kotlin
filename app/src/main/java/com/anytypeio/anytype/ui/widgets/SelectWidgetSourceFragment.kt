@@ -43,6 +43,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
 
     private val ctx: Id get() = arg(CTX_KEY)
     private val widget: Id get() = arg(WIDGET_ID_KEY)
+    private val target: Id? get() = argOrNull(TARGET_KEY)
     private val source: Id get() = arg(WIDGET_SOURCE_KEY)
     private val type: Int get() = arg(WIDGET_TYPE_KEY)
     private val forExistingWidget: Boolean? get() = argOrNull(FLOW_EXISTING_WIDGET)
@@ -103,7 +104,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
                 type = type
             )
         } else {
-            vm.onStartWithNewWidget()
+            vm.onStartWithNewWidget(target = target)
         }
         with(lifecycleScope) {
             jobs += subscribe(vm.isDismissed) { isDismissed ->
@@ -241,6 +242,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         private const val WIDGET_ID_KEY = "arg.select-widget-source.widget-id"
         private const val WIDGET_TYPE_KEY = "arg.select-widget-source.widget-type"
         private const val WIDGET_SOURCE_KEY = "arg.select-widget-source.widget-source"
+        private const val TARGET_KEY = "arg.select-widget-source.target"
         fun args(
             ctx: Id,
             widget: Id,
@@ -251,7 +253,15 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             WIDGET_ID_KEY to widget,
             WIDGET_SOURCE_KEY to source,
             WIDGET_TYPE_KEY to type,
+            TARGET_KEY to null,
             FLOW_EXISTING_WIDGET to true
         )
+
+        /**
+         * Flow for selecting source for new widget.
+         */
+        fun args(
+            target: Id?
+        ) = bundleOf(TARGET_KEY to target)
     }
 }

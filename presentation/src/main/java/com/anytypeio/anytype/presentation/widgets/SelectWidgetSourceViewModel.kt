@@ -90,9 +90,9 @@ class SelectWidgetSourceViewModel(
         )
     }
 
-    fun onStartWithNewWidget() {
+    fun onStartWithNewWidget(target: Id?) {
         Timber.d("onStart with picking source for new widget")
-        config = Config.NewWidget
+        config = Config.NewWidget(target)
         proceedWithSearchQuery()
     }
 
@@ -123,7 +123,10 @@ class SelectWidgetSourceViewModel(
             is Config.NewWidget -> {
                 viewModelScope.launch {
                     dispatcher.send(
-                        WidgetDispatchEvent.SourcePicked.Bundled(source = view.id)
+                        WidgetDispatchEvent.SourcePicked.Bundled(
+                            source = view.id,
+                            target = curr.target
+                        )
                     )
                 }
             }
@@ -154,7 +157,8 @@ class SelectWidgetSourceViewModel(
                     dispatcher.send(
                         WidgetDispatchEvent.SourcePicked.Default(
                             source = view.id,
-                            sourceLayout = view.layout?.code ?: -1
+                            sourceLayout = view.layout?.code ?: -1,
+                            target = curr.target
                         )
                     )
                 }
@@ -202,7 +206,7 @@ class SelectWidgetSourceViewModel(
 
     sealed class Config {
         object None: Config()
-        object NewWidget : Config()
+        data class NewWidget(val target: Id?) : Config()
         data class ExistingWidget(
             val ctx: Id,
             val widget: Id,

@@ -37,8 +37,9 @@ interface DataViewSubscription {
     ): Flow<DataViewSubscriptionContainer.Index>
 }
 
-class DefaultDataViewSubscription(private val dataViewSubscriptionContainer: DataViewSubscriptionContainer) :
-    DataViewSubscription {
+class DefaultDataViewSubscription(
+    private val dataViewSubscriptionContainer: DataViewSubscriptionContainer
+) : DataViewSubscription {
 
     override suspend fun startObjectCollectionSubscription(
         context: Id,

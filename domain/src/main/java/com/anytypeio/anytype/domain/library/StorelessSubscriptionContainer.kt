@@ -57,7 +57,7 @@ interface StorelessSubscriptionContainer {
                         source = source,
                         ignoreWorkspace = null,
                         noDepSubscription = true,
-                        collection = null
+                        collection = collection
                     ).results.map { SubscriptionObject(it.id, it) }.toMutableList()
                     emitAll(
                         buildObjectsFlow(

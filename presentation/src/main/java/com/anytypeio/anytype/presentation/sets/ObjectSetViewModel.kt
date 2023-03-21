@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -455,11 +452,10 @@ class ObjectSetViewModel(
                     ObjectState.Init -> DataViewViewState.Init
                     ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
                 }
-            }.distinctUntilChanged()
-                .collect { viewState ->
+            }.distinctUntilChanged().collect { viewState ->
                     Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                     _currentViewer.value = viewState
-                }
+            }
         }
     }
 

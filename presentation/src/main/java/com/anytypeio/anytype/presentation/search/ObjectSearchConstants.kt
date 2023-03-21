@@ -475,6 +475,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region OBJECT TYPES
+
     fun filterObjectTypeLibrary(workspaceId: String) = listOf(
         DVFilter(
             relation = Relations.TYPE,
@@ -659,4 +660,48 @@ object ObjectSearchConstants {
         )
     )
 
+    fun collectionFilters(workspaceId: String) = listOf(
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL ,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO,
+                DASHBOARD,
+                RELATION_OPTION,
+                DASHBOARD,
+                DATE
+            )
+        ),
+        DVFilter(
+            relation = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = workspaceId
+        ),
+        DVFilter(
+            relation = Relations.TYPE,
+            condition = DVFilterCondition.EQUAL,
+            value = ObjectTypeIds.COLLECTION
+        )
+    )
 }

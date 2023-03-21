@@ -22,6 +22,7 @@ class CollectionResourceProvider @Inject constructor(
             Subscription.Sets -> context.getString(R.string.sets)
             Subscription.Favorites -> context.getString(R.string.favorites)
             Subscription.Bin -> context.getString(R.string.bin)
+            Subscription.Collections -> context.getString(R.string.collections)
             Subscription.None -> ""
         }
     }

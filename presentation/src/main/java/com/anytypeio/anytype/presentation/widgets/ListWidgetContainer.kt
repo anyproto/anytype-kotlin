@@ -71,16 +71,12 @@ class ListWidgetContainer(
         BundledWidgetSourceIds.RECENT -> WidgetView.ListOfObjects.Type.Recent
         BundledWidgetSourceIds.SETS -> WidgetView.ListOfObjects.Type.Sets
         BundledWidgetSourceIds.FAVORITE -> WidgetView.ListOfObjects.Type.Favorites
+        BundledWidgetSourceIds.COLLECTIONS -> WidgetView.ListOfObjects.Type.Collections
         else -> throw IllegalStateException("Unexpected subscription: $subscription")
     }
 
     companion object {
         private const val MAX_COUNT = 3
-
-        val keys = buildList {
-            addAll(ObjectSearchConstants.defaultKeys)
-            add(Relations.DESCRIPTION)
-        }
 
         fun params(
             subscription: Id,
@@ -115,6 +111,15 @@ class ListWidgetContainer(
                     limit = limit
                 )
             }
+            BundledWidgetSourceIds.COLLECTIONS -> {
+                StoreSearchParams(
+                    subscription = subscription,
+                    sorts = emptyList(),
+                    filters = ObjectSearchConstants.collectionFilters(workspace),
+                    keys = keys,
+                    limit = limit
+                )
+            }
             Subscriptions.SUBSCRIPTION_ARCHIVED -> {
                 StoreSearchParams(
                     subscription = subscription,
@@ -125,6 +130,11 @@ class ListWidgetContainer(
                 )
             }
             else -> throw IllegalStateException("Unexpected subscription: $subscription")
+        }
+
+        val keys = buildList {
+            addAll(ObjectSearchConstants.defaultKeys)
+            add(Relations.DESCRIPTION)
         }
     }
 }

@@ -12,7 +12,8 @@ data class StoreSearchParams(
     val source: List<String> = emptyList(),
     val offset: Long = 0,
     val limit: Int = 0,
-    val keys: List<String> = emptyList()
+    val keys: List<String> = emptyList(),
+    val collection: Id? = null
 )
 
 data class StoreSearchByIdsParams(

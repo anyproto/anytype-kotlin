@@ -15,5 +15,6 @@
     <string name="favorites">Favorites</string>
     <string name="recent">Recent</string>
     <string name="bin">Bin</string>
+    <string name="collections">Collections</string>
 
 </resources>

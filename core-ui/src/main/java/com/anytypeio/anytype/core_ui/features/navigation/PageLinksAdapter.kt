@@ -222,6 +222,13 @@ class BundledWidgetSourceHolder(
                     ivIcon.setIcon(ObjectIcon.Basic.Emoji("📚"))
                 }
             }
+            BundledWidgetSourceView.Collections -> {
+                with(binding) {
+                    tvTitle.setText(R.string.collections)
+                    tvSubtitle.setText(R.string.collection_widget_description)
+                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📂"))
+                }
+            }
         }
     }
 }

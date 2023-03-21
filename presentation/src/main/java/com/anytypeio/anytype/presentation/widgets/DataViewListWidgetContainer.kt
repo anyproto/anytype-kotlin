@@ -1,7 +1,10 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.map
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
+    private val workspace: Id,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -125,10 +129,33 @@ class DataViewListWidgetContainer(
             }.distinct(),
             filters = buildList {
                 addAll(view.filters)
-                addAll(ObjectSearchConstants.defaultDataViewFilters())
+                addAll(ObjectSearchConstants.defaultDataViewFilters(workspace))
+                add(
+                    DVFilter(
+                        relation = Relations.TYPE,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = listOf(
+                            ObjectTypeIds.OBJECT_TYPE,
+                            ObjectTypeIds.RELATION,
+                            ObjectTypeIds.TEMPLATE,
+                            ObjectTypeIds.IMAGE,
+                            ObjectTypeIds.FILE,
+                            ObjectTypeIds.VIDEO,
+                            ObjectTypeIds.AUDIO,
+                            ObjectTypeIds.DASHBOARD,
+                            ObjectTypeIds.RELATION_OPTION,
+                            ObjectTypeIds.DASHBOARD,
+                            ObjectTypeIds.DATE
+                        )
+                    ),
+                )
             },
             limit = MAX_COUNT,
-            source = source.setOf
+            source = source.setOf,
+            collection = if (source.type.contains(ObjectTypeIds.COLLECTION))
+                source.id
+            else
+                null
         )
     }
 

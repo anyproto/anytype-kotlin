@@ -242,4 +242,5 @@ fun Widget.Source.Bundled.res() : Int = when(this) {
     Widget.Source.Bundled.Favorites -> R.string.favorites
     Widget.Source.Bundled.Recent -> R.string.recent
     Widget.Source.Bundled.Sets -> R.string.sets
+    Widget.Source.Bundled.Collections -> R.string.collections
 }

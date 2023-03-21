@@ -38,6 +38,16 @@ sealed class Subscription(
         filters = { workspaceId -> ObjectSearchConstants.filterTabSets(workspaceId) }
     )
 
+    object Collections : Subscription(
+        Subscriptions.SUBSCRIPTION_COLLECTIONS,
+        SUBSCRIPTION_DEFAULT_KEYS,
+        ObjectSearchConstants.sortTabSets,
+        0,
+        filters = { workspaceId ->
+            ObjectSearchConstants.collectionFilters(workspaceId)
+        }
+    )
+
     object Favorites : Subscription(
         Subscriptions.SUBSCRIPTION_FAVORITES,
         SUBSCRIPTION_DEFAULT_KEYS,
@@ -57,6 +67,7 @@ class SubscriptionMapper {
             Subscriptions.SUBSCRIPTION_ARCHIVED -> Subscription.Bin
             Subscriptions.SUBSCRIPTION_SETS -> Subscription.Sets
             Subscriptions.SUBSCRIPTION_FAVORITES -> Subscription.Favorites
+            Subscriptions.SUBSCRIPTION_COLLECTIONS -> Subscription.Collections
             else -> Subscription.None
         }
     }

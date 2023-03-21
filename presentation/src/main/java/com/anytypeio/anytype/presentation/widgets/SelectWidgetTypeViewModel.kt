@@ -47,7 +47,7 @@ class SelectWidgetTypeViewModel(
             )
         } else {
             val objectLayout = ObjectType.Layout.values().find { it.code == sourceLayout }
-            if (objectLayout == ObjectType.Layout.SET) {
+            if (objectLayout == ObjectType.Layout.SET || objectLayout == ObjectType.Layout.COLLECTION) {
                 views.value = listOf(
                     WidgetTypeView.List().setIsSelected(currentType),
                     WidgetTypeView.Link().setIsSelected(currentType)
@@ -67,7 +67,7 @@ class SelectWidgetTypeViewModel(
             )
         } else {
             val objectLayout = ObjectType.Layout.values().find { it.code == layout }
-            if (objectLayout == ObjectType.Layout.SET) {
+            if (objectLayout == ObjectType.Layout.SET || objectLayout == ObjectType.Layout.COLLECTION) {
                 views.value = listOf(
                     WidgetTypeView.List(isSelected = false),
                     WidgetTypeView.Link(isSelected = false)

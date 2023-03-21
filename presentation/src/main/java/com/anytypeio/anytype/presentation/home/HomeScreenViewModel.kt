@@ -194,6 +194,7 @@ class HomeScreenViewModel(
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
+                                workspace = config.workspace,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
@@ -485,6 +486,10 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.Recent -> {
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Recent))
+            }
+            is Widget.Source.Bundled.Collections -> {
+                // TODO switch to bundled widgets id
+                navigate(Navigation.ExpandWidget(Subscription.Collections))
             }
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {

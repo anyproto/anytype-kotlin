@@ -61,6 +61,11 @@ sealed class Widget {
                 override val type: Id? = null
             }
 
+            object Collections : Bundled() {
+                override val id: Id = BundledWidgetSourceIds.COLLECTIONS
+                override val type: Id? = null
+            }
+
             object Recent : Bundled() {
                 override val id: Id = BundledWidgetSourceIds.RECENT
                 override val type: Id? = null
@@ -134,6 +139,7 @@ fun List<Block>.parseWidgets(
 fun Id.bundled() : Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.RECENT -> Widget.Source.Bundled.Recent
     BundledWidgetSourceIds.SETS -> Widget.Source.Bundled.Sets
+    BundledWidgetSourceIds.COLLECTIONS -> Widget.Source.Bundled.Collections
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
     else -> throw throw IllegalStateException()
 }

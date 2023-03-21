@@ -15,6 +15,9 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
     object Sets: BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.SETS
     }
+    object Collections: BundledWidgetSourceView() {
+        override val id: Id get() = BundledWidgetSourceIds.COLLECTIONS
+    }
     object Recent: BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.RECENT
     }

@@ -70,6 +70,7 @@ sealed class WidgetView {
             object Recent : Type()
             object Favorites : Type()
             object Sets: Type()
+            object Collections: Type()
         }
     }
 

@@ -71,6 +71,7 @@ fun ListWidgetCard(
                     Type.Favorites -> stringResource(id = R.string.favorites)
                     Type.Recent -> stringResource(id = R.string.recent)
                     Type.Sets -> stringResource(id = R.string.sets)
+                    Type.Collections -> stringResource(id = R.string.collections)
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,

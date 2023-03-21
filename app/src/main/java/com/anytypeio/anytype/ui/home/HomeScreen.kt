@@ -330,6 +330,31 @@ private fun WidgetList(
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             mode = mode
                         )
+                        AnimatedVisibility(
+                            visible = mode is InteractionMode.Edit,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 12.dp),
+                            enter = fadeIn() + slideInHorizontally { it / 4 },
+                            exit = fadeOut() + slideOutHorizontally { it / 4 }
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_remove_widget),
+                                modifier = Modifier
+                                    .height(24.dp)
+                                    .width(24.dp)
+                                    .background(
+                                        shape = CircleShape,
+                                        color = Color.Gray
+                                    )
+                                    .noRippleClickable {
+                                        onWidgetMenuAction(
+                                            item.id, DropDownMenuAction.RemoveWidget
+                                        )
+                                    },
+                                contentDescription = "Remove widget icon"
+                            )
+                        }
                     }
                 }
                 is WidgetView.ListOfObjects -> {
@@ -364,6 +389,31 @@ private fun WidgetList(
                                 },
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState
                             )
+                            AnimatedVisibility(
+                                visible = mode is InteractionMode.Edit,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(end = 12.dp),
+                                enter = fadeIn() + slideInHorizontally { it / 4 },
+                                exit = fadeOut() + slideOutHorizontally { it / 4 }
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_remove_widget),
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                        .width(24.dp)
+                                        .background(
+                                            shape = CircleShape,
+                                            color = Color.Gray
+                                        )
+                                        .noRippleClickable {
+                                            onWidgetMenuAction(
+                                                item.id, DropDownMenuAction.RemoveWidget
+                                            )
+                                        },
+                                    contentDescription = "Remove widget icon"
+                                )
+                            }
                         }
                     }
                 }

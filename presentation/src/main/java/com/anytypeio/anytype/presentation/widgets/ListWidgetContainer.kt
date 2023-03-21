@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -24,10 +25,8 @@ class ListWidgetContainer(
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
-        if (isActive)
-            buildViewFlow()
-        else
-            emptyFlow()
+        if (isActive) buildViewFlow()
+        else emptyFlow()
     }
 
     private fun buildViewFlow() = isWidgetCollapsed.flatMapLatest { isCollapsed ->
@@ -49,8 +48,7 @@ class ListWidgetContainer(
                     type = resolveType(),
                     elements = objects.map { obj ->
                         WidgetView.ListOfObjects.Element(
-                            obj = obj,
-                            icon = ObjectIcon.from(
+                            obj = obj, icon = ObjectIcon.from(
                                 obj = obj,
                                 layout = obj.layout,
                                 builder = urlBuilder
@@ -63,7 +61,11 @@ class ListWidgetContainer(
         }
     }
 
-    private fun buildParams() = params(subscription = subscription, workspace = workspace)
+    private fun buildParams() = params(
+        subscription = subscription,
+        workspace = workspace,
+        keys = keys
+    )
 
     private fun resolveType() = when (subscription) {
         BundledWidgetSourceIds.RECENT -> WidgetView.ListOfObjects.Type.Recent
@@ -74,10 +76,16 @@ class ListWidgetContainer(
 
     companion object {
         private const val MAX_COUNT = 3
+
+        val keys = buildList {
+            addAll(ObjectSearchConstants.defaultKeys)
+            add(Relations.DESCRIPTION)
+        }
+
         fun params(
             subscription: Id,
             workspace: Id,
-            keys: List<Id> = ObjectSearchConstants.defaultKeys,
+            keys: List<Id>,
             limit: Int = MAX_COUNT
         ) = when (subscription) {
             BundledWidgetSourceIds.RECENT -> {

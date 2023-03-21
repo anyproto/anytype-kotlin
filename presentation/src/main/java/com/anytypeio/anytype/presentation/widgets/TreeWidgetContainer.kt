@@ -47,7 +47,8 @@ class TreeWidgetContainer(
                 container.subscribe(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
-                        workspace = workspace
+                        workspace = workspace,
+                        keys = keys
                     )
                 ).map { rootLevelObjects ->
                     rootLevelObjects.map { it.id }

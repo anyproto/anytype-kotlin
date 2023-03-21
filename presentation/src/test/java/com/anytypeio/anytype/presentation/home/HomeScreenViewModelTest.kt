@@ -474,6 +474,8 @@ class HomeScreenViewModelTest {
             layout = ObjectType.Layout.BASIC.code.toDouble()
         )
 
+        val layout = Block.Content.Widget.Layout.TREE
+
         val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
         val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
         val setsSource = StubObject(id = BundledWidgetSourceIds.SETS)
@@ -491,17 +493,17 @@ class HomeScreenViewModelTest {
         )
 
         val favoriteWidgetBlock = StubWidgetBlock(
-            layout = Block.Content.Widget.Layout.TREE,
+            layout = layout,
             children = listOf(favoriteLink.id)
         )
 
         val recentWidgetBlock = StubWidgetBlock(
-            layout = Block.Content.Widget.Layout.TREE,
+            layout = layout,
             children = listOf(recentLink.id)
         )
 
         val setsWidgetBlock = StubWidgetBlock(
-            layout = Block.Content.Widget.Layout.TREE,
+            layout = layout,
             children = listOf(setsLink.id)
         )
 
@@ -534,7 +536,8 @@ class HomeScreenViewModelTest {
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
             targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
+            results = listOf(firstLink, secondLink),
+            keys = TreeWidgetContainer.keys
         )
 
         stubSearchByIds(
@@ -546,13 +549,15 @@ class HomeScreenViewModelTest {
         stubSearchByIds(
             subscription = setsWidgetBlock.id,
             targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
+            results = listOf(firstLink, secondLink),
+            keys = TreeWidgetContainer.keys
         )
 
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = TreeWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -560,7 +565,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = TreeWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -568,7 +574,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = TreeWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1103,7 +1110,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = ListWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1111,7 +1119,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = ListWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1119,7 +1128,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = ListWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1234,7 +1244,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = TreeWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1242,7 +1253,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = TreeWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1250,7 +1262,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = TreeWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1274,7 +1287,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = TreeWidgetContainer.keys
                 )
             )
         }
@@ -1283,7 +1297,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = TreeWidgetContainer.keys
                 )
             )
         }
@@ -1292,7 +1307,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = TreeWidgetContainer.keys
                 )
             )
         }
@@ -1321,7 +1337,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = TreeWidgetContainer.keys
                 )
             )
         }
@@ -1330,7 +1347,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = TreeWidgetContainer.keys
                 )
             )
         }
@@ -1339,7 +1357,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = TreeWidgetContainer.keys
                 )
             )
         }
@@ -1429,7 +1448,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = ListWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1437,7 +1457,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = ListWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1445,7 +1466,8 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace
+                workspace = config.workspace,
+                keys = ListWidgetContainer.keys
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1469,7 +1491,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = ListWidgetContainer.keys
                 )
             )
         }
@@ -1478,7 +1501,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = ListWidgetContainer.keys
                 )
             )
         }
@@ -1487,7 +1511,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = ListWidgetContainer.keys
                 )
             )
         }
@@ -1516,7 +1541,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = ListWidgetContainer.keys
                 )
             )
         }
@@ -1525,7 +1551,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = ListWidgetContainer.keys
                 )
             )
         }
@@ -1534,7 +1561,8 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace
+                    workspace = config.workspace,
+                    keys = ListWidgetContainer.keys
                 )
             )
         }

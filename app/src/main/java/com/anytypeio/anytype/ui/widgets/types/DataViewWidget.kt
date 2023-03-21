@@ -186,7 +186,7 @@ fun ListWidgetElement(
                     Modifier
             )
     ) {
-        val hasDescription = obj.description?.isNotEmpty() ?: false
+        val hasDescription = !obj.description.isNullOrEmpty()
         val hasIcon = icon != ObjectIcon.None && icon !is ObjectIcon.Basic.Avatar
         val name = obj.name?.trim()?.orNull()
         val snippet = obj.snippet?.trim().orNull()

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -117,7 +118,11 @@ class DataViewListWidgetContainer(
         return StoreSearchParams(
             subscription = widget.id,
             sorts = view.sorts,
-            keys = defaultKeys + dataViewKeys,
+            keys = buildList {
+                addAll(defaultKeys)
+                addAll(dataViewKeys)
+                add(Relations.DESCRIPTION)
+            }.distinct(),
             filters = buildList {
                 addAll(view.filters)
                 addAll(ObjectSearchConstants.defaultDataViewFilters())

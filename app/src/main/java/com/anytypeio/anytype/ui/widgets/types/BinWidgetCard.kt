@@ -124,7 +124,8 @@ fun BinWidgetCard(
                     canChangeType = false,
                     canChangeSource = false,
                     canEmptyBin = true,
-                    canEditWidgets = mode is InteractionMode.Default
+                    canEditWidgets = mode is InteractionMode.Default,
+                    canAddBelow = false
                 )
             }
         }
@@ -135,7 +136,8 @@ fun BinWidgetCard(
             canChangeType = false,
             canChangeSource = false,
             canEmptyBin = true,
-            canEditWidgets = mode is InteractionMode.Default
+            canEditWidgets = mode is InteractionMode.Default,
+            canAddBelow = false
         )
     }
 }

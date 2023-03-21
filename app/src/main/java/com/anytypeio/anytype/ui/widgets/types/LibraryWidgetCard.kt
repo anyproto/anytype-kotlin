@@ -101,7 +101,8 @@ fun LibraryWidgetCard(
             canChangeType = false,
             canChangeSource = false,
             canEmptyBin = false,
-            canEditWidgets = mode is InteractionMode.Default
+            canEditWidgets = mode is InteractionMode.Default,
+            canAddBelow = false
         )
     }
 }

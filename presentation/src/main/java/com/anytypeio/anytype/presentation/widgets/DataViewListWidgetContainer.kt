@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -23,15 +24,23 @@ class DataViewListWidgetContainer(
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    activeView: Flow<Id?>,
-    isWidgetCollapsed: Flow<Boolean>
+    private val activeView: Flow<Id?>,
+    private val isWidgetCollapsed: Flow<Boolean>,
+    isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
-    override val view: Flow<WidgetView> = combine(
+    override val view = isSessionActive.flatMapLatest { isActive ->
+        if (isActive)
+            buildViewFlow()
+        else
+            emptyFlow()
+    }
+
+    private fun buildViewFlow() = combine(
         activeView.distinctUntilChanged(),
         isWidgetCollapsed
-    ) { view, isCollapsed -> Pair(view, isCollapsed) }.flatMapLatest { (view, isCollapsed) ->
-        when(widget.source) {
+    ) { view, isCollapsed -> view to isCollapsed }.flatMapLatest { (view, isCollapsed) ->
+        when (val source = widget.source) {
             is Widget.Source.Bundled -> throw IllegalStateException("Bundled widgets do not support data view layout")
             is Widget.Source.Default -> {
                 if (isCollapsed) {
@@ -46,7 +55,7 @@ class DataViewListWidgetContainer(
                     )
                 } else {
                     val obj = getObject.run(widget.source.id)
-                    val params = obj.parse(viewer = view, source = widget.source.obj)
+                    val params = obj.parse(viewer = view, source = source.obj)
                     if (params != null) {
                         storage.subscribe(params).map { objects ->
                             WidgetView.SetOfObjects(

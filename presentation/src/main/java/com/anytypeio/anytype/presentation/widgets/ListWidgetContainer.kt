@@ -8,6 +8,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -18,10 +19,18 @@ class ListWidgetContainer(
     private val subscription: Id,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    isWidgetCollapsed: Flow<Boolean>
+    private val isWidgetCollapsed: Flow<Boolean>,
+    isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
-    override val view: Flow<WidgetView> = isWidgetCollapsed.flatMapLatest { isCollapsed ->
+    override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
+        if (isActive)
+            buildViewFlow()
+        else
+            emptyFlow()
+    }
+
+    private fun buildViewFlow() = isWidgetCollapsed.flatMapLatest { isCollapsed ->
         if (isCollapsed) {
             flowOf(
                 WidgetView.ListOfObjects(

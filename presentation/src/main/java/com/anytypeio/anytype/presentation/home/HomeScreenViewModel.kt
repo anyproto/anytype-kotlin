@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
+import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
@@ -77,6 +78,7 @@ class HomeScreenViewModel(
     private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val interceptEvents: InterceptEvents,
+    private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
     private val urlBuilder: UrlBuilder,
@@ -87,6 +89,7 @@ class HomeScreenViewModel(
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
+    WidgetSessionStateHolder by widgetSessionStateHolder,
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     Unsubscriber by unsubscriber {
 
@@ -169,8 +172,8 @@ class HomeScreenViewModel(
                             container = storelessSubscriptionContainer,
                             expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
                             isWidgetCollapsed = isCollapsed(widget.id),
+                            isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
-                            dispatchers = appCoroutineDispatchers,
                             workspace = config.workspace
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
@@ -180,7 +183,8 @@ class HomeScreenViewModel(
                                 workspace = config.workspace,
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
-                                urlBuilder = urlBuilder
+                                urlBuilder = urlBuilder,
+                                isSessionActive = isSessionActive
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -189,6 +193,7 @@ class HomeScreenViewModel(
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
+                                isSessionActive = isSessionActive,
                                 urlBuilder = urlBuilder
                             )
                         }
@@ -227,7 +232,9 @@ class HomeScreenViewModel(
             ).collect { result ->
                 when (result) {
                     is Resultat.Failure -> {
-                        objectViewState.value = ObjectViewState.Failure(result.exception)
+                        objectViewState.value = ObjectViewState.Failure(result.exception).also {
+                            onSessionFailed()
+                        }
                         Timber.e(result.exception, "Error while opening object.")
                     }
                     is Resultat.Loading -> {
@@ -236,7 +243,9 @@ class HomeScreenViewModel(
                     is Resultat.Success -> {
                         objectViewState.value = ObjectViewState.Success(
                             obj = result.value
-                        )
+                        ).also {
+                            onSessionStarted()
+                        }
                     }
                 }
             }
@@ -258,7 +267,9 @@ class HomeScreenViewModel(
                         Timber.e(it, "Error while closing widget object")
                     },
                     onSuccess = {
-                        Timber.d("Widget object closed successfully")
+                        onSessionStopped().also {
+                            Timber.d("Widget object closed successfully")
+                        }
                     }
                 )
             }
@@ -701,6 +712,7 @@ class HomeScreenViewModel(
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val interceptEvents: InterceptEvents,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
         private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
         private val urlBuilder: UrlBuilder,
@@ -723,6 +735,7 @@ class HomeScreenViewModel(
             objectPayloadDispatcher = objectPayloadDispatcher,
             interceptEvents = interceptEvents,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
+            widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,
             collapsedWidgetStateHolder = collapsedWidgetStateHolder,
             getObject = getObject,

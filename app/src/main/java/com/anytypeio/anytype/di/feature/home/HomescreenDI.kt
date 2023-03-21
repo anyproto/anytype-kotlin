@@ -36,6 +36,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
+import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Binds
 import dagger.Component
@@ -237,6 +238,12 @@ object HomeScreenModule {
         fun collapsedWidgetStateHolder(
             holder: CollapsedWidgetStateHolder.Impl
         ): CollapsedWidgetStateHolder
+
+        @PerScreen
+        @Binds
+        fun widgetSessionStateHolder(
+            holder: WidgetSessionStateHolder.Impl
+        ): WidgetSessionStateHolder
     }
 }
 

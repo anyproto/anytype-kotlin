@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -13,8 +12,8 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 
@@ -23,19 +22,27 @@ class TreeWidgetContainer(
     private val workspace: Id,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    dispatchers: AppCoroutineDispatchers,
-    expandedBranches: Flow<List<TreePath>>,
-    isWidgetCollapsed: Flow<Boolean>
+    private val expandedBranches: Flow<List<TreePath>>,
+    private val isWidgetCollapsed: Flow<Boolean>,
+    isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
     private val nodes = mutableMapOf<Id, List<Id>>()
 
-    override val view: Flow<WidgetView> = combine(
-        expandedBranches, isWidgetCollapsed
+    override val view = isSessionActive.flatMapLatest { isActive ->
+        if (isActive)
+            buildViewFlow()
+        else
+            emptyFlow()
+    }
+
+    private fun buildViewFlow() = combine(
+        expandedBranches,
+        isWidgetCollapsed
     ) { paths, isWidgetCollapsed ->
         paths to isWidgetCollapsed
     }.flatMapLatest { (paths, isWidgetCollapsed) ->
-        when (widget.source) {
+        when (val source = widget.source) {
             is Widget.Source.Bundled -> {
                 container.subscribe(
                     ListWidgetContainer.params(
@@ -90,7 +97,7 @@ class TreeWidgetContainer(
                         targets = if (!isWidgetCollapsed) {
                             getDefaultSubscriptionTargets(
                                 paths = paths,
-                                source = widget.source
+                                source = source
                             )
                         } else {
                             emptyList()
@@ -108,7 +115,7 @@ class TreeWidgetContainer(
                         source = widget.source,
                         isExpanded = !isWidgetCollapsed,
                         elements = buildTree(
-                            links = widget.source.obj.links,
+                            links = source.obj.links,
                             level = ROOT_INDENT,
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
@@ -118,7 +125,7 @@ class TreeWidgetContainer(
                 }
             }
         }
-    }.flowOn(dispatchers.io)
+    }
 
     private fun getDefaultSubscriptionTargets(
         paths: List<TreePath>,

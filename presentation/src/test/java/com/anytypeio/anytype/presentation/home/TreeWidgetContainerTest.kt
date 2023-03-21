@@ -87,8 +87,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                dispatchers = dispatchers,
-                workspace = workspace
+                workspace = workspace,
+                isSessionActive = flowOf(true)
             )
 
             stubObjectSearch(
@@ -155,8 +155,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            dispatchers = dispatchers,
-            workspace = workspace
+            workspace = workspace,
+            isSessionActive = flowOf(true)
         )
 
         stubObjectSearch(
@@ -238,8 +238,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                dispatchers = dispatchers,
-                workspace = workspace
+                workspace = workspace,
+                isSessionActive = flowOf(true)
             )
 
             stubObjectSearch(
@@ -376,8 +376,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            dispatchers = dispatchers,
-            workspace = workspace
+            workspace = workspace,
+            isSessionActive = flowOf(true)
         )
 
         stubObjectSearch(
@@ -431,8 +431,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            dispatchers = dispatchers,
-            workspace = workspace
+            workspace = workspace,
+            isSessionActive = flowOf(true)
         )
 
         stubObjectSearch(

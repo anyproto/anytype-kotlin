@@ -34,6 +34,11 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
                         .build()
                     ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
                 }
+                is AppActionManager.Action.ClearAll -> {
+                    val shortcuts = ShortcutManagerCompat.getDynamicShortcuts(context).map { it.id }
+                    ShortcutManagerCompat.removeLongLivedShortcuts(context, shortcuts)
+                    ShortcutManagerCompat.removeAllDynamicShortcuts(context)
+                }
             }
         } catch (e: Exception) {
             Timber.e(e, "Error while setting up an app action: $action")

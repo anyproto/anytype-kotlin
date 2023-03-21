@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
+import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -53,7 +54,8 @@ object MainEntryModule {
         interceptAccountStatus: InterceptAccountStatus,
         logout: Logout,
         relationsSubscriptionManager: RelationsSubscriptionManager,
-        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+        checkAuthorizationStatus: CheckAuthorizationStatus
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -62,7 +64,8 @@ object MainEntryModule {
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         relationsSubscriptionManager = relationsSubscriptionManager,
-        objectTypesSubscriptionManager = objectTypesSubscriptionManager
+        objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+        checkAuthorizationStatus = checkAuthorizationStatus
     )
 
     @JvmStatic
@@ -129,4 +132,11 @@ object MainEntryModule {
         provider,
         dispatchers
     )
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideCheckAuthStatus(
+        repo: AuthRepository
+    ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo)
 }

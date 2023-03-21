@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
@@ -21,7 +22,9 @@ import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -86,6 +89,8 @@ class HomeScreenViewModel(
     private val move: Move,
     private val emptyBin: EmptyBin,
     private val unsubscriber: Unsubscriber,
+    private val getDefaultPageType: GetDefaultPageType,
+    private val appActionManager: AppActionManager
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -223,6 +228,7 @@ class HomeScreenViewModel(
         }
 
         proceedWithDispatches()
+        setupShortcuts()
     }
 
     private fun proceedWithOpeningWidgetObject(widgetObject: Id) {
@@ -693,6 +699,26 @@ class HomeScreenViewModel(
         }
     }
 
+    private fun setupShortcuts() {
+        viewModelScope.launch {
+            getDefaultPageType.execute(Unit).fold(
+                onSuccess = {
+                    Pair(it.name, it.type).letNotNull { name, type ->
+                        appActionManager.setup(
+                            AppActionManager.Action.CreateNew(
+                                type = type,
+                                name = name
+                            )
+                        )
+                    }
+                },
+                onFailure = {
+                    Timber.d("Error while setting up app shortcuts")
+                }
+            )
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id) : Navigation()
         data class OpenSet(val ctx: Id) : Navigation()
@@ -719,7 +745,9 @@ class HomeScreenViewModel(
         private val getObject: GetObject,
         private val move: Move,
         private val emptyBin: EmptyBin,
-        private val unsubscriber: Unsubscriber
+        private val unsubscriber: Unsubscriber,
+        private val getDefaultPageType: GetDefaultPageType,
+        private val appActionManager: AppActionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -742,7 +770,9 @@ class HomeScreenViewModel(
             urlBuilder = urlBuilder,
             move = move,
             emptyBin = emptyBin,
-            unsubscriber = unsubscriber
+            unsubscriber = unsubscriber,
+            getDefaultPageType = getDefaultPageType,
+            appActionManager = appActionManager
         ) as T
     }
 

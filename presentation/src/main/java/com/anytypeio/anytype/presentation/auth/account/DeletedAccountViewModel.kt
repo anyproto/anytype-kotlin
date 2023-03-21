@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.math.RoundingMode
+import javax.inject.Inject
 import kotlin.time.DurationUnit.DAYS
 import kotlin.time.DurationUnit.MILLISECONDS
 import kotlin.time.toDuration
@@ -30,7 +32,8 @@ class DeletedAccountViewModel(
     private val logout: Logout,
     private val dateHelper: DateHelper,
     private val analytics: Analytics,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager
+    private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val appActionManager: AppActionManager
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -103,6 +106,10 @@ class DeletedAccountViewModel(
         proceedWithLoggingOut()
     }
 
+    private fun clearShortcuts() {
+        appActionManager.setup(AppActionManager.Action.ClearAll)
+    }
+
     private fun proceedWithLoggingOut() {
         if (!isLoggingOut.value) {
             viewModelScope.launch {
@@ -115,6 +122,7 @@ class DeletedAccountViewModel(
                             isLoggingOut.value = true
                         }
                         is Interactor.Status.Success -> {
+                            clearShortcuts()
                             isLoggingOut.value = false
                             relationsSubscriptionManager.onStop()
                             commands.emit(Command.Logout)
@@ -134,12 +142,13 @@ class DeletedAccountViewModel(
         }
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val restoreAccount: RestoreAccount,
         private val logout: Logout,
         private val helper: DateHelper,
         private val analytics: Analytics,
-        private val relationsSubscriptionManager: RelationsSubscriptionManager
+        private val relationsSubscriptionManager: RelationsSubscriptionManager,
+        private val appActionManager: AppActionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -148,7 +157,8 @@ class DeletedAccountViewModel(
                 logout = logout,
                 dateHelper = helper,
                 analytics = analytics,
-                relationsSubscriptionManager = relationsSubscriptionManager
+                relationsSubscriptionManager = relationsSubscriptionManager,
+                appActionManager = appActionManager
             ) as T
         }
     }

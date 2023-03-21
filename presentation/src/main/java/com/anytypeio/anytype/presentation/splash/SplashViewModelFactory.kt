@@ -26,8 +26,6 @@ class SplashViewModelFactory @Inject constructor(
     private val launchWallet: LaunchWallet,
     private val analytics: Analytics,
     private val getLastOpenedObject: GetLastOpenedObject,
-    private val getDefaultPageType: GetDefaultPageType,
-    private val appActionManager: AppActionManager,
     private val createObject: CreateObject,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
@@ -41,8 +39,6 @@ class SplashViewModelFactory @Inject constructor(
             launchWallet = launchWallet,
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
-            getDefaultPageType = getDefaultPageType,
-            appActionManager = appActionManager,
             createObject = createObject,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager

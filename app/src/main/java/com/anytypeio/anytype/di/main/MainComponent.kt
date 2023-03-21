@@ -19,7 +19,7 @@ import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
 import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
-import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
+import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
@@ -71,7 +71,8 @@ interface MainComponent :
     TypeEditDependencies,
     RelationCreateFromLibraryDependencies,
     RelationEditDependencies,
-    SplashDependencies {
+    SplashDependencies,
+    DeletedAccountDependencies {
     fun inject(app: AndroidApplication)
 
     fun editorComponentBuilder(): EditorSubComponent.Builder
@@ -92,8 +93,6 @@ interface MainComponent :
     //region Auth
 
     fun authComponentBuilder(): AuthSubComponent.Builder
-    fun deletedAccountBuilder(): DeletedAccountSubcomponent.Builder
-
     //endregion
 
     //region Settings
@@ -161,5 +160,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(SplashDependencies::class)
     abstract fun provideSplashDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DeletedAccountDependencies::class)
+    abstract fun provideDeletedAccountDependencies(component: MainComponent): ComponentDependencies
 
 }

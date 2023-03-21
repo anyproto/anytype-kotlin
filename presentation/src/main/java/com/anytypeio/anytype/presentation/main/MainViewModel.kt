@@ -6,10 +6,13 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
+import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
+import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -30,7 +33,8 @@ class MainViewModel(
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val checkAuthorizationStatus: CheckAuthorizationStatus,
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -112,8 +116,23 @@ class MainViewModel(
         }
     }
 
+    fun onIntentCreateObject(type: Id) {
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { e -> Timber.e(e, "Error while checking auth status") },
+                success = { status ->
+                    if (status == AuthStatus.AUTHORIZED) {
+                        commands.emit(Command.OpenCreateNewType(type))
+                    }
+                }
+            )
+        }
+    }
+
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         object LogoutDueToAccountDeletion : Command()
+
+        class OpenCreateNewType(val type: Id) : Command()
     }
 }

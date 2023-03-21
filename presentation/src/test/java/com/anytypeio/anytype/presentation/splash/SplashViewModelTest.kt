@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -10,24 +9,19 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -66,12 +60,6 @@ class SplashViewModelTest {
     lateinit var createObject: CreateObject
 
     @Mock
-    lateinit var appActionManager: AppActionManager
-
-    @Mock
-    private lateinit var getDefaultPageType: GetDefaultPageType
-
-    @Mock
     private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
 
     @Mock
@@ -95,9 +83,7 @@ class SplashViewModelTest {
             launchWallet = launchWallet,
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
-            getDefaultPageType = getDefaultPageType,
             createObject = createObject,
-            appActionManager = appActionManager,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager
         )
@@ -122,63 +108,6 @@ class SplashViewModelTest {
         }
     }
 
-    @Ignore("https://github.com/mockito/mockito-kotlin/issues/456")
-    @Test
-    fun `should invoke checkAuthorizationStatus when getDefaultPageType on error `() {
-        val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
-
-        stubCheckAuthStatus(response)
-        stubLaunchWallet()
-        stubLaunchAccount()
-        stubGetLastOpenedObject()
-        getDefaultPageType.stub {
-            onBlocking { execute(Unit) } doThrow Exception("error")
-        }
-
-        initViewModel()
-
-        runBlocking {
-            verify(getDefaultPageType, times(1)).execute(any())
-            verify(checkAuthorizationStatus, times(1)).invoke(any())
-        }
-    }
-
-    @Test
-    fun `should invoke checkAuthorizationStatus when getDefaultPageType is object type `() {
-        val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
-
-        stubCheckAuthStatus(response)
-        stubLaunchWallet()
-        stubLaunchAccount()
-        stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
-
-        initViewModel()
-
-        runBlocking {
-            verify(getDefaultPageType, times(1)).execute(any())
-            verify(checkAuthorizationStatus, times(1)).invoke(any())
-        }
-    }
-
-    @Test
-    fun `should not invoke checkAuthorizationStatus when getDefaultPageType is null`() {
-        val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
-
-        stubCheckAuthStatus(response)
-        stubLaunchWallet()
-        stubLaunchAccount()
-        stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = null)
-
-        runBlocking {
-            verify(checkAuthorizationStatus, times(0)).invoke(any())
-        }
-    }
-
     @Test
     fun `should start launching wallet if user is authorized`() {
 
@@ -190,7 +119,6 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
 
         initViewModel()
 
@@ -210,7 +138,6 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
 
         initViewModel()
 
@@ -248,14 +175,4 @@ class SplashViewModelTest {
         }
     }
 
-    private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
-        getDefaultPageType.stub {
-            onBlocking { execute(Unit) } doReturn Resultat.success(
-                GetDefaultPageType.Response(
-                    type,
-                    name
-                )
-            )
-        }
-    }
 }

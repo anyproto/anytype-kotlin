@@ -58,6 +58,7 @@ import com.anytypeio.anytype.di.feature.StartLoginModule
 import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
+import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
@@ -103,10 +104,6 @@ class ComponentManager(
 
     val authComponent = Component {
         main.authComponentBuilder().authModule(AuthModule).build()
-    }
-
-    val deletedAccountComponent = Component {
-        main.deletedAccountBuilder().module(DeletedAccountModule).build()
     }
 
     val startLoginComponent = Component {
@@ -835,6 +832,12 @@ class ComponentManager(
 
     val relationCreationFromLibraryComponent = Component {
         DaggerRelationCreateFromLibraryComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val deletedAccountComponent = Component {
+        DaggerDeletedAccountComponent
             .factory()
             .create(findComponentDependencies())
     }

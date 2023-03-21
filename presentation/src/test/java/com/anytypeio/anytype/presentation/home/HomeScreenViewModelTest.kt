@@ -23,9 +23,11 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -120,6 +122,12 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var unsubscriber: Unsubscriber
+
+    @Mock
+    lateinit var getDefaultPageType: GetDefaultPageType
+
+    @Mock
+    lateinit var appActionManager: AppActionManager
 
     @Mock
     lateinit var gateway: Gateway
@@ -1836,7 +1844,9 @@ class HomeScreenViewModelTest {
         urlBuilder = urlBuilder,
         move = move,
         emptyBin = emptyBin,
-        unsubscriber = unsubscriber
+        unsubscriber = unsubscriber,
+        getDefaultPageType = getDefaultPageType,
+        appActionManager = appActionManager
     )
 
     companion object {

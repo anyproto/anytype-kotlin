@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -51,6 +52,9 @@ class DeleteAccountViewModelTest {
     lateinit var analytics: Analytics
 
     @Mock
+    lateinit var appActionManager: AppActionManager
+
+    @Mock
     private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
 
     lateinit var restoreAccount: RestoreAccount
@@ -75,7 +79,8 @@ class DeleteAccountViewModelTest {
             logout = logout,
             dateHelper = helper,
             analytics = analytics,
-            relationsSubscriptionManager = relationsSubscriptionManager
+            relationsSubscriptionManager = relationsSubscriptionManager,
+            appActionManager = appActionManager
         )
     }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
+import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -19,8 +20,9 @@ class MainViewModelFactory(
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
-) : ViewModelProvider.Factory {
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
         modelClass: Class<T>
@@ -32,6 +34,7 @@ class MainViewModelFactory(
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         relationsSubscriptionManager = relationsSubscriptionManager,
-        objectTypesSubscriptionManager = objectTypesSubscriptionManager
+        objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+        checkAuthorizationStatus = checkAuthorizationStatus
     ) as T
 }

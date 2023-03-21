@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
                 launch {
                     vm.commands.collect { command ->
-                        when(command) {
+                        when (command) {
                             is Command.ShowDeletedAccountScreen -> {
                                 navigator.deletedAccountScreen(
                                     deadline = command.deadline
@@ -84,6 +84,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.LogoutDueToAccountDeletion -> {
                                 navigator.logout()
+                            }
+                            is Command.OpenCreateNewType -> {
+                                findNavController(R.id.fragment)
+                                    .navigate(
+                                        R.id.action_global_createObjectFragment,
+                                        bundleOf(
+                                            CreateObjectFragment.TYPE_KEY to command.type
+                                        )
+                                    )
                             }
                         }
                     }
@@ -114,16 +123,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent != null && intent.action == Intent.ACTION_VIEW) {
-            val bundle = intent.extras
-            if (bundle != null) {
-                val type = bundle.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)
-                if (type != null) {
-                    findNavController(R.id.fragment)
-                        .navigate(
-                            R.id.action_global_createObjectFragment,
-                            bundleOf(CreateObjectFragment.TYPE_KEY to type)
-                        )
-                }
+            intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
+                vm.onIntentCreateObject(it)
             }
         }
     }

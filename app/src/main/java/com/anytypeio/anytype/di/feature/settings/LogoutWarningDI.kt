@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.ui.settings.LogoutWarningFragment
 import com.anytypeio.anytype.ui_settings.account.LogoutWarningViewModel
@@ -35,11 +36,13 @@ object LogoutWarningModule {
     fun provideViewModelFactory(
         logout: Logout,
         analytics: Analytics,
-        relationsSubscriptionManager: RelationsSubscriptionManager
+        relationsSubscriptionManager: RelationsSubscriptionManager,
+        appActionManager: AppActionManager
     ): LogoutWarningViewModel.Factory = LogoutWarningViewModel.Factory(
         logout = logout,
         analytics = analytics,
-        relationsSubscriptionManager = relationsSubscriptionManager
+        relationsSubscriptionManager = relationsSubscriptionManager,
+        appActionManager = appActionManager
     )
 
     @JvmStatic

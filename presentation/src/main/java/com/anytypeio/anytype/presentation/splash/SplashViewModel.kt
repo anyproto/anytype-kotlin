@@ -40,9 +40,7 @@ class SplashViewModel(
     private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount,
     private val getLastOpenedObject: GetLastOpenedObject,
-    private val getDefaultPageType: GetDefaultPageType,
     private val createObject: CreateObject,
-    private val appActionManager: AppActionManager,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModel() {
@@ -101,32 +99,11 @@ class SplashViewModel(
                     val props = Props.empty()
                     sendEvent(startTime, openAccount, props)
                     proceedWithGlobalSubscriptions()
-                    setupShortcutsAndStartApp()
+                    commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
                     Timber.e(e, "Error while launching account")
                     commands.emit(Command.Error(ERROR_MESSAGE))
-                }
-            )
-        }
-    }
-
-    private fun setupShortcutsAndStartApp() {
-        viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
-                onSuccess = {
-                    Pair(it.name, it.type).letNotNull { name, type ->
-                        appActionManager.setup(
-                            AppActionManager.Action.CreateNew(
-                                type = type,
-                                name = name
-                            )
-                        )
-                    }
-                    commands.emit(Command.CheckAppStartIntent)
-                },
-                onFailure = {
-                    commands.emit(Command.CheckAppStartIntent)
                 }
             )
         }

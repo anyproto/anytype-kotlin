@@ -8,5 +8,6 @@ interface AppActionManager {
 
     sealed class Action {
         data class CreateNew(val type: Id, val name: String) : Action()
+        object ClearAll: Action()
     }
 }

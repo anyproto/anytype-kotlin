@@ -17,7 +17,6 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
-import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -162,7 +161,6 @@ interface SplashDependencies : ComponentDependencies {
     fun workspaceManager(): WorkspaceManager
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
-    fun appActionManager(): AppActionManager
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun authRepository(): AuthRepository

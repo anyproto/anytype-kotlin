@@ -95,6 +95,7 @@ class ObjectRelationDateValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
@@ -157,6 +158,7 @@ class ObjectRelationDateValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
@@ -215,6 +217,7 @@ class ObjectRelationDateValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
@@ -278,6 +281,7 @@ class ObjectRelationDateValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
@@ -336,6 +340,7 @@ class ObjectRelationDateValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
@@ -395,6 +400,7 @@ class ObjectRelationDateValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
@@ -467,6 +473,7 @@ class ObjectRelationDateValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),

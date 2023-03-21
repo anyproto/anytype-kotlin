@@ -8,6 +8,8 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -75,9 +77,17 @@ class ManageViewerViewModel(
         ctx: Id,
         view: ViewerView
     ) {
+        val startTime = System.currentTimeMillis()
         if (!isEditEnabled.value)
             viewModelScope.launch {
                 session.currentViewerId.value = view.id
+                logEvent(
+                    state = objectState.value,
+                    analytics = analytics,
+                    event = ObjectStateAnalyticsEvent.SWITCH_VIEW,
+                    startTime = startTime,
+                    type = view.type.formattedName
+                )
                 isDismissed.emit(true)
             }
         else

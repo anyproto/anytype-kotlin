@@ -61,6 +61,7 @@ data class Block(
 
 
         val analyticsContext: String? by default
+        val analyticsOriginalId: String? by default
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())
@@ -338,7 +339,11 @@ data class Block(
                 val relationKey: String,
                 val type: Type
             ) {
-                enum class Type { ASC, DESC, CUSTOM }
+                enum class Type(val formattedName: String) {
+                    ASC("ascending"),
+                    DESC("descending"),
+                    CUSTOM("custom")
+                }
             }
 
             /**

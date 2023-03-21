@@ -161,7 +161,7 @@ class AddRelationTagValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx,blocks = listOf(dv))
 
         stubCreateRelationOption()
 
@@ -262,7 +262,7 @@ class AddRelationTagValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         // TESTING
 
@@ -344,7 +344,7 @@ class AddRelationTagValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         // TESTING
 
@@ -435,7 +435,7 @@ class AddRelationTagValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         // TESTING
 

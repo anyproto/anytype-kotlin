@@ -156,6 +156,7 @@ class ModifyInputValueFilterTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(dv)
         )
 
@@ -251,6 +252,7 @@ class ModifyInputValueFilterTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(dv)
         )
 

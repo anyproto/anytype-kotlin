@@ -23,11 +23,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.checkboxFilterValue
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.extension.index
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddFilterEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeFilterValueEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toConditionView
 import com.anytypeio.anytype.presentation.extension.type
 import com.anytypeio.anytype.presentation.mapper.toDomain
@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -605,10 +606,6 @@ open class FilterViewModel(
                     value = value
                 )
             )
-            sendAnalyticsChangeFilterValueEvent(
-                analytics = analytics,
-                condition = condition.toDomain()
-            )
         }
     }
 
@@ -649,10 +646,6 @@ open class FilterViewModel(
                                 value = value
                             )
                         )
-                        sendAnalyticsChangeFilterValueEvent(
-                            analytics = analytics,
-                            condition = condition.toDomain()
-                        )
                     }
                     ColumnView.Format.STATUS -> {
                         val value = filterValueListState.value.mapNotNull { view ->
@@ -672,10 +665,6 @@ open class FilterViewModel(
                                 value = value
                             )
                         )
-                        sendAnalyticsChangeFilterValueEvent(
-                            analytics = analytics,
-                            condition = condition.toDomain()
-                        )
                     }
                     ColumnView.Format.DATE -> {
                         val date = filterValueListState.value
@@ -692,10 +681,6 @@ open class FilterViewModel(
                                 quickOption = date?.type ?: DVFilterQuickOption.EXACT_DATE,
                                 value = date?.value?.toDouble()
                             )
-                        )
-                        sendAnalyticsChangeFilterValueEvent(
-                            analytics = analytics,
-                            condition = condition.toDomain()
                         )
                     }
                     ColumnView.Format.OBJECT -> {
@@ -716,10 +701,6 @@ open class FilterViewModel(
                                 value = value
                             )
                         )
-                        sendAnalyticsChangeFilterValueEvent(
-                            analytics = analytics,
-                            condition = condition.toDomain()
-                        )
                     }
                     ColumnView.Format.CHECKBOX -> {
                         val value = filterValueListState.value.checkboxFilterValue()
@@ -733,10 +714,6 @@ open class FilterViewModel(
                                 condition = condition.toDomain(),
                                 value = value
                             )
-                        )
-                        sendAnalyticsChangeFilterValueEvent(
-                            analytics = analytics,
-                            condition = condition.toDomain()
                         )
                     }
                     else -> {
@@ -753,6 +730,7 @@ open class FilterViewModel(
         viewer: DVViewer,
         updatedFilter: DVFilter
     ) {
+        val startTime = System.currentTimeMillis()
         val params = UpdateDataViewViewer.Params.Filter.Replace(
             ctx = ctx,
             dv = target,
@@ -761,7 +739,18 @@ open class FilterViewModel(
         )
         updateDataViewViewer(params).process(
             failure = { Timber.e(it, "Error while creating filter") },
-            success = { dispatcher.send(it).also { isCompleted.emit(true) } }
+            success = {
+                dispatcher.send(it).also {
+                    viewModelScope.logEvent(
+                        state = objectState.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.CHANGE_FILTER_VALUE,
+                        startTime = startTime,
+                        condition = updatedFilter.condition
+                    )
+                    isCompleted.emit(true)
+                }
+            }
         )
     }
 
@@ -774,6 +763,7 @@ open class FilterViewModel(
         quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
         value: Any? = null
     ) {
+        val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val params = UpdateDataViewViewer.Params.Filter.Add(
@@ -791,8 +781,11 @@ open class FilterViewModel(
             failure = { Timber.e(it, "Error while creating filter") },
             success = {
                 dispatcher.send(it).also {
-                    viewModelScope.sendAnalyticsAddFilterEvent(
+                    viewModelScope.logEvent(
+                        state = objectState.value,
                         analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.ADD_FILTER,
+                        startTime = startTime,
                         condition = condition
                     )
                     isCompleted.emit(true)

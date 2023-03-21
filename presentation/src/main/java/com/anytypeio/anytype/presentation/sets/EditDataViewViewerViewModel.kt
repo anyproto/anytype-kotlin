@@ -7,7 +7,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveViewEvent
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,6 +58,7 @@ class EditDataViewViewerViewModel(
     }
 
     fun onDuplicateClicked(ctx: Id, viewer: Id) {
+        val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
             duplicateDataViewViewer(
@@ -71,7 +73,16 @@ class EditDataViewViewerViewModel(
                     _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
                 },
                 success = {
-                    dispatcher.send(it).also { isDismissed.emit(true) }
+                    dispatcher.send(it).also {
+                        logEvent(
+                            state = objectState.value,
+                            analytics = analytics,
+                            event = ObjectStateAnalyticsEvent.DUPLICATE_VIEW,
+                            startTime = startTime,
+                            type = viewerType.formattedName
+                        )
+                        isDismissed.emit(true)
+                    }
                 }
             )
         }
@@ -112,6 +123,7 @@ class EditDataViewViewerViewModel(
         viewer: Id,
         nextViewerId: Id?
     ) {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             deleteDataViewViewer(
                 DeleteDataViewViewer.Params(
@@ -126,8 +138,11 @@ class EditDataViewViewerViewModel(
                 },
                 success = { firstPayload ->
                     dispatcher.send(firstPayload)
-                    sendAnalyticsRemoveViewEvent(
-                        analytics = analytics
+                    logEvent(
+                        state = objectState.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
+                        startTime = startTime
                     )
                     if (nextViewerId != null) {
                         objectSetSession.currentViewerId.value = nextViewerId
@@ -149,6 +164,7 @@ class EditDataViewViewerViewModel(
     }
 
     fun onDoneClicked(ctx: Id, viewerId: Id) {
+        Timber.d("onDoneClicked, ctx:[$ctx], viewerId:[$viewerId], viewerType:[${viewerType.formattedName}], viewerName:[$viewerName]")
         if (initialName != viewerName || initialType != viewerType) {
             updateDVViewerType(ctx, viewerId, viewerType, viewerName)
         } else {
@@ -169,6 +185,7 @@ class EditDataViewViewerViewModel(
     }
 
     private fun updateDVViewerType(ctx: Id, viewerId: Id, type: DVViewerType, name: String) {
+        val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewers.find { it.id == viewerId }
         if (viewer != null) {
@@ -182,9 +199,17 @@ class EditDataViewViewerViewModel(
                     )
                 ).process(
                     success = { payload ->
-                        dispatcher.send(payload)
-                        isLoading.value = false
-                        isDismissed.emit(true)
+                        dispatcher.send(payload).also {
+                            logEvent(
+                                state = objectState.value,
+                                analytics = analytics,
+                                event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
+                                startTime = startTime,
+                                type = type.formattedName
+                            )
+                            isLoading.value = false
+                            isDismissed.emit(true)
+                        }
                     },
                     failure = {
                         isLoading.value = false

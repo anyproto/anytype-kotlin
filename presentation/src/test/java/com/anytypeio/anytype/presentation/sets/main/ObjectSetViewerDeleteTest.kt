@@ -106,6 +106,7 @@ class ObjectSetViewerDeleteTest {
 
         val objectSetState = MutableStateFlow(
             ObjectState.DataView.Set(
+                root = ctx,
                 blocks = listOf(
                     header,
                     title,
@@ -177,6 +178,7 @@ class ObjectSetViewerDeleteTest {
 
         val objectSetState = MutableStateFlow(
             ObjectState.DataView.Set(
+                root = ctx,
                 blocks = listOf(
                     header,
                     title,
@@ -248,6 +250,7 @@ class ObjectSetViewerDeleteTest {
 
         val objectSetState = MutableStateFlow(
             ObjectState.DataView.Set(
+                root = ctx,
                 blocks = listOf(
                     header,
                     title,

@@ -8,7 +8,8 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeSortValueEvent
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -92,6 +93,7 @@ class ModifyViewerSortViewModel(
             Timber.e("Couldn't find sort in view:[$viewer] by sortId:[$sortId]")
             return
         }
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Replace(
                 ctx = ctx,
@@ -102,7 +104,13 @@ class ModifyViewerSortViewModel(
             updateDataViewViewer(params).process(
                 success = {
                     dispatcher.send(it).also {
-                        sendAnalyticsChangeSortValueEvent(analytics)
+                        logEvent(
+                            state = objectState.value,
+                            analytics = analytics,
+                            event = ObjectStateAnalyticsEvent.CHANGE_SORT_VALUE,
+                            startTime = startTime,
+                            type = type.formattedName
+                        )
                         isDismissed.emit(true)
                     }
                 },

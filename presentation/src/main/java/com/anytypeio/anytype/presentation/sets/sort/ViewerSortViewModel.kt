@@ -9,7 +9,8 @@ import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveSortEvent
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
@@ -87,6 +88,7 @@ class ViewerSortViewModel(
     fun onRemoveViewerSortClicked(ctx: Id, view: ViewerSortView) {
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Remove(
                 ctx = ctx,
@@ -96,9 +98,17 @@ class ViewerSortViewModel(
             )
             updateDataViewViewer(params).process(
                 failure = { Timber.e(it, "Error while removing a sort") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it).also {
+                        logEvent(
+                            state = objectState.value,
+                            analytics = analytics,
+                            event = ObjectStateAnalyticsEvent.REMOVE_SORT,
+                            startTime = startTime,
+                        )
+                    }
+                }
             )
-            sendAnalyticsRemoveSortEvent(analytics)
         }
     }
 

@@ -37,6 +37,7 @@ object MockObjectSetFactory {
     )
 
     fun makeDefaultSetObjectState(
+        root: String = MockDataFactory.randomUuid(),
         viewerId: String? = null,
         dataViewId: String? = null,
         viewerRelations: List<Block.Content.DataView.Viewer.ViewerRelation>? = null,
@@ -84,6 +85,6 @@ object MockObjectSetFactory {
 
         val blocks = listOf(title, dataView)
 
-        return ObjectState.DataView.Set(blocks = blocks)
+        return ObjectState.DataView.Set(root = root, blocks = blocks)
     }
 }

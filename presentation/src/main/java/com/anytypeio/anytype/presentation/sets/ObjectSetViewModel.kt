@@ -49,8 +49,9 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowSetEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
@@ -147,8 +148,6 @@ class ObjectSetViewModel(
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
-
-    private var analyticsContext: String? = null
 
     private var context: Id = ""
 
@@ -352,6 +351,7 @@ class ObjectSetViewModel(
 
     private fun proceedWithOpeningCurrentObject(ctx: Id) {
         Timber.d("proceedWithOpeningCurrentObject, ctx:[$ctx]")
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             openObjectSet(ctx).process(
                 success = { result ->
@@ -373,8 +373,12 @@ class ObjectSetViewModel(
                         is Result.Success -> {
                             Timber.d("proceedWithOpeningCurrentObject, ctx:[$ctx] SUCCESS")
                             defaultPayloadConsumer(result.data)
-                            setAnalyticsContext(result.data.events)
-                            sendAnalyticsShowSetEvent(analytics, analyticsContext)
+                            logEvent(
+                                state = stateReducer.state.value,
+                                analytics = analytics,
+                                event = ObjectStateAnalyticsEvent.OPEN_OBJECT,
+                                startTime = startTime
+                            )
                         }
                     }
                 },
@@ -456,16 +460,6 @@ class ObjectSetViewModel(
                     Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                     _currentViewer.value = viewState
                 }
-        }
-    }
-
-    private fun setAnalyticsContext(events: List<Event>) {
-        if (events.isNotEmpty()) {
-            val event = events[0]
-            if (event is Event.Command.ShowObject) {
-                val block = event.blocks.firstOrNull { it.id == event.context }
-                analyticsContext = block?.fields?.analyticsContext
-            }
         }
     }
 
@@ -1094,7 +1088,6 @@ class ObjectSetViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.createObjectNavBar,
-            props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
         )
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null)).fold(
@@ -1104,7 +1097,6 @@ class ObjectSetViewModel(
                             analytics = analytics,
                             objType = result.type,
                             route = EventsDictionary.Routes.objCreateSet,
-                            context = analyticsContext
                         )
                     }
                     proceedWithOpeningObject(result.objectId)
@@ -1152,24 +1144,43 @@ class ObjectSetViewModel(
 
     fun onObjectSetQueryPicked(query: Id) {
         Timber.d("onObjectSetQueryPicked, query:[$query]")
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = SetQueryToObjectSet.Params(
                 ctx = context,
                 query = query
             )
             setQueryToObjectSet.execute(params).fold(
-                onSuccess = { payload -> defaultPayloadConsumer(payload) },
+                onSuccess = { payload ->
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.SELECT_QUERY,
+                        type = query,
+                        startTime = startTime
+                    )
+                    defaultPayloadConsumer(payload)
+                },
                 onFailure = { e -> Timber.e(e, "Error while setting Set query") }
             )
         }
     }
 
     private fun proceedWithConvertingToCollection() {
+        val startTime = System.currentTimeMillis()
         val params = ConvertObjectToCollection.Params(ctx = context)
         viewModelScope.launch {
             objectToCollection.execute(params).fold(
                 onFailure = { error -> Timber.e(error, "Error convert object to collection") },
-                onSuccess = { setId -> proceedWithOpeningCollection(target = setId) }
+                onSuccess = { setId ->
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.TURN_INTO_COLLECTION,
+                        startTime = startTime
+                    )
+                    proceedWithOpeningCollection(target = setId)
+                }
             )
         }
     }

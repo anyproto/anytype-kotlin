@@ -190,6 +190,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
 
             assertEquals(
                 expected = ObjectState.DataView.Collection(
+                    root = root,
                     blocks = listOf(
                         objectCollection.header,
                         objectCollection.title,
@@ -267,6 +268,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
 
             assertEquals(
                 expected = ObjectState.DataView.Collection(
+                    root = root,
                     blocks = listOf(
                         objectCollection.header,
                         objectCollection.title,

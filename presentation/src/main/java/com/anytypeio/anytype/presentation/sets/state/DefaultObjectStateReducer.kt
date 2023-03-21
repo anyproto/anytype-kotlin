@@ -115,12 +115,14 @@ class DefaultObjectStateReducer : ObjectStateReducer {
     private fun handleShowObject(event: Command.ShowObject): ObjectState {
         val objectState = when (val layout = event.details.details[event.root]?.layout?.toInt()) {
             ObjectType.Layout.COLLECTION.code -> ObjectState.DataView.Collection(
+                root = event.root,
                 blocks = event.blocks,
                 details = event.details.details,
                 objectRestrictions = event.objectRestrictions,
                 dataViewRestrictions = event.dataViewRestrictions
             )
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
+                root = event.root,
                 blocks = event.blocks,
                 details = event.details.details,
                 objectRestrictions = event.objectRestrictions,

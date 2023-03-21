@@ -6,11 +6,13 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.presentation.sets.CreateDataViewViewerViewModel
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [CreateDataViewViewerModule::class])
 @PerModal
@@ -33,11 +35,13 @@ object CreateDataViewViewerModule {
     fun provideCreateDataViewViewerViewModelFactory(
         dispatcher: Dispatcher<Payload>,
         addDataViewViewer: AddDataViewViewer,
-        analytics: Analytics
+        analytics: Analytics,
+        objectState: MutableStateFlow<ObjectState>
     ): CreateDataViewViewerViewModel.Factory = CreateDataViewViewerViewModel.Factory(
         dispatcher = dispatcher,
         addDataViewViewer = addDataViewViewer,
-        analytics = analytics
+        analytics = analytics,
+        objectState = objectState
     )
 
     @JvmStatic

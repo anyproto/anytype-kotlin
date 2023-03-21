@@ -12,6 +12,7 @@ sealed class ObjectState {
     abstract val isInitialized: Boolean
 
     sealed class DataView : ObjectState() {
+        abstract val root: Id
         abstract val blocks: List<Block>
         abstract val details: Map<Id, Block.Fields>
         abstract val objectRestrictions: List<ObjectRestriction>
@@ -22,6 +23,7 @@ sealed class ObjectState {
         abstract val viewers: List<DVViewer>
 
         data class Set(
+            override val root: Id,
             override val blocks: List<Block> = emptyList(),
             override val details: Map<Id, Block.Fields> = emptyMap(),
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
@@ -35,6 +37,7 @@ sealed class ObjectState {
         }
 
         data class Collection(
+            override val root: Id,
             override val blocks: List<Block> = emptyList(),
             override val details: Map<Id, Block.Fields> = emptyMap(),
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),

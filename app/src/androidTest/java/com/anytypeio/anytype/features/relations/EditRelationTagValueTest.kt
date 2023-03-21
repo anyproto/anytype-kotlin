@@ -153,6 +153,7 @@ class EditRelationTagValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = ctx,
             blocks = listOf(
                 Block(
                     id = MockDataFactory.randomUuid(),
@@ -245,6 +246,7 @@ class EditRelationTagValueTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = ctx,
             blocks = listOf(dv)
         )
 

@@ -10,7 +10,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddSortEvent
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -35,6 +36,7 @@ class SelectSortRelationViewModel(
     fun onRelationClicked(ctx: Id, relation: SimpleRelationView) {
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Add(
                 ctx = ctx,
@@ -48,7 +50,13 @@ class SelectSortRelationViewModel(
             updateDataViewViewer(params).process(
                 success = {
                     dispatcher.send(it).also {
-                        sendAnalyticsAddSortEvent(analytics)
+                        logEvent(
+                            state = objectState.value,
+                            analytics = analytics,
+                            event = ObjectStateAnalyticsEvent.ADD_SORT,
+                            startTime = startTime,
+                            type = DVSortType.ASC.formattedName
+                        )
                         isDismissed.emit(true)
                     }
                 },

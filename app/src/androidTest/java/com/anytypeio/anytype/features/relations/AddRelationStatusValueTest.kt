@@ -166,7 +166,7 @@ class AddRelationStatusValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         stubCreateRelationOption()
 
@@ -243,7 +243,7 @@ class AddRelationStatusValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         stubCreateRelationOption()
 
@@ -326,7 +326,7 @@ class AddRelationStatusValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         // TESTING
 
@@ -408,7 +408,7 @@ class AddRelationStatusValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         // TESTING
 
@@ -499,7 +499,7 @@ class AddRelationStatusValueTest {
             )
         )
 
-        state.value = ObjectState.DataView.Set(blocks = listOf(dv))
+        state.value = ObjectState.DataView.Set(root = ctx, blocks = listOf(dv))
 
         // TESTING
 

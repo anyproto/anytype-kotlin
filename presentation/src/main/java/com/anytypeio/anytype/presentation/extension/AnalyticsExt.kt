@@ -2,8 +2,23 @@ package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
+import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.removeView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.addFilter
+import com.anytypeio.anytype.analytics.base.EventsDictionary.addSort
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeFilterValue
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
+import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
+import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSort
+import com.anytypeio.anytype.analytics.base.EventsDictionary.switchView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.setScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.setSelectQuery
+import com.anytypeio.anytype.analytics.base.EventsDictionary.turnIntoCollection
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
@@ -18,6 +33,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.CoroutineScope
 
 fun Block.Prototype.getAnalyticsEvent(
@@ -618,119 +634,6 @@ fun CoroutineScope.sendAnalyticsRelationDeleteEvent(
     )
 }
 
-fun CoroutineScope.sendAnalyticsShowSetEvent(
-    analytics: Analytics,
-    context: String? = null
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setScreenShow,
-        props = Props(mapOf(EventsPropertiesKey.context to context))
-    )
-}
-
-fun CoroutineScope.sendAnalyticsAddViewEvent(
-    analytics: Analytics,
-    type: String
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setAddView,
-        props = Props(mapOf(EventsPropertiesKey.type to type))
-    )
-}
-
-fun CoroutineScope.sendAnalyticsSwitchViewEvent(
-    analytics: Analytics,
-    type: String
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setSwitchView,
-        props = Props(mapOf(EventsPropertiesKey.type to type))
-    )
-}
-
-fun CoroutineScope.sendAnalyticsRemoveViewEvent(
-    analytics: Analytics
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setRemoveView,
-        props = Props.empty()
-    )
-}
-
-fun CoroutineScope.sendAnalyticsAddFilterEvent(
-    analytics: Analytics,
-    condition: DVFilterCondition
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setAddFilter,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.condition to condition.getPropName()
-            )
-        )
-    )
-}
-
-fun CoroutineScope.sendAnalyticsChangeFilterValueEvent(
-    analytics: Analytics,
-    condition: DVFilterCondition
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setChangeFilterValue,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.condition to condition.getPropName()
-            )
-        )
-    )
-}
-
-fun CoroutineScope.sendAnalyticsRemoveFilterEvent(
-    analytics: Analytics
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setRemoveFilter,
-        props = Props.empty()
-    )
-}
-
-fun CoroutineScope.sendAnalyticsAddSortEvent(
-    analytics: Analytics
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setAddSort,
-        props = Props.empty()
-    )
-}
-
-fun CoroutineScope.sendAnalyticsChangeSortValueEvent(
-    analytics: Analytics
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setChangeSortValue,
-        props = Props.empty()
-    )
-}
-
-fun CoroutineScope.sendAnalyticsRemoveSortEvent(
-    analytics: Analytics
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.setRemoveSort,
-        props = Props.empty()
-    )
-}
-
 fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     analytics: Analytics,
     objType: String?,
@@ -968,4 +871,283 @@ fun CoroutineScope.sendAnalyticsMentionMenuEvent(
         analytics = analytics,
         eventName = EventsDictionary.mentionMenu
     )
+}
+
+private fun ObjectState.DataView.getAnalyticsParams(): Pair<String?, String?> {
+    val block = blocks.firstOrNull { it.id == root }
+    val analyticsContext = block?.fields?.analyticsContext
+    val analyticsObjectId = if (analyticsContext != null) block.fields.analyticsOriginalId else null
+    return Pair(analyticsContext, analyticsObjectId)
+}
+
+fun CoroutineScope.logEvent(
+    state: ObjectState,
+    analytics: Analytics,
+    event: ObjectStateAnalyticsEvent,
+    startTime: Long? = null,
+    type: String? = null,
+    condition: DVFilterCondition? = null
+) {
+    if (state !is ObjectState.DataView) return
+    val middleTime = System.currentTimeMillis()
+    val embedTypeDefault = "object"
+    val objectTypeDefault = when (state) {
+        is ObjectState.DataView.Collection -> "collection"
+        is ObjectState.DataView.Set -> "set"
+    }
+    val scope = this
+    val params = state.getAnalyticsParams()
+    val analyticsContext = params.first
+    val analyticsObjectId = params.second
+    when (event) {
+        ObjectStateAnalyticsEvent.OPEN_OBJECT -> {
+            when (state) {
+                is ObjectState.DataView.Collection -> scope.sendEvent(
+                    analytics = analytics,
+                    eventName = collectionScreenShow,
+                    startTime = startTime,
+                    middleTime = middleTime,
+                    props = buildProps(
+                        analyticsContext = analyticsContext,
+                        analyticsObjectId = analyticsObjectId
+                    )
+                )
+                is ObjectState.DataView.Set -> scope.sendEvent(
+                    analytics = analytics,
+                    eventName = setScreenShow,
+                    startTime = startTime,
+                    middleTime = middleTime,
+                    props = buildProps(
+                        analyticsContext = analyticsContext,
+                        analyticsObjectId = analyticsObjectId,
+                        embedType = embedTypeDefault
+                    )
+                )
+            }
+        }
+        ObjectStateAnalyticsEvent.TURN_INTO_COLLECTION -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = turnIntoCollection,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.SELECT_QUERY -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = setSelectQuery,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    type = type
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.ADD_VIEW -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = addView,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    type = type,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = changeViewType,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    type = type,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.REMOVE_VIEW -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = removeView,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.SWITCH_VIEW -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = switchView,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    type = type,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.DUPLICATE_VIEW -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = duplicateView,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    type = type,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.ADD_FILTER -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = addFilter,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault,
+                    condition = condition
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.CHANGE_FILTER_VALUE -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = changeFilterValue,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault,
+                    condition = condition
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.REMOVE_FILTER -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = removeFilter,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.ADD_SORT -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = addSort,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault,
+                    type = type
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.CHANGE_SORT_VALUE -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = changeSortValue,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault,
+                    type = type
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.REMOVE_SORT -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = removeSort,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
+    }
+}
+
+private fun buildProps(
+    analyticsContext: String? = null,
+    analyticsObjectId: String? = null,
+    embedType: String? = null,
+    type: String? = null,
+    objectType: String? = null,
+    condition: DVFilterCondition? = null
+): Props {
+    return Props(
+        map = buildMap {
+            if (analyticsContext != null) put("context", analyticsContext)
+            if (analyticsObjectId != null) put("originalId", analyticsObjectId)
+            if (embedType != null) put("embedType", embedType)
+            if (type != null) put("type", type)
+            if (objectType != null) put("objectType", objectType)
+            if (condition != null) put("condition", condition.getPropName())
+        }
+    )
+}
+
+enum class ObjectStateAnalyticsEvent {
+    OPEN_OBJECT,
+    TURN_INTO_COLLECTION,
+    SELECT_QUERY,
+    ADD_VIEW,
+    CHANGE_VIEW_TYPE,
+    REMOVE_VIEW,
+    SWITCH_VIEW,
+    DUPLICATE_VIEW,
+    ADD_FILTER,
+    CHANGE_FILTER_VALUE,
+    REMOVE_FILTER,
+    ADD_SORT,
+    CHANGE_SORT_VALUE,
+    REMOVE_SORT
 }

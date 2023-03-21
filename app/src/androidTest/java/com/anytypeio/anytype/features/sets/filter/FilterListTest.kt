@@ -148,6 +148,7 @@ class FilterListTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(dv)
         )
 
@@ -232,6 +233,7 @@ class FilterListTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(dv)
         )
 
@@ -316,6 +318,7 @@ class FilterListTest {
         )
 
         state.value = ObjectState.DataView.Set(
+            root = root,
             blocks = listOf(dv)
         )
 

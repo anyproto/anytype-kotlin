@@ -9,7 +9,8 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFilterEvent
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.relations.filterExpression
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -158,6 +159,7 @@ class ViewerFilterViewModel(
     }
 
     private fun onRemoveFilterClicked(ctx: Id, filterIndex: Int) {
+        val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val filter = viewer.filters.getOrNull(filterIndex)
@@ -173,10 +175,18 @@ class ViewerFilterViewModel(
                 ids = listOf(filter.id),
             )
             updateDataViewViewer(params).process(
-                success = { dispatcher.send(it) },
+                success = {
+                    dispatcher.send(it).also {
+                        logEvent(
+                            state = objectState.value,
+                            analytics = analytics,
+                            event = ObjectStateAnalyticsEvent.REMOVE_FILTER,
+                            startTime = startTime
+                        )
+                    }
+                          },
                 failure = { Timber.e("Error while reset all filters") }
             )
-            sendAnalyticsRemoveFilterEvent(analytics)
         }
     }
 

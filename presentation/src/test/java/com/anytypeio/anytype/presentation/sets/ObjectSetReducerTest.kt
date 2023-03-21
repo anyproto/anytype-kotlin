@@ -180,7 +180,9 @@ class ObjectSetReducerTest {
         )
 
         val expected = ObjectState.DataView.Set(
-            blocks = listOf(title, expectedDataView), details = details.details
+            root = context,
+            blocks = listOf(title, expectedDataView),
+            details = details.details
         )
 
         assertEquals(expected, stateSetView)
@@ -314,6 +316,7 @@ class ObjectSetReducerTest {
         )
 
         val expected = ObjectState.DataView.Set(
+            root = context,
             blocks = listOf(title, expectedDataView),
             details = details.details
         )
@@ -447,7 +450,9 @@ class ObjectSetReducerTest {
         )
 
         val expected = ObjectState.DataView.Set(
-            blocks = listOf(title, expectedDataView), details = details.details
+            root = context,
+            blocks = listOf(title, expectedDataView),
+            details = details.details
         )
 
         assertEquals(expected, stateUpdateView)
@@ -557,6 +562,7 @@ class ObjectSetReducerTest {
         )
 
         val expected = ObjectState.DataView.Set(
+            root = context,
             blocks = listOf(title, expectedDataView),
             details = details.details
         )
@@ -663,7 +669,9 @@ class ObjectSetReducerTest {
         )
 
         val expected = ObjectState.DataView.Set(
-            blocks = listOf(title, expectedDataView), details = details.details
+            root = context,
+            blocks = listOf(title, expectedDataView),
+            details = details.details
         )
 
         assertEquals(expected, stateUpdateView)
@@ -759,7 +767,9 @@ class ObjectSetReducerTest {
         )
 
         val expected = ObjectState.DataView.Set(
-            blocks = listOf(title, expectedDataView), details = details.details
+            root = context,
+            blocks = listOf(title, expectedDataView),
+            details = details.details
         )
 
         assertEquals(expected, stateUpdateView)
@@ -836,7 +846,9 @@ class ObjectSetReducerTest {
         )
 
         val expected = ObjectState.DataView.Set(
-            blocks = listOf(title, expectedDataView), details = details.details
+            root = context,
+            blocks = listOf(title, expectedDataView),
+            details = details.details
         )
 
         assertEquals(expected, stateDeleteRelation)

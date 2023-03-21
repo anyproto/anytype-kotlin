@@ -21,15 +21,3 @@ dependencies {
     implementation libs.timber
     implementation libs.amplitude
 }
-
-tasks.register("enableAnalyticsForDebugBuilds") {
-    doLast {
-        enableAnalyticsForDebugBuilds()
-    }
-}
-
-def enableAnalyticsForDebugBuilds() {
-    def file = file('gradle.properties')
-    def content = "config.enableAnalyticsForDebugBuilds=true"
-    file.text = content.toString()
-}

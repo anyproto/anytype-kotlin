@@ -30,13 +30,18 @@ sealed class LibraryEvent {
         class Edit(val item: LibraryView.MyRelationView) : Relation()
     }
 
-    sealed class Ui(val type: String, val view: String) : LibraryEvent() {
-        object ViewTypes : Ui(type = TypeType, view = ViewYour)
-        object ViewRelations : Ui(type = TypeRelation, view = ViewYour)
-        object ViewLibTypes : Ui(type = TypeType, view = ViewLibrary)
-        object ViewLibRelations : Ui(type = TypeRelation, view = ViewLibrary)
-    }
+}
 
+sealed class LibraryAnalyticsEvent {
+    sealed class Ui {
+        object Idle : Ui()
+        sealed class TabView(val type: String, val view: String) : Ui() {
+            object Types : TabView(type = TypeType, view = ViewYour)
+            object Relations : TabView(type = TypeRelation, view = ViewYour)
+            object LibTypes : TabView(type = TypeType, view = ViewLibrary)
+            object LibRelations : TabView(type = TypeRelation, view = ViewLibrary)
+        }
+    }
 }
 
 private const val TypeType = "type"

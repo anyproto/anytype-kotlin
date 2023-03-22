@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.presentation.library.DependentData
+import com.anytypeio.anytype.presentation.library.LibraryAnalyticsEvent
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryView
@@ -69,6 +71,7 @@ fun LibraryListTabsContent(
     configuration: List<LibraryListConfig>,
     tabs: LibraryScreenState.Tabs,
     vmEventStream: (LibraryEvent) -> Unit,
+    vmAnalyticsStream: (LibraryAnalyticsEvent.Ui) -> Unit,
     screenState: MutableState<ScreenState>,
     effects: LibraryViewModel.Effect,
 ) {
@@ -87,20 +90,10 @@ fun LibraryListTabsContent(
         userScrollEnabled = screenState.value == ScreenState.CONTENT
     ) { index ->
         val data = when (configuration[index]) {
-            is LibraryListConfig.Types -> {
-                vmEventStream.invoke(LibraryEvent.Ui.ViewTypes)
+            is LibraryListConfig.Types, is LibraryListConfig.Relations -> {
                 tabs.my
             }
-            is LibraryListConfig.Relations -> {
-                vmEventStream.invoke(LibraryEvent.Ui.ViewRelations)
-                tabs.my
-            }
-            is LibraryListConfig.TypesLibrary -> {
-                vmEventStream.invoke(LibraryEvent.Ui.ViewLibTypes)
-                tabs.lib
-            }
-            is LibraryListConfig.RelationsLibrary -> {
-                vmEventStream.invoke(LibraryEvent.Ui.ViewLibRelations)
+            is LibraryListConfig.TypesLibrary, is LibraryListConfig.RelationsLibrary -> {
                 tabs.lib
             }
         }
@@ -155,6 +148,34 @@ fun LibraryListTabsContent(
                 )
             }
             LibraryList(data, vmEventStream, screenState, itemsListState)
+        }
+    }
+    attachAnalytics(pagerState, configuration, vmAnalyticsStream)
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun attachAnalytics(
+    pagerState: PagerState,
+    configuration: List<LibraryListConfig>,
+    vmAnalyticsStream: (LibraryAnalyticsEvent.Ui) -> Unit
+) {
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            when (configuration[page]) {
+                is LibraryListConfig.Types -> {
+                    vmAnalyticsStream.invoke(LibraryAnalyticsEvent.Ui.TabView.Types)
+                }
+                is LibraryListConfig.Relations -> {
+                    vmAnalyticsStream.invoke(LibraryAnalyticsEvent.Ui.TabView.Relations)
+                }
+                is LibraryListConfig.TypesLibrary -> {
+                    vmAnalyticsStream.invoke(LibraryAnalyticsEvent.Ui.TabView.LibTypes)
+                }
+                is LibraryListConfig.RelationsLibrary -> {
+                    vmAnalyticsStream.invoke(LibraryAnalyticsEvent.Ui.TabView.LibRelations)
+                }
+            }
         }
     }
 }

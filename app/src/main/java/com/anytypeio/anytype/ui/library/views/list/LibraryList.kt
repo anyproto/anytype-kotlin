@@ -8,6 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.presentation.library.LibraryAnalyticsEvent
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
@@ -23,6 +24,7 @@ fun LibraryListView(
     libraryListConfig: List<LibraryListConfig>,
     tabs: LibraryScreenState.Tabs,
     vmEventStream: (LibraryEvent) -> Unit,
+    vmAnalyticsStream: (LibraryAnalyticsEvent.Ui) -> Unit,
     screenState: MutableState<ScreenState>,
     effects: LibraryViewModel.Effect,
 ) {
@@ -38,6 +40,7 @@ fun LibraryListView(
             configuration = libraryListConfig,
             tabs = tabs,
             vmEventStream = vmEventStream,
+            vmAnalyticsStream = vmAnalyticsStream,
             screenState = screenState,
             effects = effects
         )

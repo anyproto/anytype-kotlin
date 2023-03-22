@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.presentation.library.LibraryAnalyticsEvent
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
@@ -46,6 +47,7 @@ fun LibraryTabsContent(
     configuration: List<LibraryScreenConfig>,
     state: LibraryScreenState,
     vmEventStream: (LibraryEvent) -> Unit,
+    vmAnalyticsStream: (LibraryAnalyticsEvent.Ui) -> Unit,
     screenState: MutableState<ScreenState>,
     effects: LibraryViewModel.Effect,
 ) {
@@ -63,6 +65,7 @@ fun LibraryTabsContent(
             config = configuration[page],
             tabs = dataTabs,
             vmEventStream = vmEventStream,
+            vmAnalyticsStream = vmAnalyticsStream,
             screenState = screenState,
             effects = effects
         )
@@ -78,6 +81,7 @@ fun TabContentScreen(
     config: LibraryScreenConfig,
     tabs: LibraryScreenState.Tabs,
     vmEventStream: (LibraryEvent) -> Unit,
+    vmAnalyticsStream: (LibraryAnalyticsEvent.Ui) -> Unit,
     screenState: MutableState<ScreenState>,
     effects: LibraryViewModel.Effect
 ) {
@@ -91,6 +95,7 @@ fun TabContentScreen(
             libraryListConfig = config.listConfig,
             tabs = tabs,
             vmEventStream = vmEventStream,
+            vmAnalyticsStream = vmAnalyticsStream,
             screenState = screenState,
             effects = effects
         )

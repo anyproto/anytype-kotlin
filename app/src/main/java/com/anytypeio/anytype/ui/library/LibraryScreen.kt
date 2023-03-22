@@ -84,6 +84,7 @@ fun LibraryScreen(
                 configuration = listOf(configuration.types, configuration.relations),
                 state = uiState,
                 vmEventStream = viewModel::eventStream,
+                vmAnalyticsStream = viewModel::analyticsStream,
                 screenState = screenState,
                 effects = effects
             )

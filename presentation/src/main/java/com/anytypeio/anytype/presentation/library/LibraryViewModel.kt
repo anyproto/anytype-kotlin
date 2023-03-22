@@ -26,7 +26,9 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -45,6 +47,9 @@ class LibraryViewModel(
 ) : NavigationViewModel<LibraryViewModel.Navigation>() {
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
+    private val analyticsEvents = MutableStateFlow<LibraryAnalyticsEvent.Ui>(
+        LibraryAnalyticsEvent.Ui.Idle
+    )
 
     val effects = MutableStateFlow<Effect>(Effect.Idle)
 
@@ -93,20 +98,27 @@ class LibraryViewModel(
                     is LibraryEvent.Type -> proceedWithTypeActions(it)
                     is LibraryEvent.Relation -> proceedWithRelationActions(it)
                     is LibraryEvent.BottomMenu -> proceedWithBottomMenuActions(it)
-                    is LibraryEvent.Ui -> proceedWithViewAnalytics(it)
                 }
             }
         }
+        viewModelScope.launch {
+            analyticsEvents.filterIsInstance<LibraryAnalyticsEvent.Ui.TabView>()
+                .collectIndexed { index, it ->
+                    val route = if (index == 0) ROUTE_OUTER else ROUTE_INNER
+                    proceedWithViewAnalytics(it, route)
+                }
+        }
     }
 
-    private fun proceedWithViewAnalytics(it: LibraryEvent.Ui) {
+    private fun proceedWithViewAnalytics(it: LibraryAnalyticsEvent.Ui.TabView, route: String) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = libraryView,
             props = Props(
                 mapOf(
                     "type" to it.type,
-                    "view" to it.view
+                    "view" to it.view,
+                    "route" to route
                 )
             )
         )
@@ -264,6 +276,10 @@ class LibraryViewModel(
         uiEvents.value = event
     }
 
+    fun analyticsStream(event: LibraryAnalyticsEvent.Ui) {
+        analyticsEvents.value = event
+    }
+
     private fun updateInstalledValueForTypes(
         libTypes: LibraryScreenState.Tabs.TabData,
         myTypes: LibraryScreenState.Tabs.TabData
@@ -405,3 +421,5 @@ class LibraryViewModel(
 }
 
 private const val STOP_SUBSCRIPTION_TIMEOUT = 1_000L
+private const val ROUTE_INNER = "inner"
+private const val ROUTE_OUTER = "outer"

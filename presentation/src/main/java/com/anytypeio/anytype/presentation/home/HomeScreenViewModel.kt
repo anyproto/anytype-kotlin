@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_utils.ext.letNotNull
@@ -23,6 +25,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.Reducer
@@ -34,9 +37,12 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.presentation.common.ViewState
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.presentation.spaces.SpaceIcon
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
@@ -112,12 +118,91 @@ class HomeScreenViewModel(
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
 
+    val icon = MutableStateFlow<ViewState<SpaceIcon>>(ViewState.Loading)
+
     init {
-
-        viewModelScope.launch { unsubscriber.start() }
-
         val config = configStorage.get()
+        proceedWithObservingSpaceIcon(config)
+        proceedWithLaunchingUnsubscriber()
+        proceedWithObjectViewStatePipeline(config)
+        proceedWithWidgetContainerPipeline(config)
+        proceedWithRenderingPipeline()
+        proceedWithObservingDispatches()
+        proceedWithSettingUpShortcuts()
+    }
 
+    private fun proceedWithLaunchingUnsubscriber() {
+        viewModelScope.launch { unsubscriber.start() }
+    }
+
+    private fun proceedWithRenderingPipeline() {
+        viewModelScope.launch {
+            containers.flatMapLatest { list ->
+                Timber.d("Receiving list of containers: ${list.map { it::class }}")
+                if (list.isNotEmpty()) {
+                    combine(
+                        list.map { m -> m.view }
+                    ) { array ->
+                        array.toList()
+                    }
+                } else {
+                    flowOf(emptyList())
+                }
+            }.flowOn(appCoroutineDispatchers.io).collect {
+                views.value = it + listOf(WidgetView.Library, bin) + actions
+            }
+        }
+    }
+
+    private fun proceedWithWidgetContainerPipeline(config: Config) {
+        viewModelScope.launch {
+            widgets.map {
+                it.map { widget ->
+                    when (widget) {
+                        is Widget.Link -> LinkWidgetContainer(
+                            widget = widget
+                        )
+                        is Widget.Tree -> TreeWidgetContainer(
+                            widget = widget,
+                            container = storelessSubscriptionContainer,
+                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
+                            isWidgetCollapsed = isCollapsed(widget.id),
+                            isSessionActive = isSessionActive,
+                            urlBuilder = urlBuilder,
+                            workspace = config.workspace
+                        )
+                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
+                            ListWidgetContainer(
+                                widget = widget,
+                                subscription = widget.source.id,
+                                workspace = config.workspace,
+                                storage = storelessSubscriptionContainer,
+                                isWidgetCollapsed = isCollapsed(widget.id),
+                                urlBuilder = urlBuilder,
+                                isSessionActive = isSessionActive
+                            )
+                        } else {
+                            DataViewListWidgetContainer(
+                                widget = widget,
+                                workspace = config.workspace,
+                                storage = storelessSubscriptionContainer,
+                                getObject = getObject,
+                                activeView = observeCurrentWidgetView(widget.id),
+                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isSessionActive = isSessionActive,
+                                urlBuilder = urlBuilder
+                            )
+                        }
+                    }
+                }
+            }.collect {
+                Timber.d("Emitting list of containers: ${it.size}")
+                containers.value = it
+            }
+        }
+    }
+
+    private fun proceedWithObjectViewStatePipeline(config: Config) {
         val externalChannelEvents =
             interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
                 Payload(
@@ -164,72 +249,23 @@ class HomeScreenViewModel(
                 widgets.value = it
             }
         }
+    }
 
+    private fun proceedWithObservingSpaceIcon(config: Config) {
         viewModelScope.launch {
-            widgets.map {
-                it.map { widget ->
-                    when (widget) {
-                        is Widget.Link -> LinkWidgetContainer(
-                            widget = widget
-                        )
-                        is Widget.Tree -> TreeWidgetContainer(
-                            widget = widget,
-                            container = storelessSubscriptionContainer,
-                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = isCollapsed(widget.id),
-                            isSessionActive = isSessionActive,
-                            urlBuilder = urlBuilder,
-                            workspace = config.workspace
-                        )
-                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
-                            ListWidgetContainer(
-                                widget = widget,
-                                subscription  = widget.source.id,
-                                workspace = config.workspace,
-                                storage = storelessSubscriptionContainer,
-                                isWidgetCollapsed = isCollapsed(widget.id),
-                                urlBuilder = urlBuilder,
-                                isSessionActive = isSessionActive
-                            )
-                        } else {
-                            DataViewListWidgetContainer(
-                                widget = widget,
-                                workspace = config.workspace,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = isCollapsed(widget.id),
-                                isSessionActive = isSessionActive,
-                                urlBuilder = urlBuilder
-                            )
-                        }
-                    }
-                }
-            }.collect {
-                Timber.d("Emitting list of containers: ${it.size}")
-                containers.value = it
-            }
-        }
-
-        viewModelScope.launch {
-            containers.flatMapLatest { list ->
-                Timber.d("Receiving list of containers: ${list.map { it::class }}")
-                if (list.isNotEmpty()) {
-                    combine(
-                        list.map { m -> m.view }
-                    ) { array ->
-                        array.toList()
-                    }
-                } else {
-                    flowOf(emptyList())
-                }
+            storelessSubscriptionContainer.subscribe(
+                StoreSearchByIdsParams(
+                    subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                    targets = listOf(config.workspace),
+                    keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
+                )
+            ).map { result ->
+                val obj = result.firstOrNull()
+                ViewState.Success(obj?.spaceIcon(urlBuilder) ?: SpaceIcon.Placeholder)
             }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it + listOf(WidgetView.Library, bin) + actions
+                icon.value = it
             }
         }
-
-        proceedWithDispatches()
-        setupShortcuts()
     }
 
     private fun proceedWithOpeningWidgetObject(widgetObject: Id) {
@@ -283,7 +319,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithDispatches() {
+    private fun proceedWithObservingDispatches() {
         viewModelScope.launch {
             widgetEventDispatcher.flow().collect { dispatch ->
                 Timber.d("New dispatch: $dispatch")
@@ -728,7 +764,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun setupShortcuts() {
+    private fun proceedWithSettingUpShortcuts() {
         viewModelScope.launch {
             getDefaultPageType.execute(Unit).fold(
                 onSuccess = {
@@ -809,6 +845,8 @@ class HomeScreenViewModel(
         val actions = listOf(
             WidgetView.Action.EditWidgets
         )
+
+        const val HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION = "subscription.home-screen.space-object"
     }
 }
 

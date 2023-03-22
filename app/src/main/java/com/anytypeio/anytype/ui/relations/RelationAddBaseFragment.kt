@@ -143,6 +143,7 @@ abstract class RelationAddBaseFragment :
 class RelationAddToObjectFragment : RelationAddBaseFragment() {
 
     override val ctx get() = arg<Id>(CTX_KEY)
+    private val isSetOrCollection get() = arg<Boolean>(IS_SET_OR_COLLECTION_KEY)
 
     @Inject
     lateinit var factory: RelationAddToObjectViewModel.Factory
@@ -160,22 +161,40 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     override fun onCreateFromScratchClicked() {
         val fr = RelationCreateFromScratchForObjectFragment.new(
             ctx = ctx,
-            query = createFromScratchAdapter.query
+            query = createFromScratchAdapter.query,
+            isSetOrCollection = isSetOrCollection
         )
         fr.showChildFragment()
     }
 
     override fun injectDependencies() {
-        componentManager().relationAddToObjectComponent.get(ctx).inject(this)
+        if (isSetOrCollection) {
+            componentManager().relationAddToObjectSetComponent.get(ctx).inject(this)
+        } else {
+            componentManager().relationAddToObjectComponent.get(ctx).inject(this)
+        }
     }
 
     override fun releaseDependencies() {
-        componentManager().relationAddToObjectComponent.release(ctx)
+        if (isSetOrCollection) {
+            componentManager().relationAddToObjectSetComponent.release(ctx)
+        } else {
+            componentManager().relationAddToObjectComponent.release(ctx)
+        }
     }
 
     companion object {
-        fun new(ctx: Id) = RelationAddToObjectFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+
+        private const val IS_SET_OR_COLLECTION_KEY = "arg.relation-add-to-object.is-set-or-collection"
+
+        fun new(
+            ctx: Id,
+            isSetOrCollection: Boolean = true
+        ) = RelationAddToObjectFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                IS_SET_OR_COLLECTION_KEY to isSetOrCollection
+            )
         }
     }
 }

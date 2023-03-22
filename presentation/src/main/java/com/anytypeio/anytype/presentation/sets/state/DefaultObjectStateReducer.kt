@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Event.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ext.amend
+import com.anytypeio.anytype.core_models.ext.remove
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.presentation.sets.updateFields
@@ -56,9 +57,15 @@ class DefaultObjectStateReducer : ObjectStateReducer {
 
     private fun reduce(state: ObjectState, event: Event): Transformation {
         val effects = mutableListOf<StateSideEffect>()
-        val newState = when (event) {
+        val newState : ObjectState = when (event) {
             is Command.ShowObject -> {
                 handleShowObject(event)
+            }
+            is Command.ObjectRelationLinks.Amend -> {
+                amendObjectRelationLinks(state, event)
+            }
+            is Command.ObjectRelationLinks.Remove -> {
+                removeObjectRelationLinks(state, event)
             }
             is Command.DataView.SetView -> {
                 handleSetView(state, event)
@@ -96,6 +103,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is Command.AddBlock -> {
                 handleAddBlock(state, event)
             }
+
             else -> {
                 Timber.d("Ignoring event: $event")
                 state
@@ -105,6 +113,48 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             state = newState,
             effects = effects
         )
+    }
+
+    private fun removeObjectRelationLinks(
+        state: ObjectState,
+        event: Command.ObjectRelationLinks.Remove
+    ) = when (state) {
+        is ObjectState.DataView.Collection -> {
+            state.copy(
+                objectRelationLinks = state.objectRelationLinks.remove(
+                    event.keys
+                )
+            )
+        }
+        is ObjectState.DataView.Set -> {
+            state.copy(
+                objectRelationLinks = state.objectRelationLinks.remove(
+                    event.keys
+                )
+            )
+        }
+        else -> state
+    }
+
+    private fun amendObjectRelationLinks(
+        state: ObjectState,
+        event: Command.ObjectRelationLinks.Amend
+    ) = when (state) {
+        is ObjectState.DataView.Collection -> {
+            state.copy(
+                objectRelationLinks = state.objectRelationLinks.amend(
+                    event.relationLinks
+                )
+            )
+        }
+        is ObjectState.DataView.Set -> {
+            state.copy(
+                objectRelationLinks = state.objectRelationLinks.amend(
+                    event.relationLinks
+                )
+            )
+        }
+        else -> state
     }
 
 
@@ -119,14 +169,16 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 blocks = event.blocks,
                 details = event.details.details,
                 objectRestrictions = event.objectRestrictions,
-                dataViewRestrictions = event.dataViewRestrictions
+                dataViewRestrictions = event.dataViewRestrictions,
+                objectRelationLinks = event.relationLinks
             )
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
                 root = event.root,
                 blocks = event.blocks,
                 details = event.details.details,
                 objectRestrictions = event.objectRestrictions,
-                dataViewRestrictions = event.dataViewRestrictions
+                dataViewRestrictions = event.dataViewRestrictions,
+                objectRelationLinks = event.relationLinks
             )
             else -> {
                 Timber.e("Wrong layout type: $layout")

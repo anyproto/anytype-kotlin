@@ -59,7 +59,6 @@ import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
-import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
@@ -675,6 +674,14 @@ class ComponentManager(
             .build()
     }
 
+    val relationAddToObjectSetComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .relationAddToObjectComponent()
+            .module(RelationAddToObjectModule)
+            .build()
+    }
+
     val relationAddToDataViewComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
@@ -685,6 +692,14 @@ class ComponentManager(
 
     val relationCreateFromScratchForObjectComponent = DependentComponentMap { ctx ->
         editorComponent
+            .get(ctx)
+            .relationCreateFromScratchForObjectComponent()
+            .module(RelationCreateFromScratchForObjectModule)
+            .build()
+    }
+
+    val relationCreateFromScratchForObjectSetComponent = DependentComponentMap { ctx ->
+        objectSetComponent
             .get(ctx)
             .relationCreateFromScratchForObjectComponent()
             .module(RelationCreateFromScratchForObjectModule)

@@ -146,6 +146,8 @@ abstract class RelationCreateFromScratchBaseFragment :
 
 class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBaseFragment() {
 
+    private val isSetOrCollection : Boolean get() = arg(IS_SET_OR_COLLECTION_KEY)
+
     @Inject
     lateinit var factory: RelationCreateFromScratchForObjectViewModel.Factory
     override val vm: RelationCreateFromScratchForObjectViewModel by viewModels { factory }
@@ -175,16 +177,35 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
     }
 
     override fun injectDependencies() {
-        componentManager().relationCreateFromScratchForObjectComponent.get(ctx).inject(this)
+        if (isSetOrCollection) {
+            componentManager().relationCreateFromScratchForObjectSetComponent.get(ctx).inject(this)
+        } else {
+            componentManager().relationCreateFromScratchForObjectComponent.get(ctx).inject(this)
+        }
     }
 
     override fun releaseDependencies() {
-        componentManager().relationCreateFromScratchForObjectComponent.release(ctx)
+        if (isSetOrCollection) {
+            componentManager().relationCreateFromScratchForObjectSetComponent.release(ctx)
+        } else {
+            componentManager().relationCreateFromScratchForObjectComponent.release(ctx)
+        }
     }
 
     companion object {
-        fun new(ctx: Id, query: String) = RelationCreateFromScratchForObjectFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, QUERY_KEY to query)
+
+        private const val IS_SET_OR_COLLECTION_KEY = "arg.relation-create-from-scratch.is-set-or-collection"
+
+        fun new(
+            ctx: Id,
+            query: String,
+            isSetOrCollection: Boolean = false
+        ) = RelationCreateFromScratchForObjectFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                QUERY_KEY to query,
+                IS_SET_OR_COLLECTION_KEY to isSetOrCollection
+            )
         }
 
         fun args(ctx: Id, query: String) = bundleOf(CTX_KEY to ctx, QUERY_KEY to query)

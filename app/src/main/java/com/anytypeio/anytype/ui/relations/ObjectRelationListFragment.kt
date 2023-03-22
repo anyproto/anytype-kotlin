@@ -102,7 +102,10 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         }
         binding.btnPlus.setOnClickListener {
             if (!isLocked) {
-                RelationAddToObjectFragment.new(ctx).showChildFragment()
+                RelationAddToObjectFragment.new(
+                    ctx = ctx,
+                    isSetOrCollection = isDataViewFLow
+                ).showChildFragment()
             } else {
                 toast(getString(R.string.unlock_your_object_to_add_new_relation))
             }

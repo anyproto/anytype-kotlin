@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +28,7 @@ interface RelationListProvider {
         override fun getDetails() = storage.details.current()
     }
 
-    class DataViewRelationListProvider(
+    class ObjectSetRelationListProvider(
         private val objectStates: StateFlow<ObjectState>
     ) : RelationListProvider {
 
@@ -51,10 +50,10 @@ interface RelationListProvider {
 
         private fun mapLinks(state: ObjectState) = when (state) {
             is ObjectState.DataView.Collection -> {
-                state.dataViewBlock.content<Block.Content.DataView>().relationLinks
+                state.objectRelationLinks
             }
             is ObjectState.DataView.Set -> {
-                state.dataViewBlock.content<Block.Content.DataView>().relationLinks
+                state.objectRelationLinks
             }
             else -> emptyList()
         }

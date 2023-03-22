@@ -7,7 +7,9 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
+import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewSubComponent
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
@@ -38,6 +40,7 @@ import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.relations.AddFileToObject
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
@@ -120,6 +123,8 @@ interface ObjectSetSubComponent {
     fun objectUnsplashComponent(): UnsplashSubComponent.Builder
 
     fun objectRelationListComponent(): ObjectRelationListComponent.Builder
+    fun relationAddToObjectComponent(): RelationAddToObjectSubComponent.Builder
+    fun relationCreateFromScratchForObjectComponent(): RelationCreateFromScratchForObjectSubComponent.Builder
 }
 
 @Module(
@@ -525,9 +530,14 @@ object ObjectSetModule {
     @PerScreen
     fun dataViewRelationListProvider(
         objectStateFlow: MutableStateFlow<ObjectState>
-    ) : RelationListProvider = RelationListProvider.DataViewRelationListProvider(
+    ) : RelationListProvider = RelationListProvider.ObjectSetRelationListProvider(
         objectStates = objectStateFlow
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddRelationToObject(repo: BlockRepository) = AddRelationToObject(repo)
 
     @Module
     interface Bindings {

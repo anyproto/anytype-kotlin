@@ -80,7 +80,7 @@ class RelationListViewModel(
                 ).map { view ->
                     Model.Item(
                         view = view,
-                        isRemoveable = isPossibleToRemoveRelation(relationKey = view.key)
+                        isRemovable = isPossibleToRemoveRelation(relationKey = view.key)
                     )
                 }
             }.map { views ->
@@ -199,7 +199,7 @@ class RelationListViewModel(
             isEditMode.value = !isEditMode.value
             views.value = views.value.map { view ->
                 if (view is Model.Item) {
-                    view.copy(isRemoveable = isPossibleToRemoveRelation(relationKey = view.view.key))
+                    view.copy(isRemovable = isPossibleToRemoveRelation(relationKey = view.view.key))
                 } else {
                     view
                 }
@@ -377,7 +377,7 @@ class RelationListViewModel(
 
         data class Item(
             val view: ObjectRelationView,
-            val isRemoveable: Boolean = false
+            val isRemovable: Boolean = false
         ) : Model() {
             override val identifier: String get() = view.identifier
         }

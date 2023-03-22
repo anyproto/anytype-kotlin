@@ -186,7 +186,13 @@ private fun TreeWidgetTreeItems(
                         painterResource(R.drawable.ic_widget_tree_set),
                         contentDescription = "Set icon",
                         modifier = Modifier.align(Alignment.CenterVertically)
-
+                    )
+                }
+                is WidgetView.Tree.ElementIcon.Collection -> {
+                    Image(
+                        painterResource(R.drawable.ic_widget_tree_collection),
+                        contentDescription = "Collection icon",
+                        modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
             }

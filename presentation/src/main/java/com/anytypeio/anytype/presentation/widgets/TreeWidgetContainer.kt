@@ -202,6 +202,7 @@ class TreeWidgetContainer(
         currentLinkPath: String
     ) = when {
         obj.type.contains(ObjectTypeIds.SET) -> WidgetView.Tree.ElementIcon.Set
+        obj.type.contains(ObjectTypeIds.COLLECTION) -> WidgetView.Tree.ElementIcon.Collection
         !isExpandable -> WidgetView.Tree.ElementIcon.Leaf
         obj.links.isEmpty() -> WidgetView.Tree.ElementIcon.Leaf
         else -> WidgetView.Tree.ElementIcon.Branch(

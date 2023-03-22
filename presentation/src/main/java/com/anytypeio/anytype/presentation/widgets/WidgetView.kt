@@ -29,6 +29,7 @@ sealed class WidgetView {
             data class Branch(val isExpanded: Boolean) : ElementIcon()
             object Leaf : ElementIcon()
             object Set : ElementIcon()
+            object Collection: ElementIcon()
         }
     }
 

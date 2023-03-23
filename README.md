@@ -63,14 +63,21 @@ Or [download](https://download.anytype.io/) an apk for your device architecture 
 ```
 {TASK-ID} {APP AREA} | {NATURE OF CHANGE: Fix, Enhancement, Feature, Design, Documentation} | {CONCISE DESCRIPTION OF WHAT HAS BEEN DONE}
 ```
-App area can be `App`, `Editor`, `Sets`, `Relations`, `Auth`, `Settings`, `Analytics`, `Tech` (CI, DI, scripting, etc.), etc.
 
-Example: *Editor | Fix | Show meaningful message when failed to open file by an existing application*
+App area can be `App`, `Editor`, `Sets`, `Relations`, `Auth`, `Settings`, `Analytics`, `Tech` (CI,
+DI, scripting, etc.), etc.
+
+Example: *Editor | Fix | Show meaningful message when failed to open file by an existing
+application*
 
 ##### Git branch naming
+
 ```
 {TASK_ID or TASK_NUMBER}-ConciseDescription
 ```
 
+##### Flags
 
-
+```
+com.anytype.ci=true - for CI/CD pipeline
+```

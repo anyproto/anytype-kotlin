@@ -1,9 +1,9 @@
 on:
   workflow_dispatch:
   pull_request:
-# add "synchronize" in "types", in order to trigger workflow for pull request commit(s) pushes.
-    types: [opened]
-    branches: [develop]
+    # add "synchronize" in "types", in order to trigger workflow for pull request commit(s) pushes.
+    types: [ opened ]
+    branches: [ develop ]
 name: Run debug unit tests
 jobs:
   setup-android:
@@ -20,6 +20,24 @@ jobs:
           sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
         run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug $sentry_dsn_secret
 
+      - uses: actions/checkout@master
+        with:
+          name: Setup license repository
+          repository: anytypeio/open
+          ref: refs/heads/main
+          path: ./open
+
+      - name: Check licenses
+        run: |
+          cd open
+          python3 tools/generate.py --platform android
+          cd ..
+          sudo gem install license_finder
+          license_finder inherited_decisions add open/decisions.yml
+          license_finder --gradle-command="./gradlew \
+          -Pcom.anytype.ci=true \
+          -Dorg.gradle.unsafe.configuration-cache=false"
+
       - name: Compile android test sources
         run: make compile_android_test_sources
 
@@ -29,3 +47,4 @@ jobs:
       - name: Android test report
         uses: asadmansr/android-test-report-action@v1.2.0
         if: ${{ always() }} # IMPORTANT: run Android Test Report regardless
+

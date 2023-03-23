@@ -7,6 +7,14 @@ plugins {
     id "com.google.firebase.appdistribution"
 }
 
+if (rootProject.ext.onCi) {
+    apply plugin: "com.github.hierynomus.license-report"
+    downloadLicenses {
+        dependencyConfiguration = 'all'
+        includeProjectDependencies = true
+    }
+}
+
 apply from: "$rootDir/versioning.gradle"
 
 def apikeyPropertiesFile = rootProject.file("apikeys.properties")

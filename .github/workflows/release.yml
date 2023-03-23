@@ -27,6 +27,24 @@ jobs:
           RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
         run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
 
+      - name: Setup license repository
+        uses: actions/checkout@master
+          with:
+            repository: anytypeio/open
+            ref: refs/heads/main
+            path: ./open
+
+      - name: Check licenses
+        run: |
+          cd open
+          python3 tools/generate.py --platform android
+          cd ..
+          sudo gem install license_finder
+          license_finder inherited_decisions add open/decisions.yml
+          license_finder --gradle-command="./gradlew \
+          -Pcom.anytype.ci=true \
+          -Dorg.gradle.unsafe.configuration-cache=false"
+
       - name: Build APKS
         run: ./gradlew :app:assembleRelease
 

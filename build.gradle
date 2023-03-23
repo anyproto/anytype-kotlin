@@ -9,6 +9,7 @@ buildscript {
     ext.version_name = '1.0'
     ext.version_code = 1
     ext.test_runner = 'androidx.test.runner.AndroidJUnitRunner'
+    ext.onCi = project.properties.getOrDefault("com.anytype.ci", "false").toBoolean()
 
     def githubProperties = new Properties()
     def githubPropertiesFile = file("$rootDir${File.separator}github.properties")
@@ -33,7 +34,12 @@ buildscript {
                 password = githubProperties['gpr.key']
             }
         }
+    }
 
+    if (ext.onCi) {
+        dependencies {
+            classpath "com.github.openkin:license-gradle-plugin:0d9582e233"
+        }
     }
 }
 

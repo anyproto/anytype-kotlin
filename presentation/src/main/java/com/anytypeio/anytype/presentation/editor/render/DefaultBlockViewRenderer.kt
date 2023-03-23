@@ -40,8 +40,8 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
 class DefaultBlockViewRenderer @Inject constructor(
@@ -1756,8 +1756,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     ): BlockView.LinkToObject.Default.Card {
         val isWithCover = inEditorAppearance.showCover
         val iconSize = inEditorAppearance.icon
-        return if (isWithCover) {
-            val cover = linkToObjectCardCover(obj, urlBuilder)
+        val cover = linkToObjectCardCover(obj, urlBuilder)
+        return if (isWithCover && cover != null) {
             if (obj.layout != ObjectType.Layout.TODO && iconSize == InEditor.Icon.MEDIUM) {
                 BlockView.LinkToObject.Default.Card.MediumIconCover(
                     id = id,

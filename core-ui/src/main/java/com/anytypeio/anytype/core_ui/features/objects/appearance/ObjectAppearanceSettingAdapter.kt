@@ -120,7 +120,7 @@ class ObjectAppearanceSettingAdapter(
             private fun getValue(item: ObjectAppearanceMainSettingsView.List): Int {
                 return when (item) {
                     is Description -> when (item.description) {
-                        MenuItem.Description.ADDED -> R.string.description_added
+                        MenuItem.Description.ADDED -> R.string.object_description
                         MenuItem.Description.CONTENT -> R.string.description_content
                         MenuItem.Description.NONE -> R.string.description_none
                     }

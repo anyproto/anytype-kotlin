@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultSectionViewHolder
 import com.anytypeio.anytype.core_ui.databinding.ItemDefaultListSectionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeEmptyStateBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeItemBinding
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHolder
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHorizontalHolder
@@ -47,6 +48,13 @@ class ObjectTypeVerticalAdapter(
                     )
                 )
             }
+            VIEW_TYPE_EMPTY_STATE -> {
+                EmptyStateViewHolder(
+                    binding = ItemObjectTypeEmptyStateBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -78,12 +86,25 @@ class ObjectTypeVerticalAdapter(
                     else -> {}
                 }
             }
+            is EmptyStateViewHolder -> {
+                check(item is ObjectTypeItemView.EmptyState)
+                holder.bind(item.query)
+            }
+        }
+    }
+
+    class EmptyStateViewHolder(
+        private val binding: ItemObjectTypeEmptyStateBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(query: String) {
+            binding.tvTitle.text = binding.root.resources.getString(R.string.no_type_named, query)
         }
     }
 
     override fun getItemViewType(position: Int): Int = when (data[position]) {
         is ObjectTypeItemView.Type -> VIEW_TYPE_OBJECT_TYPE
         is ObjectTypeItemView.Section -> VIEW_TYPE_SECTION
+        is ObjectTypeItemView.EmptyState -> VIEW_TYPE_EMPTY_STATE
     }
 
     override fun getItemCount(): Int = data.size
@@ -91,5 +112,6 @@ class ObjectTypeVerticalAdapter(
     companion object {
         const val VIEW_TYPE_OBJECT_TYPE = 0
         const val VIEW_TYPE_SECTION = 1
+        const val VIEW_TYPE_EMPTY_STATE = 2
     }
 }

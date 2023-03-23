@@ -222,7 +222,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     }
                 }
                 is ObjectRelationView.ObjectType.Base -> {
-                    val view = inflateObjectTypeTextView(name = relation.name)
+                    val view = inflateObjectTypeTextView(
+                        name = relation.name,
+                        isFirst = index == 0
+                    )
                     view.setOnClickListener {
                         val popup = ObjectTypePopupMenu(
                             context = context,
@@ -294,12 +297,18 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     ids.add(view.id)
                 }
                 is ObjectRelationView.ObjectType.Collection -> {
-                    val view = inflateObjectTypeTextView(name = relation.name)
+                    val view = inflateObjectTypeTextView(
+                        name = relation.name,
+                        isFirst = index == 0
+                    )
                     addView(view)
                     ids.add(view.id)
                 }
                 is ObjectRelationView.ObjectType.Set -> {
-                    val view = inflateObjectTypeTextView(name = relation.name)
+                    val view = inflateObjectTypeTextView(
+                        name = relation.name,
+                        isFirst = index == 0
+                    )
                     view.setOnClickListener {
                         val popup = ObjectSetTypePopupMenu(
                             context = context,
@@ -334,13 +343,16 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         flow.referencedIds = ids.toIntArray()
     }
 
-    private fun inflateObjectTypeTextView(name: String): TextView {
+    private fun inflateObjectTypeTextView(
+        name: String,
+        isFirst: Boolean
+    ): TextView {
         val textView = TextView(context).apply {
             id = View.generateViewId()
             isSingleLine = true
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
-            setPadding(4.px, 2.px, 4.px, 2.px)
+            setPadding(if (isFirst) 0.px else 4.px, 2.px, 4.px, 2.px)
             setTextColor(defaultTextColor)
             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
         }
@@ -356,14 +368,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         click: (ListenerType.Relation) -> Unit,
         ids: MutableList<Int>
     ) {
-        val placeholder =
-            buildPlaceholderView(resources.getString(R.string.query)).apply {
+        val placeholder = buildPlaceholderView(resources.getString(R.string.query)).apply {
                 setOnClickListener {
                     click(
                         ListenerType.Relation.SetQuery(queries = emptyList())
                     )
                 }
-            }
+        }
         addView(placeholder)
         ids.add(placeholder.id)
     }

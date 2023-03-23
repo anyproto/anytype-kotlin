@@ -11,6 +11,7 @@ sealed class ObjectTypeItemView {
         object Library : Section()
         object Marketplace : Section()
     }
+    data class EmptyState(val query: String) : ObjectTypeItemView()
 }
 
 data class ObjectTypeView(

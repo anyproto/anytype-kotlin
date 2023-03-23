@@ -128,7 +128,7 @@ class ObjectAppearanceChooseAdapter<T : ObjectAppearanceChooseSettingsView>(
             fun bind(item: ObjectAppearanceChooseSettingsView.Description) = with(binding) {
                 when (item) {
                     is ObjectAppearanceChooseSettingsView.Description.None -> name.setText(R.string.description_none)
-                    is ObjectAppearanceChooseSettingsView.Description.Added -> name.setText(R.string.description_added)
+                    is ObjectAppearanceChooseSettingsView.Description.Added -> name.setText(R.string.object_description)
                     is ObjectAppearanceChooseSettingsView.Description.Content -> name.setText(R.string.description_content)
                 }
                 icon.gone()

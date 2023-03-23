@@ -54,6 +54,8 @@ abstract class BaseObjectTypeChangeFragment :
             adapter = objectTypeAdapter
             layoutManager = LinearLayoutManager(context)
         }
+        skipCollapsed()
+        setFullHeightSheet()
     }
 
     override fun onStart() {

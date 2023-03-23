@@ -38,7 +38,8 @@
             android:gravity="center_vertical"
             android:paddingEnd="@dimen/dp_16"
             android:text="@string/remove"
-            android:textColor="#F55522" />
+            android:fontFamily="@font/inter_regular"
+            android:textColor="@color/palette_system_red" />
 
     </FrameLayout>
 

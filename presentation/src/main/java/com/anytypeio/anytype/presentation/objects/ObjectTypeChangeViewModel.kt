@@ -194,6 +194,9 @@ class ObjectTypeChangeViewModel(
             }
             addAll(views)
         }
+        if (isEmpty() && userInput.value.isNotEmpty()) {
+            add(ObjectTypeItemView.EmptyState(userInput.value))
+        }
     }
 
     private suspend fun proceedWithGettingMarketplaceTypes(

@@ -98,6 +98,10 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
         }
     }
 
+    fun setFullHeightSheet() {
+        sheet?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+    }
+
     abstract fun injectDependencies()
     abstract fun releaseDependencies()
 

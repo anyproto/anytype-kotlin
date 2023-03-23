@@ -17,7 +17,7 @@ class ObjectTypesWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private var isOpenState = true
+    private var isOpenState = false
     private var onItemClick: ((Id) -> Unit)? = null
     private var onSearchClick: (() -> Unit)? = null
     private var onDoneClick: (() -> Unit)? = null
@@ -36,6 +36,7 @@ class ObjectTypesWidget @JvmOverloads constructor(
 
     init {
         setup()
+        setHiddenState()
     }
 
     private fun setup() = with(binding) {
@@ -67,7 +68,6 @@ class ObjectTypesWidget @JvmOverloads constructor(
     }
 
     fun update(data: List<ObjectTypeView>) {
-        setOpenState()
         typesAdapter.update(data)
     }
 

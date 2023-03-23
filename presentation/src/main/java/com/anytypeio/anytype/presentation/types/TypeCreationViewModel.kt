@@ -75,7 +75,7 @@ class TypeCreationViewModel(
     }
 
     fun openEmojiPicker() {
-        navigate(Navigation.SelectEmoji)
+        navigate(Navigation.SelectEmoji(unicodeIconFlow.value.isNotEmpty()))
     }
 
     fun setEmoji(emojiUnicode: String) {
@@ -95,7 +95,7 @@ class TypeCreationViewModel(
 
     sealed class Navigation {
         object BackWithCreatedType: Navigation()
-        object SelectEmoji : Navigation()
+        class SelectEmoji(val showRemove: Boolean) : Navigation()
     }
 
     class Factory @Inject constructor(

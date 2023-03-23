@@ -554,7 +554,12 @@
     <dialog
         android:id="@+id/typeSetIconPickerScreen"
         android:name="com.anytypeio.anytype.ui.types.picker.TypeIconPickFragment"
-        android:label="Object-Icon-Picker-Screen" />
+        android:label="Object-Icon-Picker-Screen">
+        <argument
+            android:name="arg.type_show_remove"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </dialog>
 
     <fragment
         android:id="@+id/archiveFragment"

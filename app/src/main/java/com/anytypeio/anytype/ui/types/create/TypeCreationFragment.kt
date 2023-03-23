@@ -71,8 +71,10 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
                     setFragmentResult(REQUEST_CREATE_OBJECT, bundleOf())
                     findNavController().popBackStack()
                 }
-                TypeCreationViewModel.Navigation.SelectEmoji -> {
-                    findNavController().navigate(R.id.openEmojiPicker)
+                is TypeCreationViewModel.Navigation.SelectEmoji -> {
+                    findNavController().navigate(
+                        R.id.openEmojiPicker, bundleOf(ARG_SHOW_REMOVE_BUTTON to it.showRemove)
+                    )
                 }
             }
         }
@@ -93,4 +95,5 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
 }
 
 private const val ARG_TYPE_NAME = "arg.type_name"
+private const val ARG_SHOW_REMOVE_BUTTON = "arg.type_show_remove"
 const val REQUEST_CREATE_OBJECT = "request.create_type"

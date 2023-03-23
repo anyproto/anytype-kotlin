@@ -42,7 +42,7 @@ object Relations {
     const val RELATION_DEFAULT_VALUE = "relationDefaultValue"
     const val RELATION_FORMAT_OBJECT_TYPES = "relationFormatObjectTypes"
     const val SOURCE_OBJECT = "sourceObject"
-
+    const val INTERNAL_FLAGS = "internalFlags"
 
     const val PAGE_COVER = "pageCover"
 

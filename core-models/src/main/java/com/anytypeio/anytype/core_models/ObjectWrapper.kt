@@ -101,6 +101,26 @@ sealed class ObjectWrapper {
 
         val relationOptionColor: String? by default
         val relationReadonlyValue: Boolean? by default
+
+        val internalFlags: List<InternalFlags>
+            get() = when (val value = map[Relations.INTERNAL_FLAGS]) {
+                is Double -> buildList {
+                    when (value.toInt()) {
+                        InternalFlags.ShouldSelectType.code -> InternalFlags.ShouldSelectType
+                        InternalFlags.ShouldSelectTemplate.code -> InternalFlags.ShouldSelectTemplate
+                        InternalFlags.ShouldEmptyDelete.code -> InternalFlags.ShouldEmptyDelete
+                    }
+                }
+                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
+                    when (code.toInt()) {
+                        InternalFlags.ShouldSelectType.code -> InternalFlags.ShouldSelectType
+                        InternalFlags.ShouldSelectTemplate.code -> InternalFlags.ShouldSelectTemplate
+                        InternalFlags.ShouldEmptyDelete.code -> InternalFlags.ShouldEmptyDelete
+                        else -> null
+                    }
+                }
+                else -> emptyList()
+            }
     }
 
     /**

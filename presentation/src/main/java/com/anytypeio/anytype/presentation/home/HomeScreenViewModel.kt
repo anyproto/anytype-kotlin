@@ -37,7 +37,6 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
-import com.anytypeio.anytype.presentation.common.ViewState
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -118,7 +117,7 @@ class HomeScreenViewModel(
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
 
-    val icon = MutableStateFlow<ViewState<SpaceIcon>>(ViewState.Loading)
+    val icon = MutableStateFlow<SpaceIcon>(SpaceIcon.Loading)
 
     init {
         val config = configStorage.get()
@@ -261,7 +260,7 @@ class HomeScreenViewModel(
                 )
             ).map { result ->
                 val obj = result.firstOrNull()
-                ViewState.Success(obj?.spaceIcon(urlBuilder) ?: SpaceIcon.Placeholder)
+                obj?.spaceIcon(urlBuilder) ?: SpaceIcon.Placeholder
             }.flowOn(appCoroutineDispatchers.io).collect {
                 icon.value = it
             }
@@ -781,6 +780,13 @@ class HomeScreenViewModel(
                     Timber.d("Error while setting up app shortcuts")
                 }
             )
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch {
+            unsubscriber.unsubscribe(listOf(HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION))
         }
     }
 

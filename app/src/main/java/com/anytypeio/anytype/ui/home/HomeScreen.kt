@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -42,11 +43,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.spaces.SpaceIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
@@ -66,9 +70,11 @@ import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
+import timber.log.Timber
 
 @Composable
 fun HomeScreen(
+    spaceIcon: SpaceIcon,
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
@@ -138,6 +144,7 @@ fun HomeScreen(
             exit = fadeOut() + slideOutVertically { it }
         ) {
             HomeScreenBottomToolbar(
+                spaceIcon = spaceIcon,
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
                 onSpaceClicked = throttledClick(onSpaceClicked),
@@ -496,6 +503,7 @@ fun HomeScreenButton(
 
 @Composable
 fun HomeScreenBottomToolbar(
+    spaceIcon: SpaceIcon,
     modifier: Modifier,
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
@@ -540,11 +548,40 @@ fun HomeScreenBottomToolbar(
                 .fillMaxSize()
                 .noRippleClickable { onSpaceClicked() }
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_home_widget_space),
-                contentDescription = "Space icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
+            Timber.d("Binding icon: $spaceIcon")
+            when(spaceIcon) {
+                is SpaceIcon.Emoji -> {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = Emojifier.uri(spaceIcon.unicode),
+                            error = painterResource(id = R.drawable.ic_home_widget_space)
+                        ),
+                        contentDescription = "Emoji space icon",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+                is SpaceIcon.Image -> {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = spaceIcon.url,
+                            error = painterResource(id = R.drawable.ic_home_widget_space)
+                        ),
+                        contentDescription = "Custom image space icon",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+                else -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_home_widget_space),
+                        contentDescription = "Placeholder space icon",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
         }
     }
 }

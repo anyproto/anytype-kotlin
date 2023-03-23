@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 sealed class SpaceIcon {
+    object Loading : SpaceIcon()
     object Placeholder : SpaceIcon()
     data class Emoji(val unicode: String) : SpaceIcon()
     data class Image(val url: Url) : SpaceIcon()

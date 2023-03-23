@@ -329,7 +329,10 @@ open class ObjectSetViewModelTestSetup {
             listOf(
                 mockObjectCollection.relationObject1,
                 mockObjectCollection.relationObject2,
-                mockObjectCollection.relationObject3
+                mockObjectCollection.relationObject3,
+                mockObjectCollection.relationObject4,
+                mockObjectCollection.relationObject5,
+                mockObjectCollection.relationObject6
             )
         )
     }

@@ -194,6 +194,10 @@ fun ObjectState.DataView.viewerById(currentViewerId: String?): DVViewer? {
         ?: dataViewContent.viewers.firstOrNull()
 }
 
+fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): List<Id> {
+    return dataViewContent.objectOrders.find { it.view == currentViewerId }?.ids ?: emptyList()
+}
+
 suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
     return map { f: DVFilter ->
         val r = storeOfRelations.getByKey(f.relation)

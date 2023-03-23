@@ -354,7 +354,16 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
         viewers = content.views.map { it.toCoreModels() },
         relationLinks = content.relationLinks.map { it.toCoreModels() },
         targetObjectId = content.TargetObjectId,
-        isCollection = content.isCollection
+        isCollection = content.isCollection,
+        objectOrders = content.objectOrders.map { it.toCoreModelsObjectOrder() }
+    )
+}
+
+fun MDVObjectOrder.toCoreModelsObjectOrder(): ObjectOrder {
+    return ObjectOrder(
+        view = viewId,
+        group = groupId,
+        ids = objectIds
     )
 }
 

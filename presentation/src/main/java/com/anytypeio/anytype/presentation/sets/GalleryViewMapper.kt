@@ -30,7 +30,8 @@ suspend fun DVViewer.buildGalleryViews(
     details: Map<Id, Block.Fields>,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
-    objectStore: ObjectStore
+    objectStore: ObjectStore,
+    objectOrderIds: List<Id>
 ): List<Viewer.GalleryView.Item> {
 
     val filteredRelations = viewerRelations.mapNotNull { setting ->
@@ -42,6 +43,8 @@ suspend fun DVViewer.buildGalleryViews(
     }
 
     val hasCover = !coverRelationKey.isNullOrEmpty()
+
+    val orderMap = objectOrderIds.mapIndexed { index, id -> id to index }.toMap()
 
     return objectIds
         .mapNotNull { objectStore.get(it) }
@@ -67,6 +70,7 @@ suspend fun DVViewer.buildGalleryViews(
                 )
             }
         }
+        .sortedBy { item -> orderMap[item.objectId] }
 }
 
 private suspend fun ObjectWrapper.Basic.mapToDefaultItem(

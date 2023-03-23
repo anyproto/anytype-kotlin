@@ -76,7 +76,8 @@ suspend fun DVViewer.render(
     objects: List<Id>,
     details: Map<Id, Block.Fields>,
     dataViewRelations: List<ObjectWrapper.Relation>,
-    store: ObjectStore
+    store: ObjectStore,
+    objectOrderIds: List<Id> = emptyList()
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -85,7 +86,8 @@ suspend fun DVViewer.render(
                 objects = objects,
                 details = details,
                 builder = builder,
-                store = store
+                store = store,
+                objectOrderIds = objectOrderIds
             )
         }
         DVViewerType.GALLERY -> {
@@ -97,7 +99,8 @@ suspend fun DVViewer.render(
                     relations = dataViewRelations,
                     coverImageHashProvider = coverImageHashProvider,
                     urlBuilder = builder,
-                    objectStore = store
+                    objectStore = store,
+                    objectOrderIds = objectOrderIds
                 ),
                 title = name,
                 largeCards = cardSize != DVViewerCardSize.SMALL
@@ -116,7 +119,8 @@ suspend fun DVViewer.render(
                     details = details,
                     relations = visibleRelations,
                     urlBuilder = builder,
-                    store = store
+                    store = store,
+                    objectOrderIds = objectOrderIds
                 ),
                 title = name
             )
@@ -128,7 +132,8 @@ suspend fun DVViewer.render(
                     objects = objects,
                     details = details,
                     builder = builder,
-                    store = store
+                    store = store,
+                    objectOrderIds = objectOrderIds
                 )
             } else {
                 Viewer.Unsupported(
@@ -141,12 +146,18 @@ suspend fun DVViewer.render(
     }
 }
 
+private fun List<Viewer.GridView.Row>.sortObjects(objectOrderIds: List<Id>): List<Viewer.GridView.Row> {
+    val orderMap = objectOrderIds.mapIndexed { index, id -> id to index }.toMap()
+    return sortedBy { orderMap[it.id] }
+}
+
 private suspend fun DVViewer.buildGridView(
     dataViewRelations: List<ObjectWrapper.Relation>,
     objects: List<Id>,
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
-    store: ObjectStore
+    store: ObjectStore,
+    objectOrderIds: List<Id>
 ): Viewer {
     val vmap = viewerRelations.associateBy { it.key }
     val visibleRelations = dataViewRelations.filter { relation ->
@@ -173,7 +184,7 @@ private suspend fun DVViewer.buildGridView(
         id = id,
         name = name,
         columns = columns,
-        rows = rows
+        rows = if (objectOrderIds.isNotEmpty()) rows.sortObjects(objectOrderIds) else rows
     )
 }
 

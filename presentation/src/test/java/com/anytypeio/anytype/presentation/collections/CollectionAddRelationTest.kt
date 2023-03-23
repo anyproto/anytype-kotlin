@@ -115,7 +115,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
 
             val noItemsState = awaitItem()
             assertEquals(
-                expected = DataViewViewState.Collection.NoItems(title = objectCollection.viewer.name),
+                expected = DataViewViewState.Collection.NoItems(title = objectCollection.viewerList.name),
                 actual = noItemsState
             )
 
@@ -123,8 +123,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             assertEquals(
                 expected = DataViewViewState.Collection.Default(
                     viewer = Viewer.ListView(
-                        id = objectCollection.viewer.id,
-                        title = objectCollection.viewer.name,
+                        id = objectCollection.viewerList.id,
+                        title = objectCollection.viewerList.name,
                         items = listOf(
                             Viewer.ListView.Item.Default(
                                 objectId = objectCollection.obj1.id,
@@ -220,7 +220,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             val eventDataViewUpdateView = Event.Command.DataView.UpdateView(
                 context = root,
                 block = objectCollection.dataView.id,
-                viewerId = objectCollection.viewer.id,
+                viewerId = objectCollection.viewerList.id,
                 relationUpdates = listOf(
                     Event.Command.DataView.UpdateView.DVViewerRelationUpdate.Add(
                         afterId = objectCollection.relationObject2.id,
@@ -230,6 +230,15 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 fields = null,
                 filterUpdates = listOf(),
                 sortUpdates = listOf()
+            )
+            stubSubscriptionResults(
+                subscription = objectCollection.subscriptionId,
+                collection = root,
+                workspace = objectCollection.workspaceId,
+                storeOfRelations = storeOfRelations,
+                keys = objectCollection.dvKeys + relationObject4.key,
+                objects = listOf(objectCollection.obj1, objectCollection.obj2),
+                dvSorts = objectCollection.sorts
             )
             dispatcher.send(
                 Payload(
@@ -244,7 +253,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
 
             val second = awaitItem()
 
-            val expectedView = objectCollection.viewer.copy(
+            val expectedView = objectCollection.viewerList.copy(
                 viewerRelations = listOf(
                     objectCollection.dvViewerRelation1,
                     objectCollection.dvViewerRelation2,
@@ -261,6 +270,9 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.relationLink1,
                         objectCollection.relationLink2,
                         objectCollection.relationLink3,
+                        objectCollection.relationLink4,
+                        objectCollection.relationLink5,
+                        objectCollection.relationLink6,
                         relationLink4
                     )
                 )

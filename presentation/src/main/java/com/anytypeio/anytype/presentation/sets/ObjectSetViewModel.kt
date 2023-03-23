@@ -403,15 +403,21 @@ class ObjectSetViewModel(
                                 state.dataViewContent.relationLinks.mapNotNull {
                                     storeOfRelations.getByKey(it.key)
                                 }
-                            val viewer = state.viewerById(currentViewId)
-                                ?.render(
+                            val dvViewer = state.viewerById(currentViewId)
+                            val viewer = if (dvViewer != null) {
+                                val objectOrderIds = state.getObjectOrderIds(dvViewer.id)
+                                dvViewer.render(
                                     coverImageHashProvider = coverImageHashProvider,
                                     builder = urlBuilder,
                                     objects = db.objects,
                                     dataViewRelations = relations,
                                     details = state.details,
-                                    store = objectStore
+                                    store = objectStore,
+                                    objectOrderIds = objectOrderIds
                                 )
+                            } else {
+                                null
+                            }
                             when {
                                 viewer == null -> DataViewViewState.Collection.NoView
                                 viewer.isEmpty() -> DataViewViewState.Collection.NoItems(title = viewer.title)

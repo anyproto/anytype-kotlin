@@ -78,7 +78,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
             val eventDVUpdate = Event.Command.DataView.UpdateView(
                 context = objectCollection.root,
                 block = objectCollection.dataView.id,
-                viewerId = objectCollection.viewer.id,
+                viewerId = objectCollection.viewerList.id,
                 sortUpdates = listOf(
                     Event.Command.DataView.UpdateView.DVSortUpdate.Update(
                         id = objectCollection.sort1.id,

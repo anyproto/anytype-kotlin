@@ -9,7 +9,6 @@
         android:gravity="center"
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
-        android:textAllCaps="true"
         android:id="@+id/category"
         tools:text="Smileys and people"
         android:layout_height="wrap_content"

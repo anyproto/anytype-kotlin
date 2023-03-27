@@ -182,7 +182,8 @@ fun WidgetActionButton(
             style = TextStyle(
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium,
-                color = colorResource(id = R.color.text_primary)
+                color = colorResource(id = R.color.text_primary),
+                lineHeight = 20.sp
             )
         )
     }

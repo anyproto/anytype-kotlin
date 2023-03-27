@@ -65,6 +65,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -500,7 +501,9 @@ private fun objDescriptionTextStyle() = MaterialTheme.typography.body2.copy(
 @Composable
 private fun objNameTextStyle() = MaterialTheme.typography.h3.copy(
     fontSize = 15.sp,
-    color = colorResource(id = R.color.text_primary)
+    color = colorResource(id = R.color.text_primary),
+    fontWeight = FontWeight.Medium,
+    lineHeight = 20.sp
 )
 
 @ExperimentalMaterialApi

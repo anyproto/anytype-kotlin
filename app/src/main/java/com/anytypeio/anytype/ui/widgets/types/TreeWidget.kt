@@ -212,6 +212,7 @@ private fun TreeWidgetTreeItems(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = colorResource(id = R.color.text_primary),
+                    lineHeight = 20.sp
                 )
             )
         }
@@ -250,6 +251,7 @@ fun WidgetHeader(
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.text_primary),
+                lineHeight = 24.sp
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

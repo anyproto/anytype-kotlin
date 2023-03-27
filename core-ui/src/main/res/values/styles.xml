@@ -221,7 +221,8 @@
     <style name="ModalTitleStyle">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="lineHeight">24sp</item>
     </style>
 
     <style name="RoundedBgTextView" parent="@android:style/Widget.TextView">

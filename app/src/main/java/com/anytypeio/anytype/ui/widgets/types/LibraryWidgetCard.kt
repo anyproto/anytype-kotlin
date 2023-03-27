@@ -90,7 +90,8 @@ fun LibraryWidgetCard(
                 style = TextStyle(
                     fontSize = 17.sp,
                     color = colorResource(id = R.color.text_primary),
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 24.sp
                 )
             )
         }

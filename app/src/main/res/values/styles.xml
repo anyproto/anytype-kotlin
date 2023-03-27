@@ -144,7 +144,7 @@
     <style name="KeychainDialogTitleStyle">
         <item name="fontFamily">@font/inter_bold</item>
         <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="KeychainDialogSubtitleStyle">

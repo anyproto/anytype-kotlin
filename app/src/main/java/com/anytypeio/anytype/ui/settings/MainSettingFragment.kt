@@ -8,18 +8,22 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
+import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase.Companion.ARG_CONTEXT_ID_KEY
 import com.anytypeio.anytype.ui.settings.system.SettingsActivity
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -57,24 +61,36 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
         vm.onOptionClicked(Event.OnDebugClicked)
     }
 
+    private val onSpaceImageClicked = {
+        vm.onOptionClicked(Event.OnSpaceImageClicked)
+    }
+
+    private val onNameSet = { name: String ->
+        vm.onNameSet(name)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                MaterialTheme(typography = typography) {
-                    MainSettingScreen(
-                        onAccountAndDataClicked = onAccountAndDataClicked,
-                        onAboutAppClicked = onAboutAppClicked,
-                        onAppearanceClicked = onAppearanceClicked,
-                        onDebugClicked = onDebugClicked,
-                        onPersonalizationClicked = onPersonalizationClicked,
-                        showDebugMenu = featureToggles.isTroubleshootingMode
-                    )
-                }
+    ) = ComposeDialogView(
+        context = requireContext(),
+        dialog = requireDialog()
+    ).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            MaterialTheme(typography = typography) {
+                MainSettingScreen(
+                    workspace = vm.workspaceData.collectAsStateWithLifecycle().value,
+                    onAccountAndDataClicked = onAccountAndDataClicked,
+                    onAboutAppClicked = onAboutAppClicked,
+                    onAppearanceClicked = onAppearanceClicked,
+                    onDebugClicked = onDebugClicked,
+                    onPersonalizationClicked = onPersonalizationClicked,
+                    showDebugMenu = featureToggles.isTroubleshootingMode,
+                    onSpaceIconClick = onSpaceImageClicked,
+                    onNameSet = onNameSet
+                )
             }
         }
     }
@@ -99,20 +115,27 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
     private fun processCommands(command: Command) {
         when (command) {
-            Command.OpenAboutScreen -> {
+            is Command.OpenAboutScreen -> {
                 safeNavigate(R.id.actionOpenAboutAppScreen)
             }
-            Command.OpenAccountAndDataScreen -> {
+            is Command.OpenAccountAndDataScreen -> {
                 safeNavigate(R.id.actionOpenAccountAndDataScreen)
             }
-            Command.OpenAppearanceScreen -> {
+            is Command.OpenAppearanceScreen -> {
                 safeNavigate(R.id.actionOpenAppearanceScreen)
             }
-            Command.OpenPersonalizationScreen -> {
+            is Command.OpenPersonalizationScreen -> {
                 safeNavigate(R.id.actionOpenPersonalizationScreen)
             }
-            Command.OpenDebugScreen -> {
+            is Command.OpenDebugScreen -> {
                 startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+            }
+            is Command.OpenSpaceImageSet -> {
+                safeNavigate(
+                    R.id.actionOpenImagePickerScreen, bundleOf(
+                        ARG_CONTEXT_ID_KEY to command.id
+                    )
+                )
             }
         }
     }

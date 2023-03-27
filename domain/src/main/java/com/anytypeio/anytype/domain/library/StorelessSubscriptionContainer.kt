@@ -74,7 +74,10 @@ interface StorelessSubscriptionContainer {
                     subscription = subscription,
                     ids = targets,
                     keys = keys
-                ).results.map { SubscriptionObject(it.id, it) }.toMutableList()
+                ).results.map {
+                    println()
+                    SubscriptionObject(it.id, it)
+                }.toMutableList()
                 emitAll(
                     buildObjectsFlow(
                         subscription = searchParams.subscription,

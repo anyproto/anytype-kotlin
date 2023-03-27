@@ -22,6 +22,8 @@ dependencies {
     implementation project(':analytics')
     implementation project(':core-models')
     implementation project(':core-utils')
+    implementation project(':presentation')
+    implementation project(':library-emojifier')
 
     compileOnly libs.javaxInject
 
@@ -33,6 +35,8 @@ dependencies {
     implementation libs.composeFoundation
     implementation libs.composeMaterial
     implementation libs.composeToolingPreview
+
+    implementation libs.coilCompose
 
     debugImplementation libs.composeTooling
 

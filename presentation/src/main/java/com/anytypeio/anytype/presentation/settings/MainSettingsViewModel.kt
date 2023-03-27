@@ -6,19 +6,59 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainSettingsViewModel(
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val configStorage: ConfigStorage,
+    private val urlBuilder: UrlBuilder,
+    private val setObjectDetails: SetObjectDetails
 ) : ViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
     val commands = MutableSharedFlow<Command>(replay = 0)
+
+    val workspaceData = storelessSubscriptionContainer.subscribe(
+        StoreSearchByIdsParams(
+            subscription = SPACE_SUBSCRIPTION_ID,
+            targets = listOf(configStorage.get().workspace),
+            keys = listOf(
+                Relations.ID,
+                Relations.NAME,
+                Relations.ICON_EMOJI,
+                Relations.ICON_IMAGE
+            )
+        )
+    ).map { result ->
+        val obj = result.firstOrNull()
+        WorkspaceData.Data(
+            name = obj?.name ?: "",
+            icon = obj?.spaceIcon(urlBuilder) ?: SpaceIconView.Placeholder
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
+        WorkspaceData.Idle
+    )
 
     init {
         events
@@ -39,6 +79,9 @@ class MainSettingsViewModel(
             Event.OnAppearanceClicked -> commands.emit(Command.OpenAppearanceScreen)
             Event.OnPersonalizationClicked -> commands.emit(Command.OpenPersonalizationScreen)
             Event.OnDebugClicked -> commands.emit(Command.OpenDebugScreen)
+            Event.OnSpaceImageClicked -> commands.emit(Command.OpenSpaceImageSet(
+                configStorage.get().workspace
+            ))
         }
     }
 
@@ -68,18 +111,56 @@ class MainSettingsViewModel(
                     eventName = EventsDictionary.personalisationSettingsShow
                 )
             }
+            Event.OnSpaceImageClicked -> {}
             Event.OnDebugClicked -> {}
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch {
+            storelessSubscriptionContainer.unsubscribe(
+                listOf(SPACE_SUBSCRIPTION_ID)
+            )
+        }
+    }
+
+    fun onNameSet(name: String)  {
+        viewModelScope.launch {
+            setObjectDetails.execute(
+                SetObjectDetails.Params(
+                    ctx = configStorage.get().workspace,
+                    details = mapOf(
+                        Relations.NAME to name
+                    )
+                )
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while updating object details")
+                },
+                onSuccess = {
+                    // do nothing
+                }
+            )
+        }
+    }
+
     class Factory(
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val configStorage: ConfigStorage,
+        private val urlBuilder: UrlBuilder,
+        private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = MainSettingsViewModel(
-            analytics = analytics
+            analytics = analytics,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            configStorage = configStorage,
+            urlBuilder = urlBuilder,
+            setObjectDetails = setObjectDetails
         ) as T
     }
 
@@ -89,6 +170,7 @@ class MainSettingsViewModel(
         object OnAccountAndDataClicked : Event()
         object OnPersonalizationClicked : Event()
         object OnDebugClicked : Event()
+        object OnSpaceImageClicked : Event()
     }
 
     sealed class Command {
@@ -97,5 +179,18 @@ class MainSettingsViewModel(
         object OpenAccountAndDataScreen : Command()
         object OpenPersonalizationScreen : Command()
         object OpenDebugScreen : Command()
+        class OpenSpaceImageSet(val id: Id) : Command()
     }
+
+    sealed class WorkspaceData {
+        object Idle : WorkspaceData()
+        class Data(
+            val name: String,
+            val icon: SpaceIconView
+        ) : WorkspaceData()
+    }
+
 }
+
+private const val SPACE_SUBSCRIPTION_ID = "settings_space_subscription"
+private const val STOP_SUBSCRIPTION_TIMEOUT = 1_000L

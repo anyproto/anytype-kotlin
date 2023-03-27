@@ -165,6 +165,7 @@
         <action android:id="@+id/actionOpenAboutAppScreen" app:destination="@id/aboutAppScreen"/>
         <action android:id="@+id/actionOpenPersonalizationScreen" app:destination="@+id/personalizationScreen"/>
         <action android:id="@+id/actionOpenAppearanceScreen" app:destination="@+id/appearanceScreen"/>
+        <action android:id="@+id/actionOpenImagePickerScreen" app:destination="@+id/objectSetIconPickerScreenForSpace"/>
         <action
             android:id="@+id/action_profileScreen_to_splashFragment"
             app:destination="@+id/main_navigation"
@@ -191,6 +192,11 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </dialog>
+
+    <dialog
+        android:id="@+id/objectSetIconPickerScreenForSpace"
+        android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
+        android:label="Object-Set-Icon-Picker-Screen" />
 
     <dialog
         android:id="@+id/accountAndDataScreen"

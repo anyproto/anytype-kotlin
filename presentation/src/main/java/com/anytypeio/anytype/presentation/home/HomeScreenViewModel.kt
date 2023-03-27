@@ -40,7 +40,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.search.Subscriptions
-import com.anytypeio.anytype.presentation.spaces.SpaceIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
@@ -117,7 +117,7 @@ class HomeScreenViewModel(
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
 
-    val icon = MutableStateFlow<SpaceIcon>(SpaceIcon.Loading)
+    val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
 
     init {
         val config = configStorage.get()
@@ -260,7 +260,7 @@ class HomeScreenViewModel(
                 )
             ).map { result ->
                 val obj = result.firstOrNull()
-                obj?.spaceIcon(urlBuilder) ?: SpaceIcon.Placeholder
+                obj?.spaceIcon(urlBuilder) ?: SpaceIconView.Placeholder
             }.flowOn(appCoroutineDispatchers.io).collect {
                 icon.value = it
             }

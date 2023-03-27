@@ -35,7 +35,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,7 +52,7 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
-import com.anytypeio.anytype.presentation.spaces.SpaceIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
@@ -74,7 +76,7 @@ import timber.log.Timber
 
 @Composable
 fun HomeScreen(
-    spaceIcon: SpaceIcon,
+    spaceIconView: SpaceIconView,
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
@@ -144,7 +146,7 @@ fun HomeScreen(
             exit = fadeOut() + slideOutVertically { it }
         ) {
             HomeScreenBottomToolbar(
-                spaceIcon = spaceIcon,
+                spaceIconView = spaceIconView,
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
                 onSpaceClicked = throttledClick(onSpaceClicked),
@@ -503,7 +505,7 @@ fun HomeScreenButton(
 
 @Composable
 fun HomeScreenBottomToolbar(
-    spaceIcon: SpaceIcon,
+    spaceIconView: SpaceIconView,
     modifier: Modifier,
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
@@ -548,12 +550,12 @@ fun HomeScreenBottomToolbar(
                 .fillMaxSize()
                 .noRippleClickable { onSpaceClicked() }
         ) {
-            Timber.d("Binding icon: $spaceIcon")
-            when(spaceIcon) {
-                is SpaceIcon.Emoji -> {
+            Timber.d("Binding icon: $spaceIconView")
+            when(spaceIconView) {
+                is SpaceIconView.Emoji -> {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = Emojifier.uri(spaceIcon.unicode),
+                            model = Emojifier.uri(spaceIconView.unicode),
                             error = painterResource(id = R.drawable.ic_home_widget_space)
                         ),
                         contentDescription = "Emoji space icon",
@@ -562,16 +564,18 @@ fun HomeScreenBottomToolbar(
                             .align(Alignment.Center)
                     )
                 }
-                is SpaceIcon.Image -> {
+                is SpaceIconView.Image -> {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = spaceIcon.url,
+                            model = spaceIconView.url,
                             error = painterResource(id = R.drawable.ic_home_widget_space)
                         ),
                         contentDescription = "Custom image space icon",
                         modifier = Modifier
                             .size(24.dp)
-                            .align(Alignment.Center)
+                            .clip(RoundedCornerShape(3.dp))
+                            .align(Alignment.Center),
+                        contentScale = ContentScale.Crop
                     )
                 }
                 else -> {

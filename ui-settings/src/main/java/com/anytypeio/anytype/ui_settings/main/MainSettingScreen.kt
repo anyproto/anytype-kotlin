@@ -14,20 +14,29 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
+import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.ui_settings.R
 
 @Composable
 fun MainSettingScreen(
+    workspace: MainSettingsViewModel.WorkspaceData,
+    onSpaceIconClick: () -> Unit,
     onAccountAndDataClicked: () -> Unit,
     onAboutAppClicked: () -> Unit,
     onDebugClicked: () -> Unit,
     onPersonalizationClicked: () -> Unit,
     onAppearanceClicked: () -> Unit,
+    onNameSet: (String) -> Unit,
     showDebugMenu: Boolean
 ) {
     Column(Modifier.fillMaxSize()) {
-        Header(Modifier.align(Alignment.CenterHorizontally))
-        Spacer(modifier = Modifier.height(10.dp))
+        Header(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            workspace = workspace,
+            onSpaceIconClick = onSpaceIconClick,
+            onNameSet = onNameSet
+        )
+        Spacer(modifier = Modifier.height(10.dp).padding(top = 4.dp))
         Divider()
         Spacer(modifier = Modifier.height(26.dp))
         Settings(
@@ -90,15 +99,28 @@ private fun Settings(
 }
 
 @Composable
-private fun Header(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.padding(vertical = 6.dp)) {
-        Dragger()
+private fun Header(
+    modifier: Modifier = Modifier,
+    workspace: MainSettingsViewModel.WorkspaceData,
+    onSpaceIconClick: () -> Unit,
+    onNameSet: (String) -> Unit
+) {
+    when (workspace) {
+        is MainSettingsViewModel.WorkspaceData.Data -> {
+            Box(modifier = modifier.padding(vertical = 6.dp)) {
+                Dragger()
+            }
+            Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
+                SpaceNameBlock()
+            }
+            Box(modifier = modifier.padding(bottom = 16.dp)) {
+                SpaceImageBlock(
+                    icon = workspace.icon,
+                    onSpaceIconClick = onSpaceIconClick
+                )
+            }
+            NameBlock(name = workspace.name, onNameSet = onNameSet)
+        }
+        is MainSettingsViewModel.WorkspaceData.Idle -> {}
     }
-    Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
-        SpaceNameBlock()
-    }
-    Box(modifier = modifier) {
-        SpaceImageBlock(Modifier)
-    }
-    NameBlock(name = "Personal")
 }

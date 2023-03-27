@@ -4270,6 +4270,7 @@ class EditorViewModel(
                     proceedWithConvertingToCollection()
                 }
                 else -> {
+                    clearFocusInCaseOfLayoutNote()
                     proceedWithUpdateObjectType(type = type)
                     sendAnalyticsObjectTypeChangeEvent(
                         analytics = analytics,
@@ -4318,6 +4319,13 @@ class EditorViewModel(
                 typeId = type
             )
         )
+    }
+
+    private fun clearFocusInCaseOfLayoutNote() {
+        val layout = orchestrator.stores.details.current().details[context]?.layout?.toInt()
+        if (layout == ObjectType.Layout.NOTE.code) {
+            proceedWithClearingFocus()
+        }
     }
 
     companion object {

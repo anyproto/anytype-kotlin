@@ -19,6 +19,8 @@ interface LibraryListDelegate {
         .debounce(DEBOUNCE_TIMEOUT)
         .distinctUntilChanged()
 
+    suspend fun unsubscribe()
+
 }
 
 fun List<LibraryView>.filterByQuery(query: String): List<LibraryView> {

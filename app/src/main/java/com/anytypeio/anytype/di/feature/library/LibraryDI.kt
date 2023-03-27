@@ -64,9 +64,10 @@ object LibraryModule {
     fun provideMyTypesDelegate(
         container: StorelessSubscriptionContainer,
         workspaceManager: WorkspaceManager,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        dispatchers: AppCoroutineDispatchers
     ): LibraryListDelegate {
-        return MyTypesDelegate(container, workspaceManager, urlBuilder)
+        return MyTypesDelegate(container, workspaceManager, urlBuilder, dispatchers)
     }
 
     @PerScreen
@@ -74,9 +75,10 @@ object LibraryModule {
     @JvmStatic
     fun provideLibTypesDelegate(
         container: StorelessSubscriptionContainer,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        dispatchers: AppCoroutineDispatchers
     ): LibraryListDelegate {
-        return LibraryTypesDelegate(container, urlBuilder)
+        return LibraryTypesDelegate(container, urlBuilder, dispatchers)
     }
 
     @PerScreen
@@ -85,9 +87,10 @@ object LibraryModule {
     fun provideMyRelationsDelegate(
         container: StorelessSubscriptionContainer,
         workspaceManager: WorkspaceManager,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        dispatchers: AppCoroutineDispatchers
     ): LibraryListDelegate {
-        return MyRelationsDelegate(container, workspaceManager, urlBuilder)
+        return MyRelationsDelegate(container, workspaceManager, urlBuilder, dispatchers)
     }
 
     @PerScreen
@@ -95,9 +98,10 @@ object LibraryModule {
     @JvmStatic
     fun provideLibRelationsDelegate(
         container: StorelessSubscriptionContainer,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        dispatchers: AppCoroutineDispatchers
     ): LibraryListDelegate {
-        return LibraryRelationsDelegate(container, urlBuilder)
+        return LibraryRelationsDelegate(container, urlBuilder, dispatchers)
     }
 
     @Provides

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,7 +23,8 @@ import kotlinx.coroutines.flow.combine
 
 class LibraryTypesDelegate @Inject constructor(
     private val container: StorelessSubscriptionContainer,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val dispatchers: AppCoroutineDispatchers
 ) : LibraryListDelegate, QueryListenerLibTypes {
 
     override val queryFlow: MutableStateFlow<String> = MutableStateFlow("")
@@ -67,6 +69,10 @@ class LibraryTypesDelegate @Inject constructor(
                 )
             }
         )
+    }
+
+    override suspend fun unsubscribe() = with(dispatchers.io) {
+        container.unsubscribe(listOf(SUB_LIBRARY_TYPES))
     }
 
 }

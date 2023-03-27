@@ -356,6 +356,16 @@ class LibraryViewModel(
         effects.value = Effect.ObjectCreated()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch {
+            myRelationsDelegate.unsubscribe()
+            libraryRelationsDelegate.unsubscribe()
+            myTypesDelegate.unsubscribe()
+            libraryTypesDelegate.unsubscribe()
+        }
+    }
+
     class Factory @Inject constructor(
         private val myTypesDelegate: MyTypesDelegate,
         private val libraryTypesDelegate: LibraryTypesDelegate,

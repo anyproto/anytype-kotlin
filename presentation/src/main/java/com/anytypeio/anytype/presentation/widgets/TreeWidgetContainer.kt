@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
@@ -170,11 +169,7 @@ class TreeWidgetContainer(
                             expanded = expanded,
                             currentLinkPath = currentLinkPath
                         ),
-                        objectIcon = ObjectIcon.from(
-                            obj = obj,
-                            layout = obj.layout,
-                            builder = urlBuilder
-                        ),
+                        objectIcon = obj.widgetElementIcon(urlBuilder),
                         indent = level,
                         obj = obj,
                         path = path + link

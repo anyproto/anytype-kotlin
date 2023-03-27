@@ -67,11 +67,7 @@ sealed class ObjectIcon {
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
                     else -> Basic.Avatar(obj.name.orEmpty())
                 }
-                ObjectType.Layout.RELATION -> None
-                ObjectType.Layout.DASHBOARD -> None
-                ObjectType.Layout.SPACE -> None
-                ObjectType.Layout.DATABASE -> None
-                null -> None
+                else -> None
             }
         }
 

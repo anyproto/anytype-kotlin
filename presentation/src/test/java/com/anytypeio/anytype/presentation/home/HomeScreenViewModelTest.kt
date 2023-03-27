@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.home
 
 import app.cash.turbine.test
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -131,6 +132,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var gateway: Gateway
+
+    @Mock
+    lateinit var analytics: Analytics
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -1883,7 +1887,8 @@ class HomeScreenViewModelTest {
         emptyBin = emptyBin,
         unsubscriber = unsubscriber,
         getDefaultPageType = getDefaultPageType,
-        appActionManager = appActionManager
+        appActionManager = appActionManager,
+        analytics = analytics
     )
 
     companion object {

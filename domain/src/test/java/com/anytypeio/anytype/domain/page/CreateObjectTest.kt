@@ -126,7 +126,9 @@ class CreateObjectTest {
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, defaultType) },
                 template = templateBook,
-                internalFlags = listOf()
+                internalFlags = listOf(
+                    InternalFlags.ShouldEmptyDelete
+                )
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -180,7 +182,9 @@ class CreateObjectTest {
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, type) },
                 template = template,
-                internalFlags = listOf()
+                internalFlags = listOf(
+                    InternalFlags.ShouldEmptyDelete
+                )
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -216,7 +220,7 @@ class CreateObjectTest {
                 prefilled = buildMap { put(Relations.TYPE, type) },
                 template = null,
                 internalFlags = listOf(
-                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 )
             )

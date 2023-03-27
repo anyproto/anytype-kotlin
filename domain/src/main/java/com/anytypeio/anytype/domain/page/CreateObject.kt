@@ -25,16 +25,23 @@ class CreateObject(
 
         val type = params.type ?: getDefaultPageType.run(Unit).type
 
-        val template = if (type != null) {
-            getTemplates.run(GetTemplates.Params(type = type)).singleOrNull()?.id
+        val objectTemplates = if (type != null) {
+            getTemplates.run(GetTemplates.Params(type = type))
         } else {
             null
         }
 
-        val internalFlags = if (template != null) {
-            listOf()
-        } else {
-            listOf(InternalFlags.ShouldSelectType, InternalFlags.ShouldEmptyDelete)
+        val template = objectTemplates?.singleOrNull()?.id
+
+        val internalFlags = buildList {
+            if (objectTemplates != null && objectTemplates.size > 1) {
+                add(InternalFlags.ShouldSelectTemplate)
+            } else {
+                if (template == null) {
+                    add(InternalFlags.ShouldSelectType)
+                }
+            }
+            add(InternalFlags.ShouldEmptyDelete)
         }
 
         val prefilled = buildMap {

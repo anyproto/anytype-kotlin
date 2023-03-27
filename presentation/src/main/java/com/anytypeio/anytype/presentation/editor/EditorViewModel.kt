@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Block.Prototype
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -522,8 +523,8 @@ class EditorViewModel(
                     orchestrator.stores.objectTypes.update(event.objectTypes)
                     orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
-                    val objectType = event.details.details[context]?.type?.firstOrNull()
-                    proceedWithShowingObjectTypesWidget(objectType, event.blocks)
+
+                    proceedWithShowingObjectTypesWidget()
                 }
                 is Event.Command.Details -> {
                     orchestrator.stores.details.apply { update(current().process(event)) }
@@ -5831,8 +5832,6 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetItemClicked(typeId: Id) {
         Timber.d("onObjectTypesWidgetItemClicked, type:[$typeId]")
-        dispatchObjectCreateEvent(typeId)
-        proceedWithHidingObjectTypeWidget()
         proceedWithObjectTypeChange(type = typeId, applyTemplate = true)
     }
 
@@ -5852,32 +5851,17 @@ class EditorViewModel(
             )
     }
 
-    private fun proceedWithShowingObjectTypesWidget(objectType: String?, blocks: List<Block>) {
+    private fun proceedWithShowingObjectTypesWidget() {
         val restrictions = orchestrator.stores.objectRestrictions.current()
         if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
             return
         }
-        when (objectType) {
-            ObjectTypeIds.NOTE -> {
-                val root = blocks.find { it.id == context } ?: return
-                if (root.children.size == 2) {
-                    val lastBlock = blocks.find { it.id == root.children.last() }
-                    if (lastBlock != null && lastBlock.content is Content.Text) {
-                        if (lastBlock.content<Content.Text>().text.isEmpty()) {
-                            proceedWithGettingObjectTypesForObjectTypeWidget()
-                        }
-                    }
-                }
-            }
-            else -> {
-                val root = blocks.find { it.id == context } ?: return
-                if (root.children.size == 1) {
-                    val title = blocks.title() ?: return
-                    if (title.content<Content.Text>().text.isEmpty()) {
-                        proceedWithGettingObjectTypesForObjectTypeWidget()
-                    }
-                }
-            }
+        val details = orchestrator.stores.details.current()
+        val objectDetails = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+
+        val internalFlags = objectDetails.internalFlags
+        if (internalFlags.contains(InternalFlags.ShouldSelectType)) {
+            proceedWithGettingObjectTypesForObjectTypeWidget()
         }
     }
 

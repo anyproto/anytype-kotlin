@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
@@ -37,6 +39,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -95,7 +98,8 @@ class HomeScreenViewModel(
     private val emptyBin: EmptyBin,
     private val unsubscriber: Unsubscriber,
     private val getDefaultPageType: GetDefaultPageType,
-    private val appActionManager: AppActionManager
+    private val appActionManager: AppActionManager,
+    private val analytics: Analytics
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -728,10 +732,23 @@ class HomeScreenViewModel(
     }
 
     fun onCreateNewObjectClicked() {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             createObject.stream(CreateObject.Param(null)).collect { result ->
                 result.fold(
-                    onSuccess = { navigate(Navigation.OpenObject(it.objectId)) },
+                    onSuccess = {
+                        if (it.appliedTemplate != null) {
+                            val middleTime = System.currentTimeMillis()
+                            sendAnalyticsObjectCreateEvent(
+                                analytics = analytics,
+                                objType = it.type,
+                                route = EventsDictionary.Routes.objPowerTool,
+                                startTime = startTime,
+                                middleTime = middleTime
+                            )
+                        }
+                        navigate(Navigation.OpenObject(it.objectId))
+                    },
                     onFailure = {
                         Timber.e(it, "Error while creating object")
                         sendToast("Error while creating object. Please, try again later")
@@ -818,7 +835,8 @@ class HomeScreenViewModel(
         private val emptyBin: EmptyBin,
         private val unsubscriber: Unsubscriber,
         private val getDefaultPageType: GetDefaultPageType,
-        private val appActionManager: AppActionManager
+        private val appActionManager: AppActionManager,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -843,7 +861,8 @@ class HomeScreenViewModel(
             emptyBin = emptyBin,
             unsubscriber = unsubscriber,
             getDefaultPageType = getDefaultPageType,
-            appActionManager = appActionManager
+            appActionManager = appActionManager,
+            analytics = analytics
         ) as T
     }
 

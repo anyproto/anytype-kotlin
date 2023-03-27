@@ -2214,7 +2214,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 layout = targetSet.layout,
                 builder = urlBuilder
             )
-            if (targetSet.setOf.isEmpty() && !content.isCollection) {
+            val isSetNoQuery = targetSet.setOf.all { it.isNullOrBlank() }
+            if (isSetNoQuery && !content.isCollection) {
                 return BlockView.DataView.EmptyData(
                     id = block.id,
                     decorations = decorations,

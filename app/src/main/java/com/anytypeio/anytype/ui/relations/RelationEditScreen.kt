@@ -62,7 +62,7 @@ fun RelationEditScreen(vm: RelationEditViewModel, preparedName: String, readOnly
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
 
-    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(120.dp)) {
+    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(132.dp)) {
         RelationEditHeader(vm = vm, readOnly = readOnly)
         RelationEditWidget(
             preparedString = inputValue,

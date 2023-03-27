@@ -29,7 +29,7 @@ fun TypeEditScreen(vm: TypeEditViewModel, preparedName: String, readOnly: Boolea
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
 
-    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(120.dp)) {
+    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(132.dp)) {
         TypeEditHeader(vm = vm, readOnly)
         TypeEditWidget(
             preparedString = inputValue,

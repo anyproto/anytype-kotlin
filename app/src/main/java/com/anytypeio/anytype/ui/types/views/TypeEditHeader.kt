@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.types.views
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,42 +34,49 @@ fun TypeEditHeader(
     readOnly: Boolean
 ) {
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Dragger(modifier = Modifier.align(Alignment.Center))
-    }
+    Column {
 
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
+        Box(modifier = Modifier
             .fillMaxWidth()
-            .height(EditHeaderDefaults.Height)
-            .padding(EditHeaderDefaults.PaddingValues)
-    ) {
-        if (!readOnly) {
-            Spacer(modifier = Modifier.weight(1f))
+            .padding(bottom = 6.dp)
+        ) {
+            Dragger(modifier = Modifier.align(Alignment.Center))
         }
-        Text(
-            text = stringResource(id = R.string.type_editing_title),
-            style = TextStyle(
-                fontFamily = com.anytypeio.anytype.ui.library.styles.fonts,
-                color = colorResource(id = R.color.text_primary),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 17.sp,
-            ),
-        )
-        if (!readOnly) {
-            Box(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(id = R.string.type_editing_uninstall),
-                    color = colorResource(id = R.color.palette_system_red),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .noRippleClickable {
-                            vm.uninstallType()
-                        },
-                    textAlign = TextAlign.End,
-                    style = EditHeaderDefaults.TextButtonStyle
-                )
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(EditHeaderDefaults.PaddingValues)
+                .height(EditHeaderDefaults.Height)
+        ) {
+            if (!readOnly) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Text(
+                text = stringResource(id = R.string.type_editing_title),
+                style = TextStyle(
+                    fontFamily = com.anytypeio.anytype.ui.library.styles.fonts,
+                    color = colorResource(id = R.color.text_primary),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 17.sp,
+                ),
+            )
+            if (!readOnly) {
+                Box(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(id = R.string.type_editing_uninstall),
+                        color = colorResource(id = R.color.palette_system_red),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .noRippleClickable {
+                                vm.uninstallType()
+                            },
+                        textAlign = TextAlign.End,
+                        style = EditHeaderDefaults.TextButtonStyle
+                    )
+                }
             }
         }
     }
@@ -76,8 +85,8 @@ fun TypeEditHeader(
 
 @Immutable
 private object EditHeaderDefaults {
-    val Height = 54.dp
-    val PaddingValues = PaddingValues(start = 12.dp, top = 18.dp, end = 16.dp, bottom = 12.dp)
+    val PaddingValues = PaddingValues(start = 12.dp, top = 6.dp, end = 16.dp, bottom = 12.dp)
+    val Height = 48.dp
     val TextButtonStyle = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Normal,

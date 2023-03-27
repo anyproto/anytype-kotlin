@@ -27,7 +27,7 @@ fun TypeCreationScreen(vm: TypeCreationViewModel, preparedName: String) {
     val inputValue = remember { mutableStateOf(preparedName) }
     val nameValid = remember { mutableStateOf(preparedName.trim().isNotEmpty()) }
 
-    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(120.dp)) {
+    Column(Modifier.padding(top = PaddingTop, bottom = PaddingBottom).height(132.dp)) {
         TypeCreationHeader(
             vm = vm,
             nameValid = nameValid,

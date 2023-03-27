@@ -14,6 +14,12 @@ val fonts = FontFamily(
     Font(R.font.inter_semibold, weight = FontWeight.SemiBold)
 )
 
+val ButtonTextStyle = TextStyle(
+    fontFamily = fonts,
+    fontSize = 17.sp,
+    fontWeight = FontWeight(500)
+)
+
 val TabSubTitleStyle = TextStyle(
     fontFamily = fonts,
     fontSize = 17.sp,

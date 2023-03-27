@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
+import com.anytypeio.anytype.ui.library.styles.ButtonTextStyle
 import com.anytypeio.anytype.ui.library.views.list.LibraryListView
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -123,7 +124,7 @@ private fun Header(
                 end = HeaderDefaults.HeaderPadding
             )
         )
-        Box(Modifier.height(18.dp))
+        Box(Modifier.height(14.dp))
         Button(
             onClick = {
                 when (config) {
@@ -144,9 +145,8 @@ private fun Header(
             content = {
                 Text(
                     text = stringResource(config.mainBtnTitle),
-                    color = colorResource(id = R.color.glyph_label),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold
+                    style = ButtonTextStyle,
+                    color = colorResource(id = R.color.glyph_label)
                 )
             },
             elevation = ButtonDefaults.elevation(

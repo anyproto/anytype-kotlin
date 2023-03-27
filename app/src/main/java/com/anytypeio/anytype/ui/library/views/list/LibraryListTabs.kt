@@ -33,8 +33,7 @@ fun LibraryListTabs(
     pagerState: PagerState,
     configuration: List<LibraryListConfig>,
     modifier: Modifier,
-    screenState: MutableState<ScreenState>
-) = WrapWithLibraryAnimation(visible = screenState.value.visible()) {
+) {
     val scope = rememberCoroutineScope()
     ScrollableTabRow(
         selectedTabIndex = pagerState.currentPage,

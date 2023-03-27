@@ -43,9 +43,7 @@ import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.LibraryListConfig
 import com.anytypeio.anytype.ui.library.ScreenState
-import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
 import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchBarPadding
-import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchBarPaddingTop
 import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchCancelPaddingStart
 import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults.SearchCancelPaddingTop
 import com.anytypeio.anytype.ui.library.views.list.items.CreateNewRelationItem
@@ -103,9 +101,6 @@ fun LibraryListTabsContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            WrapWithLibraryAnimation(visible = screenState.value.visible().not()) {
-                Spacer(modifier = Modifier.height(SearchBarPaddingTop))
-            }
             Row(
                 modifier = Modifier.padding(start = SearchBarPadding, end = SearchBarPadding)
             ) {
@@ -122,7 +117,6 @@ fun LibraryListTabsContent(
                         itemsListState.animateScrollToItem(0)
                     }
                 }
-
                 LibraryListSearchWidget(
                     vmEventStream = vmEventStream,
                     config = configuration[index],
@@ -326,8 +320,7 @@ internal object LibraryListDefaults {
     val DividerThickness = 0.5.dp
     val SearchBarPadding = 20.dp
     val SearchCancelPaddingStart = 8.dp
-    val SearchCancelPaddingTop = 4.dp
-    val SearchBarPaddingTop = 16.dp
+    val SearchCancelPaddingTop = 12.dp
 }
 
 enum class LibraryObjectTypes(val type: String) {

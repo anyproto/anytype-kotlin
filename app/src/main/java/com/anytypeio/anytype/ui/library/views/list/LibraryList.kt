@@ -33,7 +33,7 @@ fun LibraryListView(
         color = colorResource(id = R.color.background_primary)
     )
     Column {
-        LibraryListTabs(pagerState, libraryListConfig, modifier, screenState)
+        LibraryListTabs(pagerState, libraryListConfig, modifier)
         LibraryListTabsContent(
             modifier = modifier,
             pagerState = pagerState,

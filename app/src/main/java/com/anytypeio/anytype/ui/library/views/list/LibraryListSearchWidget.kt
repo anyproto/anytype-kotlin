@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.library.views.list
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.ui.library.views.LibraryTextField
 import com.anytypeio.anytype.ui.library.views.list.LibraryListSearchWidgetDefaults.CornerRadius
 import com.anytypeio.anytype.ui.library.views.list.LibraryListSearchWidgetDefaults.Height
 import com.anytypeio.anytype.ui.library.views.list.LibraryListSearchWidgetDefaults.LeadingIconOffset
+import com.anytypeio.anytype.ui.library.views.list.LibraryListSearchWidgetDefaults.PaddingVertical
 
 @Composable
 fun LibraryListSearchWidget(
@@ -47,14 +49,14 @@ fun LibraryListSearchWidget(
         },
         shape = RoundedCornerShape(CornerRadius),
         modifier = modifier
+            .padding(vertical = PaddingVertical)
             .height(Height)
             .onFocusEvent {
                 if (it.isFocused && animationStartState.value.not()) {
                     animationStartState.value = true
                     screenState.value = ScreenState.SEARCH
                 }
-            }
-        ,
+            },
         textStyle = SearchQueryTextStyle,
         placeholder = {
             Text(
@@ -94,6 +96,7 @@ fun LibraryListConfig.toEvent(query: String): LibraryEvent.Query = when (this) {
 @Immutable
 private object LibraryListSearchWidgetDefaults {
     val Height = 36.dp
+    val PaddingVertical = 6.dp
     val CornerRadius = 10.dp
     val LeadingIconOffset = 8.dp
 }

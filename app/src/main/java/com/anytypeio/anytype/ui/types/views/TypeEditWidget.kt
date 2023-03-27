@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.types.views
 
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
@@ -30,7 +29,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.settings.fonts
 import com.anytypeio.anytype.ui.types.views.TypeEditWidgetDefaults.OffsetX
-import com.anytypeio.anytype.ui.types.views.TypeEditWidgetDefaults.PaddingStart
 
 
 @Composable
@@ -66,7 +64,6 @@ fun TypeEditWidget(
         },
         modifier = Modifier
             .focusRequester(focusRequester)
-            .padding(start = PaddingStart)
             .offset(OffsetX)
             .onGloballyPositioned {
                 focusRequester.requestFocus()
@@ -129,5 +126,4 @@ enum class ImeOptions {
 @Immutable
 private object TypeEditWidgetDefaults {
     val OffsetX = (-4).dp
-    val PaddingStart = 6.dp
 }

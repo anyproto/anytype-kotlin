@@ -49,7 +49,7 @@ sealed class ListRelationViewHolder(
                     }
                 }
             }
-            setSystemIcon(systemIcon, item.system)
+            setLockIcon(systemIcon, item.readOnly)
         }
     }
 
@@ -63,7 +63,7 @@ sealed class ListRelationViewHolder(
         fun bind(item: ObjectRelationView.Checkbox) = with(itemView) {
             tvTitle.text = item.name
             ivCheckbox.isSelected = item.isChecked
-            setSystemIcon(systemIcon, item.system)
+            setLockIcon(systemIcon, item.system)
         }
     }
 
@@ -91,7 +91,7 @@ sealed class ListRelationViewHolder(
                     text = null
                 }
             }
-            setSystemIcon(systemIcon, item.system)
+            setLockIcon(systemIcon, item.system)
         }
     }
 
@@ -109,7 +109,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setSystemIcon(systemIcon, item.system)
+            setLockIcon(systemIcon, item.system)
             for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
             item.tags.forEachIndexed { index, tagView ->
                 when (index) {
@@ -151,7 +151,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setSystemIcon(systemIcon, item.system)
+            setLockIcon(systemIcon, item.system)
             for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
             item.objects.forEachIndexed { index, objectView ->
                 when (index) {
@@ -198,7 +198,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setSystemIcon(systemIcon, item.system)
+            setLockIcon(systemIcon, item.system)
             item.files.forEachIndexed { index, fileView ->
                 when (index) {
                     in 0..MAX_VISIBLE_FILES_INDEX -> {
@@ -239,8 +239,8 @@ sealed class ListRelationViewHolder(
         itemView.setBlockBackgroundColor(color)
     }
 
-    fun setSystemIcon(view: View, isSystem: Boolean) {
-        if (isSystem) {
+    fun setLockIcon(view: View, isReadOnly: Boolean) {
+        if (isReadOnly) {
             view.visible()
         } else {
             view.gone()

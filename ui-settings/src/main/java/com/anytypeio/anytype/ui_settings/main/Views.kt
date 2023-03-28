@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui_settings.main
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -17,7 +19,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -136,25 +138,30 @@ fun SpaceNameBlock(modifier: Modifier = Modifier) {
 
 @Composable
 fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
-
-    val spaceImageModifier = Modifier
-        .size(96.dp)
-        .clip(RoundedCornerShape(8.dp))
-        .noRippleClickable {
-            onSpaceIconClick.invoke()
-        }
-
     when (icon) {
         is SpaceIconView.Emoji -> {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = Emojifier.uri(icon.unicode),
-                    error = painterResource(id = R.drawable.ic_home_widget_space)
-                ),
-                contentDescription = "Emoji space icon",
-                modifier = spaceImageModifier,
-                contentScale = ContentScale.Crop
-            )
+            Box(
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .noRippleClickable {
+                        onSpaceIconClick.invoke()
+                    }
+                    .background(color = colorResource(id = R.color.shape_primary))
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = Emojifier.uri(icon.unicode),
+                        error = painterResource(id = R.drawable.ic_home_widget_space)
+                    ),
+                    contentDescription = "Emoji space icon",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
         is SpaceIconView.Image -> {
             Image(
@@ -164,7 +171,12 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
                 ),
                 contentDescription = "Custom image space icon",
                 contentScale = ContentScale.Crop,
-                modifier = spaceImageModifier
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .noRippleClickable {
+                        onSpaceIconClick.invoke()
+                    }
             )
         }
         else -> {
@@ -172,7 +184,12 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
                 painter = painterResource(id = R.drawable.ic_home_widget_space),
                 contentDescription = "Placeholder space icon",
                 contentScale = ContentScale.Crop,
-                modifier = spaceImageModifier
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .noRippleClickable {
+                        onSpaceIconClick.invoke()
+                    }
             )
         }
     }

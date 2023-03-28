@@ -107,7 +107,12 @@
         <dialog
             android:id="@+id/objectSetIconPickerScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
-            android:label="Object-Set-Icon-Picker-Screen" />
+            android:label="Object-Set-Icon-Picker-Screen">
+            <argument
+                android:name="arg.show_remove_button"
+                android:defaultValue="true"
+                app:argType="boolean"/>
+        </dialog>
         <dialog
             android:id="@+id/objectSetCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment"

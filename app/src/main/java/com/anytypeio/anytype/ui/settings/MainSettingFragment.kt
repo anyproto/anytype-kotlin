@@ -24,6 +24,7 @@ import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase.Companion.ARG_CONTEXT_ID_KEY
+import com.anytypeio.anytype.ui.sets.ARG_SHOW_REMOVE_BUTTON
 import com.anytypeio.anytype.ui.settings.system.SettingsActivity
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -133,7 +134,8 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
             is Command.OpenSpaceImageSet -> {
                 safeNavigate(
                     R.id.actionOpenImagePickerScreen, bundleOf(
-                        ARG_CONTEXT_ID_KEY to command.id
+                        ARG_CONTEXT_ID_KEY to command.id,
+                        ARG_SHOW_REMOVE_BUTTON to false
                     )
                 )
             }

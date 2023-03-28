@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchFor
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_BLOCK
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_DV
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_OBJECT
+import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_SET_OR_COLLECTION
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_TYPE
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -161,7 +162,11 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
             R.id.limitObjectTypeScreen,
             bundleOf(
                 LimitObjectTypeFragment.CTX_KEY to ctx,
-                LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_OBJECT
+                if (isSetOrCollection) {
+                    LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_SET_OR_COLLECTION
+                } else {
+                    LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_OBJECT
+                }
             )
         )
     }
@@ -171,7 +176,11 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
             R.id.relationFormatPickerScreen,
             bundleOf(
                 RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
-                FLOW_TYPE to FLOW_OBJECT
+                if (isSetOrCollection) {
+                    FLOW_TYPE to FLOW_SET_OR_COLLECTION
+                } else {
+                    FLOW_TYPE to FLOW_OBJECT
+                }
             )
         )
     }

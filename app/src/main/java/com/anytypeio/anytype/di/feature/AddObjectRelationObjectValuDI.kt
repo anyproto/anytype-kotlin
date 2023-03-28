@@ -12,6 +12,7 @@ import com.anytypeio.anytype.ui.relations.add.AddObjectRelationFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
 
 @Subcomponent(modules = [AddObjectRelationModule::class])
 @PerDialog
@@ -33,14 +34,13 @@ object AddObjectRelationModule {
     @Provides
     @PerDialog
     fun provideViewModelFactory(
-        relations: ObjectRelationProvider,
+        @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         storeOfObjectTypes: StoreOfObjectTypes,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder,
         workspaceManager: WorkspaceManager
-    ): AddObjectRelationViewModel.Factory =
-        AddObjectRelationViewModel.Factory(
-            relations, values, searchObjects, urlBuilder, storeOfObjectTypes, workspaceManager
-        )
+    ): AddObjectRelationViewModel.Factory = AddObjectRelationViewModel.Factory(
+        relations, values, searchObjects, urlBuilder, storeOfObjectTypes, workspaceManager
+    )
 }

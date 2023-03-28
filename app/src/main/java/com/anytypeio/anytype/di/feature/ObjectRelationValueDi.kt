@@ -4,12 +4,14 @@ import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
@@ -22,6 +24,7 @@ import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
 
 @Subcomponent(modules = [ObjectSetObjectRelationValueModule::class])
 @PerModal
@@ -70,7 +73,7 @@ object ObjectSetObjectRelationValueModule {
     @Provides
     @PerModal
     fun provideViewModelFactoryForDataView(
-        relations: ObjectRelationProvider,
+        @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
         storeOfObjectTypes: StoreOfObjectTypes,
@@ -101,7 +104,7 @@ object ObjectObjectRelationValueModule {
     @Provides
     @PerModal
     fun provideViewModelFactoryForObject(
-        relations: ObjectRelationProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
         storeOfObjectTypes: StoreOfObjectTypes,

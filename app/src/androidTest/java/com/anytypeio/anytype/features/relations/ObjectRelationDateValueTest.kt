@@ -114,7 +114,7 @@ class ObjectRelationDateValueTest {
                 RelationDateValueFragment.CONTEXT_ID to root,
                 RelationDateValueFragment.RELATION_KEY to relation.key,
                 RelationDateValueFragment.OBJECT_ID to target,
-                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DV
             )
         )
 
@@ -177,7 +177,7 @@ class ObjectRelationDateValueTest {
                 RelationDateValueFragment.CONTEXT_ID to root,
                 RelationDateValueFragment.RELATION_KEY to relation.key,
                 RelationDateValueFragment.OBJECT_ID to target,
-                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DV
             )
         )
 
@@ -236,7 +236,7 @@ class ObjectRelationDateValueTest {
                 RelationDateValueFragment.CONTEXT_ID to root,
                 RelationDateValueFragment.RELATION_KEY to relation.key,
                 RelationDateValueFragment.OBJECT_ID to target,
-                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DV
             )
         )
 
@@ -300,7 +300,7 @@ class ObjectRelationDateValueTest {
                 RelationDateValueFragment.CONTEXT_ID to root,
                 RelationDateValueFragment.RELATION_KEY to relation.key,
                 RelationDateValueFragment.OBJECT_ID to target,
-                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DV
             )
         )
 
@@ -359,7 +359,7 @@ class ObjectRelationDateValueTest {
                 RelationDateValueFragment.CONTEXT_ID to root,
                 RelationDateValueFragment.RELATION_KEY to relation.key,
                 RelationDateValueFragment.OBJECT_ID to target,
-                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DV
             )
         )
 
@@ -419,7 +419,7 @@ class ObjectRelationDateValueTest {
                 RelationDateValueFragment.CONTEXT_ID to root,
                 RelationDateValueFragment.RELATION_KEY to relation.key,
                 RelationDateValueFragment.OBJECT_ID to target,
-                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DV
             )
         )
 
@@ -492,7 +492,7 @@ class ObjectRelationDateValueTest {
                 RelationDateValueFragment.CONTEXT_ID to root,
                 RelationDateValueFragment.RELATION_KEY to relation.key,
                 RelationDateValueFragment.OBJECT_ID to target,
-                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DATAVIEW
+                RelationDateValueFragment.FLOW_KEY to RelationDateValueFragment.FLOW_DV
             )
         )
 

@@ -243,7 +243,9 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         event: Command.DataView.SetRelation
     ): ObjectState {
         val updateBlockContent = { content: Block.Content.DataView ->
-            content.copy(relationLinks = content.relationLinks + event.links)
+            content.copy(
+                relationLinks = content.relationLinks + event.links
+            )
         }
         return when (state) {
             is ObjectState.DataView.Collection -> state.updateBlockContent(

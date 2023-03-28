@@ -3,8 +3,8 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvid
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.add.AddOptionsRelationDVFragment
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.ui.relations.add.AddOptionsRelationFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
 
 @Subcomponent(modules = [AddObjectRelationValueModule::class])
 @PerDialog
@@ -40,7 +42,7 @@ object AddObjectRelationValueModule {
     @Provides
     @PerDialog
     fun provideViewModelFactoryForSets(
-        relations: ObjectRelationProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         dispatcher: Dispatcher<Payload>,
         createRelationOption: CreateRelationOption,
@@ -64,7 +66,7 @@ object AddObjectRelationValueModule {
     @Provides
     @PerDialog
     fun provideViewModelFactoryForObjects(
-        relations: ObjectRelationProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         dispatcher: Dispatcher<Payload>,
         createRelationOption: CreateRelationOption,

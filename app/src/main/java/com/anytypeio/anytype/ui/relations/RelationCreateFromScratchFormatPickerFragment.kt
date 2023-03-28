@@ -71,10 +71,13 @@ class RelationCreateFromScratchFormatPickerFragment :
                 componentManager().relationFormatPickerBlockComponent.get(ctx).inject(this)
             }
             FLOW_DV -> {
-                componentManager().relationFormatPickerObjectSetComponent.get(ctx).inject(this)
+                componentManager().relationFormatPickerDataViewComponent.get(ctx).inject(this)
             }
             FLOW_LIBRARY -> {
                 componentManager().relationFormatPickerLibraryComponent.get(ctx).inject(this)
+            }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().relationFormatPickerSetOrCollectionComponent.get(ctx).inject(this)
             }
         }
     }
@@ -88,10 +91,13 @@ class RelationCreateFromScratchFormatPickerFragment :
                 componentManager().relationFormatPickerBlockComponent.release(ctx)
             }
             FLOW_DV -> {
-                componentManager().relationFormatPickerObjectSetComponent.release(ctx)
+                componentManager().relationFormatPickerDataViewComponent.release(ctx)
             }
             FLOW_LIBRARY -> {
                 componentManager().relationFormatPickerLibraryComponent.release(ctx)
+            }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().relationFormatPickerSetOrCollectionComponent.release(ctx)
             }
         }
     }
@@ -116,5 +122,6 @@ class RelationCreateFromScratchFormatPickerFragment :
         const val FLOW_DV = "arg.relation-format-picker.flow-dv"
         const val FLOW_BLOCK = "arg.relation-format-picker.flow-block"
         const val FLOW_LIBRARY = "arg.relation-format-picker.flow-library"
+        const val FLOW_SET_OR_COLLECTION = "arg.relation-format-picker.flow-set-or-collection"
     }
 }

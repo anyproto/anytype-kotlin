@@ -132,7 +132,12 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
                     relationKey = command.relationKey,
-                    objectId = command.target
+                    objectId = command.target,
+                    flow = if (isDataViewFLow) {
+                        RelationDateValueFragment.FLOW_SET_OR_COLLECTION
+                    } else {
+                        RelationDateValueFragment.FLOW_DEFAULT
+                    }
                 )
                 fr.showChildFragment()
             }

@@ -46,6 +46,7 @@ import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
 import com.anytypeio.anytype.di.feature.OtherSettingsModule
 import com.anytypeio.anytype.di.feature.PageNavigationModule
+import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
 import com.anytypeio.anytype.di.feature.RelationTextValueModule
 import com.anytypeio.anytype.di.feature.SelectAccountModule
@@ -400,7 +401,15 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetObjectRelationDataValueComponent = DependentComponentMap { ctx ->
+    val dataViewRelationDateValueComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .dataViewRelationDateValueComponent()
+            .module(RelationDataViewDateValueModule)
+            .build()
+    }
+
+    val setOrCollectionRelationDateValueComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
             .relationDateValueComponent()
@@ -408,7 +417,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectObjectRelationDateValueComponet = DependentComponentMap { ctx ->
+    val objectRelationDateValueComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)
             .editRelationDateComponent()
@@ -706,6 +715,22 @@ class ComponentManager(
             .build()
     }
 
+    val relationCreateFromScratchForObjectBlockComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .relationCreateFromScratchForObjectBlockComponent()
+            .module(RelationCreateFromScratchForObjectBlockModule)
+            .build()
+    }
+
+    val relationCreateFromScratchForDataViewComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .relationCreateFromScratchForDataViewComponent()
+            .module(RelationCreateFromScratchForDataViewModule)
+            .build()
+    }
+
     val relationFormatPickerObjectComponent = DependentComponentMap { ctx ->
         relationCreateFromScratchForObjectComponent
             .get(ctx)
@@ -726,14 +751,21 @@ class ComponentManager(
             .build()
     }
 
-    val relationFormatPickerObjectSetComponent = DependentComponentMap { ctx ->
+    val relationFormatPickerDataViewComponent = DependentComponentMap { ctx ->
         relationCreateFromScratchForDataViewComponent
             .get(ctx)
             .relationFormatPickerComponent()
             .build()
     }
 
-    val limitObjectTypeComponent = DependentComponentMap { ctx ->
+    val relationFormatPickerSetOrCollectionComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForObjectSetComponent
+            .get(ctx)
+            .relationFormatPickerComponent()
+            .build()
+    }
+
+    val limitObjectTypeObjectComponent = DependentComponentMap { ctx ->
         relationCreateFromScratchForObjectComponent.get(ctx)
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)
@@ -754,26 +786,17 @@ class ComponentManager(
             .build()
     }
 
-    val limitObjectTypeLibraryComponent = DependentComponentMap { ctx ->
-        relationCreationFromLibraryComponent.get()
+    val limitObjectTypeSetOrCollectionComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForObjectSetComponent.get(ctx)
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)
             .build()
     }
 
-    val relationCreateFromScratchForObjectBlockComponent = DependentComponentMap { ctx ->
-        editorComponent
-            .get(ctx)
-            .relationCreateFromScratchForObjectBlockComponent()
-            .module(RelationCreateFromScratchForObjectBlockModule)
-            .build()
-    }
-
-    val relationCreateFromScratchForDataViewComponent = DependentComponentMap { ctx ->
-        objectSetComponent
-            .get(ctx)
-            .relationCreateFromScratchForDataViewComponent()
-            .module(RelationCreateFromScratchForDataViewModule)
+    val limitObjectTypeLibraryComponent = DependentComponentMap { ctx ->
+        relationCreationFromLibraryComponent.get()
+            .limitObjectTypeComponent()
+            .module(LimitObjectTypeModule)
             .build()
     }
 

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Subcomponent(modules = [RelationAddToObjectModule::class])
@@ -50,7 +52,7 @@ object RelationAddToObjectModule {
         storeOfRelations: StoreOfRelations,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        relationsProvider: ObjectRelationProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) relationsProvider: ObjectRelationProvider,
         getRelations: GetRelations,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         addObjectToWorkspace: AddObjectToWorkspace,
@@ -110,7 +112,7 @@ object RelationAddToDataViewModule {
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
         analytics: Analytics,
-        relationsProvider: ObjectRelationProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) relationsProvider: ObjectRelationProvider,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,

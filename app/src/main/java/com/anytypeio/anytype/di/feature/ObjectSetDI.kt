@@ -62,8 +62,11 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRela
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionRelationProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -115,7 +118,9 @@ interface ObjectSetSubComponent {
     fun viewerSortComponent(): ViewerSortSubComponent.Builder
     fun modifyViewerSortComponent(): ModifyViewerSortSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
-    fun relationDateValueComponent(): RelationDataValueSubComponent.Builder
+
+    fun relationDateValueComponent(): DefaultRelationDataValueSubComponent.Builder
+    fun dataViewRelationDateValueComponent(): DataViewRelationDataValueSubComponent.Builder
 
     fun objectSetMenuComponent(): ObjectSetMenuComponent.Builder
     fun objectSetIconPickerComponent(): ObjectSetIconPickerComponent.Builder
@@ -354,10 +359,23 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    @Named(DATA_VIEW_PROVIDER_TYPE)
     fun provideDataViewObjectRelationProvider(
         state: MutableStateFlow<ObjectState>,
         storeOfRelations: StoreOfRelations
     ): ObjectRelationProvider = DataViewObjectRelationProvider(
+        objectState = state,
+        storeOfRelations = storeOfRelations
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    @Named(INTRINSIC_PROVIDER_TYPE)
+    fun provideObjectRelationProvider(
+        state: MutableStateFlow<ObjectState>,
+        storeOfRelations: StoreOfRelations
+    ): ObjectRelationProvider = SetOrCollectionRelationProvider(
         objectState = state,
         storeOfRelations = storeOfRelations
     )

@@ -127,18 +127,30 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
     }
 
     override fun injectDependencies() {
-        if (flow == FLOW_DATAVIEW) {
-            componentManager().objectSetObjectRelationDataValueComponent.get(ctx).inject(this)
-        } else {
-            componentManager().objectObjectRelationDateValueComponet.get(ctx).inject(this)
+        when (flow) {
+            FLOW_DV -> {
+                componentManager().dataViewRelationDateValueComponent.get(ctx).inject(this)
+            }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().setOrCollectionRelationDateValueComponent.get(ctx).inject(this)
+            }
+            else -> {
+                componentManager().objectRelationDateValueComponent.get(ctx).inject(this)
+            }
         }
     }
 
     override fun releaseDependencies() {
-        if (flow == FLOW_DATAVIEW) {
-            componentManager().objectSetObjectRelationDataValueComponent.release(ctx)
-        } else {
-            componentManager().objectObjectRelationDateValueComponet.release(ctx)
+        when (flow) {
+            FLOW_DV -> {
+                componentManager().dataViewRelationDateValueComponent.release(ctx)
+            }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().setOrCollectionRelationDateValueComponent.release(ctx)
+            }
+            else -> {
+                componentManager().objectRelationDateValueComponent.release(ctx)
+            }
         }
     }
 
@@ -171,7 +183,8 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
 
         const val FLOW_KEY = "arg.relation.date.flow"
         const val FLOW_DEFAULT = 0
-        const val FLOW_DATAVIEW = 1
+        const val FLOW_DV = 1
+        const val FLOW_SET_OR_COLLECTION = 2
     }
 
     interface DateValueEditReceiver {

@@ -116,6 +116,7 @@ import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelat
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -131,6 +132,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
 import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(
@@ -163,7 +165,7 @@ interface EditorSubComponent {
     fun relationCreateFromScratchForObjectBlockComponent(): RelationCreateFromScratchForObjectBlockSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
     fun editDocRelationComponent(): ObjectObjectRelationValueSubComponent.Builder
-    fun editRelationDateComponent(): RelationDataValueSubComponent.Builder
+    fun editRelationDateComponent(): DefaultRelationDataValueSubComponent.Builder
 
     fun objectCoverComponent(): SelectCoverObjectSubComponent.Builder
     fun objectUnsplashComponent(): UnsplashSubComponent.Builder
@@ -872,6 +874,7 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
+    @Named(INTRINSIC_PROVIDER_TYPE)
     fun provideDefaultObjectRelationProvider(
         storage: Editor.Storage,
         storeOfRelations: StoreOfRelations

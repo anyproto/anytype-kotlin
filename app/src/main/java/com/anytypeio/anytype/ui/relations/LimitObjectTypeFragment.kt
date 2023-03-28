@@ -17,9 +17,9 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.LimitObjectTypeViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChangeBinding>() {
 
@@ -70,7 +70,7 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
     override fun injectDependencies() {
         when(flow) {
             FLOW_OBJECT -> {
-                componentManager().limitObjectTypeComponent.get(ctx).inject(this)
+                componentManager().limitObjectTypeObjectComponent.get(ctx).inject(this)
             }
             FLOW_DV -> {
                 componentManager().limitObjectTypeDataViewComponent.get(ctx).inject(this)
@@ -81,13 +81,16 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
             FLOW_LIBRARY -> {
                 componentManager().limitObjectTypeLibraryComponent.get(ctx).inject(this)
             }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().limitObjectTypeSetOrCollectionComponent.get(ctx).inject(this)
+            }
         }
     }
 
     override fun releaseDependencies() {
         when(flow) {
             FLOW_OBJECT -> {
-                componentManager().limitObjectTypeComponent.release(ctx)
+                componentManager().limitObjectTypeObjectComponent.release(ctx)
             }
             FLOW_DV -> {
                 componentManager().limitObjectTypeDataViewComponent.release(ctx)
@@ -97,6 +100,9 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
             }
             FLOW_LIBRARY -> {
                 componentManager().limitObjectTypeLibraryComponent.release(ctx)
+            }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().limitObjectTypeSetOrCollectionComponent.release(ctx)
             }
         }
     }
@@ -112,6 +118,7 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
         const val CTX_KEY = "arg.limit-object-type.ctx"
         const val FLOW_TYPE = "arg.limit-object-type.flow"
         const val FLOW_OBJECT = "arg.limit-object-type.flow-object"
+        const val FLOW_SET_OR_COLLECTION = "arg.limit-object-type.flow-set-or-collection"
         const val FLOW_LIBRARY = "arg.limit-object-type.flow-library"
         const val FLOW_DV = "arg.limit-object-type.flow-dv"
         const val FLOW_BLOCK = "arg.limit-object-type.flow-block"

@@ -4,9 +4,8 @@ import android.os.Build
 import androidx.core.text.getSpans
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.CheckedCheckboxColorSpan
-import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -14,11 +13,11 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -52,12 +51,12 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = holder.content.currentTextColor,
-            expected = context.resources.dark(ThemeColor.DEFAULT)
+            expected = context.resources.getColor(R.color.text_primary, null)
         )
     }
 
     @Test
-    fun `should have checkboxhighlight span when checked`() {
+    fun `should have checkbox highlight span when checked`() {
 
         val checkbox = BlockView.Text.Checkbox(
             id = MockDataFactory.randomUuid(),
@@ -84,7 +83,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = holder.content.currentTextColor,
-            expected = context.resources.dark(ThemeColor.DEFAULT)
+            expected = context.resources.getColor(R.color.text_primary, null)
         )
 
         val spans = holder.content.text!!.getSpans<CheckedCheckboxColorSpan>(0)

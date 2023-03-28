@@ -147,7 +147,7 @@
     <color name="dashboard_background">#99F5F5F5</color>
 
     <!-- Colors at Figma https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Typography-and-Colors%2FMobile?node-id=1031%3A160 -->
-    <color name="palette_dark_default">#2C2B27</color>
+    <color name="palette_dark_default">#252525</color>
     <color name="palette_dark_yellow">#AFA100</color>
     <color name="palette_dark_orange">#C38400</color>
     <color name="palette_dark_red">#E9410B</color>

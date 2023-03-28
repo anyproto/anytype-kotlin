@@ -132,9 +132,6 @@ open class ObjectSetFragment :
     private val customizeViewButton: ImageView
         get() = binding.dataViewHeader.customizeViewButton
 
-    private val tvCurrentViewerName: TextView
-        get() = binding.dataViewHeader.tvCurrentViewerName
-
     private val menuButton: FrameLayout
         get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
 
@@ -220,7 +217,7 @@ open class ObjectSetFragment :
             }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
-            subscribe(tvCurrentViewerName.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
+            subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
             subscribe(binding.unsupportedViewError.clicks().throttleFirst()) { vm.onUnsupportedViewErrorClicked() }
 
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnFilter).clicks().throttleFirst()) {
@@ -402,7 +399,7 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = true
                 addNewButton.isEnabled = true
                 customizeViewButton.isEnabled = true
-                viewerTitle.text = state.title
+                setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
                 setViewer(viewer = null)
             }
@@ -414,7 +411,7 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = true
                 addNewButton.isEnabled = true
                 customizeViewButton.isEnabled = true
-                viewerTitle.text = state.viewer?.title ?: getString(R.string.viewer_default_title)
+                setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
                 setViewer(viewer = state.viewer)
             }
@@ -427,7 +424,7 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = false
                 addNewButton.isEnabled = false
                 customizeViewButton.isEnabled = false
-                viewerTitle.text = getString(R.string.viewer_default_title)
+                setCurrentViewerName(getString(R.string.viewer_default_title))
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_QUERY)
                 setViewer(viewer = null)
             }
@@ -440,7 +437,7 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = true
                 addNewButton.isEnabled = true
                 customizeViewButton.isEnabled = true
-                viewerTitle.text = state.title
+                setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
                 setViewer(viewer = null)
 
@@ -453,7 +450,7 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = true
                 addNewButton.isEnabled = true
                 customizeViewButton.isEnabled = true
-                viewerTitle.text = state.viewer?.title ?: getString(R.string.viewer_default_title)
+                setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
                 dataViewInfo.hide()
             }
@@ -475,6 +472,14 @@ open class ObjectSetFragment :
                 dataViewInfo.hide()
                 setViewer(viewer = null)
             }
+        }
+    }
+
+    private fun setCurrentViewerName(title: String?) {
+        viewerTitle.text = if (title.isNullOrEmpty()) {
+            getString(R.string.untitled)
+        } else {
+            title
         }
     }
 

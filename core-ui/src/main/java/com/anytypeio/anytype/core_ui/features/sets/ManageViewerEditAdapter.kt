@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.sets
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.AbstractAdapter
 import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
 import com.anytypeio.anytype.core_ui.databinding.ItemDvManageViewerBinding
@@ -59,8 +60,12 @@ class ManageViewerEditAdapter(
         val binding: ItemDvManageViewerBinding
     ) : AbstractViewHolder<ViewerView>(binding.root), ItemTouchHelperViewHolder {
 
+        val untitled = binding.root.context.getString(R.string.untitled)
+
         override fun bind(item: ViewerView) {
-            binding.title.text = item.name
+            binding.title.text = item.name.ifEmpty {
+                untitled
+            }
         }
 
         override fun onItemSelected() {
@@ -96,9 +101,12 @@ class ManageViewerDoneAdapter(
 
         private val title = binding.title
         private val icChecked = binding.iconChecked
+        val untitled = binding.root.context.getString(R.string.untitled)
 
         override fun bind(item: ViewerView) {
-            title.text = item.name
+            title.text = item.name.ifEmpty {
+                untitled
+            }
             if (item.isActive) {
                 icChecked.visible()
             } else {

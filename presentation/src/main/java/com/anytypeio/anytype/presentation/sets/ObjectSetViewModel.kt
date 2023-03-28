@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.getAnalyticsParams
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -1091,14 +1092,14 @@ class ObjectSetViewModel(
             analytics = analytics,
             eventName = EventsDictionary.createObjectNavBar,
         )
+        val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null)).fold(
                 onSuccess = { result ->
                     if (result.appliedTemplate != null) {
                         sendAnalyticsObjectCreateEvent(
-                            analytics = analytics,
-                            objType = result.type,
-                            route = EventsDictionary.Routes.objCreateSet,
+                            startTime = startTime,
+                            type = result.type
                         )
                     }
                     proceedWithOpeningObject(result.objectId)
@@ -1109,6 +1110,23 @@ class ObjectSetViewModel(
                 }
             )
         }
+    }
+
+    private fun sendAnalyticsObjectCreateEvent(startTime: Long, type: String?) {
+        val state = (stateReducer.state.value as? ObjectState.DataView) ?: return
+        val middleTime = System.currentTimeMillis()
+        val params = state.getAnalyticsParams()
+        val analyticsContext = params.first
+        val analyticsObjectId = params.second
+        viewModelScope.sendAnalyticsObjectCreateEvent(
+            analytics = analytics,
+            objType = type,
+            route = EventsDictionary.Routes.objCreateSet,
+            startTime = startTime,
+            middleTime = middleTime,
+            context = analyticsContext,
+            originalId = analyticsObjectId
+        )
     }
 
     fun onSearchButtonClicked() {

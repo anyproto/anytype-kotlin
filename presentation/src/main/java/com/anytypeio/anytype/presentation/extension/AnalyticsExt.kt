@@ -257,7 +257,8 @@ private fun propsForObjectEvents(
     type: String?,
     layoutCode: Double?,
     route: String? = null,
-    context: String? = null
+    context: String? = null,
+    originalId: String? = null
 ): Props {
     val objType = when {
         type == null -> null
@@ -274,7 +275,8 @@ private fun propsForObjectEvents(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.layout to layout,
             EventsPropertiesKey.route to route,
-            EventsPropertiesKey.context to context
+            EventsPropertiesKey.context to context,
+            EventsPropertiesKey.originalId to originalId
         )
     )
 }
@@ -641,7 +643,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     route: String,
     startTime: Long? = null,
     middleTime: Long? = null,
-    context: String? = null
+    context: String? = null,
+    originalId: String? = null
 ) {
     sendEvent(
         analytics = analytics,
@@ -650,7 +653,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             type = objType,
             layoutCode = layout,
             route = route,
-            context = context
+            context = context,
+            originalId = originalId
         ),
         startTime = startTime,
         middleTime = middleTime,
@@ -873,7 +877,7 @@ fun CoroutineScope.sendAnalyticsMentionMenuEvent(
     )
 }
 
-private fun ObjectState.DataView.getAnalyticsParams(): Pair<String?, String?> {
+fun ObjectState.DataView.getAnalyticsParams(): Pair<String?, String?> {
     val block = blocks.firstOrNull { it.id == root }
     val analyticsContext = block?.fields?.analyticsContext
     val analyticsObjectId = if (analyticsContext != null) block.fields.analyticsOriginalId else null

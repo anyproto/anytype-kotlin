@@ -35,6 +35,7 @@ class CreateObject(
 
         val internalFlags = buildList {
             if (objectTemplates != null && objectTemplates.size > 1) {
+                add(InternalFlags.ShouldSelectType)
                 add(InternalFlags.ShouldSelectTemplate)
             } else {
                 if (template == null) {

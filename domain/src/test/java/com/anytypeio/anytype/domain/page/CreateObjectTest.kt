@@ -220,6 +220,7 @@ class CreateObjectTest {
                 prefilled = buildMap { put(Relations.TYPE, type) },
                 template = null,
                 internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 )

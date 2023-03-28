@@ -363,6 +363,7 @@ class EditorViewModel(
         private set
 
     private var analyticsContext: String? = null
+    private var analyticsOriginalId: String? = null
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
@@ -977,6 +978,9 @@ class EditorViewModel(
                                     }
                                     val block = event.blocks.firstOrNull { it.id == context }
                                     analyticsContext = block?.fields?.analyticsContext
+                                    if (analyticsContext != null) {
+                                        analyticsOriginalId = block?.fields?.analyticsOriginalId
+                                    }
                                     sendAnalyticsObjectShowEvent(
                                         analytics = analytics,
                                         startTime = startTime,
@@ -3136,7 +3140,8 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime,
                         middleTime = middleTime,
-                        context = analyticsContext
+                        context = analyticsContext,
+                        originalId = analyticsOriginalId
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -3155,16 +3160,21 @@ class EditorViewModel(
             props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
         )
 
+        val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
                         if (result.appliedTemplate != null) {
+                            val middleTime = System.currentTimeMillis()
                             sendAnalyticsObjectCreateEvent(
                                 analytics = analytics,
                                 objType = result.type,
                                 route = EventsDictionary.Routes.objPowerTool,
-                                context = analyticsContext
+                                context = analyticsContext,
+                                originalId = analyticsOriginalId,
+                                startTime = startTime,
+                                middleTime = middleTime
                             )
                         }
                         proceedWithOpeningObject(result.objectId)
@@ -5675,7 +5685,8 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime,
                         middleTime = middleTime,
-                        context = analyticsContext
+                        context = analyticsContext,
+                        originalId = analyticsOriginalId
                     )
                 }
             )
@@ -5845,10 +5856,11 @@ class EditorViewModel(
         proceedWithHidingObjectTypeWidget()
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        if (wrapper.type.isNotEmpty())
-            proceedWithTemplateSelection(
-                typeId = wrapper.type.first()
-            )
+        if (wrapper.internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
+            if (wrapper.type.isNotEmpty()) {
+                proceedWithTemplateSelection(typeId = wrapper.type.first())
+            }
+        }
     }
 
     private fun proceedWithShowingObjectTypesWidget() {
@@ -5920,7 +5932,8 @@ class EditorViewModel(
                         objType = type.name,
                         layout = wrapper.layout?.code?.toDouble(),
                         route = EventsDictionary.Routes.objCreateHome,
-                        context = analyticsContext
+                        context = analyticsContext,
+                        originalId = analyticsOriginalId
                     )
                 }
             }
@@ -5937,7 +5950,8 @@ class EditorViewModel(
                         objType = type.name,
                         layout = wrapper.layout?.code?.toDouble(),
                         route = EventsDictionary.Routes.objCreateHome,
-                        context = analyticsContext
+                        context = analyticsContext,
+                        originalId = analyticsOriginalId
                     )
                 }
             }
@@ -6039,6 +6053,7 @@ class EditorViewModel(
                     layout = null,
                     route = EventsDictionary.Routes.objTurnInto,
                     context = analyticsContext,
+                    originalId = analyticsOriginalId,
                     startTime = startTime,
                     middleTime = middleTime
                 )

@@ -187,4 +187,5 @@ object EventsPropertiesKey {
     const val relationKey = "relationKey"
     const val condition = "condition"
     const val align = "align"
+    const val originalId = "originalId"
 }

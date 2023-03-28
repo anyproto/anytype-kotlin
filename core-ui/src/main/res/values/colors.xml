@@ -118,23 +118,24 @@
 
     <color name="auth_background_color">#0066C3</color>
 
-    <color name="text_primary">#2C2B27</color>
-    <color name="text_secondary">#929082</color>
-    <color name="text_tertiary">#CBC9BD</color>
+    <color name="text_primary">#252525</color>
+    <color name="text_secondary">#949494</color>
+    <color name="text_tertiary">#C8C8C8</color>
     <color name="text_white">#FFFFFF</color>
+    <color name="text_button_label">#FFFFFF</color>
 
     <color name="background_primary">#FFFFFF</color>
     <color name="background_secondary">#FFFFFF</color>
-    <color name="background_highlighted">#1450491C</color>
+    <color name="background_highlighted">#144F4F4F</color>
 
-    <color name="shape_primary">#DFDDD0</color>
-    <color name="shape_secondary">#EAE9E0</color>
-    <color name="shape_tertiary">#F1F0ED</color>
-    <color name="shape_transparent">#1450491C</color>
+    <color name="shape_primary">#E3E3E3</color>
+    <color name="shape_secondary">#EBEBEB</color>
+    <color name="shape_tertiary">#F2F2F2</color>
+    <color name="shape_transparent">#14535353</color>
 
-    <color name="glyph_active">#ABA99B</color>
-    <color name="glyph_selected">#2C2B27</color>
-    <color name="glyph_inactive">#DFDDD0</color>
+    <color name="glyph_active">#A7A7A7</color>
+    <color name="glyph_selected">#252525</color>
+    <color name="glyph_inactive">#DCDCDC</color>
     <color name="glyph_accent">#F09C0E</color>
     <color name="glyph_white">#FFFFFF</color>
     <color name="glyph_label">#FFFFFF</color>

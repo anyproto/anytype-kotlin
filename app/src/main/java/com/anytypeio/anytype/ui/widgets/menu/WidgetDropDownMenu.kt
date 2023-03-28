@@ -53,7 +53,7 @@ fun WidgetMenu(
                 }
             ) {
                 Text(
-                    text = stringResource(R.string.block_action_add_below),
+                    text = stringResource(R.string.widget_add_below),
                     style = defaultTextStyle
                 )
             }
@@ -107,7 +107,7 @@ fun WidgetMenu(
                 }
             ) {
                 Text(
-                    text = stringResource(id = R.string.remove_widget),
+                    text = stringResource(id = R.string.widget_remove_widget),
                     style = TextStyle(
                         color = colorResource(id = R.color.palette_dark_red),
                         fontSize = 17.sp
@@ -128,7 +128,7 @@ fun WidgetMenu(
                 }
             ) {
                 Text(
-                    text = stringResource(id = R.string.empty_bin),
+                    text = stringResource(id = R.string.widget_empty_bin),
                     style = TextStyle(
                         color = colorResource(id = R.color.palette_dark_red),
                         fontSize = 17.sp
@@ -149,7 +149,7 @@ fun WidgetMenu(
                 }
             ) {
                 Text(
-                    text = stringResource(R.string.edit_widgets),
+                    text = stringResource(R.string.widget_edit_widgets),
                     style = defaultTextStyle
                 )
             }

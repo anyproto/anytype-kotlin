@@ -315,15 +315,18 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="edit_widgets">Edit widgets</string>
     <string name="widget_source">Widget source</string>
     <string name="widget_type">Widget type</string>
+    <string name="widget_add_below">Add Below</string>
     <string name="widget_type_tree">Tree</string>
     <string name="widget_type_tree_description">Hierarchical structure of object</string>
     <string name="widget_type_link">Link</string>
     <string name="widget_type_link_description">Compact version of the object</string>
     <string name="widget_type_list_description">Widget with list view of set object</string>
     <string name="widget_type_list">List</string>
-    <string name="widget_change_source">Change source</string>
-    <string name="widget_change_type">Change widget type</string>
-    <string name="remove_widget">Remove widget</string>
+    <string name="widget_change_source">Change Source</string>
+    <string name="widget_change_type">Change Type</string>
+    <string name="widget_remove_widget">Remove Widget</string>
+    <string name="widget_empty_bin">Empty Bin</string>
+    <string name="widget_edit_widgets">Edit Widgets</string>
 
     <string name="type_creation_new_type">New type</string>
     <string name="type_creation_done">Done</string>
@@ -336,6 +339,5 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="empty_tree_widget">This object has no links to other objects</string>
     <string name="empty_list_widget">This view has no objects</string>
     <string name="empty_list_widget_no_view">This data view has no objects</string>
-    <string name="empty_bin">Empty bin</string>
 
 </resources>

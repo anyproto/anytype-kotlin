@@ -35,8 +35,8 @@ fun BottomNavigationMenu(
             /**
              * Workaround for clicks through the bottom navigation menu.
              */
-            .noRippleClickable {  },
-        horizontalArrangement = Arrangement.SpaceEvenly,
+            .noRippleClickable { },
+        horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
         MenuItem(BottomNavigationItem.BACK.res, onClick = backClick)
@@ -64,7 +64,7 @@ private fun MenuItem(
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
     BACK(R.drawable.ic_main_toolbar_back),
     HOME(R.drawable.ic_main_toolbar_home),
-    SEARCH(R.drawable.ic_main_toolbar_search),
+    SEARCH(R.drawable.ic_page_toolbar_search),
     ADD_DOC(R.drawable.ic_page_toolbar_add_doc)
 }
 

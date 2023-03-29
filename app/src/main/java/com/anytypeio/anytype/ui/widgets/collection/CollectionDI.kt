@@ -12,17 +12,21 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -140,6 +144,47 @@ object CollectionModule {
         dispatchers: AppCoroutineDispatchers
     ): DeleteObjects = DeleteObjects(repo, dispatchers)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getCreateObject(
+        repo: BlockRepository,
+        getTemplates: GetTemplates,
+        getDefaultPageType: GetDefaultPageType,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateObject = CreateObject(
+        repo = repo,
+        getTemplates = getTemplates,
+        getDefaultPageType = getDefaultPageType,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetDefaultPageType(
+        userSettingsRepository: UserSettingsRepository,
+        blockRepository: BlockRepository,
+        workspaceManager: WorkspaceManager,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDefaultPageType = GetDefaultPageType(
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetTemplates(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetTemplates = GetTemplates(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -163,6 +208,7 @@ interface CollectionDependencies : ComponentDependencies {
     fun workspaceManager(): WorkspaceManager
     fun analytics(): Analytics
     fun eventChannel(): EventChannel
+    fun userSettingsRepository(): UserSettingsRepository
 
     fun dispatchers(): AppCoroutineDispatchers
 }

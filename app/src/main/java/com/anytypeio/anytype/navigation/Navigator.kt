@@ -97,7 +97,6 @@ class Navigator : AppNavigation {
             R.id.objectNavigation,
             bundleOf(EditorFragment.ID_KEY to id),
             navOptions {
-                popUpTo = R.id.homeScreen
                 launchSingleTop = true
             }
         )
@@ -115,7 +114,6 @@ class Navigator : AppNavigation {
             R.id.dataViewNavigation,
             bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
             navOptions {
-                popUpTo = R.id.homeScreen
                 launchSingleTop = true
             }
         )
@@ -206,7 +204,6 @@ class Navigator : AppNavigation {
             R.id.homeScreen,
             bundleOf(EditorFragment.ID_KEY to pageId),
             navOptions {
-                popUpTo = R.id.homeScreen
                 launchSingleTop = true
             }
         )

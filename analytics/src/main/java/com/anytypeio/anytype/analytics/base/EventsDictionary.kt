@@ -31,6 +31,7 @@ object EventsDictionary {
     const val loginScreenShow = "ScreenLogin"
     const val searchScreenShow = "ScreenSearch"
     const val createObjectNavBar = "CreateObjectNavBar"
+    const val createObjectCollectionsNavBar = "CreateObjectCollectionsNavBar"
     const val signupScreenShow = "ScreenAuthRegistration"
     const val invitationScreenShow = "ScreenAuthInvitation"
     const val aboutAnalyticsScreenShow = "ScreenDisclaimer"

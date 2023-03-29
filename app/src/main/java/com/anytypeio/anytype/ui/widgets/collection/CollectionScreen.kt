@@ -74,6 +74,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.widgets.CollectionActionWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -108,11 +109,24 @@ fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
         Modifier.background(color = colorResource(R.color.background_primary))
     )
     {
-        Column {
-            TopBar(vm, uiState)
-            SearchBar(vm, uiState)
-            ListView(vm, uiState)
+        Box {
+            Column(
+                Modifier.padding(0.dp, 0.dp, 0.dp, 32.dp)
+            ) {
+                TopBar(vm, uiState)
+                SearchBar(vm, uiState)
+                ListView(vm, uiState)
+            }
+            Box(Modifier.align(BottomCenter)) {
+                BottomNavigationMenu(
+                    backClick = { vm.onPrevClicked() },
+                    homeClick = { vm.onHomeClicked() },
+                    searchClick = { vm.onSearchClicked() },
+                    addDocClick = { vm.onAddClicked() },
+                )
+            }
         }
+
 
         if (uiState.operationInProgress) {
             LinearProgressIndicator(
@@ -580,7 +594,7 @@ private fun BlockWidget(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .absolutePadding(16.dp, 0.dp, 16.dp, 22.dp),
+            .absolutePadding(16.dp, 0.dp, 16.dp, 48.dp),
         factory = { context ->
             CollectionActionWidget(context).apply {
                 layoutParams = LinearLayout.LayoutParams(

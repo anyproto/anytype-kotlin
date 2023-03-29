@@ -33,7 +33,9 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -78,6 +80,7 @@ class CollectionViewModel(
     private val deleteObjects: DeleteObjects,
     private val resourceProvider: CollectionResourceProvider,
     private val openObject: OpenObject,
+    private val createObject: CreateObject,
     private val configstorage: ConfigStorage,
     interceptEvents: InterceptEvents,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
@@ -472,7 +475,7 @@ class CollectionViewModel(
         if (interactionMode.value == InteractionMode.Edit && subscription != Subscription.Bin) {
             onDone()
         } else if (!(subscription == Subscription.Bin && isExpanded)) {
-            launch { commands.emit(Command.Exit) }
+            onPrevClicked()
         }
     }
 
@@ -617,6 +620,50 @@ class CollectionViewModel(
         return curr
     }
 
+    fun onHomeClicked() {
+        launch {
+            commands.emit(Command.ToDesktop)
+        }
+    }
+
+    fun onPrevClicked() {
+        launch {
+            commands.emit(Command.Exit)
+        }
+    }
+
+    fun onSearchClicked() {
+        launch {
+            commands.emit(Command.ToSearch)
+        }
+    }
+
+    fun onAddClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.createObjectCollectionsNavBar,
+            props = Props(mapOf(EventsPropertiesKey.context to null))
+        )
+
+        launch {
+            createObject.execute(CreateObject.Param(type = null))
+                .fold(
+                    onSuccess = { result ->
+                        if (result.appliedTemplate != null) {
+                            sendAnalyticsObjectCreateEvent(
+                                analytics = analytics,
+                                objType = result.type,
+                                route = EventsDictionary.Routes.objPowerTool,
+                                context = null
+                            )
+                        }
+                        commands.emit(Command.LaunchDocument(result.objectId))
+                    },
+                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                )
+        }
+    }
+
     class Factory @Inject constructor(
         private val container: StorelessSubscriptionContainer,
         private val workspaceManager: WorkspaceManager,
@@ -629,6 +676,7 @@ class CollectionViewModel(
         private val deleteObjects: DeleteObjects,
         private val resourceProvider: CollectionResourceProvider,
         private val openObject: OpenObject,
+        private val createObject: CreateObject,
         private val configStorage: ConfigStorage,
         private val interceptEvents: InterceptEvents,
         private val objectPayloadDispatcher: Dispatcher<Payload>,
@@ -651,6 +699,7 @@ class CollectionViewModel(
                 deleteObjects = deleteObjects,
                 resourceProvider = resourceProvider,
                 openObject = openObject,
+                createObject = createObject,
                 configstorage = configStorage,
                 interceptEvents = interceptEvents,
                 objectPayloadDispatcher = objectPayloadDispatcher,
@@ -664,7 +713,11 @@ class CollectionViewModel(
     sealed class Command {
         data class ConfirmRemoveFromBin(val count: Int) : Command()
         data class LaunchDocument(val id: Id) : Command()
+        data class OpenCollection(val subscription: Subscription) : Command()
         data class LaunchObjectSet(val target: Id) : Command()
+
+        object ToDesktop : Command()
+        object ToSearch : Command()
         object Exit : Command()
     }
 }

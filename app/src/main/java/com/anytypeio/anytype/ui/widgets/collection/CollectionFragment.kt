@@ -68,6 +68,9 @@ class CollectionFragment : BaseComposeFragment() {
             is Command.LaunchObjectSet -> launchObjectSet(command.target)
             is Command.Exit -> exit()
             is Command.ConfirmRemoveFromBin -> confirmRemoveFromBin(command)
+            is Command.OpenCollection -> navigation.launchCollections(command.subscription)
+            is Command.ToDesktop -> navigation.exitToDesktop()
+            is Command.ToSearch -> navigation.openPageSearch()
         }
     }
 

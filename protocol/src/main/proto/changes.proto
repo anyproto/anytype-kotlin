@@ -23,6 +23,9 @@ message Change {
     // creation timestamp
     int64 timestamp = 7;
 
+    // version of business logic
+    uint32 version = 8;
+
     message Snapshot {
         // logId -> lastChangeId
         map<string, string> logHeads = 1;

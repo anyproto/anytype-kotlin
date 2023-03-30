@@ -530,7 +530,7 @@ message Rpc {
             }
 
             message Response {
-                string address = 1;
+                string accountId = 1;
                 Error error = 2;
 
                 message Error {
@@ -541,6 +541,7 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        DIFFERENT_ACCOUNT = 3;
                     }
                 }
             }
@@ -1797,6 +1798,12 @@ message Rpc {
                 bool includeNested = 5;
                 // include all files
                 bool includeFiles = 6;
+                // for protobuf export
+                bool isJson = 7;
+                // for migration
+                bool includeDeleted = 8;
+                // for migration
+                bool includeArchived = 9;
             }
 
             message Response {
@@ -1835,16 +1842,16 @@ message Rpc {
                     NotionParams notionParams = 1;
                     BookmarksParams bookmarksParams = 2; //for internal use
                     MarkdownParams markdownParams = 3;
-                    MigrationParams migrationParams = 4;
-                    HtmlParams htmlParams = 5;
-                    TxtParams txtParams = 6;
-                    PbParams pbParams = 7;
-                    CsvParams csvParams = 8;
+                    HtmlParams htmlParams = 4;
+                    TxtParams txtParams = 5;
+                    PbParams pbParams = 6;
+                    CsvParams csvParams = 7;
                 }
-                repeated Snapshot snapshots = 9; // optional, for external developers usage
-                bool updateExistingObjects = 10;
-                Type type = 11;
-                Mode mode = 12;
+                repeated Snapshot snapshots = 8; // optional, for external developers usage
+                bool updateExistingObjects = 9;
+                Type type = 10;
+                Mode mode = 11;
+                bool noProgress = 12;
 
                 message NotionParams {
                     string apiKey = 1;
@@ -1862,25 +1869,21 @@ message Rpc {
                     repeated string path = 1;
                 }
 
-                message MigrationParams {
-                    string accountId = 1;
-                    string path = 2;
-                }
-
                 message TxtParams {
                     repeated string path = 1;
                 }
 
                 message PbParams {
-                    string path = 1;
+                    repeated string path = 1;
+                    bool noCollection = 2;
                 }
 
                 message CsvParams {
                     repeated string path = 1;
                     Mode mode = 2;
-                    bool useFirstColumnForRelations = 3; // use for collection mode
+                    bool useFirstRowForRelations = 3;
                     string delimiter = 4;
-
+                    bool transposeRowsAndColumns = 5;
                     enum Mode {
                         COLLECTION = 0;
                         TABLE = 1;
@@ -1900,7 +1903,7 @@ message Rpc {
                     Notion = 0;
                     Markdown = 1; 
                     External = 2; // external developers use it
-                    Migration = 3;
+                    Pb = 3;
                     Html = 4;
                     Txt = 5;
                     Csv = 6;

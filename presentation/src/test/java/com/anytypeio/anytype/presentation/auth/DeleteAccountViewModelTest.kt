@@ -8,10 +8,13 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import java.time.Duration
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
@@ -21,8 +24,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
-import java.time.Duration
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class DeleteAccountViewModelTest {
@@ -41,6 +42,9 @@ class DeleteAccountViewModelTest {
 
     @Mock
     lateinit var repo: AuthRepository
+
+    @Mock
+    lateinit var userSettingsRepository: UserSettingsRepository
 
     @Mock
     lateinit var helper: DateHelper
@@ -71,8 +75,9 @@ class DeleteAccountViewModelTest {
         )
         logout = Logout(
             repo = repo,
-            provider = configStorage,
-            dispatchers = testDispatchers
+            config = configStorage,
+            dispatchers = testDispatchers,
+            user = userSettingsRepository
         )
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,

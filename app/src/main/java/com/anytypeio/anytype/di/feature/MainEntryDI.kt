@@ -126,11 +126,13 @@ object MainEntryModule {
     fun provideLogoutUseCase(
         repo: AuthRepository,
         provider: ConfigStorage,
+        user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers
     ): Logout = Logout(
-        repo,
-        provider,
-        dispatchers
+        repo = repo,
+        user = user,
+        config = provider,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

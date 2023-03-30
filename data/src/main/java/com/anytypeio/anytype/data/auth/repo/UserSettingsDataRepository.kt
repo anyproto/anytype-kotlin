@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.data.auth.repo
 
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.ThemeMode
+import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 
 class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSettingsRepository {
@@ -22,4 +23,12 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     }
 
     override suspend fun getThemeMode(): ThemeMode = cache.getThemeMode()
+
+    override suspend fun getWidgetSession(): WidgetSession = cache.getWidgetSession()
+
+    override suspend fun saveWidgetSession(session: WidgetSession) = cache.saveWidgetSession(
+        session = session
+    )
+
+    override suspend fun clear() = cache.clear()
 }

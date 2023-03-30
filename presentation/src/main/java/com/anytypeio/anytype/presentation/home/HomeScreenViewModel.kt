@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -38,6 +39,8 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
+import com.anytypeio.anytype.domain.widgets.GetWidgetSession
+import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
@@ -74,6 +77,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class HomeScreenViewModel(
@@ -99,7 +103,9 @@ class HomeScreenViewModel(
     private val unsubscriber: Unsubscriber,
     private val getDefaultPageType: GetDefaultPageType,
     private val appActionManager: AppActionManager,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val getWidgetSession: GetWidgetSession,
+    private val saveWidgetSession: SaveWidgetSession
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -110,6 +116,8 @@ class HomeScreenViewModel(
     val views = MutableStateFlow<List<WidgetView>>(actions)
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
+
+    private var isWidgetSessionRestored = false
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
@@ -300,6 +308,11 @@ class HomeScreenViewModel(
 
     private fun proceedWithClosingWidgetObject(widgetObject: Id) {
         viewModelScope.launch {
+            saveWidgetSession.execute(
+                SaveWidgetSession.Params(
+                    WidgetSession(collapsed = collapsedWidgetStateHolder.get())
+                )
+            )
             val subscriptions = widgets.value.map { widget ->
                 if (widget.source is Widget.Source.Bundled)
                     widget.source.id
@@ -697,6 +710,7 @@ class HomeScreenViewModel(
         }
         if (deletedWidgets.isNotEmpty()) {
             viewModelScope.launch {
+                collapsedWidgetStateHolder.onWidgetDeleted(deletedWidgets)
                 unsubscriber.unsubscribe(deletedWidgets)
             }
         }
@@ -704,7 +718,19 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
+        if (!isWidgetSessionRestored) {
+            viewModelScope.launch {
+                val session = withContext(appCoroutineDispatchers.io) {
+                    getWidgetSession.execute(Unit).getOrNull()
+                }
+                if (session != null && session.collapsed.isNotEmpty()) {
+                    collapsedWidgetStateHolder.set(session.collapsed)
+                }
+                proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
+            }
+        } else {
+            proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
+        }
     }
 
     fun onStop() {
@@ -836,7 +862,9 @@ class HomeScreenViewModel(
         private val unsubscriber: Unsubscriber,
         private val getDefaultPageType: GetDefaultPageType,
         private val appActionManager: AppActionManager,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val getWidgetSession: GetWidgetSession,
+        private val saveWidgetSession: SaveWidgetSession
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -862,7 +890,9 @@ class HomeScreenViewModel(
             unsubscriber = unsubscriber,
             getDefaultPageType = getDefaultPageType,
             appActionManager = appActionManager,
-            analytics = analytics
+            analytics = analytics,
+            getWidgetSession = getWidgetSession,
+            saveWidgetSession = saveWidgetSession
         ) as T
     }
 

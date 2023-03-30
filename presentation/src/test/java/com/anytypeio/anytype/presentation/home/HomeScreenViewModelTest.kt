@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
+import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -36,6 +38,8 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
+import com.anytypeio.anytype.domain.widgets.GetWidgetSession
+import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -136,6 +140,12 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var saveWidgetSession: SaveWidgetSession
+
+    @Mock
+    lateinit var getWidgetSession: GetWidgetSession
+
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
 
@@ -184,6 +194,7 @@ class HomeScreenViewModelTest {
         stubInterceptEvents(events)
         stubOpenObject(givenObjectView)
         stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
 
         val vm = buildViewModel()
 
@@ -202,6 +213,26 @@ class HomeScreenViewModelTest {
         delay(1)
 
         verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+    }
+
+    private fun stubGetWidgetSession(
+        session: WidgetSession = WidgetSession(emptyList())
+    ) {
+        getWidgetSession.stub {
+            onBlocking {
+                execute(any())
+            } doReturn Resultat.Success(session)
+        }
+    }
+
+    private fun stubSaveWidgetSession(
+        session: WidgetSession = WidgetSession(emptyList())
+    ) {
+        saveWidgetSession.stub {
+            onBlocking {
+                execute(SaveWidgetSession.Params(session))
+            } doReturn Resultat.Success(Unit)
+        }
     }
 
     @Test
@@ -229,6 +260,7 @@ class HomeScreenViewModelTest {
             stubInterceptEvents(events = emptyFlow())
             stubOpenObject(givenObjectView)
             stubCollapsedWidgetState(any())
+            stubGetWidgetSession()
 
             val vm = buildViewModel()
 
@@ -306,6 +338,7 @@ class HomeScreenViewModelTest {
         )
         stubCollapsedWidgetState(any())
         stubWidgetActiveView(widgetBlock)
+        stubGetWidgetSession()
 
         val vm = buildViewModel()
 
@@ -412,6 +445,7 @@ class HomeScreenViewModelTest {
 
         stubCollapsedWidgetState(any())
         stubWidgetActiveView(widgetBlock)
+        stubGetWidgetSession()
 
         val vm = buildViewModel()
 
@@ -590,6 +624,7 @@ class HomeScreenViewModelTest {
         )
 
         stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
 
         val vm = buildViewModel()
@@ -744,7 +779,7 @@ class HomeScreenViewModelTest {
             targets = emptyList()
         )
         stubCollapsedWidgetState(any())
-
+        stubGetWidgetSession()
 
         val vm = buildViewModel()
 
@@ -836,6 +871,30 @@ class HomeScreenViewModelTest {
             targets = emptyList()
         )
         stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
+        stubSaveWidgetSession()
+
+        getDefaultPageType.stub {
+            onBlocking {
+                execute(any())
+            } doReturn Resultat.Success(
+                GetDefaultPageType.Response(
+                    null, null
+                )
+            )
+        }
+
+        storelessSubscriptionContainer.stub {
+            onBlocking {
+                subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                        targets = listOf(config.workspace),
+                        keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
+                    )
+                )
+            } doReturn emptyFlow()
+        }
 
         val givenPayload = Payload(
             context = WIDGET_OBJECT_ID,
@@ -868,6 +927,8 @@ class HomeScreenViewModelTest {
         // TESTING
 
         vm.onStart()
+
+        advanceUntilIdle()
 
         vm.onDropDownMenuAction(
             widget = widgetBlock.id,
@@ -951,6 +1012,7 @@ class HomeScreenViewModelTest {
             targets = emptyList()
         )
         stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
 
         val vm = buildViewModel()
 
@@ -1019,6 +1081,7 @@ class HomeScreenViewModelTest {
                 targets = emptyList()
             )
             stubCollapsedWidgetState(any())
+            stubGetWidgetSession()
             stubCloseObject()
 
             val vm = buildViewModel()
@@ -1148,6 +1211,7 @@ class HomeScreenViewModelTest {
         )
 
         stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
 
         val vm = buildViewModel()
@@ -1282,8 +1346,8 @@ class HomeScreenViewModelTest {
         )
 
         stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
-
         stubCloseObject()
 
         val vm = buildViewModel()
@@ -1486,6 +1550,7 @@ class HomeScreenViewModelTest {
         )
 
         stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
 
         stubCloseObject()
@@ -1699,7 +1764,7 @@ class HomeScreenViewModelTest {
             targets = emptyList()
         )
         stubCollapsedWidgetState(any())
-
+        stubGetWidgetSession()
 
         val vm = buildViewModel()
 
@@ -1768,7 +1833,7 @@ class HomeScreenViewModelTest {
                 targets = emptyList()
             )
             stubCollapsedWidgetState(any())
-
+            stubGetWidgetSession()
 
             val vm = buildViewModel()
 
@@ -1888,7 +1953,9 @@ class HomeScreenViewModelTest {
         unsubscriber = unsubscriber,
         getDefaultPageType = getDefaultPageType,
         appActionManager = appActionManager,
-        analytics = analytics
+        analytics = analytics,
+        getWidgetSession = getWidgetSession,
+        saveWidgetSession = saveWidgetSession
     )
 
     companion object {

@@ -10,6 +10,9 @@ interface CollapsedWidgetStateHolder {
 
     fun onToggleCollapsedWidgetState(widget: Id)
     fun isCollapsed(widget: Id): Flow<Boolean>
+    fun set(collapsed: List<Id>)
+    fun get() : List<Id>
+    fun onWidgetDeleted(widgets: List<Id>)
 
     class Impl @Inject constructor(): CollapsedWidgetStateHolder {
         private val collapsedWidgets = MutableStateFlow<List<Id>>(emptyList())
@@ -28,6 +31,19 @@ interface CollapsedWidgetStateHolder {
 
         override fun isCollapsed(widget: Id) = collapsedWidgets.map { collapsed ->
             collapsed.contains(widget)
+        }
+
+        override fun set(collapsed: List<Id>) {
+            collapsedWidgets.value = collapsed
+        }
+
+        override fun get(): List<Id> = collapsedWidgets.value
+
+        override fun onWidgetDeleted(widgets: List<Id>) {
+            val curr = collapsedWidgets.value
+            if (curr.isNotEmpty()) {
+                collapsedWidgets.value = curr - widgets
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.persistence.repo
 import android.content.SharedPreferences
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 
 class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSettingsCache {
@@ -121,6 +122,34 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
         }
     }
 
+    override suspend fun getWidgetSession(): WidgetSession {
+        return if (prefs.contains(COLLAPSED_WIDGETS_KEY)) {
+            WidgetSession(
+                collapsed = prefs.getStringSet(COLLAPSED_WIDGETS_KEY, emptySet())
+                    .orEmpty()
+                    .toList()
+            )
+        } else
+            WidgetSession(
+                collapsed = emptyList()
+            )
+    }
+
+    override suspend fun saveWidgetSession(session: WidgetSession) {
+        prefs
+            .edit()
+            .putStringSet(COLLAPSED_WIDGETS_KEY, session.collapsed.toSet())
+            .apply()
+    }
+
+    override suspend fun clear() {
+        prefs.edit()
+            .remove(DEFAULT_OBJECT_TYPE_ID_KEY)
+            .remove(DEFAULT_OBJECT_TYPE_NAME_KEY)
+            .remove(COLLAPSED_WIDGETS_KEY)
+            .apply()
+    }
+
     companion object {
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
         const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
@@ -136,5 +165,7 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
         const val THEME_TYPE_SYSTEM = 1
         const val THEME_TYPE_LIGHT = 2
         const val THEME_TYPE_NIGHT = 3
+
+        const val COLLAPSED_WIDGETS_KEY = "prefs.user_settings.collapsed-widgets"
     }
 }

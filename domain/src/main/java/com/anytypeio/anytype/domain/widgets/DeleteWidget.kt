@@ -6,8 +6,9 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
-class DeleteWidget(
+class DeleteWidget @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<DeleteWidget.Params, Payload>(dispatchers.io) {

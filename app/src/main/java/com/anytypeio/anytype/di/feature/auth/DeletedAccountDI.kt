@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.ext.DefaultDateHelper
@@ -58,11 +59,13 @@ object DeletedAccountModule {
     fun provideLogoutUseCase(
         repo: AuthRepository,
         provider: ConfigStorage,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        user: UserSettingsRepository
     ): Logout = Logout(
-        repo,
-        provider,
-        dispatchers
+        repo = repo,
+        config = provider,
+        user = user,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -89,4 +92,5 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun configStorage(): ConfigStorage
     fun authRepository(): AuthRepository
+    fun userSettingsRepository(): UserSettingsRepository
 }

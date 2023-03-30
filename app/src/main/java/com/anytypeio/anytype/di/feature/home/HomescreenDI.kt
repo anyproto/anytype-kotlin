@@ -27,9 +27,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
-import com.anytypeio.anytype.domain.widgets.CreateWidget
-import com.anytypeio.anytype.domain.widgets.DeleteWidget
-import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
@@ -91,35 +88,6 @@ object HomeScreenModule {
     ): CloseBlock = CloseBlock(
         repo = repo,
         dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun createWidget(
-        repo: BlockRepository
-    ): CreateWidget = CreateWidget(
-        repo = repo,
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun deleteWidget(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): DeleteWidget = DeleteWidget(
-        repo = repo,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun updateWidget(
-        repo: BlockRepository,
-    ): UpdateWidget = UpdateWidget(
-        repo = repo
     )
 
     @JvmStatic

@@ -5,11 +5,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.ResultatInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
 /**
  * Use-case for updating widget block contained in widgets.
  */
-class UpdateWidget(
+class UpdateWidget @Inject constructor(
     private val repo: BlockRepository
 ) : ResultatInteractor<UpdateWidget.Params, Payload>() {
 

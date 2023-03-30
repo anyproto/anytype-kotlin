@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.config
 
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.WidgetSession
 
 interface UserSettingsRepository {
     suspend fun setWallpaper(wallpaper: Wallpaper)
@@ -10,4 +11,7 @@ interface UserSettingsRepository {
     suspend fun getDefaultObjectType(): Pair<String?, String?>
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun getThemeMode(): ThemeMode
+    suspend fun getWidgetSession() : WidgetSession
+    suspend fun saveWidgetSession(session: WidgetSession)
+    suspend fun clear()
 }

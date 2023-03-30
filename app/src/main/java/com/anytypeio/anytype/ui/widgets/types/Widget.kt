@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
@@ -26,10 +27,12 @@ fun EmptyWidgetPlaceholder(
             text = stringResource(id = text),
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(vertical = 10.dp),
+                .padding(vertical = 18.dp, horizontal = 16.dp),
             style = TextStyle(
                 fontSize = 13.sp,
-                color = colorResource(id = R.color.text_secondary)
+                color = colorResource(id = R.color.text_secondary),
+                lineHeight = 18.sp,
+                textAlign = TextAlign.Center
             )
         )
     }

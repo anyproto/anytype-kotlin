@@ -98,13 +98,9 @@ fun ListWidgetCard(
                     }
                 }
             } else {
-                // TODO
-//                if (item.isExpanded) {
-//                    if (item.tabs.isNotEmpty())
-//                        EmptyWidgetPlaceholder(R.string.empty_list_widget)
-//                    else
-//                        EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
-//                }
+                if (item.isExpanded) {
+                    EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                }
             }
         }
         WidgetMenu(

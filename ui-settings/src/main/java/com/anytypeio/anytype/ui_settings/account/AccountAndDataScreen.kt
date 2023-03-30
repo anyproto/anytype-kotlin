@@ -1,31 +1,56 @@
 package com.anytypeio.anytype.ui_settings.account
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
-import com.anytypeio.anytype.core_ui.foundation.Toolbar
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
+import com.anytypeio.anytype.ui_settings.main.NameBlock
 
 @Composable
 fun AccountAndDataScreen(
@@ -38,15 +63,23 @@ fun AccountAndDataScreen(
     isClearCacheInProgress: Boolean,
     isDebugSyncReportInProgress: Boolean,
     isShowDebug: Boolean,
+    onNameChange: (String) -> Unit,
+    onProfileIconClick: () -> Unit,
+    account: AccountAndDataViewModel.AccountProfile
 ) {
-    Column {
-        Box(
-            Modifier
-                .padding(vertical = 6.dp)
-                .align(Alignment.CenterHorizontally)) {
-            Dragger()
-        }
-        Toolbar(stringResource(R.string.account_and_data))
+    Column(modifier = Modifier.fillMaxHeight()) {
+        Header(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            account = account,
+            onNameSet = onNameChange,
+            onProfileIconClick = onProfileIconClick
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+                .padding(top = 4.dp)
+        )
+        Divider()
         Section(stringResource(R.string.access))
         Option(
             image = R.drawable.ic_keychain_phrase,
@@ -204,6 +237,171 @@ fun ActionWithProgressBar(
                     .size(24.dp),
                 color = colorResource(R.color.shape_secondary)
             )
+        }
+    }
+}
+
+@Composable
+private fun Header(
+    modifier: Modifier = Modifier,
+    account: AccountAndDataViewModel.AccountProfile,
+    onProfileIconClick: () -> Unit,
+    onNameSet: (String) -> Unit
+) {
+    when (account) {
+        is AccountAndDataViewModel.AccountProfile.Data -> {
+            Box(modifier = modifier.padding(vertical = 6.dp)) {
+                Dragger()
+            }
+            Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
+                ProfileNameBlock()
+            }
+            Box(modifier = modifier.padding(bottom = 16.dp)) {
+                ProfileImageBlock(
+                    name = account.name,
+                    icon = account.icon,
+                    onProfileIconClick = onProfileIconClick
+                )
+            }
+            NameBlock(name = account.name, onNameSet = onNameSet)
+        }
+        is AccountAndDataViewModel.AccountProfile.Idle -> {}
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun NameBlock(
+    modifier: Modifier = Modifier,
+    name: String,
+    onNameSet: (String) -> Unit
+) {
+
+    val nameValue = remember { mutableStateOf(name) }
+    val focusManager = LocalFocusManager.current
+
+    Column(modifier = modifier.padding(start = 20.dp)) {
+        Text(
+            text = "Name",
+            color = colorResource(id = R.color.text_secondary),
+            fontSize = 13.sp
+        )
+        BasicTextField(
+            value = nameValue.value,
+            onValueChange = {
+                nameValue.value = it
+            },
+            modifier = Modifier.padding(top = 4.dp, end = 20.dp),
+            enabled = true,
+            textStyle = TextStyle(
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.text_primary)
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onNameSet.invoke(nameValue.value)
+                    focusManager.clearFocus()
+                }
+            ),
+            singleLine = true,
+            decorationBox = @Composable { innerTextField ->
+                TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                    value = nameValue.value,
+                    innerTextField = innerTextField,
+                    singleLine = true,
+                    enabled = true,
+                    isError = false,
+                    placeholder = {
+                        Text(text = "Account name")
+                    },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = colorResource(id = R.color.text_primary),
+                        backgroundColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent,
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        placeholderColor = colorResource(id = R.color.text_tertiary),
+                    ),
+                    contentPadding = PaddingValues(
+                        start = 0.dp,
+                        top = 0.dp,
+                        end = 0.dp,
+                        bottom = 0.dp
+                    ),
+                    border = {},
+                    interactionSource = remember { MutableInteractionSource() },
+                    visualTransformation = VisualTransformation.None
+                )
+            }
+        )
+    }
+
+}
+
+@Composable
+fun ProfileNameBlock(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(R.string.account_and_data),
+        style = MaterialTheme.typography.h3,
+        color = colorResource(id = R.color.text_primary)
+    )
+}
+
+
+@Composable
+fun ProfileImageBlock(
+    name: String,
+    icon: ProfileIconView,
+    onProfileIconClick: () -> Unit
+) {
+    when (icon) {
+        is ProfileIconView.Image -> {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = icon.url,
+                    error = painterResource(id = R.drawable.ic_home_widget_space)
+                ),
+                contentDescription = "Custom image profile",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(48.dp))
+                    .noRippleClickable {
+                        onProfileIconClick.invoke()
+                    }
+            )
+        }
+        else -> {
+            val nameFirstChar = if (name.isEmpty()) {
+                stringResource(id = R.string.account_default_name)
+            } else {
+                name.first().uppercaseChar().toString()
+            }
+            Box(
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(48.dp))
+                    .background(colorResource(id = R.color.shape_primary))
+                    .noRippleClickable {
+                        onProfileIconClick.invoke()
+                    }
+            ) {
+                Text(
+                    text = nameFirstChar,
+                    style = MaterialTheme.typography.h3.copy(
+                        color = colorResource(id = R.color.text_white),
+                        fontSize = 64.sp
+                    ),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
         }
     }
 }

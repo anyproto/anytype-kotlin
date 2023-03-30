@@ -15,6 +15,8 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,10 +39,13 @@ class MainSettingsViewModel(
     val events = MutableSharedFlow<Event>(replay = 0)
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    val workspaceData = storelessSubscriptionContainer.subscribe(
+    private val profileId = configStorage.get().profile
+    private val workspaceId = configStorage.get().workspace
+
+    val workspaceAndAccount = storelessSubscriptionContainer.subscribe(
         StoreSearchByIdsParams(
             subscription = SPACE_SUBSCRIPTION_ID,
-            targets = listOf(configStorage.get().workspace),
+            targets = listOf(workspaceId, profileId),
             keys = listOf(
                 Relations.ID,
                 Relations.NAME,
@@ -49,15 +54,26 @@ class MainSettingsViewModel(
             )
         )
     ).map { result ->
-        val obj = result.firstOrNull()
-        WorkspaceData.Data(
-            name = obj?.name ?: "",
-            icon = obj?.spaceIcon(urlBuilder) ?: SpaceIconView.Placeholder
+        val workspace = result.find { it.id == workspaceId }
+        val profile = result.find { it.id == profileId }
+        WorkspaceAndAccount.Account(
+            space = workspace?.let {
+                WorkspaceAndAccount.SpaceData(
+                    name = workspace.name ?: "",
+                    icon = workspace.spaceIcon(urlBuilder)
+                )
+            },
+            profile = profile?.let {
+                WorkspaceAndAccount.ProfileData(
+                    name = profile.name ?: "",
+                    icon = profile.profileIcon(urlBuilder)
+                )
+            }
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
-        WorkspaceData.Idle
+        WorkspaceAndAccount.Idle
     )
 
     init {
@@ -79,9 +95,11 @@ class MainSettingsViewModel(
             Event.OnAppearanceClicked -> commands.emit(Command.OpenAppearanceScreen)
             Event.OnPersonalizationClicked -> commands.emit(Command.OpenPersonalizationScreen)
             Event.OnDebugClicked -> commands.emit(Command.OpenDebugScreen)
-            Event.OnSpaceImageClicked -> commands.emit(Command.OpenSpaceImageSet(
-                configStorage.get().workspace
-            ))
+            Event.OnSpaceImageClicked -> commands.emit(
+                Command.OpenSpaceImageSet(
+                    configStorage.get().workspace
+                )
+            )
         }
     }
 
@@ -125,7 +143,7 @@ class MainSettingsViewModel(
         }
     }
 
-    fun onNameSet(name: String)  {
+    fun onNameSet(name: String) {
         viewModelScope.launch {
             setObjectDetails.execute(
                 SetObjectDetails.Params(
@@ -182,13 +200,25 @@ class MainSettingsViewModel(
         class OpenSpaceImageSet(val id: Id) : Command()
     }
 
-    sealed class WorkspaceData {
-        object Idle : WorkspaceData()
-        class Data(
+    sealed class WorkspaceAndAccount {
+        object Idle : WorkspaceAndAccount()
+        class Account(
+            val space: SpaceData?,
+            val profile: ProfileData?
+        ) : WorkspaceAndAccount()
+
+        data class SpaceData(
             val name: String,
             val icon: SpaceIconView
-        ) : WorkspaceData()
+        )
+
+        data class ProfileData(
+            val name: String,
+            val icon: ProfileIconView,
+        )
+
     }
+
 
 }
 

@@ -12,6 +12,11 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSync
 import com.anytypeio.anytype.domain.device.ClearFileCache
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.settings.AccountAndDataFragment
@@ -46,12 +51,22 @@ object AccountAndDataModule {
         clearFileCache: ClearFileCache,
         deleteAccount: DeleteAccount,
         debugSyncShareDownloader: DebugSyncShareDownloader,
-        analytics: Analytics
+        analytics: Analytics,
+        storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        setObjectDetails: SetObjectDetails,
+        configStorage: ConfigStorage,
+        urlBuilder: UrlBuilder,
+        setDocumentImageIcon: SetDocumentImageIcon
     ): AccountAndDataViewModel.Factory = AccountAndDataViewModel.Factory(
         clearFileCache = clearFileCache,
         deleteAccount = deleteAccount,
         debugSyncShareDownloader = debugSyncShareDownloader,
-        analytics = analytics
+        analytics = analytics,
+        storelessSubscriptionContainer = storelessSubscriptionContainer,
+        setObjectDetails = setObjectDetails,
+        configStorage = configStorage,
+        urlBuilder = urlBuilder,
+        setDocumentImageIcon = setDocumentImageIcon
     )
 
     @Provides
@@ -101,6 +116,37 @@ object AccountAndDataModule {
     @Provides
     @PerScreen
     fun deleteAccount(repo: AuthRepository): DeleteAccount = DeleteAccount(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetObjectDetails(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectDetails = SetObjectDetails(
+        repo,
+        dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDocumentImageIcon(
+        repo: BlockRepository
+    ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideStoreLessSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers
+    ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
+        repo = repo,
+        channel = channel,
+        dispatchers = dispatchers
+    )
 
     @Module
     interface Bindings {

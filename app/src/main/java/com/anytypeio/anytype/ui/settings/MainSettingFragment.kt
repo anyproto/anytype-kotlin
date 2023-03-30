@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -16,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -82,7 +80,7 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
         setContent {
             MaterialTheme(typography = typography) {
                 MainSettingScreen(
-                    workspace = vm.workspaceData.collectAsStateWithLifecycle().value,
+                    workspace = vm.workspaceAndAccount.collectAsStateWithLifecycle().value,
                     onAccountAndDataClicked = onAccountAndDataClicked,
                     onAboutAppClicked = onAboutAppClicked,
                     onAppearanceClicked = onAppearanceClicked,

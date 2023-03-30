@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_utils.ext
 
 import android.content.Context
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 
@@ -65,6 +66,9 @@ inline fun <T> List<T>.replace(replacement: (T) -> T, target: (T) -> Boolean): L
 
 fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 fun Fragment.toast(msg: CharSequence) = requireActivity().toast(msg)
+
+fun Fragment.toast(@StringRes msgId: Int) = requireActivity().toast(requireActivity().getString(msgId))
+
 fun Fragment.dismissInnerDialog(tag: String) {
     val fragment = childFragmentManager.findFragmentByTag(tag)
     (fragment as? DialogFragment)?.dismiss()

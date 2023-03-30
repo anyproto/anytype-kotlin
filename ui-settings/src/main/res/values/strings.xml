@@ -26,6 +26,10 @@
     <string name="dark">Dark</string>
     <string name="system">System</string>
 
+    <string name="account_default_name">U</string>
+
+    <string name="settings">Settings</string>
+
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your recovery phrase?</string>
     <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
 

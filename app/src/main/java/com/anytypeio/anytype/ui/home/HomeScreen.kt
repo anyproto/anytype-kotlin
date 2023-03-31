@@ -183,12 +183,14 @@ private fun WidgetList(
             }
         },
         onDragEnd = { from, to ->
-            onMove(views.value, from, to)
+            if (from != to) {
+                onMove(views.value, from, to)
+            }
         },
         canDragOver = { draggedOver, _ ->
             val curr = views.value
             val targetView = curr[draggedOver.index]
-            targetView is WidgetView.Draggable
+            (targetView is WidgetView.Draggable)
         }
     )
     LazyColumn(
@@ -313,57 +315,63 @@ private fun WidgetList(
                     }
                 }
                 is WidgetView.SetOfObjects -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = if (index == 0) 6.dp else 0.dp)
-                            .animateContentSize(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow
-                                )
-                            )
-                            .then(
-                                if (mode is InteractionMode.Edit)
-                                    Modifier.detectReorderAfterLongPress(lazyListState)
-                                else
-                                    Modifier
-                            )
-                    ) {
-                        DataViewListWidgetCard(
-                            item = item,
-                            onWidgetObjectClicked = onWidgetObjectClicked,
-                            onWidgetSourceClicked = onWidgetSourceClicked,
-                            onDropDownMenuAction = { action ->
-                                onWidgetMenuAction(item.id, action)
-                            },
-                            onChangeWidgetView = onChangeWidgetView,
-                            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            mode = mode
-                        )
-                        AnimatedVisibility(
-                            visible = mode is InteractionMode.Edit,
+                    ReorderableItem(
+                        lazyListState, key = item.id
+                    ) { isDragged ->
+                        val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
+                        Box(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(end = 12.dp),
-                            enter = fadeIn() + slideInHorizontally { it / 4 },
-                            exit = fadeOut() + slideOutHorizontally { it / 4 }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_remove_widget),
-                                modifier = Modifier
-                                    .height(24.dp)
-                                    .width(24.dp)
-                                    .background(
-                                        shape = CircleShape,
-                                        color = Color.Gray
+                                .fillMaxWidth()
+                                .padding(top = if (index == 0) 6.dp else 0.dp)
+                                .animateContentSize(
+                                    animationSpec = spring(
+                                        stiffness = Spring.StiffnessLow
                                     )
-                                    .noRippleClickable {
-                                        onWidgetMenuAction(
-                                            item.id, DropDownMenuAction.RemoveWidget
-                                        )
-                                    },
-                                contentDescription = "Remove widget icon"
+                                )
+                                .then(
+                                    if (mode is InteractionMode.Edit)
+                                        Modifier.detectReorderAfterLongPress(lazyListState)
+                                    else
+                                        Modifier
+                                )
+                                .alpha(alpha.value)
+                        ) {
+                            DataViewListWidgetCard(
+                                item = item,
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetSourceClicked = onWidgetSourceClicked,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
+                                onChangeWidgetView = onChangeWidgetView,
+                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                                mode = mode
                             )
+                            AnimatedVisibility(
+                                visible = mode is InteractionMode.Edit,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(end = 12.dp),
+                                enter = fadeIn() + slideInHorizontally { it / 4 },
+                                exit = fadeOut() + slideOutHorizontally { it / 4 }
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_remove_widget),
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                        .width(24.dp)
+                                        .background(
+                                            shape = CircleShape,
+                                            color = Color.Gray
+                                        )
+                                        .noRippleClickable {
+                                            onWidgetMenuAction(
+                                                item.id, DropDownMenuAction.RemoveWidget
+                                            )
+                                        },
+                                    contentDescription = "Remove widget icon"
+                                )
+                            }
                         }
                     }
                 }

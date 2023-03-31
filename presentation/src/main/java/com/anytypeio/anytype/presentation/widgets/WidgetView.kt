@@ -63,7 +63,7 @@ sealed class WidgetView {
         val type: Type,
         val elements: List<Element>,
         val isExpanded: Boolean
-    ) : WidgetView() {
+    ) : WidgetView(), Draggable {
         data class Element(
             val icon: ObjectIcon,
             val obj: ObjectWrapper.Basic

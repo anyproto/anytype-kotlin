@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -45,7 +44,6 @@ class CollectionFragment : BaseComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {

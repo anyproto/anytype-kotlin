@@ -5,7 +5,7 @@ buildscript {
     ext.target_sdk = 32
     ext.min_sdk = 26
 
-    ext.application_id = 'com.anytypeio.anytype'
+    ext.application_id = 'io.anytype.app'
     ext.version_name = '1.0'
     ext.version_code = 1
     ext.test_runner = 'androidx.test.runner.AndroidJUnitRunner'

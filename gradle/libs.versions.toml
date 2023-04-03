@@ -173,4 +173,4 @@ crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.2" }
 navigation = { id = "androidx.navigation.safeargs", version.ref = "navigationVersion" }
 navigationKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationVersion" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinVersion" }
-gms = { id = "com.google.gms.google-services", version = "4.3.14" }
+gms = { id = "com.google.gms.google-services", version = "4.3.15" }

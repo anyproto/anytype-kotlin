@@ -279,20 +279,25 @@ fun WidgetHeader(
 
         val rotation = getAnimatableRotation(isExpanded)
 
-        Image(
-            painterResource(R.drawable.ic_widget_tree_expand),
-            contentDescription = "Expand icon",
+        Box(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 12.dp)
-                .rotate(rotation.value)
                 .then(
                     if (isInEditMode)
                         Modifier
                     else
                         Modifier.noRippleClickable { onExpandElement() }
                 )
-        )
+        ) {
+            Image(
+                painterResource(R.drawable.ic_widget_tree_expand),
+                contentDescription = "Expand icon",
+                modifier = Modifier
+                    .rotate(rotation.value)
+                    .padding(horizontal = 12.dp)
+            )
+        }
+
         AnimatedVisibility(
             visible = isInEditMode,
             modifier = Modifier

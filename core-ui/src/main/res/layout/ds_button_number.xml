@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    tools:context="com.anytypeio.anytype.core_ui.widgets.NumberButton">
+
+    <Button
+        android:id="@+id/button"
+        style="?attr/primaryLargeNumberButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:stateListAnimator="@null"
+        android:text="Button"
+        android:textAppearance="?attr/primaryLargeNumberButtonTextAppearance"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tvNumber"
+        style="@style/TextView.UXStyle.Captions.1.Medium"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/ds_button_with_number_text_bg"
+        android:clickable="false"
+        android:gravity="center"
+        android:stateListAnimator="@null"
+        android:text="12"
+        android:textColor="@color/button_text" />
+
+</merge>

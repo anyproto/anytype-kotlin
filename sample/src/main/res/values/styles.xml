@@ -1,15 +1,40 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/orange</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimary">@color/sync_status_red</item>
         <item name="colorPrimaryDark">@color/palette_dark_teal</item>
         <item name="colorAccent">@color/orange</item>
 <!--        <item name="android:dialogTheme">@style/AppBottomSheetDialogTheme</item>-->
         <item name="alertDialogTheme">@style/DialogTheme</item>
 <!--        <item name="android:alertDialogTheme">?alertDialogTheme</item>-->
 <!--        <item name="dialogTheme">?alertDialogTheme</item>-->
+
+        <item name="primaryXSButtonTextAppearance">@style/TextView.UXStyle.Captions.1.Medium</item>
+        <item name="primarySButtonTextAppearance">@style/TextView.UXStyle.Body.Callout.Medium</item>
+        <item name="primaryMediumButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
+        <item name="primaryLargeButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
+        <item name="primaryLargeNumberButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
+
+        <item name="secondaryXSButtonTextAppearance">@style/TextView.UXStyle.Captions.1.Medium</item>
+        <item name="secondarySButtonTextAppearance">@style/TextView.UXStyle.Body.Callout.Medium</item>
+        <item name="secondaryMediumButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
+        <item name="secondaryLargeButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
+
+        <item name="primaryXSButtonStyle">@style/Button.Primary.XSmall</item>
+        <item name="primarySButtonStyle">@style/Button.Primary.Small</item>
+        <item name="primaryMediumButtonStyle">@style/Button.Primary.Medium</item>
+        <item name="primaryLargeButtonStyle">@style/Button.Primary.Large</item>
+        <item name="primaryLargeNumberButtonStyle">@style/Button.Primary.Large</item>
+
+        <item name="secondaryXSButtonStyle">@style/Button.Secondary.XSmall</item>
+        <item name="secondarySButtonStyle">@style/Button.Secondary.Small</item>
+        <item name="secondaryMediumButtonStyle">@style/Button.Secondary.Medium</item>
+        <item name="secondaryLargeButtonStyle">@style/Button.Secondary.Large</item>
+
     </style>
 
     <!-- define your dialog theme -->

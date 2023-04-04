@@ -14,3 +14,12 @@
      - [RelationCreateFromScratchForDataViewFragment] creating a Relation for the Data View contained in this Set or this Collection
 
 // TODO
+
+
+[Sample App]
+ - [DesignSystemActivity] activity for demonstration Anytype app design
+   - [ButtonsPrimaryFragment] screen with primary buttons
+   - [ButtonsSecondaryFragment] screen with secondary buttons
+   - [ContentStyleFragment] typography, content text styles
+   - [ContentStyleMultiline] typography, content text styles, large text sample
+   - [UxStyleFragment] typography, interface text styles

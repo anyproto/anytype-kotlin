@@ -70,6 +70,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -113,7 +115,7 @@ class HomeScreenViewModel(
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     Unsubscriber by unsubscriber {
 
-    val views = MutableStateFlow<List<WidgetView>>(actions)
+    val views = MutableStateFlow<List<WidgetView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
@@ -122,8 +124,8 @@ class HomeScreenViewModel(
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
-    private val widgets = MutableStateFlow<List<Widget>>(emptyList())
-    private val containers = MutableStateFlow<List<WidgetContainer>>(emptyList())
+    private val widgets = MutableStateFlow<Widgets>(null)
+    private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     // Bundled widget containing archived objects
@@ -148,7 +150,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
-            containers.flatMapLatest { list ->
+            containers.filterNotNull().flatMapLatest { list ->
                 Timber.d("Receiving list of containers: ${list.map { it::class }}")
                 if (list.isNotEmpty()) {
                     combine(
@@ -167,7 +169,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithWidgetContainerPipeline(config: Config) {
         viewModelScope.launch {
-            widgets.map {
+            widgets.filterNotNull().map {
                 it.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
@@ -236,25 +238,11 @@ class HomeScreenViewModel(
                         payloads.scan(state) { s, p -> s.copy(obj = reduce(s.obj, p)) }
                     }
                 }
-            }.map { state ->
-                Timber.d("Emitting new state: ${state::class.java.simpleName}")
-                when (state) {
-                    is ObjectViewState.Failure -> {
-                        emptyList()
-                    }
-                    is ObjectViewState.Idle -> {
-                        emptyList()
-                    }
-                    is ObjectViewState.Loading -> {
-                        emptyList()
-                    }
-                    is ObjectViewState.Success -> {
-                        state.obj.blocks.parseWidgets(
-                            root = state.obj.root,
-                            details = state.obj.details
-                        )
-                    }
-                }
+            }.filterIsInstance<ObjectViewState.Success>().map { state ->
+                state.obj.blocks.parseWidgets(
+                    root = state.obj.root,
+                    details = state.obj.details
+                )
             }.collect {
                 Timber.d("Emitting list of widgets: ${it.size}")
                 widgets.value = it
@@ -313,7 +301,7 @@ class HomeScreenViewModel(
                     WidgetSession(collapsed = collapsedWidgetStateHolder.get())
                 )
             )
-            val subscriptions = widgets.value.map { widget ->
+            val subscriptions = widgets.value.orEmpty().map { widget ->
                 if (widget.source is Widget.Source.Bundled)
                     widget.source.id
                 else
@@ -616,7 +604,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithChangingType(widget: Id) {
         Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
-        val curr = widgets.value.find { it.id == widget }
+        val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
                 commands.emit(
@@ -640,7 +628,7 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithChangingSource(widget: Id) {
-        val curr = widgets.value.find { it.id == widget }
+        val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
                 commands.emit(
@@ -956,3 +944,14 @@ sealed class Command {
         }
     }
 }
+
+/**
+ * Empty list means there are no widgets.
+ * Null means there are no info about widgets — due to loading or error state.
+ */
+typealias Widgets = List<Widget>?
+/**
+ * Empty list means there are no containers.
+ * Null means there are no info about containers — due to loading or error state.
+ */
+typealias Containers = List<WidgetContainer>?

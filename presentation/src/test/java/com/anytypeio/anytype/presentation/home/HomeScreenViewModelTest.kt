@@ -172,7 +172,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit only widget actions if there is no block`() = runTest {
+    fun `should emit bin, library and actions if there is no block`() = runTest {
 
         // SETUP
 
@@ -187,6 +187,8 @@ class HomeScreenViewModelTest {
             type = SmartBlockType.WIDGET,
             blocks = listOf(smartBlock)
         )
+
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         val events: Flow<List<Event>> = emptyFlow()
 
@@ -206,7 +208,16 @@ class HomeScreenViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+                expected = emptyList()
+            )
+            val secondTimeState = awaitItem()
+            assertEquals(
+                actual = secondTimeState,
+                expected = buildList {
+                    add(WidgetView.Library)
+                    add(binWidget)
+                    addAll(HomeScreenViewModel.actions)
+                }
             )
         }
 
@@ -272,7 +283,7 @@ class HomeScreenViewModelTest {
                 val firstTimeState = awaitItem()
                 assertEquals(
                     actual = firstTimeState,
-                    expected = HomeScreenViewModel.actions
+                    expected = emptyList()
                 )
                 val secondTimeItem = awaitItem()
                 assertEquals(
@@ -350,18 +361,9 @@ class HomeScreenViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+                expected = emptyList()
             )
             val secondTimeState = awaitItem()
-            assertEquals(
-                actual = secondTimeState,
-                expected = buildList {
-                    add(WidgetView.Library)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                }
-            )
-            val thirdTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(
@@ -376,7 +378,7 @@ class HomeScreenViewModelTest {
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = thirdTimeState
+                actual = secondTimeState
             )
             verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
         }
@@ -457,18 +459,9 @@ class HomeScreenViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+                expected = emptyList()
             )
             val secondTimeState = awaitItem()
-            assertEquals(
-                actual = secondTimeState,
-                expected = buildList {
-                    add(WidgetView.Library)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                }
-            )
-            val thirdTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(
@@ -498,7 +491,7 @@ class HomeScreenViewModelTest {
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = thirdTimeState
+                actual = secondTimeState
             )
         }
     }
@@ -637,18 +630,9 @@ class HomeScreenViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+                expected = emptyList()
             )
             val secondTimeState = awaitItem()
-            assertEquals(
-                actual = secondTimeState,
-                expected = buildList {
-                    add(WidgetView.Library)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                }
-            )
-            val thirdTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(
@@ -724,7 +708,7 @@ class HomeScreenViewModelTest {
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = thirdTimeState
+                actual = secondTimeState
             )
         }
     }
@@ -791,20 +775,10 @@ class HomeScreenViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+                expected = emptyList()
             )
             advanceUntilIdle()
             val secondTimeState = awaitItem()
-            assertEquals(
-                actual = secondTimeState,
-                expected = buildList {
-                    add(WidgetView.Library)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                }
-            )
-            advanceUntilIdle()
-            val thirdTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(
@@ -817,7 +791,7 @@ class HomeScreenViewModelTest {
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
-                actual = thirdTimeState
+                actual = secondTimeState
             )
             verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
         }
@@ -1687,6 +1661,8 @@ class HomeScreenViewModelTest {
             )
         )
 
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenObject(givenObjectView)
@@ -1696,6 +1672,8 @@ class HomeScreenViewModelTest {
         )
         stubCollapsedWidgetState(any())
 
+        stubObserveSpaceObject()
+        stubGetWidgetSession()
 
         val vm = buildViewModel()
 
@@ -1707,11 +1685,18 @@ class HomeScreenViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+                expected = emptyList()
             )
             delay(1)
-            val secondTimeItem = awaitItem()
-            assertTrue { secondTimeItem.none { it.id == widgetBlock.id } }
+            val secondTimeState = awaitItem()
+            assertEquals(
+                actual = secondTimeState,
+                expected = buildList {
+                    add(WidgetView.Library)
+                    add(binWidget)
+                    addAll(HomeScreenViewModel.actions)
+                }
+            )
         }
     }
 
@@ -1776,7 +1761,7 @@ class HomeScreenViewModelTest {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
-                expected = HomeScreenViewModel.actions
+                expected = emptyList()
             )
             delay(1)
             val secondTimeItem = awaitItem()
@@ -1845,7 +1830,7 @@ class HomeScreenViewModelTest {
                 val firstTimeState = awaitItem()
                 assertEquals(
                     actual = firstTimeState,
-                    expected = HomeScreenViewModel.actions
+                    expected = emptyList()
                 )
                 delay(1)
                 val secondTimeItem = awaitItem()
@@ -1927,6 +1912,20 @@ class HomeScreenViewModelTest {
     private fun stubCollapsedWidgetState(id: Id, isCollapsed: Boolean = false) {
         collapsedWidgetStateHolder.stub {
             on { isCollapsed(id) } doReturn flowOf(isCollapsed)
+        }
+    }
+
+    private fun stubObserveSpaceObject() {
+        storelessSubscriptionContainer.stub {
+            onBlocking {
+                subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                        targets = listOf(config.workspace),
+                        keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
+                    )
+                )
+            } doReturn emptyFlow()
         }
     }
 

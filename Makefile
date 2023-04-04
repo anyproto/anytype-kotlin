@@ -20,3 +20,9 @@ enable_analytics_for_debug:
 
 disable_analytics_for_debug:
 	sed -i -e 's/config.enableAnalyticsForDebugBuilds=true/config.enableAnalyticsForDebugBuilds=false/g' analytics/gradle.properties
+
+encryption:
+	./scripts/common/encrypt.sh
+
+decryption:
+	./scripts/common/decrypt.sh

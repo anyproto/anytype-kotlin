@@ -74,13 +74,13 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBl
 import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockDeleteHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockEmptyDataHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockEmptySourceHolder
-import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setup
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setupPlaceholder
+import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Bookmark
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
@@ -135,6 +135,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.LongClick
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_PLACEHOLDER
@@ -144,9 +145,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_DEFAULT
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_DATA
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_SOURCE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_DOTS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_LINE
@@ -195,8 +196,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import java.util.Queue
 import timber.log.Timber
-import java.util.*
 
 /**
  * Adapter for rendering list of blocks.
@@ -862,16 +863,6 @@ class BlockAdapter(
                     onTextInputClicked(blocks[pos].id)
                 }
             }
-            holder.content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
-                val pos = holder.bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
-                    val item = views[pos]
-                    if (item is BlockView.TextBlockProps) {
-                        item.isFocused = hasFocus
-                    }
-                    onFocusChanged(item.id, hasFocus)
-                }
-            }
             holder.content.selectionWatcher = { selection ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
@@ -949,6 +940,19 @@ class BlockAdapter(
                 }
             }
             holder.itemView.setOnDragListener(onDragListener)
+        }
+
+        if (holder is TextHolder) {
+            holder.content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val item = views[pos]
+                    if (item is Focusable) {
+                        item.isFocused = hasFocus
+                    }
+                    onFocusChanged(item.id, hasFocus)
+                }
+            }
         }
 
         return holder
@@ -1317,7 +1321,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Basic,
-                        onFocusChanged = onFocusChanged,
                         onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked
                     )
@@ -1335,7 +1338,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Todo,
-                        onFocusChanged = onFocusChanged,
                         onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked
                     )
@@ -1353,7 +1355,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Profile,
-                        onFocusChanged = onFocusChanged,
                         onProfileIconClicked = onClickListener,
                         onCoverClicked = onCoverClicked
                     )

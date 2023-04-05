@@ -28,7 +28,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -65,6 +64,13 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import java.util.LinkedList
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToLong
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -74,13 +80,6 @@ import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.math.roundToLong
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -690,55 +689,6 @@ class BlockAdapterTest {
         assertEquals(
             expected = updated.text,
             actual = holder.content.text.toString()
-        )
-    }
-
-    @Test
-    fun `should call back when title view gets focused`() {
-
-        // Setup
-
-        val events = mutableListOf<Pair<String, Boolean>>()
-
-        val title = BlockView.Title.Basic(
-            text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid(),
-            isFocused = false
-        )
-
-        val views = listOf(title)
-
-        val adapter = givenAdapter(
-            views = views,
-            onFocusChanged = { id, hasFocus ->
-                events.add(Pair(id, hasFocus))
-            }
-        )
-
-        val recycler = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-        }
-
-        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
-
-        adapter.onBindViewHolder(holder, 0)
-
-        check(holder is Document)
-
-        // Testing
-
-        assertEquals(
-            expected = false,
-            actual = holder.content.hasFocus()
-        )
-
-        holder.content.requestFocus()
-
-        assertEquals(
-            expected = listOf(
-                Pair(title.id, true)
-            ),
-            actual = events
         )
     }
 

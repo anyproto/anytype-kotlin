@@ -33,7 +33,6 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
@@ -44,7 +43,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     val ivCover: ImageView? = itemView.findViewById(R.id.cover)
     private val title: View = itemView.findViewById(R.id.title)
-    private val coverAndIconContainer: ViewGroup? = itemView.findViewById(R.id.coverAndIconContainer)
+    private val coverAndIconContainer: ViewGroup? =
+        itemView.findViewById(R.id.coverAndIconContainer)
     private val cover: ImageView? = itemView.findViewById(R.id.cover)
 
     abstract val icon: FrameLayout
@@ -53,7 +53,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     fun bind(
         item: BlockView.Title,
-        onFocusChanged: (String, Boolean) -> Unit,
         onCoverClicked: () -> Unit
     ) {
         setImage(item)
@@ -76,10 +75,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
             if (item.isFocused) setCursor(item)
             focus(item.isFocused)
-            content.setOnFocusChangeListener { _, hasFocus ->
-                onFocusChanged(item.id, hasFocus)
-                if (hasFocus) showKeyboard()
-            }
         }
         cover?.setOnClickListener { onCoverClicked() }
     }
@@ -286,13 +281,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Basic,
-            onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit,
             onCoverClicked: () -> Unit
         ) {
             super.bind(
                 item = item,
-                onFocusChanged = onFocusChanged,
                 onCoverClicked = onCoverClicked
             )
             setEmoji(item)
@@ -401,7 +394,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         ) {
             super.bind(
                 item = item,
-                onFocusChanged = { _, _ -> },
                 onCoverClicked = {}
             )
             setImage(item)
@@ -433,13 +425,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Profile,
-            onFocusChanged: (String, Boolean) -> Unit,
             onProfileIconClicked: (ListenerType) -> Unit,
             onCoverClicked: () -> Unit
         ) {
             super.bind(
                 item = item,
-                onFocusChanged = onFocusChanged,
                 onCoverClicked = onCoverClicked
             )
             applySearchHighlights(item)
@@ -523,13 +513,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Todo,
-            onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit,
             onCoverClicked: () -> Unit
         ) {
             super.bind(
                 item = item,
-                onFocusChanged = onFocusChanged,
                 onCoverClicked = onCoverClicked
             )
             setLocked(item.mode)

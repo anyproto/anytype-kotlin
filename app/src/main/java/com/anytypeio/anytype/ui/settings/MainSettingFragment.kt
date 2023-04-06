@@ -86,7 +86,7 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                     onAppearanceClicked = onAppearanceClicked,
                     onDebugClicked = onDebugClicked,
                     onPersonalizationClicked = onPersonalizationClicked,
-                    showDebugMenu = featureToggles.isTroubleshootingMode,
+                    showDebugMenu = featureToggles.isDebug,
                     onSpaceIconClick = onSpaceImageClicked,
                     onNameSet = onNameSet
                 )

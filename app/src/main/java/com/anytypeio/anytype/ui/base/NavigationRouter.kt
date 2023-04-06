@@ -57,9 +57,6 @@ class NavigationRouter(
             is AppNavigation.Command.Exit -> navigation.exit()
             is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
             is AppNavigation.Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()
-            is AppNavigation.Command.OpenPageNavigationScreen -> navigation.openPageNavigation(
-                command.target
-            )
             is AppNavigation.Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(
                 command.pageId
             )

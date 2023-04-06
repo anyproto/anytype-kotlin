@@ -1,13 +1,22 @@
 package com.anytypeio.anytype.domain.ext
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ext.*
+import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.asRender
+import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
+import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
+import com.anytypeio.anytype.core_models.ext.getSubstring
+import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
+import com.anytypeio.anytype.core_models.ext.numbers
+import com.anytypeio.anytype.core_models.ext.rangeIntersection
+import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.Test
 
 class BlockExtensionTest {
 
@@ -28,9 +37,7 @@ class BlockExtensionTest {
         val root = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(type = SmartBlockType.PAGE),
             children = listOf(child.id)
         )
 
@@ -88,9 +95,7 @@ class BlockExtensionTest {
         val root = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(type = SmartBlockType.PAGE),
             children = listOf(children[1].id, children[0].id, children[2].id)
         )
 
@@ -142,9 +147,7 @@ class BlockExtensionTest {
         val root = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(type = SmartBlockType.PAGE),
             children = listOf(parent.id)
         )
 
@@ -201,9 +204,7 @@ class BlockExtensionTest {
         val root = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(type = SmartBlockType.PAGE),
             children = listOf(parent.id)
         )
 
@@ -286,9 +287,7 @@ class BlockExtensionTest {
         val root = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(type = SmartBlockType.PAGE),
             children = listOf(parent.id)
         )
 
@@ -407,9 +406,7 @@ class BlockExtensionTest {
         val root = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(type = SmartBlockType.PAGE),
             children = listOf(row.id, lastBlock.id)
         )
 
@@ -488,9 +485,7 @@ class BlockExtensionTest {
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.EMPTY
-            ),
+            content = Block.Content.Smart(type = SmartBlockType.PAGE),
             children = emptyList()
         )
         val range = IntRange(0, 44)

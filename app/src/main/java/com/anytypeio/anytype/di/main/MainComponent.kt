@@ -17,7 +17,6 @@ import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
-import com.anytypeio.anytype.di.feature.PageNavigationSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
@@ -78,7 +77,6 @@ interface MainComponent :
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
-    fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
     fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
     fun moveToBuilder(): MoveToSubComponent.Builder
     fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder

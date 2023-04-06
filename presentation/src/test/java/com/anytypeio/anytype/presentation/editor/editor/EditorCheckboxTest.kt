@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
@@ -13,7 +14,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
 
 class EditorCheckboxTest : EditorPresentationTestSetup() {
 
@@ -57,9 +63,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(type = SmartBlockType.PAGE),
                 children = listOf(child)
             ),
             checkbox
@@ -119,9 +123,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(type = SmartBlockType.PAGE),
                 children = listOf(child)
             ),
             checkbox

@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
@@ -44,6 +45,7 @@ import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
+import kotlin.test.assertEquals
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -54,7 +56,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import kotlin.test.assertEquals
 
 /**
 Helping link For Espresso RecyclerView actions:
@@ -98,9 +99,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = blocks.map { it.id }
             )
         ) + blocks
@@ -163,9 +162,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = listOf(
                     BLOCK_PARAGRAPH_1.id
                 )
@@ -211,9 +208,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = listOf(
                     BLOCK_PARAGRAPH_1.id
                 )
@@ -261,9 +256,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = listOf(paragraph.id)
             ),
             paragraph
@@ -401,9 +394,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = listOf(paragraphBefore.id, paragraphAfter.id)
             ),
             paragraphBefore,
@@ -513,9 +504,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = listOf(paragraph1.id, paragraph2.id)
             ),
             paragraph1,
@@ -617,9 +606,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = listOf(paragraph.id)
             ),
             paragraph

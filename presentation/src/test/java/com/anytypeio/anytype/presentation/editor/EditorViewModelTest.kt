@@ -104,7 +104,6 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
@@ -2158,65 +2157,6 @@ open class EditorViewModelTest {
                         target = child,
                         position = Position.BOTTOM,
                         prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `should start updating text style of the focused block on turn-into-option-clicked event`() {
-
-        val root = MockDataFactory.randomUuid()
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithTwoTextBlocks(
-            root = root,
-            firstChild = firstChild,
-            firstChildStyle = Block.Content.Text.Style.TITLE,
-            secondChild = secondChild,
-            secondChildStyle = Block.Content.Text.Style.P
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        stubTurnIntoStyle()
-
-        givenViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        vm.onBlockFocusChanged(
-            id = secondChild,
-            hasFocus = true
-        )
-
-        val newStyle = Block.Content.Text.Style.H1
-
-        vm.onSlashItemClicked(SlashItem.Style.Type.Title)
-
-        runBlockingTest {
-            verify(turnIntoStyle, times(1)).invoke(
-                params = eq(
-                    TurnIntoStyle.Params(
-                        context = root,
-                        targets = listOf(secondChild),
-                        style = newStyle
                     )
                 )
             )

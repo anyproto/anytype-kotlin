@@ -43,7 +43,6 @@ interface AppNavigation {
     fun exit()
     fun exitToDesktop()
     fun openDebugSettings()
-    fun openPageNavigation(target: String)
     fun openPageSearch()
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
@@ -100,8 +99,6 @@ interface AppNavigation {
         object OpenSwitchDisplayView : Command()
         object OpenCustomizeDisplayView : Command()
         object OpenDebugSettingsScreen : Command()
-
-        data class OpenPageNavigationScreen(val target: String) : Command()
 
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()

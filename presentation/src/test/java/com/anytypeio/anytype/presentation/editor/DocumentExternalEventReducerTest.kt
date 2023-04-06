@@ -3,14 +3,15 @@ package com.anytypeio.anytype.presentation.editor
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Link.IconSize
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class DocumentExternalEventReducerTest {
 
@@ -38,9 +39,7 @@ class DocumentExternalEventReducerTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(title.id, bookmark.id),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            )
+            content = Block.Content.Smart(type = SmartBlockType.PAGE)
         )
 
         val state = listOf(page, title, bookmark)
@@ -170,9 +169,7 @@ class DocumentExternalEventReducerTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(title.id, bookmark.id),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            )
+            content = Block.Content.Smart(type = SmartBlockType.PAGE)
         )
 
         val state = listOf(page, title, bookmark)
@@ -217,9 +214,7 @@ class DocumentExternalEventReducerTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(title.id, link.id),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            )
+            content = Block.Content.Smart(type = SmartBlockType.PAGE)
         )
 
         val state = listOf(page, title, link)

@@ -343,7 +343,7 @@ fun StubDataViewBlock(
 
 fun StubLinkToObjectBlock(
     id: Id = MockDataFactory.randomUuid(),
-    target: Id,
+    target: Id = MockDataFactory.randomUuid(),
     children: List<Id> = emptyList(),
     fields: Block.Fields = Block.Fields.empty(),
     backgroundColor: String? = null,

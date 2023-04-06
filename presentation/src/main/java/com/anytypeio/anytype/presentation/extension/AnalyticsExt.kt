@@ -2,22 +2,22 @@ package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
-import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
-import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
-import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
-import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
-import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
-import com.anytypeio.anytype.analytics.base.EventsDictionary.removeView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addSort
+import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeFilterValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
+import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSort
-import com.anytypeio.anytype.analytics.base.EventsDictionary.switchView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.removeView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setSelectQuery
+import com.anytypeio.anytype.analytics.base.EventsDictionary.switchView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.turnIntoCollection
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
@@ -48,13 +48,6 @@ fun Block.Prototype.getAnalyticsEvent(
                 mapOf(
                     EventsPropertiesKey.type to "text",
                     EventsPropertiesKey.style to getStyleName()
-                )
-            )
-        }
-        is Block.Prototype.Page -> {
-            Props(
-                mapOf(
-                    EventsPropertiesKey.style to style.name
                 )
             )
         }

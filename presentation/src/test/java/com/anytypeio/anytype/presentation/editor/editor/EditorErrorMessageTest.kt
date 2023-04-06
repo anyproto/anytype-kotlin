@@ -2,9 +2,11 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -14,7 +16,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
 
 class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
@@ -49,9 +50,7 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
                 children = listOf(file.id)
             ),
             file

@@ -1790,9 +1790,6 @@ class EditorViewModel(
                             excludedActions.add(ActionItemType.Preview)
                         }
                     }
-                    is Content.Page -> {
-                        excludedActions.add(ActionItemType.Download)
-                    }
                     is Content.RelationBlock -> {
                         excludedActions.add(ActionItemType.Download)
                     }

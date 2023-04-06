@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubTitle
@@ -161,9 +162,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(div1.id, div2.id)
         )
 
@@ -270,9 +269,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(div1.id, div2.id)
         )
 
@@ -335,9 +332,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(a.id, b.id)
         )
 

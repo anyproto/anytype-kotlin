@@ -45,7 +45,6 @@ import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
 import com.anytypeio.anytype.di.feature.OtherSettingsModule
-import com.anytypeio.anytype.di.feature.PageNavigationModule
 import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
 import com.anytypeio.anytype.di.feature.RelationTextValueModule
@@ -322,12 +321,6 @@ class ComponentManager(
         main
             .createBookmarkBuilder()
             .createBookmarkModule(CreateBookmarkModule())
-            .build()
-    }
-
-    val navigationComponent = Component {
-        main.navigationComponentBuilder()
-            .pageNavigationModule(PageNavigationModule)
             .build()
     }
 

@@ -42,6 +42,7 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
@@ -51,7 +52,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
 
 class DefaultBlockViewRendererTest {
 
@@ -798,81 +798,6 @@ class DefaultBlockViewRendererTest {
         )
 
         assertEquals(expected = expected, actual = result)
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun `should throw exception when smart block type is unexpected`() {
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
-
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.P,
-                marks = emptyList(),
-                align = Block.Align.AlignCenter
-            ),
-            fields = Block.Fields.empty()
-        )
-
-        val name = MockDataFactory.randomString()
-        val imageName = MockDataFactory.randomString()
-        val pageId = MockDataFactory.randomUuid()
-
-        val fields = Block.Fields(
-            map = mapOf(
-                "name" to name,
-                "iconImage" to imageName
-            )
-        )
-
-        val details = mapOf(pageId to fields)
-
-        val page = Block(
-            id = pageId,
-            children = listOf(header.id, paragraph.id),
-            fields = fields,
-            content = Block.Content.Page(style = Block.Content.Page.Style.TASK)
-        )
-
-        val blocks = listOf(page, header, title, paragraph)
-
-        val map = blocks.asMap()
-
-        wrapper = BlockViewRenderWrapper(
-            blocks = map,
-            renderer = renderer
-        )
-
-        runBlocking {
-            wrapper.render(
-                root = page,
-                anchor = page.id,
-                focus = Editor.Focus.id(paragraph.id),
-                indent = 0,
-                details = Block.Details(details)
-            )
-        }
     }
 
     @Test

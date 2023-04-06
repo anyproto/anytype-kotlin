@@ -15,7 +15,6 @@ import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARG
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
-import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
@@ -188,11 +187,6 @@ class Navigator : AppNavigation {
 
     override fun openDebugSettings() {
         navController?.navigate(R.id.action_profileScreen_to_debugSettingsFragment)
-    }
-
-    override fun openPageNavigation(target: String) {
-        val bundle = bundleOf(PageNavigationFragment.TARGET_ID_KEY to target)
-        navController?.navigate(R.id.pageNavigationFragment, bundle)
     }
 
     override fun openPageSearch() {

@@ -117,14 +117,6 @@ object MockBlockFactory {
         secondChildText: String = MockDataFactory.randomString()
     ) = listOf(
         Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
-            children = listOf(firstChild, secondChild)
-        ),
-        Block(
             id = firstChild,
             fields = Block.Fields(emptyMap()),
             content = StubTextContent(
@@ -162,14 +154,6 @@ object MockBlockFactory {
         titleBlockId: String,
         pageBlockId: String
     ) = listOf(
-        Block(
-            id = rootId,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Page(
-                style = Block.Content.Page.Style.SET
-            ),
-            children = listOf(titleBlockId, pageBlockId)
-        ),
         Block(
             id = titleBlockId,
             fields = Block.Fields(emptyMap()),

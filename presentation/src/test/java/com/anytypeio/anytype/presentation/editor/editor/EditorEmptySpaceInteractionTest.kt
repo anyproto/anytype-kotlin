@@ -3,7 +3,10 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
+import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTable
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -162,22 +165,27 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val firstChild = MockDataFactory.randomUuid()
-        val secondChild = MockDataFactory.randomUuid()
+        val link = StubLinkToObjectBlock()
 
-        val page = MockBlockFactory.makeOnePageWithTitleAndOnePageLinkBlock(
-            rootId = root,
-            titleBlockId = firstChild,
-            pageBlockId = secondChild
+        val root = StubSmartBlock(
+            children = listOf(
+                header.id,
+                link.id
+            )
+        )
+
+        val doc = listOf(
+            root, header, title, link
         )
 
         stubInterceptEvents()
-        stubOpenDocument(page)
-        stubCreateBlock(root)
+        stubInterceptThreadStatus()
+        stubOpenDocument(doc)
+        stubCreateBlock(root.id)
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(root.id)
 
         // TESTING
 
@@ -188,7 +196,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
                 params = eq(
                     CreateBlock.Params(
                         target = "",
-                        context = root,
+                        context = root.id,
                         position = Position.INNER,
                         prototype = Block.Prototype.Text(
                             style = Block.Content.Text.Style.P
@@ -233,9 +241,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Page(
-                    style = Block.Content.Page.Style.SET
-                ),
+                content = Block.Content.Smart(type = SmartBlockType.PAGE),
                 children = listOf(pic.id, txt.id)
             ),
             pic,

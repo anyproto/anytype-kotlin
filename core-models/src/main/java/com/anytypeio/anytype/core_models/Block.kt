@@ -168,7 +168,7 @@ data class Block(
             }
 
             /**
-             * Style H4 is depricated
+             * Style H4 is deprecated
              */
             enum class Style {
                 P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX, DESCRIPTION, CALLOUT
@@ -177,11 +177,6 @@ data class Block(
 
         data class Layout(val type: Type) : Content() {
             enum class Type { ROW, COLUMN, DIV, HEADER, TABLE_ROW, TABLE_COLUMN }
-        }
-
-        @Deprecated("Legacy class")
-        data class Page(val style: Style) : Content() {
-            enum class Style { EMPTY, TASK, SET }
         }
 
         /**
@@ -399,11 +394,7 @@ data class Block(
          * @param style style for a block to create
          */
         data class Text(
-            val style: Content.Text.Style
-        ) : Prototype()
-
-        data class Page(
-            val style: Content.Page.Style
+            val style: Style
         ) : Prototype()
 
         data class File(

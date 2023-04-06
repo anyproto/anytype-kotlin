@@ -147,6 +147,7 @@
     <color name="dashboard_background">#99F5F5F5</color>
 
     <!-- Colors at Figma https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Typography-and-Colors%2FMobile?node-id=1031%3A160 -->
+
     <color name="palette_dark_default">#252525</color>
     <color name="palette_dark_yellow">#AFA100</color>
     <color name="palette_dark_orange">#C38400</color>
@@ -182,7 +183,20 @@
     <color name="palette_very_light_teal">#D9F6F4</color>
     <color name="palette_very_light_lime">#E5F8D6</color>
     <color name="palette_very_light_grey">#F1F0ED</color>
+
+    <color name="palette_system_yellow">#ECD91B</color>
+    <color name="palette_system_amber_125">#F09C0E</color>
+    <color name="palette_system_amber_100">#FFB522</color>
+    <color name="palette_system_amber_80">#FFC532</color>
+    <color name="palette_system_amber_50">#FFD15B</color>
+    <color name="palette_system_amber_25">#FFEE94</color>
     <color name="palette_system_red">#F55522</color>
+    <color name="palette_system_pink">#E51CA0</color>
+    <color name="palette_system_purple">#AB50CC</color>
+    <color name="palette_system_blue">#3E58EB</color>
+    <color name="palette_system_sky">#2AA7EE</color>
+    <color name="palette_system_teal">#0FC8BA</color>
+    <color name="palette_system_green">#5DD400</color>
 
     <color name="library_action_btn_text_color">#FFFFFF</color>
 

@@ -66,7 +66,21 @@
     <color name="palette_very_light_teal">#022724</color>
     <color name="palette_very_light_lime">#172A08</color>
     <color name="palette_very_light_grey">#1D1D1B</color>
+
+    <color name="palette_system_yellow">#ECD91B</color>
+    <color name="palette_system_amber_125">#FFC83C</color>
+    <color name="palette_system_amber_100">#FFB522</color>
+    <color name="palette_system_amber_80">#D38D00</color>
+    <color name="palette_system_amber_50">#9F6B00</color>
+    <color name="palette_system_amber_25">#694500</color>
     <color name="palette_system_red">#F55522</color>
+    <color name="palette_system_pink">#E51CA0</color>
+    <color name="palette_system_purple">#AB50CC</color>
+    <color name="palette_system_blue">#3E58EB</color>
+    <color name="palette_system_sky">#2AA7EE</color>
+    <color name="palette_system_teal">#0FC8BA</color>
+    <color name="palette_system_green">#5DD400</color>
+
     <color name="object_loading_state_gradient_start_color">#161615</color>
     <color name="object_loading_state_gradient_end_color">#1F1E1D</color>
 

@@ -13,28 +13,21 @@
 <!--        <item name="android:alertDialogTheme">?alertDialogTheme</item>-->
 <!--        <item name="dialogTheme">?alertDialogTheme</item>-->
 
-        <item name="primaryXSButtonTextAppearance">@style/TextView.UXStyle.Captions.1.Medium</item>
-        <item name="primarySButtonTextAppearance">@style/TextView.UXStyle.Body.Callout.Medium</item>
-        <item name="primaryMediumButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
-        <item name="primaryLargeButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
-        <item name="primaryLargeNumberButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
-
-        <item name="secondaryXSButtonTextAppearance">@style/TextView.UXStyle.Captions.1.Medium</item>
-        <item name="secondarySButtonTextAppearance">@style/TextView.UXStyle.Body.Callout.Medium</item>
-        <item name="secondaryMediumButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
-        <item name="secondaryLargeButtonTextAppearance">@style/TextView.UXStyle.Buttons.Medium</item>
-
-        <item name="primaryXSButtonStyle">@style/Button.Primary.XSmall</item>
-        <item name="primarySButtonStyle">@style/Button.Primary.Small</item>
+        <item name="primaryXSmallButtonStyle">@style/Button.Primary.XSmall</item>
+        <item name="primarySmallButtonStyle">@style/Button.Primary.Small</item>
         <item name="primaryMediumButtonStyle">@style/Button.Primary.Medium</item>
         <item name="primaryLargeButtonStyle">@style/Button.Primary.Large</item>
         <item name="primaryLargeNumberButtonStyle">@style/Button.Primary.Large</item>
 
-        <item name="secondaryXSButtonStyle">@style/Button.Secondary.XSmall</item>
-        <item name="secondarySButtonStyle">@style/Button.Secondary.Small</item>
+        <item name="secondaryXSmallButtonStyle">@style/Button.Secondary.XSmall</item>
+        <item name="secondarySmallButtonStyle">@style/Button.Secondary.Small</item>
         <item name="secondaryMediumButtonStyle">@style/Button.Secondary.Medium</item>
         <item name="secondaryLargeButtonStyle">@style/Button.Secondary.Large</item>
 
+        <item name="warningXSmallButtonStyle">@style/Button.Warning.XSmall</item>
+        <item name="warningSmallButtonStyle">@style/Button.Warning.Small</item>
+        <item name="warningMediumButtonStyle">@style/Button.Warning.Medium</item>
+        <item name="warningLargeButtonStyle">@style/Button.Warning.Large</item>
     </style>
 
     <!-- define your dialog theme -->

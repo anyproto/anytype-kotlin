@@ -244,43 +244,54 @@
 
     <!--https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Mobile-Design-System?node-id=1588%3A59&t=9DPtsMxKLupkwVfY-1-->
     <!-- MOBILE DESIGN SYSTEM, Buttons-->
-    <style name="BaseButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:stateListAnimator">@null</item>
-    </style>
-
-    <style name="Button.Primary" parent="BaseButton">
+    <style name="Button.Primary.XSmall" parent="TextView.UXStyle.Captions.1.Medium">
         <item name="android:background">@drawable/button_background_primary_selector</item>
         <item name="android:textColor">@color/text_color_button_primary_selector</item>
-        <item name="backgroundTint">@null</item>
-        <item name="android:minHeight">0dp</item>
-        <item name="android:minWidth">0dp</item>
-    </style>
-
-    <style name="Button.Primary.XSmall" parent="Button.Primary">
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
     </style>
 
-    <style name="Button.Primary.Small" parent="Button.Primary">
+    <style name="Button.Primary.Small" parent="TextView.UXStyle.Body.Callout.Medium">
+        <item name="android:background">@drawable/button_background_primary_selector</item>
+        <item name="android:textColor">@color/text_color_button_primary_selector</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
-        <item name="android:insetTop">2.5dp</item>
-        <item name="android:insetBottom">2.5dp</item>
+        <item name="android:paddingTop">7dp</item>
+        <item name="android:paddingBottom">7dp</item>
     </style>
 
-    <style name="Button.Primary.Medium" parent="Button.Primary">
+    <style name="Button.Primary.Medium" parent="TextView.UXStyle.Buttons.Medium">
+        <item name="android:background">@drawable/button_background_primary_selector</item>
+        <item name="android:textColor">@color/text_color_button_primary_selector</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">56dp</item>
         <item name="android:paddingRight">56dp</item>
-        <item name="android:insetTop">5dp</item>
-        <item name="android:insetBottom">5dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
     </style>
 
-    <style name="Button.Primary.Large" parent="Button.Primary">
+    <style name="Button.Primary.Large" parent="TextView.UXStyle.Buttons.Medium">
+        <item name="android:background">@drawable/button_background_primary_selector</item>
+        <item name="android:textColor">@color/text_color_button_primary_selector</item>
+        <item name="android:stateListAnimator">@null</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:insetTop">7dp</item>
-        <item name="android:insetBottom">7dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
     <style name="Button.Primary.Large.Icon" parent="Widget.Material3.Button.TextButton">
@@ -289,60 +300,110 @@
         <item name="android:insetBottom">7dp</item>
     </style>
 
-    <style name="Button.Secondary" parent="BaseButton">
+    <style name="Button.Secondary.XSmall" parent="TextView.UXStyle.Captions.1.Medium">
         <item name="android:background">@drawable/button_background_secondary_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
-        <item name="backgroundTint">@null</item>
-        <item name="android:minHeight">0dp</item>
-        <item name="android:minWidth">0dp</item>
-    </style>
-
-    <style name="Button.Secondary.XSmall" parent="Button.Secondary">
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
     </style>
 
-    <style name="Button.Secondary.Small" parent="Button.Secondary">
+    <style name="Button.Secondary.Small" parent="TextView.UXStyle.Body.Callout.Medium">
+        <item name="android:background">@drawable/button_background_secondary_selector</item>
+        <item name="android:textColor">@color/text_color_button_secondary_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
-        <item name="android:insetTop">2.5dp</item>
-        <item name="android:insetBottom">2.5dp</item>
+        <item name="android:paddingTop">7dp</item>
+        <item name="android:paddingBottom">7dp</item>
     </style>
 
-    <style name="Button.Secondary.Medium" parent="Button.Secondary">
+    <style name="Button.Secondary.Medium" parent="TextView.UXStyle.Buttons.Medium">
+        <item name="android:background">@drawable/button_background_secondary_selector</item>
+        <item name="android:textColor">@color/text_color_button_secondary_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">56dp</item>
         <item name="android:paddingRight">56dp</item>
-        <item name="android:insetTop">5dp</item>
-        <item name="android:insetBottom">5dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
     </style>
 
-    <style name="Button.Secondary.Large" parent="Button.Secondary">
+    <style name="Button.Secondary.Large" parent="TextView.UXStyle.Buttons.Medium">
+        <item name="android:background">@drawable/button_background_secondary_selector</item>
+        <item name="android:textColor">@color/text_color_button_secondary_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:insetTop">7dp</item>
-        <item name="android:insetBottom">7dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
-    <!-- button text appearance -->
-    <attr name="primaryXSButtonTextAppearance" format="reference" />
-    <attr name="secondaryXSButtonTextAppearance" format="reference" />
-    <attr name="primarySButtonTextAppearance" format="reference" />
-    <attr name="secondarySButtonTextAppearance" format="reference" />
-    <attr name="primaryMediumButtonTextAppearance" format="reference" />
-    <attr name="secondaryMediumButtonTextAppearance" format="reference" />
-    <attr name="primaryLargeButtonTextAppearance" format="reference" />
-    <attr name="secondaryLargeButtonTextAppearance" format="reference" />
-    <attr name="primaryLargeNumberButtonTextAppearance" format="reference" />
+    <style name="Button.Warning.XSmall" parent="TextView.UXStyle.Captions.1.Medium">
+        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:textColor">@color/text_color_button_warning_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+    </style>
+
+    <style name="Button.Warning.Small" parent="TextView.UXStyle.Body.Callout.Medium">
+        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:textColor">@color/text_color_button_warning_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">7dp</item>
+        <item name="android:paddingBottom">7dp</item>
+    </style>
+
+    <style name="Button.Warning.Medium" parent="TextView.UXStyle.Buttons.Medium">
+        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:textColor">@color/text_color_button_warning_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:paddingLeft">56dp</item>
+        <item name="android:paddingRight">56dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="Button.Warning.Large" parent="TextView.UXStyle.Buttons.Medium">
+        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:textColor">@color/text_color_button_warning_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
 
     <!-- button styles -->
-    <attr name="primaryXSButtonStyle" format="reference" />
-    <attr name="secondaryXSButtonStyle" format="reference" />
-    <attr name="primarySButtonStyle" format="reference" />
-    <attr name="secondarySButtonStyle" format="reference" />
+    <attr name="primaryXSmallButtonStyle" format="reference" />
+    <attr name="secondaryXSmallButtonStyle" format="reference" />
+    <attr name="primarySmallButtonStyle" format="reference" />
+    <attr name="secondarySmallButtonStyle" format="reference" />
     <attr name="primaryMediumButtonStyle" format="reference" />
     <attr name="secondaryMediumButtonStyle" format="reference" />
     <attr name="primaryLargeButtonStyle" format="reference" />
     <attr name="secondaryLargeButtonStyle" format="reference" />
     <attr name="primaryLargeNumberButtonStyle" format="reference" />
+    <attr name="warningXSmallButtonStyle" format="reference" />
+    <attr name="warningSmallButtonStyle" format="reference" />
+    <attr name="warningMediumButtonStyle" format="reference" />
+    <attr name="warningLargeButtonStyle" format="reference" />
 </resources>

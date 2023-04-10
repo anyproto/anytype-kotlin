@@ -55,6 +55,14 @@ class DesignSystemActivity : AppCompatActivity(), Navigate {
             .addToBackStack(null)
             .commit()
     }
+
+    override fun toButtonsWarning() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.root, ButtonsWarningFragment())
+            .addToBackStack(null)
+            .commit()
+    }
 }
 
 interface Navigate {
@@ -63,4 +71,5 @@ interface Navigate {
     fun toUxStyle()
     fun toButtons()
     fun toButtonsSecondary()
+    fun toButtonsWarning()
 }

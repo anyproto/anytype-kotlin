@@ -6,15 +6,13 @@
     android:clickable="true"
     tools:context="com.anytypeio.anytype.core_ui.widgets.NumberButton">
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
         android:id="@+id/button"
         style="?attr/primaryLargeNumberButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="false"
-        android:stateListAnimator="@null"
         android:text="Button"
-        android:textAppearance="?attr/primaryLargeNumberButtonTextAppearance"
         android:visibility="visible" />
 
     <TextView

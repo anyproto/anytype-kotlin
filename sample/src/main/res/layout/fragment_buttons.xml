@@ -16,27 +16,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryXSmall
         android:id="@+id/button8"
-        style="?attr/primaryXSButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Button"
-        android:textAppearance="?attr/primaryXSButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="@+id/textView21"
         app:layout_constraintStart_toStartOf="@+id/textView21"
         app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryXSmall
         android:id="@+id/button13"
-        style="?attr/primaryXSButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:enabled="false"
         android:text="Button"
-        android:textAppearance="?attr/primaryXSButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="@+id/textView21"
         app:layout_constraintStart_toStartOf="@+id/textView21"
         app:layout_constraintTop_toBottomOf="@+id/button8" />
@@ -51,27 +47,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button13" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimarySmall
         android:id="@+id/button9"
-        style="?attr/primarySButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Button"
-        android:textAppearance="?attr/primarySButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView22" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimarySmall
         android:id="@+id/button17"
-        style="?attr/primarySButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:enabled="false"
         android:text="Button"
-        android:textAppearance="?attr/primarySButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button9" />
@@ -86,27 +78,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button17" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryMedium
         android:id="@+id/button10"
-        style="?attr/primaryMediumButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Button"
-        android:textAppearance="?attr/primaryMediumButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView23" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryMedium
         android:id="@+id/button18"
-        style="?attr/primaryMediumButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:enabled="false"
         android:text="Button"
-        android:textAppearance="?attr/primaryMediumButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button10" />
@@ -121,23 +109,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button18" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
         android:id="@+id/button11"
-        style="?attr/primaryLargeButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:text="Button"
-        android:textAppearance="?attr/primaryLargeButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView24" />
 
-    <Button
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
         android:id="@+id/button19"
-        style="?attr/primaryLargeButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -145,7 +130,6 @@
         android:layout_marginEnd="16dp"
         android:enabled="false"
         android:text="Button"
-        android:textAppearance="?attr/primaryLargeButtonTextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button11" />

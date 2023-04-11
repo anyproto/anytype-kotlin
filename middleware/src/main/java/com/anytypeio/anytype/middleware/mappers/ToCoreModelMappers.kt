@@ -263,17 +263,8 @@ fun MBlock.toCoreModelsLink(): Block.Content.Link {
         iconSize = content.iconSize.toCoreModel(),
         cardStyle = content.cardStyle.toCoreModel(),
         description = content.description.toCoreModel(),
-        relations = content.relations.map { it.toCoreLinkRelationModel() }.toSet(),
+        relations = content.relations.toSet(),
     )
-}
-
-internal fun String.toCoreLinkRelationModel(): Block.Content.Link.Relation {
-    return when (this) {
-        "cover" -> Block.Content.Link.Relation.COVER
-        "name" -> Block.Content.Link.Relation.NAME
-        "type" -> Block.Content.Link.Relation.TYPE
-        else -> Block.Content.Link.Relation.UNKNOWN(this)
-    }
 }
 
 fun MBLinkIconSize.toCoreModel(): Block.Content.Link.IconSize {

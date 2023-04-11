@@ -192,29 +192,18 @@ data class Block(
             val iconSize: IconSize,
             val cardStyle: CardStyle,
             val description: Description,
-            @Deprecated("To be removed")
-            val relations: Set<Relation> = emptySet(),
+            val relations: Set<Key> = emptySet(),
         ) : Content() {
-            sealed interface Relation {
-                object COVER : Relation
-                object NAME : Relation
-                object TYPE : Relation
-                data class UNKNOWN(val value: String) : Relation
-            }
-
             enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
             enum class IconSize { NONE, SMALL, MEDIUM }
             enum class CardStyle { TEXT, CARD, INLINE }
             enum class Description { NONE, ADDED, CONTENT }
 
-            val hasName: Boolean
-                get() = relations.contains(Relation.NAME)
-
             val hasCover: Boolean
-                get() = relations.contains(Relation.COVER)
+                get() = relations.contains(Relations.COVER)
 
             val hasType: Boolean
-                get() = relations.contains(Relation.TYPE)
+                get() = relations.contains(Relations.TYPE)
         }
 
         /**

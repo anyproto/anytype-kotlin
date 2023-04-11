@@ -118,17 +118,8 @@ internal fun Block.Content.Link.toMiddlewareModel(): MBLink {
         iconSize = iconSize.toMiddlewareModel(),
         cardStyle = cardStyle.toMiddlewareModel(),
         description = description.toMiddlewareModel(),
-        relations = relations.map { it.toMiddlewareModel() }
+        relations = relations.toList()
     )
-}
-
-internal fun Block.Content.Link.Relation.toMiddlewareModel(): String {
-    return when (this) {
-        Block.Content.Link.Relation.COVER -> "cover"
-        Block.Content.Link.Relation.NAME -> "name"
-        Block.Content.Link.Relation.TYPE -> "type"
-        is Block.Content.Link.Relation.UNKNOWN -> this.value
-    }
 }
 
 internal fun Block.Content.Link.Description.toMiddlewareModel(): MBLinkDescription {

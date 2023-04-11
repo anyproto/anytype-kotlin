@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -37,12 +38,12 @@ class ObjectAppearanceChooseCoverViewModel(
         return when (item) {
             is Cover.None -> {
                 oldContent.copy(
-                    relations = relations - Block.Content.Link.Relation.COVER
+                    relations = relations - Relations.COVER
                 )
             }
             is Cover.Visible -> {
                 oldContent.copy(
-                    relations = relations + Block.Content.Link.Relation.COVER
+                    relations = relations + Relations.COVER
                 )
             }
         }

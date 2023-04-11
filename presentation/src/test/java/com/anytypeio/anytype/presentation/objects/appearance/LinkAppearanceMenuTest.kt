@@ -2,13 +2,13 @@ package com.anytypeio.anytype.presentation.objects.appearance
 
 import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
-import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseIconViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
-import org.junit.Test
 import kotlin.test.assertEquals
+import org.junit.Test
 
 class LinkAppearanceMenuTest {
 
@@ -16,7 +16,7 @@ class LinkAppearanceMenuTest {
         iconSize = Link.IconSize.SMALL,
         cardStyle = Link.CardStyle.TEXT,
         description = Link.Description.NONE,
-        relations = setOf(Link.Relation.NAME)
+        relations = setOf(Relations.NAME)
     )
 
     @Test
@@ -67,7 +67,7 @@ class LinkAppearanceMenuTest {
                 iconSize = Link.IconSize.SMALL,
                 cardStyle = Link.CardStyle.CARD,
                 description = Link.Description.NONE,
-                relations = setOf(Link.Relation.NAME)
+                relations = setOf(Relations.NAME)
             ),
             layout = ObjectType.Layout.TODO
         )
@@ -91,7 +91,7 @@ class LinkAppearanceMenuTest {
                 iconSize = Link.IconSize.SMALL,
                 cardStyle = Link.CardStyle.CARD,
                 description = Link.Description.NONE,
-                relations = setOf(Link.Relation.NAME, Link.Relation.COVER)
+                relations = setOf(Relations.NAME, Relations.COVER)
             ),
             layout = ObjectType.Layout.TODO
         )

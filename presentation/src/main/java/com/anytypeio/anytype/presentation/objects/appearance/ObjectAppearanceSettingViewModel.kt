@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.ext.getLinkAppearanceMenu
@@ -104,9 +105,9 @@ class ObjectAppearanceSettingViewModel(
                 val newContent = when (toggle) {
                     is Relation.ObjectType -> content.copy(
                         relations = if (isChecked) {
-                            content.relations + Link.Relation.TYPE
+                            content.relations + Relations.TYPE
                         } else {
-                            content.relations - Link.Relation.TYPE
+                            content.relations - Relations.TYPE
                         }
                     )
                 }

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Link
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 object MockBlockContentFactory {
@@ -12,7 +13,7 @@ object MockBlockContentFactory {
         iconSize: Link.IconSize = Link.IconSize.SMALL,
         cardStyle: Link.CardStyle = Link.CardStyle.TEXT,
         description: Link.Description = Link.Description.NONE,
-        relations: Set<Link.Relation> = emptySet(),
+        relations: Set<Key> = emptySet(),
     ): Link = Link(
         target = target,
         type = type,

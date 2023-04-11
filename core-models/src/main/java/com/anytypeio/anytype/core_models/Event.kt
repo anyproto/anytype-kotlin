@@ -80,7 +80,6 @@ sealed class Event {
          * @property context update's context
          * @property id id of the link
          * @property target id of the linked block
-         * @property fields link's fields (considered updated if not null)
          */
         data class LinkGranularChange(
             override val context: String,
@@ -89,7 +88,7 @@ sealed class Event {
             val iconSize: Block.Content.Link.IconSize?,
             val cardStyle: Block.Content.Link.CardStyle?,
             val description: Block.Content.Link.Description?,
-            val relations: Set<Block.Content.Link.Relation>?,
+            val relations: Set<Key>?,
         ) : Command()
 
         /**

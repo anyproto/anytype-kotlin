@@ -2645,7 +2645,7 @@ class DefaultBlockViewRendererTest {
                 cardStyle = Link.CardStyle.CARD,
                 iconSize = Link.IconSize.NONE,
                 description = Link.Description.ADDED,
-                relations = setOf(Link.Relation.NAME)
+                relations = setOf(Relations.NAME)
             ),
             backgroundColor = "red"
         )

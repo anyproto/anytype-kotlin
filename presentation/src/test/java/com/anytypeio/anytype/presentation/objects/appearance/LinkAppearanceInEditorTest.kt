@@ -2,11 +2,12 @@ package com.anytypeio.anytype.presentation.objects.appearance
 
 import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor.Description
-import org.junit.Test
 import kotlin.test.assertEquals
+import org.junit.Test
 
 class LinkAppearanceInEditorTest {
 
@@ -61,7 +62,7 @@ class LinkAppearanceInEditorTest {
     fun `should create appearance params without cover`() {
         val factory = LinkAppearanceFactory(
             content = defaultLinkAppearance.copy(
-                relations = defaultLinkAppearance.relations + Link.Relation.COVER
+                relations = defaultLinkAppearance.relations + Relations.COVER
             ),
             layout = ObjectType.Layout.BASIC
         )

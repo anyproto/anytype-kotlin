@@ -696,7 +696,7 @@ class Middleware(
             iconSize = content.iconSize.toMiddlewareModel(),
             cardStyle = content.cardStyle.toMiddlewareModel(),
             description = content.description.toMiddlewareModel(),
-            relations = content.relations.map { it.toMiddlewareModel() }
+            relations = content.relations.toList()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockLinkListSetAppearance(

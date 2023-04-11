@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -51,7 +52,6 @@ fun Section(modifier: Modifier = Modifier, title: String) {
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NameBlock(
     modifier: Modifier = Modifier,
@@ -68,67 +68,23 @@ fun NameBlock(
             color = colorResource(id = R.color.text_secondary),
             fontSize = 13.sp
         )
-        BasicTextField(
+        SettingsTextField(
             value = nameValue.value,
             onValueChange = {
                 nameValue.value = it
             },
-            modifier = Modifier.padding(top = 4.dp, end = 20.dp),
-            enabled = true,
-            textStyle = TextStyle(
-                fontSize = 22.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.text_primary)
-            ),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     onNameSet.invoke(nameValue.value)
                     focusManager.clearFocus()
                 }
             ),
-            singleLine = true,
-            decorationBox = @Composable { innerTextField ->
-                TextFieldDefaults.OutlinedTextFieldDecorationBox(
-                    value = nameValue.value,
-                    innerTextField = innerTextField,
-                    singleLine = true,
-                    enabled = true,
-                    isError = false,
-                    placeholder = {
-                        Text(text = "Space name")
-                    },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = colorResource(id = R.color.text_primary),
-                        backgroundColor = Color.Transparent,
-                        disabledBorderColor = Color.Transparent,
-                        errorBorderColor = Color.Transparent,
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        placeholderColor = colorResource(id = R.color.text_tertiary),
-                    ),
-                    contentPadding = PaddingValues(
-                        start = 0.dp,
-                        top = 0.dp,
-                        end = 0.dp,
-                        bottom = 0.dp
-                    ),
-                    border = {},
-                    interactionSource = remember { MutableInteractionSource() },
-                    visualTransformation = VisualTransformation.None
-                )
-            }
         )
     }
-
-
 }
 
 @Composable
-fun SpaceNameBlock(modifier: Modifier = Modifier) {
+fun SpaceNameBlock() {
     Text(
         text = "Space",
         style = MaterialTheme.typography.h3,
@@ -193,4 +149,66 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+fun SettingsTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+) {
+
+    @OptIn(ExperimentalMaterialApi::class)
+    BasicTextField(
+        value = value,
+        modifier = Modifier
+            .padding(top = 4.dp, end = 20.dp)
+            .fillMaxWidth(),
+        onValueChange = onValueChange,
+        enabled = true,
+        readOnly = false,
+        textStyle = TextStyle(
+            fontSize = 22.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colorResource(id = R.color.text_primary)
+        ),
+        cursorBrush = SolidColor(colorResource(id = R.color.orange)),
+        visualTransformation = visualTransformation,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = keyboardActions,
+        interactionSource = remember { MutableInteractionSource() },
+        singleLine = true,
+        maxLines = 1,
+        decorationBox = @Composable { innerTextField ->
+            TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                value = value,
+                visualTransformation = visualTransformation,
+                innerTextField = innerTextField,
+                placeholder = null,
+                label = null,
+                leadingIcon = null,
+                trailingIcon = null,
+                singleLine = true,
+                enabled = true,
+                isError = false,
+                interactionSource = remember { MutableInteractionSource() },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = colorResource(id = R.color.text_primary),
+                    backgroundColor = Color.Transparent,
+                    disabledBorderColor = Color.Transparent,
+                    errorBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    placeholderColor = colorResource(id = R.color.glyph_active),
+                    cursorColor = colorResource(id = R.color.orange)
+                ),
+                contentPadding = PaddingValues(),
+                border = {}
+            )
+        }
+    )
 }

@@ -29,9 +29,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
-import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
-import com.anytypeio.anytype.ui.sets.ARG_SHOW_REMOVE_BUTTON
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -88,7 +86,7 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
                         isShowDebug = toggles.isTroubleshootingMode,
                         onNameChange = { vm.onNameChange(it) },
                         onProfileIconClick = { proceedWithIconClick() },
-                        vm.accountData.collectAsStateWithLifecycle().value
+                        vm.accountData.collectAsStateWithLifecycle().value,
                     )
                 }
             }

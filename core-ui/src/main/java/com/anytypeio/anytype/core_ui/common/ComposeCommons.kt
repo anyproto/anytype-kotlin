@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.util
+package com.anytypeio.anytype.core_ui.common
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime

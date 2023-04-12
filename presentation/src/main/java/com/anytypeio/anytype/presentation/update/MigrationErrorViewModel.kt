@@ -20,27 +20,25 @@ class MigrationErrorViewModel(
 
     init {
         viewModelScope.launch {
-            viewActions.collect {
-                when (it) {
+            viewActions.collect { action ->
+                when (action) {
                     ViewAction.CloseScreen -> {
-//                        sendDownloadEvent(ANALYTICS_TYPE_EXIT)
+                        sendAnalyticsEvent(ANALYTICS_TYPE_EXIT)
                         proceedWithCloseScreen()
                     }
                     ViewAction.VisitForum -> {
-                        // TODO send analytics?
+                        sendAnalyticsEvent(ANALYTICS_TYPE_CHECK_INSTRUCTIONS)
                         proceedWithVisitingForum()
                     }
                     ViewAction.DownloadDesktop -> {
-//                        sendToggleEvent(ANALYTICS_TYPE_DOWNLOAD)
+                        sendAnalyticsEvent(ANALYTICS_TYPE_DESKTOP_DOWNLOAD)
                         proceedWithDesktopDownload()
                     }
                     ViewAction.ToggleMigrationNotReady -> {
-                        // TODO send analytics?
-//                        sendToggleEvent(ANALYTICS_TYPE_WITH_DESKTOP)
+                        // Do nothing
                     }
                     ViewAction.ToggleMigrationReady -> {
-                        // TODO send analytics?
-//                        sendToggleEvent(ANALYTICS_TYPE_WITHOUT_DESKTOP)
+                        sendAnalyticsEvent(ANALYTICS_TYPE_MIGRATION_COMPLETED)
                     }
                 }
             }
@@ -71,18 +69,10 @@ class MigrationErrorViewModel(
         }
     }
 
-    private fun sendToggleEvent(type: String) {
+    private fun sendAnalyticsEvent(type: String) {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = ANALYTICS_EVENT_TOGGLE,
-            props = Props(mapOf("type" to type))
-        )
-    }
-
-    private fun sendDownloadEvent(type: String) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = ANALYTICS_EVENT_DOWNLOAD,
+            eventName = ANALYTICS_EVENT_SCREEN,
             props = Props(mapOf("type" to type))
         )
     }
@@ -117,9 +107,8 @@ class MigrationErrorViewModel(
     }
 }
 
-private const val ANALYTICS_EVENT_DOWNLOAD = "MigrationDownloadNewApp"
-private const val ANALYTICS_EVENT_TOGGLE = "MigrationMobileToggle"
-private const val ANALYTICS_TYPE_WITH_DESKTOP = "With_desktop"
-private const val ANALYTICS_TYPE_WITHOUT_DESKTOP = "Without_desktop"
-private const val ANALYTICS_TYPE_DOWNLOAD = "Download"
-private const val ANALYTICS_TYPE_EXIT = "Exit"
+private const val ANALYTICS_EVENT_SCREEN = "MigrationGoneWrong"
+private const val ANALYTICS_TYPE_MIGRATION_COMPLETED = "complete"
+private const val ANALYTICS_TYPE_CHECK_INSTRUCTIONS = "instructions"
+private const val ANALYTICS_TYPE_DESKTOP_DOWNLOAD = "download"
+private const val ANALYTICS_TYPE_EXIT = "exit"

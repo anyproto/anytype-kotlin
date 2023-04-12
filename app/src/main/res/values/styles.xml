@@ -1,31 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/orange</item>
-        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
-        <item name="searchViewStyle">@style/SearchViewStyle</item>
-    </style>
-
-    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/AppModalStyle</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
-        <item name="colorAccent">@color/orange</item>
-    </style>
-
-    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/rounded_dialog</item>
-    </style>
-
     <style name="AuthHeaderStyle">
         <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:textColor">@color/text_primary</item>
@@ -226,19 +200,16 @@
         <item name="android:textSize">17sp</item>
     </style>
 
-    <style name="dataViewTextErrorStyle">
+    <style name="dataViewTextErrorStyle" parent="TextView.UXStyle.Captions.2.Regular">
         <item name="android:padding">32dp</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:fontFamily">monospace</item>
-        <item name="android:textColor">@color/palette_dark_grey</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_tertiary</item>
     </style>
 
-    <style name="dataViewUnsupportedViewErrorStyle">
+    <style name="dataViewUnsupportedViewErrorStyle" parent="TextView.UXStyle.Captions.2.Regular">
         <item name="android:padding">32dp</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/palette_dark_grey</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_tertiary</item>
     </style>
 
     <style name="DefaultTextViewErrorStyle">

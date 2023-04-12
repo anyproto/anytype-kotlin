@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -102,7 +103,7 @@
             android:id="@+id/bottomMenu"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            android:background="@color/defaultCanvasColor"
+            android:background="@color/chapter_yellow"
             android:translationY="@dimen/default_toolbar_height"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

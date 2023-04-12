@@ -466,7 +466,7 @@ class AddRelationTagValueTest {
 
         // Veryfying UI
 
-        R.id.tvSelectionCounter.matchView().checkHasText("2")
+        R.id.btnAdd.matchView().checkHasText("2")
 
         R.id.btnAdd.performClick()
 

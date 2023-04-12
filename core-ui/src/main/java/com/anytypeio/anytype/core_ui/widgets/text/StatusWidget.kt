@@ -13,6 +13,10 @@ class StatusWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
+    init {
+        setTextAppearance(R.style.TextView_ContentStyle_Relations_1)
+    }
+
     fun setColor(color: String?) {
         val defaultTextColor = context.getColor(R.color.text_primary)
         val themeColor = ThemeColor.values().find { it.code == color } ?: ThemeColor.DEFAULT

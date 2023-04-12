@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
     android:clickable="true"
     android:focusable="true"
-    android:layout_gravity="bottom"
+    android:orientation="vertical"
     android:transitionName="checkoutTransition"
-    android:layout_height="wrap_content">
+    tools:context="com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFromSelectedValueFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -36,17 +38,15 @@
 
         <TextView
             android:id="@+id/tvRelationName"
+            style="@style/TextView.ContentStyle.PreviewTitles.2.Medium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="20dp"
-            android:fontFamily="@font/inter_medium"
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            android:singleLine="true"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivRelationIcon"
             app:layout_constraintTop_toBottomOf="@+id/dragger"
@@ -54,13 +54,14 @@
 
         <TextView
             android:id="@+id/tvFilterCondition"
-            style="@style/FilterConditionTextStyle"
+            style="@style/TextView.ContentStyle.Relations.1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/dp_12"
             android:paddingEnd="@dimen/dp_12"
             android:paddingBottom="@dimen/dp_12"
             android:text="@string/filter_condition_is"
+            android:textColor="@color/text_secondary"
             app:drawableEndCompat="@drawable/ic_list_arrow"
             app:layout_constraintStart_toEndOf="@+id/ivRelationIcon"
             app:layout_constraintTop_toBottomOf="@+id/tvRelationName"
@@ -71,8 +72,8 @@
             layout="@layout/widget_search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,43 +85,24 @@
         android:id="@+id/rvViewerFilterRecycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
+        android:layout_weight="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchBar" />
 
-    <FrameLayout
+    <com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber
+        android:id="@+id/btnBottomAction"
         android:layout_width="match_parent"
-        android:layout_height="68dp">
-
-        <TextView
-            android:id="@+id/btnBottomAction"
-            style="@style/DefaultOrangeActionButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/rect_orange_action_button"
-            tools:text="Apply" />
-
-        <TextView
-            android:id="@+id/tvOptionCount"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="34dp"
-            android:background="@drawable/circle_solid_default"
-            android:backgroundTint="#E89D00"
-            android:fontFamily="@font/inter_medium"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
-
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="@dimen/dp_10"
+        app:buttonTitle="@string/apply">
+    </com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber>
 
 </LinearLayout>

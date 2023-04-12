@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,7 +18,7 @@
 
     <TextView
         android:id="@+id/tvRelationHeader"
-        style="@style/DefaultCellRelationHeaderStyle"
+        style="@style/TextView.UXStyle.Titles.1"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginStart="@dimen/dp_20"
@@ -35,7 +36,7 @@
 
     <TextView
         android:id="@+id/tvToday"
-        style="@style/DefaultDataViewDateCellTextViewStyle"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -62,7 +63,7 @@
 
     <TextView
         android:id="@+id/tvYesterday"
-        style="@style/DefaultDataViewDateCellTextViewStyle"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -89,7 +90,7 @@
 
     <TextView
         android:id="@+id/tvTomorrow"
-        style="@style/DefaultDataViewDateCellTextViewStyle"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -116,7 +117,7 @@
 
     <TextView
         android:id="@+id/tvExactDay"
-        style="@style/DefaultDataViewDateCellTextViewStyle"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -129,14 +130,13 @@
 
     <TextView
         android:id="@+id/tvDate"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/inter_regular"
         android:gravity="end"
-        android:textColor="#ACA996"
-        android:textSize="17sp"
+        android:textColor="@color/text_secondary"
         app:layout_constraintBottom_toBottomOf="@+id/tvExactDay"
         app:layout_constraintEnd_toStartOf="@+id/ivExactDayCheck"
         app:layout_constraintStart_toEndOf="@+id/tvExactDay"
@@ -191,16 +191,14 @@
         app:layout_constraintTop_toTopOf="@+id/tvToday"
         tools:visibility="visible" />
 
-    <TextView
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
         android:id="@+id/btnBottomAction"
-        style="@style/DefaultOrangeActionButtonStyle"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="20dp"
-        android:background="@drawable/rect_orange_action_button"
         android:text="@string/done"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -233,7 +231,7 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
         android:text="@string/no_date"
-        style="@style/DefaultDataViewDateCellTextViewStyle"
+        style="@style/TextView.UXStyle.Body"
         app:layout_constraintEnd_toStartOf="@+id/ivNoDateCheck"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvRelationHeader" />

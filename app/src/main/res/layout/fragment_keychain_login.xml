@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -23,19 +23,20 @@
 
             <TextView
                 android:id="@+id/title"
-                style="@style/AuthHeaderStyle"
+                style="@style/TextView.ContentStyle.Headline.Heading"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
-                android:text="@string/login"
+                android:text="@string/login_with_recovery_phrase"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvqrcode"
+                style="@style/TextView.UXStyle.Body"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="20dp"
@@ -43,12 +44,9 @@
                 android:gravity="center_vertical"
                 android:layout_marginEnd="20dp"
                 android:drawableEnd="@drawable/ic_arrow_forward_legacy"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
                 android:text="@string/or_scan_qr_code"
-                android:textSize="17sp"
-                android:textColor="@color/black"
-                android:fontFamily="@font/inter_regular"
                 android:visibility="visible"
                 app:layout_constraintTop_toBottomOf="@id/title"
                 app:layout_constraintStart_toStartOf="parent"
@@ -68,6 +66,7 @@
 
             <EditText
                 android:id="@+id/keychainInputField"
+                style="@style/TextView.ContentStyle.CodeBlock"
                 android:layout_width="0dp"
                 android:layout_height="96dp"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
@@ -75,19 +74,16 @@
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
                 android:gravity="top"
                 android:background="@null"
-                android:fontFamily="@font/inconsolata"
                 android:hint="@string/type_your_recovery_phrase"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine|text"
-                android:textColorHint="@color/keychain_hint_color"
-                android:textSize="15sp"
+                android:textColorHint="@color/text_tertiary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider"/>
 
-            <TextView
+            <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
                 android:id="@+id/loginButton"
-                style="@style/DefaultSolidButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginStart="6dp"
@@ -100,9 +96,8 @@
                 app:layout_constraintStart_toEndOf="@+id/backButton"
                 app:layout_constraintTop_toTopOf="@+id/backButton" />
 
-            <TextView
+            <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
                 android:id="@+id/backButton"
-                style="@style/DefaultStrokeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginStart="@dimen/auth_default_margin_start"

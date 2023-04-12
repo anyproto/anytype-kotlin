@@ -67,7 +67,6 @@ open class CreateFilterFromSelectedValueFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnBottomAction.setText(R.string.create)
         searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
@@ -97,7 +96,7 @@ open class CreateFilterFromSelectedValueFragment :
                 binding.tvRelationName.text = it.title
                 binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
             }
-            subscribe(vm.optionCountState) { binding.tvOptionCount.text = it.toString() }
+            subscribe(vm.optionCountState) { binding.btnBottomAction.setNumber(it.toString()) }
             subscribe(vm.isCompleted) { isCompleted ->
                 if (isCompleted) withParent<CreateFilterFlow> { onFilterCreated() }
             }
@@ -156,8 +155,8 @@ open class CreateFilterFromSelectedValueFragment :
                     index = commands.index
                 ).showChildFragment()
             }
-            FilterViewModel.Commands.ShowCount -> binding.tvOptionCount.visible()
-            FilterViewModel.Commands.HideCount -> binding.tvOptionCount.gone()
+            FilterViewModel.Commands.ShowCount -> binding.btnBottomAction.showNumber()
+            FilterViewModel.Commands.HideCount -> binding.btnBottomAction.hideNumber()
             FilterViewModel.Commands.ShowSearchbar -> binding.searchBar.root.visible()
             FilterViewModel.Commands.HideSearchbar -> binding.searchBar.root.gone()
             FilterViewModel.Commands.DateDivider -> setDivider(R.drawable.divider_relation_date)

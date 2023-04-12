@@ -22,6 +22,7 @@ class TagWidget @JvmOverloads constructor(
         val lr = context.dimen(R.dimen.dv_tag_left_right_padding).toInt()
         setPadding(lr, 0, lr, 0)
         setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
+        setTextAppearance(R.style.TextView_ContentStyle_Relations_1)
         maxLines = 1
         isSingleLine = true
         ellipsize = TextUtils.TruncateAt.END

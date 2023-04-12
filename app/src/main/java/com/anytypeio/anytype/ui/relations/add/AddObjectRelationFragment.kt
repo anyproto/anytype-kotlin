@@ -73,7 +73,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         }
         binding.rvObjects.layoutManager = LinearLayoutManager(requireContext())
         binding.rvObjects.adapter = adapter
-        binding.btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
+        binding.btnAdd.setOnClickListener { vm.onActionButtonClicked() }
         setupBottomSheet()
         searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
@@ -96,11 +96,10 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
                     }
 
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        if (binding.btnAddContainer == null) return
                         if (slideOffset < 0)
-                            binding.btnAddContainer.gone()
+                            binding.btnAdd.gone()
                         else
-                            binding.btnAddContainer.visible()
+                            binding.btnAdd.visible()
                     }
                 }
             )
@@ -132,7 +131,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
 
     private fun observeState(state: ObjectValueAddView) {
         adapter.update(state.objects)
-        binding.tvObjectsCount.text = state.count
+        binding.btnAdd.setNumber(state.count.orEmpty())
     }
 
     private fun observeCommands(command: ObjectValueAddCommand) {

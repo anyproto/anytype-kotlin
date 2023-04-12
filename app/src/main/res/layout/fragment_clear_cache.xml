@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment">
 
     <TextView
         android:id="@+id/tvTitle"
+        style="@style/TextView.ContentStyle.Headline.Heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:fontFamily="@font/inter_bold"
-        android:textColor="@color/black"
-        android:textSize="22sp"
         android:text="@string/clear_cache" />
 
     <TextView
         android:id="@+id/tvSubtitle"
+        style="@style/TextView.UXStyle.Body.Callout.Regular"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
-        android:fontFamily="@font/inter_regular"
-        android:textColor="@color/black"
-        android:textSize="15sp"
         android:text="@string/download_from_node" />
 
     <LinearLayout
@@ -38,9 +36,8 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp">
 
-        <TextView
+        <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
             android:id="@+id/btnCancel"
-            style="@style/DefaultStrokeButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
@@ -48,9 +45,8 @@
             android:gravity="center"
             android:text="@string/cancel" />
 
-        <TextView
+        <com.anytypeio.anytype.core_ui.views.ButtonWarningLarge
             android:id="@+id/btnClear"
-            style="@style/DefaultRedButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"

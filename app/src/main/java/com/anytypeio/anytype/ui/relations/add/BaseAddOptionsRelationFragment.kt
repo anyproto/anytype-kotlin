@@ -117,9 +117,9 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {
                         if (vm.isMultiple.value) {
                             if (slideOffset < 0)
-                                binding.btnAddContainer.gone()
+                                binding.btnAdd.gone()
                             else
-                                binding.btnAddContainer.visible()
+                                binding.btnAdd.visible()
                         }
                     }
                 }
@@ -131,9 +131,9 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
         super.onActivityCreated(savedInstanceState)
         with(lifecycleScope) {
             subscribe(vm.ui) { editCellTagAdapter.update(it) }
-            subscribe(vm.counter) { binding.tvSelectionCounter.text = it.toString() }
+            subscribe(vm.counter) { binding.btnAdd.setNumber(it.toString()) }
             subscribe(vm.isAddButtonVisible) { isVisible ->
-                if (!isVisible) binding.btnAddContainer.gone() else binding.btnAddContainer.visible()
+                if (!isVisible) binding.btnAdd.gone() else binding.btnAdd.visible()
             }
             subscribe(vm.isDismissed) { isDismissed ->
                 if (isDismissed) {

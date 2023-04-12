@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -24,14 +26,13 @@
 
     <TextView
         android:id="@+id/error"
+        style="@style/TextView.UXStyle.Captions.2.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="100dp"
-        android:fontFamily="monospace"
         android:text="@string/failed_to_launch_wallet"
-        android:textColor="#FF5722"
-        android:textSize="10sp"
+        android:textColor="@color/palette_system_red"
         android:visibility="invisible"
         tools:ignore="SmallSp"
         tools:visibility="visible" />

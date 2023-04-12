@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -23,6 +24,7 @@
 
         <EditText
             android:id="@+id/textInputField"
+            style="@style/TextView.ContentStyle.Body.Regular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -30,26 +32,24 @@
             android:layout_marginEnd="6dp"
             android:layout_weight="1"
             android:background="@null"
-            android:fontFamily="@font/inter_regular"
             android:hint="@string/hint_paste_link"
             android:imeOptions="actionDone"
             android:paddingTop="@dimen/dp_14"
             android:paddingBottom="@dimen/dp_14"
-            android:textColor="@color/text_primary"
             android:textColorHint="@color/text_tertiary"
-            android:textCursorDrawable="@drawable/cursor"
             tools:text="http://www.reallylong.link/rll/jZxOZV6GUAwRucSxhnpWJwr1NZB1v5ck/dThI2STuLl" />
 
         <TextView
             android:id="@+id/button"
+            style="@style/TextView.UXStyle.Body"
+            android:textColor="@color/glyph_active"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="16dp"
             android:background="@drawable/default_ripple"
             android:stateListAnimator="@animator/scale_shrink"
-            android:text="@string/create"
-            android:textSize="17sp" />
+            android:text="@string/create" />
 
     </LinearLayout>
 

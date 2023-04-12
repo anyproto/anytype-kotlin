@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sheet"
@@ -31,26 +32,23 @@
 
         <TextView
             android:id="@+id/tvHeader"
+            style="@style/TextView.UXStyle.Titles.1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:fontFamily="@font/inter_semibold"
             android:gravity="center"
-            android:text="Change icon"
-            android:textColor="@color/text_primary"
-            android:textSize="17sp" />
+            android:text="@string/change_icon" />
 
         <TextView
             android:id="@+id/btnRemoveIcon"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center_vertical"
-            android:text="@string/remove"
-            android:textColor="@color/palette_dark_red"
-            android:textSize="17sp" />
+            android:textColor="@color/palette_system_red"
+            android:text="@string/remove" />
 
     </FrameLayout>
 
@@ -144,36 +142,32 @@
 
         <TextView
             android:id="@+id/tvTabEmoji"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center"
-            android:text="Emoji"
-            android:textColor="@color/black"
-            android:textSize="17sp" />
+            android:text="@string/emoji" />
 
         <TextView
             android:id="@+id/tvTabRandom"
+            style="@style/TextView.UXStyle.Body"
+            android:textColor="@color/glyph_active"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center"
-            android:text="Random"
-            android:textColor="#ACA996"
-            android:textSize="17sp" />
+            android:text="@string/random" />
 
         <TextView
             android:id="@+id/tvTabUpload"
+            style="@style/TextView.UXStyle.Body"
+            android:textColor="@color/glyph_active"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center"
-            android:text="Upload"
-            android:textColor="#ACA996"
-            android:textSize="17sp" />
+            android:text="@string/btn_upload" />
 
     </LinearLayout>
 

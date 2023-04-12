@@ -87,4 +87,8 @@
     <color name="library_action_btn_text_color">#000000</color>
     <color name="set_new_btn_text">#000000</color>
 
+    <color name="colorPrimary">#FF5722</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#3F51B5</color>
+
 </resources>

@@ -58,7 +58,7 @@ class AddFileRelationFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.rvFiles.layoutManager = LinearLayoutManager(requireContext())
         binding.rvFiles.adapter = adapter
-        binding.btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
+        binding.btnAdd.setOnClickListener { vm.onActionButtonClicked() }
         searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
@@ -93,7 +93,7 @@ class AddFileRelationFragment :
 
     private fun observeState(state: FileValueAddView) {
         adapter.update(state.files)
-        binding.tvFilesCount.text = state.count
+        binding.btnAdd.setNumber(state.count.orEmpty())
     }
 
     private fun observeCommands(command: FileValueAddCommand) {

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -22,9 +23,11 @@
 
         <TextView
             android:id="@+id/editBtn"
-            style="@style/DefaultCellInteractionTextButtonStyle"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@color/glyph_active"
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="16dp"
             android:text="@string/edit" />

@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    tools:context="com.anytypeio.anytype.core_ui.widgets.NumberButton">
+    tools:context="com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber">
 
     <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
         android:id="@+id/button"
-        style="?attr/primaryLargeNumberButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="false"

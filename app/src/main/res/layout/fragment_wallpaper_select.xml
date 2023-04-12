@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment">
 
     <View
         android:id="@+id/dragger"
@@ -17,12 +20,12 @@
         android:layout_height="@dimen/default_toolbar_height">
 
         <TextView
-            style="@style/DefaultDataViewModalHeaderStyle"
+            style="@style/TextView.UXStyle.Titles.1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Change wallpaper" />
+            android:text="@string/change_wallpaper" />
 
     </FrameLayout>
 

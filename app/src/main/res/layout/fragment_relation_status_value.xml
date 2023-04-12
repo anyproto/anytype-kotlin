@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,7 +24,8 @@
 
         <TextView
             android:id="@+id/btnEditOrDone"
-            style="@style/DefaultCellInteractionTextButtonStyle"
+            style="@style/TextView.UXStyle.Body"
+            android:textColor="@color/glyph_active"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/dp_16"
@@ -37,7 +39,7 @@
 
         <TextView
             android:id="@+id/tvRelationHeader"
-            style="@style/DefaultCellRelationHeaderStyle"
+            style="@style/TextView.UXStyle.Titles.1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="52dp"

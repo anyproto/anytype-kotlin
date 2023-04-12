@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,7 +23,7 @@
 
         <TextView
             android:id="@+id/textView4"
-            style="@style/CoverModalTitleStyle"
+            style="@style/TextView.UXStyle.Titles.1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -31,14 +32,13 @@
 
         <TextView
             android:id="@+id/btnRemove"
-            style="@style/CoverModalTitleStyle"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:gravity="center_vertical"
             android:paddingEnd="@dimen/dp_16"
             android:text="@string/remove"
-            android:fontFamily="@font/inter_regular"
             android:textColor="@color/palette_system_red" />
 
     </FrameLayout>
@@ -75,16 +75,15 @@
 
         <TextView
             android:id="@+id/btnUpload"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:fontFamily="@font/inter_regular"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:gravity="center"
             android:text="@string/btn_upload"
-            android:textColor="@color/glyph_active"
-            android:textSize="17sp" />
+            android:textColor="@color/glyph_active" />
 
     </LinearLayout>
 

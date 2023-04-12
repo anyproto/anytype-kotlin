@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.anytypeio.anytype.ui.relations.add.BaseAddOptionsRelationFragment">
 
     <LinearLayout
         android:id="@+id/sheet"
@@ -37,37 +39,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp" />
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp" />
 
     </LinearLayout>
 
-    <FrameLayout
-        android:layout_gravity="bottom"
-        android:id="@+id/btnAddContainer"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
+    <com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber
+        android:id="@+id/btnAdd"
         android:layout_width="match_parent"
-        android:layout_height="68dp">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_gravity="bottom"
+        app:buttonTitle="@string/add">
 
-        <TextView
-            android:id="@+id/btnAdd"
-            style="@style/DefaultSolidButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_height="44dp"
-            android:text="@string/add"
-            android:textSize="17sp" />
-
-        <TextView
-            tools:text="1"
-            android:layout_marginEnd="12dp"
-            android:layout_gravity="end|center_vertical"
-            android:id="@+id/tvSelectionCounter"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            style="@style/SelectRelationValueCounterStyle" />
-
-    </FrameLayout>
+    </com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

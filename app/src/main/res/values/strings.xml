@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="amplitude_api_key">1ba981d1a9afb8af8c81847ef3383a20</string>
     <string name="amplitude_api_key_debug">b9791dd64a1e9f07a330a4ac9feb1f10</string>
@@ -243,6 +243,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="shared">Shared</string>
     <string name="object_not_exist">This object doesn\'t exist</string>
     <string name="back_to_dashboard">Back to dashboard</string>
+    <string name="go_back">Go back</string>
 
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Create</string>
@@ -340,5 +341,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
+    <string name="emoji">Emoji</string>
 
 </resources>

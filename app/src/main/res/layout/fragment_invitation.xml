@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -26,50 +27,43 @@
 
             <TextView
                 android:id="@+id/title"
+                style="@style/TextView.ContentStyle.Headline.Heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="23dp"
                 android:layout_marginEnd="20dp"
-                android:fontFamily="@font/inter_bold"
-                android:letterSpacing="-0.0218"
                 android:text="@string/enter_your_code"
-                android:textColor="@color/black"
-                android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/description"
+                style="@style/TextView.UXStyle.Body.Callout.Regular"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="11dp"
                 android:layout_marginEnd="20dp"
-                android:fontFamily="@font/inter_regular"
-                android:lineSpacingMultiplier="1.21"
                 android:text="@string/enter_invitation_text"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title" />
 
             <EditText
                 android:id="@+id/edtCode"
+                style="@style/TextView.UXStyle.Body"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="20dp"
                 android:background="@null"
-                android:fontFamily="@font/inter_regular"
                 android:hint="@string/enter_invitation_hint"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
-                android:textColorHint="#ACA996"
-                android:textSize="17sp"
+                android:textColorHint="@color/text_tertiary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/description" />
@@ -86,9 +80,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/edtCode" />
 
-            <TextView
+            <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
                 android:id="@+id/btnBack"
-                style="@style/DefaultStrokeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginStart="20dp"
@@ -102,9 +95,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-            <TextView
+            <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
                 android:id="@+id/btnConfirm"
-                style="@style/DefaultSolidButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginStart="5dp"

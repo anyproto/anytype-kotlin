@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -20,11 +21,11 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/KeychainDialogTitleStyle"
+        style="@style/TextView.ContentStyle.Headline.Heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="23dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="20dp"
         android:text="@string/do_not_forget_mnemonic_phrase"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,11 +33,11 @@
 
     <TextView
         android:id="@+id/subtitle"
-        style="@style/KeychainDialogSubtitleStyle"
+        style="@style/TextView.UXStyle.Body.Callout.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="20dp"
         android:text="@string/if_you_lose_recovery_phrase_warning"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,11 +46,13 @@
 
     <TextView
         android:id="@+id/keychain"
-        style="@style/KeychainDialogKeychainStyle"
+        style="@style/TextView.ContentStyle.CodeBlock"
+        android:textColor="@color/palette_dark_ice"
+        android:background="@drawable/keychain_ripple"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="20dp"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
@@ -64,17 +67,14 @@
 
         tools:text="@string/keychain_mock" />
 
-    <TextView
+    <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
         android:id="@+id/btnCopy"
-        style="@style/DefaultStrokeButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="24dp"
-        android:paddingTop="@dimen/dp_12"
-        android:paddingBottom="@dimen/dp_12"
         android:text="@string/show_and_copy_mnemonic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

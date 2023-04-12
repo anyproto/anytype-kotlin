@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -48,29 +49,26 @@
 
             <TextView
                 android:id="@+id/tvNewProfile"
+                style="@style/TextView.UXStyle.Captions.1.Regular"
+                android:textColor="@color/text_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:textSize="13sp"
                 android:layout_marginTop="11dp"
                 android:text="@string/new_profile"
-                android:textColor="@color/text_secondary"
-                android:fontFamily="@font/inter_regular"
                 app:layout_constraintTop_toBottomOf="@id/profileIcon"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/nameInputField"
+                style="@style/TextView.ContentStyle.Headline.Heading"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="6dp"
                 android:background="@null"
-                android:fontFamily="@font/inter_bold"
                 android:hint="@string/type_your_name"
-                android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_tertiary"
-                android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvNewProfile" />
 
@@ -86,9 +84,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameInputField" />
 
-            <TextView
+            <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
                 android:id="@+id/createProfileButton"
-                style="@style/DefaultSolidButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginTop="20dp"
@@ -102,9 +99,8 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/backButton" />
 
-            <TextView
+            <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
                 android:id="@+id/backButton"
-                style="@style/DefaultStrokeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginTop="20dp"

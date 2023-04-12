@@ -60,7 +60,6 @@ open class ModifyFilterFromSelectedValueFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnBottomAction.setText(R.string.apply)
         searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
@@ -89,12 +88,12 @@ open class ModifyFilterFromSelectedValueFragment :
             subscribe(vm.relationState.filterNotNull()) {
                 if (it.format == ColumnView.Format.DATE) {
                     binding.searchBar.root.gone()
-                    binding.tvOptionCount.gone()
+                    binding.btnBottomAction.hideNumber()
                 }
                 binding.tvRelationName.text = it.title
                 binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
             }
-            subscribe(vm.optionCountState) { binding.tvOptionCount.text = it.toString() }
+            subscribe(vm.optionCountState) { binding.btnBottomAction.setNumber(it.toString()) }
             subscribe(vm.isCompleted) { isCompleted -> if (isCompleted) dismiss() }
             subscribe(vm.conditionState) {
                 binding.tvFilterCondition.text = it?.condition?.title
@@ -134,8 +133,8 @@ open class ModifyFilterFromSelectedValueFragment :
                 )
                     .showChildFragment()
             }
-            FilterViewModel.Commands.ShowCount -> binding.tvOptionCount.visible()
-            FilterViewModel.Commands.HideCount -> binding.tvOptionCount.gone()
+            FilterViewModel.Commands.ShowCount -> binding.btnBottomAction.showNumber()
+            FilterViewModel.Commands.HideCount -> binding.btnBottomAction.hideNumber()
             FilterViewModel.Commands.ShowSearchbar -> binding.searchBar.root.visible()
             FilterViewModel.Commands.HideSearchbar -> binding.searchBar.root.gone()
             FilterViewModel.Commands.DateDivider -> setDivider(R.drawable.divider_relation_date)

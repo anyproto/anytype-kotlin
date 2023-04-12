@@ -41,8 +41,8 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
             adapter = objectTypeAdapter
             layoutManager = LinearLayoutManager(context)
         }
-        binding.bottomButton.visible()
-        binding.btnBottomAction.setOnClickListener {
+        binding.btnBottom.visible()
+        binding.btnBottom.setOnClickListener {
             vm.onAddClicked()
         }
         lifecycleScope.launch {
@@ -54,7 +54,7 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
                 }
                 launch {
                     vm.count.collectLatest {
-                        binding.tvCount.text = it.toString()
+                        binding.btnBottom.setNumber(it.toString())
                     }
                 }
                 launch {

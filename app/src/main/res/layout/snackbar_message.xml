@@ -9,7 +9,7 @@
 
         <TextView
             android:id="@+id/snackbar_text"
-            style="@style/SnackbarTextStyle"
+            style="@style/TextView.UXStyle.Captions.1.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="97dp"

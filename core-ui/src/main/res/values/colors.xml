@@ -211,4 +211,8 @@
     <color name="home_screen_button">#662C2B27</color>
     <color name="set_new_btn_text">#FFFFFF</color>
 
+    <color name="colorPrimary">#FF5722</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#3F51B5</color>
+
 </resources>

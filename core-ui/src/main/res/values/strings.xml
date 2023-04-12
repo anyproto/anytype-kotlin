@@ -628,5 +628,8 @@
     <string name="collection_widget_description">Your collections of objects</string>
     <string name="no_type_named">There is no type named \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Try to create a new one or search for something else</string>
+    <string name="change_wallpaper">Change wallpaper</string>
+    <string name="change_icon">Change icon</string>
+    <string name="random">Random</string>
 
 </resources>

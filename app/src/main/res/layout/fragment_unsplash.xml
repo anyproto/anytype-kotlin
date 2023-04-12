@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,7 +22,7 @@
         android:layout_marginTop="@dimen/dp_6">
 
         <TextView
-            style="@style/CoverModalTitleStyle"
+            style="@style/TextView.UXStyle.Titles.1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -56,15 +57,15 @@
 
     <TextView
         android:id="@+id/tvError"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:fontFamily="monospace"
         android:gravity="center_horizontal"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:text="@string/unsplash_generic_error"
         android:textColor="@color/text_secondary"
-        android:textSize="10sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </LinearLayout>

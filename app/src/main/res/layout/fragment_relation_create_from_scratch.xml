@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -18,10 +19,8 @@
             android:background="@drawable/dragger" />
 
         <TextView
+            style="@style/TextView.UXStyle.Titles.1"
             android:layout_marginTop="18sp"
-            android:textSize="17sp"
-            android:fontFamily="@font/inter_bold"
-            android:textColor="@color/text_primary"
             android:text="@string/new_relation"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
@@ -43,15 +42,12 @@
         android:layout_width="match_parent"
         android:layout_height="68dp">
 
-        <TextView
-            android:background="@drawable/rectangle_default_button_selector"
+        <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
             android:id="@+id/btnAction"
-            style="@style/DefaultSolidButtonStyle"
             android:layout_width="match_parent"
             android:layout_gravity="center_vertical"
-            android:layout_height="44dp"
-            android:text="@string/create"
-            android:textSize="17sp" />
+            android:layout_height="wrap_content"
+            android:text="@string/create" />
 
     </FrameLayout>
 

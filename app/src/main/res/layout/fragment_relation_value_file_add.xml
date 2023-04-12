@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.anytypeio.anytype.ui.relations.add.AddFileRelationFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -46,34 +49,14 @@
         android:layout_marginEnd="20dp"
         android:layout_weight="1" />
 
-    <FrameLayout
+    <com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber
+        android:id="@+id/btnAdd"
         android:layout_width="match_parent"
-        android:layout_height="68dp">
-
-        <TextView
-            android:id="@+id/btnBottomAction"
-            style="@style/DefaultOrangeActionButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:text="@string/btn_apply_new_object"
-            android:background="@drawable/rect_orange_action_button" />
-
-        <TextView
-            android:id="@+id/tvFilesCount"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="34dp"
-            android:background="@drawable/circle_solid_default"
-            android:backgroundTint="#E89D00"
-            android:fontFamily="@font/inter_medium"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
-
-    </FrameLayout>
-
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
+        app:buttonTitle="@string/btn_apply_new_object"
+        android:layout_gravity="bottom">
+    </com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber>
 </LinearLayout>

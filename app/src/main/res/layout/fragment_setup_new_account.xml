@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -51,7 +52,7 @@
 
                 <TextView
                     android:id="@+id/header"
-                    style="@style/AuthHeaderStyle"
+                    style="@style/TextView.ContentStyle.Headline.Heading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/auth_default_margin_start"
@@ -62,15 +63,11 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
+                <com.anytypeio.anytype.core_ui.views.ButtonWarningSmall
                     android:id="@+id/btnRetry"
-                    style="@style/DefaultSolidButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/auth_default_button_height"
                     android:layout_marginStart="16dp"
-                    android:backgroundTint="@color/palette_dark_red"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
                     android:text="@string/retry"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
@@ -84,7 +81,8 @@
 
         <TextView
             android:id="@+id/tvError"
-            style="@style/DefaultTextViewErrorStyle"
+            style="@style/TextView.UXStyle.Body.Callout.Regular"
+            android:textColor="@color/palette_system_red"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"

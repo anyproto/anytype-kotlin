@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -19,7 +20,7 @@
         android:layout_marginTop="18dp">
 
         <TextView
-            style="@style/DefaultDataViewModalHeaderStyle"
+            style="@style/TextView.UXStyle.Titles.1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -38,27 +39,23 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        style="@style/TextView.UXStyle.Captions.1.Regular"
         android:layout_marginTop="23dp"
-        android:fontFamily="@font/inter_regular"
         android:text="@string/name"
-        android:textColor="@color/text_secondary"
-        android:textSize="@dimen/sp_13" />
+        android:textColor="@color/text_secondary" />
 
     <EditText
         android:id="@+id/viewerNameInput"
+        style="@style/TextView.ContentStyle.Headline.Heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:background="@null"
-        android:fontFamily="@font/inter_bold"
         android:hint="@string/untitled"
         android:imeOptions="actionDone"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColorHint="@color/text_secondary"
-        android:textColor="@color/text_primary"
-        android:textCursorDrawable="@drawable/cursor"
-        android:textSize="22sp" />
+        android:textColorHint="@color/text_secondary" />
 
     <View
         android:layout_width="match_parent"
@@ -69,11 +66,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        style="@style/TextView.UXStyle.Captions.1.Regular"
         android:layout_marginTop="27dp"
-        android:fontFamily="@font/inter_regular"
         android:text="@string/viewer_as"
-        android:textColor="@color/text_secondary"
-        android:textSize="@dimen/sp_13" />
+        android:textColor="@color/text_secondary" />
 
     <View
         android:layout_width="match_parent"
@@ -101,7 +97,7 @@
         </FrameLayout>
 
         <TextView
-            style="@style/CreateViewerViewerNameStyle"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -142,7 +138,7 @@
         </FrameLayout>
 
         <TextView
-            style="@style/CreateViewerViewerNameStyle"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -184,7 +180,7 @@
         </FrameLayout>
 
         <TextView
-            style="@style/CreateViewerViewerNameStyle"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -225,7 +221,8 @@
         </FrameLayout>
 
         <TextView
-            style="@style/CreateViewerViewerNameStyle"
+            style="@style/TextView.UXStyle.Body"
+            android:textColor="@color/text_tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -241,11 +238,12 @@
             android:visibility="invisible" />
 
         <TextView
-            style="@style/DataViewComingSoonStyle"
+            style="@style/TextView.UXStyle.Captions.1.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:text="@string/soon"
+            android:textColor="@color/text_tertiary"
             android:textAllCaps="true" />
 
     </FrameLayout>
@@ -262,13 +260,11 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="40dp">
 
-        <TextView
+        <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
             android:id="@+id/btnDone"
-            style="@style/DefaultSolidButtonStyle"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="@string/done"
-            android:textSize="17sp" />
+            android:layout_height="wrap_content"
+            android:text="@string/done" />
 
         <ProgressBar
             android:visibility="gone"

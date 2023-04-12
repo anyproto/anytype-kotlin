@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -21,19 +22,17 @@
 
         <EditText
             android:id="@+id/textInputField"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
             android:background="@null"
-            android:fontFamily="@font/inter_regular"
             android:hint="@string/untitled"
             android:imeOptions="actionDone"
             android:maxLines="1"
             android:singleLine="true"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_tertiary"
-            android:textCursorDrawable="@drawable/cursor" />
+            android:textColorHint="@color/text_tertiary" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/icExpand"

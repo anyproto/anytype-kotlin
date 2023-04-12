@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context="com.anytypeio.anytype.ui.dashboard.MnemonicReminderDialog">
 
     <TextView
         android:id="@+id/tvTitle"
+        style="@style/TextView.ContentStyle.Headline.Heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="23dp"
         android:layout_marginEnd="20dp"
-        android:lineHeight="26sp"
-        android:fontFamily="@font/inter_bold"
-        android:textColor="@color/text_primary"
-        android:textSize="22sp"
         android:text="@string/do_not_forget_to_save_recovery_phrase_msg" />
 
     <LinearLayout
@@ -26,9 +26,8 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp">
 
-        <TextView
+        <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
             android:id="@+id/btnClose"
-            style="@style/DefaultStrokeButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
@@ -36,9 +35,8 @@
             android:gravity="center"
             android:text="@string/close" />
 
-        <TextView
+        <com.anytypeio.anytype.core_ui.views.ButtonWarningLarge
             android:id="@+id/btnSettings"
-            style="@style/DefaultSolidButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"

@@ -221,7 +221,7 @@ class ModifyStatusFilterTest {
 
         // Verifying that the selection counter is equal to 1
 
-        onView(withId(R.id.tvOptionCount)).apply {
+        onView(withId(R.id.btnAdd)).apply {
             check(matches(withText("1")))
         }
 
@@ -247,7 +247,7 @@ class ModifyStatusFilterTest {
 
         // Verifying that the selection counter is still equal to 1
 
-        onView(withId(R.id.tvOptionCount)).apply {
+        onView(withId(R.id.btnAdd)).apply {
             check(matches(withText("1")))
         }
 

@@ -222,7 +222,7 @@ class ModifyTagFilterTest {
 
         // Verifying that the selection counter is equal to 1
 
-        onView(withId(R.id.tvOptionCount)).apply {
+        onView(withId(R.id.btnAdd)).apply {
             check(matches(withText("1")))
         }
 
@@ -248,7 +248,7 @@ class ModifyTagFilterTest {
 
         // Verifying that the selection counter is now equal to 2
 
-        onView(withId(R.id.tvOptionCount)).apply {
+        onView(withId(R.id.btnAdd)).apply {
             check(matches(withText("2")))
         }
     }

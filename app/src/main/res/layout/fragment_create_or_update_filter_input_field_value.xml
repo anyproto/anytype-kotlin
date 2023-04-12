@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +8,8 @@
     android:layout_gravity="bottom"
     android:clickable="true"
     android:focusable="true"
-    android:transitionName="checkoutTransition">
+    android:transitionName="checkoutTransition"
+    tools:context="com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFromInputFieldValueFragment">
 
     <View
         android:id="@+id/dragger"
@@ -31,33 +33,28 @@
 
     <TextView
         android:id="@+id/tvRelationName"
+        style="@style/TextView.ContentStyle.PreviewTitles.2.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/inter_medium"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@+id/ivRelationIcon"
         app:layout_constraintTop_toBottomOf="@+id/dragger"
         tools:text="Tag" />
 
     <EditText
         android:id="@+id/enterTextValueInputField"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="20dp"
         android:background="@null"
-        android:fontFamily="@font/inter_regular"
         android:hint="@string/value"
         android:imeOptions="actionDone"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/black"
-        android:textCursorDrawable="@drawable/cursor"
-        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivRelationIcon" />
@@ -76,7 +73,8 @@
 
     <TextView
         android:id="@+id/tvFilterCondition"
-        style="@style/FilterConditionTextStyle"
+        style="@style/TextView.ContentStyle.Relations.1"
+        android:textColor="@color/text_secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/dp_12"
@@ -88,16 +86,14 @@
         app:layout_constraintTop_toBottomOf="@+id/tvRelationName"
         tools:text="Is" />
 
-    <TextView
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
         android:id="@+id/btnBottomAction"
-        style="@style/DefaultOrangeActionButtonStyle"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/rect_orange_action_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

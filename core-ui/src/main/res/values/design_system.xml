@@ -406,4 +406,8 @@
     <attr name="warningSmallButtonStyle" format="reference" />
     <attr name="warningMediumButtonStyle" format="reference" />
     <attr name="warningLargeButtonStyle" format="reference" />
+
+    <declare-styleable name="ButtonPrimaryNumber">
+        <attr name="buttonTitle" format="string" />
+    </declare-styleable>
 </resources>

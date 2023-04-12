@@ -20,11 +20,12 @@
 
         <TextView
             android:id="@+id/tvStatus"
-            style="@style/SyncStatusTextStyle"
+            style="@style/TextView.UXStyle.Captions.1.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
+            android:textColor="@color/text_secondary"
             tools:text="Syncing" />
 
     </FrameLayout>
@@ -53,10 +54,14 @@
 
             <TextView
                 android:id="@+id/tvTopToolbarTitle"
-                style="@style/ObjectSetToolbarTitleStyle"
+                style="@style/TextView.ContentStyle.PreviewTitles.2.Regular"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:singleLine="true"
                 tools:text="Your favorite movies" />
 
         </LinearLayout>

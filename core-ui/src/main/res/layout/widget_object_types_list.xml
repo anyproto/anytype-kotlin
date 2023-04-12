@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -19,7 +20,8 @@
 
     <TextView
         android:id="@+id/tvChangeType"
-        style="@style/DefaultTextButtonStyle"
+        style="@style/TextView.UXStyle.Body"
+        android:textColor="@color/glyph_active"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/dp_12"
@@ -31,10 +33,10 @@
 
     <TextView
         android:id="@+id/tvDone"
-        style="@style/DefaultOrangeTextButtonStyle"
+        style="@style/TextView.UXStyle.Body"
+        android:textColor="@color/glyph_accent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_regular"
         android:paddingStart="13dp"
         android:paddingTop="13dp"
         android:paddingEnd="15dp"

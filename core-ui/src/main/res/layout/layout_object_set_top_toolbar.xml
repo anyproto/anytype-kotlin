@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/topToolbar"
@@ -23,7 +24,8 @@
 
         <TextView
             android:id="@+id/tvStatus"
-            style="@style/SyncStatusTextStyle"
+            style="@style/TextView.UXStyle.Captions.1.Regular"
+            android:textColor="@color/text_secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

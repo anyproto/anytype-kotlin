@@ -31,19 +31,17 @@
 
         <TextView
             android:id="@+id/errorBookmarkUrl"
+            style="@style/TextView.ContentStyle.Relations.3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="48dp"
             android:layout_marginEnd="16dp"
             android:ellipsize="end"
-            android:fontFamily="@font/inter_regular"
             android:text="@string/bookmark_error"
             android:hint="@string/bookmark_error"
             android:maxLines="1"
-            android:textColor="@color/palette_system_red"
-            android:textColorHint="@color/palette_system_red"
-            android:textSize="15sp" />
+            android:textColor="@color/palette_system_red" />
 
     </FrameLayout>
 

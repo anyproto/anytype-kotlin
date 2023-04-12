@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -49,15 +50,14 @@
 
     <TextView
         android:id="@+id/tvUndo"
+        style="@style/TextView.UXStyle.Captions.2.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="13dp"
-        android:fontFamily="@font/inter_regular"
         android:text="@string/undo"
         android:textColor="@color/text_secondary"
-        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/btnUndo"
         app:layout_constraintStart_toStartOf="@+id/btnUndo"
@@ -65,15 +65,14 @@
 
     <TextView
         android:id="@+id/tvRedo"
+        style="@style/TextView.UXStyle.Captions.2.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="13dp"
-        android:fontFamily="@font/inter_regular"
         android:text="@string/redo"
         android:textColor="@color/text_secondary"
-        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/btnRedo"
         app:layout_constraintStart_toStartOf="@+id/btnRedo"

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="52dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -15,13 +15,11 @@
         android:id="@+id/tvCreateOptionValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="10dp"
+        style="@style/TextView.UXStyle.Body"
         android:ellipsize="end"
-        android:fontFamily="@font/inter_regular"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/text_secondary"
-        android:textSize="15sp"
         tools:text="Create option 'Bar'" />
 
 </LinearLayout>

@@ -35,14 +35,12 @@
 
         <TextView
             android:id="@+id/errorMessage"
-            style="@style/BlockVideoStyle"
+            style="@style/UploadMediaTextStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="24dp"
-            android:inputType="none"
             android:text="@string/error_while_loading"
-            android:textColor="@color/text_tertiary"
             app:layout_constraintBottom_toBottomOf="@+id/icFile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/icFile"

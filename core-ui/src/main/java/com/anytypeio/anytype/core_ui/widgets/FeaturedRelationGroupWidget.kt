@@ -3,7 +3,7 @@ package com.anytypeio.anytype.core_ui.widgets
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
@@ -36,7 +36,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         defStyleAttr: Int
     ) : super(context, attrs, defStyleAttr)
 
-    private val defaultTextSize: Float = context.dimen(R.dimen.sp_15)
+    private val style = R.style.FeaturedRelationTextStyle
+    private val themeWrapper = ContextThemeWrapper(context, style)
     private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
     private val defaultTextColor = resources.getColor(R.color.text_secondary, null)
 
@@ -63,14 +64,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         item.relations.forEachIndexed { index, relation ->
             when (relation) {
                 is ObjectRelationView.Default -> {
-                    val view = TextView(context).apply {
+                    val view = TextView(themeWrapper).apply {
                         id = generateViewId()
                         text = relation.value ?: getPlaceholderHint(relation)
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
-                        setTextColor(defaultTextColor)
-                        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     if (relation.value == null) {
@@ -93,14 +92,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 }
                 is ObjectRelationView.File -> {
                     relation.files.forEach { file ->
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             text = file.name
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
-                            setTextColor(defaultTextColor)
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
                         addView(view)
@@ -118,27 +115,23 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is ObjectRelationView.Object -> {
                     relation.objects.forEach { obj ->
                         if (obj is ObjectView.Default) {
-                            val view = TextView(context).apply {
+                            val view = TextView(themeWrapper).apply {
                                 id = generateViewId()
                                 text = obj.name
                                 isSingleLine = true
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
-                                setTextColor(defaultTextColor)
-                                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                                 setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                             }
                             addView(view)
                             ids.add(view.id)
                         } else {
-                            val view = TextView(context).apply {
+                            val view = TextView(themeWrapper).apply {
                                 id = generateViewId()
                                 setText(R.string.deleted)
                                 isSingleLine = true
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
-                                setTextColor(defaultTextColor)
-                                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                                 setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                             }
                             addView(view)
@@ -157,13 +150,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is ObjectRelationView.Status -> {
                     relation.status.forEach { status ->
                         val color = ThemeColor.values().find { v -> v.code == status.color }
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             text = status.status
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             if (color != null) {
                                 setTextColor(resources.dark(color, defaultTextColor))
                             } else {
@@ -187,7 +179,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     relation.tags.forEach { tag ->
                         val color = ThemeColor.values().find { v -> v.code == tag.color }
                         val defaultBackground = resources.getColor(R.color.shape_primary, null)
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             text = tag.tag
                             isSingleLine = true
@@ -272,14 +264,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     )
                 }
                 is ObjectRelationView.ObjectType.Deleted -> {
-                    val view = TextView(context).apply {
+                    val view = TextView(themeWrapper).apply {
                         id = generateViewId()
                         text = context.resources.getString(R.string.deleted_type)
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                         setTextColor(context.getColor(R.color.palette_dark_red))
-                        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                     }
                     view.setOnClickListener {
                         val popup = ObjectTypePopupMenu(
@@ -347,14 +338,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         name: String,
         isFirst: Boolean
     ): TextView {
-        val textView = TextView(context).apply {
+        val textView = TextView(themeWrapper).apply {
             id = View.generateViewId()
             isSingleLine = true
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
             setPadding(if (isFirst) 0.px else 4.px, 2.px, 4.px, 2.px)
-            setTextColor(defaultTextColor)
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
         }
         if (name.isEmpty()) {
             textView.hint = context.resources.getString(R.string.untitled)
@@ -390,7 +379,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 when (obj) {
                     is ObjectView.Default -> {
                         setTextColor(context.color(R.color.text_secondary))
-                        setTextSize(context.dimen(R.dimen.featured_relations_text_size))
                         setup(
                             name = resources.getString(
                                 R.string.set_by_type,
@@ -400,7 +388,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     }
                     is ObjectView.Deleted -> {
                         setTextColor(context.color(R.color.glyph_active))
-                        setTextSize(context.dimen(R.dimen.featured_relations_text_size))
                         setup(
                             name = context.getString(R.string.deleted),
                             icon = ObjectIcon.None
@@ -429,7 +416,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         val view = ObjectIconTextWidget(context).apply {
             id = generateViewId()
             setTextColor(context.color(R.color.text_secondary))
-            setTextSize(context.dimen(R.dimen.featured_relations_text_size))
             setup(
                 name = if (names.size == 1) {
                     resources.getString(
@@ -459,7 +445,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             val view = ObjectIconTextWidget(context).apply {
                 id = generateViewId()
                 setTextColor(context.color(R.color.palette_dark_red))
-                setTextSize(context.dimen(R.dimen.featured_relations_text_size))
                 setup(
                     name = context.getString(R.string.deleted_type_in_set),
                     icon = ObjectIcon.None
@@ -487,15 +472,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         }
     }
 
-    private fun buildPlaceholderView(txt: String): TextView = TextView(context).apply {
+    private fun buildPlaceholderView(txt: String): TextView = TextView(themeWrapper).apply {
         id = generateViewId()
         text = txt
         isSingleLine = true
         alpha = 0.5f
         maxLines = 1
         ellipsize = TextUtils.TruncateAt.END
-        setTextColor(defaultTextColor)
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
     }
 
     fun clear() {

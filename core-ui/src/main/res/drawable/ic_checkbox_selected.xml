@@ -4,7 +4,7 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="#FFB522"
+        android:fillColor="@color/palette_system_sky"
         android:pathData="M12,21.0029C16.9706,21.0029 21,16.9735 21,12.0029C21,7.0324 16.9706,3.0029 12,3.0029C7.0294,3.0029 3,7.0324 3,12.0029C3,16.9735 7.0294,21.0029 12,21.0029Z" />
     <path
         android:fillColor="#ffffff"

@@ -7,9 +7,9 @@
         android:id="@+id/tvEmptyMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/TextView.UXStyle.Body.Callout.Regular"
         android:gravity="center"
-        android:padding="12dp"
-        android:textSize="15sp"
+        android:paddingTop="@dimen/sp_13"
         android:textColor="@color/text_tertiary"
         android:text="@string/empty" />
 

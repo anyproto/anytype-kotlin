@@ -21,13 +21,11 @@
 
         <TextView
             android:id="@+id/number"
+            style="@style/TextView.ContentStyle.Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:minWidth="@dimen/default_block_type_width"
-            android:textColor="@color/black"
-            android:textSize="17sp"
-            android:fontFamily="@font/inter_regular"
             android:visibility="visible"
             tools:text="19." />
 

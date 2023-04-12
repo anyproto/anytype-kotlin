@@ -19,10 +19,9 @@
 
     <TextView
         android:gravity="center_horizontal"
+        style="@style/TextView.UXStyle.Captions.2.Regular"
         android:textColor="@color/text_secondary"
         android:layout_marginTop="5dp"
-        android:fontFamily="@font/inter_regular"
-        android:textSize="11sp"
         android:id="@+id/tvActionTitle"
         tools:text="Delete"
         android:layout_width="match_parent"

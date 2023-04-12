@@ -33,14 +33,11 @@
 
         <TextView
             android:id="@+id/editUrl"
-            style="@style/BlockVideoStyle"
+            style="@style/UploadMediaTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:inputType="none"
-            android:fontFamily="@font/inter_regular"
             android:text="@string/loading_wait"
-            android:textColor="@color/glyph_active"
             app:layout_constraintBottom_toBottomOf="@+id/icFile"
             app:layout_constraintStart_toEndOf="@+id/icFile"
             app:layout_constraintTop_toTopOf="@+id/icFile" />

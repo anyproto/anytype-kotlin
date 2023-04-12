@@ -9,7 +9,15 @@
     <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
         android:id="@+id/decorationContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/selected"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/item_block_multi_select_mode_selector"
+            tools:background="@drawable/item_block_multi_select_selected" />
+    </com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bookmarkRoot"
@@ -50,7 +58,7 @@
 
             <TextView
                 android:id="@+id/bookmarkTitle"
-                style="@style/BlockBookmarkTitleStyle"
+                style="@style/TextView.ContentStyle.PreviewTitles.2.Medium"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -68,13 +76,12 @@
 
             <TextView
                 android:id="@+id/bookmarkDescription"
-                style="@style/BlockBookmarkDescriptionStyle"
+                style="@style/TextView.ContentStyle.Relations.3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="16dp"
-                android:lineSpacingExtra="5sp"
                 app:layout_constraintEnd_toStartOf="@+id/bookmarkImage"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bookmarkTitle"
@@ -83,7 +90,8 @@
 
             <TextView
                 android:id="@+id/bookmarkUrl"
-                style="@style/BlockBookmarkUrlStyle"
+                style="@style/TextView.ContentStyle.Relations.3"
+                android:textColor="@color/text_secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
@@ -119,12 +127,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
-    <View
-        android:id="@+id/selected"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/item_block_multi_select_mode_selector"
-        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

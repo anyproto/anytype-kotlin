@@ -38,7 +38,8 @@
 
         <com.anytypeio.anytype.core_ui.widgets.text.TextHighlightWidget
             android:id="@+id/pageTitle"
-            style="@style/BlockPageArchivedContentStyle"
+            style="@style/TextView.ContentStyle.PreviewTitles.2.Medium"
+            android:textColor="@color/text_tertiary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"

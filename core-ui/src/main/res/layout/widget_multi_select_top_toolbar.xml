@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
         android:id="@+id/tvToolbarTitle"
-        style="@style/EditorMultiSelectSelectAllButtonTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="@style/TextView.UXStyle.Titles.1"
         android:text="@string/select_all" />
 
     <TextView
         android:id="@+id/btnDone"
+        style="@style/TextView.UXStyle.Body"
+        android:textColor="@color/glyph_active"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical|end"
-        android:fontFamily="@font/inter_regular"
         android:gravity="center"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:text="@string/done"
-        android:textSize="17sp" />
+        android:text="@string/done" />
 
 </merge>

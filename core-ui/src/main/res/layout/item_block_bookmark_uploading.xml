@@ -33,11 +33,10 @@
 
         <TextView
             android:id="@+id/editUrl"
-            style="@style/BlockVideoStyle"
+            style="@style/TextView.ContentStyle.Relations.3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:fontFamily="@font/inter_regular"
             android:inputType="none"
             android:hint="@string/loading_wait"
             android:textColor="@color/glyph_inactive"

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -26,6 +27,7 @@
 
     <TextView
         android:id="@+id/docSearchCancelButton"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -73,6 +75,7 @@
 
     <EditText
         android:id="@+id/docSearchInputField"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
@@ -80,12 +83,9 @@
         android:background="@null"
         android:maxLines="1"
         android:singleLine="true"
-        android:fontFamily="@font/inter_regular"
-        android:textColorHint="@color/text_tertiary"
-        android:textColor="@color/text_primary"
+        android:textColorHint="@color/glyph_active"
         android:hint="@string/your_search_query"
         android:imeOptions="actionSearch"
-        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/docSearchRectangle"
         app:layout_constraintEnd_toStartOf="@+id/docSearchClearIcon"
         app:layout_constraintStart_toEndOf="@+id/docSearchSearchIcon"

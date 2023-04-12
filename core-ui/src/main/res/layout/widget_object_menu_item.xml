@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--typography, buttons 05.04-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -21,17 +22,14 @@
 
         <TextView
             android:id="@+id/tvTitle"
-            android:textColor="@color/text_primary"
-            android:fontFamily="@font/inter_medium"
-            android:textSize="15sp"
+            style="@style/TextView.UXStyle.Titles.2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Icon" />
 
         <TextView
+            style="@style/TextView.UXStyle.Captions.1.Regular"
             android:textColor="@color/text_secondary"
-            android:fontFamily="@font/inter_regular"
-            android:textSize="13sp"
             android:id="@+id/tvSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

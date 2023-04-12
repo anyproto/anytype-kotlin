@@ -54,63 +54,46 @@
         <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
     </style>
 
-    <style name="DefaultEditorTextStyle">
-        <item name="android:textSize">17sp</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
+    <style name="DefaultEditorTextStyle" parent="TextView.ContentStyle.Body.Regular">
+        <item name="android:textColorHint">@color/text_tertiary</item>
     </style>
 
-    <style name="BlockTextContentStyle" parent="DefaultEditorTextStyle">
-        <item name="android:fontFamily">@font/inter_font</item>
+    <style name="BlockTextContentStyle" parent="TextView.ContentStyle.Body.Regular">
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
-        <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="BlockHeaderOneContentStyle">
+    <style name="BlockHeaderOneContentStyle" parent="TextView.ContentStyle.Headline.Title">
         <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
-        <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:background">@null</item>
-        <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">28sp</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
         <item name="android:paddingTop">4dp</item>
-        <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="BlockHeaderTwoContentStyle">
+    <style name="BlockHeaderTwoContentStyle" parent="TextView.ContentStyle.Headline.Heading">
         <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
-        <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:background">@null</item>
-        <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:lineSpacingExtra">4sp</item>
-        <item name="android:textSize">22sp</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="BlockHeaderThreeContentStyle">
+    <style name="BlockHeaderThreeContentStyle" parent="TextView.ContentStyle.Headline.Subheading">
         <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
-        <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:background">@null</item>
-        <item name="android:textStyle">bold</item>
-        <item name="text_size">17sp</item>
-        <item name="android:lineSpacingExtra">3sp</item>
-        <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
-        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:layout_width">match_parent</item>
@@ -127,42 +110,27 @@
         <item name="android:textSize">28sp</item>
     </style>
 
-    <style name="BlockCheckboxContentStyle" parent="DefaultEditorTextStyle">
+    <style name="BlockCheckboxContentStyle" parent="TextView.ContentStyle.Body.Regular">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
-        <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="BlockPageContentStyle">
+    <style name="BlockPageContentStyle" parent="TextView.ContentStyle.Body.Regular">
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:paddingTop">3dp</item>
         <item name="android:paddingBottom">3dp</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">17sp</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
-    <style name="BlockObjectLinkDeleteContentStyle">
+    <style name="BlockObjectLinkDeleteContentStyle" parent="TextView.ContentStyle.Body.Regular">
         <item name="android:textColor">@color/text_tertiary</item>
-        <item name="android:textSize">17sp</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
-    <style name="BlockPageArchivedContentStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/text_tertiary</item>
-        <item name="android:textSize">17sp</item>
-    </style>
-
-    <style name="BlockBulletContentStyle" parent="DefaultEditorTextStyle">
+    <style name="BlockBulletContentStyle" parent="TextView.ContentStyle.Body.Regular">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -182,10 +150,8 @@
 
     <style name="BlockNumberedContentStyle" parent="DefaultEditorTextStyle">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:layout_marginStart">13dp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
@@ -238,11 +204,12 @@
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
+    <style name="UploadMediaTextStyle" parent="TextView.ContentStyle.Body.Callout">
+        <item name="android:textColor">@color/glyph_active</item>
+    </style>
+
     <style name="BlockHighlightContentStyle" parent="DefaultEditorTextStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:background">@null</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:lineSpacingExtra">3sp</item>
         <item name="android:layout_marginStart">@dimen/default_graphic_container_right_offset</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -250,11 +217,8 @@
         <item name="android:paddingBottom">4dp</item>
     </style>
 
-    <style name="BlockCalloutContentStyle" parent="DefaultEditorTextStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
+    <style name="BlockCalloutContentStyle" parent="TextView.ContentStyle.Body.Regular">
         <item name="android:background">@null</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
     </style>
@@ -378,12 +342,9 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
-    <style name="GridCellDateTextStyle">
-        <item name="android:textColor">@color/text_primary</item>
+    <style name="GridCellDateTextStyle" parent="TextView.ContentStyle.Relations.2">
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:textSize">13sp</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="RelationObjectTextStyle">
@@ -663,14 +624,10 @@
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="ObjectDescriptionTextStyle">
+    <style name="ObjectDescriptionTextStyle" parent="TextView.ContentStyle.Relations.2">
         <item name="android:maxLines">3</item>
         <item name="android:ellipsize">end</item>
         <item name="android:background">@null</item>
-        <item name="android:textCursorDrawable">@drawable/cursor</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">13sp</item>
     </style>
 
     <style name="PasteUrlEditTextStyle">
@@ -956,16 +913,13 @@
     </style>
 
     <!-- text -->
-    <style name="DefaultGraphicTextBlockTextStyle">
+    <style name="DefaultGraphicTextBlockTextStyle" parent="TextView.ContentStyle.Body.Regular">
         <item name="android:layout_width">@dimen/default_graphic_text_graphic_width</item>
         <item name="android:layout_height">@dimen/default_graphic_text_graphic_width</item>
         <item name="android:layout_marginStart">@dimen/default_graphic_text_text_margin_start</item>
         <item name="android:paddingTop">@dimen/default_graphic_text_text_padding_top</item>
         <item name="android:paddingBottom">@dimen/default_graphic_text_text_padding_bottom</item>
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">17sp</item>
     </style>
 
     <!-- Media placeholder {root {card {title}} selected}-->
@@ -1031,13 +985,9 @@
         <item name="android:layout_marginBottom">@dimen/dp_10</item>
     </style>
 
-    <style name="DefaultCodeBlockContentStyle">
+    <style name="DefaultCodeBlockContentStyle" parent="TextView.ContentStyle.CodeBlock">
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
         <item name="android:background">@null</item>
-        <item name="android:lineSpacingExtra">7sp</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:fontFamily">monospace</item>
     </style>
 
     <style name="DefaultCodeBlockLanguageMenuStyle">
@@ -1116,41 +1066,27 @@
     </style>
 
     <!-- Editor, object link as text block, {root {guideline , iconObjectContainer, text, tvObjectType, tvDescription}}-->
-    <style name="ObjectLinkBlockTextStyle">
+    <style name="ObjectLinkBlockTextStyle" parent="TextView.ContentStyle.PreviewTitles.2.Medium">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">17sp</item>
     </style>
 
-    <style name="ObjectLinkBlockRelationsStyle">
+    <style name="ObjectLinkBlockRelationsStyle" parent="TextView.ContentStyle.Relations.3">
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textSize">12sp</item>
     </style>
 
     <!-- Editor, object link as card block-->
-    <style name="ObjectLinkBlockCardTitleStyle">
-        <item name="android:fontFamily">@font/inter_medium</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="ObjectLinkBlockCardDescriptionStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">12sp</item>
+    <style name="ObjectLinkBlockCardTitleStyle" parent="TextView.ContentStyle.PreviewTitles.2.Medium">
         <item name="android:maxLines">2</item>
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="ObjectLinkBlockCardObjectTypeStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
+    <style name="ObjectLinkBlockCardDescriptionStyle" parent="TextView.ContentStyle.Relations.3">
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="ObjectLinkBlockCardObjectTypeStyle" parent="TextView.ContentStyle.Relations.3">
         <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textSize">12sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
@@ -1172,24 +1108,18 @@
         <item name="android:layout_marginEnd">@dimen/dp_12</item>
     </style>
 
-    <style name="BlockDataViewTitleStyle">
-        <item name="android:fontFamily">@font/inter_bold</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">17sp</item>
+    <style name="BlockDataViewTitleStyle" parent="TextView.ContentStyle.Headline.Subheading">
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:layout_marginStart">6dp</item>
         <item name="android:layout_marginTop">18dp</item>
         <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:includeFontPadding">false</item>
         <item name="android:textColorHint">@color/text_tertiary</item>
         <item name="android:contentDescription">@string/block_data_view_content_description_title</item>
     </style>
 
-    <style name="BlockDataViewSubtitleStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
+    <style name="BlockDataViewSubtitleStyle" parent="TextView.ContentStyle.Relations.3">
         <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textSize">12sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:layout_marginStart">16dp</item>
@@ -1198,10 +1128,8 @@
         <item name="android:layout_marginBottom">16dp</item>
     </style>
 
-    <style name="BlockDataViewInfoStyle">
-        <item name="android:fontFamily">@font/inter_regular</item>
+    <style name="BlockDataViewInfoStyle" parent="TextView.UXStyle.Captions.2.Regular">
         <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textSize">11sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:background">@drawable/bg_rect_3_radius</item>
@@ -1255,16 +1183,8 @@
         <item name="android:popupBackground">@drawable/bg_menu_default</item>
     </style>
 
-    <!--https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Mobile-Design-System?node-id=1588%3A59&t=9DPtsMxKLupkwVfY-1-->
-    <style name="DSXSmallButtonStyle">
-        <item name="android:textSize">13sp</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
-        <item name="android:textColor">@color/ds_button_primary_text</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:singleLine">true</item>
-        <item name="rippleColor">@null</item>
-    </style>
+   <style name="FeaturedRelationTextStyle" parent="TextView.ContentStyle.Relations.2">
+       <item name="android:textColor">@color/text_secondary</item>
+   </style>
 
 </resources>

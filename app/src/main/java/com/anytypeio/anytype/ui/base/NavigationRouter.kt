@@ -69,6 +69,7 @@ class NavigationRouter(
                 templates = command.templates
             )
             is AppNavigation.Command.OpenLibrary -> navigation.openLibrary()
+            is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
             else -> Timber.d("Nav command ignored: $command")
         }
     }

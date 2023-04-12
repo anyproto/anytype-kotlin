@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -57,12 +58,16 @@ class SetupSelectedAccountViewModel(
                     path = pathProvider.providePath()
                 )
             ).process(
-                failure = {
-                    migrationMessageJob.cancel()
-                    isMigrationInProgress.value = false
-                    val msg = it.message ?: "Unknown error"
-                    error.postValue("$ERROR_MESSAGE: $msg")
-                    Timber.e(it, "Error while selecting account with id: $id")
+                failure = {e ->
+                    Timber.e(e, "Error while selecting account with id: $id")
+                    if (e is MigrationNeededException) {
+                        navigateToMigrationErrorScreen()
+                    } else {
+                        migrationMessageJob.cancel()
+                        isMigrationInProgress.value = false
+                        val msg = e.message ?: "Unknown error"
+                        error.postValue("$ERROR_MESSAGE: $msg")
+                    }
                 },
                 success = { (accountId, status) ->
                     migrationMessageJob.cancel()
@@ -92,6 +97,10 @@ class SetupSelectedAccountViewModel(
 
     private fun navigateToDashboard() {
         navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromLogin))
+    }
+
+    private fun navigateToMigrationErrorScreen() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.MigrationErrorScreen))
     }
 
     private fun updateUserProps(id: String) {

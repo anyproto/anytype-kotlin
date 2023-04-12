@@ -641,4 +641,20 @@
         android:label="TemplateSelectScreen"
         tools:layout="@layout/fragment_template_select"/>
 
+    <fragment
+        android:id="@+id/migrationNeededScreen"
+        android:name="com.anytypeio.anytype.ui.update.MigrationErrorFragment"
+        android:label="Migration-needed screen">
+        <action
+            android:id="@+id/action_splashFragment_to_login_nav"
+            app:destination="@id/login_nav"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashScreen"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+
 </navigation>

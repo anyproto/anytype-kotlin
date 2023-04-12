@@ -60,6 +60,8 @@ interface AppNavigation {
 
     fun logout()
 
+    fun migrationErrorScreen()
+
     sealed class Command {
 
         object Exit : Command()
@@ -91,6 +93,7 @@ interface AppNavigation {
         object OpenUserSettingsScreen : Command()
         object StartDesktopFromSplash : Command()
         object StartDesktopFromLogin : Command()
+        object MigrationErrorScreen: Command()
         object StartDesktopFromSignUp : Command()
         object StartSplashFromDesktop : Command()
         object OpenContactsScreen : Command()

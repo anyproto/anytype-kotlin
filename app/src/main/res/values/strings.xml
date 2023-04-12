@@ -342,5 +342,15 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
+    <string name="almost_there">Almost there!</string>
+    <string name="i_did_not_not_complete_migration">I didn’t complete migration</string>
+    <string name="not_completed_migration_steps">I didn’t complete migration</string>
+    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your account.</string>
+    <string name="i_completed_migration">I completed migration</string>
+    <string name="here">here</string>
+    <string name="update_steps_first">1. Download the desktop app </string>
+    <string name="update_steps_last">\n2. Log in and update it to the latest version\n3. Follow migration instructions</string>
+    <string name="visit_forum">Visit forum</string>
+    <string name="migration_error_msg">Something might have gone wrong. Please visit our forum, read the migration instructions, and ask questions to our team.</string>
 
 </resources>

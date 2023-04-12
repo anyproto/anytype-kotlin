@@ -257,6 +257,10 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.actionLogout)
     }
 
+    override fun migrationErrorScreen() {
+        navController?.navigate(R.id.migrationNeededScreen)
+    }
+
     override fun openTemplates(
         ctx: Id,
         type: String,

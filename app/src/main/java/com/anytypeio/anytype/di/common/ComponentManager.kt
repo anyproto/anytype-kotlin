@@ -84,6 +84,7 @@ import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
+import com.anytypeio.anytype.di.feature.update.DaggerMigrationErrorComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
@@ -869,6 +870,12 @@ class ComponentManager(
 
     val deletedAccountComponent = Component {
         DaggerDeletedAccountComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val migrationErrorComponent = Component {
+        DaggerMigrationErrorComponent
             .factory()
             .create(findComponentDependencies())
     }

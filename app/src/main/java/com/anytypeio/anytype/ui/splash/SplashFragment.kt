@@ -97,6 +97,11 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     R.id.action_splashFragment_to_login_nav
                 )
             }
+            SplashViewModel.Command.NavigateToMigration -> {
+                findNavController().navigate(
+                    R.id.migrationNeededScreen
+                )
+            }
             SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = requireActivity().intent
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {

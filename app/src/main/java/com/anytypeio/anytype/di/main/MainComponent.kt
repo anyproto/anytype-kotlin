@@ -33,6 +33,7 @@ import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
+import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
@@ -71,7 +72,9 @@ interface MainComponent :
     RelationCreateFromLibraryDependencies,
     RelationEditDependencies,
     SplashDependencies,
-    DeletedAccountDependencies {
+    DeletedAccountDependencies,
+    MigrationErrorDependencies {
+
     fun inject(app: AndroidApplication)
 
     fun editorComponentBuilder(): EditorSubComponent.Builder
@@ -163,5 +166,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(DeletedAccountDependencies::class)
     abstract fun provideDeletedAccountDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(MigrationErrorDependencies::class)
+    abstract fun migrationErrorDependencies(component: MainComponent) : ComponentDependencies
 
 }

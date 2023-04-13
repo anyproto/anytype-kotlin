@@ -25,5 +25,6 @@ enum class SmartBlockType(val code: Int) {
     DATE(code = 516),
     WORKSPACE_OLD(code = 517),
     WORKSPACE(code = 518),
-    WIDGET(code = 112)
+    WIDGET(code = 112),
+    MISSING_OBJECT(code = 519)
 }

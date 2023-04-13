@@ -46,6 +46,8 @@ enum SmartBlockType {
     Date = 0x204;
     WorkspaceOld = 0x205; // deprecated thread-based workspace
     Workspace = 0x206;
+
+    MissingObject = 0x207;
 }
 
 message Block {
@@ -422,6 +424,7 @@ message Block {
                     NotAllIn = 14;
                     ExactIn = 15;
                     NotExactIn = 16;
+                    Exists = 17;
                 }
 
                 enum QuickOption {

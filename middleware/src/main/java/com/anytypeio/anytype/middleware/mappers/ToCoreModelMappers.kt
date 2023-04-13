@@ -545,6 +545,7 @@ fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {
     MDVFilterCondition.NotAllIn -> DVFilterCondition.NOT_ALL_IN
     MDVFilterCondition.ExactIn -> DVFilterCondition.EXACT_IN
     MDVFilterCondition.NotExactIn -> DVFilterCondition.NOT_EXACT_IN
+    MDVFilterCondition.Exists -> DVFilterCondition.EXISTS
 }
 
 fun MDVFilterQuickOption.toCoreModels(): DVFilterQuickOption = when (this) {
@@ -710,6 +711,7 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.AccountOld -> SmartBlockType.ACCOUNT_OLD
     MSmartBlockType.Widget -> SmartBlockType.WIDGET
     MSmartBlockType.Collection -> SmartBlockType.COLLECTION
+    MSmartBlockType.MissingObject -> SmartBlockType.MISSING_OBJECT
 }
 
 // ---------------------- RESTRICTIONS ------------------------

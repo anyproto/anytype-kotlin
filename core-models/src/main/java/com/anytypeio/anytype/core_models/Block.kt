@@ -347,7 +347,7 @@ data class Block(
                 enum class Condition {
                     EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL,
                     LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE,
-                    EXACT_IN, NOT_EXACT_IN
+                    EXACT_IN, NOT_EXACT_IN, EXISTS
                 }
 
                 enum class QuickOption {

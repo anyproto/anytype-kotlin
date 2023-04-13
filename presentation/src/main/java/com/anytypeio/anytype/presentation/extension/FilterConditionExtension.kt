@@ -173,4 +173,8 @@ private fun DVFilterCondition.toView(
         Timber.w("Unexpected filter condition: NOT EXACT IN")
         null
     }
+    DVFilterCondition.EXISTS -> {
+        Timber.w("Unexpected filter condition: EXISTS")
+        null
+    }
 }

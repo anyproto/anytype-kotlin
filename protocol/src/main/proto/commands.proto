@@ -1329,6 +1329,8 @@ message Rpc {
                 repeated string keys = 3;
 
                 string ignoreWorkspace = 11;
+                // disable dependent subscription
+                bool noDepSubscription = 12;
             }
 
             message Response {
@@ -1801,8 +1803,6 @@ message Rpc {
                 // for protobuf export
                 bool isJson = 7;
                 // for migration
-                bool includeDeleted = 8;
-                // for migration
                 bool includeArchived = 9;
             }
 
@@ -1923,6 +1923,7 @@ message Rpc {
                         INTERNAL_ERROR = 1;
                         UNKNOWN_ERROR = 2;
                         BAD_INPUT = 3;
+                        ACCOUNT_IS_NOT_RUNNING = 4;
                     }
                 }
             }

@@ -392,6 +392,7 @@ fun Block.Content.DataView.Filter.Condition.toMiddlewareModel(): MDVFilterCondit
     Block.Content.DataView.Filter.Condition.NONE -> MDVFilterCondition.None
     Block.Content.DataView.Filter.Condition.EXACT_IN -> MDVFilterCondition.ExactIn
     Block.Content.DataView.Filter.Condition.NOT_EXACT_IN -> MDVFilterCondition.NotExactIn
+    Block.Content.DataView.Filter.Condition.EXISTS -> MDVFilterCondition.Exists
 }
 
 fun Block.Content.DataView.DateFormat?.toMiddlewareModel(): MDVDateFormat = when (this) {

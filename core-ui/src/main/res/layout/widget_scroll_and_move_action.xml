@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--typography, buttons 05.04-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge

@@ -5,13 +5,13 @@
     android:layout_height="68dp">
 
     <TextView
+        style="@style/DefaultRelationCategoryStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:text="@string/item_relation_create_from_scratch_title"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp" />
+        android:textColor="@color/text_secondary" />
 
     <com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
         android:id="@+id/ivRelationFormat"

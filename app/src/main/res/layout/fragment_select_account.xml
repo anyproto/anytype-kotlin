@@ -72,8 +72,6 @@
                 android:drawablePadding="26dp"
                 android:text="@string/add_profile"
                 android:textColor="@color/text_secondary"
-                android:textSize="17sp"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

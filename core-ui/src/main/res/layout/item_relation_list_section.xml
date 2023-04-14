@@ -5,9 +5,8 @@
 
     <TextView
         android:id="@+id/tvSectionName"
-        android:fontFamily="@font/inter_bold"
-        android:textSize="17sp"
-        android:textColor="@color/black"
+        style="@style/TextView.UXStyle.Captions.1.Medium"
+        android:textColor="@color/text_secondary"
         android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

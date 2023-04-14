@@ -34,7 +34,6 @@ class NavigationRouter(
                 command.id,
                 command.editorSettings
             )
-            is AppNavigation.Command.OpenArchive -> navigation.openArchive(command.target)
             is AppNavigation.Command.OpenObjectSet -> navigation.openObjectSet(
                 command.target,
                 command.isPopUpToDashboard

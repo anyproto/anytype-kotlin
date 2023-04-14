@@ -24,7 +24,7 @@
         android:clickable="false"
         android:longClickable="false"
         android:text="Add headings to create a table of contents"
-        android:textColor="@color/editor_default_hint_text_color" />
+        android:textColor="@color/text_tertiary" />
 
     <View
         android:id="@+id/selected"

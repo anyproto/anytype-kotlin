@@ -153,6 +153,7 @@
         android:layout_marginEnd="16dp"
         android:text="Button"
         android:clickable="true"
+        app:buttonTitle="Add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView25" />

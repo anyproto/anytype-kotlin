@@ -19,7 +19,6 @@ interface AppNavigation {
     fun workspace()
     fun openSettings()
 
-    fun openArchive(target: String)
     fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
     fun openDocument(id: String, editorSettings: EditorSettings? = null)
 
@@ -106,7 +105,6 @@ interface AppNavigation {
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()
 
-        data class OpenArchive(val target: String) : Command()
         data class OpenObjectSet(val target: String, val isPopUpToDashboard: Boolean = false) :
             Command()
 

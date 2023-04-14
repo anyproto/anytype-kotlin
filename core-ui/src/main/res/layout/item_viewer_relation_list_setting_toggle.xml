@@ -9,15 +9,13 @@
 
     <TextView
         android:id="@+id/tvSettingName"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="14dp"
         android:layout_marginBottom="14dp"
-        android:fontFamily="@font/inter_regular"
-        android:textColor="@color/black"
-        tools:text="@string/fit_image"
-        android:textSize="17sp" />
+        tools:text="@string/fit_image" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchView"

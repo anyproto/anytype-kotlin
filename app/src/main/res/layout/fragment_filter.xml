@@ -79,11 +79,10 @@
 
     <TextView
         android:id="@+id/txtEmptyState"
+        style="@style/TextView.UXStyle.Body.Callout.Regular"
         android:layout_width="match_parent"
         android:layout_height="68dp"
-        android:textSize="15sp"
-        android:fontFamily="@font/inter_regular"
-        android:textColor="@color/glyph_active"
+        android:textColor="@color/text_secondary"
         android:gravity="center"
         android:layout_marginBottom="@dimen/dp_20"
         android:text="@string/filter_empty_state" />

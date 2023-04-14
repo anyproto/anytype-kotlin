@@ -462,16 +462,6 @@
         android:label="DebugSettingsFragment"
         tools:layout="@layout/fragment_debug_settings" />
     <fragment
-        android:id="@+id/pageNavigationFragment"
-        android:name="com.anytypeio.anytype.ui.navigation.PageNavigationFragment"
-        android:label="PageNavigationFragment"
-        tools:layout="@layout/fragment_page_navigation">
-        <argument
-            android:name="ID_KEY"
-            android:defaultValue='""'
-            app:argType="string" />
-    </fragment>
-    <fragment
         android:id="@+id/pageSearchFragment"
         android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
         android:label="PageSearchFragment"
@@ -572,10 +562,6 @@
             app:argType="boolean" />
     </dialog>
 
-    <fragment
-        android:id="@+id/archiveFragment"
-        android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"
-        android:label="ArchiveFragment" />
     <fragment
         android:id="@+id/fullScreenImageFragment"
         android:name="com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment"

@@ -45,9 +45,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:paddingBottom="3dp"
-            android:textSize="17sp"
             android:text="@string/empty_tap_to_create_new_block"
             android:textColor="@color/text_tertiary"
+            style="@style/TextView.ContentStyle.Body.Regular"
             app:layout_constraintEnd_toEndOf="@+id/toggleContent"
             app:layout_constraintStart_toStartOf="@+id/toggleContent"
             app:layout_constraintTop_toBottomOf="@+id/toggleContent" />

@@ -28,13 +28,13 @@
 
         <TextView
             android:id="@+id/tvPlaceholder"
+            style="@style/RelationPlaceholderTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_4"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:text="@string/set_new_relation"
-            android:textColor="@color/palette_dark_grey" />
+            android:text="@string/set_new_relation" />
 
     </LinearLayout>
 

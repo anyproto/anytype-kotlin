@@ -36,14 +36,13 @@
             app:srcCompat="@drawable/ic_video" />
 
         <TextView
-            android:fontFamily="@font/inter_regular"
             android:id="@+id/tvError"
+            style="@style/UploadMediaInActiveTextStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="24dp"
             android:text="@string/error_while_loading"
-            android:textColor="@color/text_tertiary"
             app:layout_constraintBottom_toBottomOf="@+id/icVideo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/icVideo"

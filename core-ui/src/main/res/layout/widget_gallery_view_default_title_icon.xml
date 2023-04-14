@@ -16,15 +16,14 @@
 
     <TextView
         android:id="@+id/tvAvatar"
+        style="@style/TextView.UXStyle.Captions.2.Medium"
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:background="@drawable/circle_default_avatar_background"
-        android:fontFamily="@font/inter_medium"
         android:gravity="center"
         android:maxLines="1"
         android:textAllCaps="true"
         android:textColor="@color/white"
-        android:textSize="11sp"
         android:visibility="gone"
         tools:text="T" />
 

@@ -67,15 +67,13 @@
 
         <TextView
             android:id="@+id/tvScreenStateMessage"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="176dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="17sp"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,15 +82,14 @@
 
         <TextView
             android:id="@+id/tvScreenStateSubMessage"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center"
             android:text="@string/search_no_results_try"
             android:textColor="@color/text_secondary"
-            android:textSize="17sp"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

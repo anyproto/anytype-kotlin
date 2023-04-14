@@ -46,19 +46,17 @@
 
         <EditText
             android:id="@+id/searchObjectTypeInput"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="4dp"
             android:background="@null"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center_vertical"
             android:hint="@string/search"
             android:maxLines="1"
             android:singleLine="true"
             android:textColor="@color/text_primary"
             android:textColorHint="@color/text_secondary"
-            android:textCursorDrawable="@drawable/cursor"
-            android:textSize="15sp"
             tools:text="Search" />
 
     </LinearLayout>

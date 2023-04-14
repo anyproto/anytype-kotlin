@@ -27,11 +27,11 @@
             android:paddingBottom="16dp">
 
             <TextView
+                style="@style/TextView.UXStyle.Body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_regular"
-                android:text="Choose"
-                android:textColor="#ACA996" />
+                android:text="@string/choose"
+                android:textColor="@color/glyph_active" />
 
         </FrameLayout>
     </LinearLayout>

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -37,6 +38,8 @@ class GalleryViewContentWidget @JvmOverloads constructor(
     private var defaultBottomMargin = resources.getDimension(R.dimen.dp_1).toInt()
     private var defaultTextSize = 0f
 
+    private val style = R.style.GalleryViewContentWidgetStyle
+    private val themeWrapper = ContextThemeWrapper(context, style)
     private val defaultTextColor = context.getColor(R.color.text_secondary)
 
     init {
@@ -58,14 +61,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
             when (relation) {
                 is DefaultObjectRelationValueView.Text -> {
                     if (!relation.text.isNullOrEmpty()) {
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             text = relation.text
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            setTextColor(defaultTextColor)
                         }
                         addView(view)
                         view.updateLayoutParams<LayoutParams> {
@@ -77,14 +78,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                 }
                 is DefaultObjectRelationValueView.Url -> {
                     if (!relation.url.isNullOrEmpty()) {
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             text = relation.url
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            setTextColor(defaultTextColor)
                         }
                         addView(view)
                         view.updateLayoutParams<LayoutParams> {
@@ -96,14 +95,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                 }
                 is DefaultObjectRelationValueView.Email -> {
                     if (!relation.email.isNullOrEmpty()) {
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             text = relation.email
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            setTextColor(defaultTextColor)
                         }
                         addView(view)
                         view.updateLayoutParams<LayoutParams> {
@@ -115,14 +112,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                 }
                 is DefaultObjectRelationValueView.Number -> {
                     if (relation.number != null) {
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             text = relation.number
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            setTextColor(defaultTextColor)
                         }
                         addView(view)
                         view.updateLayoutParams<LayoutParams> {
@@ -134,14 +129,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                 }
                 is DefaultObjectRelationValueView.Phone -> {
                     if (relation.phone != null) {
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             text = relation.phone
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            setTextColor(defaultTextColor)
                         }
                         addView(view)
                         view.updateLayoutParams<LayoutParams> {
@@ -153,7 +146,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                 }
                 is DefaultObjectRelationValueView.Date -> {
                     if (relation.timeInMillis != null) {
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             isSingleLine = true
                             maxLines = 1
@@ -162,8 +155,6 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                 isMillis = true,
                                 format = relation.dateFormat
                             )
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            setTextColor(defaultTextColor)
                         }
                         addView(view)
                         view.updateLayoutParams<LayoutParams> {
@@ -178,12 +169,11 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     if (status != null) {
                         val color = ThemeColor.values().find { v -> v.code == status.color }
                         val defaultTextColor = resources.getColor(R.color.text_primary, null)
-                        val view = TextView(context).apply {
+                        val view = TextView(themeWrapper).apply {
                             id = generateViewId()
                             text = status.status
                             isSingleLine = true
                             maxLines = 1
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             ellipsize = TextUtils.TruncateAt.END
                             if (color != null) {
                                 setTextColor(resources.dark(color, defaultTextColor))
@@ -272,7 +262,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                             .into(image)
                                     }
                                     is ObjectIcon.Profile.Avatar -> {
-                                        val avatar = TextView(context).apply {
+                                        val avatar = TextView(themeWrapper).apply {
                                             gravity = Gravity.CENTER
                                             isAllCaps = true
                                             setBackgroundResource(R.drawable.circle_default_avatar_background)
@@ -342,15 +332,13 @@ class GalleryViewContentWidget @JvmOverloads constructor(
 
                                 val noIcon = obj.icon == ObjectIcon.None || obj.icon is ObjectIcon.Basic.Avatar
 
-                                val view = TextView(context).apply {
+                                val view = TextView(themeWrapper).apply {
                                     id = generateViewId()
                                     isSingleLine = true
                                     maxLines = 1
                                     ellipsize = TextUtils.TruncateAt.END
                                     setHint(R.string.untitled)
                                     text = obj.name
-                                    setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                                    setTextColor(defaultTextColor)
                                 }
                                 group.addView(view)
                                 view.updateLayoutParams<LayoutParams> {
@@ -376,13 +364,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                             val color = ThemeColor.values().find { v -> v.code == tag.color }
                             val defaultTextColor = resources.getColor(R.color.text_primary, null)
                             val defaultBackground = resources.getColor(R.color.shape_primary, null)
-                            val view = TextView(context).apply {
+                            val view = TextView(themeWrapper).apply {
                                 id = generateViewId()
                                 isSingleLine = true
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
                                 text = tag.tag
-                                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                                 if (color != null) {
                                     setTextColor(resources.dark(color, defaultTextColor))
                                     setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
@@ -417,14 +404,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         }
                         relation.files.forEachIndexed { idx, file ->
                             val filename = file.name + "." + file.ext
-                            val view = TextView(context).apply {
+                            val view = TextView(themeWrapper).apply {
                                 id = generateViewId()
                                 isSingleLine = true
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
                                 text = filename
-                                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                                setTextColor(defaultTextColor)
                                 setHint(R.string.untitled)
                             }
                             group.addView(view)
@@ -444,10 +429,9 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     }
                 }
                 else -> {
-                    val view = TextView(context).apply {
+                    val view = TextView(themeWrapper).apply {
                         id = generateViewId()
                         text = relation::class.java.simpleName
-                        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                     }
                     addView(view)
                     view.updateLayoutParams<LayoutParams> {

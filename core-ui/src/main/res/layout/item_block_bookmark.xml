@@ -108,15 +108,12 @@
 
             <TextView
                 android:id="@+id/loadBookmarkPictureError"
+                style="@style/TextView.UXStyle.Captions.2.Regular"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:alpha="0.5"
-                android:fontFamily="monospace"
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="@string/error_while_loading_picture"
-                android:textColor="@color/black"
-                android:textSize="8sp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"

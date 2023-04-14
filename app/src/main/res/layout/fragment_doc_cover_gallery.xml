@@ -62,16 +62,15 @@
 
         <TextView
             android:id="@+id/btnUnsplash"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:fontFamily="@font/inter_regular"
             android:gravity="center"
             android:text="@string/unsplash"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:textColor="@color/glyph_active"
-            android:textSize="17sp" />
+            android:textColor="@color/glyph_active" />
 
         <TextView
             android:id="@+id/btnUpload"

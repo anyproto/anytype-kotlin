@@ -19,6 +19,5 @@
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="10dp"
-        tools:listitem="@layout/item_select_profile_profile" />
+        android:layout_marginEnd="10dp" />
 </LinearLayout>

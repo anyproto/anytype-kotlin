@@ -14,12 +14,12 @@
 
     <TextView
         android:id="@+id/tvName"
+        style="@style/TextView.ContentStyle.Relations.3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/inter_medium"
         android:textColor="@color/white"
         tools:text="Yves Klein" />
 

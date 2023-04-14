@@ -12,10 +12,8 @@
 
     <TextView
         android:id="@+id/tvTitle"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="match_parent"
-        android:fontFamily="@font/inter_regular"
-        android:textSize="17sp"
-        android:textColor="@color/text_primary"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="54dp"

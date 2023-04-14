@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
-import com.anytypeio.anytype.di.feature.ArchiveModule
 import com.anytypeio.anytype.di.feature.AuthModule
 import com.anytypeio.anytype.di.feature.CreateAccountModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
@@ -229,12 +228,6 @@ class ComponentManager(
             .editorComponentBuilder()
             .session(EditorSessionModule)
             .usecase(EditorUseCaseModule)
-            .build()
-    }
-
-    val archiveComponent = ComponentMap {
-        main.archiveComponentBuilder()
-            .module(ArchiveModule)
             .build()
     }
 

@@ -31,8 +31,6 @@
     <color name="toolbar_section_media">#F55522</color>
     <color name="toolbar_section_other">#A646C9</color>
     <color name="block_highlight_divider">#FFB522</color>
-    <color name="toolbar_archive_button_disable">#DFDDD0</color>
-    <color name="page_archive_text_color">#ACA996</color>
     <color name="block_file_size_text_color">#ACA996</color>
 
     <color name="kanban_main">#EEEEEE</color>
@@ -114,7 +112,6 @@
     <color name="keychain_text_color">#1BA0EB</color>
 
     <color name="orange_button_background_color">#FFB522</color>
-    <color name="editor_default_hint_text_color">#CBC9BD</color>
 
     <color name="auth_background_color">#0066C3</color>
 

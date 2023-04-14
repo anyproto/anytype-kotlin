@@ -6,14 +6,13 @@
 
     <TextView
         android:layout_width="match_parent"
+        style="@style/TextView.UXStyle.Captions.1.Medium"
         android:gravity="center"
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
         android:id="@+id/category"
         tools:text="Smileys and people"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/graphik_medium"
-        android:textColor="@color/emoji_category_text_color"
-        android:textSize="13sp" />
+        android:textColor="@color/text_secondary" />
 
 </FrameLayout>

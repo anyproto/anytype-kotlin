@@ -5,15 +5,15 @@
     android:layout_height="68dp">
 
     <TextView
+        style="@style/DefaultRelationCategoryStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:text="@string/limit_object_types"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp" />
+        android:text="@string/limit_object_types" />
 
     <TextView
+        style="@style/DefaultRelationTitleStyle"
         android:id="@+id/limitObjectTypes"
         android:layout_width="match_parent"
         android:layout_height="24dp"
@@ -21,13 +21,6 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="50dp"
         android:gravity="center_vertical"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_tertiary"
-        android:textSize="17sp"
-        android:ellipsize="end"
-        android:fontFamily="@font/inter_regular"
         android:hint="@string/none"
         tools:text="Text" />
 

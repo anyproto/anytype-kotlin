@@ -4,7 +4,6 @@
 
     <FrameLayout
         android:id="@+id/copy"
-        style="@style/BottomMultiSelectToolbarOptionStyle"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -24,7 +23,6 @@
 
     <FrameLayout
         android:id="@+id/enterScrollAndMove"
-        style="@style/BottomMultiSelectToolbarOptionStyle"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"

@@ -16,6 +16,7 @@
 
     <TextView
         android:id="@+id/title"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -23,11 +24,8 @@
         android:layout_marginEnd="12dp"
         android:layout_weight="1.0"
         android:ellipsize="end"
-        android:fontFamily="@font/inter_regular"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/text_primary"
-        android:textSize="17sp"
         tools:text="We need to render the " />
 
     <com.google.android.material.switchmaterial.SwitchMaterial

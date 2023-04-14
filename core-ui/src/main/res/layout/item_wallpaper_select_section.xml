@@ -5,14 +5,13 @@
     android:layout_height="48dp">
 
     <TextView
+        style="@style/TextView.UXStyle.Captions.1.Medium"
         android:id="@+id/tvSectionName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="18dp"
-        android:fontFamily="@font/inter_medium"
         android:textColor="@color/text_secondary"
-        android:textSize="13sp"
         tools:text="Solid color" />
 
 </FrameLayout>

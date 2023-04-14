@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
-import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
@@ -200,13 +199,6 @@ class Navigator : AppNavigation {
             navOptions {
                 launchSingleTop = true
             }
-        )
-    }
-
-    override fun openArchive(target: String) {
-        navController?.navigate(
-            R.id.archiveFragment,
-            bundleOf(ArchiveFragment.ID_KEY to target)
         )
     }
 

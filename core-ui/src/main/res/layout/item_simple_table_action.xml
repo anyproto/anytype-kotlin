@@ -23,14 +23,13 @@
 
     <TextView
         android:id="@+id/title"
+        style="@style/TextView.UXStyle.Captions.2.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:fontFamily="@font/inter_regular"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
         android:textColor="@color/text_secondary"
-        android:textSize="11sp"
         tools:text="Reset Style" />
 
 </LinearLayout>

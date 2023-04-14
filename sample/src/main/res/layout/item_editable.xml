@@ -4,7 +4,6 @@
     android:layout_height="wrap_content">
 
     <EditText
-        android:fontFamily="monospace"
         android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

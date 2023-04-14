@@ -11,13 +11,12 @@
 
     <TextView
         android:id="@+id/tvInitial"
+        style="@style/TextView.ContentStyle.Initials"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="@font/inter_semibold"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/white"
         android:textSize="28sp"
         tools:text="U" />
 

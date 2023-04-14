@@ -36,12 +36,11 @@
 
             <TextView
                 android:id="@+id/imageText"
+                style="@style/TextView.ContentStyle.Initials"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:fontFamily="@font/inter_semibold"
                 android:gravity="center"
-                android:textColor="@color/white"
                 android:textSize="64sp"
                 tools:text="S" />
 
@@ -51,6 +50,7 @@
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
+        style="@style/BlockTitleContentStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="20dp"
@@ -59,11 +59,7 @@
         android:layout_marginBottom="13dp"
         android:background="@null"
         android:textAlignment="center"
-        android:fontFamily="@font/inter_bold"
         android:hint="@string/untitled"
-        android:textColorHint="@color/editor_default_hint_text_color"
-        android:textColor="@color/black"
-        android:textSize="28sp"
         app:ignoreDragAndDrop="true"
         app:onlyPasteAsPlaneText="true"
         tools:text="Title" />

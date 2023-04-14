@@ -4,20 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dashboard_background"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.settings.system.SettingsActivity">
 
     <TextView
-        style="@style/DashboardGreetingTextStyle"
+        style="@style/TextView.ContentStyle.Headline.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="20dp"
-        android:text="@string/settings_screen"
-        android:textColor="@color/text_primary" />
+        android:padding="@dimen/dp_16"
+        android:gravity="center"
+        android:text="@string/settings_screen" />
 
-    <androidx.fragment.app.FragmentContainerView xmlns:tools="http://schemas.android.com/tools"
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment"
         android:name="com.anytypeio.anytype.ui.settings.system.PreferenceFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".ui.settings.system.SettingsActivity" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

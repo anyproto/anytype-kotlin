@@ -5,31 +5,26 @@
     android:layout_height="wrap_content">
 
     <TextView
+        style="@style/DefaultRelationCategoryStyle"
         android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:fontFamily="@font/inter_regular"
         android:text="@string/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <EditText
         android:id="@+id/textInputField"
+        style="@style/TextView.ContentStyle.Headline.Heading"
         android:hint="@string/name_is_required"
-        android:textColorHint="#CBC9BD"
-        android:textColor="@color/black"
+        android:textColorHint="@color/text_tertiary"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:textCursorDrawable="@drawable/cursor"
         android:background="@null"
         android:singleLine="true"
         android:maxLines="1"
         android:ellipsize="end"
-        android:fontFamily="@font/graphik_semibold"
-        android:textSize="22sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

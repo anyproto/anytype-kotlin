@@ -27,14 +27,12 @@
 
         <TextView
             android:id="@+id/initial"
+            style="@style/TextView.ContentStyle.Initials"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="@font/inter_semibold"
             android:gravity="center"
-            android:hint="@string/u"
-            android:textColorHint="@color/text_tertiary"
-            android:textColor="@color/text_primary" />
+            android:hint="@string/u" />
 
     </FrameLayout>
 

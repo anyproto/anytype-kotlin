@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -9,12 +10,10 @@
 
     <TextView
         android:id="@+id/tvCondition"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="17sp"
         android:layout_weight="1"
-        android:fontFamily="@font/inter_regular"
-        android:textColor="@color/text_primary"
         android:layout_gravity="center_vertical"/>
 
     <ImageView

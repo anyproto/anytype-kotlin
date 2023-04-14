@@ -15,13 +15,12 @@
 
         <TextView
             android:id="@+id/percentText"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="15dp"
-            android:text="Loading, please wait..."
-            android:textColor="@android:color/black"
-            android:textSize="21sp" />
+            android:text="Loading, please wait..." />
 
         <ProgressBar
             android:id="@+id/mProgressBar"
@@ -33,7 +32,7 @@
             android:progressDrawable="@drawable/progressbar" />
     </RelativeLayout>
 
-    <com.google.android.material.button.MaterialButton
+    <com.anytypeio.anytype.core_ui.views.ButtonSecondaryMedium
         android:id="@+id/btnCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

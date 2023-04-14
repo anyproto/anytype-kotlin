@@ -4,20 +4,20 @@
     <!-- MOBILE DESIGN SYSTEM, Typography-->
 
     <style name="BaseTextView" parent="Widget.MaterialComponents.TextView">
-        <item name="android:includeFontPadding">true</item>
+        <item name="android:includeFontPadding">false</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <!-- MOBILE DESIGN SYSTEM, Content Text Styles -->
     <!-- Headlines -->
     <style name="TextView.ContentStyle.Headline" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_bold</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:fontWeight">700</item>
     </style>
 
     <style name="TextView.ContentStyle.Headline.Title" parent="TextView.ContentStyle.Headline">
         <item name="android:textSize">28sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">32sp</item>
+        <item name="android:lineHeight" tools:targetApi="28">30.5sp</item>
         <item name="android:letterSpacing">-0.017</item>
     </style>
 
@@ -41,29 +41,29 @@
     </style>
 
     <style name="TextView.ContentStyle.Body.Bold" parent="TextView.ContentStyle.Body">
-        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:fontWeight">600</item>
     </style>
 
     <style name="TextView.ContentStyle.Body.Bold.Italic" parent="TextView.ContentStyle.Body">
-        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">italic</item>
         <item name="android:fontWeight">600</item>
     </style>
 
     <style name="TextView.ContentStyle.Body.Regular" parent="TextView.ContentStyle.Body">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
     </style>
 
     <style name="TextView.ContentStyle.Body.Italic" parent="TextView.ContentStyle.Body">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">italic</item>
         <item name="android:fontWeight">400</item>
     </style>
 
     <style name="TextView.ContentStyle.Body.Callout" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">22sp</item>
@@ -72,7 +72,7 @@
 
     <!-- Preview Titles -->
     <style name="TextView.ContentStyle.PreviewTitles.1.Medium" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">17sp</item>
         <item name="android:lineHeight" tools:targetApi="28">22sp</item>
@@ -80,7 +80,7 @@
     </style>
 
     <style name="TextView.ContentStyle.PreviewTitles.1.Regular" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">17sp</item>
         <item name="android:lineHeight" tools:targetApi="28">22sp</item>
@@ -88,7 +88,7 @@
     </style>
 
     <style name="TextView.ContentStyle.PreviewTitles.2.Medium" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">20sp</item>
@@ -96,7 +96,7 @@
     </style>
 
     <style name="TextView.ContentStyle.PreviewTitles.2.Regular" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">20sp</item>
@@ -105,7 +105,7 @@
 
     <!-- Relations -->
     <style name="TextView.ContentStyle.Relations" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
     </style>
 
@@ -128,17 +128,24 @@
 
     <!-- Code block -->
     <style name="TextView.ContentStyle.CodeBlock" parent="BaseTextView">
-        <item name="fontFamily">@font/ibm_plex_mono</item>
+        <item name="android:fontFamily">@font/ibm_plex_mono</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">22sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
+    <!-- Initials -->
+    <style name="TextView.ContentStyle.Initials" parent="BaseTextView">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:fontWeight">600</item>
+        <item name="android:textColor">@color/text_button_label</item>
+    </style>
+
     <!-- MOBILE DESIGN SYSTEM, UX Styles -->
     <!-- Titles -->
     <style name="TextView.UXStyle.Titles.1" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:fontWeight">600</item>
         <item name="android:textSize">17sp</item>
         <item name="android:lineHeight" tools:targetApi="28">24sp</item>
@@ -146,7 +153,7 @@
     </style>
 
     <style name="TextView.UXStyle.Titles.2" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">20sp</item>
@@ -154,7 +161,7 @@
     </style>
 
     <style name="TextView.UXStyle.Titles.3" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">20sp</item>
@@ -163,7 +170,7 @@
 
     <!-- Body -->
     <style name="TextView.UXStyle.Body" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">17sp</item>
         <item name="android:lineHeight" tools:targetApi="28">24sp</item>
@@ -171,7 +178,7 @@
     </style>
 
     <style name="TextView.UXStyle.Body.Callout.Medium" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">22sp</item>
@@ -179,7 +186,7 @@
     </style>
 
     <style name="TextView.UXStyle.Body.Callout.Regular" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
         <item name="android:lineHeight" tools:targetApi="28">22sp</item>
@@ -188,7 +195,7 @@
 
     <!-- Captions -->
     <style name="TextView.UXStyle.Captions.1.Medium" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">13sp</item>
         <item name="android:lineHeight" tools:targetApi="28">18sp</item>
@@ -196,7 +203,7 @@
     </style>
 
     <style name="TextView.UXStyle.Captions.1.Regular" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">13sp</item>
         <item name="android:lineHeight" tools:targetApi="28">18sp</item>
@@ -204,7 +211,7 @@
     </style>
 
     <style name="TextView.UXStyle.Captions.2.Medium" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">11sp</item>
         <item name="android:lineHeight" tools:targetApi="28">14sp</item>
@@ -212,7 +219,7 @@
     </style>
 
     <style name="TextView.UXStyle.Captions.2.Regular" parent="BaseTextView">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">11sp</item>
         <item name="android:lineHeight" tools:targetApi="28">14sp</item>
@@ -225,7 +232,7 @@
 
     <!-- Buttons -->
     <style name="TextView.UXStyle.Buttons.Medium" parent="BaseTextView.Buttons">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">17sp</item>
         <item name="android:lineHeight" tools:targetApi="28">24sp</item>
@@ -234,7 +241,7 @@
     </style>
 
     <style name="TextView.UXStyle.Buttons.Regular" parent="BaseTextView.Buttons">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">17sp</item>
         <item name="android:lineHeight" tools:targetApi="28">24sp</item>

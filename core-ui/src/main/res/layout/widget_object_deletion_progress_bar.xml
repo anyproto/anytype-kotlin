@@ -15,14 +15,12 @@
         android:orientation="vertical">
 
         <TextView
+            style="@style/TextView.UXStyle.Body.Callout.Regular"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="@string/object_removal_process"
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:text="@string/object_removal_process" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/dvProgressBar"

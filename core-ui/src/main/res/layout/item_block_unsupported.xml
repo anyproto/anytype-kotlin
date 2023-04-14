@@ -26,12 +26,11 @@
         android:layout_marginTop="5dp"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="5dp"
+        style="@style/TextView.ContentStyle.Body.Regular"
         android:id="@+id/tvUnsupportedBlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_regular"
         android:text="@string/unsupported_block"
-        android:textColor="@color/text_tertiary"
-        android:textSize="15sp" />
+        android:textColor="@color/text_tertiary" />
 
 </LinearLayout>

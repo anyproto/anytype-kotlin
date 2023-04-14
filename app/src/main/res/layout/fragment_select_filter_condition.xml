@@ -18,6 +18,6 @@
         android:paddingBottom="@dimen/dp_16"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="10"
-        tools:listitem="@layout/item_list_base" />
+        tools:listitem="@layout/item_list_object" />
 
 </FrameLayout>

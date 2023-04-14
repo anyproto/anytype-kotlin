@@ -7,13 +7,11 @@
 
     <TextView
         android:id="@+id/tvDateTitle"
+        style="@style/TextView.ContentStyle.Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
-        android:fontFamily="@font/inter_regular"
         android:maxLines="1"
-        android:textColor="@color/black"
-        android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tvDate"
         app:layout_constraintHorizontal_bias="0.5"
@@ -24,12 +22,11 @@
 
     <TextView
         android:id="@+id/tvDate"
+        style="@style/TextView.ContentStyle.Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/inter_regular"
-        android:textColor="#ACA996"
-        android:textSize="17sp"
+        android:textColor="@color/text_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iconChecked"
         app:layout_constraintHorizontal_bias="0.5"

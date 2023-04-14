@@ -32,7 +32,6 @@
         tools:text="sdsdsdsd"
         android:textColor="@color/white"
         android:background="@color/black"
-        android:fontFamily="monospace"
         android:id="@+id/output"
         android:layout_width="0dp"
         android:layout_height="0dp"

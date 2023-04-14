@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
-import com.anytypeio.anytype.di.feature.ArchiveSubComponent
 import com.anytypeio.anytype.di.feature.AuthSubComponent
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
@@ -78,7 +77,6 @@ interface MainComponent :
     fun inject(app: AndroidApplication)
 
     fun editorComponentBuilder(): EditorSubComponent.Builder
-    fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
     fun moveToBuilder(): MoveToSubComponent.Builder

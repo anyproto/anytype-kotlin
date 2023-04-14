@@ -14,6 +14,7 @@
     <TextView
         android:id="@+id/relName"
         android:text="@string/name"
+        style="@style/TextView.UXStyle.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -21,11 +22,8 @@
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
         android:ellipsize="end"
-        android:fontFamily="@font/inter_regular"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/text_primary"
-        android:textSize="17sp"
         tools:text="We need to render the " />
 
 </RelativeLayout>

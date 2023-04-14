@@ -6,6 +6,7 @@
     android:orientation="horizontal">
 
     <TextView
+        style="@style/TextView.ContentStyle.Relations.2"
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,27 +14,22 @@
         android:maxLines="1"
         android:singleLine="true"
         android:ellipsize="end"
-        android:fontFamily="@font/inter_regular"
-        android:textSize="12sp"
-        android:textColor="@color/text_secondary"
         android:background="@drawable/rect_dv_cell_tag_item"
         android:visibility="gone"
         tools:text="Favorites"
         tools:visibility="visible" />
 
     <TextView
+        style="@style/TextView.ContentStyle.Relations.2"
         android:id="@+id/tvCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:background="@drawable/bg_dv_list_item_object_count"
-        android:fontFamily="@font/inter_regular"
         android:maxLines="1"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         android:singleLine="true"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp"
         android:visibility="gone"
         tools:text="+2"
         tools:visibility="visible" />

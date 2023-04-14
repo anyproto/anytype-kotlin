@@ -18,10 +18,10 @@ class ButtonPrimaryNumber @JvmOverloads constructor(
     val binding = DsButtonNumberBinding.inflate(LayoutInflater.from(context), this)
 
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.ButtonPrimaryNumber).use {
-            val text = it.getString(R.styleable.ButtonPrimaryNumber_buttonTitle)
-            binding.button.text = text
-        }
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ButtonPrimaryNumber)
+        val text = typedArray.getString(R.styleable.ButtonPrimaryNumber_buttonTitle)
+        binding.button.text = text
+        typedArray.recycle()
     }
 
     fun setNumber(num: String) {

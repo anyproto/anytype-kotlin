@@ -3,12 +3,11 @@
 
     <TextView
         android:id="@+id/initials"
+        style="@style/TextView.ContentStyle.Initials"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:fontFamily="@font/inter_semibold"
-        android:textColor="@color/white" />
+        android:gravity="center" />
 
     <ImageView
         android:id="@+id/icon"

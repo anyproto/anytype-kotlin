@@ -890,8 +890,8 @@ fun CoroutineScope.logEvent(
     val middleTime = System.currentTimeMillis()
     val embedTypeDefault = "object"
     val objectTypeDefault = when (state) {
-        is ObjectState.DataView.Collection -> "collection"
-        is ObjectState.DataView.Set -> "set"
+        is ObjectState.DataView.Collection -> "ot-collection"
+        is ObjectState.DataView.Set -> "ot-set"
     }
     val scope = this
     val params = state.getAnalyticsParams()

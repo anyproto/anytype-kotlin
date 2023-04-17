@@ -28,7 +28,7 @@ object MockObjectTypes {
         id = SET,
         name = "Set",
         objectType = OBJECT_TYPE,
-        smartBlockTypes = listOf(SmartBlockType.SET.code.toDouble()),
+        smartBlockTypes = listOf(),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
         description = "Set of objects with equal types and relations. Database experience based on all objects in Anytype",
         isReadOnly = true
@@ -38,7 +38,7 @@ object MockObjectTypes {
         id = COLLECTION,
         name = "Collection",
         objectType = OBJECT_TYPE,
-        smartBlockTypes = listOf(SmartBlockType.COLLECTION.code.toDouble()),
+        smartBlockTypes = listOf(),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
         description = "Collection of objects with equal types and relations. Database experience based on all objects in Anytype",
         isReadOnly = true
@@ -138,7 +138,6 @@ object MockObjectTypes {
         name = "Type",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(
-            SmartBlockType.CUSTOM_OBJECT_TYPE.code.toDouble(),
             SmartBlockType.BUNDLED_OBJECT_TYPE.code.toDouble()
         ),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),

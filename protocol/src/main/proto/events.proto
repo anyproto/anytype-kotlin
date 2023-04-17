@@ -29,6 +29,8 @@ message Event {
 
             Object.Remove objectRemove = 54;
 
+            Object.Restrictions.Set objectRestrictionsSet = 55;
+
             Object.Subscription.Add subscriptionAdd = 60;
             Object.Subscription.Remove subscriptionRemove = 61;
             Object.Subscription.Position subscriptionPosition = 62;
@@ -205,9 +207,11 @@ message Event {
             repeated string ids = 1;
         }
 
-        message Restriction {
-            string id = 1;
-            anytype.model.Restrictions restrictions = 2;
+        message Restrictions {
+            message Set {
+                string id = 1;
+                anytype.model.Restrictions restrictions = 2;
+            }
         }
     }
     message Block {

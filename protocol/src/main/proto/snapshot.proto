@@ -1,0 +1,19 @@
+syntax = "proto3";
+package anytype;
+option go_package = "pb";
+
+import "models.proto";
+import "changes.proto";
+
+message SnapshotWithType {
+  anytype.model.SmartBlockType sbType = 1;
+  anytype.Change.Snapshot snapshot = 2;
+}
+
+message Profile {
+  string name = 1;
+  string avatar = 2;
+  string address = 4;
+  string spaceDashboardId = 5;
+  string profileId = 6;
+}

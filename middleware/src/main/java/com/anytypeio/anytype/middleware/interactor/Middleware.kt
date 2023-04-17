@@ -1633,14 +1633,13 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectToCollection(ctx: Id): String {
+    fun objectToCollection(ctx: Id) {
         val request = Rpc.Object.ToCollection.Request(
             contextId = ctx
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectToCollection(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.collectionId
     }
 
     @Throws(Exception::class)

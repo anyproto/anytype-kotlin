@@ -249,7 +249,7 @@ open class ObjectSetViewModelTestSetup {
                                 relations = relations,
                                 objectTypes = objectTypes,
                                 dataViewRestrictions = dataViewRestrictions,
-                                type = SmartBlockType.SET
+                                type = SmartBlockType.PAGE
                             )
                         ) + additionalEvents
                     )

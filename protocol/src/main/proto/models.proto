@@ -17,17 +17,12 @@ message SmartBlockSnapshotBase {
 }
 
 enum SmartBlockType {
-    AccountOld = 0;
-    Breadcrumbs = 0x01;
+    AccountOld = 0; // deprecated
 
     Page = 0x10;
     ProfilePage = 0x11;
     Home = 0x20;
     Archive = 0x30;
-    Database = 0x40;
-    Set = 0x41; // only have dataview simpleblock
-    Collection = 0x42;
-    STObjectType = 0x60; // have relations list
     Widget = 0x70;
 
     File = 0x100;
@@ -35,16 +30,11 @@ enum SmartBlockType {
     Template = 0x120;
     BundledTemplate = 0x121;
 
-    MarketplaceType = 0x110;
-    MarketplaceRelation = 0x111;
-    MarketplaceTemplate = 0x112;
-
     BundledRelation = 0x200; // DEPRECATED
     SubObject = 0x201;
     BundledObjectType = 0x202;
     AnytypeProfile = 0x203;
     Date = 0x204;
-    WorkspaceOld = 0x205; // deprecated thread-based workspace
     Workspace = 0x206;
 
     MissingObject = 0x207;

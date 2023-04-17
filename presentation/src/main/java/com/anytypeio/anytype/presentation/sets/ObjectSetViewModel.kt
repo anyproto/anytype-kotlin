@@ -1192,14 +1192,14 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             objectToCollection.execute(params).fold(
                 onFailure = { error -> Timber.e(error, "Error convert object to collection") },
-                onSuccess = { setId ->
+                onSuccess = {
                     logEvent(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.TURN_INTO_COLLECTION,
                         startTime = startTime
                     )
-                    proceedWithOpeningCollection(target = setId)
+                    //proceedWithOpeningCollection(target = setId)
                 }
             )
         }

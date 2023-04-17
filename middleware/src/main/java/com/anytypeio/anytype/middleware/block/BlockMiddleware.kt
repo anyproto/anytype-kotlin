@@ -501,8 +501,8 @@ class BlockMiddleware(
         return middleware.objectToSet(ctx, source)
     }
 
-    override suspend fun objectToCollection(ctx: Id): Id {
-        return middleware.objectToCollection(ctx)
+    override suspend fun objectToCollection(ctx: Id) {
+        middleware.objectToCollection(ctx)
     }
 
     override suspend fun blockDataViewSetSource(

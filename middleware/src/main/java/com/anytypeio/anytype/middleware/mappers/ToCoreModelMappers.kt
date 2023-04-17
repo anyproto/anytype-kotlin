@@ -687,19 +687,12 @@ fun ObjectInfo.toCoreModel(): DocumentInfo = DocumentInfo(
 )
 
 fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
-    MSmartBlockType.Breadcrumbs -> SmartBlockType.BREADCRUMBS
     MSmartBlockType.Page -> SmartBlockType.PAGE
     MSmartBlockType.ProfilePage -> SmartBlockType.PROFILE_PAGE
     MSmartBlockType.Home -> SmartBlockType.HOME
     MSmartBlockType.Archive -> SmartBlockType.ARCHIVE
-    MSmartBlockType.Database -> SmartBlockType.DATABASE
-    MSmartBlockType.Set -> SmartBlockType.SET
-    MSmartBlockType.STObjectType -> SmartBlockType.CUSTOM_OBJECT_TYPE
     MSmartBlockType.File -> SmartBlockType.FILE
     MSmartBlockType.Template -> SmartBlockType.TEMPLATE
-    MSmartBlockType.MarketplaceType -> SmartBlockType.MARKETPLACE_TYPE
-    MSmartBlockType.MarketplaceRelation -> SmartBlockType.MARKETPLACE_RELATION
-    MSmartBlockType.MarketplaceTemplate -> SmartBlockType.MARKETPLACE_TEMPLATE
     MSmartBlockType.BundledRelation -> SmartBlockType.BUNDLED_RELATION
     MSmartBlockType.SubObject -> SmartBlockType.SUB_OBJECT
     MSmartBlockType.BundledObjectType -> SmartBlockType.BUNDLED_OBJECT_TYPE
@@ -707,10 +700,8 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.BundledTemplate -> SmartBlockType.BUNDLED_TEMPLATE
     MSmartBlockType.Date -> SmartBlockType.DATE
     MSmartBlockType.Workspace -> SmartBlockType.WORKSPACE
-    MSmartBlockType.WorkspaceOld -> SmartBlockType.WORKSPACE_OLD
     MSmartBlockType.AccountOld -> SmartBlockType.ACCOUNT_OLD
     MSmartBlockType.Widget -> SmartBlockType.WIDGET
-    MSmartBlockType.Collection -> SmartBlockType.COLLECTION
     MSmartBlockType.MissingObject -> SmartBlockType.MISSING_OBJECT
 }
 

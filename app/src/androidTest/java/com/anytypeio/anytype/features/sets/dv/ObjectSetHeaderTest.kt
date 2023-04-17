@@ -69,7 +69,7 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.SET),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, dataview.id)
         )
 

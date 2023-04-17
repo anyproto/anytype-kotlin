@@ -4314,8 +4314,8 @@ class EditorViewModel(
         val params = ConvertObjectToCollection.Params(ctx = context)
         objectToCollection.execute(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
-            onSuccess = { setId ->
-                proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
+            onSuccess = {
+                //proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
             }
         )
     }

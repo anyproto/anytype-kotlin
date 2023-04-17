@@ -3,6 +3,27 @@ package com.anytypeio.anytype.core_ui.views
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Text
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 
 class ButtonPrimaryXSmall @JvmOverloads constructor(
@@ -76,3 +97,131 @@ class ButtonWarningLarge @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.warningLargeButtonStyle,
 ) : AppCompatTextView(context, attrs, defStyleAttr)
+
+/**
+ * Composable Buttons
+ */
+@Composable
+fun ButtonPrimary(
+    text: String = "",
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    size: ButtonSize
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor =
+        if (isPressed.value) colorResource(id = R.color.button_pressed) else colorResource(
+            id = R.color.glyph_selected
+        )
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Button(
+            onClick = onClick,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            shape = RoundedCornerShape(size.cornerSize),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = backgroundColor,
+                contentColor = colorResource(id = R.color.button_text),
+                disabledBackgroundColor = colorResource(id = R.color.shape_tertiary),
+                disabledContentColor = colorResource(id = R.color.text_tertiary)
+            ),
+            modifier = modifier
+                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp
+            ),
+            contentPadding = size.contentPadding
+        ) {
+            Text(
+                text = text,
+                style = size.textStyle
+            )
+        }
+    }
+}
+
+@Composable
+fun ButtonSecondary(
+    text: String = "",
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    size: ButtonSize
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor =
+        if (isPressed.value) colorResource(id = R.color.shape_transparent) else colorResource(
+            id = R.color.background_primary
+        )
+    val borderColor = if (enabled) colorResource(id = R.color.shape_primary) else colorResource(
+        id = R.color.shape_secondary
+    )
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Button(
+            onClick = onClick,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            shape = RoundedCornerShape(size.cornerSize),
+            border = BorderStroke(width = 1.dp, color = borderColor),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = backgroundColor,
+                contentColor = colorResource(id = R.color.text_primary),
+                disabledBackgroundColor = colorResource(id = R.color.background_primary),
+                disabledContentColor = colorResource(id = R.color.text_tertiary)
+            ),
+            modifier = modifier
+                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp
+            ),
+            contentPadding = size.contentPadding
+        ) {
+            Text(
+                text = text,
+                style = size.textStyle
+            )
+        }
+    }
+}
+
+enum class ButtonSize(
+    val cornerSize: Dp,
+    val contentPadding: PaddingValues,
+    val textStyle: TextStyle
+) {
+    XSmall(
+        cornerSize = 6.dp,
+        contentPadding = PaddingValues(9.5.dp, 3.5.dp, 9.5.dp, 3.5.dp),
+        textStyle = Caption1Medium
+    ),
+    Small(
+        cornerSize = 8.dp,
+        contentPadding = PaddingValues(11.dp, 5.dp, 11.dp, 5.dp),
+        textStyle = BodyCalloutMedium
+    ),
+    Medium(
+        cornerSize = 10.dp,
+        contentPadding = PaddingValues(55.dp, 10.dp, 55.dp, 10.dp),
+        textStyle = ButtonMedium
+    ),
+    Large(
+        cornerSize = 12.dp,
+        contentPadding = PaddingValues(0.dp, 12.dp, 0.dp, 12.dp),
+        textStyle = ButtonMedium
+    )
+}
+
+object NoRippleTheme : RippleTheme {
+    @Composable
+    override fun defaultColor() = Color.Unspecified
+
+    @Composable
+    override fun rippleAlpha(): RippleAlpha = RippleAlpha(0.0f, 0.0f, 0.0f, 0.0f)
+}

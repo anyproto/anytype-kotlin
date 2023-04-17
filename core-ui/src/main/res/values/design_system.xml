@@ -252,7 +252,7 @@
     <!--https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Mobile-Design-System?node-id=1588%3A59&t=9DPtsMxKLupkwVfY-1-->
     <!-- MOBILE DESIGN SYSTEM, Buttons-->
     <style name="Button.Primary.XSmall" parent="TextView.UXStyle.Captions.1.Medium">
-        <item name="android:background">@drawable/button_background_primary_selector</item>
+        <item name="android:background">@drawable/button_primary_xsmall_selector</item>
         <item name="android:textColor">@color/text_color_button_primary_selector</item>
         <item name="android:stateListAnimator">@null</item>
         <item name="android:gravity">center</item>
@@ -265,7 +265,7 @@
     </style>
 
     <style name="Button.Primary.Small" parent="TextView.UXStyle.Body.Callout.Medium">
-        <item name="android:background">@drawable/button_background_primary_selector</item>
+        <item name="android:background">@drawable/button_primary_small_selector</item>
         <item name="android:textColor">@color/text_color_button_primary_selector</item>
         <item name="android:stateListAnimator">@null</item>
         <item name="android:gravity">center</item>
@@ -278,7 +278,7 @@
     </style>
 
     <style name="Button.Primary.Medium" parent="TextView.UXStyle.Buttons.Medium">
-        <item name="android:background">@drawable/button_background_primary_selector</item>
+        <item name="android:background">@drawable/button_primary_medium_selector</item>
         <item name="android:textColor">@color/text_color_button_primary_selector</item>
         <item name="android:stateListAnimator">@null</item>
         <item name="android:gravity">center</item>
@@ -291,7 +291,7 @@
     </style>
 
     <style name="Button.Primary.Large" parent="TextView.UXStyle.Buttons.Medium">
-        <item name="android:background">@drawable/button_background_primary_selector</item>
+        <item name="android:background">@drawable/button_primary_large_selector</item>
         <item name="android:textColor">@color/text_color_button_primary_selector</item>
         <item name="android:stateListAnimator">@null</item>
         <item name="android:layout_width">match_parent</item>
@@ -308,7 +308,7 @@
     </style>
 
     <style name="Button.Secondary.XSmall" parent="TextView.UXStyle.Captions.1.Medium">
-        <item name="android:background">@drawable/button_background_secondary_selector</item>
+        <item name="android:background">@drawable/button_secondary_xsmall_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -320,7 +320,7 @@
     </style>
 
     <style name="Button.Secondary.Small" parent="TextView.UXStyle.Body.Callout.Medium">
-        <item name="android:background">@drawable/button_background_secondary_selector</item>
+        <item name="android:background">@drawable/button_secondary_small_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -332,7 +332,7 @@
     </style>
 
     <style name="Button.Secondary.Medium" parent="TextView.UXStyle.Buttons.Medium">
-        <item name="android:background">@drawable/button_background_secondary_selector</item>
+        <item name="android:background">@drawable/button_secondary_medium_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -344,7 +344,7 @@
     </style>
 
     <style name="Button.Secondary.Large" parent="TextView.UXStyle.Buttons.Medium">
-        <item name="android:background">@drawable/button_background_secondary_selector</item>
+        <item name="android:background">@drawable/button_secondary_large_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -354,7 +354,7 @@
     </style>
 
     <style name="Button.Warning.XSmall" parent="TextView.UXStyle.Captions.1.Medium">
-        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:background">@drawable/button_warning_xsmall_selector</item>
         <item name="android:textColor">@color/text_color_button_warning_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -366,7 +366,7 @@
     </style>
 
     <style name="Button.Warning.Small" parent="TextView.UXStyle.Body.Callout.Medium">
-        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:background">@drawable/button_warning_small_selector</item>
         <item name="android:textColor">@color/text_color_button_warning_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -378,7 +378,7 @@
     </style>
 
     <style name="Button.Warning.Medium" parent="TextView.UXStyle.Buttons.Medium">
-        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:background">@drawable/button_warning_medium_selector</item>
         <item name="android:textColor">@color/text_color_button_warning_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -390,7 +390,7 @@
     </style>
 
     <style name="Button.Warning.Large" parent="TextView.UXStyle.Buttons.Medium">
-        <item name="android:background">@drawable/button_background_warning</item>
+        <item name="android:background">@drawable/button_warning_large_selector</item>
         <item name="android:textColor">@color/text_color_button_warning_selector</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
@@ -417,4 +417,12 @@
     <declare-styleable name="ButtonPrimaryNumber">
         <attr name="buttonTitle" format="string" />
     </declare-styleable>
+
+
+    <!-- dimens -->
+    <dimen name="button_xsmall_corner">6dp</dimen>
+    <dimen name="button_small_corner">8dp</dimen>
+    <dimen name="button_medium_corner">10dp</dimen>
+    <dimen name="button_large_corner">12dp</dimen>
+
 </resources>

@@ -8,6 +8,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
@@ -191,6 +194,47 @@ fun ButtonSecondary(
     }
 }
 
+@Composable
+fun ButtonWarning(
+    text: String = "",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: ButtonSize
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val contentColor =
+        if (isPressed.value) colorResource(id = R.color.palette_light_red) else colorResource(
+            id = R.color.palette_system_red
+        )
+    val borderColor = colorResource(id = R.color.shape_primary)
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Button(
+            onClick = onClick,
+            interactionSource = interactionSource,
+            shape = RoundedCornerShape(size.cornerSize),
+            border = BorderStroke(width = 1.dp, color = borderColor),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.background_primary),
+                contentColor = contentColor
+            ),
+            modifier = modifier
+                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp
+            ),
+            contentPadding = size.contentPadding
+        ) {
+            Text(
+                text = text,
+                style = size.textStyle
+            )
+        }
+    }
+}
+
 enum class ButtonSize(
     val cornerSize: Dp,
     val contentPadding: PaddingValues,
@@ -224,4 +268,40 @@ object NoRippleTheme : RippleTheme {
 
     @Composable
     override fun rippleAlpha(): RippleAlpha = RippleAlpha(0.0f, 0.0f, 0.0f, 0.0f)
+}
+
+@Composable
+@Preview
+fun MyPrimaryButton() {
+    ButtonPrimary(
+        onClick = {},
+        size = ButtonSize.Large,
+        text = "Login",
+        modifier = Modifier.fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+@Preview
+fun MySecondaryButton() {
+    ButtonSecondary(
+        onClick = {},
+        size = ButtonSize.Large,
+        text = "Cancel",
+        modifier = Modifier.fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+@Preview
+fun MyWarningButton() {
+    ButtonWarning(
+        onClick = {},
+        size = ButtonSize.Large,
+        text = "Log out",
+        modifier = Modifier.fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    )
 }

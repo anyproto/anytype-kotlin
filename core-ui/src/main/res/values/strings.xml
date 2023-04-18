@@ -632,5 +632,6 @@
     <string name="change_icon">Change icon</string>
     <string name="random">Random</string>
     <string name="choose">Choose</string>
+    <string name="attributes">Attributes</string>
 
 </resources>

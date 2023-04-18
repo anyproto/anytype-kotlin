@@ -66,9 +66,9 @@ class SelectWidgetSourceViewModel(
                                     addAll(
                                         listOf(
                                             BundledWidgetSourceView.Favorites,
-                                            BundledWidgetSourceView.Recent,
                                             BundledWidgetSourceView.Sets,
-                                            BundledWidgetSourceView.Collections
+                                            BundledWidgetSourceView.Collections,
+                                            BundledWidgetSourceView.Recent,
                                         )
                                     )
                                     add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)

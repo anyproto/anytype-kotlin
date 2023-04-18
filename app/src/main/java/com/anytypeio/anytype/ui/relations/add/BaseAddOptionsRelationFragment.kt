@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.relations.add
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,16 +24,18 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.AddOptionRelationFragmentBinding
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.add.BaseAddOptionsRelationViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRelationFragmentBinding>() {
+abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptionRelationFragmentBinding>() {
 
-    private val behavior get() = BottomSheetBehavior.from(binding.sheet)
+    private val behavior get() = sheet?.let {
+        BottomSheetBehavior.from(it)
+    }
 
     val ctx get() = argString(CTX_KEY)
     val relationKey get() = argString(RELATION_KEY)
@@ -102,25 +103,25 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
                 vm.onFilterInputChanged(it.toString())
             }
             subscribe(searchRelationInput.focusChanges()) { hasFocus ->
-                if (hasFocus) behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                if (hasFocus) behavior?.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
 
-        behavior.apply {
+        if (vm.isMultiple.value) {
+            binding.btnAdd.visible()
+        }
+
+        behavior?.apply {
             skipCollapsed = true
+            state = BottomSheetBehavior.STATE_EXPANDED
             addBottomSheetCallback(
                 object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) dismiss()
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        // Do nothing.
                     }
 
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        if (vm.isMultiple.value) {
-                            if (slideOffset < 0)
-                                binding.btnAdd.gone()
-                            else
-                                binding.btnAdd.visible()
-                        }
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) dismiss()
                     }
                 }
             )
@@ -175,7 +176,6 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
 
     override fun onStart() {
         super.onStart()
-        setupAppearance()
         vm.onStart(
             ctx = ctx,
             target = target,
@@ -186,15 +186,6 @@ abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRela
     override fun onStop() {
         super.onStop()
         vm.onStop()
-    }
-
-    private fun setupAppearance() {
-        dialog?.window?.apply {
-            setGravity(Gravity.BOTTOM)
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            setBackgroundDrawableResource(android.R.color.transparent)
-            setWindowAnimations(R.style.DefaultBottomDialogAnimation)
-        }
     }
 
     override fun inflateBinding(

@@ -20,12 +20,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
@@ -87,12 +85,7 @@ fun LibraryWidgetCard(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 42.dp, end = 16.dp),
-                style = TextStyle(
-                    fontSize = 17.sp,
-                    color = colorResource(id = R.color.text_primary),
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 24.sp
-                )
+                style = HeadlineSubheading
             )
         }
         WidgetMenu(

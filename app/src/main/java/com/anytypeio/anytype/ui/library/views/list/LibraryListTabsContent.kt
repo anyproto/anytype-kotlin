@@ -30,11 +30,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.library.LibraryAnalyticsEvent
 import com.anytypeio.anytype.presentation.library.LibraryEvent
@@ -54,7 +53,6 @@ import com.anytypeio.anytype.ui.library.views.list.items.LibTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.LibraryObjectEmptyItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyTypeItem
-import com.anytypeio.anytype.ui.settings.fonts
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -180,11 +178,9 @@ private fun SearchCancel(modifier: Modifier = Modifier, visible: Boolean = false
         Text(
             modifier = modifier,
             text = stringResource(id = R.string.cancel),
-            style = TextStyle(
-                color = colorResource(id = R.color.text_secondary),
-                fontSize = 17.sp,
-                fontFamily = fonts
-            ),
+            style = UXBody.copy(
+                color = colorResource(id = R.color.glyph_active)
+            )
         )
     }
 

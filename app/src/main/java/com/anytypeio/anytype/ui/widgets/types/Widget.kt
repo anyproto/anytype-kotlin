@@ -10,11 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.views.Relations2
 
 @Composable
 fun EmptyWidgetPlaceholder(
@@ -28,11 +26,8 @@ fun EmptyWidgetPlaceholder(
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(vertical = 18.dp, horizontal = 16.dp),
-            style = TextStyle(
-                fontSize = 13.sp,
+            style = Relations2.copy(
                 color = colorResource(id = R.color.text_secondary),
-                lineHeight = 18.sp,
-                textAlign = TextAlign.Center
             )
         )
     }

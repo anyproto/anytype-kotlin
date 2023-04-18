@@ -15,16 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.library.views.list.LibraryListDefaults
@@ -50,7 +49,8 @@ fun MyTypeItem(
             text = name,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
-                .padding(start = TEXT_PADDING_START)
+                .padding(start = TEXT_PADDING_START),
+            style = UXBody
         )
         Spacer(modifier = Modifier.weight(1f))
         if (readOnly) {
@@ -83,7 +83,8 @@ fun LibTypeItem(
             text = name,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
-                .padding(start = TEXT_PADDING_START)
+                .padding(start = TEXT_PADDING_START),
+            style = UXBody
         )
         Spacer(modifier = Modifier.weight(1f))
         val installedImageRes = if (installed) {
@@ -123,7 +124,8 @@ fun MyRelationItem(
             text = name,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
-                .padding(start = TEXT_PADDING_START)
+                .padding(start = TEXT_PADDING_START),
+            style = UXBody
         )
         Spacer(modifier = Modifier.weight(1f))
         if (readOnly) {
@@ -158,7 +160,8 @@ fun LibRelationItem(
             text = name,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
-                .padding(start = TEXT_PADDING_START)
+                .padding(start = TEXT_PADDING_START),
+            style = UXBody
         )
         Spacer(modifier = Modifier.weight(1f))
         val installedImageRes = if (installed) {
@@ -199,7 +202,8 @@ fun CreateNewTypeItem(
                 formatArgs = arrayOf(name)
             ),
             color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.padding(start = TEXT_PADDING_START)
+            modifier = Modifier.padding(start = TEXT_PADDING_START),
+            style = UXBody
         )
     }
 }
@@ -217,12 +221,7 @@ fun LibraryObjectEmptyItem(objectType: String, name: String) {
                 id = R.string.library_objects_empty,
                 formatArgs = arrayOf(objectType, name)
             ),
-            style = TextStyle(
-                fontFamily = com.anytypeio.anytype.ui.settings.fonts,
-                fontWeight = FontWeight.Normal,
-                fontSize = 17.sp,
-                color = colorResource(id = R.color.text_primary)
-            ),
+            style = UXBody,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 9.dp)
         )
@@ -230,12 +229,8 @@ fun LibraryObjectEmptyItem(objectType: String, name: String) {
             text = stringResource(
                 id = R.string.library_objects_empty_action
             ),
-            style = TextStyle(
-                fontFamily = com.anytypeio.anytype.ui.settings.fonts,
-                fontWeight = FontWeight.Normal,
-                fontSize = 13.sp,
-                color = colorResource(id = R.color.text_primary)
-            ),
+            color = colorResource(id = R.color.text_secondary),
+            style = UXBody,
             textAlign = TextAlign.Center
         )
     }
@@ -264,7 +259,8 @@ fun CreateNewRelationItem(
                 formatArgs = arrayOf(name)
             ),
             color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.padding(start = TEXT_PADDING_START)
+            modifier = Modifier.padding(start = TEXT_PADDING_START),
+            style = UXBody,
         )
     }
 }

@@ -16,18 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.ui.settings.fonts
-import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.ui.types.views.HeaderDefaults.ColorTextActive
 import com.anytypeio.anytype.ui.types.views.HeaderDefaults.ColorTextDisabled
 
@@ -52,12 +49,7 @@ fun TypeCreationHeader(
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = stringResource(id = R.string.type_creation_new_type),
-            style = TextStyle(
-                fontFamily = com.anytypeio.anytype.ui.library.styles.fonts,
-                color = colorResource(id = R.color.text_primary),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 17.sp,
-            ),
+            style = Title1,
         )
         Box(modifier = Modifier.weight(1f)) {
             Text(
@@ -69,7 +61,7 @@ fun TypeCreationHeader(
                         vm.createType(inputValue.value)
                     },
                 textAlign = TextAlign.End,
-                style = HeaderDefaults.TextButtonStyle
+                style = UXBody
             )
         }
     }
@@ -80,11 +72,6 @@ fun TypeCreationHeader(
 private object HeaderDefaults {
     val Height = 54.dp
     val PaddingValues = PaddingValues(start = 12.dp, top = 18.dp, end = 16.dp, bottom = 12.dp)
-    val TextButtonStyle = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Normal,
-        fontSize = 17.sp
-    )
     const val ColorTextActive = R.color.text_primary
     const val ColorTextDisabled = R.color.text_secondary
 }

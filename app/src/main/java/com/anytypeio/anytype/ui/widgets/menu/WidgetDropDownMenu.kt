@@ -15,13 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 
 @Composable
@@ -40,10 +39,7 @@ fun WidgetMenu(
         onDismissRequest = { isExpanded.value = false },
         offset = DpOffset(x = 0.dp, y = 6.dp)
     ) {
-        val defaultTextStyle = TextStyle(
-            color = colorResource(id = R.color.text_primary),
-            fontSize = 17.sp
-        )
+        val defaultTextStyle = BodyRegular
         if (canAddBelow) {
             DropdownMenuItem(
                 onClick = {
@@ -54,7 +50,7 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(R.string.widget_add_below),
-                    style = defaultTextStyle
+                    style = BodyRegular
                 )
             }
             Divider(
@@ -108,9 +104,8 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(id = R.string.widget_remove_widget),
-                    style = TextStyle(
-                        color = colorResource(id = R.color.palette_dark_red),
-                        fontSize = 17.sp
+                    style = defaultTextStyle.copy(
+                        color = colorResource(id = R.color.palette_dark_red)
                     )
                 )
             }
@@ -129,9 +124,8 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(id = R.string.widget_empty_bin),
-                    style = TextStyle(
-                        color = colorResource(id = R.color.palette_dark_red),
-                        fontSize = 17.sp
+                    style = defaultTextStyle.copy(
+                        color = colorResource(id = R.color.palette_dark_red)
                     )
                 )
             }
@@ -179,12 +173,7 @@ fun WidgetActionButton(
                 .align(Alignment.Center)
                 .padding(horizontal = 12.dp),
             text = label,
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = colorResource(id = R.color.text_primary),
-                lineHeight = 20.sp
-            )
+            style = Title2
         )
     }
 }

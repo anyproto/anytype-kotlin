@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.types.views
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,16 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.types.TypeEditViewModel
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.ui.settings.fonts
+import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UXBody
 
 @Composable
 fun TypeEditHeader(
@@ -56,12 +53,7 @@ fun TypeEditHeader(
             }
             Text(
                 text = stringResource(id = R.string.type_editing_title),
-                style = TextStyle(
-                    fontFamily = com.anytypeio.anytype.ui.library.styles.fonts,
-                    color = colorResource(id = R.color.text_primary),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 17.sp,
-                ),
+                style = Title1
             )
             if (!readOnly) {
                 Box(modifier = Modifier.weight(1f)) {
@@ -74,7 +66,7 @@ fun TypeEditHeader(
                                 vm.uninstallType()
                             },
                         textAlign = TextAlign.End,
-                        style = EditHeaderDefaults.TextButtonStyle
+                        style = UXBody
                     )
                 }
             }
@@ -87,9 +79,4 @@ fun TypeEditHeader(
 private object EditHeaderDefaults {
     val PaddingValues = PaddingValues(start = 12.dp, top = 6.dp, end = 16.dp, bottom = 12.dp)
     val Height = 48.dp
-    val TextButtonStyle = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Normal,
-        fontSize = 17.sp
-    )
 }

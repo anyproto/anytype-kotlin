@@ -21,14 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -150,12 +149,11 @@ private fun DataViewTabs(
             itemContent = { tab ->
                 Text(
                     text = tab.name,
-                    fontSize = 15.sp,
+                    style = PreviewTitle2Medium,
                     color = if (tab.isSelected)
                         colorResource(id = R.color.text_primary)
                     else
                         colorResource(id = R.color.glyph_active),
-                    fontWeight = FontWeight.Medium,
                     modifier = Modifier
                         .padding(start = 16.dp)
                         .noRippleClickable {
@@ -213,11 +211,7 @@ fun ListWidgetElement(
                     .align(Alignment.CenterStart),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = TextStyle(
-                fontSize = 15.sp,
-                color = colorResource(id = R.color.text_primary),
-                fontWeight = FontWeight.Medium,
-            )
+            style = PreviewTitle2Medium
         )
         if (hasDescription) {
             Text(
@@ -228,8 +222,7 @@ fun ListWidgetElement(
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    fontSize = 12.sp,
+                style = Relations3.copy(
                     color = colorResource(id = R.color.text_secondary)
                 )
             )

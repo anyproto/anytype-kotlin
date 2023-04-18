@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -22,6 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.library.LibraryAnalyticsEvent
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
@@ -29,7 +28,6 @@ import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
-import com.anytypeio.anytype.ui.library.styles.ButtonTextStyle
 import com.anytypeio.anytype.ui.library.views.list.LibraryListView
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -114,7 +112,7 @@ private fun Header(
         Text(
             color = colorResource(id = R.color.text_primary),
             text = stringResource(config.description),
-            style = MaterialTheme.typography.h1,
+            style = HeadlineSubheading,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(
                 top = 58.dp,
@@ -123,7 +121,7 @@ private fun Header(
             )
         )
         Box(Modifier.height(14.dp))
-        Button(
+        ButtonPrimary(
             onClick = {
                 when (config) {
                     is LibraryScreenConfig.Types -> {
@@ -135,29 +133,14 @@ private fun Header(
                 }
             },
             modifier = Modifier.padding(bottom = 48.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.glyph_selected)
-            ),
-            shape = RoundedCornerShape(10.dp),
-            contentPadding = HeaderDefaults.ButtonContentPaddingValues,
-            content = {
-                Text(
-                    text = stringResource(config.mainBtnTitle),
-                    style = ButtonTextStyle,
-                    color = colorResource(id = R.color.glyph_label)
-                )
-            },
-            elevation = ButtonDefaults.elevation(
-                defaultElevation = 0.dp,
-                pressedElevation = 0.dp
-            )
+            text = stringResource(config.mainBtnTitle),
+            size = ButtonSize.Medium.apply {
+                contentPadding = PaddingValues(28.dp, 10.dp, 28.dp, 10.dp)
+            }
         )
     }
 }
 
 private object HeaderDefaults {
     val HeaderPadding = 20.dp
-    val ButtonContentPaddingValues = PaddingValues(
-        28.dp, 10.dp, 28.dp, 10.dp
-    )
 }

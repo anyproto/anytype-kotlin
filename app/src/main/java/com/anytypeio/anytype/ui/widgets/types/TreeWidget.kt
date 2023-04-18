@@ -36,14 +36,13 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -208,12 +207,7 @@ private fun TreeWidgetTreeItems(
                 modifier = Modifier.padding(start = 8.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = colorResource(id = R.color.text_primary),
-                    lineHeight = 20.sp
-                )
+                style = PreviewTitle2Medium
             )
         }
         Divider(
@@ -247,12 +241,7 @@ fun WidgetHeader(
     {
         Text(
             text = title.ifEmpty { stringResource(id = R.string.untitled) },
-            style = TextStyle(
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.text_primary),
-                lineHeight = 24.sp
-            ),
+            style = HeadlineSubheading,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier

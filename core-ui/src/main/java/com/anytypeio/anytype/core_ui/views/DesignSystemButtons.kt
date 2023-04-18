@@ -237,7 +237,7 @@ fun ButtonWarning(
 
 enum class ButtonSize(
     val cornerSize: Dp,
-    val contentPadding: PaddingValues,
+    var contentPadding: PaddingValues,
     val textStyle: TextStyle
 ) {
     XSmall(

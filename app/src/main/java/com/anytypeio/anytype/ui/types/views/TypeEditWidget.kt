@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.settings.fonts
 import com.anytypeio.anytype.ui.types.views.TypeEditWidgetDefaults.OffsetX
@@ -91,11 +92,7 @@ fun TypeEditWidget(
             Text(
                 text = stringResource(id = R.string.type_creation_placeholder),
                 color = colorResource(id = R.color.text_tertiary),
-                style = TextStyle(
-                    fontFamily = fonts,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 17.sp
-                )
+                style = BodyRegular
             )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(

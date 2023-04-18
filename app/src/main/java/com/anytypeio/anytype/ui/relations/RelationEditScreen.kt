@@ -34,24 +34,23 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.presentation.relations.RelationEditState
 import com.anytypeio.anytype.presentation.relations.RelationEditViewModel
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.ui.relations.TypeEditWidgetDefaults.OffsetX
 import com.anytypeio.anytype.ui.relations.TypeEditWidgetDefaults.PaddingStart
 import com.anytypeio.anytype.ui.relations.RelationScreenDefaults.PaddingBottom
 import com.anytypeio.anytype.ui.relations.RelationScreenDefaults.PaddingTop
-import com.anytypeio.anytype.ui.settings.fonts
 import com.anytypeio.anytype.ui.types.views.ImeOptions
 
 @ExperimentalMaterialApi
@@ -100,12 +99,7 @@ fun RelationEditHeader(
         }
         Text(
             text = stringResource(id = R.string.relation_editing_title),
-            style = TextStyle(
-                fontFamily = com.anytypeio.anytype.ui.library.styles.fonts,
-                color = colorResource(id = R.color.text_primary),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 17.sp,
-            ),
+            style = Title1,
         )
         if (!readOnly) {
             Box(modifier = Modifier.weight(1f)) {
@@ -116,7 +110,7 @@ fun RelationEditHeader(
                         .fillMaxWidth()
                         .noRippleClickable { vm.uninstallRelation() },
                     textAlign = TextAlign.End,
-                    style = EditHeaderDefaults.TextButtonStyle
+                    style = UXBody
                 )
             }
         }
@@ -184,11 +178,7 @@ fun RelationEditWidget(
             Text(
                 text = stringResource(id = R.string.type_creation_placeholder),
                 color = colorResource(id = R.color.text_tertiary),
-                style = TextStyle(
-                    fontFamily = fonts,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 17.sp
-                )
+                style = BodyRegular
             )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -205,7 +195,8 @@ fun RelationEditWidget(
             if (state is RelationEditState.Data) {
                 LeadingRelationIcon(icon = state.objectIcon)
             }
-        }
+        },
+        textStyle = BodyRegular
     )
 
 }
@@ -228,11 +219,6 @@ private object TypeEditWidgetDefaults {
 private object EditHeaderDefaults {
     val Height = 54.dp
     val PaddingValues = PaddingValues(start = 12.dp, top = 18.dp, end = 16.dp, bottom = 12.dp)
-    val TextButtonStyle = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Normal,
-        fontSize = 17.sp
-    )
 }
 
 @Immutable

@@ -23,13 +23,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -96,12 +94,7 @@ fun LinkWidgetCard(
                         start = 16.dp,
                         end = if (isInEditMode) 76.dp else 32.dp
                     ),
-                style = TextStyle(
-                    fontSize = 17.sp,
-                    color = colorResource(id = R.color.text_primary),
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 24.sp
-                )
+                style = HeadlineSubheading
             )
             AnimatedVisibility(
                 visible = isInEditMode,

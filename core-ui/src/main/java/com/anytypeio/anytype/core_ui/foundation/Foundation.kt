@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 
 @Composable
 fun Toolbar(title: String) {
@@ -43,8 +44,7 @@ fun Toolbar(title: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.h3,
-            color = colorResource(R.color.text_primary)
+            style = HeadlineSubheading
         )
     }
 }

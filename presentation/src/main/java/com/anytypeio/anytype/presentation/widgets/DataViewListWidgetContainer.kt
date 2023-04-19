@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -76,20 +77,22 @@ class DataViewListWidgetContainer(
                             )
                         }
                     } else {
-                        flowOf(
-                            WidgetView.SetOfObjects(
-                                id = widget.id,
-                                source = widget.source,
-                                tabs = emptyList(),
-                                elements = emptyList(),
-                                isExpanded = true
-                            )
-                        )
+                        flowOf(defaultEmptyState())
                     }
                 }
             }
         }
+    }.catch {
+        emit(defaultEmptyState())
     }
+
+    private fun defaultEmptyState() = WidgetView.SetOfObjects(
+        id = widget.id,
+        source = widget.source,
+        tabs = emptyList(),
+        elements = emptyList(),
+        isExpanded = true
+    )
 
     fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList {
         val block = blocks.find { it.content is DV }

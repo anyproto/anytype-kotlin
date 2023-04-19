@@ -89,11 +89,7 @@ fun List<Block>.parseWidgets(
                 if (sourceContent is Block.Content.Link) {
                     val target = sourceContent.target
                     val raw = details[target] ?: run {
-                        if (BundledWidgetSourceIds.ids.contains(sourceContent.target)) {
-                            mapOf(Relations.ID to sourceContent.target)
-                        } else {
-                            emptyMap()
-                        }
+                        mapOf(Relations.ID to sourceContent.target)
                     }
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()

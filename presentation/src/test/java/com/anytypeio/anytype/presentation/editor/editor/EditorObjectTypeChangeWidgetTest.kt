@@ -3,23 +3,21 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
@@ -80,7 +78,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id)
         )
 
@@ -151,7 +149,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id)
         )
 

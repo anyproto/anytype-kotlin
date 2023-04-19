@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -21,11 +20,11 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
 
 class EditorLockPageTest : EditorPresentationTestSetup() {
 
@@ -73,7 +72,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child.id)
             ),
             header,
@@ -142,7 +141,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child.id)
             ),
             header,
@@ -211,7 +210,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to true)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child.id)
             ),
             header,
@@ -268,7 +267,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to true)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, link.id)
             ),
             header,
@@ -374,7 +373,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to true)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, paragraph.id)
             ),
             header,
@@ -483,7 +482,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to true)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, bookmark.id)
             ),
             header,
@@ -589,7 +588,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to true)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, file.id)
             ),
             header,
@@ -682,7 +681,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to true)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, picture.id)
             ),
             header,

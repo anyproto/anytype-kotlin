@@ -3,17 +3,18 @@ package com.anytypeio.anytype.presentation.editor.editor.styling
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.TextStyle
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -22,8 +23,6 @@ import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -55,7 +54,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id)
         )
 
@@ -158,7 +157,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(header.id, block1.id, block2.id)
         )
 

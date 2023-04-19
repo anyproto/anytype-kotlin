@@ -25,33 +25,6 @@ class EditorMenuTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should dispatch command for opening profile menu if document is started`() {
-
-        // SETUP
-
-        val doc = profile(root)
-
-        stubInterceptEvents()
-        stubOpenDocument(document = doc)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.onStart(root)
-
-        val observer = vm.commands.test()
-
-        observer.assertNoValue()
-
-        vm.onDocumentMenuClicked()
-
-        observer.assertValue { value ->
-            value.peekContent() == Command.OpenProfileMenu(isFavorite = false, isLocked = false)
-        }
-    }
-
-    @Test
     fun `should not dispatch command for opening profile menu if document is not started`() {
 
         // SETUP

@@ -7,7 +7,6 @@ data class ObjectView(
     val root: Id,
     val blocks: List<Block>,
     val details: Map<Id, Struct>,
-    val type: SmartBlockType,
     val relations: List<RelationLink>,
     val objectRestrictions: List<ObjectRestriction>,
     val dataViewRestrictions: List<DataViewRestrictions>

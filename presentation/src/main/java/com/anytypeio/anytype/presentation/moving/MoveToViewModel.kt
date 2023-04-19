@@ -3,9 +3,11 @@ package com.anytypeio.anytype.presentation.moving
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
@@ -123,9 +125,22 @@ class MoveToViewModel(
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                    workspaceId = workspaceManager.getCurrentWorkspace()
-                ),
+                filters = buildList {
+                    addAll(
+                        ObjectSearchConstants.filterObjectTypeLibrary(
+                            workspaceId = workspaceManager.getCurrentWorkspace()
+                        )
+                    )
+                    add(
+                        DVFilter(
+                            relation = Relations.RECOMMENDED_LAYOUT,
+                            condition = DVFilterCondition.IN,
+                            value = SupportedLayouts.editorLayouts.map {
+                                it.code.toDouble()
+                            }
+                        )
+                    )
+                },
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.execute(params).fold(
@@ -139,10 +154,7 @@ class MoveToViewModel(
     }
 
     private suspend fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
-
-        val filteredTypes = types.value.getOrDefault(emptyList())
-            .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
-            .map { objectType -> objectType.id }
+        val filteredTypes = types.value.getOrDefault(emptyList()).map { objectType -> objectType.id }
 
         return SearchObjects.Params(
             limit = SEARCH_LIMIT,

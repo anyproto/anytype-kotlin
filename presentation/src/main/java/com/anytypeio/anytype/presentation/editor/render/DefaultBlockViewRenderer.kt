@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
@@ -70,20 +69,6 @@ class DefaultBlockViewRenderer @Inject constructor(
         val children = getValue(anchor)
 
         val result = mutableListOf<BlockView>()
-
-        if (anchor == root.id) {
-            root.content.let { cnt ->
-                if (cnt is Content.Smart && cnt.type == SmartBlockType.ARCHIVE) {
-                    result.add(
-                        BlockView.Title.Archive(
-                            mode = BlockView.Mode.READ,
-                            id = anchor,
-                            text = details.details[root.id]?.name.orEmpty()
-                        )
-                    )
-                }
-            }
-        }
 
         var mCounter = count
 
@@ -1473,17 +1458,9 @@ class DefaultBlockViewRenderer @Inject constructor(
 
         val layoutCode = details.details[root.id]?.layout?.toInt()
 
-        var layout = ObjectType.Layout.values().find { it.code == layoutCode }
-
-        if (layout == null) {
-            // Retrieving layout based on smart block type:
-            layout = if (rootContent.type == SmartBlockType.PROFILE_PAGE)
-                ObjectType.Layout.PROFILE
-            else {
-                // Falling back to default layout if layout is not defined
-                ObjectType.Layout.BASIC
-            }
-        }
+        val layout = ObjectType.Layout.values().find {
+            it.code == layoutCode
+        } ?: ObjectType.Layout.BASIC
 
         val blockMode = if (restrictions.contains(ObjectRestriction.DETAILS)) {
             BlockView.Mode.READ

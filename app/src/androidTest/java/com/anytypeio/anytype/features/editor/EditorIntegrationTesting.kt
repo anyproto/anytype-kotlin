@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
@@ -99,7 +98,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = blocks.map { it.id }
             )
         ) + blocks
@@ -162,7 +161,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(
                     BLOCK_PARAGRAPH_1.id
                 )
@@ -208,7 +207,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(
                     BLOCK_PARAGRAPH_1.id
                 )
@@ -256,7 +255,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(paragraph.id)
             ),
             paragraph
@@ -394,7 +393,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(paragraphBefore.id, paragraphAfter.id)
             ),
             paragraphBefore,
@@ -504,7 +503,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(paragraph1.id, paragraph2.id)
             ),
             paragraph1,
@@ -606,7 +605,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(paragraph.id)
             ),
             paragraph

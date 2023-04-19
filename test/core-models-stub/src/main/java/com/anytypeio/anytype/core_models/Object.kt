@@ -36,7 +36,6 @@ fun StubObject(
 
 fun StubObjectView(
     root: Id,
-    type: SmartBlockType,
     blocks: List<Block> = emptyList(),
     details: Map<Id, Struct> = emptyMap(),
     relations: List<RelationLink> = emptyList(),
@@ -46,7 +45,6 @@ fun StubObjectView(
     root = root,
     blocks = blocks,
     details = details,
-    type = type,
     relations = relations,
     objectRestrictions = objectRestrictions,
     dataViewRestrictions = dataViewRestrictions

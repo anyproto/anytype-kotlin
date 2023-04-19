@@ -8,12 +8,10 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
@@ -30,6 +28,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -280,8 +279,7 @@ abstract class TestObjectSetSetup {
     fun stubOpenObjectSetWithRecord(
         set: List<Block>,
         details: Block.Details = Block.Details(),
-        relations: List<Relation> = emptyList(),
-        objectTypes: List<ObjectType>
+        relations: List<Relation> = emptyList()
     ) {
         repo.stub {
             onBlocking { openObjectSet(ctx) } doReturn Result.Success(
@@ -294,7 +292,6 @@ abstract class TestObjectSetSetup {
                             details = details,
                             blocks = set,
                             relations = relations,
-                            objectTypes = objectTypes
                         )
                     )
                 )

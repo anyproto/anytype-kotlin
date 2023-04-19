@@ -23,8 +23,6 @@ sealed class Event {
             val root: Id,
             val details: Block.Details = Block.Details(emptyMap()),
             val blocks: List<Block>,
-            val type: SmartBlockType = SmartBlockType.PAGE,
-            val objectTypes: List<ObjectType> = emptyList(),
             val relations: List<Relation> = emptyList(),
             val relationLinks: List<RelationLink> = emptyList(),
             val objectRestrictions: List<ObjectRestriction> = emptyList(),

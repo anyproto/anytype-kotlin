@@ -6,9 +6,7 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -51,19 +49,6 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
 
     @Test
     fun shouldRenderAllObjectPrimitiveRelationsValuesFromTwoRecords() {
-
-        val type = ObjectType(
-            url = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            emoji = MockDataFactory.randomString(),
-            layout = ObjectType.Layout.BASIC,
-            relationLinks = emptyList(),
-            description = "",
-            isHidden = false,
-            smartBlockTypes = listOf(),
-            isArchived = false,
-            isReadOnly = false
-        )
 
         val relation1 = Relation(
             key = MockDataFactory.randomString(),
@@ -114,7 +99,6 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
 
         val record1 = mapOf(
             ObjectSetConfig.ID_KEY to MockDataFactory.randomUuid(),
-            ObjectSetConfig.TYPE_KEY to type.url,
             ObjectSetConfig.NAME_KEY to "Anytype",
             "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
             relation1.key to object1value1,
@@ -126,7 +110,6 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
 
         val record2 = mapOf(
             ObjectSetConfig.ID_KEY to MockDataFactory.randomUuid(),
-            ObjectSetConfig.TYPE_KEY to type.url,
             ObjectSetConfig.NAME_KEY to "IPFS",
             "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
             relation1.key to object2value1,
@@ -179,7 +162,7 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, dataview.id)
         )
 
@@ -191,7 +174,6 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
             set = set,
             relations = listOf(relation1, relation2, relation3, relation4, relation5),
             details = defaultDetails,
-            objectTypes = listOf(type)
         )
 
         // TESTING

@@ -60,7 +60,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields.empty(),
             children = listOf(header.id, block.id, dv.id),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         stubOpenDocument(document = listOf(page, header, title, block, dv))
@@ -114,7 +114,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields.empty(),
             children = listOf(header.id, block.id, dv.id),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
         val objectDetails = Block.Fields(
             mapOf(
@@ -177,7 +177,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields.empty(),
             children = listOf(header.id, block.id, dv.id),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
         val objectDetails = Block.Fields(
             mapOf(
@@ -240,7 +240,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields.empty(),
             children = listOf(header.id, block.id, dv.id),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
         val objectDetails = Block.Fields(
             mapOf(
@@ -303,7 +303,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields.empty(),
             children = listOf(header.id, block.id, dv.id),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
         val objectDetails = Block.Fields(
             mapOf(
@@ -365,7 +365,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields.empty(),
             children = listOf(header.id, block.id, dv.id),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         stubOpenDocument(document = listOf(page, header, title, block, dv))
@@ -426,7 +426,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 id = root,
                 fields = Block.Fields.empty(),
                 children = listOf(header.id, block.id, dv.id),
-                content = Block.Content.Smart()
+                content = Block.Content.Smart
             )
 
             val events = flow<List<Event>> {

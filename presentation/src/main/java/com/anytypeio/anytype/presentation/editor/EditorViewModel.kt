@@ -26,7 +26,6 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -521,7 +520,6 @@ class EditorViewModel(
             when (event) {
                 is Event.Command.ShowObject -> {
                     orchestrator.stores.details.update(event.details)
-                    orchestrator.stores.objectTypes.update(event.objectTypes)
                     orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
 
@@ -969,11 +967,9 @@ class EditorViewModel(
                             session.value = Session.OPEN
                             onStartFocusing(result.data)
                             orchestrator.proxies.payloads.send(result.data)
-                            // Temporarily hiding sync status for file objects.
-                            // TODO Remove when sync status for files is ready.
                             result.data.events.forEach { event ->
                                 if (event is Event.Command.ShowObject) {
-                                    if (event.type == SmartBlockType.FILE) {
+                                    if (event.details.details[context]?.type?.contains(ObjectTypeIds.FILE) == true) {
                                         isSyncStatusVisible.value = false
                                     }
                                     val block = event.blocks.firstOrNull { it.id == context }
@@ -1459,50 +1455,17 @@ class EditorViewModel(
             sendToast("Your object is not initialized. Please, try again later.")
             return
         }
-        blocks.find { it.id == context }?.let { root ->
-            val content = root.content
-            check(content is Content.Smart)
-            when (content.type) {
-                SmartBlockType.PROFILE_PAGE -> {
-                    val details = orchestrator.stores.details.current().details
-                    dispatch(
-                        command = Command.OpenProfileMenu(
-                            isFavorite = details[context]?.isFavorite ?: false,
-                            isLocked = mode == EditorMode.Locked
-                        )
-                    )
-                }
-                SmartBlockType.PAGE -> {
-                    val details = orchestrator.stores.details.current().details
-                    controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
-                    dispatch(
-                        command = Command.OpenDocumentMenu(
-                            isArchived = details[context]?.isArchived ?: false,
-                            isFavorite = details[context]?.isFavorite ?: false,
-                            isLocked = mode == EditorMode.Locked,
-                            fromName = ObjectWrapper.Basic(details[context]?.map ?: emptyMap())
-                                .getProperObjectName() ?: ""
-                        )
-                    )
-                }
-                SmartBlockType.FILE -> {
-                    val details = orchestrator.stores.details.current().details
-                    controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
-                    dispatch(
-                        command = Command.OpenDocumentMenu(
-                            isArchived = details[context]?.isArchived ?: false,
-                            isFavorite = details[context]?.isFavorite ?: false,
-                            isLocked = mode == EditorMode.Locked,
-                            fromName = ObjectWrapper.Basic(details[context]?.map ?: emptyMap())
-                                .getProperObjectName() ?: ""
-                        )
-                    )
-                }
-                else -> {
-                    Timber.e("Trying to open menu for unexpected smart content: ${content.type}")
-                }
-            }
-        }
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
+        val details = orchestrator.stores.details.current().details
+        val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
+        dispatch(
+            command = Command.OpenDocumentMenu(
+                isArchived = details[context]?.isArchived ?: false,
+                isFavorite = details[context]?.isFavorite ?: false,
+                isLocked = mode == EditorMode.Locked,
+                fromName = wrapper.getProperObjectName().orEmpty()
+            )
+        )
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {

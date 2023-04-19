@@ -13,23 +13,24 @@ import com.anytypeio.anytype.core_models.StubTable
 import com.anytypeio.anytype.core_models.StubTableColumn
 import com.anytypeio.anytype.core_models.StubTableRow
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.TXT
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
@@ -37,7 +38,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
 
 class TableBlockRendererTest {
 
@@ -151,7 +151,7 @@ class TableBlockRendererTest {
             id = "page",
             children = listOf(header.id) + blocksUpper.map { it.id } + listOf(table.id) + blocksDown.map { it.id },
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val l = mutableListOf<Block>()
@@ -329,7 +329,7 @@ class TableBlockRendererTest {
             id = "page",
             children = listOf(header.id) + blocksUpper.map { it.id } + listOf(table.id) + blocksDown.map { it.id },
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val l = mutableListOf<Block>()
@@ -519,7 +519,7 @@ class TableBlockRendererTest {
             id = "page",
             children = listOf(header.id) + blocksUpper.map { it.id } + listOf(table.id) + blocksDown.map { it.id },
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val l = mutableListOf<Block>()

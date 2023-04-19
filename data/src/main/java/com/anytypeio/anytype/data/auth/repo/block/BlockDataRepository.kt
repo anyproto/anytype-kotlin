@@ -8,11 +8,9 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -248,12 +246,6 @@ class BlockDataRepository(
     override suspend fun downloadFile(
         command: Command.DownloadFile
     ): String = remote.downloadFile(command)
-
-    override suspend fun getObjectInfoWithLinks(
-        pageId: String
-    ): ObjectInfoWithLinks = remote.getObjectInfoWithLinks(pageId)
-
-    override suspend fun getListPages(): List<DocumentInfo> = remote.getListPages()
 
     override suspend fun setRelationKey(command: Command.SetRelationKey): Payload =
         remote.setRelationKey(command)

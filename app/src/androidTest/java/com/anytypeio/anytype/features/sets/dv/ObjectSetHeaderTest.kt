@@ -7,7 +7,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -69,7 +68,7 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(header.id, dataview.id)
         )
 

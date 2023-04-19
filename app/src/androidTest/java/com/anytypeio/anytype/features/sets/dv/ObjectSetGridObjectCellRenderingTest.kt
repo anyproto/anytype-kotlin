@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -61,19 +60,6 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
         val object2Name = "Jean-Pierre Léaud"
         val object2Id = MockDataFactory.randomUuid()
 
-        val objectType = ObjectType(
-            url = MockDataFactory.randomUuid(),
-            name = "Movie",
-            relationLinks = emptyList(),
-            emoji = MockDataFactory.randomString(),
-            layout = ObjectType.Layout.PROFILE,
-            description = "",
-            isHidden = false,
-            smartBlockTypes = listOf(),
-            isArchived = false,
-            isReadOnly = false
-        )
-
         val relationId = MockDataFactory.randomUuid()
         val record1Id = MockDataFactory.randomUuid()
         val record2Id = MockDataFactory.randomUuid()
@@ -82,7 +68,6 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             ObjectSetConfig.ID_KEY to record1Id,
             ObjectSetConfig.NAME_KEY to "The Great Dictator",
             ObjectSetConfig.EMOJI_KEY to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-            ObjectSetConfig.TYPE_KEY to objectType.url,
             relationId to object1Id
         )
 
@@ -90,7 +75,6 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             ObjectSetConfig.ID_KEY to record2Id,
             ObjectSetConfig.NAME_KEY to "Les Quatre Cents Coups",
             ObjectSetConfig.EMOJI_KEY to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-            ObjectSetConfig.TYPE_KEY to objectType.url,
             relationId to object2Id
         )
 
@@ -130,14 +114,12 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
                 object1Id to Block.Fields(
                     mapOf(
                         ObjectSetConfig.NAME_KEY to object1Name,
-                        ObjectSetConfig.TYPE_KEY to objectType.url,
                         "iconEmoji" to "👤"
                     )
                 ),
                 object2Id to Block.Fields(
                     mapOf(
                         ObjectSetConfig.NAME_KEY to object2Name,
-                        ObjectSetConfig.TYPE_KEY to objectType.url,
                         "iconEmoji" to "👤"
                     )
                 )
@@ -147,7 +129,7 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, dataview.id)
         )
 
@@ -158,8 +140,7 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            details = details,
-            objectTypes = listOf(objectType)
+            details = details
         )
 
         // TESTING
@@ -194,7 +175,6 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )
@@ -263,7 +243,7 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, dataview.id)
         )
 
@@ -275,7 +255,6 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             set = set,
             relations = listOf(relation),
             details = details,
-            objectTypes = listOf(objectType)
         )
 
         // TESTING

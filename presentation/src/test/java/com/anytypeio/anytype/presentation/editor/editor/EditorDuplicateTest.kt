@@ -15,13 +15,13 @@ import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColo
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import kotlin.test.assertTrue
 
 class EditorDuplicateTest : EditorPresentationTestSetup() {
 
@@ -59,7 +59,7 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id, b.id, c.id)
         )
 
@@ -120,7 +120,7 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id, b.id, c.id)
         )
 
@@ -312,7 +312,7 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id, c.id)
         )
 

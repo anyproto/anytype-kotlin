@@ -53,6 +53,8 @@ object Relations {
     const val FILE_EXT = "fileExt"
     const val FILE_MIME_TYPE = "fileMimeType"
 
+    const val RECOMMENDED_LAYOUT = "recommendedLayout"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

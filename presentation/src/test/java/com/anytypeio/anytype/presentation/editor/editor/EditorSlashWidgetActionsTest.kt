@@ -15,6 +15,9 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -23,9 +26,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoMoreInteractions
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 
 class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
@@ -594,7 +594,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 

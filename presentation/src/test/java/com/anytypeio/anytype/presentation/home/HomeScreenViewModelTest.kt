@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
@@ -179,12 +178,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = emptyList(),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(smartBlock)
         )
 
@@ -255,12 +252,10 @@ class HomeScreenViewModelTest {
             val smartBlock = StubSmartBlock(
                 id = WIDGET_OBJECT_ID,
                 children = emptyList(),
-                type = SmartBlockType.WIDGET
             )
 
             val givenObjectView = StubObjectView(
                 root = WIDGET_OBJECT_ID,
-                type = SmartBlockType.WIDGET,
                 blocks = listOf(smartBlock),
                 details = emptyMap()
             )
@@ -322,12 +317,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 widgetBlock,
@@ -417,12 +410,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 widgetBlock,
@@ -546,12 +537,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 favoriteWidgetBlock,
@@ -737,12 +726,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 widgetBlock,
@@ -821,12 +808,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 widgetBlock,
@@ -940,12 +925,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 widgetBlock,
@@ -1031,12 +1014,10 @@ class HomeScreenViewModelTest {
             val smartBlock = StubSmartBlock(
                 id = WIDGET_OBJECT_ID,
                 children = listOf(widgetBlock.id),
-                type = SmartBlockType.WIDGET
             )
 
             val givenObjectView = StubObjectView(
                 root = WIDGET_OBJECT_ID,
-                type = SmartBlockType.WIDGET,
                 blocks = listOf(
                     smartBlock,
                     widgetBlock,
@@ -1118,12 +1099,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 favoriteWidgetBlock,
@@ -1253,12 +1232,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 favoriteWidgetBlock,
@@ -1457,12 +1434,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 favoriteWidgetBlock,
@@ -1645,12 +1620,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 widgetBlock,
@@ -1725,12 +1698,10 @@ class HomeScreenViewModelTest {
         val smartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(widgetBlock.id),
-            type = SmartBlockType.WIDGET
         )
 
         val givenObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
-            type = SmartBlockType.WIDGET,
             blocks = listOf(
                 smartBlock,
                 widgetBlock,
@@ -1794,12 +1765,10 @@ class HomeScreenViewModelTest {
             val smartBlock = StubSmartBlock(
                 id = WIDGET_OBJECT_ID,
                 children = listOf(widgetBlock.id),
-                type = SmartBlockType.WIDGET
             )
 
             val givenObjectView = StubObjectView(
                 root = WIDGET_OBJECT_ID,
-                type = SmartBlockType.WIDGET,
                 blocks = listOf(
                     smartBlock,
                     widgetBlock,

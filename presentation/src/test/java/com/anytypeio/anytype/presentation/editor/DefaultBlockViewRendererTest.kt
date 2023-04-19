@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.StubCallout
 import com.anytypeio.anytype.core_models.StubFile
@@ -178,7 +177,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id, toggle.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val blocks = listOf(page, header, title, paragraph, toggle, checkbox)
@@ -317,7 +316,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id, toggle.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val blocks = listOf(page, header, title, paragraph, toggle, checkbox)
@@ -453,7 +452,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -544,7 +543,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -597,7 +596,7 @@ class DefaultBlockViewRendererTest {
     }
 
     @Test
-    fun `should add profile title when smart block is profile`() {
+    fun `should add profile title when layout is profile`() {
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -636,8 +635,10 @@ class DefaultBlockViewRendererTest {
         val pageId = MockDataFactory.randomUuid()
         val fields = Block.Fields(
             map = mapOf(
-                "name" to name,
-                "iconImage" to imageName
+                Relations.ID to pageId,
+                Relations.NAME to name,
+                Relations.ICON_IMAGE to imageName,
+                Relations.LAYOUT to ObjectType.Layout.PROFILE.code.toDouble()
             )
         )
         val details = mapOf(pageId to fields)
@@ -646,7 +647,7 @@ class DefaultBlockViewRendererTest {
             id = pageId,
             children = listOf(header.id, paragraph.id),
             fields = fields,
-            content = Block.Content.Smart(SmartBlockType.PROFILE_PAGE)
+            content = Block.Content.Smart
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -699,7 +700,7 @@ class DefaultBlockViewRendererTest {
     }
 
     @Test
-    fun `should add title when smart block is page`() {
+    fun `should fallback to basic title when layout is not defined`() {
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -748,7 +749,7 @@ class DefaultBlockViewRendererTest {
             id = pageId,
             children = listOf(header.id, paragraph.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -865,7 +866,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -1032,7 +1033,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -1196,7 +1197,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -1324,7 +1325,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -1392,7 +1393,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -1505,7 +1506,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
@@ -1694,7 +1695,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
@@ -1883,7 +1884,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
@@ -2069,7 +2070,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
@@ -2242,7 +2243,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
@@ -2379,7 +2380,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val fieldsUpdated1 = Block.Fields(mapOf(Relations.NAME to mentionText2))
@@ -2520,7 +2521,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
@@ -2654,7 +2655,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val blocks = listOf(page, header, title, a)
@@ -2805,7 +2806,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -3043,7 +3044,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(header.id, a1.id, a2.id, a3.id, a4.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())
@@ -3308,7 +3309,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(header.id, a1.id, a2.id, a3.id, a4.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())
@@ -3525,7 +3526,7 @@ class DefaultBlockViewRendererTest {
             id = "root",
             children = listOf(header.id) + listOf(div1.id, div2.id, div3.id, div4.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -3664,7 +3665,7 @@ class DefaultBlockViewRendererTest {
                 div4.id
             ) + numbered.subList(20, 25).map { it.id },
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -3854,7 +3855,7 @@ class DefaultBlockViewRendererTest {
                 div2.id
             ) + listOf(afterDiv2Num1.id, afterDiv2Num2.id),
             fields = fields,
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to fields)
@@ -4164,7 +4165,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(header.id, a1.id, a2.id, a3.id, a4.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())
@@ -4436,7 +4437,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(quote.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())
@@ -4543,7 +4544,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(quote1.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())
@@ -4666,7 +4667,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(quote1.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())
@@ -4828,7 +4829,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(quote1.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())
@@ -5016,7 +5017,7 @@ class DefaultBlockViewRendererTest {
             id = "objectId",
             children = listOf(paragraph.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val details = mapOf(page.id to Block.Fields.empty())

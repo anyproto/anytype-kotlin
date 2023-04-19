@@ -9,7 +9,6 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
@@ -121,10 +120,6 @@ class OtherSettingsViewModel(
 
         object ShowClearCacheAlert : Command()
         object Exit : Command()
-    }
-
-    companion object {
-        private val DEFAULT_SETTINGS_SMART_BLOCK_TYPE = SmartBlockType.PAGE
     }
 
     class Factory(

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColo
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,7 +22,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -54,7 +54,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         Block(
             id = root,
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id) + blocks.map { it.id }
         )
     ) + listOf(header, title) + blocks

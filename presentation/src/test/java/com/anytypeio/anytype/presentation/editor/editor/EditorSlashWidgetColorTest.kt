@@ -15,6 +15,9 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -25,9 +28,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -73,7 +73,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 
@@ -158,7 +158,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 
@@ -243,7 +243,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 
@@ -453,7 +453,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 
@@ -540,7 +540,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 
@@ -627,7 +627,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 

@@ -223,6 +223,15 @@ class ObjectTypeChangeViewModel(
                             )
                         )
                     }
+                    add(
+                        DVFilter(
+                            relation = Relations.RECOMMENDED_LAYOUT,
+                            condition = DVFilterCondition.IN,
+                            value = SupportedLayouts.editorLayouts.map {
+                                it.code.toDouble()
+                            }
+                        )
+                    )
                 },
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 query = query,
@@ -240,6 +249,15 @@ class ObjectTypeChangeViewModel(
                 addAll(
                     ObjectSearchConstants.filterObjectTypeLibrary(
                         workspaceId = workspaceManager.getCurrentWorkspace()
+                    )
+                )
+                add(
+                    DVFilter(
+                        relation = Relations.RECOMMENDED_LAYOUT,
+                        condition = DVFilterCondition.IN,
+                        value = SupportedLayouts.editorLayouts.map {
+                            it.code.toDouble()
+                        }
                     )
                 )
             },

@@ -18,12 +18,12 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verifyNoInteractions
-import kotlin.test.assertEquals
 
 
 class EditorFocusTest : EditorPresentationTestSetup() {
@@ -80,7 +80,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, block.id)
             ),
             header,
@@ -130,7 +130,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id)
             ),
             header,
@@ -173,7 +173,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id)
             ),
             header,
@@ -229,7 +229,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, block.id)
             ),
             header,
@@ -301,7 +301,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id)
         )
         val document = listOf(page, header, title, paragraph)
@@ -343,7 +343,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, first.id)
         )
         val doc = listOf(page, header, title, first)
@@ -395,7 +395,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, first.id)
         )
         val doc = listOf(page, header, title, first)
@@ -453,7 +453,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, table.id, paragraph.id) + listOf(table.id) + listOf(
                 paragraph.id
             )

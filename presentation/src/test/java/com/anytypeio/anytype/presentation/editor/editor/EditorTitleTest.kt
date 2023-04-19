@@ -16,6 +16,7 @@ import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColo
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -30,7 +31,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoMoreInteractions
-import kotlin.test.assertEquals
 
 class EditorTitleTest : EditorPresentationTestSetup() {
 
@@ -86,7 +86,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id)
         )
 
@@ -136,7 +136,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id)
             ),
             header,
@@ -180,7 +180,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id)
         )
 
@@ -292,7 +292,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 
@@ -417,7 +417,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 

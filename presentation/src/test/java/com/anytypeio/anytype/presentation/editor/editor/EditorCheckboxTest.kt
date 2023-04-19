@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
@@ -63,7 +62,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(type = SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(child)
             ),
             checkbox
@@ -123,7 +122,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(type = SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(child)
             ),
             checkbox

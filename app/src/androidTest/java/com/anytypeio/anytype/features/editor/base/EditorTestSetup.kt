@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.app.DefaultFeatureToggles
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -544,12 +543,6 @@ open class EditorTestSetup {
                     fulltext = ""
                 )
             } doReturn objectTypes.map { it.map }
-        }
-    }
-
-    fun stubGetListPages(pages: List<DocumentInfo>) {
-        repo.stub {
-            onBlocking { getListPages() } doReturn pages
         }
     }
 

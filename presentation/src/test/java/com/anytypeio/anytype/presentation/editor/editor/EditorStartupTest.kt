@@ -31,7 +31,7 @@ class EditorStartupTest : EditorPresentationTestSetup() {
             Block(
                 id = "some id",
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = emptyList()
             )
         )

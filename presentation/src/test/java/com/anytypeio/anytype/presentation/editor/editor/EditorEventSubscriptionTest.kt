@@ -45,7 +45,7 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id)
         )
 

@@ -2,8 +2,6 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
 import anytype.model.Block
-import anytype.model.ObjectInfo
-import anytype.model.ObjectInfoWithLinks
 import anytype.model.Range
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
@@ -785,32 +783,6 @@ class Middleware(
         val response = service.fileDownload(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response
-    }
-
-    @Throws(Exception::class)
-    fun navigationGetObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
-        val request = Rpc.Navigation.GetObjectInfoWithLinks.Request(
-            objectId = pageId
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.navigationGetObjectInfoWithLinks(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        val info = response.object_
-
-        checkNotNull(info) { "Empty result" }
-
-        return info
-    }
-
-    @Throws(Exception::class)
-    fun navigationListObjects(): List<ObjectInfo> {
-        val request = Rpc.Navigation.ListObjects.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.navigationListObjects(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.objects
     }
 
     @Throws(Exception::class)

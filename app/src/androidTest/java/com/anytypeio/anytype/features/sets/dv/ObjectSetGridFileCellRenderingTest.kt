@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -70,7 +69,6 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )
@@ -148,7 +146,7 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, dataview.id)
         )
 
@@ -160,7 +158,6 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
             set = set,
             relations = listOf(relation),
             details = details,
-            objectTypes = listOf(objectType)
         )
 
         // TESTING

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.mapper
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
-import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -18,8 +17,6 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMar
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
-import com.anytypeio.anytype.presentation.navigation.ObjectView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -336,24 +333,6 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
 
 fun DebugSettings.toView(): EditorSettings =
     EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)
-
-fun DocumentInfo.toView(
-    urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
-): ObjectView {
-    val typeId = obj.type.firstOrNull()
-    val type = objectTypes.find { it.url == typeId }
-    return ObjectView(
-        id = id,
-        title = obj.name.orEmpty(),
-        subtitle = type?.name.orEmpty(),
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = obj.layout,
-            builder = urlBuilder
-        )
-    )
-}
 
 fun Block.Fields.getName(): String =
     this.name.let { name ->

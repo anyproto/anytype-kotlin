@@ -14,6 +14,18 @@ object SupportedLayouts {
         ObjectType.Layout.NOTE,
         ObjectType.Layout.BOOKMARK
     )
+    val editorLayouts = listOf(
+        ObjectType.Layout.BASIC,
+        ObjectType.Layout.PROFILE,
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.BOOKMARK
+    )
+    val fileLayouts = listOf(
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.IMAGE,
+    )
+
     fun isSupported(layout: ObjectType.Layout?) : Boolean {
         return layouts.contains(layout)
     }

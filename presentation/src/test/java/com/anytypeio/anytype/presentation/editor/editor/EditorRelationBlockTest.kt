@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
@@ -17,12 +16,12 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
 
 class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
@@ -84,7 +83,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id, b.id)
         )
 
@@ -175,7 +174,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
             val page = Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, block.id, relationBlock.id)
             )
 
@@ -316,7 +315,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id, relationBlock.id)
         )
 
@@ -437,7 +436,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id, relationBlock.id)
         )
 

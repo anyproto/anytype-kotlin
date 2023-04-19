@@ -3,19 +3,15 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.StubTitle
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubLayoutColumns
 import com.anytypeio.anytype.core_models.StubLayoutRows
-import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubTable
 import com.anytypeio.anytype.core_models.StubTableCells
-import com.anytypeio.anytype.core_models.StubTableColumn
 import com.anytypeio.anytype.core_models.StubTableColumns
-import com.anytypeio.anytype.core_models.StubTableRow
 import com.anytypeio.anytype.core_models.StubTableRows
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -36,6 +32,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,7 +42,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -156,7 +152,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, parent.id)
         )
 
@@ -435,7 +431,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, parent.id)
         )
 
@@ -672,7 +668,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, parent.id)
         )
 
@@ -759,7 +755,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id)
         )
 
@@ -835,7 +831,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id, b.id, c.id)
         )
 
@@ -910,7 +906,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id, b.id, c.id)
         )
 
@@ -1066,7 +1062,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -1139,7 +1135,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -1187,7 +1183,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -1236,7 +1232,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -1284,7 +1280,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -1364,7 +1360,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block1.id, block2.id, block3.id)
         )
 
@@ -1415,7 +1411,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             id = root,
             children = listOf(header.id) + listOf(table.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val document =
@@ -1453,7 +1449,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             id = root,
             children = listOf(header.id) + listOf(table.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val document =

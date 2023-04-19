@@ -32,6 +32,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -40,7 +41,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
-import kotlin.test.assertEquals
 
 class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
@@ -98,7 +98,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, parent.id)
         )
 
@@ -221,7 +221,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, parent.id)
         )
 
@@ -362,7 +362,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, parent.id)
         )
 
@@ -474,7 +474,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, bookmark.id, paragraph.id)
         )
 
@@ -576,7 +576,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, bookmark.id, paragraph.id)
         )
 
@@ -672,7 +672,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, checkbox.id)
         )
 
@@ -717,7 +717,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, bulleted.id)
         )
 
@@ -762,7 +762,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, numbered.id)
         )
 
@@ -807,7 +807,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, toggle.id)
         )
 
@@ -852,7 +852,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, quote.id)
         )
 
@@ -902,7 +902,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, checkbox.id)
         )
 
@@ -986,7 +986,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, bulleted.id)
         )
 
@@ -1069,7 +1069,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, quote.id)
         )
 
@@ -1152,7 +1152,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, toggle.id)
         )
 
@@ -1235,7 +1235,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, numbered.id)
         )
 
@@ -1342,7 +1342,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id),
         )
 
@@ -1417,7 +1417,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id),
         )
 
@@ -1484,7 +1484,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id),
         )
 
@@ -1567,7 +1567,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id),
         )
 

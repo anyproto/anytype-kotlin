@@ -9,10 +9,8 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -26,7 +24,6 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
-import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 
 class BlockMiddleware(
@@ -215,14 +212,6 @@ class BlockMiddleware(
     override suspend fun downloadFile(
         command: Command.DownloadFile
     ): String = middleware.fileDownload(command).localPath
-
-    override suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
-        return middleware.navigationGetObjectInfoWithLinks(pageId).toCoreModel()
-    }
-
-    override suspend fun getListPages(): List<DocumentInfo> {
-        return middleware.navigationListObjects().map { it.toCoreModel() }
-    }
 
     override suspend fun setRelationKey(command: Command.SetRelationKey): Payload {
         return middleware.blockRelationSetKey(command)

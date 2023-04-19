@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubSmartBlock
@@ -73,7 +72,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id)
         )
 
@@ -126,7 +125,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, block.id)
         )
 
@@ -241,7 +240,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(type = SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(pic.id, txt.id)
             ),
             pic,
@@ -323,7 +322,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
             id = root,
             children = listOf(header.id) + listOf(table.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart()
+            content = Block.Content.Smart
         )
 
         val document = listOf(page, header, title, table)

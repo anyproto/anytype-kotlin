@@ -25,6 +25,7 @@ import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
+import kotlin.test.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,7 +33,6 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -77,7 +77,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -220,7 +220,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -361,7 +361,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -502,7 +502,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -643,7 +643,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -786,7 +786,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -929,7 +929,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -1072,7 +1072,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 
@@ -1215,7 +1215,7 @@ class SplitBlockTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(block.id)
         )
 

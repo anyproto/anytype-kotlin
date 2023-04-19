@@ -8,10 +8,8 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -81,10 +79,6 @@ interface BlockDataStore {
 
     suspend fun uploadFile(command: Command.UploadFile): String
     suspend fun downloadFile(command: Command.DownloadFile): String
-
-    suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks
-
-    suspend fun getListPages(): List<DocumentInfo>
 
     suspend fun updateDivider(command: Command.UpdateDivider): Payload
 

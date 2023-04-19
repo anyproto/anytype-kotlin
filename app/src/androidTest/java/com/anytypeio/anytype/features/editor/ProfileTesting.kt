@@ -9,7 +9,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
@@ -58,7 +57,7 @@ class ProfileTesting : EditorTestSetup() {
     val page = Block(
         id = root,
         fields = Block.Fields(emptyMap()),
-        content = Block.Content.Smart(SmartBlockType.PAGE),
+        content = Block.Content.Smart,
         children = listOf(header.id)
     )
 

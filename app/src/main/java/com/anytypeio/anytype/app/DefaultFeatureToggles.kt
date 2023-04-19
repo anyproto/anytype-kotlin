@@ -12,20 +12,11 @@ class DefaultFeatureToggles @Inject constructor(
     @TogglePrefs private val prefs: SharedPreferences
 ) : FeatureToggles {
 
-    override val isLogFromMiddlewareLibrary =
-        BuildConfig.LOG_FROM_MW_LIBRARY && isDebug
-
-    override val isLogMiddlewareInteraction =
-        BuildConfig.LOG_MW_INTERACTION && isDebug
-
-    override val isLogDashboardReducer =
-        BuildConfig.LOG_DASHBOARD_REDUCER && isDebug
-
-    override val isLogEditorViewModelEvents =
-        BuildConfig.LOG_EDITOR_VIEWMODEL_EVENTS && isDebug
-
-    override val isLogEditorControlPanelMachine =
-        BuildConfig.LOG_EDITOR_CONTROL_PANEL && isDebug
+    override val isLogFromMiddlewareLibrary = BuildConfig.LOG_FROM_MW_LIBRARY && isDebug
+    override val isLogMiddlewareInteraction = BuildConfig.LOG_DASHBOARD_REDUCER && isDebug
+    override val isLogDashboardReducer = BuildConfig.LOG_DASHBOARD_REDUCER && isDebug
+    override val isLogEditorViewModelEvents = BuildConfig.LOG_EDITOR_VIEWMODEL_EVENTS && isDebug
+    override val isLogEditorControlPanelMachine = BuildConfig.LOG_EDITOR_CONTROL_PANEL && isDebug
 
     override val isTroubleshootingMode
         get() = prefs.getBoolean(context.getString(R.string.trouble_mode), BuildConfig.DEBUG)

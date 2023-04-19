@@ -150,16 +150,6 @@ sealed class ObjectWrapper {
         val isArchived: Boolean? by default
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
-        val smartBlockTypes: List<SmartBlockType>
-            get() = when (val value = map[Relations.SMARTBLOCKTYPES]) {
-                is Double -> buildList {
-                    SmartBlockType.values().firstOrNull { it.code == value.toInt() }
-                }
-                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
-                    SmartBlockType.values().firstOrNull { it.code == code.toInt() }
-                }
-                else -> emptyList()
-            }
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

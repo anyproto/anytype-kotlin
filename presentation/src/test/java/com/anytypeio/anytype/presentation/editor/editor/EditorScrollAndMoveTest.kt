@@ -101,7 +101,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -178,7 +178,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -234,7 +234,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, a.id)
         )
 
@@ -340,7 +340,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id)
         )
 
@@ -409,7 +409,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id)
         )
 
@@ -480,7 +480,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id)
         )
 
@@ -542,7 +542,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id)
         )
 
@@ -615,7 +615,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, parent.id)
         )
 
@@ -710,7 +710,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(parent.id, block.id)
         )
 
@@ -839,7 +839,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(a.id, b.id, c.id, d.id, e.id, f.id)
         )
 

@@ -301,7 +301,6 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.values().random(),
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )
@@ -314,7 +313,6 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.values().random(),
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )
@@ -405,7 +403,6 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )
@@ -418,7 +415,6 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )
@@ -509,7 +505,6 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )
@@ -522,7 +517,6 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf(),
             isArchived = false,
             isReadOnly = false
         )

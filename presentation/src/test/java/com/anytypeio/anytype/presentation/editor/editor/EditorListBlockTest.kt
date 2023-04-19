@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
@@ -61,7 +60,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -130,7 +129,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -199,7 +198,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -266,7 +265,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -344,7 +343,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -479,7 +478,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -633,7 +632,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -768,7 +767,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,

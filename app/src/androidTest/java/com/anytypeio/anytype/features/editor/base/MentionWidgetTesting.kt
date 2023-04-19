@@ -91,7 +91,7 @@ class MentionWidgetTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id)
         )
 
@@ -100,7 +100,6 @@ class MentionWidgetTesting : EditorTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubUpdateText()
-        stubGetListPages(listOf())
         stubOpenDocument(document, defaultDetails)
 
         launchFragment(args)
@@ -142,7 +141,7 @@ class MentionWidgetTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id)
         )
 
@@ -151,7 +150,6 @@ class MentionWidgetTesting : EditorTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubUpdateText()
-        stubGetListPages(listOf())
         stubOpenDocument(document, defaultDetails)
 
         launchFragment(args)
@@ -194,7 +192,7 @@ class MentionWidgetTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id)
         )
 
@@ -203,7 +201,6 @@ class MentionWidgetTesting : EditorTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubUpdateText()
-        stubGetListPages(listOf())
         stubOpenDocument(document, defaultDetails)
 
         launchFragment(args)

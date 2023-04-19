@@ -2,11 +2,31 @@ package com.anytypeio.anytype.middleware.mappers
 
 import anytype.ResponseEvent
 import anytype.Rpc
-import anytype.model.ObjectInfo
-import anytype.model.ObjectInfoWithLinks
-import anytype.model.ObjectLinksInfo
 import anytype.model.Restrictions
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.CreateObjectResult
+import com.anytypeio.anytype.core_models.DVDateFormat
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterOperator
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.DVTimeFormat
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerCardSize
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectOrder
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -24,22 +44,18 @@ fun ResponseEvent?.toPayload(): Payload {
 }
 
 fun MObjectView.toPayload(): Payload {
-    val type = type.toCoreModel()
     return Payload(
         context = rootId,
         events = listOf(
             Event.Command.ShowObject(
                 context = rootId,
                 root = rootId,
-                blocks = blocks.toCoreModels(
-                    types = mapOf(rootId to type)
-                ),
+                blocks = blocks.toCoreModels(),
                 details = Block.Details(
                     details.associate { details ->
                         details.id to details.details.toCoreModel()
                     }
                 ),
-                type = type,
                 relationLinks = relationLinks.map { it.toCoreModels() },
                 objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
                 dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
@@ -49,23 +65,19 @@ fun MObjectView.toPayload(): Payload {
 }
 
 fun MObjectView.toCore(): ObjectView {
-    val type = type.toCoreModel()
     return ObjectView(
         root = rootId,
-        blocks = blocks.toCoreModels(types = mapOf(rootId to type)),
+        blocks = blocks.toCoreModels(),
         details = details.associate { d -> d.id to d.details.orEmpty() },
         relations = relationLinks.map { it.toCoreModels() },
         objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
         dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty(),
-        type = type
     )
 }
 
 
 // ---------------------- BLOCKS ------------------------
-fun List<MBlock>.toCoreModels(
-    types: Map<String, SmartBlockType> = emptyMap()
-): List<Block> = mapNotNull { block ->
+fun List<MBlock>.toCoreModels(): List<Block> = mapNotNull { block ->
     when {
         block.text != null -> {
             Block(
@@ -133,9 +145,7 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = Block.Content.Smart(
-                    type = types[block.id] ?: throw IllegalStateException("Type missing")
-                )
+                content = Block.Content.Smart
             )
         }
         block.dataview != null -> {
@@ -595,19 +605,6 @@ fun MRelation.toCoreModels(): Relation = Relation(
     format = format.format()
 )
 
-fun MObjectType.toCoreModels(): ObjectType = ObjectType(
-    url = url,
-    name = name,
-    emoji = iconEmoji,
-    description = description,
-    isHidden = hidden,
-    relationLinks = relationLinks.map { it.toCoreModels() },
-    layout = layout.toCoreModels(),
-    smartBlockTypes = types.map { it.toCoreModel() },
-    isArchived = isArchived,
-    isReadOnly = readonly
-)
-
 fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.basic -> ObjectType.Layout.BASIC
     MOTypeLayout.profile -> ObjectType.Layout.PROFILE
@@ -661,49 +658,6 @@ fun MRelationLink.toCoreModels() = RelationLink(
     key = key,
     format = format.format()
 )
-
-// ---------------------- NAVIGATION & SEARCH ------------------------
-fun ObjectInfoWithLinks.toCoreModel(): com.anytypeio.anytype.core_models.ObjectInfoWithLinks {
-    val i = info
-    checkNotNull(i)
-    return ObjectInfoWithLinks(
-        id = id,
-        links = links?.toCoreModel() ?: ObjectLinks(emptyList(), emptyList()),
-        documentInfo = i.toCoreModel()
-    )
-}
-
-fun ObjectLinksInfo.toCoreModel(): ObjectLinks = ObjectLinks(
-    inbound = inbound.map { it.toCoreModel() },
-    outbound = outbound.map { it.toCoreModel() }
-)
-
-fun ObjectInfo.toCoreModel(): DocumentInfo = DocumentInfo(
-    id = id,
-    obj = ObjectWrapper.Basic(details?.toMap() ?: mapOf()),
-    snippet = snippet,
-    hasInboundLinks = hasInboundLinks,
-    smartBlockType = objectType.toCoreModel()
-)
-
-fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
-    MSmartBlockType.Page -> SmartBlockType.PAGE
-    MSmartBlockType.ProfilePage -> SmartBlockType.PROFILE_PAGE
-    MSmartBlockType.Home -> SmartBlockType.HOME
-    MSmartBlockType.Archive -> SmartBlockType.ARCHIVE
-    MSmartBlockType.File -> SmartBlockType.FILE
-    MSmartBlockType.Template -> SmartBlockType.TEMPLATE
-    MSmartBlockType.BundledRelation -> SmartBlockType.BUNDLED_RELATION
-    MSmartBlockType.SubObject -> SmartBlockType.SUB_OBJECT
-    MSmartBlockType.BundledObjectType -> SmartBlockType.BUNDLED_OBJECT_TYPE
-    MSmartBlockType.AnytypeProfile -> SmartBlockType.ANYTYPE_PROFILE
-    MSmartBlockType.BundledTemplate -> SmartBlockType.BUNDLED_TEMPLATE
-    MSmartBlockType.Date -> SmartBlockType.DATE
-    MSmartBlockType.Workspace -> SmartBlockType.WORKSPACE
-    MSmartBlockType.AccountOld -> SmartBlockType.ACCOUNT_OLD
-    MSmartBlockType.Widget -> SmartBlockType.WIDGET
-    MSmartBlockType.MissingObject -> SmartBlockType.MISSING_OBJECT
-}
 
 // ---------------------- RESTRICTIONS ------------------------
 fun MObjectRestriction.toCoreModel(): ObjectRestriction = when (this) {

@@ -8,11 +8,9 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.DocumentInfo
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -134,9 +132,6 @@ interface BlockRepository {
 
     suspend fun copy(command: Command.Copy): Response.Clipboard.Copy
     suspend fun paste(command: Command.Paste): Response.Clipboard.Paste
-
-    suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks
-    suspend fun getListPages(): List<DocumentInfo>
 
     suspend fun updateDivider(command: Command.UpdateDivider): Payload
 

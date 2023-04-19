@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -71,7 +70,7 @@ object MockBlockFactory {
         Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(SmartBlockType.PAGE),
+            content = Block.Content.Smart,
             children = listOf(child)
         ),
         Block(

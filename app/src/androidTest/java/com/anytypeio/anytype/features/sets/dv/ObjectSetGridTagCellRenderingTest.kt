@@ -8,9 +8,7 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -63,19 +61,6 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
         val tag3Name = "Director"
         val tag3Id = MockDataFactory.randomUuid()
 
-        val objectType = ObjectType(
-            url = MockDataFactory.randomUuid(),
-            name = "Film",
-            relationLinks = emptyList(),
-            emoji = MockDataFactory.randomString(),
-            layout = ObjectType.Layout.BASIC    ,
-            description = "",
-            isHidden = false,
-            smartBlockTypes = listOf(),
-            isArchived = false,
-            isReadOnly = false
-        )
-
         val relationId = MockDataFactory.randomUuid()
         val record1Id = MockDataFactory.randomUuid()
         val record2Id = MockDataFactory.randomUuid()
@@ -84,7 +69,6 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
             ObjectSetConfig.ID_KEY to record1Id,
             ObjectSetConfig.NAME_KEY to "The Face on the Bar Room Floor",
             ObjectSetConfig.EMOJI_KEY to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-            ObjectSetConfig.TYPE_KEY to objectType.url,
             relationId to listOf(tag1Id, tag3Id)
         )
 
@@ -92,7 +76,6 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
             ObjectSetConfig.ID_KEY to record2Id,
             ObjectSetConfig.NAME_KEY to "The Great Dictator",
             ObjectSetConfig.EMOJI_KEY to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-            ObjectSetConfig.TYPE_KEY to objectType.url,
             relationId to listOf(tag2Id, tag3Id)
         )
 
@@ -142,7 +125,7 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, dataview.id)
         )
 
@@ -153,8 +136,7 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
-            details = details,
-            objectTypes = listOf(objectType)
+            details = details
         )
 
         // TESTING

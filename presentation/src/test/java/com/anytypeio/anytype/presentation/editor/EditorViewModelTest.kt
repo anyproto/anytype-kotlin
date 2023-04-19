@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubParagraph
@@ -418,7 +417,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -622,7 +621,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -722,7 +721,7 @@ open class EditorViewModelTest {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child)
         )
 
@@ -775,7 +774,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -888,7 +887,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child)
         )
 
@@ -1050,7 +1049,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child)
         )
 
@@ -1204,7 +1203,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child)
         )
 
@@ -1284,7 +1283,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child)
         )
 
@@ -1387,7 +1386,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child)
         )
 
@@ -1477,7 +1476,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(child)
         )
 
@@ -1589,7 +1588,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child)
         )
 
@@ -1791,7 +1790,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child.id)
         )
 
@@ -1860,7 +1859,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, firstChild.id, secondChild.id)
         )
 
@@ -1999,7 +1998,7 @@ open class EditorViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, child.id)
         )
 
@@ -2104,7 +2103,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -2231,7 +2230,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, child)
             ),
             header,
@@ -2374,7 +2373,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, paragraph.id)
             ),
             header,
@@ -2476,7 +2475,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, paragraph.id)
             ),
             header,
@@ -2577,7 +2576,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id, file.id)
             ),
             title,
@@ -2634,7 +2633,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id, file.id)
             ),
             title,
@@ -2695,7 +2694,7 @@ open class EditorViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2760,7 +2759,7 @@ open class EditorViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2825,7 +2824,7 @@ open class EditorViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id)
             ),
             title
@@ -2879,7 +2878,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2949,7 +2948,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id, numbered.id)
             ),
             title,
@@ -3022,7 +3021,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -3083,7 +3082,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(paragraph.id)
             ),
             paragraph
@@ -3179,7 +3178,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -3362,7 +3361,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -3471,7 +3470,7 @@ open class EditorViewModelTest {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to false)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, picture.id)
             ),
             header,
@@ -3550,7 +3549,7 @@ open class EditorViewModelTest {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to false)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, video.id)
             ),
             header,
@@ -3624,7 +3623,7 @@ open class EditorViewModelTest {
                 fields = Block.Fields(
                     mapOf(Block.Fields.IS_LOCKED_KEY to false)
                 ),
-                content = Block.Content.Smart(SmartBlockType.PAGE),
+                content = Block.Content.Smart,
                 children = listOf(header.id, file.id)
             ),
             header,
@@ -4001,7 +4000,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4116,7 +4115,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4235,7 +4234,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4388,7 +4387,7 @@ open class EditorViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = blocks.map { it.id }
             )
         ) + blocks

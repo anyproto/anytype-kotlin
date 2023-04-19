@@ -132,7 +132,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id, block1.id)
         )
 
@@ -235,7 +235,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, paragraph.id, block1.id)
         )
 

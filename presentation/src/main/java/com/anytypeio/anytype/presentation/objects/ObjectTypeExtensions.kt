@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 
 /**
@@ -45,11 +44,9 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
         if (excludeTypes.contains(obj.id)) {
             return@forEach
         }
-        if (obj.smartBlockTypes.contains(SmartBlockType.PAGE)) {
-            val objTypeView = obj.toObjectTypeView(selectedTypes)
-            result.add(objTypeView)
-            return@forEach
-        }
+        val objTypeView = obj.toObjectTypeView(selectedTypes)
+        result.add(objTypeView)
+        return@forEach
     }
     return result.sortedWith(ObjectTypeViewComparator())
 }

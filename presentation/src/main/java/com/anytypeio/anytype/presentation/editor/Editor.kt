@@ -103,7 +103,6 @@ interface Editor {
 
         @Deprecated("legacy")
         val relations: Store.Relations = Store.Relations()
-        val objectTypes: Store.ObjectTypes = Store.ObjectTypes()
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
         val relationLinks: Store.RelationLinks = Store.RelationLinks()

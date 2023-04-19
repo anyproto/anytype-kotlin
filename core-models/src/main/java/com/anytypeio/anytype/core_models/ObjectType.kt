@@ -27,9 +27,7 @@ data class ObjectType(
     @Deprecated("Will be deprecated. Object type will be treated as object")
     val isArchived: Boolean,
     @Deprecated("Will be deprecated. Object type will be treated as object")
-    val isReadOnly: Boolean,
-    @Deprecated("Will be deprecated. Object type will be treated as object")
-    val smartBlockTypes: List<SmartBlockType>
+    val isReadOnly: Boolean
 ) {
     enum class Layout(val code: Int) {
         BASIC(0),

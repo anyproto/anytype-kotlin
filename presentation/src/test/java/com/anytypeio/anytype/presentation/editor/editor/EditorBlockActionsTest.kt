@@ -7,13 +7,13 @@ import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import kotlin.test.assertContains
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertContains
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class EditorBlockActionsTest : EditorPresentationTestSetup() {
 
@@ -39,7 +39,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
             val smart = Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(),
+                content = Block.Content.Smart,
                 children = listOf(header.id, link.id)
             )
 
@@ -79,7 +79,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, p1.id, divider.id, p2.id)
         )
 
@@ -121,7 +121,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, p1.id, divider.id, p2.id)
         )
 
@@ -170,7 +170,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
+            content = Block.Content.Smart,
             children = listOf(header.id, p1.id, divider.id, p2.id)
         )
 

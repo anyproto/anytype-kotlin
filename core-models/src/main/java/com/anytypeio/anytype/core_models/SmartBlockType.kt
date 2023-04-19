@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models
 
+@Deprecated("To be removed")
 enum class SmartBlockType(val code: Int) {
     ACCOUNT_OLD(code = 0),
     PAGE(code = 16),

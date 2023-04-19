@@ -88,7 +88,7 @@ data class Block(
         /**
          * Smart block.
          */
-        data class Smart(val type: SmartBlockType = SmartBlockType.PAGE) : Content()
+        object Smart : Content()
 
         /**
          * Textual block.

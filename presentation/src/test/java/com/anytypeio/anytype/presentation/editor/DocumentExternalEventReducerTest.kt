@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Link.IconSize
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
@@ -39,7 +38,7 @@ class DocumentExternalEventReducerTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(title.id, bookmark.id),
-            content = Block.Content.Smart(type = SmartBlockType.PAGE)
+            content = Block.Content.Smart
         )
 
         val state = listOf(page, title, bookmark)
@@ -169,7 +168,7 @@ class DocumentExternalEventReducerTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(title.id, bookmark.id),
-            content = Block.Content.Smart(type = SmartBlockType.PAGE)
+            content = Block.Content.Smart
         )
 
         val state = listOf(page, title, bookmark)
@@ -214,7 +213,7 @@ class DocumentExternalEventReducerTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(title.id, link.id),
-            content = Block.Content.Smart(type = SmartBlockType.PAGE)
+            content = Block.Content.Smart
         )
 
         val state = listOf(page, title, link)

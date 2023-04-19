@@ -8,16 +8,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -34,9 +30,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCallout
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.update.MigrationErrorViewModel.ViewAction
 import kotlinx.coroutines.launch
 
@@ -59,17 +60,14 @@ fun Cards(onViewAction: (ViewAction) -> Unit) {
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         Text(
             text = stringResource(id = R.string.almost_there),
-            style = MaterialTheme.typography.h2.copy(
-                color = colorResource(id = R.color.text_primary)
-            ),
+            style = HeadlineHeading,
+            color = colorResource(id = R.color.text_primary),
             modifier = Modifier.padding(top = 56.dp)
         )
         Text(
             text = stringResource(id = R.string.almost_there_subtitle),
-            style = MaterialTheme.typography.body1.copy(
-                fontSize = 17.sp,
-                color = colorResource(id = R.color.text_primary)
-            ),
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_primary),
             modifier = Modifier.padding(top = 12.dp)
         )
         InfoCard(
@@ -95,11 +93,7 @@ fun Cards(onViewAction: (ViewAction) -> Unit) {
                 ClickableText(
                     modifier = Modifier.padding(top = 12.dp),
                     text = text,
-                    style = MaterialTheme.typography.body2.copy(
-                        fontSize = 15.sp,
-                        color = colorResource(id = R.color.text_primary),
-                        lineHeight = 22.sp
-                    ),
+                    style = BodyCallout,
                     onClick = { offset ->
                         text.getStringAnnotations(
                             tag = ANNOTATION_TAG,
@@ -120,37 +114,20 @@ fun Cards(onViewAction: (ViewAction) -> Unit) {
             expanded = false,
             toggleClick = { onViewAction(ViewAction.ToggleMigrationReady) },
             content = {
-                Column() {
+                Column {
                     Text(
                         modifier = Modifier.padding(top = 12.dp),
                         text = stringResource(id = R.string.migration_error_msg),
-                        style = MaterialTheme.typography.body2.copy(
-                            fontSize = 15.sp,
-                            color = colorResource(id = R.color.text_primary),
-                            lineHeight = 22.sp
-                        )
+                        style = BodyCallout,
+                        color = colorResource(id = R.color.text_primary)
                     )
-                    Button(
+                    ButtonPrimary(
+                        text = stringResource(id = R.string.visit_forum),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 0.dp),
+                            .padding(top = 16.dp),
                         onClick = { onViewAction(ViewAction.VisitForum) },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.black)),
-                        shape = RoundedCornerShape(10.dp),
-                        contentPadding = PaddingValues(
-                            0.dp, 10.dp, 0.dp, 10.dp
-                        ),
-                        content = {
-                            Text(
-                                text = stringResource(id = R.string.visit_forum),
-                                style = MaterialTheme.typography.h3.copy(
-                                    color = colorResource(id = R.color.library_action_btn_text_color)
-                                )
-                            )
-                        },
-                        elevation = ButtonDefaults.elevation(
-                            defaultElevation = 0.dp, pressedElevation = 0.dp
-                        )
+                        size = ButtonSize.Large
                     )
                 }
             }
@@ -210,10 +187,8 @@ fun InfoCard(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h2.copy(
-                        color = colorResource(id = R.color.text_primary),
-                        fontSize = 17.sp
-                    )
+                    style = HeadlineSubheading,
+                    color = colorResource(id = R.color.text_primary)
                 )
                 AnimatedVisibility(visible = cardOpened.value) {
                     content()

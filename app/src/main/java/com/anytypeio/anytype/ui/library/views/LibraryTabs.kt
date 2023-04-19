@@ -122,6 +122,7 @@ fun LibraryTab(
                 Text(
                     text = stringResource(id = config.mainTitle),
                     style = TabTitleStyle,
+                    color = colorResource(id = R.color.text_primary),
                     onTextLayout = onTextLayout::invoke
                 )
             }

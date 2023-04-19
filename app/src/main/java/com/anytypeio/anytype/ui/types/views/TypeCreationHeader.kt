@@ -49,6 +49,7 @@ fun TypeCreationHeader(
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = stringResource(id = R.string.type_creation_new_type),
+            color = colorResource(id = R.color.text_primary),
             style = Title1,
         )
         Box(modifier = Modifier.weight(1f)) {

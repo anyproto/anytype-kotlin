@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.ui_settings.R
@@ -217,10 +218,11 @@ fun AccountOption(
 
         Text(
             text = text,
-            color = colorResource(com.anytypeio.anytype.core_ui.R.color.text_primary),
+            color = colorResource(R.color.text_primary),
             modifier = Modifier.padding(
                 start = 12.dp
-            )
+            ),
+            style = BodyRegular
         )
         Box(
             modifier = Modifier.weight(1.0f, true),

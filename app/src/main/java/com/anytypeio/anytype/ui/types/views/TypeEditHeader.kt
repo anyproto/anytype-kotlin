@@ -53,7 +53,8 @@ fun TypeEditHeader(
             }
             Text(
                 text = stringResource(id = R.string.type_editing_title),
-                style = Title1
+                style = Title1,
+                color = colorResource(id = R.color.text_primary)
             )
             if (!readOnly) {
                 Box(modifier = Modifier.weight(1f)) {

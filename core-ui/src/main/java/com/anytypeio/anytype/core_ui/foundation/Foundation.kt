@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.core_ui.foundation
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,36 +13,42 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.ButtonWarning
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
 fun Toolbar(title: String) {
     Box(
-        Modifier.fillMaxWidth().height(48.dp),
+        Modifier
+            .fillMaxWidth()
+            .height(48.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = title,
-            style = HeadlineSubheading
+            style = Title1,
+            color = colorResource(R.color.text_primary)
         )
     }
 }
@@ -52,13 +56,15 @@ fun Toolbar(title: String) {
 @Composable
 fun Dragger(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.size(
-            height = 4.dp,
-            width = 48.dp
-        ).background(
-            color = colorResource(R.color.shape_primary),
-            shape = RoundedCornerShape(6.dp)
-        )
+        modifier = modifier
+            .size(
+                height = 4.dp,
+                width = 48.dp
+            )
+            .background(
+                color = colorResource(R.color.shape_primary),
+                shape = RoundedCornerShape(6.dp)
+            )
     )
 }
 
@@ -68,7 +74,8 @@ fun Divider(
     paddingEnd: Dp = 20.dp
 ) {
     Box(
-        Modifier.padding(start = paddingStart, end = paddingEnd)
+        Modifier
+            .padding(start = paddingStart, end = paddingEnd)
             .background(color = colorResource(R.color.shape_primary))
             .height(0.5.dp)
             .fillMaxWidth()
@@ -83,7 +90,9 @@ fun Option(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.height(52.dp).clickable(onClick = onClick)
+        modifier = Modifier
+            .height(52.dp)
+            .clickable(onClick = onClick)
 
     ) {
         Image(
@@ -98,7 +107,8 @@ fun Option(
             color = colorResource(R.color.text_primary),
             modifier = Modifier.padding(
                 start = 12.dp
-            )
+            ),
+            style = BodyRegular
         )
         Box(
             modifier = Modifier.weight(1.0f, true),
@@ -133,13 +143,13 @@ fun Warning(
 ) {
     Column {
         Text(
-            style = MaterialTheme.typography.h2,
             text = title,
             modifier = Modifier.padding(
                 top = 24.dp,
                 start = 20.dp,
                 end = 20.dp
             ),
+            style = HeadlineHeading,
             color = colorResource(R.color.text_primary)
         )
         Text(
@@ -147,54 +157,40 @@ fun Warning(
             modifier = Modifier.padding(
                 top = 12.dp,
                 start = 20.dp,
-                end = 20.dp
+                end = 20.dp,
+                bottom = 10.dp
             ),
+            style = BodyCalloutRegular,
             color = colorResource(R.color.text_primary)
         )
         Row(
-            modifier = Modifier.height(68.dp).padding(
-                top = 8.dp,
-                start = 20.dp,
-                end = 20.dp
-            ).fillMaxWidth(),
+            modifier = Modifier
+                .height(68.dp)
+                .padding(
+                    top = 10.dp,
+                    start = 20.dp,
+                    end = 20.dp
+                )
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier.height(48.dp).border(
-                    width = 1.dp,
-                    color = colorResource(R.color.shape_primary),
-                    shape = RoundedCornerShape(10.dp)
-                ).weight(1.0f, true).clickable(onClick = onNegativeClick),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = cancelButtonText,
-                    color = colorResource(R.color.text_primary),
-                    fontSize = 17.sp
-                )
-            }
+            ButtonSecondary(
+                onClick = onNegativeClick,
+                size = ButtonSize.Large,
+                text = cancelButtonText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
             Spacer(modifier = Modifier.width(10.dp))
-            Box(
-                modifier = Modifier.height(48.dp).background(
-                    color = colorResource(R.color.palette_system_red),
-                    shape = RoundedCornerShape(10.dp)
-                ).weight(1.0f, true).clickable(onClick = onPositiveClick),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = actionButtonText,
-                    color = Color.White,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                if (isInProgress) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.CenterEnd).padding(end = 20.dp).size(16.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
-                    )
-                }
-            }
+            ButtonWarning(
+                onClick = onPositiveClick,
+                size = ButtonSize.Large,
+                text = actionButtonText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
         }
     }
 }
@@ -219,13 +215,13 @@ fun Announcement(
         ) {
             Column {
                 Text(
-                    style = MaterialTheme.typography.h2,
                     text = title,
                     modifier = Modifier.padding(
                         top = 24.dp,
                         start = 20.dp,
                         end = 20.dp
                     ),
+                    style = HeadlineHeading,
                     color = colorResource(R.color.text_primary)
                 )
                 Text(
@@ -235,52 +231,37 @@ fun Announcement(
                         start = 20.dp,
                         end = 20.dp
                     ),
+                    style = BodyCalloutRegular,
                     color = colorResource(R.color.text_primary)
                 )
                 Row(
-                    modifier = Modifier.height(68.dp).padding(
-                        top = 8.dp,
-                        start = 20.dp,
-                        end = 20.dp
-                    ).fillMaxWidth(),
+                    modifier = Modifier
+                        .height(68.dp)
+                        .padding(
+                            top = 8.dp,
+                            start = 20.dp,
+                            end = 20.dp
+                        )
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Card(
-                        modifier = Modifier.height(48.dp).weight(1.0f, true),
+                    ButtonSecondary(
+                        text = stringResource(R.string.back),
                         onClick = onBackClicked,
-                        shape = RoundedCornerShape(10.dp),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = colorResource(R.color.shape_primary)
-                        ),
-                        elevation = 0.dp,
-                        backgroundColor = Color.Transparent
-                    ) {
-                        Box(Modifier.wrapContentSize(Alignment.Center)) {
-                            Text(
-                                text = stringResource(R.string.back),
-                                color = colorResource(R.color.text_primary),
-                                fontSize = 17.sp
-                            )
-                        }
-                    }
+                        size = ButtonSize.Large,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1.0f)
+                    )
                     Spacer(modifier = Modifier.width(10.dp))
-                    Card(
-                        modifier = Modifier.height(48.dp).weight(1.0f, true),
+                    ButtonPrimary(
+                        text = stringResource(R.string.next),
                         onClick = onNextClicked,
-                        backgroundColor = colorResource(R.color.glyph_accent),
-                        shape = RoundedCornerShape(10.dp),
-                        elevation = 0.dp
-                    ) {
-                        Box(Modifier.wrapContentSize(Alignment.Center)) {
-                            Text(
-                                text = stringResource(R.string.next),
-                                color = Color.White,
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
+                        size = ButtonSize.Large,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1.0f)
+                    )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
             }

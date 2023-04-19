@@ -211,7 +211,8 @@ fun ListWidgetElement(
                     .align(Alignment.CenterStart),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = PreviewTitle2Medium
+            style = PreviewTitle2Medium,
+            color = colorResource(id = R.color.text_primary),
         )
         if (hasDescription) {
             Text(

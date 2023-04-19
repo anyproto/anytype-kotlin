@@ -48,6 +48,9 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
 import com.anytypeio.anytype.ui_settings.main.NameBlock
@@ -105,17 +108,17 @@ fun AccountAndDataScreen(
             Divider()
         }
         Section(stringResource(R.string.account))
-        Action(
-            name = stringResource(R.string.delete_account),
-            color = colorResource(R.color.text_primary),
-            onClick = onDeleteAccountClicked
-        )
-        Divider()
         ActionWithProgressBar(
             name = stringResource(R.string.log_out),
-            color = colorResource(R.color.palette_dark_red),
+            color = colorResource(R.color.text_primary),
             onClick = onLogoutClicked,
             isInProgress = isLogoutInProgress
+        )
+        Divider()
+        Action(
+            name = stringResource(R.string.delete_account),
+            color = colorResource(R.color.palette_dark_red),
+            onClick = onDeleteAccountClicked
         )
         Divider()
         Box(Modifier.height(54.dp))
@@ -132,12 +135,12 @@ fun Section(name: String) {
     ) {
         Text(
             text = name,
-            fontSize = 13.sp,
             modifier = Modifier.padding(
                 start = 20.dp,
                 bottom = 8.dp
             ),
-            color = colorResource(R.color.text_secondary)
+            color = colorResource(R.color.text_secondary),
+            style = Caption1Regular
         )
     }
 }
@@ -199,7 +202,7 @@ fun Action(
         Text(
             text = name,
             color = color,
-            fontSize = 17.sp,
+            style = BodyRegular,
             modifier = Modifier.padding(
                 start = 20.dp
             )
@@ -224,7 +227,7 @@ fun ActionWithProgressBar(
         Text(
             text = name,
             color = color,
-            fontSize = 17.sp,
+            style = BodyRegular,
             modifier = Modifier.padding(
                 start = 20.dp
             )
@@ -345,10 +348,10 @@ fun NameBlock(
 }
 
 @Composable
-fun ProfileNameBlock(modifier: Modifier = Modifier) {
+fun ProfileNameBlock() {
     Text(
         text = stringResource(R.string.account_and_data),
-        style = MaterialTheme.typography.h3,
+        style = Title1,
         color = colorResource(id = R.color.text_primary)
     )
 }

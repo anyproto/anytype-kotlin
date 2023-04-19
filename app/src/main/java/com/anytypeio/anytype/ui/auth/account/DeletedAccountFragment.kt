@@ -38,6 +38,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
@@ -183,7 +185,7 @@ fun DeletedAccountScreen(
                             }
                         },
                         color = colorResource(R.color.text_primary),
-                        style = MaterialTheme.typography.h2,
+                        style = HeadlineHeading,
                         modifier = Modifier.padding(
                             start = 20.dp,
                             end = 20.dp
@@ -192,13 +194,13 @@ fun DeletedAccountScreen(
                     Text(
                         text = stringResource(R.string.deleted_account_msg),
                         color = colorResource(R.color.text_primary),
+                        style = BodyCalloutRegular,
                         modifier = Modifier.padding(
                             top = 12.dp,
                             start = 20.dp,
                             end = 20.dp,
                             bottom = 14.dp
-                        ),
-                        fontSize = 15.sp
+                        )
                     )
                     if (date != DeletionDate.Deleted) {
                         Action(

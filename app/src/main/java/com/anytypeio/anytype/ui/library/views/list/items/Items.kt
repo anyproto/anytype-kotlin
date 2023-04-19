@@ -222,6 +222,7 @@ fun LibraryObjectEmptyItem(objectType: String, name: String) {
                 formatArgs = arrayOf(objectType, name)
             ),
             style = UXBody,
+            color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 9.dp)
         )

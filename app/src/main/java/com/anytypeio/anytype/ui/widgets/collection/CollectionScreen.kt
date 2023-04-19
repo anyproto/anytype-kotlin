@@ -77,6 +77,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.CollectionActionWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -152,23 +157,20 @@ private fun TopBar(
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = uiState.collectionName,
-            style = MaterialTheme.typography.h3,
+            style = Title1,
+            color = colorResource(id = R.color.text_primary)
         )
         Text(
             modifier = Modifier
                 .align(CenterEnd)
-                .noRippleClickable { vm.onActionClicked() },
+                .noRippleClickable { vm.onActionClicked() }
+                .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
             text = uiState.actionName,
-            style = actionTextStyle(),
+            style = UXBody,
+            color = colorResource(id = R.color.glyph_active)
         )
     }
 }
-
-@Composable
-private fun actionTextStyle() = MaterialTheme.typography.body2.copy(
-    fontSize = 17.sp,
-    color = colorResource(id = R.color.glyph_active)
-)
 
 @Composable
 private fun ListView(
@@ -339,9 +341,10 @@ fun SectionItem(
         Text(
             modifier = Modifier.padding(16.dp, 20.dp, 0.dp, 0.dp),
             text = view.name,
-            style = sectionTextStyle(),
+            style = BodyCalloutRegular,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = colorResource(id = R.color.text_secondary)
         )
     }
 }
@@ -431,7 +434,8 @@ fun CollectionItem(
 
                 Text(
                     text = name,
-                    style = objNameTextStyle(),
+                    style = PreviewTitle2Medium,
+                    color = colorResource(id = R.color.text_primary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -440,7 +444,8 @@ fun CollectionItem(
                 if (!description.isNullOrBlank()) {
                     Text(
                         text = description,
-                        style = objDescriptionTextStyle(),
+                        style = Relations3,
+                        color = colorResource(id = R.color.text_primary),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -451,8 +456,8 @@ fun CollectionItem(
                     if (!typeName.isNullOrBlank()) {
                         Text(
                             text = typeName,
-                            fontSize = 12.sp,
-                            style = objTypeNameTextStyle(),
+                            style = Relations3,
+                            color = colorResource(id = R.color.text_secondary),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -493,32 +498,6 @@ fun CollectionItem(
         )
     }
 }
-
-
-@Composable
-private fun sectionTextStyle() = MaterialTheme.typography.body2.copy(
-    fontSize = 15.sp,
-    color = colorResource(id = R.color.text_secondary)
-)
-
-@Composable
-private fun objTypeNameTextStyle() = MaterialTheme.typography.body2.copy(
-    color = colorResource(id = R.color.text_secondary)
-)
-
-@Composable
-private fun objDescriptionTextStyle() = MaterialTheme.typography.body2.copy(
-    fontSize = 12.sp,
-    color = colorResource(id = R.color.text_primary)
-)
-
-@Composable
-private fun objNameTextStyle() = MaterialTheme.typography.h3.copy(
-    fontSize = 15.sp,
-    color = colorResource(id = R.color.text_primary),
-    fontWeight = FontWeight.Medium,
-    lineHeight = 20.sp
-)
 
 @ExperimentalMaterialApi
 @Composable

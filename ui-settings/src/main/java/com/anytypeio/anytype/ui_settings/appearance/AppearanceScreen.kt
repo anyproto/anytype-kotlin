@@ -47,6 +47,8 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.ui_settings.R
 
 
@@ -83,8 +85,8 @@ fun AppearanceScreen(
                 .padding(top = 18.dp, bottom = 12.dp),
             textAlign = TextAlign.Center,
             text = stringResource(R.string.mode),
-            style = MaterialTheme.typography.body2,
-            color = colorResource(com.anytypeio.anytype.core_ui.R.color.text_secondary),
+            style = Caption1Medium,
+            color = colorResource(R.color.text_secondary),
         )
         Row(
             modifier = Modifier
@@ -251,8 +253,8 @@ fun ModeNameText(
 ) {
     Text(
         text = stringResource(id = id),
-        style = MaterialTheme.typography.caption,
-        color = colorResource(com.anytypeio.anytype.core_ui.R.color.text_secondary),
+        style = Caption2Regular,
+        color = colorResource(R.color.text_secondary),
         modifier = Modifier.padding(top = 4.dp)
     )
 }

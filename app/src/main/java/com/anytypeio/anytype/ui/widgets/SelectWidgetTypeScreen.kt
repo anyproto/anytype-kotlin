@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.widgets
 
+import android.graphics.Color
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,15 +17,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.presentation.widgets.WidgetTypeView
+
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
+@Composable
+fun MySelectWidgetTypeScreen() {
+    SelectWidgetTypeScreen(
+        views = listOf(
+            WidgetTypeView.List(isSelected = true),
+            WidgetTypeView.Link(isSelected = true),
+            WidgetTypeView.Tree(isSelected = true)
+        ),
+        onViewClicked = {  }
+    )
+}
 
 @Composable
 fun SelectWidgetTypeScreen(
@@ -78,9 +92,6 @@ fun SelectWidgetTypeScreen(
                     onClick = { onViewClicked(type) }
                 )
             }
-            if (index != views.lastIndex) {
-                Divider(paddingStart = 76.dp)
-            }
         }
         Spacer(modifier = Modifier.height(20.dp))
     }
@@ -110,23 +121,18 @@ fun WidgetTypeItem(
         Text(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 70.dp, top = 11.dp),
+                .padding(start = 76.dp, top = 11.dp),
             text = title,
-            style = TextStyle(
-                color = colorResource(id = R.color.text_primary),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium
-            )
+            style = Title2,
+            color = colorResource(id = R.color.text_primary)
         )
         Text(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 70.dp, bottom = 11.dp),
+                .padding(start = 76.dp, bottom = 11.dp),
             text = subtitle,
-            style = TextStyle(
-                color = colorResource(id = R.color.text_secondary),
-                fontSize = 13.sp
-            )
+            style = Caption2Regular,
+            color = colorResource(id = R.color.text_secondary)
         )
         if (isChecked) {
             Image(

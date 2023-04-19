@@ -36,8 +36,8 @@
 
     <com.anytypeio.anytype.core_ui.views.ButtonSecondarySmall
         android:id="@+id/button"
-        android:layout_width="118dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         tools:text="Create object"

@@ -14,7 +14,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -29,15 +28,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
@@ -48,7 +47,7 @@ fun Section(modifier: Modifier = Modifier, title: String) {
         modifier = modifier,
         text = title,
         color = colorResource(id = R.color.text_secondary),
-        fontSize = 13.sp
+        style = Caption1Regular
     )
 }
 
@@ -65,8 +64,8 @@ fun NameBlock(
     Column(modifier = modifier.padding(start = 20.dp)) {
         Text(
             text = "Name",
-            color = colorResource(id = R.color.text_secondary),
-            fontSize = 13.sp
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary)
         )
         SettingsTextField(
             value = nameValue.value,
@@ -87,7 +86,7 @@ fun NameBlock(
 fun SpaceNameBlock() {
     Text(
         text = "Space",
-        style = MaterialTheme.typography.h3,
+        style = Title1,
         color = colorResource(id = R.color.text_primary)
     )
 }
@@ -168,11 +167,7 @@ fun SettingsTextField(
         onValueChange = onValueChange,
         enabled = true,
         readOnly = false,
-        textStyle = TextStyle(
-            fontSize = 22.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = colorResource(id = R.color.text_primary)
-        ),
+        textStyle = HeadlineHeading.copy(color = colorResource(id = R.color.text_primary)),
         cursorBrush = SolidColor(colorResource(id = R.color.orange)),
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(

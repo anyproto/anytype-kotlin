@@ -85,7 +85,8 @@ fun LibraryWidgetCard(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 42.dp, end = 16.dp),
-                style = HeadlineSubheading
+                style = HeadlineSubheading,
+                color = colorResource(id = R.color.text_primary),
             )
         }
         WidgetMenu(

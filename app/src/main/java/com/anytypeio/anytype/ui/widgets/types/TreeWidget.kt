@@ -207,7 +207,8 @@ private fun TreeWidgetTreeItems(
                 modifier = Modifier.padding(start = 8.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = PreviewTitle2Medium
+                style = PreviewTitle2Medium,
+                color = colorResource(id = R.color.text_primary),
             )
         }
         Divider(
@@ -242,6 +243,7 @@ fun WidgetHeader(
         Text(
             text = title.ifEmpty { stringResource(id = R.string.untitled) },
             style = HeadlineSubheading,
+            color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier

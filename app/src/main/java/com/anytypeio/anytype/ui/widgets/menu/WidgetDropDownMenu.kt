@@ -50,7 +50,8 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(R.string.widget_add_below),
-                    style = BodyRegular
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_primary),
                 )
             }
             Divider(
@@ -68,7 +69,8 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(R.string.widget_change_source),
-                    style = defaultTextStyle
+                    style = defaultTextStyle,
+                    color = colorResource(id = R.color.text_primary),
                 )
             }
             Divider(
@@ -86,7 +88,8 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(R.string.widget_change_type),
-                    style = defaultTextStyle
+                    style = defaultTextStyle,
+                    color = colorResource(id = R.color.text_primary),
                 )
             }
             Divider(
@@ -144,7 +147,8 @@ fun WidgetMenu(
             ) {
                 Text(
                     text = stringResource(R.string.widget_edit_widgets),
-                    style = defaultTextStyle
+                    style = defaultTextStyle,
+                    color = colorResource(id = R.color.text_primary),
                 )
             }
         }
@@ -173,7 +177,8 @@ fun WidgetActionButton(
                 .align(Alignment.Center)
                 .padding(horizontal = 12.dp),
             text = label,
-            style = Title2
+            style = Title2,
+            color = colorResource(id = R.color.text_primary)
         )
     }
 }

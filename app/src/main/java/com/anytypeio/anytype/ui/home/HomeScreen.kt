@@ -41,15 +41,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -503,10 +502,8 @@ fun HomeScreenButton(
         Text(
             text = text,
             modifier = Modifier.align(Alignment.Center),
-            style = TextStyle(
-                fontSize = 17.sp,
-                color = colorResource(id = R.color.text_white)
-            )
+            style = UXBody,
+            color = colorResource(id = R.color.text_button_label)
         )
     }
 }

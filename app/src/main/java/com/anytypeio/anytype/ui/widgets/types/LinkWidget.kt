@@ -94,7 +94,8 @@ fun LinkWidgetCard(
                         start = 16.dp,
                         end = if (isInEditMode) 76.dp else 32.dp
                     ),
-                style = HeadlineSubheading
+                style = HeadlineSubheading,
+                color = colorResource(id = R.color.text_primary),
             )
             AnimatedVisibility(
                 visible = isInEditMode,

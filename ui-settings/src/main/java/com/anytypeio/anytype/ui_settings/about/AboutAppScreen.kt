@@ -11,10 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.ui_settings.R
 
 @Composable
@@ -38,8 +38,7 @@ fun AboutAppScreen(
         ) {
             Text(
                 text = stringResource(R.string.about),
-                fontWeight = FontWeight.Bold,
-                fontSize = 28.sp,
+                style = Title1,
                 color = colorResource(R.color.text_primary)
             )
         }
@@ -54,7 +53,7 @@ fun AboutAppScreen(
             Box(modifier = Modifier.weight(1.0f, true)) {
                 Text(
                     text = stringResource(R.string.app_version),
-                    fontSize = 17.sp,
+                    style = BodyRegular,
                     color = colorResource(R.color.text_secondary)
                 )
             }
@@ -64,7 +63,7 @@ fun AboutAppScreen(
             ) {
                 Text(
                     text = version,
-                    fontSize = 17.sp,
+                    style = BodyRegular,
                     color = colorResource(R.color.text_primary)
                 )
             }
@@ -80,7 +79,7 @@ fun AboutAppScreen(
             Box(modifier = Modifier.weight(1.0f, true)) {
                 Text(
                     text = stringResource(R.string.library),
-                    fontSize = 17.sp,
+                    style = BodyRegular,
                     color = colorResource(R.color.text_secondary)
                 )
             }
@@ -90,7 +89,7 @@ fun AboutAppScreen(
             ) {
                 Text(
                     text = libraryVersion,
-                    fontSize = 17.sp,
+                    style = BodyRegular,
                     color = colorResource(R.color.text_primary)
                 )
             }
@@ -106,7 +105,7 @@ fun AboutAppScreen(
             Box(modifier = Modifier.weight(1.0f, true)) {
                 Text(
                     text = stringResource(R.string.user_id),
-                    fontSize = 17.sp,
+                    style = BodyRegular,
                     color = colorResource(R.color.text_secondary)
                 )
             }
@@ -116,7 +115,7 @@ fun AboutAppScreen(
             ) {
                 Text(
                     text = anytypeId,
-                    fontSize = 17.sp,
+                    style = BodyRegular,
                     color = colorResource(R.color.text_primary)
                 )
             }

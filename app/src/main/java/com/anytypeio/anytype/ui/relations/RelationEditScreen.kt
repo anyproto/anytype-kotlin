@@ -99,6 +99,7 @@ fun RelationEditHeader(
         }
         Text(
             text = stringResource(id = R.string.relation_editing_title),
+            color = colorResource(id = R.color.text_primary),
             style = Title1,
         )
         if (!readOnly) {

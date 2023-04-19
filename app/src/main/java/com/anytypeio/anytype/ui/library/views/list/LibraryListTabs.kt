@@ -80,6 +80,7 @@ fun LibraryListTab(
                 modifier = modifier
                     .wrapContentWidth()
                     .offset(x = config.subtitleTabOffset),
+                color = colorResource(id = R.color.text_primary)
             )
         },
         selected = pagerState.currentPage == index,

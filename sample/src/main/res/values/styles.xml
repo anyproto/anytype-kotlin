@@ -8,10 +8,8 @@
         <item name="colorPrimary">@color/sync_status_red</item>
         <item name="colorPrimaryDark">@color/palette_dark_teal</item>
         <item name="colorAccent">@color/orange</item>
-<!--        <item name="android:dialogTheme">@style/AppBottomSheetDialogTheme</item>-->
         <item name="alertDialogTheme">@style/DialogTheme</item>
-<!--        <item name="android:alertDialogTheme">?alertDialogTheme</item>-->
-<!--        <item name="dialogTheme">?alertDialogTheme</item>-->
+        <item name="android:textStyle">normal</item>
 
         <item name="primaryXSmallButtonStyle">@style/Button.Primary.XSmall</item>
         <item name="primarySmallButtonStyle">@style/Button.Primary.Small</item>

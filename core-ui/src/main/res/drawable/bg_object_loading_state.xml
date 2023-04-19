@@ -2,7 +2,11 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <gradient android:endColor="@color/object_loading_state_gradient_end_color" android:startColor="@color/object_loading_state_gradient_start_color" android:type="linear" />
+            <gradient
+                android:startColor="@color/shape_secondary"
+                android:endColor="@color/shape_tertiary"
+                android:type="linear"
+                />
         </shape>
     </item>
 </selector>

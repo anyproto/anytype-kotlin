@@ -21,7 +21,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,7 +56,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -543,33 +541,21 @@ fun CollectionScreen(vm: CollectionViewModel) {
     uiState.fold(
         onSuccess = { uiState ->
             BottomSheetScaffold(
-                modifier = Modifier.pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        coroutineScope.launch {
-                            if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                                bottomSheetScaffoldState.bottomSheetState.expand()
-                            } else {
-                                bottomSheetScaffoldState.bottomSheetState.collapse()
-                            }
-                        }
-                    })
-                },
                 sheetElevation = 0.dp,
                 sheetBackgroundColor = Color.Transparent,
                 scaffoldState = bottomSheetScaffoldState,
-                sheetContent = {
-                    BlockWidget(localDensity, vm, uiState)
-                }, sheetPeekHeight = 0.dp
+                sheetContent = { BlockWidget(localDensity, vm, uiState) },
+                sheetPeekHeight = 0.dp
             ) {
                 ScreenContent(vm, uiState)
 
                 LaunchedEffect(uiState) {
 
-                    if (uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                        coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() }
-                    } else if (!uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isExpanded) {
-                        coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
-                    }
+                        if (uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                            coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() }
+                        } else if (!uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                            coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
+                        }
 
                     snapshotFlow { bottomSheetScaffoldState.bottomSheetState.targetValue }
                         .distinctUntilChanged()

@@ -119,7 +119,7 @@ class CollectionViewModel(
         combine(interactionMode, views, operationInProgress) { mode, views, operationInProgress ->
             Resultat.success(
                 CollectionUiState(
-                    views,
+                    views = views,
                     mode == InteractionMode.Edit,
                     mode == InteractionMode.Edit && isAnySelected(),
                     resourceProvider.subscriptionName(subscription),
@@ -222,12 +222,13 @@ class CollectionViewModel(
             queryFlow(),
             objectTypes()
         ) { objs, query, types ->
-            objs.filter { obj ->
-                obj.getProperName().lowercase().contains(query.lowercase())
-            }
-                .toViews(urlBuilder, types)
-                .map { ObjectView(it) }
-                .tryAddSections()
+            val result = objs.filter { obj ->
+                obj.getProperName().contains(query, true)
+            }.toViews(urlBuilder, types).map { ObjectView(it) }.tryAddSections()
+            if (result.isEmpty() && query.isNotEmpty())
+                listOf(CollectionView.EmptySearch(query))
+            else
+                result
         }
 
     private fun List<ObjectView>.tryAddSections() =
@@ -268,7 +269,11 @@ class CollectionViewModel(
             openObject.asFlow(OpenObject.Params(configstorage.get().home, false))
                 .flatMapLatest { payloads.scan(it) { s, p -> reduce(s, p) } },
         ) { objs, query, types, favorotiesObj ->
-            prepareFavorites(favorotiesObj, objs, query, types)
+            val result = prepareFavorites(favorotiesObj, objs, query, types)
+                if (result.isEmpty() && query.isNotEmpty())
+                    listOf(CollectionView.EmptySearch(query))
+                else
+                    result
         }
 
     private fun prepareFavorites(

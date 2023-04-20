@@ -65,11 +65,10 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -92,6 +91,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionObjectView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionUiState
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.EmptySearch
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.SectionView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
@@ -206,6 +206,7 @@ private fun ListView(
                         is ObjectView -> it.obj.id
                         is CollectionView.FavoritesView -> it.obj.id
                         is SectionView -> it.name
+                        is EmptySearch -> it.query
                     }
                 }) { item ->
                     when (item) {
@@ -247,6 +248,35 @@ private fun ListView(
                                 key = item.name,
                             ) { isDragging ->
                                 SectionItem(item)
+                            }
+                        }
+                        is EmptySearch -> {
+                            Box(
+                                modifier = Modifier.fillParentMaxHeight()
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(horizontal = 16.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.search_no_results,
+                                            item.query
+                                        ),
+                                        style = UXBody,
+                                        color = colorResource(id = R.color.text_primary),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.search_no_results_try),
+                                        style = UXBody,
+                                        color = colorResource(id = R.color.text_secondary),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
                             }
                         }
                     }
@@ -513,8 +543,7 @@ fun CollectionScreen(vm: CollectionViewModel) {
     uiState.fold(
         onSuccess = { uiState ->
             BottomSheetScaffold(
-                modifier =
-                Modifier.pointerInput(Unit) {
+                modifier = Modifier.pointerInput(Unit) {
                     detectTapGestures(onTap = {
                         coroutineScope.launch {
                             if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {

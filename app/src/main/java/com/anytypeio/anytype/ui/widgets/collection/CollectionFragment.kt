@@ -104,6 +104,6 @@ class CollectionFragment : BaseComposeFragment() {
     }
 
     companion object {
-        val SUBSCRIPTION_KEY: String = "arg.collection.subscription"
+        const val SUBSCRIPTION_KEY: String = "arg.collection.subscription"
     }
 }

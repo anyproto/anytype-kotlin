@@ -24,4 +24,6 @@ sealed class CollectionView {
     data class SectionView(
         val name: String
     ) : CollectionView()
+
+    data class EmptySearch(val query: String) : CollectionView()
 }

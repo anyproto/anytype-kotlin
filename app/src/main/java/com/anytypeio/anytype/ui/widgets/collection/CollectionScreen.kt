@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -114,7 +115,9 @@ fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
     {
         Box {
             Column(
-                Modifier.padding(0.dp, 0.dp, 0.dp, 32.dp)
+                Modifier
+                    .fillMaxSize()
+                    .padding(0.dp, 0.dp, 0.dp, 32.dp)
             ) {
                 TopBar(vm, uiState)
                 SearchBar(vm, uiState)

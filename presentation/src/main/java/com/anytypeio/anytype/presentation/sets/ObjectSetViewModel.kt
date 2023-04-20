@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -34,6 +35,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -56,6 +58,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMI
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.sets.model.CellView
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
@@ -334,9 +337,11 @@ class ObjectSetViewModel(
                             emptyFlow()
                         }
                     }
-                }.onEach { index ->
-                    Timber.d("subscribeToObjectState, New index size: ${index.objects.size}")
-                    database.update(index)
+                }.onEach { dataViewState ->
+                    if (dataViewState is DataViewState.Loaded) {
+                        Timber.d("subscribeToObjectState, New index size: ${dataViewState.objects.size}")
+                    }
+                    database.update(dataViewState)
                 }
                 .catch { error ->
                     Timber.e("subscribeToObjectState error : $error")
@@ -394,75 +399,127 @@ class ObjectSetViewModel(
                 database.index,
                 stateReducer.state,
                 session.currentViewerId
-            ) { db, state, currentViewId ->
-                when (state) {
-                    is ObjectState.DataView.Collection -> {
-                        if (!state.isInitialized) {
-                            DataViewViewState.Init
-                        } else {
-                            val relations =
-                                state.dataViewContent.relationLinks.mapNotNull {
-                                    storeOfRelations.getByKey(it.key)
-                                }
-                            val dvViewer = state.viewerById(currentViewId)
-                            val viewer = if (dvViewer != null) {
-                                val objectOrderIds = state.getObjectOrderIds(dvViewer.id)
-                                dvViewer.render(
-                                    coverImageHashProvider = coverImageHashProvider,
-                                    builder = urlBuilder,
-                                    objects = db.objects,
-                                    dataViewRelations = relations,
-                                    details = state.details,
-                                    store = objectStore,
-                                    objectOrderIds = objectOrderIds
-                                )
-                            } else {
-                                null
-                            }
-                            when {
-                                viewer == null -> DataViewViewState.Collection.NoView
-                                viewer.isEmpty() -> DataViewViewState.Collection.NoItems(title = viewer.title)
-                                else -> DataViewViewState.Collection.Default(viewer = viewer)
-                            }
-                        }
-                    }
-                    is ObjectState.DataView.Set -> {
-                        if (!state.isInitialized) {
-                            DataViewViewState.Init
-                        } else {
-                            val relations =
-                                state.dataViewContent.relationLinks.mapNotNull {
-                                    storeOfRelations.getByKey(it.key)
-                                }
-                            val setOfValue = state.getSetOfValue(ctx = context)
-                            val query = state.filterOutDeletedAndMissingObjects(query = setOfValue)
-                            val render = state.viewerById(currentViewId)
-                                ?.render(
-                                    coverImageHashProvider = coverImageHashProvider,
-                                    builder = urlBuilder,
-                                    objects = db.objects,
-                                    dataViewRelations = relations,
-                                    details = state.details,
-                                    store = objectStore
-                                )
-                            when {
-                                query.isEmpty() -> DataViewViewState.Set.NoQuery
-                                setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
-                                render == null -> DataViewViewState.Set.NoView
-                                render.isEmpty() -> {
-                                    DataViewViewState.Set.NoItems(title = render.title)
-                                }
-                                else -> DataViewViewState.Set.Default(viewer = render)
-                            }
-                        }
-                    }
-                    ObjectState.Init -> DataViewViewState.Init
-                    ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
-                }
+            ) { dataViewState, objectState, currentViewId ->
+                processViewState(dataViewState, objectState, currentViewId)
             }.distinctUntilChanged().collect { viewState ->
-                    Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
-                    _currentViewer.value = viewState
+                Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
+                _currentViewer.value = viewState
             }
+        }
+    }
+
+    private suspend fun processViewState(
+        dataViewState: DataViewState,
+        objectState: ObjectState,
+        currentViewId: String?
+    ): DataViewViewState {
+        return when (objectState) {
+            is ObjectState.DataView.Collection -> processCollectionState(
+                dataViewState,
+                objectState,
+                currentViewId
+            )
+            is ObjectState.DataView.Set -> processSetState(
+                dataViewState,
+                objectState,
+                currentViewId
+            )
+            ObjectState.Init -> DataViewViewState.Init
+            ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
+        }
+    }
+
+    private suspend fun processCollectionState(
+        dataViewState: DataViewState,
+        objectState: ObjectState.DataView.Collection,
+        currentViewId: String?
+    ): DataViewViewState {
+        if (!objectState.isInitialized) return DataViewViewState.Init
+
+        val dvViewer = objectState.viewerById(currentViewId)
+
+        return when (dataViewState) {
+            DataViewState.Init -> {
+                if (dvViewer == null) {
+                    DataViewViewState.Collection.NoView
+                } else {
+                    DataViewViewState.Init
+                }
+            }
+            is DataViewState.Loaded -> {
+                val relations = objectState.dataViewContent.relationLinks.mapNotNull {
+                    storeOfRelations.getByKey(it.key)
+                }
+                val viewer = renderViewer(objectState, dataViewState, dvViewer, relations)
+
+                when {
+                    viewer == null -> DataViewViewState.Collection.NoView
+                    viewer.isEmpty() -> DataViewViewState.Collection.NoItems(title = viewer.title)
+                    else -> DataViewViewState.Collection.Default(viewer = viewer)
+                }
+            }
+        }
+    }
+
+    private suspend fun processSetState(
+        dataViewState: DataViewState,
+        objectState: ObjectState.DataView.Set,
+        currentViewId: String?
+    ): DataViewViewState {
+        if (!objectState.isInitialized) return DataViewViewState.Init
+
+        val setOfValue = objectState.getSetOfValue(ctx = context)
+        val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
+        val viewer = objectState.viewerById(currentViewId)
+
+        return when (dataViewState) {
+            DataViewState.Init -> {
+                when {
+                    setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
+                    viewer == null -> DataViewViewState.Set.NoView
+                    else -> DataViewViewState.Init
+                }
+            }
+            is DataViewState.Loaded -> {
+                val relations = objectState.dataViewContent.relationLinks.mapNotNull {
+                    storeOfRelations.getByKey(it.key)
+                }
+                val render = viewer?.render(
+                    coverImageHashProvider = coverImageHashProvider,
+                    builder = urlBuilder,
+                    objects = dataViewState.objects,
+                    dataViewRelations = relations,
+                    details = objectState.details,
+                    store = objectStore
+                )
+
+                when {
+                    query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
+                    render == null -> DataViewViewState.Set.NoView
+                    render.isEmpty() -> DataViewViewState.Set.NoItems(title = render.title)
+                    else -> DataViewViewState.Set.Default(viewer = render)
+                }
+            }
+        }
+    }
+
+    private suspend fun renderViewer(
+        objectState: ObjectState.DataView.Collection,
+        dataViewState: DataViewState.Loaded,
+        dvViewer: DVViewer?,
+        relations: List<ObjectWrapper.Relation>
+    ): Viewer? {
+        return dvViewer?.let {
+            val objectOrderIds = objectState.getObjectOrderIds(dvViewer.id)
+            it.render(
+                coverImageHashProvider = coverImageHashProvider,
+                builder = urlBuilder,
+                objects = dataViewState.objects,
+                dataViewRelations = relations,
+                details = objectState.details,
+                store = objectStore,
+                objectOrderIds = objectOrderIds
+            )
         }
     }
 

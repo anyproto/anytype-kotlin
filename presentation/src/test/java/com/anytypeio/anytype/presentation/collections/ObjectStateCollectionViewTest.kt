@@ -124,7 +124,8 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             workspace = mockObjectCollection.workspaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
-            keys = mockObjectCollection.dvKeys
+            keys = mockObjectCollection.dvKeys,
+            dvSorts = mockObjectCollection.sorts
         )
 
         // TESTING
@@ -177,7 +178,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
         assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
+        //assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem())
     }
 
@@ -222,7 +223,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also {dataViewState ->
             val rows = (dataViewState.viewer as Viewer.ListView).items
             assertEquals(5, rows.size)
@@ -277,7 +277,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also {dataViewState ->
             val rows = (dataViewState.viewer as Viewer.ListView).items
             assertEquals(5, rows.size)
@@ -333,7 +332,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
+        //assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also {dataViewState ->
             val rows = (dataViewState.viewer as Viewer.GridView).rows
             assertEquals(5, rows.size)
@@ -389,7 +388,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also {dataViewState ->
             val rows = (dataViewState.viewer as Viewer.GridView).rows
             assertEquals(5, rows.size)
@@ -445,7 +443,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also {dataViewState ->
             val rows = (dataViewState.viewer as Viewer.GalleryView).items
             assertEquals(5, rows.size)
@@ -501,7 +498,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also {dataViewState ->
             val rows = (dataViewState.viewer as Viewer.GalleryView).items
             assertEquals(5, rows.size)

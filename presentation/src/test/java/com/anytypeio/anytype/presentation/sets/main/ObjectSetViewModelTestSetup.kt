@@ -69,6 +69,7 @@ import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 open class ObjectSetViewModelTestSetup {
@@ -130,7 +131,7 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var cancelSearchSubscription: CancelSearchSubscription
 
-    @Mock
+    //@Mock
     lateinit var repo: BlockRepository
 
     @Mock
@@ -163,6 +164,7 @@ open class ObjectSetViewModelTestSetup {
     lateinit var dispatchers: AppCoroutineDispatchers
 
     fun givenViewModel(): ObjectSetViewModel {
+        repo = mock(verboseLogging = true)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,
             computation = rule.dispatcher,

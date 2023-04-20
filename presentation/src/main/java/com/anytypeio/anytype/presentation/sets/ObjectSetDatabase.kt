@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer.Index
+import com.anytypeio.anytype.domain.search.DataViewState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,10 +14,10 @@ import timber.log.Timber
 class ObjectSetDatabase(
     val store: ObjectStore
 ) {
-    private val _index = MutableStateFlow(Index())
-    val index: StateFlow<Index> = _index
+    private val _index: MutableStateFlow<DataViewState> = MutableStateFlow(DataViewState.Init)
+    val index: StateFlow<DataViewState> = _index
 
-    fun update(update: Index) {
+    fun update(update: DataViewState) {
         _index.value = update
     }
 

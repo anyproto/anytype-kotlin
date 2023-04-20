@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -159,7 +160,7 @@ class DataViewSubscriptionContainerTest {
 
                 // checking subscription
 
-                val firstEmission = awaitItem()
+                val firstEmission = awaitItem() as DataViewState.Loaded
 
                 assertTrue {
                     with(firstEmission) {
@@ -167,7 +168,7 @@ class DataViewSubscriptionContainerTest {
                     }
                 }
 
-                val secondEmission = awaitItem()
+                val secondEmission = awaitItem() as DataViewState.Loaded
 
                 assertTrue {
                     with(secondEmission) {
@@ -175,7 +176,7 @@ class DataViewSubscriptionContainerTest {
                     }
                 }
 
-                val thirdEmission = awaitItem()
+                val thirdEmission = awaitItem() as DataViewState.Loaded
 
                 assertTrue {
                     with(thirdEmission) {

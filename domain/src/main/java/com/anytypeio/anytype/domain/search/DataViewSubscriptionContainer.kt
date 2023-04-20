@@ -10,7 +10,6 @@ import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer.Index
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emitAll
@@ -22,7 +21,7 @@ import kotlinx.coroutines.flow.scan
  * Container for data view subscription responsible for:
  * fetching data for data view and storing it in the provided [ObjectStore]
  * reacting to subsequent [SubscriptionEvent] (objects added, removed, repositioned, etc.)
- * emitting database [Index] changes to its subscribers
+ * emitting Data View state [DataViewState] changes to its subscribers
  * keeping track for [SearchResult.Counter] changes needed for pagination logic and emitting it to its subscribers
  */
 class DataViewSubscriptionContainer(
@@ -34,7 +33,7 @@ class DataViewSubscriptionContainer(
 
     val counter = MutableSharedFlow<SearchResult.Counter>()
 
-    fun observe(params: Params): Flow<Index> {
+    fun observe(params: Params): Flow<DataViewState> {
         return flow {
             val initial = repo.searchObjectsWithSubscription(
                 subscription = params.subscription,
@@ -55,7 +54,7 @@ class DataViewSubscriptionContainer(
                 dependencies = initial.dependencies,
                 subscriptions = listOf(params.subscription)
             )
-            val sub = Index(
+            val sub = DataViewState.Loaded(
                 objects = initial.results.map { it.id },
                 dependencies = initial.dependencies.map { it.id }
             )
@@ -182,17 +181,5 @@ class DataViewSubscriptionContainer(
         val keys: List<Key>,
         val sources: List<String> = emptyList(),
         val collection: Id? = null
-    )
-
-    /**
-     * Index for keeping track of results and its dependencies.
-     * @property [objects] data for this subscription
-     * @property [dependencies] its dependencies
-     * @property [lastModified] timestamp for data modification
-     */
-    data class Index(
-        val objects: List<Id> = emptyList(),
-        val dependencies: List<Id> = emptyList(),
-        val lastModified: Long = 0L
     )
 }

@@ -447,6 +447,7 @@ open class ObjectSetFragment :
                 topToolbarStatusContainer.visible()
                 initView.gone()
                 header.visible()
+                dataViewHeader.visible()
                 viewerTitle.isEnabled = true
                 addNewButton.isEnabled = true
                 customizeViewButton.isEnabled = true

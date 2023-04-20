@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.subscription
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -24,7 +25,7 @@ interface DataViewSubscription {
         session: ObjectSetSession,
         offset: Long,
         storeOfRelations: StoreOfRelations
-    ): Flow<DataViewSubscriptionContainer.Index>
+    ): Flow<DataViewState>
 
     suspend fun startObjectCollectionSubscription(
         context: Id,
@@ -34,7 +35,7 @@ interface DataViewSubscription {
         session: ObjectSetSession,
         offset: Long,
         storeOfRelations: StoreOfRelations
-    ): Flow<DataViewSubscriptionContainer.Index>
+    ): Flow<DataViewState>
 }
 
 class DefaultDataViewSubscription(
@@ -49,7 +50,7 @@ class DefaultDataViewSubscription(
         session: ObjectSetSession,
         offset: Long,
         storeOfRelations: StoreOfRelations
-    ): Flow<DataViewSubscriptionContainer.Index> {
+    ): Flow<DataViewState> {
         if (context.isEmpty() || collection.isEmpty()) {
             Timber.w("Data view collection subscription: context or collection is empty")
             return emptyFlow()
@@ -87,7 +88,7 @@ class DefaultDataViewSubscription(
         session: ObjectSetSession,
         offset: Long,
         storeOfRelations: StoreOfRelations
-    ): Flow<DataViewSubscriptionContainer.Index> {
+    ): Flow<DataViewState> {
         if (context.isEmpty()) {
             Timber.w("Data view set subscription: context is empty")
             return emptyFlow()

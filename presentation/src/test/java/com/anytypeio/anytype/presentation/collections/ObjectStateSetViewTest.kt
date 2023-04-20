@@ -212,7 +212,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
         assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Set.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
     }
 
@@ -231,7 +230,8 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             workspace = mockObjectSet.workspaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
-            sources = listOf(mockObjectSet.setOf)
+            sources = listOf(mockObjectSet.setOf),
+            dvFilters = mockObjectSet.filters
         )
 
         // TESTING
@@ -243,9 +243,8 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         // ASSERT STATES
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-
         assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Set.NoItems>(viewerFlow.awaitItem())
     }
 
@@ -323,7 +322,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
         assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Set.NoItems>(viewerFlow.awaitItem())
         assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
 
         stateFlow.ensureAllEventsConsumed()

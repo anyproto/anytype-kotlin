@@ -113,12 +113,6 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 actual = initState
             )
 
-            val noItemsState = awaitItem()
-            assertEquals(
-                expected = DataViewViewState.Collection.NoItems(title = objectCollection.viewerList.name),
-                actual = noItemsState
-            )
-
             val gridState = awaitItem()
             assertEquals(
                 expected = DataViewViewState.Collection.Default(

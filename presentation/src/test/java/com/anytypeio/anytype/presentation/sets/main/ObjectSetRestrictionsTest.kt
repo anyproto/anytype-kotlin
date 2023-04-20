@@ -68,10 +68,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
@@ -117,10 +114,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
@@ -166,10 +160,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
@@ -215,10 +206,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
@@ -264,10 +252,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {

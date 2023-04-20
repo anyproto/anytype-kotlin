@@ -78,10 +78,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // CLICK ON TAG RELATION
             viewModel.onGridCellClicked(
@@ -145,10 +142,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // CLICK ON TAG RELATION
             viewModel.onGridCellClicked(
@@ -205,10 +199,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // CLICK ON RECORD NAME
             viewModel.onObjectHeaderClicked(mockObjectSet.obj1.id)
@@ -263,10 +254,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(first)
 
             val second = awaitItem()
-            assertIs<DataViewViewState.Set.NoItems>(second)
-
-            val third = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(third)
+            assertIs<DataViewViewState.Set.Default>(second)
 
             // CLICK ON RECORD NAME
             viewModel.onObjectHeaderClicked(objectUnsupportedLayout.id)

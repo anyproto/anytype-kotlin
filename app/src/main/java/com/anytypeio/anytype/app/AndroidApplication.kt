@@ -1,12 +1,8 @@
 package com.anytypeio.anytype.app
 
 import android.app.Application
-import androidx.core.provider.FontRequest
-import androidx.emoji.text.EmojiCompat
-import androidx.emoji.text.FontRequestEmojiCompatConfig
 import com.amplitude.api.Amplitude
 import com.anytypeio.anytype.BuildConfig
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.SentryCrashReporter
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker
 import com.anytypeio.anytype.core_utils.tools.CrashlyticsTree
@@ -54,20 +50,8 @@ class AndroidApplication : Application(), HasComponentDependencies {
         super.onCreate()
         main.inject(this)
         setupAnalytics()
-        setupEmojiCompat()
         setupTimber()
         setupLocalNetworkAddressHandler()
-    }
-
-    private fun setupEmojiCompat() {
-        val fontRequest = FontRequest(
-            "com.google.android.gms.fonts",
-            "com.google.android.gms",
-            "Graphik Regular",
-            R.array.certs
-        )
-        val config = FontRequestEmojiCompatConfig(this, fontRequest)
-        EmojiCompat.init(config)
     }
 
     private fun setupTimber() {

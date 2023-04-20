@@ -4265,10 +4265,10 @@ class EditorViewModel(
             ctx = context,
             sources = emptyList()
         )
-        objectToSet.invoke(params).proceed(
-            failure = { error -> Timber.e(error, "Error convert object to set") },
-            success = { setId ->
-                proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
+        objectToSet.execute(params).fold(
+            onFailure = { error -> Timber.e(error, "Error convert object to set") },
+            onSuccess = {
+                //proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
             }
         )
     }

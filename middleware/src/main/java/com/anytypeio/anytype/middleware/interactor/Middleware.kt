@@ -1593,7 +1593,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectToSet(ctx: String, source: List<String>): String {
+    fun objectToSet(ctx: String, source: List<String>) {
         val request = Rpc.Object.ToSet.Request(
             contextId = ctx,
             source = source
@@ -1601,7 +1601,6 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectToSet(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.setId
     }
 
     @Throws(Exception::class)

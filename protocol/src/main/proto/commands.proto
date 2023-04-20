@@ -1136,29 +1136,6 @@ message Rpc {
             }
         }
 
-        message AddWithObjectId {
-            message Request {
-                string objectId = 1;
-                string payload = 2;
-            }
-
-            message Response {
-                Error error = 1;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-
         message Search {
             message Request {
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
@@ -1578,7 +1555,6 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                string setId = 2;
 
                 message Error {
                     Code code = 1;
@@ -1851,6 +1827,7 @@ message Rpc {
                 Type type = 10;
                 Mode mode = 11;
                 bool noProgress = 12;
+                bool isMigration = 13;
 
                 message NotionParams {
                     string apiKey = 1;

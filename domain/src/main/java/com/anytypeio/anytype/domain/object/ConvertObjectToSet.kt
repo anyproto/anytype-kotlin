@@ -1,20 +1,20 @@
 package com.anytypeio.anytype.domain.`object`
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class ConvertObjectToSet(
-    private val repo: BlockRepository
-) : BaseUseCase<String, ConvertObjectToSet.Params>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<ConvertObjectToSet.Params, Unit>(dispatchers.io) {
 
-    override suspend fun run(params: Params): Either<Throwable, String> = safe {
+    override suspend fun doWork(params: Params) =
         repo.objectToSet(
             ctx = params.ctx,
             source = params.sources
         )
-    }
 
     data class Params(
         val ctx: Id,

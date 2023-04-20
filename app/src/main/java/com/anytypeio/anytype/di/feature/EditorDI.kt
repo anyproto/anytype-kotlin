@@ -855,9 +855,11 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideObjectToSet(
-        repo: BlockRepository
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
     ): ConvertObjectToSet = ConvertObjectToSet(
-        repo = repo
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

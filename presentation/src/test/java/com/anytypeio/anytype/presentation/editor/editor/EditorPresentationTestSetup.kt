@@ -101,6 +101,7 @@ import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.dispatchers
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
@@ -342,7 +343,7 @@ open class EditorPresentationTestSetup {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
-        objectToSet = ConvertObjectToSet(repo)
+        objectToSet = ConvertObjectToSet(repo, dispatchers)
         updateDetail = UpdateDetail(repo)
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)

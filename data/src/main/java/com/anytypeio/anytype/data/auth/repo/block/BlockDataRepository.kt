@@ -529,8 +529,8 @@ class BlockDataRepository(
     override suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload =
         remote.fillTableRow(ctx, targetIds)
 
-    override suspend fun objectToSet(ctx: Id, source: List<String>): Id {
-        return remote.objectToSet(ctx, source)
+    override suspend fun objectToSet(ctx: Id, source: List<String>) {
+        remote.objectToSet(ctx, source)
     }
 
     override suspend fun objectToCollection(ctx: Id) {

@@ -997,6 +997,7 @@ message Model {
             Export = 2;
             SaveFile = 3;
             RecoverAccount = 4;
+            Migration = 5;
         }
 
         enum State {

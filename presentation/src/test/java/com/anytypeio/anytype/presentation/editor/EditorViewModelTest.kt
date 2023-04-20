@@ -3883,7 +3883,7 @@ open class EditorViewModelTest {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
-        objectToSet = ConvertObjectToSet(repo)
+        objectToSet = ConvertObjectToSet(repo, dispatchers)
         updateDetail = UpdateDetail(repo)
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)

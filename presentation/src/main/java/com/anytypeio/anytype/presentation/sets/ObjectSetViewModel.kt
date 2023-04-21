@@ -1250,31 +1250,12 @@ class ObjectSetViewModel(
             objectToCollection.execute(params).fold(
                 onFailure = { error -> Timber.e(error, "Error convert object to collection") },
                 onSuccess = {
+                    isCustomizeViewPanelVisible.value = false
                     logEvent(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.TURN_INTO_COLLECTION,
                         startTime = startTime
-                    )
-                    //proceedWithOpeningCollection(target = setId)
-                }
-            )
-        }
-    }
-
-    private fun proceedWithOpeningCollection(target: Id) {
-        isCustomizeViewPanelVisible.value = false
-        viewModelScope.launch {
-            closeBlock.execute(context).fold(
-                onSuccess = {
-                    navigate(
-                        EventWrapper(AppNavigation.Command.OpenObjectSet(target, true))
-                    )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while closing object set: $context")
-                    navigate(
-                        EventWrapper(AppNavigation.Command.OpenObjectSet(target, true))
                     )
                 }
             )
@@ -1282,14 +1263,9 @@ class ObjectSetViewModel(
     }
 
     companion object {
-        const val TITLE_CHANNEL_DISPATCH_DELAY = 300L
         const val NOT_ALLOWED = "Not allowed for this set"
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
-        const val DATA_VIEW_NOT_FOUND_ERROR =
-            "Content missing for this set. Please, try again later."
-        const val OBJECT_SET_HAS_EMPTY_SOURCE_ERROR =
-            "Object type is not defined for this set. Please, setup object type on Desktop."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
     }
 }

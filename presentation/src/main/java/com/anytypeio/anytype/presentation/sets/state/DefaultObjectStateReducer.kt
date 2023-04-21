@@ -320,10 +320,28 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
+            is ObjectState.DataView.Set -> {
+                val blocks = state.blocks.map { block ->
+                    val content = block.content
+                    if (block.id == event.dv && content is Block.Content.DataView) {
+                        block.copy(
+                            content = content.copy(
+                                isCollection = event.isCollection
+                            )
+                        )
+                    } else {
+                        block
+                    }
+                }
+                ObjectState.DataView.Collection(
+                    root = state.root,
+                    blocks = blocks,
+                    details = state.details,
+                    objectRestrictions = state.objectRestrictions,
+                    dataViewRestrictions = state.dataViewRestrictions,
+                    objectRelationLinks = state.objectRelationLinks
+                )
+            }
             else -> state
         }
     }

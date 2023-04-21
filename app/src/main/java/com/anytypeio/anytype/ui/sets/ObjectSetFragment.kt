@@ -385,6 +385,7 @@ open class ObjectSetFragment :
                 topToolbarThreeDotsButton.visible()
                 topToolbarStatusContainer.visible()
                 initView.gone()
+                header.visible()
                 dataViewHeader.gone()
                 dataViewInfo.hide()
                 toast(getString(R.string.set_collection_view_not_present))
@@ -406,6 +407,7 @@ open class ObjectSetFragment :
             is DataViewViewState.Collection.Default -> {
                 topToolbarThreeDotsButton.visible()
                 topToolbarStatusContainer.visible()
+                header.visible()
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
@@ -467,6 +469,7 @@ open class ObjectSetFragment :
             is DataViewViewState.Error -> {
                 topToolbarThreeDotsButton.visible()
                 topToolbarStatusContainer.visible()
+                header.visible()
                 initView.gone()
                 dataViewHeader.gone()
                 toast(state.msg)

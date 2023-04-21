@@ -4268,7 +4268,7 @@ class EditorViewModel(
         objectToSet.execute(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
-                //proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
             }
         )
     }
@@ -4278,7 +4278,7 @@ class EditorViewModel(
         objectToCollection.execute(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
-                //proceedWithOpeningDataViewObject(target = setId, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
             }
         )
     }

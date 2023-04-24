@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.editor
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.editor.Editor.Focus.Companion.id
 
 interface Editor {
 
@@ -11,21 +12,38 @@ interface Editor {
      * @property isPending focus is pending if we do not know whether the target widget has gained focus.
      */
     data class Focus(
-        val id: Id,
+        var target: Target,
         val cursor: Cursor?,
         val isPending: Boolean = true
     ) : Editor {
 
-        val isEmpty: Boolean get() = id == EMPTY_FOCUS
+        val isEmpty: Boolean get() = target is Target.None
+
+        fun isTarget(block: Id) : Boolean {
+            val cur = target
+            return (cur is Target.Block && cur.id == block)
+        }
+        fun requireTarget() : Id = (target as Target.Block).id
+        fun targetOrNull() : Id? = (target as? Target.Block)?.id
 
         companion object {
-            fun empty() = Focus("", null)
+            fun empty() = Focus(
+                target = Target.None,
+                cursor = null,
+                isPending = false
+            )
             fun id(id: Id, isPending: Boolean = true) = Focus(
-                id = id,
+                target = Target.Block(id),
                 cursor = null,
                 isPending = isPending
             )
             const val EMPTY_FOCUS = ""
+        }
+
+        sealed class Target {
+            object None: Target()
+            object FirstTextBlock : Target()
+            data class Block(val id: Id) : Target()
         }
     }
 

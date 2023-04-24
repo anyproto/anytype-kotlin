@@ -648,7 +648,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
 
     @Test
@@ -762,7 +762,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
     //endregion
 
@@ -813,7 +813,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
 
     @Test
@@ -923,7 +923,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
     //endregion
 
@@ -989,7 +989,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
 
     @Test
@@ -1053,7 +1053,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
 
     @Test
@@ -1167,7 +1167,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
     //endregion
 
@@ -1232,7 +1232,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(
+            expected = expectedFocus,
+            actual = focus.requireTarget()
+        )
     }
 
     @Test
@@ -1344,7 +1347,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         val focus = orchestrator.stores.focus.current()
         val expectedFocus = description.id
-        assertEquals(expected = expectedFocus, actual = focus.id)
+        assertEquals(expected = expectedFocus, actual = focus.requireTarget())
     }
     //endregion
 

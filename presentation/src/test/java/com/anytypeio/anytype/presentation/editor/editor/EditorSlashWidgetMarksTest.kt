@@ -330,7 +330,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block.id, focus.id)
+        assertEquals(block.id, focus.requireTarget())
         assertEquals(cursor, focus.cursor)
     }
 
@@ -587,7 +587,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block.id, focus.id)
+        assertEquals(block.id, focus.requireTarget())
         assertEquals(cursor, focus.cursor)
     }
 
@@ -820,7 +820,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block2.id, focus.id)
+        assertEquals(block2.id, focus.requireTarget())
         assertEquals(cursor, focus.cursor)
     }
 
@@ -1059,7 +1059,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block3.id, focus.id)
+        assertEquals(block3.id, focus.requireTarget())
         assertEquals(cursor, focus.cursor)
     }
 

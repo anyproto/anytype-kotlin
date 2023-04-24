@@ -344,7 +344,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block.id, focus.id)
+        assertEquals(block.id, focus.requireTarget())
         assertEquals(cursor, focus.cursor)
     }
 
@@ -733,7 +733,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
 
-        assertEquals(block.id, focus.id)
+        assertEquals(block.id, focus.requireTarget())
         assertEquals(cursor, focus.cursor)
     }
 

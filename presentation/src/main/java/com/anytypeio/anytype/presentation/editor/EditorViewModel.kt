@@ -310,7 +310,6 @@ class EditorViewModel(
 
     val views: List<BlockView> get() = orchestrator.stores.views.current()
 
-    val pending: Queue<Restore> = LinkedList()
     val restore: Queue<Restore> = LinkedList()
 
     private val jobs = mutableListOf<Job>()
@@ -467,15 +466,19 @@ class EditorViewModel(
                     orchestrator.stores.textSelection.update(Editor.TextSelection.empty())
                 } else {
                     if (!focus.isPending) {
-                        val event = views.getOnFocusChangedEvent(blockId = focus.id)
+                        val focused = focus.targetOrNull()
+                        val event = if (focused != null)
+                            views.getOnFocusChangedEvent(blockId = focused)
+                        else
+                            null
                         if (event != null) {
                             controlPanelInteractor.onEvent(event)
                         } else {
-                            Timber.w("Couldn't found focused block by id:[${focus.id}]")
+                            Timber.w("Couldn't found focused block by id:[${focus.targetOrNull()}]")
                         }
                     }
                 }
-                _focus.postValue(focus.id)
+                _focus.postValue(focus.targetOrNull().orEmpty())
             }
         }
     }
@@ -489,9 +492,10 @@ class EditorViewModel(
                 .filter { it.events.isNotEmpty() }
                 .map { payload -> processEvents(payload.events) }
                 .collect { flags ->
-                    if (flags.contains(Flags.FLAG_REFRESH))
+                    if (flags.contains(Flags.FLAG_REFRESH)) {
+                        Timber.d("Starting refresh due to internal payload update")
                         refresh()
-                    else {
+                    } else {
                         Timber.d("----------Refresh skipped----------")
                     }
                 }
@@ -693,6 +697,7 @@ class EditorViewModel(
                 }
                 footers.value = getFooterState(root, details)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
+                Timber.d("Rendering starting...")
                 val doc = models.asMap().render(
                     mode = mode,
                     root = root,
@@ -786,7 +791,7 @@ class EditorViewModel(
             if (state.markupMainToolbar.isVisible) {
                 controlPanelInteractor.onEvent(
                     event = ControlPanelMachine.Event.OnRefresh.Markup(
-                        target = document.find { block -> block.id == orchestrator.stores.focus.current().id },
+                        target = document.find { block -> block.id == orchestrator.stores.focus.current().targetOrNull() },
                         selection = orchestrator.stores.textSelection.current().selection
                     )
                 )
@@ -938,9 +943,10 @@ class EditorViewModel(
                 .build(InterceptEvents.Params(context))
                 .map { events -> processEvents(events) }
                 .collect { flags ->
-                    if (flags.contains(Flags.FLAG_REFRESH))
+                    if (flags.contains(Flags.FLAG_REFRESH)) {
+                        Timber.d("Starting refresh due external payload update")
                         refresh()
-                    else
+                    } else
                         Timber.d("----------Refresh skipped----------")
                 }
         }
@@ -1024,7 +1030,10 @@ class EditorViewModel(
                         try {
                             val title = event.blocks.title()
                             if (title != null && title.content<Content.Text>().text.isEmpty()) {
-                                val focus = Editor.Focus(id = title.id, cursor = Editor.Cursor.End)
+                                val focus = Editor.Focus(
+                                    target = Editor.Focus.Target.Block(title.id),
+                                    cursor = Editor.Cursor.End
+                                )
                                 viewModelScope.launch { orchestrator.stores.focus.update(focus) }
                             } else {
                                 Timber.d("Skipping initial focusing. Title is not empty or is null")
@@ -1039,7 +1048,10 @@ class EditorViewModel(
                     if (layout == ObjectType.Layout.NOTE.code.toDouble()) {
                         val block = event.blocks.firstOrNull { it.content is Content.Text }
                         if (block != null && block.content<Content.Text>().text.isEmpty()) {
-                            val focus = Editor.Focus(id = block.id, cursor = Editor.Cursor.End)
+                            val focus = Editor.Focus(
+                                target = Editor.Focus.Target.Block(block.id),
+                                cursor = Editor.Cursor.End
+                            )
                             viewModelScope.launch { orchestrator.stores.focus.update(focus) }
                         }
                     }
@@ -1330,8 +1342,8 @@ class EditorViewModel(
     ) {
         Timber.d("onEnterKeyClicked, target:[$target] text:[$text] marks:[$marks] range:[$range]")
         val focus = orchestrator.stores.focus.current()
-        if (!focus.isEmpty && focus.id == target) {
-            proceedWithEnterEvent(focus.id, range, text, marks)
+        if (!focus.isEmpty && focus.isTarget(target)) {
+            proceedWithEnterEvent(focus.requireTarget(), range, text, marks)
         } else {
             Timber.e("No blocks in focus, emit SplitLineEnter event")
         }
@@ -2140,9 +2152,14 @@ class EditorViewModel(
 
         Timber.d("onAddTextBlockClicked, style:[$style]")
 
-        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val focused = orchestrator.stores.focus.current().targetOrNull()
 
-        val content = target.content
+        val target = if (focused != null)
+            blocks.find { it.id == focused }
+        else
+            null
+
+        val content = target?.content ?: return
 
         if (content is Content.Text && content.text.isEmpty()) {
             viewModelScope.launch {
@@ -2208,17 +2225,21 @@ class EditorViewModel(
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
         Timber.d("onAddFileBlockClicked, type:[$type]")
-        val focused = blocks.find { it.id == orchestrator.stores.focus.current().id }
-        if (focused != null) {
-            val content = focused.content
+        val focused = orchestrator.stores.focus.current().targetOrNull()
+        val target = if (focused != null)
+            blocks.find { it.id == focused }
+        else
+            null
+        if (target != null) {
+            val content = target.content
             if (content is Content.Text && content.text.isEmpty()) {
                 proceedWithReplacingByEmptyFileBlock(
-                    id = focused.id,
+                    id = target.id,
                     type = type
                 )
             } else {
                 proceedWithCreatingEmptyFileBlock(
-                    id = focused.id,
+                    id = target.id,
                     type = type,
                     position = Position.BOTTOM
                 )
@@ -2348,8 +2369,8 @@ class EditorViewModel(
 
     fun onBlockToolbarStyleClicked() {
         Timber.d("onBlockToolbarStyleClicked, ")
-        val focus = orchestrator.stores.focus.current()
-        val targetId = focus.id
+        val focus = orchestrator.stores.focus.current().targetOrNull()
+        val targetId = focus.orEmpty()
         if (targetId.isNotEmpty()) {
             when (val targetView = views.singleOrNull { it.id == targetId }) {
                 is BlockView.Description -> sendToast(CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION)
@@ -2448,7 +2469,7 @@ class EditorViewModel(
             viewModelScope.launch {
                 orchestrator.stores.focus.update(
                     Editor.Focus(
-                        id = target,
+                        target = Editor.Focus.Target.Block(target),
                         cursor = cursor?.let { c -> Editor.Cursor.Range(c..c) }
                     )
                 )
@@ -2490,7 +2511,7 @@ class EditorViewModel(
             viewModelScope.launch {
                 orchestrator.stores.focus.update(
                     Editor.Focus(
-                        id = target,
+                        target = Editor.Focus.Target.Block(target),
                         cursor = cursor?.let { c -> Editor.Cursor.Range(c..c) }
                     )
                 )
@@ -2533,10 +2554,10 @@ class EditorViewModel(
 
     fun onBlockToolbarBlockActionsClicked() {
         Timber.d("onBlockToolbarBlockActionsClicked, ")
-        val target = orchestrator.stores.focus.current().id
-        val view = views.find { it.id == target }
+        val target = orchestrator.stores.focus.current().targetOrNull()
+        val view = if (target != null) views.find { it.id == target } else null
         if (view == null) {
-            val cell = views.findTableCellView(target)
+            val cell = if (target != null) views.findTableCellView(target) else null
             if (cell != null) {
                 proceedWithEnterTableMode(cell)
                 viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
@@ -2550,7 +2571,7 @@ class EditorViewModel(
                     sendToast(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
                 }
                 else -> {
-                    proceedWithEnteringActionMode(target = target, scrollTarget = false)
+                    proceedWithEnteringActionMode(target = view.id, scrollTarget = false)
                 }
             }
             viewModelScope.sendAnalyticsSelectionMenuEvent(analytics)
@@ -2723,8 +2744,9 @@ class EditorViewModel(
     }
 
     private fun addDividerBlock(style: Content.Divider.Style) {
+        val focus = orchestrator.stores.focus.current().targetOrNull() ?: return
+        val focused = blocks.find { it.id == focus } ?: return
 
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
         val prototype = when (style) {
             Content.Divider.Style.LINE -> Prototype.DividerLine
@@ -2773,8 +2795,9 @@ class EditorViewModel(
     }
 
     private fun addTableOfContentsBlock() {
+        val focus = orchestrator.stores.focus.current().targetOrNull() ?: return
+        val focused = blocks.find { it.id == focus } ?: return
 
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
         val prototype = Prototype.TableOfContents
 
@@ -2819,8 +2842,9 @@ class EditorViewModel(
     }
 
     private fun addSimpleTableBlock(item: SlashItem.Other.Table) {
+        val focus = orchestrator.stores.focus.current().targetOrNull() ?: return
+        val focused = blocks.find { it.id == focus } ?: return
 
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
 
         if (content is Content.Text && content.text.isEmpty()) {
@@ -2903,7 +2927,10 @@ class EditorViewModel(
                         content.text.isEmpty() -> {
                             val stores = orchestrator.stores
                             if (stores.focus.current().isEmpty) {
-                                val focus = Editor.Focus(id = last.id, cursor = null)
+                                val focus = Editor.Focus(
+                                    target = Editor.Focus.Target.Block(last.id),
+                                    cursor = null
+                                )
                                 viewModelScope.launch { orchestrator.stores.focus.update(focus) }
                                 viewModelScope.launch { refresh() }
                             } else {
@@ -3050,7 +3077,7 @@ class EditorViewModel(
 
         val position: Position
 
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().targetOrNull() }
 
         var target = focused.id
 
@@ -3166,7 +3193,8 @@ class EditorViewModel(
     fun onAddBookmarkBlockClicked() {
         Timber.d("onAddBookmarkBlockClicked, ")
 
-        val focused = blocks.find { it.id == orchestrator.stores.focus.current().id } ?: return
+        val focus = orchestrator.stores.focus.current().targetOrNull() ?: return
+        val focused = blocks.find { it.id == focus } ?: return
 
         val content = focused.content
 
@@ -3327,7 +3355,7 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Clipboard.Paste(
                     context = context,
-                    focus = orchestrator.stores.focus.current().id,
+                    focus = orchestrator.stores.focus.current().targetOrNull().orEmpty(),
                     range = range,
                     selected = emptyList()
                 )
@@ -3475,7 +3503,7 @@ class EditorViewModel(
                 orchestrator.proxies.intents.send(
                     Intent.Bookmark.CreateBookmark(
                         context = context,
-                        target = focus.id,
+                        target = focus.requireTarget(),
                         position = Position.TOP,
                         url = url
                     )
@@ -4241,7 +4269,6 @@ class EditorViewModel(
                     proceedWithConvertingToCollection()
                 }
                 else -> {
-                    clearFocusInCaseOfLayoutNote()
                     proceedWithUpdateObjectType(type = type)
                     sendAnalyticsObjectTypeChangeEvent(
                         analytics = analytics,
@@ -4284,19 +4311,19 @@ class EditorViewModel(
     }
 
     private suspend fun proceedWithUpdateObjectType(type: Id) {
+        val focus = orchestrator.stores.focus.current()
+        val effects = buildList<SideEffect> {
+            if (focus.targetOrNull() != null) {
+                add(SideEffect.ResetFocusToFirstTextBlock)
+            }
+        }
         orchestrator.proxies.intents.send(
             Intent.Document.SetObjectType(
                 context = context,
-                typeId = type
+                typeId = type,
+                effects = effects
             )
         )
-    }
-
-    private fun clearFocusInCaseOfLayoutNote() {
-        val layout = orchestrator.stores.details.current().details[context]?.layout?.toInt()
-        if (layout == ObjectType.Layout.NOTE.code) {
-            proceedWithClearingFocus()
-        }
     }
 
     companion object {
@@ -4373,7 +4400,7 @@ class EditorViewModel(
         Timber.v("onSlashItemClicked, item:[$item]")
         val target = orchestrator.stores.focus.current()
         if (!target.isEmpty) {
-            proceedWithSlashItem(item, target.id)
+            proceedWithSlashItem(item, target.requireTarget())
         } else {
             Timber.e("Slash Widget Error, target is empty")
         }
@@ -4742,7 +4769,7 @@ class EditorViewModel(
             range = IntRange(position, position)
         )
         val focus = Editor.Focus(
-            id = targetId,
+            target = Editor.Focus.Target.Block(targetId),
             cursor = cursor
         )
         viewModelScope.launch {
@@ -5158,7 +5185,7 @@ class EditorViewModel(
         viewModelScope.launch {
             orchestrator.stores.focus.update(
                 Editor.Focus(
-                    id = block,
+                    target = Editor.Focus.Target.Block(block),
                     cursor = cursor
                 )
             )
@@ -5691,7 +5718,7 @@ class EditorViewModel(
             val position = mentionFrom + name.length + 1
             orchestrator.stores.focus.update(
                 t = Editor.Focus(
-                    id = new.id,
+                    target = Editor.Focus.Target.Block(new.id),
                     cursor = Editor.Cursor.Range(IntRange(position, position))
                 )
             )
@@ -5979,7 +6006,7 @@ class EditorViewModel(
 
     fun onEditLinkClicked() {
         Timber.d("onEditLinkClicked, ")
-        val target = orchestrator.stores.focus.current().id
+        val target = orchestrator.stores.focus.current().targetOrNull() ?: return
         val range = orchestrator.stores.textSelection.current().selection
         val block = blocks.firstOrNull { it.id == target }
         if (block != null && range != null) {
@@ -6066,12 +6093,16 @@ class EditorViewModel(
         Timber.d("proceedToAddUriToTextAsLink, uri:[$uri]")
         val range = orchestrator.stores.textSelection.current().selection
         if (range != null) {
-            val target = orchestrator.stores.focus.current().id
-            applyLinkMarkup(
-                blockId = target,
-                link = uri,
-                range = range.first..range.last.dec()
-            )
+            val target = orchestrator.stores.focus.current().targetOrNull()
+            if (target != null) {
+                applyLinkMarkup(
+                    blockId = target,
+                    link = uri,
+                    range = range.first..range.last.dec()
+                )
+            } else {
+                Timber.e("No target")
+            }
         } else {
             Timber.e("Can't add uri to text, range is null")
         }
@@ -6703,7 +6734,10 @@ class EditorViewModel(
 
     private fun setFocusInCellWhenInEditMode(cellId: Id) {
         if (mode == EditorMode.Edit) {
-            val focus = Editor.Focus(id = cellId, cursor = null)
+            val focus = Editor.Focus(
+                target = Editor.Focus.Target.Block(cellId),
+                cursor = null
+            )
             viewModelScope.launch {
                 orchestrator.stores.focus.update(focus)
             }

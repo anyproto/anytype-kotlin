@@ -798,17 +798,19 @@ class DefaultBlockViewRenderer @Inject constructor(
             details = details,
             marks = marks
         )
+        val isFocused = resolveIsFocused(focus, block)
+
         return BlockView.Text.Paragraph(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
             text = normalizedText,
             marks = normalizedMarks,
-            isFocused = block.id == focus.id,
+            isFocused = isFocused,
             color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (isFocused) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -834,7 +836,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             id = block.id,
             text = content.text,
             mode = blockMode,
-            isFocused = block.id == focus.id
+            isFocused = resolveIsFocused(focus, block)
         )
     }
 
@@ -858,12 +860,12 @@ class DefaultBlockViewRenderer @Inject constructor(
             id = block.id,
             text = normalizedText,
             color = content.parseThemeTextColor(),
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             marks = normalizedMarks,
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -893,12 +895,12 @@ class DefaultBlockViewRenderer @Inject constructor(
             id = block.id,
             text = normalizedText,
             color = content.parseThemeTextColor(),
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             marks = normalizedMarks,
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -928,12 +930,12 @@ class DefaultBlockViewRenderer @Inject constructor(
             id = block.id,
             text = normalizedText,
             color = content.parseThemeTextColor(),
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             marks = normalizedMarks,
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -966,9 +968,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             isChecked = content.isChecked == true,
             color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             indent = indent,
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -999,10 +1001,10 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             indent = indent,
             marks = normalizedMarks,
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -1026,7 +1028,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         text = content.text,
         background = block.parseThemeBackgroundColor(),
         color = content.parseThemeTextColor(),
-        isFocused = block.id == focus.id,
+        isFocused = resolveIsFocused(focus, block),
         indent = indent,
         lang = block.fields.lang,
         isSelected = checkIfSelected(
@@ -1067,13 +1069,13 @@ class DefaultBlockViewRenderer @Inject constructor(
         return BlockView.Text.Highlight(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             text = normalizedText,
             marks = normalizedMarks,
             indent = indent,
             alignment = content.align?.toView(), color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -1108,13 +1110,13 @@ class DefaultBlockViewRenderer @Inject constructor(
         return BlockView.Text.Callout(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             text = normalizedText,
             marks = normalizedMarks,
             indent = indent,
             color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -1149,10 +1151,10 @@ class DefaultBlockViewRenderer @Inject constructor(
             color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             indent = indent,
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             toggled = toggleStateHolder.isToggled(block.id),
             isEmpty = isEmpty,
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -1183,12 +1185,12 @@ class DefaultBlockViewRenderer @Inject constructor(
             id = block.id,
             text = normalizedText,
             number = number,
-            isFocused = block.id == focus.id,
+            isFocused = resolveIsFocused(focus, block),
             color = content.parseThemeTextColor(),
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             marks = normalizedMarks,
-            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -1435,8 +1437,9 @@ class DefaultBlockViewRenderer @Inject constructor(
         details: Block.Details,
         restrictions: List<ObjectRestriction>
     ): BlockView.Title {
+        val focusTarget = focus.target
 
-        val cursor: Int? = if (focus.id == block.id) {
+        val cursor: Int? = if (focusTarget is Focus.Target.Block && focusTarget.id == block.id) {
             focus.cursor?.let { crs ->
                 when (crs) {
                     is Cursor.Start -> 0
@@ -1483,7 +1486,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         else
                             null
                     },
-                    isFocused = block.id == focus.id,
+                    isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
                     coverImage = coverContainer.coverImage,
@@ -1497,7 +1500,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    isFocused = block.id == focus.id,
+                    isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
                     coverImage = coverContainer.coverImage,
@@ -1518,7 +1521,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         else
                             null
                     },
-                    isFocused = block.id == focus.id,
+                    isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
                     coverImage = coverContainer.coverImage,
@@ -1541,7 +1544,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         else
                             null
                     },
-                    isFocused = block.id == focus.id,
+                    isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
                     coverImage = coverContainer.coverImage,
@@ -1553,6 +1556,19 @@ class DefaultBlockViewRenderer @Inject constructor(
 
             else -> throw IllegalStateException("Unexpected layout: $layout")
         }
+    }
+
+    private fun resolveIsFocused(
+        focus: Focus,
+        block: Block
+    ) = when (val target = focus.target) {
+        is Focus.Target.Block -> target.id == block.id
+        is Focus.Target.FirstTextBlock -> {
+            true.also {
+                focus.target = Focus.Target.Block(block.id)
+            }
+        }
+        is Focus.Target.None -> false
     }
 
     private suspend fun toLinks(

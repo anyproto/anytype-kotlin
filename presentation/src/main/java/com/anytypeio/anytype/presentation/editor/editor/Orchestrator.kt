@@ -157,7 +157,12 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { (ids, payload) ->
-                            stores.focus.update(Focus(id = ids.last(), cursor = Cursor.End))
+                            stores.focus.update(
+                                Focus(
+                                    target = Focus.Target.Block(ids.last()),
+                                    cursor = Cursor.End
+                                )
+                            )
                             proxies.payloads.send(payload)
                             analytics.sendAnalyticsDuplicateBlockEvent(intent.blocks.size)
                         }
@@ -176,12 +181,14 @@ class Orchestrator(
                             if (focus != null) {
                                 stores.focus.update(
                                     Focus(
-                                        id = focus,
+                                        target = Focus.Target.Block(focus),
                                         cursor = Cursor.End
                                     )
                                 )
                             }
-                            processSideEffects(intent.effects)
+                            if (intent.effects.isNotEmpty()) {
+                                processSideEffects(intent.effects)
+                            }
                             proxies.payloads.send(payload)
                             analytics.sendAnalyticsDeleteBlockEvent(count = intent.targets.size)
                         }
@@ -213,7 +220,7 @@ class Orchestrator(
                             val middlewareTime = System.currentTimeMillis()
                             stores.focus.update(
                                 Focus(
-                                    id = id,
+                                    target = Focus.Target.Block(id),
                                     cursor = Cursor.Start
                                 )
                             )
@@ -238,7 +245,7 @@ class Orchestrator(
                             if (intent.previousLength != null) {
                                 stores.focus.update(
                                     Focus(
-                                        id = intent.previous,
+                                        target = Focus.Target.Block(intent.previous),
                                         cursor = Cursor.Range(
                                             intent.previousLength..intent.previousLength
                                         )
@@ -533,7 +540,7 @@ class Orchestrator(
                             else if (response.blocks.isNotEmpty()) {
                                 stores.focus.update(
                                     Focus(
-                                        id = response.blocks.last(),
+                                        target = Focus.Target.Block(response.blocks.last()),
                                         cursor = Cursor.End
                                     )
                                 )
@@ -594,6 +601,9 @@ class Orchestrator(
                     ).process(
                         failure = defaultOnError,
                         success = { payload ->
+                            if (intent.effects.isNotEmpty()) {
+                                processSideEffects(intent.effects)
+                            }
                             proxies.payloads.send(payload)
                         }
                     )
@@ -658,10 +668,22 @@ class Orchestrator(
         }
     }
 
-    private fun processSideEffects(effects: List<SideEffect>) {
+    private suspend fun processSideEffects(effects: List<SideEffect>) {
         effects.forEach { effect ->
-            if (effect is SideEffect.ClearMultiSelectSelection)
-                memory.selections.clearSelections()
+            when(effect) {
+                SideEffect.ClearMultiSelectSelection -> {
+                    memory.selections.clearSelections()
+                }
+                SideEffect.ResetFocusToFirstTextBlock -> {
+                    stores.focus.update(
+                        Focus(
+                            target = Focus.Target.FirstTextBlock,
+                            cursor = Cursor.End,
+                            isPending = true
+                        )
+                    )
+                }
+            }
         }
     }
 

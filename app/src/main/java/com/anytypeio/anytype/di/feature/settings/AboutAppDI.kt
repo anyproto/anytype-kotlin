@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.settings
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
@@ -31,10 +32,12 @@ object AboutAppModule {
     @PerScreen
     fun provideViewModelFactory(
         getAccount: GetAccount,
-        getLibraryVersion: GetLibraryVersion
+        getLibraryVersion: GetLibraryVersion,
+        analytics: Analytics
     ): AboutAppViewModel.Factory = AboutAppViewModel.Factory(
         getAccount = getAccount,
-        getLibraryVersion = getLibraryVersion
+        getLibraryVersion = getLibraryVersion,
+        analytics = analytics
     )
 
     @JvmStatic

@@ -10,6 +10,8 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -65,6 +67,10 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
                 )
             }
         }
+    }
+
+    fun expand() {
+        (dialog as? BottomSheetDialog)?.behavior?.state = STATE_EXPANDED
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

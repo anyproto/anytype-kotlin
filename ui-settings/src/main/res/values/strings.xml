@@ -33,4 +33,21 @@
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your recovery phrase?</string>
     <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
 
+    <string name="about_help_and_community">Help &amp; Community</string>
+    <string name="about_what_is_new">What\'s new</string>
+    <string name="about_anytype_community">Anytype Community</string>
+    <string name="about_help_and_tutorials">Help &amp; Tutorials</string>
+    <string name="about_legal">Legal</string>
+    <string name="about_terms_of_use">Terms of Use"</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_acknowledgements">Acknowledgments</string>
+
+    <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
+    <string name="about_anytype_community_link">https://community.anytype.io</string>
+    <string name="about_help_and_tutorials_link">https://doc.anytype.io/</string>
+    <string name="about_terms_and_conditions">https://anytype.io/terms.pdf</string>
+    <string name="about_privacy_policy_link">https://anytype.io/Anytype_Privacy_Statement.pdf</string>
+
+    <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary: %3$s\nUser\u00A0ID:\u00A0%4$s</string>
+    <string name="about_meta_info_for_copy">Device: %1$s \nAndroid version: %2$d App version: %3$s\nBuild number: %4$d\nLibrary: %5$s\nUser\u00A0ID:\u00A0%6$s</string>
 </resources>

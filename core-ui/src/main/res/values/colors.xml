@@ -117,6 +117,7 @@
 
     <color name="text_primary">#252525</color>
     <color name="text_secondary">#949494</color>
+    <color name="text_secondary_widgets">#949494</color>
     <color name="text_tertiary">#C8C8C8</color>
     <color name="text_white">#FFFFFF</color>
     <color name="text_button_label">#FFFFFF</color>
@@ -212,5 +213,7 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#3F51B5</color>
     <color name="snackbar_background">#000000</color>
+
+    <color name="widget_divider">#E3E3E3</color>
 
 </resources>

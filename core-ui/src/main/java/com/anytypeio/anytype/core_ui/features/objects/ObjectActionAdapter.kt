@@ -19,9 +19,9 @@ class ObjectActionAdapter(
         )
     ).apply {
         binding.btnContainer.setOnClickListener {
-            val pos = bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION)
-                onObjectActionClicked(getItem(pos))
+            if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+                onObjectActionClicked(getItem(bindingAdapterPosition))
+            }
         }
     }
 

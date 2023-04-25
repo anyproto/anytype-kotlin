@@ -105,7 +105,7 @@ interface AppNavigation {
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()
 
-        data class OpenObjectSet(val target: String, val isPopUpToDashboard: Boolean = false) :
+        data class OpenSetOrCollection(val target: String, val isPopUpToDashboard: Boolean = false) :
             Command()
 
         data class LaunchObjectSet(val target: Id) : Command()

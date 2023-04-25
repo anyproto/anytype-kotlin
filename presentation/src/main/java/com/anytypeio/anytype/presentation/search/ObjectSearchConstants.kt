@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
+import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.DASHBOARD
 import com.anytypeio.anytype.core_models.ObjectTypeIds.DATE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.FILE
@@ -17,6 +18,8 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.IMAGE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.RELATION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.RELATION_OPTION
+import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
+import com.anytypeio.anytype.core_models.ObjectTypeIds.SPACE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.TEMPLATE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.VIDEO
 import com.anytypeio.anytype.core_models.Relations
@@ -422,6 +425,62 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.NAME,
             type = DVSortType.ASC
+        )
+    )
+    //endregion
+
+    //region BACK LINK OR ADD TO OBJECT
+    fun filtersBackLinkOrAddToObject(ignore: Id?, workspaceId: String) = listOf(
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO,
+                DASHBOARD,
+                DATE,
+                RELATION_OPTION,
+                SPACE,
+                SET,
+                BOOKMARK
+            )
+        ),
+        DVFilter(
+            relation = Relations.ID,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ignore
+        ),
+        DVFilter(
+            relation = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = workspaceId
+        )
+    )
+
+    val sortBackLinkOrAddToObject = listOf(
+        DVSort(
+            relationKey = Relations.LAST_MODIFIED_DATE,
+            type = DVSortType.DESC
         )
     )
     //endregion

@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.presentation.objects.menu
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -40,7 +43,8 @@ abstract class ObjectMenuViewModelBase(
     protected val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
-    private val duplicateObject: DuplicateObject
+    private val duplicateObject: DuplicateObject,
+    private val addObjectToCollection: AddObjectToCollection
 ) : BaseViewModel() {
 
     protected val jobs = mutableListOf<Job>()
@@ -168,6 +172,74 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
+    fun onBackLinkOrAddToObjectAction(
+        ctx: Id,
+        backLinkId: Id,
+        backLinkName: String,
+        backLinkLayout: ObjectType.Layout?,
+        backLinkIcon: ObjectIcon,
+        fromName: String
+    ) {
+        Timber.e("onBackLinkOrAddToObjectAction, ctx:[$ctx], backLinkId:[$backLinkId], backLinkName:[$backLinkName], backLinkLayout:[$backLinkLayout], fromName:[$fromName]")
+        if (backLinkLayout == null) {
+            Timber.e("onBackLinkOrAddToObjectAction, layout is null")
+            viewModelScope.launch { _toasts.emit(BACK_LINK_WRONG_LAYOUT) }
+            return
+        }
+        when (backLinkLayout) {
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.NOTE -> {
+                onLinkedMyselfTo(
+                    myself = ctx, addTo = backLinkId, fromName = fromName
+                )
+            }
+            ObjectType.Layout.COLLECTION -> {
+                proceedWithAddObjectToCollection(
+                    ctx = ctx,
+                    collection = backLinkId,
+                    collectionName = backLinkName,
+                    collectionIcon = backLinkIcon,
+                    fromName = fromName
+                )
+            }
+            else -> { Timber.e("onBackLinkOrAddToObjectAction, layout:$backLinkLayout is not supported") }
+        }
+    }
+
+    private fun proceedWithAddObjectToCollection(
+        ctx: Id,
+        collection: Id,
+        collectionName: String,
+        collectionIcon: ObjectIcon,
+        fromName: String
+    ) {
+        val params = AddObjectToCollection.Params(
+            ctx = collection,
+            after = "",
+            targets = listOf(ctx)
+        )
+        viewModelScope.launch {
+            addObjectToCollection.execute(params).fold(
+                onSuccess = { payload ->
+                    dispatcher.send(payload)
+                    sendAnalyticsObjectLinkToEvent(analytics)
+                    commands.emit(
+                        Command.OpenSnackbar(
+                            id = collection,
+                            currentObjectName = fromName,
+                            targetObjectName = collectionName,
+                            icon = collectionIcon,
+                            isCollection = true
+                        )
+                    )
+                },
+                onFailure = { Timber.e(it, "Error while adding object to collection") }
+            )
+        }
+    }
+
     fun onLinkedMyselfTo(myself: Id, addTo: Id, fromName: String?) {
         Timber.d("onLinkedMyselfTo, myself:[$myself], addTo:[$addTo], fromName:[$fromName]")
         jobs += viewModelScope.launch {
@@ -200,6 +272,13 @@ abstract class ObjectMenuViewModelBase(
         Timber.d("proceedWithOpeningPage, id:[$id]")
         viewModelScope.launch {
             delegator.delegate(Action.OpenObject(id))
+        }
+    }
+
+    fun proceedWithOpeningCollection(id: Id) {
+        Timber.d("proceedWithOpeningCollection, id:[$id]")
+        viewModelScope.launch {
+            delegator.delegate(Action.OpenCollection(id))
         }
     }
 
@@ -238,7 +317,8 @@ abstract class ObjectMenuViewModelBase(
             val id: Id,
             val currentObjectName: String?,
             val targetObjectName: String?,
-            val icon: ObjectIcon
+            val icon: ObjectIcon,
+            val isCollection: Boolean = false
         ) : Command()
     }
 
@@ -253,5 +333,6 @@ abstract class ObjectMenuViewModelBase(
         const val OBJECT_IS_LOCKED_MSG = "Your object is locked"
         const val OBJECT_IS_UNLOCKED_MSG = "Your object is locked"
         const val SOMETHING_WENT_WRONG_MSG = "Something went wrong. Please, try again later."
+        const val BACK_LINK_WRONG_LAYOUT = "Wrong object layout, try again"
     }
 }

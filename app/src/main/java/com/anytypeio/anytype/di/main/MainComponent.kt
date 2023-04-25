@@ -4,6 +4,7 @@ import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
 import com.anytypeio.anytype.di.feature.AuthSubComponent
+import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
 import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
@@ -72,7 +73,8 @@ interface MainComponent :
     RelationEditDependencies,
     SplashDependencies,
     DeletedAccountDependencies,
-    MigrationErrorDependencies {
+    MigrationErrorDependencies,
+    BacklinkOrAddToObjectDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -169,5 +171,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(MigrationErrorDependencies::class)
     abstract fun migrationErrorDependencies(component: MainComponent) : ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(BacklinkOrAddToObjectDependencies::class)
+    abstract fun provideBackLinkDependencies(component: MainComponent): ComponentDependencies
 
 }

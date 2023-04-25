@@ -34,7 +34,7 @@ class NavigationRouter(
                 command.id,
                 command.editorSettings
             )
-            is AppNavigation.Command.OpenObjectSet -> navigation.openObjectSet(
+            is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
                 command.target,
                 command.isPopUpToDashboard
             )

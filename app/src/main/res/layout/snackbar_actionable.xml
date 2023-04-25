@@ -9,7 +9,8 @@
 
     <TextView
         android:id="@+id/snackbar_text"
-        style="@style/TextView.UXStyle.Captions.1.Regular"
+        style="@style/TextView.UXStyle.Captions.1.Medium"
+        android:textColor="@color/text_button_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="77dp"
@@ -43,7 +44,8 @@
 
     <TextView
         android:id="@+id/snackbar_action"
-        style="@style/TextView.UXStyle.Captions.1.Regular"
+        style="@style/TextView.UXStyle.Captions.1.Medium"
+        android:textColor="@color/text_button_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"

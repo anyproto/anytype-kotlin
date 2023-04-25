@@ -192,7 +192,7 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
 
     private fun navigate(command: AppNavigation.Command) {
         when (command) {
-            is AppNavigation.Command.OpenObjectSet -> {
+            is AppNavigation.Command.OpenSetOrCollection -> {
                 findNavController().navigate(
                     R.id.dataViewNavigation,
                     bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.target)

@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.click
@@ -27,13 +28,15 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
-import com.anytypeio.anytype.ui.moving.MoveToFragment
+import com.anytypeio.anytype.ui.linking.BacklinkAction
+import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 
 abstract class ObjectMenuBaseFragment :
     BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
-    OnMoveToAction {
+    OnMoveToAction,
+    BacklinkAction {
 
     protected val ctx get() = arg<Id>(CTX_KEY)
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
@@ -193,13 +196,7 @@ abstract class ObjectMenuBaseFragment :
 
 
     private fun openLinkChooser() {
-        val fr = MoveToFragment.new(
-            ctx = ctx,
-            blocks = emptyList(),
-            restorePosition = null,
-            restoreBlock = null,
-            title = getString(R.string.link_to)
-        )
+        val fr = BacklinkOrAddToObjectFragment.new(ctx = ctx)
         fr.showChildFragment()
     }
 
@@ -208,13 +205,17 @@ abstract class ObjectMenuBaseFragment :
             dialog?.window
                 ?.decorView
                 ?.showActionableSnackBar(
-                    command.currentObjectName,
-                    command.targetObjectName,
-                    command.icon,
-                    R.string.snack_link_to,
-                    binding.anchor
+                    from = command.currentObjectName,
+                    to = command.targetObjectName,
+                    icon = command.icon,
+                    middleString = R.string.snack_link_to,
+                    anchor = binding.anchor
                 ) {
-                    vm.proceedWithOpeningPage(command.id)
+                    if (command.isCollection) {
+                        vm.proceedWithOpeningCollection(command.id)
+                    } else {
+                        vm.proceedWithOpeningPage(command.id)
+                    }
                 }
         }, 300L)
     }
@@ -228,6 +229,17 @@ abstract class ObjectMenuBaseFragment :
         isSet: Boolean
     ) {
         vm.onLinkedMyselfTo(myself = ctx, addTo = target, fromName)
+    }
+
+    override fun backLink(id: Id, name: String, layout: ObjectType.Layout?, icon: ObjectIcon) {
+        vm.onBackLinkOrAddToObjectAction(
+            ctx = ctx,
+            backLinkId = id,
+            backLinkName = name,
+            backLinkLayout = layout,
+            backLinkIcon = icon,
+            fromName = fromName.orEmpty()
+        )
     }
 
     override fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?) {}

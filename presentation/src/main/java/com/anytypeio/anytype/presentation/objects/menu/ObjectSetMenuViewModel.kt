@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -34,6 +35,7 @@ class ObjectSetMenuViewModel(
     menuOptionsProvider: ObjectMenuOptionsProvider,
     private val objectState: StateFlow<ObjectState>,
     private val analytics: Analytics,
+    private val addObjectToCollection: AddObjectToCollection
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -45,6 +47,7 @@ class ObjectSetMenuViewModel(
     dispatcher = dispatcher,
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider,
+    addObjectToCollection = addObjectToCollection
 ) {
 
     @Suppress("UNCHECKED_CAST")
@@ -60,6 +63,7 @@ class ObjectSetMenuViewModel(
         private val analytics: Analytics,
         private val objectState: StateFlow<ObjectState>,
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
+        private val addObjectToCollection: AddObjectToCollection
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -73,7 +77,8 @@ class ObjectSetMenuViewModel(
                 analytics = analytics,
                 objectState = objectState,
                 dispatcher = dispatcher,
-                menuOptionsProvider = menuOptionsProvider
+                menuOptionsProvider = menuOptionsProvider,
+                addObjectToCollection = addObjectToCollection
             ) as T
         }
     }

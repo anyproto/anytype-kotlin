@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -110,7 +111,8 @@ object ObjectMenuModule {
         dispatcher: Dispatcher<Payload>,
         updateFields: UpdateFields,
         featureToggles: FeatureToggles,
-        delegator: Delegator<Action>
+        delegator: Delegator<Action>,
+        addObjectToCollection: AddObjectToCollection
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -124,7 +126,8 @@ object ObjectMenuModule {
         dispatcher = dispatcher,
         updateFields = updateFields,
         delegator = delegator,
-        menuOptionsProvider = createMenuOptionsProvider(storage, featureToggles)
+        menuOptionsProvider = createMenuOptionsProvider(storage, featureToggles),
+        addObjectToCollection = addObjectToCollection
     )
 
     @JvmStatic
@@ -134,6 +137,17 @@ object ObjectMenuModule {
             restrictions = storage.objectRestrictions.stream(),
             featureToggles = featureToggles
         )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideAddObjectToCollection(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): AddObjectToCollection = AddObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 }
 
 @Module
@@ -153,7 +167,8 @@ object ObjectSetMenuModule {
         analytics: Analytics,
         state: MutableStateFlow<ObjectState>,
         featureToggles: FeatureToggles,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        addObjectToCollection: AddObjectToCollection
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -165,7 +180,8 @@ object ObjectSetMenuModule {
         analytics = analytics,
         objectState = state,
         dispatcher = dispatcher,
-        menuOptionsProvider = createMenuOptionsProvider(state, featureToggles)
+        menuOptionsProvider = createMenuOptionsProvider(state, featureToggles),
+        addObjectToCollection = addObjectToCollection
     )
 
     @JvmStatic

@@ -6,8 +6,8 @@
         android:top="48dp">
 
         <shape android:shape="rectangle">
-            <solid android:color="@color/background_secondary" />
-            <corners android:radius="12dp" />
+            <solid android:color="@color/snackbar_background" />
+            <corners android:radius="8dp" />
         </shape>
     </item>
 </layer-list>

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.di.feature.CreateAccountModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
+import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
@@ -820,6 +821,13 @@ class ComponentManager(
 
     val libraryComponent = ComponentWithParams { ctx: Context ->
         DaggerLibraryComponent.builder()
+            .withContext(ctx)
+            .withDependencies(findComponentDependencies())
+            .build()
+    }
+
+    val backLinkOrAddToObjectComponent = ComponentWithParams { ctx: Id ->
+        DaggerBacklinkOrAddToObjectComponent.builder()
             .withContext(ctx)
             .withDependencies(findComponentDependencies())
             .build()

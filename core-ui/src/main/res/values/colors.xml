@@ -211,5 +211,6 @@
     <color name="colorPrimary">#FF5722</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#3F51B5</color>
+    <color name="snackbar_background">#000000</color>
 
 </resources>

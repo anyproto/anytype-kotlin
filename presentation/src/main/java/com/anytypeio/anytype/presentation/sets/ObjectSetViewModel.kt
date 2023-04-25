@@ -230,6 +230,7 @@ class ObjectSetViewModel(
                         proceedWithSettingUnsplashImage(action)
                     }
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
+                    is Action.OpenCollection -> proceedWithOpeningObjectCollection(action.id)
                     is Action.Duplicate -> proceedWithNavigation(
                         target = action.id,
                         layout = ObjectType.Layout.SET
@@ -1085,6 +1086,21 @@ class ObjectSetViewModel(
         }
     }
 
+    private suspend fun proceedWithOpeningObjectCollection(target: Id) {
+        isCustomizeViewPanelVisible.value = false
+        jobs += viewModelScope.launch {
+            closeBlock.execute(context).fold(
+                onSuccess = {
+                    navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target = target)))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while closing object set: $context")
+                    navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target = target)))
+                }
+            )
+        }
+    }
+
     private suspend fun proceedWithNavigation(target: Id, layout: ObjectType.Layout?) {
         when (layout) {
             ObjectType.Layout.BASIC,
@@ -1097,11 +1113,11 @@ class ObjectSetViewModel(
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.execute(context).fold(
                     onSuccess = {
-                        navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                        navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target)))
                     },
                     onFailure = {
                         Timber.e(it, "Error while closing object set: $context")
-                        navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                        navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target)))
                     }
                 )
             }

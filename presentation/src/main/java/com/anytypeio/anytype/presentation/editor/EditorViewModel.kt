@@ -386,6 +386,7 @@ class EditorViewModel(
                     Action.SearchOnPage -> onEnterSearchModeClicked()
                     Action.UndoRedo -> onUndoRedoActionClicked()
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
+                    is Action.OpenCollection -> proceedWithOpeningDataViewObject(action.id)
                 }
             }
         }
@@ -4143,7 +4144,7 @@ class EditorViewModel(
                     Timber.e(it, "Error while closing object")
                     navigate(
                         EventWrapper(
-                            AppNavigation.Command.OpenObjectSet(
+                            AppNavigation.Command.OpenSetOrCollection(
                                 target,
                                 isPopUpToDashboard
                             )
@@ -4153,7 +4154,7 @@ class EditorViewModel(
                 onSuccess = {
                     navigate(
                         EventWrapper(
-                            AppNavigation.Command.OpenObjectSet(
+                            AppNavigation.Command.OpenSetOrCollection(
                                 target,
                                 isPopUpToDashboard
                             )

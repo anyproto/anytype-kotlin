@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -41,7 +42,8 @@ class ObjectMenuViewModel(
     private val debugTreeShareDownloader: DebugTreeShareDownloader,
     private val storage: Editor.Storage,
     private val analytics: Analytics,
-    private val updateFields: UpdateFields
+    private val updateFields: UpdateFields,
+    private val addObjectToCollection: AddObjectToCollection
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -52,7 +54,8 @@ class ObjectMenuViewModel(
     urlBuilder = urlBuilder,
     dispatcher = dispatcher,
     analytics = analytics,
-    menuOptionsProvider = menuOptionsProvider
+    menuOptionsProvider = menuOptionsProvider,
+    addObjectToCollection = addObjectToCollection
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
@@ -294,7 +297,8 @@ class ObjectMenuViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val updateFields: UpdateFields,
         private val delegator: Delegator<Action>,
-        private val menuOptionsProvider: ObjectMenuOptionsProvider
+        private val menuOptionsProvider: ObjectMenuOptionsProvider,
+        private val addObjectToCollection: AddObjectToCollection
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -310,7 +314,8 @@ class ObjectMenuViewModel(
                 dispatcher = dispatcher,
                 updateFields = updateFields,
                 delegator = delegator,
-                menuOptionsProvider = menuOptionsProvider
+                menuOptionsProvider = menuOptionsProvider,
+                addObjectToCollection = addObjectToCollection
             ) as T
         }
     }

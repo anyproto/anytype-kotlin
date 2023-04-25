@@ -22,5 +22,6 @@ sealed class Action {
     object SearchOnPage: Action()
     object UndoRedo : Action()
     data class OpenObject(val id: Id) : Action()
+    data class OpenCollection(val id: Id) : Action()
     data class Duplicate(val id: Id) : Action()
 }

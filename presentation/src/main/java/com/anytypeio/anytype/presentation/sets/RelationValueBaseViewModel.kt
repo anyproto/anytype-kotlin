@@ -491,7 +491,7 @@ abstract class RelationValueBaseViewModel(
                 }
                 ObjectType.Layout.SET -> {
                     viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenObjectSet(id))
+                        navigation.emit(AppNavigation.Command.OpenSetOrCollection(id))
                     }
                 }
                 else -> Timber.d("Unexpected layout: $layout").also {

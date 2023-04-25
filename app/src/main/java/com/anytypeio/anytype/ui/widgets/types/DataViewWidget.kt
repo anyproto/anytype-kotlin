@@ -108,12 +108,15 @@ fun DataViewListWidgetCard(
                         icon = element.icon,
                         mode = mode
                     )
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(end = 16.dp, start = 8.dp)
-                    )
+                    if (idx != item.elements.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                            color = colorResource(id = R.color.widget_divider)
+                        )
+                    }
                     if (idx == item.elements.lastIndex) {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
             } else {
@@ -141,7 +144,8 @@ private fun DataViewTabs(
     LazyRow(
         modifier = Modifier
             .height(40.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         items(
@@ -153,12 +157,14 @@ private fun DataViewTabs(
                     color = if (tab.isSelected)
                         colorResource(id = R.color.text_primary)
                     else
-                        colorResource(id = R.color.glyph_active),
+                        colorResource(id = R.color.text_secondary_widgets),
                     modifier = Modifier
                         .padding(start = 16.dp)
                         .noRippleClickable {
                             onChangeWidgetView(item.id, tab.id)
-                        }
+                        },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         )
@@ -176,7 +182,7 @@ fun ListWidgetElement(
         modifier = Modifier
             .height(72.dp)
             .fillMaxWidth()
-            .padding(end = 8.dp)
+            .padding(end = 16.dp)
             .then(
                 if (mode is InteractionMode.Default)
                     Modifier.noRippleClickable { onWidgetObjectClicked(obj) }
@@ -224,7 +230,7 @@ fun ListWidgetElement(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = Relations3.copy(
-                    color = colorResource(id = R.color.text_secondary)
+                    color = colorResource(id = R.color.text_secondary_widgets)
                 )
             )
         }

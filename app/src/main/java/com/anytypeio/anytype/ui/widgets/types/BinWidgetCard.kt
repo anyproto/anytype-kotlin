@@ -99,7 +99,7 @@ fun BinWidgetCard(
             visible = mode is InteractionMode.Edit,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 48.dp),
+                .padding(end = 20.dp),
             enter = fadeIn(),
             exit = fadeOut()
         ) {

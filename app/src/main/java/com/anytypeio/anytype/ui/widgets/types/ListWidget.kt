@@ -89,12 +89,15 @@ fun ListWidgetCard(
                         icon = element.icon,
                         mode = mode
                     )
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(end = 16.dp, start = 8.dp)
-                    )
+                    if (idx != item.elements.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                            color = colorResource(id = R.color.widget_divider)
+                        )
+                    }
                     if (idx == item.elements.lastIndex) {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
             } else {

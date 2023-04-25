@@ -211,13 +211,15 @@ private fun TreeWidgetTreeItems(
                 color = colorResource(id = R.color.text_primary),
             )
         }
-        Divider(
-            thickness = 0.5.dp,
-            modifier = Modifier.padding(horizontal = 8.dp),
-            color = colorResource(id = R.color.shape_primary)
-        )
+        if (idx != item.elements.lastIndex) {
+            Divider(
+                thickness = 0.5.dp,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = colorResource(id = R.color.widget_divider)
+            )
+        }
         if (idx == item.elements.lastIndex) {
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

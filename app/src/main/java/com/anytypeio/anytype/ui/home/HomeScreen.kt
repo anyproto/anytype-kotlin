@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -249,10 +248,6 @@ private fun WidgetList(
                                     modifier = Modifier
                                         .height(24.dp)
                                         .width(24.dp)
-                                        .background(
-                                            shape = CircleShape,
-                                            color = Color.Gray
-                                        )
                                         .noRippleClickable {
                                             onWidgetMenuAction(
                                                 item.id, DropDownMenuAction.RemoveWidget
@@ -300,10 +295,6 @@ private fun WidgetList(
                                     modifier = Modifier
                                         .height(24.dp)
                                         .width(24.dp)
-                                        .background(
-                                            shape = CircleShape,
-                                            color = Color.Gray
-                                        )
                                         .noRippleClickable {
                                             onWidgetMenuAction(
                                                 item.id, DropDownMenuAction.RemoveWidget
@@ -361,10 +352,6 @@ private fun WidgetList(
                                     modifier = Modifier
                                         .height(24.dp)
                                         .width(24.dp)
-                                        .background(
-                                            shape = CircleShape,
-                                            color = Color.Gray
-                                        )
                                         .noRippleClickable {
                                             onWidgetMenuAction(
                                                 item.id, DropDownMenuAction.RemoveWidget
@@ -421,10 +408,6 @@ private fun WidgetList(
                                     modifier = Modifier
                                         .height(24.dp)
                                         .width(24.dp)
-                                        .background(
-                                            shape = CircleShape,
-                                            color = Color.Gray
-                                        )
                                         .noRippleClickable {
                                             onWidgetMenuAction(
                                                 item.id, DropDownMenuAction.RemoveWidget
@@ -505,7 +488,7 @@ fun HomeScreenButton(
             text = text,
             modifier = Modifier.align(Alignment.Center),
             style = UXBody,
-            color = colorResource(id = R.color.text_button_label)
+            color = colorResource(id = R.color.text_white)
         )
     }
 }

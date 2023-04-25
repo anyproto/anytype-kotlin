@@ -4,6 +4,7 @@
 
     <color name="text_primary">#F3F2EC</color>
     <color name="text_secondary">#908F86</color>
+    <color name="text_secondary_widgets">#80F3F2EC</color>
     <color name="text_tertiary">#64635B</color>
     <color name="text_white">#FFFFFF</color>
     <color name="text_button_label">#000000</color>
@@ -91,5 +92,7 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#3F51B5</color>
     <color name="snackbar_background">#FFFFFF</color>
+
+    <color name="widget_divider">#24DAD7CA</color>
 
 </resources>

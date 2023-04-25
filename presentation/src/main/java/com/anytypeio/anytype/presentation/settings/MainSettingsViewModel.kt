@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,7 +34,8 @@ class MainSettingsViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val spaceGradientProvider: SpaceGradientProvider
 ) : ViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
@@ -50,7 +52,8 @@ class MainSettingsViewModel(
                 Relations.ID,
                 Relations.NAME,
                 Relations.ICON_EMOJI,
-                Relations.ICON_IMAGE
+                Relations.ICON_IMAGE,
+                Relations.ICON_OPTION
             )
         )
     ).map { result ->
@@ -60,13 +63,13 @@ class MainSettingsViewModel(
             space = workspace?.let {
                 WorkspaceAndAccount.SpaceData(
                     name = workspace.name ?: "",
-                    icon = workspace.spaceIcon(urlBuilder)
+                    icon = workspace.spaceIcon(urlBuilder, spaceGradientProvider)
                 )
             },
             profile = profile?.let {
                 WorkspaceAndAccount.ProfileData(
                     name = profile.name ?: "",
-                    icon = profile.profileIcon(urlBuilder)
+                    icon = profile.profileIcon(urlBuilder, spaceGradientProvider)
                 )
             }
         )
@@ -168,7 +171,8 @@ class MainSettingsViewModel(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val spaceGradientProvider: SpaceGradientProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -178,7 +182,8 @@ class MainSettingsViewModel(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             configStorage = configStorage,
             urlBuilder = urlBuilder,
-            setObjectDetails = setObjectDetails
+            setObjectDetails = setObjectDetails,
+            spaceGradientProvider = spaceGradientProvider
         ) as T
     }
 

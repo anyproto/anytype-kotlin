@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -133,6 +135,31 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
                         onSpaceIconClick.invoke()
                     }
             )
+        }
+        is SpaceIconView.Gradient -> {
+            val gradient = Brush.radialGradient(
+                colors = listOf(
+                    Color(icon.from.toColorInt()),
+                    Color(icon.to.toColorInt())
+                )
+            )
+            Box(
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(color = colorResource(id = R.color.shape_primary))
+                    .noRippleClickable {
+                        onSpaceIconClick.invoke()
+                    }
+            ) {
+                Box(
+                    modifier = Modifier.align(Alignment.Center)
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(32.dp))
+                        .background(gradient)
+                )
+            }
+
         }
         else -> {
             Image(

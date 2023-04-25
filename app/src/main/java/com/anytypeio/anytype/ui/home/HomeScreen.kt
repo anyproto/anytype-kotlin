@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -43,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -581,6 +583,21 @@ fun HomeScreenBottomToolbar(
                             .clip(RoundedCornerShape(3.dp))
                             .align(Alignment.Center),
                         contentScale = ContentScale.Crop
+                    )
+                }
+                is SpaceIconView.Gradient -> {
+                    val gradient = Brush.radialGradient(
+                        colors = listOf(
+                            Color(spaceIconView.from.toColorInt()),
+                            Color(spaceIconView.to.toColorInt())
+                        )
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(3.dp))
+                            .align(Alignment.Center)
+                            .background(gradient)
                     )
                 }
                 else -> {

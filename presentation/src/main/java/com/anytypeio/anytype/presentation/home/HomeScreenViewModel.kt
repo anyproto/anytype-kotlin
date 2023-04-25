@@ -46,6 +46,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -107,7 +108,8 @@ class HomeScreenViewModel(
     private val appActionManager: AppActionManager,
     private val analytics: Analytics,
     private val getWidgetSession: GetWidgetSession,
-    private val saveWidgetSession: SaveWidgetSession
+    private val saveWidgetSession: SaveWidgetSession,
+    private val spaceGradientProvider: SpaceGradientProvider
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -256,11 +258,16 @@ class HomeScreenViewModel(
                 StoreSearchByIdsParams(
                     subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
                     targets = listOf(config.workspace),
-                    keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION
+                    )
                 )
             ).map { result ->
                 val obj = result.firstOrNull()
-                obj?.spaceIcon(urlBuilder) ?: SpaceIconView.Placeholder
+                obj?.spaceIcon(urlBuilder, spaceGradientProvider) ?: SpaceIconView.Placeholder
             }.flowOn(appCoroutineDispatchers.io).collect {
                 icon.value = it
             }
@@ -613,9 +620,9 @@ class HomeScreenViewModel(
                         widget = widget,
                         source = curr.source.id,
                         type = parseWidgetType(curr),
-                        layout = when(val source = curr.source) {
+                        layout = when (val source = curr.source) {
                             is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
-                            is Widget.Source.Default ->  {
+                            is Widget.Source.Default -> {
                                 source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                             }
                         }
@@ -852,7 +859,8 @@ class HomeScreenViewModel(
         private val appActionManager: AppActionManager,
         private val analytics: Analytics,
         private val getWidgetSession: GetWidgetSession,
-        private val saveWidgetSession: SaveWidgetSession
+        private val saveWidgetSession: SaveWidgetSession,
+        private val spaceGradientProvider: SpaceGradientProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -880,7 +888,8 @@ class HomeScreenViewModel(
             appActionManager = appActionManager,
             analytics = analytics,
             getWidgetSession = getWidgetSession,
-            saveWidgetSession = saveWidgetSession
+            saveWidgetSession = saveWidgetSession,
+            spaceGradientProvider = spaceGradientProvider
         ) as T
     }
 

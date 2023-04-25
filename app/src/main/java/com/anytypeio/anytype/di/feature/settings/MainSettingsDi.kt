@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.MainSettingFragment
 import dagger.Module
 import dagger.Provides
@@ -58,17 +59,24 @@ object MainSettingsModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideViewModelFactory(
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
-        setObjectDetails: SetObjectDetails
+        setObjectDetails: SetObjectDetails,
+        spaceGradientProvider: SpaceGradientProvider
     ): MainSettingsViewModel.Factory = MainSettingsViewModel.Factory(
         analytics,
         storelessSubscriptionContainer,
         configStorage,
         urlBuilder,
-        setObjectDetails
+        setObjectDetails,
+        spaceGradientProvider
     )
 }

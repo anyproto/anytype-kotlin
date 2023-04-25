@@ -42,6 +42,7 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
@@ -141,6 +142,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var saveWidgetSession: SaveWidgetSession
+
+    @Mock
+    lateinit var spaceGradientProvider: SpaceGradientProvider
 
     @Mock
     lateinit var getWidgetSession: GetWidgetSession
@@ -1923,7 +1927,8 @@ class HomeScreenViewModelTest {
         appActionManager = appActionManager,
         analytics = analytics,
         getWidgetSession = getWidgetSession,
-        saveWidgetSession = saveWidgetSession
+        saveWidgetSession = saveWidgetSession,
+        spaceGradientProvider = spaceGradientProvider
     )
 
     companion object {

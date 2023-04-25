@@ -24,6 +24,7 @@ sealed class ObjectWrapper {
 
         val iconEmoji: String? by default
         val iconImage: String? by default
+        val iconOption: Double? by default
 
         val coverId: String? by default
 

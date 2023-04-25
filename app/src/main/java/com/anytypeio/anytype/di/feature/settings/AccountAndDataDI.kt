@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.settings.AccountAndDataFragment
@@ -56,7 +57,8 @@ object AccountAndDataModule {
         setObjectDetails: SetObjectDetails,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
-        setDocumentImageIcon: SetDocumentImageIcon
+        setDocumentImageIcon: SetDocumentImageIcon,
+        spaceGradientProvider: SpaceGradientProvider
     ): AccountAndDataViewModel.Factory = AccountAndDataViewModel.Factory(
         clearFileCache = clearFileCache,
         deleteAccount = deleteAccount,
@@ -66,8 +68,13 @@ object AccountAndDataModule {
         setObjectDetails = setObjectDetails,
         configStorage = configStorage,
         urlBuilder = urlBuilder,
-        setDocumentImageIcon = setDocumentImageIcon
+        setDocumentImageIcon = setDocumentImageIcon,
+        spaceGradientProvider = spaceGradientProvider
     )
+
+    @Provides
+    @PerScreen
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
 
     @Provides
     @PerScreen

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui_settings.account.repo.DebugSyncShareDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +41,8 @@ class AccountAndDataViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
-    private val setImageIcon: SetDocumentImageIcon
+    private val setImageIcon: SetDocumentImageIcon,
+    private val spaceGradientProvider: SpaceGradientProvider
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -59,7 +61,8 @@ class AccountAndDataViewModel(
                 Relations.ID,
                 Relations.NAME,
                 Relations.ICON_IMAGE,
-                Relations.ICON_EMOJI
+                Relations.ICON_EMOJI,
+                Relations.ICON_OPTION
             ),
             targets = listOf(profileId)
         )
@@ -67,7 +70,7 @@ class AccountAndDataViewModel(
         val obj = result.firstOrNull()
         AccountProfile.Data(
             name = obj?.name ?: "",
-            icon = obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder
+            icon = obj?.profileIcon(urlBuilder, spaceGradientProvider) ?: ProfileIconView.Placeholder
         )
     }.stateIn(
         viewModelScope,
@@ -209,7 +212,8 @@ class AccountAndDataViewModel(
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
-        private val setDocumentImageIcon: SetDocumentImageIcon
+        private val setDocumentImageIcon: SetDocumentImageIcon,
+        private val spaceGradientProvider: SpaceGradientProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -222,7 +226,8 @@ class AccountAndDataViewModel(
                 setObjectDetails = setObjectDetails,
                 configStorage = configStorage,
                 urlBuilder = urlBuilder,
-                setImageIcon = setDocumentImageIcon
+                setImageIcon = setDocumentImageIcon,
+                spaceGradientProvider = spaceGradientProvider
             ) as T
         }
     }

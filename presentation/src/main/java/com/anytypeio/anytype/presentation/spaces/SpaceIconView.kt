@@ -7,11 +7,15 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 sealed class SpaceIconView {
     object Loading : SpaceIconView()
     object Placeholder : SpaceIconView()
+    class Gradient(val from: String, val to: String) : SpaceIconView()
     data class Emoji(val unicode: String) : SpaceIconView()
     data class Image(val url: Url) : SpaceIconView()
 }
 
-fun ObjectWrapper.Basic.spaceIcon(builder: UrlBuilder): SpaceIconView = when {
+fun ObjectWrapper.Basic.spaceIcon(
+    builder: UrlBuilder,
+    spaceGradientProvider: SpaceGradientProvider
+) = when {
     !iconEmoji.isNullOrEmpty() -> {
         val emoji = checkNotNull(iconEmoji)
         SpaceIconView.Emoji(emoji)
@@ -19,6 +23,12 @@ fun ObjectWrapper.Basic.spaceIcon(builder: UrlBuilder): SpaceIconView = when {
     !iconImage.isNullOrEmpty() -> {
         val hash = checkNotNull(iconImage)
         SpaceIconView.Image(builder.thumbnail(hash))
+    }
+    iconOption != null -> {
+        iconOption?.let {
+            val gradient = spaceGradientProvider.get(it)
+            SpaceIconView.Gradient(gradient.from, gradient.to)
+        } ?: SpaceIconView.Placeholder
     }
     else -> SpaceIconView.Placeholder
 }

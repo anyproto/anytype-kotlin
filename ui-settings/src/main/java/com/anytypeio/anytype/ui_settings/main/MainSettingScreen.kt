@@ -18,12 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -179,6 +182,21 @@ fun AccountOption(
                             .padding(start = 20.dp)
                             .size(28.dp)
                             .clip(RoundedCornerShape(14.dp))
+                    )
+                }
+                is ProfileIconView.Gradient -> {
+                    val gradient = Brush.radialGradient(
+                        colors = listOf(
+                            Color(icon.from.toColorInt()),
+                            Color(icon.to.toColorInt())
+                        )
+                    )
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 20.dp)
+                            .size(28.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(gradient)
                     )
                 }
                 else -> {

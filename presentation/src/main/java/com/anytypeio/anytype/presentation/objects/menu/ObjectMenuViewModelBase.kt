@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.objects.menu
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
@@ -18,9 +17,10 @@ import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToCollectionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectLinkToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -221,10 +221,14 @@ abstract class ObjectMenuViewModelBase(
             targets = listOf(ctx)
         )
         viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
             addObjectToCollection.execute(params).fold(
                 onSuccess = { payload ->
                     dispatcher.send(payload)
-                    sendAnalyticsObjectLinkToEvent(analytics)
+                    sendAnalyticsAddToCollectionEvent(
+                        analytics = analytics,
+                        startTime = startTime
+                    )
                     commands.emit(
                         Command.OpenSnackbar(
                             id = collection,
@@ -243,11 +247,15 @@ abstract class ObjectMenuViewModelBase(
     fun onLinkedMyselfTo(myself: Id, addTo: Id, fromName: String?) {
         Timber.d("onLinkedMyselfTo, myself:[$myself], addTo:[$addTo], fromName:[$fromName]")
         jobs += viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
             addBackLinkToObject.execute(
                 AddBackLinkToObject.Params(objectToLink = myself, objectToPlaceLink = addTo)
             ).fold(
                 onSuccess = { obj ->
-                    sendAnalyticsObjectLinkToEvent(analytics)
+                    sendAnalyticsBackLinkAddEvent(
+                        analytics = analytics,
+                        startTime = startTime
+                    )
                     commands.emit(
                         Command.OpenSnackbar(
                             id = addTo,

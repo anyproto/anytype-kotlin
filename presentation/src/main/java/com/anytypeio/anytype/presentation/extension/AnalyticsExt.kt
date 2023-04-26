@@ -352,12 +352,43 @@ fun CoroutineScope.sendAnalyticsRemoveFromFavoritesEvent(
     )
 }
 
-fun CoroutineScope.sendAnalyticsObjectLinkToEvent(
-    analytics: Analytics
+fun CoroutineScope.sendAnalyticsBackLinkAddEvent(
+    analytics: Analytics,
+    startTime: Long
 ) {
+    val props = Props(
+        buildMap {
+            analytics.getContext()?.let { put("context", it) }
+            analytics.getOriginalId()?.let { put("originalId", it) }
+            put("linkType", "Object")
+        }
+    )
     sendEvent(
         analytics = analytics,
-        eventName = EventsDictionary.objectLinkTo
+        eventName = EventsDictionary.objectLinkTo,
+        props = props,
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
+}
+
+fun CoroutineScope.sendAnalyticsAddToCollectionEvent(
+    analytics: Analytics,
+    startTime: Long
+) {
+    val props = Props(
+        buildMap {
+            analytics.getContext()?.let { put("context", it) }
+            analytics.getOriginalId()?.let { put("originalId", it) }
+            put("linkType", "Collection")
+        }
+    )
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.objectLinkTo,
+        props = props,
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }
 

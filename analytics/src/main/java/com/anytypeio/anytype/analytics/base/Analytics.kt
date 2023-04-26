@@ -24,6 +24,11 @@ interface Analytics {
     fun observeEvents(): Flow<EventAnalytics>
 
     fun observeUserProperties(): Flow<UserProperty>
+
+    fun setContext(ctx: String?)
+    fun getContext(): String?
+    fun setOriginalId(originalId: String?)
+    fun getOriginalId(): String?
 }
 
 fun CoroutineScope.sendEvent(

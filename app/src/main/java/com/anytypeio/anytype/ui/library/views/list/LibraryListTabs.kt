@@ -76,11 +76,16 @@ fun LibraryListTab(
         text = {
             Text(
                 text = stringResource(id = config.title),
-                style = HeadlineSubheading,
+                style = HeadlineSubheading.copy(
+                    color = if (pagerState.currentPage == index) {
+                        colorResource(id = R.color.glyph_selected)
+                    } else {
+                        colorResource(id = R.color.glyph_active)
+                    }
+                ),
                 modifier = modifier
                     .wrapContentWidth()
                     .offset(x = config.subtitleTabOffset),
-                color = colorResource(id = R.color.text_primary)
             )
         },
         selected = pagerState.currentPage == index,

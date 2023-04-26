@@ -121,8 +121,13 @@ fun LibraryTab(
             ) {
                 Text(
                     text = stringResource(id = config.mainTitle),
-                    style = TabTitleStyle,
-                    color = colorResource(id = R.color.text_primary),
+                    style = TabTitleStyle.copy(
+                        color = if (pagerState.currentPage == config.index) {
+                            colorResource(id = R.color.glyph_selected)
+                        } else {
+                            colorResource(id = R.color.glyph_active)
+                        }
+                    ),
                     onTextLayout = onTextLayout::invoke
                 )
             }

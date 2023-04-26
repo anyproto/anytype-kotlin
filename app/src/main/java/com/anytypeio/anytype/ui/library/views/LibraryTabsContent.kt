@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.presentation.library.LibraryAnalyticsEvent
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
@@ -110,9 +110,10 @@ private fun Header(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            color = colorResource(id = R.color.text_primary),
             text = stringResource(config.description),
-            style = HeadlineSubheading,
+            style = HeadlineTitle.copy(
+                color = colorResource(id = R.color.text_primary)
+            ),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(
                 top = 58.dp,

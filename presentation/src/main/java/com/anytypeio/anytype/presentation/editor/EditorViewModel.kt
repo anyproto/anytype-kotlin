@@ -980,6 +980,8 @@ class EditorViewModel(
                                         isSyncStatusVisible.value = false
                                     }
                                     val block = event.blocks.firstOrNull { it.id == context }
+                                    analytics.setContext(block?.fields?.analyticsContext)
+                                    analytics.setOriginalId(block?.fields?.analyticsOriginalId)
                                     analyticsContext = block?.fields?.analyticsContext
                                     if (analyticsContext != null) {
                                         analyticsOriginalId = block?.fields?.analyticsOriginalId

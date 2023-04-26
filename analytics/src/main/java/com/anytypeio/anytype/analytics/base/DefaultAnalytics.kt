@@ -12,4 +12,19 @@ class DefaultAnalytics : Analytics {
     override suspend fun updateUserProperty(property: UserProperty) = userProps.emit(property)
     override fun observeEvents(): Flow<EventAnalytics> = events
     override fun observeUserProperties(): Flow<UserProperty> = userProps
+
+    private var analyticsContext: String? = null
+    private var analyticsOriginalId: String? = null
+
+    override fun setContext(ctx: String?) {
+        analyticsContext = ctx
+    }
+
+    override fun getContext(): String? = analyticsContext
+
+    override fun setOriginalId(originalId: String?) {
+        analyticsOriginalId = originalId
+    }
+
+    override fun getOriginalId(): String? = analyticsOriginalId
 }

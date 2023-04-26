@@ -52,7 +52,10 @@ class CreateDataViewObject(
                         relations = params.relations,
                         type = type
                     ),
-                    internalFlags = listOf(InternalFlags.ShouldSelectType)
+                    internalFlags = listOf(
+                        InternalFlags.ShouldSelectType,
+                        InternalFlags.ShouldSelectTemplate
+                    )
                 )
                 val result = repo.createObject(command)
                 result.id
@@ -66,7 +69,10 @@ class CreateDataViewObject(
                         relations = emptyList(),
                         type = type
                     ),
-                    internalFlags = listOf(InternalFlags.ShouldSelectType)
+                    internalFlags = listOf(
+                        InternalFlags.ShouldSelectType,
+                        InternalFlags.ShouldSelectTemplate
+                    )
                 )
                 val result = repo.createObject(command)
                 result.id

@@ -27,12 +27,12 @@ jobs:
           RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
         run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
 
-      - name: Setup license repository
-        uses: actions/checkout@master
-          with:
-            repository: anytypeio/open
-            ref: refs/heads/main
-            path: ./open
+      - uses: actions/checkout@master
+        with:
+          name: Setup license repository
+          repository: anytypeio/open
+          ref: refs/heads/main
+          path: ./open
 
       - name: Check licenses
         run: |

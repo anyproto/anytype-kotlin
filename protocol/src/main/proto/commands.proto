@@ -527,6 +527,7 @@ message Rpc {
                 option (no_auth) = true;
                 string path = 1;
                 string rootPath = 2;
+                int64 icon = 3;
             }
 
             message Response {

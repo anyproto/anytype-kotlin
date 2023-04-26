@@ -81,3 +81,14 @@ application*
 ```
 com.anytype.ci=true - for CI/CD pipeline
 ```
+
+### Updating MW (basics)
+
+1. Run the following command in Terminal or Makefile:
+
+    ```
+    make update_mw
+    ```
+
+2. Make sure your proto files located in `protocol/main/proto/` compile.
+3. Make sure to update `middlewareVersion` version in `libs.versions.toml`.

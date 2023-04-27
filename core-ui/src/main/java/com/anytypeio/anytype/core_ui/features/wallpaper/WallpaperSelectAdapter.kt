@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemWallpaperSelectGradientBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemWallpaperSelectSectionBinding
 import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -27,7 +28,13 @@ class WallpaperSelectAdapter(
                 false
             )
         )
-        R.layout.item_wallpaper_select_gradient -> GradientViewHolder(parent).apply {
+        R.layout.item_wallpaper_select_gradient -> GradientViewHolder(
+            ItemWallpaperSelectGradientBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
             itemView.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
@@ -98,6 +105,7 @@ class WallpaperSelectAdapter(
                 WallpaperSelectView.Section.SolidColor -> {
                     tvSectionName.setText(R.string.cover_color_solid)
                 }
+                else -> {}
             }
         }
     }
@@ -121,14 +129,10 @@ class WallpaperSelectAdapter(
         }
     }
 
-    class GradientViewHolder(parent: ViewGroup) : VH(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_wallpaper_select_gradient,
-            parent,
-            false
-        )
-    ) {
-        fun bind(item: WallpaperSelectView.Wallpaper) = with(itemView) {
+    class GradientViewHolder(
+        private val binding: ItemWallpaperSelectGradientBinding
+    ) : VH(binding.root) {
+        fun bind(item: WallpaperSelectView.Wallpaper) = with(binding.gradient) {
             val wallpaper = item.item
             check(wallpaper is WallpaperView.Gradient)
             when (wallpaper.code) {

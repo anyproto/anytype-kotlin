@@ -447,6 +447,9 @@
         <item name="android:maxLines">3</item>
         <item name="android:ellipsize">end</item>
         <item name="android:background">@null</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
+        <item name="textColor">@color/text_primary</item>
+        <item name="text_size">15sp</item>
     </style>
 
     <style name="PasteUrlEditTextStyle" parent="TextView.UXStyle.Body">

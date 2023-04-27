@@ -9,13 +9,13 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.tools.DefaultDividerItemDecoration
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -64,12 +64,12 @@ class RelationStatusValueFragment :
             layoutManager = LinearLayoutManager(context)
             adapter = relationValueAdapter
         }
-        dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(drawable(R.drawable.divider_relations))
-        }
-        dividerItemEdit = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(drawable(R.drawable.divider_relations_edit))
-        }
+        dividerItem = DefaultDividerItemDecoration(
+            drawable(R.drawable.divider_relations)
+        )
+        dividerItemEdit = DefaultDividerItemDecoration(
+            drawable(R.drawable.divider_relations_edit)
+        )
         proceed(btnAddValue.clicks()) { vm.onAddValueClicked(isLocked) }
         proceed(btnClear.clicks()) {
             vm.onRemoveStatusFromObjectClicked(

@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -54,7 +53,7 @@ import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import timber.log.Timber
 
-abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragment<T>(),
+abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragment<T>(),
     OnStartDragListener,
     AddObjectRelationFragment.ObjectValueAddReceiver,
     PickiTCallbacks {
@@ -70,8 +69,8 @@ abstract class RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragme
     abstract val vm: RelationValueBaseViewModel
 
     private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
-    protected lateinit var dividerItem: DividerItemDecoration
-    protected lateinit var dividerItemEdit: DividerItemDecoration
+    protected lateinit var dividerItem: RecyclerView.ItemDecoration
+    protected lateinit var dividerItemEdit: RecyclerView.ItemDecoration
 
     protected abstract val root: View
     protected abstract val recycler: RecyclerView

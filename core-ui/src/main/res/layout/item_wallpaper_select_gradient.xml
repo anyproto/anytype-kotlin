@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:background="@drawable/rectangle_debug"
-    android:layout_height="@dimen/default_wallpaper_select_item_height">
+    android:layout_height="@dimen/default_wallpaper_select_item_height"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="0dp">
 
-</FrameLayout>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gradient"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rect_cover_gallery_color" />
+
+</androidx.cardview.widget.CardView>

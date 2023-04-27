@@ -22,11 +22,13 @@ class AuthDataRepository(
     override suspend fun createAccount(
         name: String,
         avatarPath: String?,
-        invitationCode: String
+        invitationCode: String,
+        icon: Int
     ): AccountSetup = factory.remote.createAccount(
         name = name,
         avatarPath = avatarPath,
-        invitationCode = invitationCode
+        invitationCode = invitationCode,
+        icon = icon
     )
 
     override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()

@@ -8,7 +8,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRemote {
     suspend fun startAccount(id: String, path: String): AccountSetup
-    suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): AccountSetup
+    suspend fun createAccount(
+        name: String,
+        avatarPath: String?,
+        invitationCode: String,
+        icon: Int
+    ): AccountSetup
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus
     suspend fun recoverAccount()

@@ -93,12 +93,15 @@ class AuthDataRepositoryTest {
 
         val setup = StubAccountSetup()
 
+        val icon = MockDataFactory.randomInt()
+
         authRemote.stub {
             onBlocking {
                 createAccount(
                     name = name,
                     avatarPath = path,
-                    invitationCode = "code"
+                    invitationCode = "code",
+                    icon = icon
                 )
             } doReturn setup
         }
@@ -106,7 +109,8 @@ class AuthDataRepositoryTest {
         repo.createAccount(
             name = name,
             avatarPath = path,
-            invitationCode = "code"
+            invitationCode = "code",
+            icon = icon
         )
 
         verifyNoInteractions(authCache)
@@ -114,7 +118,8 @@ class AuthDataRepositoryTest {
         verify(authRemote, times(1)).createAccount(
             name = name,
             avatarPath = path,
-            invitationCode = "code"
+            invitationCode = "code",
+            icon = icon
         )
 
         verifyNoMoreInteractions(authRemote)

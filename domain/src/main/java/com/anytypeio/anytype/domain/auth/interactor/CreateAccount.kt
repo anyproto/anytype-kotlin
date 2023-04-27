@@ -19,7 +19,8 @@ open class CreateAccount(
         val setup = repository.createAccount(
             name = params.name,
             avatarPath = params.avatarPath,
-            invitationCode = params.invitationCode
+            invitationCode = params.invitationCode,
+            icon = params.icon
         )
         with(repository) {
             saveAccount(setup.account)
@@ -37,6 +38,7 @@ open class CreateAccount(
     class Params(
         val name: String,
         val avatarPath: String? = null,
-        val invitationCode: String
+        val invitationCode: String,
+        val icon: Int
     )
 }

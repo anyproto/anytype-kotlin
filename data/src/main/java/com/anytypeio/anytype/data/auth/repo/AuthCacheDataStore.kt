@@ -17,9 +17,12 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         throw UnsupportedOperationException()
     }
 
-
-
-    override suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): AccountSetup {
+    override suspend fun createAccount(
+        name: String,
+        avatarPath: String?,
+        invitationCode: String,
+        icon: Int
+    ): AccountSetup {
         throw UnsupportedOperationException()
     }
 

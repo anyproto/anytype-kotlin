@@ -7,13 +7,15 @@ import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.model.Session
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 
 class SetupNewAccountViewModelFactory(
     private val createAccount: CreateAccount,
     private val session: Session,
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceGradientProvider: SpaceGradientProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -23,7 +25,8 @@ class SetupNewAccountViewModelFactory(
             session = session,
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
-            objectTypesSubscriptionManager = objectTypesSubscriptionManager
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+            spaceGradientProvider = spaceGradientProvider
         ) as T
     }
 }

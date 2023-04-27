@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.model.Session
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -34,7 +35,8 @@ class SetupNewAccountViewModel(
     private val createAccount: CreateAccount,
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceGradientProvider: SpaceGradientProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
@@ -62,7 +64,8 @@ class SetupNewAccountViewModel(
             params = CreateAccount.Params(
                 name = session.name ?: throw IllegalStateException("Name not set"),
                 avatarPath = session.avatarPath,
-                invitationCode = session.invitationCode
+                invitationCode = session.invitationCode,
+                icon = spaceGradientProvider.randomId()
             )
         ) { result ->
             result.either(

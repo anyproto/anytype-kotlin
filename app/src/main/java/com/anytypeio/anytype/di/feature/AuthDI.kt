@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewM
 import com.anytypeio.anytype.presentation.auth.keychain.KeychainLoginViewModelFactory
 import com.anytypeio.anytype.presentation.auth.model.Session
 import com.anytypeio.anytype.presentation.auth.start.StartLoginViewModelFactory
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.auth.AboutAnalyticsFragment
 import com.anytypeio.anytype.ui.auth.InvitationFragment
 import com.anytypeio.anytype.ui.auth.KeychainLoginFragment
@@ -208,16 +209,23 @@ object SetupNewAccountModule {
         session: Session,
         analytics: Analytics,
         relationsSubscriptionManager: RelationsSubscriptionManager,
-        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+        spaceGradientProvider: SpaceGradientProvider
     ): SetupNewAccountViewModelFactory {
         return SetupNewAccountViewModelFactory(
             createAccount = createAccount,
             session = session,
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
-            objectTypesSubscriptionManager = objectTypesSubscriptionManager
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+            spaceGradientProvider = spaceGradientProvider
         )
     }
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
 
     @JvmStatic
     @Provides

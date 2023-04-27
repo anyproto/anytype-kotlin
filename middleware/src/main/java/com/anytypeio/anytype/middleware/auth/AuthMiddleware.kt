@@ -28,11 +28,13 @@ class AuthMiddleware(
     override suspend fun createAccount(
         name: String,
         avatarPath: String?,
-        invitationCode: String
+        invitationCode: String,
+        icon: Int,
     ) : AccountSetup = middleware.accountCreate(
         name = name,
         path = avatarPath,
-        invitationCode = invitationCode
+        invitationCode = invitationCode,
+        icon = icon
     )
 
     override suspend fun deleteAccount(): AccountStatus = middleware.accountDelete()

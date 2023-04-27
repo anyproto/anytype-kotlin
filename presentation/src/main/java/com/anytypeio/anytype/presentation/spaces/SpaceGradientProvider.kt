@@ -6,10 +6,16 @@ interface SpaceGradientProvider {
 
     fun get(id: Double): Gradient
 
+    fun randomId(): Int
+
     class Impl @Inject constructor(): SpaceGradientProvider {
 
         override fun get(id: Double): Gradient {
             return gradients[id] ?: Gradient("#F6EB7D", "#CBD2FA")
+        }
+
+        override fun randomId(): Int {
+            return gradients.keys.random().toInt()
         }
 
         private val gradients = mapOf(

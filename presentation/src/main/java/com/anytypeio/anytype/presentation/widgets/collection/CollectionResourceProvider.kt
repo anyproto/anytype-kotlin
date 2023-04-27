@@ -7,10 +7,24 @@ import javax.inject.Inject
 class CollectionResourceProvider @Inject constructor(
     private val context: Context
 ) {
-    fun actionModeName(actionMode: ActionMode): String {
+    fun actionModeName(
+        actionMode: ActionMode,
+        isResultEmpty: Boolean
+    ): String {
         return when (actionMode) {
-            ActionMode.SelectAll -> context.getString(R.string.select_all)
-            ActionMode.UnselectAll -> context.getString(R.string.unselect_all)
+            ActionMode.SelectAll -> {
+                if (isResultEmpty)
+                    ""
+                else
+                    context.getString(R.string.select_all)
+            }
+            ActionMode.UnselectAll -> {
+                if (isResultEmpty) {
+                    ""
+                } else {
+                    context.getString(R.string.unselect_all)
+                }
+            }
             ActionMode.Edit -> context.getString(R.string.edit)
             ActionMode.Done -> context.getString(R.string.done)
         }

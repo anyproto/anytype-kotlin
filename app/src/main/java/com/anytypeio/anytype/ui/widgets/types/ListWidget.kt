@@ -103,6 +103,7 @@ fun ListWidgetCard(
             } else {
                 if (item.isExpanded) {
                     EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                    Spacer(modifier = Modifier.height(2.dp))
                 }
             }
         }

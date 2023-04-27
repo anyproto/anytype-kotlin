@@ -39,6 +39,7 @@ fun WidgetMenu(
         onDismissRequest = { isExpanded.value = false },
         offset = DpOffset(x = 0.dp, y = 6.dp)
     ) {
+        val extraEndPadding = 68.dp
         val defaultTextStyle = BodyRegular
         if (canAddBelow) {
             DropdownMenuItem(
@@ -52,6 +53,7 @@ fun WidgetMenu(
                     text = stringResource(R.string.widget_add_below),
                     style = BodyRegular,
                     color = colorResource(id = R.color.text_primary),
+                    modifier = Modifier.padding(end = extraEndPadding)
                 )
             }
             Divider(
@@ -71,6 +73,7 @@ fun WidgetMenu(
                     text = stringResource(R.string.widget_change_source),
                     style = defaultTextStyle,
                     color = colorResource(id = R.color.text_primary),
+                    modifier = Modifier.padding(end = extraEndPadding)
                 )
             }
             Divider(
@@ -90,6 +93,7 @@ fun WidgetMenu(
                     text = stringResource(R.string.widget_change_type),
                     style = defaultTextStyle,
                     color = colorResource(id = R.color.text_primary),
+                    modifier = Modifier.padding(end = extraEndPadding)
                 )
             }
             Divider(
@@ -109,7 +113,8 @@ fun WidgetMenu(
                     text = stringResource(id = R.string.widget_remove_widget),
                     style = defaultTextStyle.copy(
                         color = colorResource(id = R.color.palette_dark_red)
-                    )
+                    ),
+                    modifier = Modifier.padding(end = extraEndPadding)
                 )
             }
             Divider(
@@ -129,7 +134,8 @@ fun WidgetMenu(
                     text = stringResource(id = R.string.widget_empty_bin),
                     style = defaultTextStyle.copy(
                         color = colorResource(id = R.color.palette_dark_red)
-                    )
+                    ),
+                    modifier = Modifier.padding(end = extraEndPadding)
                 )
             }
             Divider(
@@ -149,6 +155,7 @@ fun WidgetMenu(
                     text = stringResource(R.string.widget_edit_widgets),
                     style = defaultTextStyle,
                     color = colorResource(id = R.color.text_primary),
+                    modifier = Modifier.padding(end = extraEndPadding)
                 )
             }
         }

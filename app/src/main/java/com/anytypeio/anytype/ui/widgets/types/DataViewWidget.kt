@@ -125,6 +125,7 @@ fun DataViewListWidgetCard(
                         EmptyWidgetPlaceholder(R.string.empty_list_widget)
                     else
                         EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
+                    Spacer(modifier = Modifier.height(2.dp))
                 }
             }
         }

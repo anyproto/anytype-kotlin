@@ -119,7 +119,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                     )
                 )
             clipboard.setPrimaryClip(clip)
-            toast("Technical info copied.")
+            toast("Technical info copied")
         } catch (e: Exception) {
             toast("Could not copy your technical info. Please try again later, or copy it manually.")
         }
@@ -127,10 +127,10 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
 
     private fun AboutAppViewModel.ExternalLink.toExternalUrl() =
         when (this) {
-            AboutAppViewModel.ExternalLink.AnytypeCommunity -> getString(R.string.about_anytype_community)
+            AboutAppViewModel.ExternalLink.AnytypeCommunity -> getString(R.string.about_anytype_community_link)
             AboutAppViewModel.ExternalLink.HelpAndTutorials -> getString(R.string.about_help_and_tutorials_link)
             AboutAppViewModel.ExternalLink.PrivacyPolicy -> getString(R.string.about_privacy_policy_link)
-            AboutAppViewModel.ExternalLink.TermsOfUse -> getString(R.string.about_terms_of_use)
+            AboutAppViewModel.ExternalLink.TermsOfUse -> getString(R.string.about_terms_and_conditions_link)
             AboutAppViewModel.ExternalLink.WhatIsNew -> getString(R.string.about_what_is_new_link)
         }
 

@@ -44,8 +44,8 @@
 
     <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
     <string name="about_anytype_community_link">https://community.anytype.io</string>
-    <string name="about_help_and_tutorials_link">https://doc.anytype.io/</string>
-    <string name="about_terms_and_conditions">https://anytype.io/terms.pdf</string>
+    <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
+    <string name="about_terms_and_conditions_link">https://anytype.io/terms.pdf</string>
     <string name="about_privacy_policy_link">https://anytype.io/Anytype_Privacy_Statement.pdf</string>
 
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary: %3$s\nUser\u00A0ID:\u00A0%4$s</string>

@@ -62,6 +62,7 @@ fun AboutAppScreen(
         Option(title = stringResource(id = R.string.about_help_and_tutorials)) {
             onExternalLinkClicked(AboutAppViewModel.ExternalLink.HelpAndTutorials)
         }
+        Divider()
         Section(title = stringResource(id = R.string.about_legal))
         Option(title = stringResource(id = R.string.about_terms_of_use)) {
             onExternalLinkClicked(AboutAppViewModel.ExternalLink.TermsOfUse)

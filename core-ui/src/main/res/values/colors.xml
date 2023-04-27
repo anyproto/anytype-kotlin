@@ -206,7 +206,7 @@
     <color name="object_loading_state_gradient_end_color">#F1F0ED</color>
 
     <color name="widget_button">#A6FFFFFF</color>
-    <color name="home_screen_button">#662C2B27</color>
+    <color name="home_screen_button">#CC2C2B27</color>
     <color name="set_new_btn_text">#FFFFFF</color>
 
     <color name="colorPrimary">#FF5722</color>

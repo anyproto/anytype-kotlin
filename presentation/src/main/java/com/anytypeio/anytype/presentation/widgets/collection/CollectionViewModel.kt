@@ -123,7 +123,16 @@ class CollectionViewModel(
                     mode == InteractionMode.Edit,
                     mode == InteractionMode.Edit && isAnySelected(),
                     resourceProvider.subscriptionName(subscription),
-                    resourceProvider.actionModeName(actionMode),
+                    resourceProvider.actionModeName(
+                        actionMode = actionMode,
+                        isResultEmpty = when(views) {
+                            is Resultat.Failure -> true
+                            is Resultat.Loading -> true
+                            is Resultat.Success -> {
+                                views.value.none { it is ObjectView || it is FavoritesView }
+                            }
+                        }
+                    ),
                     actionObjectFilter.filter(subscription, selectedViews()),
                     subscription == Subscription.Favorites && mode == InteractionMode.Edit,
                     subscription != Subscription.Sets,
@@ -153,6 +162,7 @@ class CollectionViewModel(
         .distinctUntilChanged()
         .onEach {
             if (subscription != Subscription.Bin) {
+                actionMode = ActionMode.Edit
                 interactionMode.value = InteractionMode.View
             }
             views.value = Resultat.loading()
@@ -166,10 +176,11 @@ class CollectionViewModel(
     }
 
     fun onStart(subscription: Subscription) {
-        if (this.subscription != subscription && subscription == Subscription.Bin) {
+        val isFirstLaunch = this.subscription == Subscription.None
+        this.subscription = subscription
+        if (isFirstLaunch && subscription == Subscription.Bin) {
             onStartEditMode()
         }
-        this.subscription = subscription
         subscribeObjects()
     }
 
@@ -366,9 +377,17 @@ class CollectionViewModel(
 
     private fun alterActionState(views: List<CollectionView>) {
         actionMode = if (isAllSelected(views)) {
-            ActionMode.UnselectAll
+            if (subscription == Subscription.Bin) {
+                ActionMode.UnselectAll
+            } else {
+                ActionMode.Done
+            }
         } else {
-            ActionMode.SelectAll
+            if (subscription == Subscription.Bin) {
+                ActionMode.SelectAll
+            } else {
+                ActionMode.Done
+            }
         }
     }
 
@@ -447,7 +466,11 @@ class CollectionViewModel(
     }
 
     private fun onStartEditMode() {
-        actionMode = ActionMode.SelectAll
+        actionMode = if (subscription == Subscription.Bin) {
+            ActionMode.SelectAll
+        } else {
+            ActionMode.Done
+        }
         interactionMode.value = InteractionMode.Edit
     }
 
@@ -556,8 +579,8 @@ class CollectionViewModel(
     private fun isAnySelected() =
         currentViews().any { it is CollectionObjectView && it.isSelected }
 
-    private fun isAllSelected(views: List<CollectionView>) =
-        views.filterIsInstance<CollectionObjectView>().all { it.isSelected }
+    private fun isAllSelected(views: List<CollectionView>) = views.filterIsInstance<CollectionObjectView>().all { it.isSelected }
+    private fun isNoneSelected(views: List<CollectionView>) = views.filterIsInstance<CollectionObjectView>().none { it.isSelected }
 
     private fun selectedViews() =
         currentViews()

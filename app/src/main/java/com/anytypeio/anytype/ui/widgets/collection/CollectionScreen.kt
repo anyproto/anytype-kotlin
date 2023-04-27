@@ -231,7 +231,6 @@ private fun ListView(
                                                 Modifier
                                             }
                                         )
-                                        .background(MaterialTheme.colors.surface)
                                 ) {
                                     CollectionItem(
                                         view = item,

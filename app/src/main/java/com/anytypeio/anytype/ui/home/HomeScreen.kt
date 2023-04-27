@@ -238,8 +238,8 @@ private fun WidgetList(
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(end = 12.dp),
+                                    .align(Alignment.TopStart)
+                                    .padding(start = 12.dp),
                                 enter = fadeIn() + slideInHorizontally { it / 4 },
                                 exit = fadeOut() + slideOutHorizontally { it / 4 }
                             ) {
@@ -285,8 +285,8 @@ private fun WidgetList(
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(end = 12.dp),
+                                    .align(Alignment.TopStart)
+                                    .padding(start = 12.dp),
                                 enter = fadeIn() + slideInHorizontally { it / 4 },
                                 exit = fadeOut() + slideOutHorizontally { it / 4 }
                             ) {
@@ -342,8 +342,8 @@ private fun WidgetList(
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(end = 12.dp),
+                                    .align(Alignment.TopStart)
+                                    .padding(start = 12.dp),
                                 enter = fadeIn() + slideInHorizontally { it / 4 },
                                 exit = fadeOut() + slideOutHorizontally { it / 4 }
                             ) {
@@ -398,8 +398,8 @@ private fun WidgetList(
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(end = 12.dp),
+                                    .align(Alignment.TopStart)
+                                    .padding(start = 12.dp),
                                 enter = fadeIn() + slideInHorizontally { it / 4 },
                                 exit = fadeOut() + slideOutHorizontally { it / 4 }
                             ) {

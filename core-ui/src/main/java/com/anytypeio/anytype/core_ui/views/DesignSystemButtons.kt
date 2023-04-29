@@ -245,21 +245,42 @@ enum class ButtonSize(
         contentPadding = PaddingValues(9.5.dp, 3.5.dp, 9.5.dp, 3.5.dp),
         textStyle = Caption1Medium
     ),
+    XSmallSecondary(
+        cornerSize = 6.dp,
+        contentPadding = PaddingValues(9.5.dp, 3.5.dp, 9.5.dp, 3.5.dp),
+        textStyle = Caption1Regular
+    ),
     Small(
         cornerSize = 8.dp,
         contentPadding = PaddingValues(11.dp, 5.dp, 11.dp, 5.dp),
         textStyle = BodyCalloutMedium
+    ),
+    SmallSecondary(
+        cornerSize = 8.dp,
+        contentPadding = PaddingValues(11.dp, 5.dp, 11.dp, 5.dp),
+        textStyle = BodyCalloutRegular
     ),
     Medium(
         cornerSize = 10.dp,
         contentPadding = PaddingValues(55.dp, 10.dp, 55.dp, 10.dp),
         textStyle = ButtonMedium
     ),
+    MediumSecondary(
+        cornerSize = 10.dp,
+        contentPadding = PaddingValues(55.dp, 10.dp, 55.dp, 10.dp),
+        textStyle = UXBody
+    ),
     Large(
         cornerSize = 12.dp,
         contentPadding = PaddingValues(0.dp, 12.dp, 0.dp, 12.dp),
         textStyle = ButtonMedium
+    ),
+    LargeSecondary(
+        cornerSize = 12.dp,
+        contentPadding = PaddingValues(0.dp, 12.dp, 0.dp, 12.dp),
+        textStyle = ButtonRegular
     )
+
 }
 
 object NoRippleTheme : RippleTheme {
@@ -287,7 +308,7 @@ fun MyPrimaryButton() {
 fun MySecondaryButton() {
     ButtonSecondary(
         onClick = {},
-        size = ButtonSize.Large,
+        size = ButtonSize.LargeSecondary,
         text = "Cancel",
         modifier = Modifier.fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)

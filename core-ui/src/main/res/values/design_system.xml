@@ -307,7 +307,7 @@
         <item name="android:insetBottom">7dp</item>
     </style>
 
-    <style name="Button.Secondary.XSmall" parent="TextView.UXStyle.Captions.1.Medium">
+    <style name="Button.Secondary.XSmall" parent="TextView.UXStyle.Captions.1.Regular">
         <item name="android:background">@drawable/button_secondary_xsmall_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>
@@ -319,7 +319,7 @@
         <item name="android:paddingBottom">5dp</item>
     </style>
 
-    <style name="Button.Secondary.Small" parent="TextView.UXStyle.Body.Callout.Medium">
+    <style name="Button.Secondary.Small" parent="TextView.UXStyle.Body.Callout.Regular">
         <item name="android:background">@drawable/button_secondary_small_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>
@@ -331,7 +331,7 @@
         <item name="android:paddingBottom">7dp</item>
     </style>
 
-    <style name="Button.Secondary.Medium" parent="TextView.UXStyle.Buttons.Medium">
+    <style name="Button.Secondary.Medium" parent="TextView.UXStyle.Body">
         <item name="android:background">@drawable/button_secondary_medium_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>
@@ -343,7 +343,7 @@
         <item name="android:paddingBottom">10dp</item>
     </style>
 
-    <style name="Button.Secondary.Large" parent="TextView.UXStyle.Buttons.Medium">
+    <style name="Button.Secondary.Large" parent="TextView.UXStyle.Buttons.Regular">
         <item name="android:background">@drawable/button_secondary_large_selector</item>
         <item name="android:textColor">@color/text_color_button_secondary_selector</item>
         <item name="android:gravity">center</item>

@@ -176,7 +176,7 @@ fun Warning(
         ) {
             ButtonSecondary(
                 onClick = onNegativeClick,
-                size = ButtonSize.Large,
+                size = ButtonSize.LargeSecondary,
                 text = cancelButtonText,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -248,7 +248,7 @@ fun Announcement(
                     ButtonSecondary(
                         text = stringResource(R.string.back),
                         onClick = onBackClicked,
-                        size = ButtonSize.Large,
+                        size = ButtonSize.LargeSecondary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1.0f)

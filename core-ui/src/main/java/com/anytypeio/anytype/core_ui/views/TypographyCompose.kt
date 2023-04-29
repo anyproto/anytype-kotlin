@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.em
 import com.anytypeio.anytype.core_ui.R
 
 val fontInterRegular = FontFamily(
@@ -35,7 +36,7 @@ val HeadlineTitle =
         fontWeight = FontWeight.W700,
         fontSize = 28.sp,
         lineHeight = 30.5.sp,
-        letterSpacing = (-0.017).sp
+        letterSpacing = (-0.017).em
     )
 
 //Content/Headlines/Heading
@@ -45,7 +46,7 @@ val HeadlineHeading =
         fontWeight = FontWeight.W700,
         fontSize = 22.sp,
         lineHeight = 26.sp,
-        letterSpacing = (-0.016).sp
+        letterSpacing = (-0.016).em
     )
 
 //Content/Headlines/Subheading
@@ -55,7 +56,7 @@ val HeadlineSubheading =
         fontWeight = FontWeight.W700,
         fontSize = 17.sp,
         lineHeight = 24.sp,
-        letterSpacing = (-0.016).sp
+        letterSpacing = (-0.016).em
     )
 
 //Content/Body/Bold
@@ -64,7 +65,7 @@ val BodyBold = TextStyle(
     fontWeight = FontWeight.W600,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //Content/Body/Bold Italic
@@ -74,7 +75,7 @@ val BodyBoldItalic = TextStyle(
     fontStyle = FontStyle.Italic,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //Content/Body/Regular
@@ -83,7 +84,7 @@ val BodyRegular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //Content/Body/Italic
@@ -93,7 +94,7 @@ val BodyItalic = TextStyle(
     fontStyle = FontStyle.Italic,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //Content/Callout/Regular
@@ -102,7 +103,7 @@ val BodyCallout = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.016).sp
+    letterSpacing = (-0.016).em
 )
 
 //Content/Preview Title 1/Medium
@@ -111,7 +112,7 @@ val PreviewTitle1Medium = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 17.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //Content/Preview Title 1/Regular
@@ -120,7 +121,7 @@ val PreviewTitle1Regular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 17.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //Content/Preview Title 2/Medium
@@ -129,7 +130,7 @@ val PreviewTitle2Medium = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 15.sp,
     lineHeight = 20.sp,
-    letterSpacing = (-0.016).sp
+    letterSpacing = (-0.016).em
 )
 
 //Content/Preview Title 2/Regular
@@ -138,7 +139,7 @@ val PreviewTitle2Regular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 20.sp,
-    letterSpacing = (-0.016).sp
+    letterSpacing = (-0.016).em
 )
 
 //Content/Relation 1/Regular
@@ -147,7 +148,7 @@ val Relations1 = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 20.sp,
-    letterSpacing = (-0.016).sp
+    letterSpacing = (-0.016).em
 )
 
 //Content/Relation 2/Regular
@@ -156,7 +157,7 @@ val Relations2 = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 13.sp,
     lineHeight = 18.sp,
-    letterSpacing = (-0.006).sp
+    letterSpacing = (-0.006).em
 )
 
 //Content/Relation 3/Regular
@@ -173,7 +174,7 @@ val CodeBlock = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.016).sp
+    letterSpacing = (-0.016).em
 )
 
 //UX/Title 1/Semibold
@@ -182,7 +183,7 @@ val Title1 = TextStyle(
     fontWeight = FontWeight.W600,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //UX/Title 2/Medium
@@ -191,7 +192,7 @@ val Title2 = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 15.sp,
     lineHeight = 20.sp,
-    letterSpacing = (-0.014).sp
+    letterSpacing = (-0.014).em
 )
 
 //UX/Title 2/Regular
@@ -200,7 +201,7 @@ val Title3 = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 20.sp,
-    letterSpacing = (-0.014).sp
+    letterSpacing = (-0.014).em
 )
 
 //UX/Body/Regular
@@ -209,7 +210,7 @@ val UXBody = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //UX/Callout/Medium
@@ -218,7 +219,7 @@ val BodyCalloutMedium = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 15.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.014).sp
+    letterSpacing = (-0.014).em
 )
 
 //UX/Callout/Regular
@@ -227,7 +228,7 @@ val BodyCalloutRegular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.014).sp
+    letterSpacing = (-0.014).em
 )
 
 //UX/Caption 1/Medium
@@ -236,7 +237,7 @@ val Caption1Medium = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 13.sp,
     lineHeight = 18.sp,
-    letterSpacing = (-0.006).sp
+    letterSpacing = (-0.006).em
 )
 
 //UX/Caption 1/Regular
@@ -245,7 +246,7 @@ val Caption1Regular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 13.sp,
     lineHeight = 18.sp,
-    letterSpacing = (-0.006).sp
+    letterSpacing = (-0.006).em
 )
 
 //UX/Caption 2/Medium
@@ -254,7 +255,7 @@ val Caption2Medium = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 11.sp,
     lineHeight = 14.sp,
-    letterSpacing = (-0.006).sp
+    letterSpacing = (-0.006).em
 )
 
 //UX/Caption 2/Regular
@@ -263,7 +264,7 @@ val Caption2Regular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 11.sp,
     lineHeight = 14.sp,
-    letterSpacing = (-0.006).sp
+    letterSpacing = (-0.006).em
 )
 
 //UX/Button/Medium
@@ -272,7 +273,7 @@ val ButtonMedium = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )
 
 //UX/Button/Regular
@@ -281,5 +282,5 @@ val ButtonRegular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).sp
+    letterSpacing = (-0.024).em
 )

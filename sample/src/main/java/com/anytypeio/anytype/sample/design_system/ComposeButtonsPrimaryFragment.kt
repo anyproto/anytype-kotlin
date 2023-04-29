@@ -94,7 +94,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .wrapContentHeight()
                                 .align(CenterHorizontally),
                             text = "Button",
-                            size = ButtonSize.XSmall
+                            size = ButtonSize.XSmallSecondary
                         )
                         ButtonSecondary(
                             onClick = {},
@@ -103,7 +103,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             text = "Button",
                             enabled = false,
-                            size = ButtonSize.XSmall
+                            size = ButtonSize.XSmallSecondary
                         )
                         ButtonWarning(
                             onClick = {},
@@ -144,7 +144,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .wrapContentHeight()
                                 .align(CenterHorizontally),
                             text = "Button",
-                            size = ButtonSize.Small
+                            size = ButtonSize.SmallSecondary
                         )
                         ButtonSecondary(
                             onClick = {},
@@ -153,7 +153,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             text = "Button",
                             enabled = false,
-                            size = ButtonSize.Small
+                            size = ButtonSize.SmallSecondary
                         )
                         ButtonWarning(
                             onClick = {},
@@ -197,7 +197,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .align(CenterHorizontally),
                             text = "Button",
-                            size = ButtonSize.Medium
+                            size = ButtonSize.MediumSecondary
                         )
                         ButtonSecondary(
                             onClick = {},
@@ -207,7 +207,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             text = "Button",
                             enabled = false,
-                            size = ButtonSize.Medium
+                            size = ButtonSize.MediumSecondary
                         )
                         ButtonWarning(
                             onClick = {},
@@ -255,7 +255,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .align(CenterHorizontally),
                             text = "Button",
-                            size = ButtonSize.Large
+                            size = ButtonSize.LargeSecondary
                         )
                         ButtonSecondary(
                             onClick = {},
@@ -266,7 +266,7 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             text = "Button",
                             enabled = false,
-                            size = ButtonSize.Large
+                            size = ButtonSize.LargeSecondary
                         )
                         ButtonWarning(
                             onClick = {},

@@ -7,56 +7,56 @@
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootConstraint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/dp_12">
+        android:paddingBottom="@dimen/dp_16">
 
         <com.anytypeio.anytype.core_ui.widgets.GalleryCoverWidget
             android:id="@+id/cover"
             android:layout_width="match_parent"
-            android:layout_height="112dp"
+            android:layout_height="102dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
-        <FrameLayout
-            android:id="@+id/cardIconContainer"
-            android:layout_width="34dp"
-            android:layout_height="31dp"
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/cardIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom|end"
+            app:checkboxSize="16dp"
+            app:emojiSize="16dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginStart="16dp"
+            app:hasEmojiRounded8Background="false"
+            app:hasInitialRounded8Background="true"
+            app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
+            app:imageSize="16dp"
+            app:initialTextSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cover"
-            tools:visibility="visible">
+            app:layout_constraintTop_toBottomOf="@+id/cover"/>
 
-            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-                android:id="@+id/cardIcon"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_gravity="bottom|end"
-                app:checkboxSize="18dp"
-                app:emojiSize="18dp"
-                app:hasEmojiRounded8Background="false"
-                app:hasInitialRounded8Background="true"
-                app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
-                app:imageSize="18dp"
-                app:initialTextSize="13sp" />
-
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/tvTitle"
-            style="@style/SetGalleryViewTitleStyle"
+        <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewTitleDescriptionWidget
+            android:id="@+id/titleDescContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_12"
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginEnd="@dimen/dp_16"
-            app:layout_constraintBottom_toTopOf="@+id/contentContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cover"
-            tools:text="Material Design is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material Design streamlines collaboration between designers and developers, and helps teams quickly build beautiful products."
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@+id/cover"/>
+
+        <Space
+            android:id="@+id/titleDescContainerSpace"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_dv_gallery_title_desc_height"
+            android:layout_marginTop="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cover"/>
 
         <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewContentWidget
             android:id="@+id/contentContainer"
@@ -68,7 +68,7 @@
             app:itemIntervalMargin="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+            app:layout_constraintTop_toBottomOf="@+id/titleDescContainerSpace"
             app:marginAfterIcon="4dp"
             app:marginAfterText="6dp" />
 

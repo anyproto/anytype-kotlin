@@ -80,7 +80,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
     viewerRelations: List<DVViewerRelation>,
     store: ObjectStore,
     filteredRelations: List<ObjectWrapper.Relation>
-): Viewer.GalleryView.Item.Default {
+): Viewer.GalleryView.Item {
     val obj = this
     return Viewer.GalleryView.Item.Default(
         objectId = obj.id,
@@ -97,7 +97,8 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             obj = obj,
             layout = obj.layout,
             builder = urlBuilder
-        )
+        ),
+        withDescription = filteredRelations.any { it.key == Relations.DESCRIPTION }
     )
 }
 
@@ -109,7 +110,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     urlBuilder: UrlBuilder,
     store: ObjectStore,
     filteredRelations: List<ObjectWrapper.Relation>
-): Viewer.GalleryView.Item.Cover {
+): Viewer.GalleryView.Item {
     val obj = this
     var cover: CoverView? = null
 
@@ -171,6 +172,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
             builder = urlBuilder
         ),
         cover = cover,
-        fitImage = dvViewer.coverFit
+        fitImage = dvViewer.coverFit,
+        withDescription = filteredRelations.any { it.key == Relations.DESCRIPTION }
     )
 }

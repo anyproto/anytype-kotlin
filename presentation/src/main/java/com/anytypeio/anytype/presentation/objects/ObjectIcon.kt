@@ -27,7 +27,8 @@ sealed class ObjectIcon {
         fun from(
             obj: ObjectWrapper.Basic,
             layout: ObjectType.Layout?,
-            builder: UrlBuilder
+            builder: UrlBuilder,
+            objectTypeNoIcon: Boolean = false
         ): ObjectIcon {
             val img = obj.iconImage
             val emoji = obj.iconEmoji
@@ -38,6 +39,7 @@ sealed class ObjectIcon {
                     else -> Basic.Avatar(obj.name.orEmpty())
                 }
                 ObjectType.Layout.OBJECT_TYPE -> when {
+                    objectTypeNoIcon -> None
                     !img.isNullOrBlank() -> Basic.Image(hash = builder.thumbnail(img))
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
                     else -> Basic.Avatar(obj.name.orEmpty())

@@ -220,7 +220,8 @@ fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when 
         icon = ObjectIcon.from(
             obj = this,
             layout = layout,
-            builder = urlBuilder
+            builder = urlBuilder,
+            objectTypeNoIcon = true
         ),
         types = type,
         isRelation = type.contains(ObjectTypeIds.RELATION)

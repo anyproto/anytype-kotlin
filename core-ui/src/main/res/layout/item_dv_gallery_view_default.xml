@@ -13,30 +13,30 @@
 
         <FrameLayout
             android:id="@+id/cardIconContainer"
-            android:layout_width="34dp"
-            android:layout_height="31dp"
+            android:layout_width="32dp"
+            android:layout_height="30dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible">
 
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/cardIcon"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:layout_gravity="bottom|end"
-                app:checkboxSize="18dp"
-                app:emojiSize="18dp"
+                app:checkboxSize="16dp"
+                app:emojiSize="16dp"
+                android:layout_marginBottom="1dp"
                 app:hasEmojiRounded8Background="false"
                 app:hasInitialRounded8Background="true"
                 app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
-                app:imageSize="18dp"
-                app:initialTextSize="13sp" />
+                app:imageSize="16dp"
+                app:initialTextSize="12sp" />
 
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/tvTitle"
-            style="@style/SetGalleryViewTitleStyle"
+        <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewTitleDescriptionWidget
+            android:id="@+id/titleDescContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_12"
@@ -45,9 +45,7 @@
             app:layout_constraintBottom_toTopOf="@+id/contentContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Material Design is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material Design streamlines collaboration between designers and developers, and helps teams quickly build beautiful products."
-            tools:visibility="visible" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewContentWidget
             android:id="@+id/contentContainer"
@@ -59,7 +57,7 @@
             app:itemIntervalMargin="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+            app:layout_constraintTop_toBottomOf="@+id/titleDescContainer"
             app:marginAfterIcon="4dp"
             app:marginAfterText="6dp" />
 

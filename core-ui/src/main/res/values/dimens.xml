@@ -90,7 +90,9 @@
     <dimen name="dp_10">10dp</dimen>
     <dimen name="dp_1">1dp</dimen>
     <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_17">17dp</dimen>
     <dimen name="dp_12">12dp</dimen>
+    <dimen name="dp_13">13dp</dimen>
     <dimen name="dp_48">48dp</dimen>
     <dimen name="dp_32">32dp</dimen>
     <dimen name="dp_20">20dp</dimen>
@@ -311,5 +313,8 @@
 
     <dimen name="default_dv_gallery_first_line_margin_start">22dp</dimen>
     <dimen name="default_collection_dv_header_height">56dp</dimen>
+
+    <dimen name="default_dv_gallery_title_height">38dp</dimen>
+    <dimen name="default_dv_gallery_title_desc_height">57dp</dimen>
 
 </resources>

@@ -70,7 +70,8 @@ sealed class Viewer {
                 override val name: String,
                 override val icon: ObjectIcon,
                 override val relations: List<DefaultObjectRelationValueView>,
-                override val hideIcon: Boolean
+                override val hideIcon: Boolean,
+                val withDescription: Boolean
             ) : Item()
             data class Cover(
                 override val objectId: Id,
@@ -79,7 +80,8 @@ sealed class Viewer {
                 override val relations: List<DefaultObjectRelationValueView>,
                 override val hideIcon: Boolean,
                 val fitImage: Boolean,
-                val cover: CoverView? = null
+                val cover: CoverView? = null,
+                val withDescription: Boolean
             ) : Item()
         }
     }

@@ -2,8 +2,6 @@ package com.anytypeio.anytype.middleware.auth
 
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
 import com.anytypeio.anytype.middleware.EventProxy
@@ -29,12 +27,12 @@ class AuthMiddleware(
         name: String,
         avatarPath: String?,
         invitationCode: String,
-        icon: Int,
+        iconGradientValue: Int,
     ) : AccountSetup = middleware.accountCreate(
         name = name,
         path = avatarPath,
         invitationCode = invitationCode,
-        icon = icon
+        iconGradientValue = iconGradientValue
     )
 
     override suspend fun deleteAccount(): AccountStatus = middleware.accountDelete()

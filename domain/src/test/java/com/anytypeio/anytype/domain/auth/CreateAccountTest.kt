@@ -58,7 +58,7 @@ class CreateAccountTest {
                 name = name,
                 avatarPath = path,
                 invitationCode = code,
-                icon = icon
+                iconGradientValue = icon
             )
 
             repo.stub {
@@ -87,7 +87,7 @@ class CreateAccountTest {
             name = name,
             avatarPath = path,
             invitationCode = code,
-            icon = icon
+            iconGradientValue = icon
         )
 
         repo.stub {

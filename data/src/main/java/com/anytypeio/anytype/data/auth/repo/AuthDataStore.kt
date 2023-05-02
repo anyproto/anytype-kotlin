@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -16,7 +15,7 @@ interface AuthDataStore {
         name: String,
         avatarPath: String?,
         invitationCode: String,
-        icon: Int
+        iconGradientValue: Int
     ): AccountSetup
 
     suspend fun deleteAccount() : AccountStatus

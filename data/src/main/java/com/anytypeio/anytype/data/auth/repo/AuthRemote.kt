@@ -12,7 +12,7 @@ interface AuthRemote {
         name: String,
         avatarPath: String?,
         invitationCode: String,
-        icon: Int
+        iconGradientValue: Int
     ): AccountSetup
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus

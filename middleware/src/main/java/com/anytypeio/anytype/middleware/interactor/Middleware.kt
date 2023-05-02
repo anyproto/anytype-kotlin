@@ -56,13 +56,13 @@ class Middleware(
         name: String,
         path: String?,
         invitationCode: String,
-        icon: Int
+        iconGradientValue: Int
     ): AccountSetup {
         val request = Rpc.Account.Create.Request(
             name = name,
             alphaInviteCode = invitationCode,
             avatarLocalPath = path,
-            icon = icon.toLong()
+            icon = iconGradientValue.toLong()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountCreate(request)

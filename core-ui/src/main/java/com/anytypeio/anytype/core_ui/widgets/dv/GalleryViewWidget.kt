@@ -7,19 +7,21 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
-import com.anytypeio.anytype.core_utils.ext.expandViewHitArea
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.GalleryViewItemDecoration
@@ -105,26 +107,49 @@ class GalleryViewWidget @JvmOverloads constructor(
                             inflater, parent, false
                         )
                     ).apply {
-                        expandViewHitArea(
-                            parent = iconContainer,
-                            child = checkboxView,
-                        )
+                        binding.titleDescContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            height = dimen(R.dimen.default_dv_gallery_title_height)
+                        }
                         setClicks()
                     }
                 }
-                else -> {
+                VIEW_TYPE_WITH_COVER_DESC -> {
+                    return GalleryViewHolder.WithCover(
+                        binding = ItemDvGalleryItemCoverBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
+                        binding.titleDescContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            height = dimen(R.dimen.default_dv_gallery_title_desc_height)
+                        }
+                        setClicks()
+                    }
+                }
+                VIEW_TYPE_DEFAULT -> {
                     return GalleryViewHolder.Default(
                         binding = ItemDvGalleryViewDefaultBinding.inflate(
                             inflater, parent, false
                         )
                     ).apply {
-                        expandViewHitArea(
-                            parent = iconContainer,
-                            child = checkboxView,
-                        )
+                        binding.titleDescContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            height = dimen(R.dimen.default_dv_gallery_title_height)
+                        }
                         setClicks()
                     }
                 }
+                VIEW_TYPE_DEFAULT_DESC -> {
+                    return GalleryViewHolder.Default(
+                        binding = ItemDvGalleryViewDefaultBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
+                        binding.titleDescContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            height = dimen(R.dimen.default_dv_gallery_title_desc_height)
+                        }
+                        setClicks()
+                    }
+                }
+                else -> throw RuntimeException("Unsupported view type")
             }
         }
 
@@ -157,9 +182,13 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
         }
 
-        override fun getItemViewType(position: Int): Int = when (getItem(position)) {
-            is Viewer.GalleryView.Item.Cover -> VIEW_TYPE_WITH_COVER
-            else -> VIEW_TYPE_DEFAULT
+        override fun getItemViewType(position: Int): Int = when (val item = getItem(position)) {
+            is Viewer.GalleryView.Item.Cover -> {
+                if (item.withDescription) VIEW_TYPE_WITH_COVER_DESC else VIEW_TYPE_WITH_COVER
+            }
+            is Viewer.GalleryView.Item.Default -> {
+                if (item.withDescription) VIEW_TYPE_DEFAULT_DESC else VIEW_TYPE_DEFAULT
+            }
         }
     }
 
@@ -168,23 +197,22 @@ class GalleryViewWidget @JvmOverloads constructor(
         private val untitled = itemView.resources.getString(R.string.untitled)
         private val firstLineMargin =
             itemView.resources.getDimensionPixelOffset(R.dimen.default_dv_gallery_first_line_margin_start)
-        abstract val iconContainer: FrameLayout
         abstract val iconView: ObjectIconWidget
-        abstract val titleView: TextView
+        abstract val titleDescContainer: GalleryViewTitleDescriptionWidget
         abstract val contentContainer: GalleryViewContentWidget
         abstract val checkboxView: View
 
         class Default(val binding: ItemDvGalleryViewDefaultBinding) :
             GalleryViewHolder(binding.root) {
 
-            override val titleView = binding.tvTitle
-            override val iconContainer = binding.cardIconContainer
+            override val titleDescContainer = binding.titleDescContainer
             override val iconView = binding.cardIcon
             override val contentContainer = binding.contentContainer
             override val checkboxView = binding.cardIcon.checkbox
 
             fun bind(item: Viewer.GalleryView.Item.Default) {
                 applyTextAndIcon(item)
+                titleDescContainer.setupDescription(item = item, space = null)
                 applyContentItems(item)
             }
 
@@ -199,8 +227,7 @@ class GalleryViewWidget @JvmOverloads constructor(
         class WithCover(val binding: ItemDvGalleryItemCoverBinding) :
             GalleryViewHolder(binding.root) {
 
-            override val titleView = binding.tvTitle
-            override val iconContainer = binding.cardIconContainer
+            override val titleDescContainer = binding.titleDescContainer
             override val iconView = binding.cardIcon
             override val contentContainer = binding.contentContainer
             private val cover get() = binding.cover
@@ -208,8 +235,10 @@ class GalleryViewWidget @JvmOverloads constructor(
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
                 applyTextAndIcon(item)
+                titleDescContainer.setupDescription(item = item, space = binding.titleDescContainerSpace)
                 applyContentItems(item)
                 cover.bind(cover = item.cover, fitImage = item.fitImage)
+                updateConstraints(item = item)
             }
 
             fun processChangePayload(
@@ -219,7 +248,71 @@ class GalleryViewWidget @JvmOverloads constructor(
                 payload(payload, item)
                 if (payload.contains(COVER_CHANGED) || payload.contains(FIT_IMAGE_CHANGED)) {
                     cover.bind(cover = item.cover, fitImage = item.fitImage)
+                    updateConstraints(item = item)
                 }
+            }
+
+            private fun updateConstraints(item: Viewer.GalleryView.Item.Cover) {
+                if (item.cover == null) {
+                    updateViewConstraints(
+                        parentLayout = binding.rootConstraint,
+                        view = titleDescContainer,
+                        toParent = true
+                    )
+                    updateViewConstraints(
+                        parentLayout = binding.rootConstraint,
+                        view = iconView,
+                        toParent = true
+                    )
+                    binding.titleDescContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_16)
+                    }
+                    binding.cardIcon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_17)
+                    }
+                } else {
+                    updateViewConstraints(
+                        parentLayout = binding.rootConstraint,
+                        view = titleDescContainer,
+                        toParent = false
+                    )
+                    updateViewConstraints(
+                        parentLayout = binding.rootConstraint,
+                        view = iconView,
+                        toParent = false
+                    )
+                    binding.titleDescContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_12)
+                    }
+                    binding.cardIcon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_13)
+                    }
+                }
+            }
+
+            private fun updateViewConstraints(
+                parentLayout: ConstraintLayout,
+                view: View,
+                toParent: Boolean
+            ) {
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(parentLayout)
+                if (toParent) {
+                    constraintSet.connect(
+                        view.id,
+                        ConstraintLayout.LayoutParams.TOP,
+                        parentLayout.id,
+                        ConstraintLayout.LayoutParams.TOP
+                    )
+                } else {
+                    constraintSet.connect(
+                        view.id,
+                        ConstraintLayout.LayoutParams.TOP,
+                        R.id.cover,
+                        ConstraintLayout.LayoutParams.BOTTOM
+                    )
+                }
+                constraintSet.applyTo(parentLayout)
             }
         }
 
@@ -236,23 +329,24 @@ class GalleryViewWidget @JvmOverloads constructor(
         }
 
         protected fun applyContentItems(item: Viewer.GalleryView.Item) {
-            contentContainer.setItems(item.relations)
+            val filtered = item.relations.filter { it.relationKey != Relations.DESCRIPTION }
+            contentContainer.setItems(filtered)
         }
 
         protected fun applyTextAndIcon(item: Viewer.GalleryView.Item) {
             if (!item.hideIcon && item.icon != ObjectIcon.None) {
-                iconContainer.visible()
+                iconView.visible()
                 iconView.setIcon(item.icon)
                 val sb = SpannableString(item.name.ifEmpty { untitled })
                 sb.setSpan(
                     LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
                 )
-                titleView.text = sb
+                titleDescContainer.setupTitle(sb)
             } else {
-                iconContainer.gone()
+                iconView.gone()
                 when {
-                    item.name.isEmpty() -> titleView.text = untitled
-                    else -> titleView.text = item.name
+                    item.name.isEmpty() -> titleDescContainer.setupTitle(SpannableString(untitled))
+                    else -> titleDescContainer.setupTitle(SpannableString(item.name))
                 }
             }
         }
@@ -314,6 +408,9 @@ class GalleryViewWidget @JvmOverloads constructor(
 
         const val VIEW_TYPE_DEFAULT = 0
         const val VIEW_TYPE_WITH_COVER = 3
+
+        const val VIEW_TYPE_DEFAULT_DESC = 10
+        const val VIEW_TYPE_WITH_COVER_DESC = 13
 
         const val TEXT_ICON_CHANGED = 0
         const val CONTENT_CHANGED = 2

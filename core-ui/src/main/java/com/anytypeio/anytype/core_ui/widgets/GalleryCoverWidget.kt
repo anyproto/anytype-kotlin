@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.bumptech.glide.Glide
@@ -17,10 +19,12 @@ class GalleryCoverWidget @JvmOverloads constructor(
     fun bind(cover: CoverView?, fitImage: Boolean = false) {
         when (cover) {
             is CoverView.Color -> {
+                visible()
                 setImageDrawable(null)
                 setBackgroundColor(cover.coverColor.color)
             }
             is CoverView.Gradient -> {
+                visible()
                 setImageDrawable(null)
                 when (cover.gradient) {
                     CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow_rounded)
@@ -34,6 +38,7 @@ class GalleryCoverWidget @JvmOverloads constructor(
                 }
             }
             is CoverView.Image -> {
+                visible()
                 setImageDrawable(null)
                 if (fitImage) {
                     Glide
@@ -52,9 +57,7 @@ class GalleryCoverWidget @JvmOverloads constructor(
                 }
             }
             null -> {
-                setBackgroundColor(context.getColor(R.color.shape_transparent))
-                setImageDrawable(context.getDrawable(R.drawable.bg_cover_default))
-                scaleType = ScaleType.CENTER
+                invisible()
             }
         }
     }

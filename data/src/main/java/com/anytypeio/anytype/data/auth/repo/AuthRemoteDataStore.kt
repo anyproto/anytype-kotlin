@@ -18,12 +18,12 @@ class AuthRemoteDataStore(
         name: String,
         avatarPath: String?,
         invitationCode: String,
-        icon: Int
+        iconGradientValue: Int
     ) : AccountSetup = authRemote.createAccount(
         name = name,
         avatarPath = avatarPath,
         invitationCode = invitationCode,
-        icon = icon
+        iconGradientValue = iconGradientValue
     )
 
     override suspend fun deleteAccount(): AccountStatus = authRemote.deleteAccount()

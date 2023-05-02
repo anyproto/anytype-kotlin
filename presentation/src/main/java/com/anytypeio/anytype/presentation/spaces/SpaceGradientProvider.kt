@@ -6,6 +6,9 @@ interface SpaceGradientProvider {
 
     fun get(id: Double): Gradient
 
+    /**
+     * @return random id of gradient for space and account background
+     */
     fun randomId(): Int
 
     class Impl @Inject constructor(): SpaceGradientProvider {

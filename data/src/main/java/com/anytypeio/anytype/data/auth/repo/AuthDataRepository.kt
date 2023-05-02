@@ -3,7 +3,6 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
@@ -28,7 +27,7 @@ class AuthDataRepository(
         name = name,
         avatarPath = avatarPath,
         invitationCode = invitationCode,
-        icon = icon
+        iconGradientValue = icon
     )
 
     override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()

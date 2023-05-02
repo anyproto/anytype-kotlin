@@ -101,7 +101,7 @@ class AuthDataRepositoryTest {
                     name = name,
                     avatarPath = path,
                     invitationCode = "code",
-                    icon = icon
+                    iconGradientValue = icon
                 )
             } doReturn setup
         }
@@ -119,7 +119,7 @@ class AuthDataRepositoryTest {
             name = name,
             avatarPath = path,
             invitationCode = "code",
-            icon = icon
+            iconGradientValue = icon
         )
 
         verifyNoMoreInteractions(authRemote)

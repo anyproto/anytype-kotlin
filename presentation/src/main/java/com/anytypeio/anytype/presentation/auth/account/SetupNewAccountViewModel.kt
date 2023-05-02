@@ -65,7 +65,7 @@ class SetupNewAccountViewModel(
                 name = session.name ?: throw IllegalStateException("Name not set"),
                 avatarPath = session.avatarPath,
                 invitationCode = session.invitationCode,
-                icon = spaceGradientProvider.randomId()
+                iconGradientValue = spaceGradientProvider.randomId()
             )
         ) { result ->
             result.either(

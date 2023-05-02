@@ -21,7 +21,7 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         name: String,
         avatarPath: String?,
         invitationCode: String,
-        icon: Int
+        iconGradientValue: Int
     ): AccountSetup {
         throw UnsupportedOperationException()
     }

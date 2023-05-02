@@ -20,7 +20,7 @@ open class CreateAccount(
             name = params.name,
             avatarPath = params.avatarPath,
             invitationCode = params.invitationCode,
-            icon = params.icon
+            icon = params.iconGradientValue
         )
         with(repository) {
             saveAccount(setup.account)
@@ -34,11 +34,12 @@ open class CreateAccount(
     /**
      * @property avatarPath optional avatar image file path
      * @property name username
+     * @property iconGradientValue random icon gradient value for new account/space background
      */
     class Params(
         val name: String,
         val avatarPath: String? = null,
         val invitationCode: String,
-        val icon: Int
+        val iconGradientValue: Int
     )
 }

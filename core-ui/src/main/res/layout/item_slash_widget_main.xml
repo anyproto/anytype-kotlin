@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="56dp">
+    android:layout_height="56dp"
+    android:paddingStart="@dimen/dp_20"
+    android:paddingEnd="@dimen/dp_20">
 
     <ImageView
         android:id="@+id/iconMain"
@@ -22,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        style="@style/TextView.UXStyle.Titles.2"
+        style="@style/TextView.UXStyle.Titles.3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iconMain"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,6 +37,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="3dp"
         app:srcCompat="@drawable/ic_slash_widget_arrow_forward" />
 
     <View
@@ -42,6 +45,7 @@
         android:layout_width="0dp"
         android:layout_height="0.5dp"
         android:layout_marginStart="52dp"
+        android:layout_marginEnd="@dimen/dp_8"
         android:background="@drawable/divider_relations"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

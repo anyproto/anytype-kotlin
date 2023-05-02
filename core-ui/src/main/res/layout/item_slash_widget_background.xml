@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/slashBackgroundRoot"
     android:layout_width="match_parent"
+    android:paddingStart="@dimen/dp_20"
+    android:paddingEnd="@dimen/dp_20"
     android:layout_height="55dp">
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
@@ -31,6 +33,7 @@
         android:layout_height="0.5dp"
         android:layout_gravity="bottom"
         android:layout_marginStart="52dp"
+        android:layout_marginEnd="@dimen/dp_8"
         android:background="@drawable/divider_relations" />
 
 </FrameLayout>

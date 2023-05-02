@@ -459,7 +459,7 @@
         <item name="android:maxLines">1</item>
     </style>
 
-    <style name="SlashWidgetStyleItemTitle" parent="TextView.UXStyle.Titles.2">
+    <style name="SlashWidgetStyleItemTitle" parent="TextView.UXStyle.Titles.3">
         <item name="android:layout_gravity">center_vertical|start</item>
     </style>
 
@@ -505,7 +505,7 @@
     </style>
 
     <!-- Object items in lists -->
-    <style name="ObjectListItemTitle" parent="TextView.ContentStyle.PreviewTitles.2.Medium">
+    <style name="ObjectListItemTitle" parent="TextView.UXStyle.Titles.3">
         <item name="android:textColorHint">@color/text_tertiary</item>
     </style>
 

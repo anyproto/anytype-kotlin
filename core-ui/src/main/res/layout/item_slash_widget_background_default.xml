@@ -3,6 +3,8 @@
     android:id="@+id/slashBackgroundDefaultRoot"
     android:layout_width="match_parent"
     android:layout_height="55dp"
+    android:paddingStart="@dimen/dp_20"
+    android:paddingEnd="@dimen/dp_20"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -32,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:layout_marginStart="52dp"
+        android:layout_marginEnd="@dimen/dp_8"
         android:background="@drawable/divider_relations"
         android:layout_gravity="bottom"/>
 

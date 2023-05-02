@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemListObjectSmallBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetObjectTypeBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetStyleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.ActionMenuHolder
@@ -38,8 +38,8 @@ class SlashObjectTypesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            R.layout.item_list_object_small -> ObjectTypeMenuHolder(
-                binding = ItemListObjectSmallBinding.inflate(
+            R.layout.item_slash_widget_object_type -> ObjectTypeMenuHolder(
+                binding = ItemSlashWidgetObjectTypeBinding.inflate(
                     inflater, parent, false
                 )
             )
@@ -53,7 +53,7 @@ class SlashObjectTypesAdapter(
                     inflater, parent, false
                 )
             ).apply {
-                itemView.findViewById<FrameLayout>(R.id.flBack).setOnClickListener {
+                itemView.findViewById<View>(R.id.flBack).setOnClickListener {
                     clicks(SlashItem.Back)
                 }
             }
@@ -88,7 +88,7 @@ class SlashObjectTypesAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
-        is SlashItem.ObjectType -> R.layout.item_list_object_small
+        is SlashItem.ObjectType -> R.layout.item_slash_widget_object_type
         is SlashItem.Subheader -> R.layout.item_slash_widget_subheader
         is SlashItem.Actions -> R.layout.item_slash_widget_style
         else -> throw IllegalArgumentException("Wrong item type:${items[position]} for SlashObjectTypeAdapter")

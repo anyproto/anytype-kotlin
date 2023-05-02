@@ -12,21 +12,20 @@
         android:layout_gravity="center"
         tools:text="Media"/>
 
-    <FrameLayout
+    <ImageView
         android:id="@+id/flBack"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingStart="@dimen/dp_20"
-        android:layout_gravity="start"
-        android:clickable="true"
-        android:focusable="true">
+        android:layout_gravity="start|center_vertical"
+        android:paddingStart="11dp"
+        android:paddingEnd="@dimen/dp_20"
+        android:src="@drawable/ic_back"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start|center_vertical"
-            android:src="@drawable/ic_back"/>
-
-    </FrameLayout>
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/divider_relations" />
 
 </FrameLayout>

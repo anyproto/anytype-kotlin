@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
@@ -54,7 +54,7 @@ abstract class SlashBaseAdapter(
                         inflater, parent, false
                     )
                 ).apply {
-                    itemView.findViewById<FrameLayout>(R.id.flBack).setOnClickListener {
+                    itemView.findViewById<View>(R.id.flBack).setOnClickListener {
                         clicks.invoke(SlashItem.Back)
                     }
                 }

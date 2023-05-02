@@ -3,8 +3,8 @@ package com.anytypeio.anytype.core_ui.features.editor.slash
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.relations.ListRelat
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationNewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderMenuHolder
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
@@ -31,6 +32,7 @@ class SlashRelationsAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val defaultPadding = parent.context.dimen(R.dimen.dp_20).toInt()
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             R.layout.item_relation_list_relation_default -> {
@@ -38,6 +40,7 @@ class SlashRelationsAdapter(
                     ItemRelationListRelationDefaultBinding.inflate(inflater, parent, false)
                 ListRelationViewHolder.Default(binding).apply {
                     updateHeight(binding.root)
+                    updatePadding(binding.root, defaultPadding)
                     binding.divider.visible()
                     itemView.setOnClickListener {
                         onItemClicked(bindingAdapterPosition)
@@ -50,6 +53,7 @@ class SlashRelationsAdapter(
                 ListRelationViewHolder.Checkbox(binding)
                     .apply {
                         updateHeight(binding.root)
+                        updatePadding(binding.root, defaultPadding)
                         binding.divider.visible()
                         itemView.setOnClickListener {
                             onItemClicked(bindingAdapterPosition)
@@ -62,6 +66,7 @@ class SlashRelationsAdapter(
                 )
                 ListRelationViewHolder.Object(binding).apply {
                     updateHeight(binding.root)
+                    updatePadding(binding.root, defaultPadding)
                     binding.divider.visible()
                     itemView.setOnClickListener {
                         onItemClicked(bindingAdapterPosition)
@@ -72,6 +77,7 @@ class SlashRelationsAdapter(
                 val binding = ItemRelationListRelationStatusBinding.inflate(inflater, parent, false)
                 ListRelationViewHolder.Status(binding).apply {
                     updateHeight(binding.root)
+                    updatePadding(binding.root, defaultPadding)
                     binding.divider.visible()
                     itemView.setOnClickListener {
                         onItemClicked(bindingAdapterPosition)
@@ -84,6 +90,7 @@ class SlashRelationsAdapter(
                 )
                 ListRelationViewHolder.Tags(binding).apply {
                     updateHeight(binding.root)
+                    updatePadding(binding.root, defaultPadding)
                     binding.divider.visible()
                     itemView.setOnClickListener {
                         onItemClicked(bindingAdapterPosition)
@@ -96,6 +103,7 @@ class SlashRelationsAdapter(
                 )
                 ListRelationViewHolder.File(binding).apply {
                     updateHeight(binding.root)
+                    updatePadding(binding.root, defaultPadding)
                     binding.divider.visible()
                     itemView.setOnClickListener {
                         onItemClicked(bindingAdapterPosition)
@@ -108,7 +116,7 @@ class SlashRelationsAdapter(
                         inflater, parent, false
                     )
                 ).apply {
-                    itemView.findViewById<FrameLayout>(R.id.flBack).setOnClickListener {
+                    itemView.findViewById<View>(R.id.flBack).setOnClickListener {
                         clicks(SlashItem.Back)
                     }
                 }
@@ -117,6 +125,7 @@ class SlashRelationsAdapter(
                 RelationNewHolder(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
+                    updatePadding(this.itemView, defaultPadding)
                     itemView.setOnClickListener {
                         clicks(SlashItem.RelationNew)
                     }
@@ -139,6 +148,13 @@ class SlashRelationsAdapter(
             height =
                 root.resources.getDimensionPixelSize(R.dimen.object_slash_menu_relations_item_height)
         }
+    }
+
+    private fun updatePadding(root: View, padding: Int) {
+        root.updatePadding(
+            left = padding,
+            right = padding
+        )
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

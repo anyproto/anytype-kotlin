@@ -195,10 +195,10 @@
     <dimen name="list_item_object_half_icon_margin_start">0dp</dimen>
     <dimen name="list_item_object_half_icon_margin_top">8dp</dimen>
     <dimen name="list_item_object_half_icon_margin_bottom">8dp</dimen>
-    <dimen name="list_item_object_half_title_margin_top">8dp</dimen>
+    <dimen name="list_item_object_half_title_margin_top">9dp</dimen>
     <dimen name="list_item_object_half_title_margin_start">52dp</dimen>
     <dimen name="list_item_object_half_title_margin_end">0dp</dimen>
-    <dimen name="list_item_object_half_subtitle_margin_top">30dp</dimen>
+    <dimen name="list_item_object_half_subtitle_margin_top">29dp</dimen>
     <dimen name="list_item_object_half_subtitle_margin_start">52dp</dimen>
     <dimen name="list_item_object_half_subtitle_margin_end">0dp</dimen>
     <dimen name="list_item_object_half_emoji_size">24dp</dimen>

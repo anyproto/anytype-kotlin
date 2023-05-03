@@ -166,7 +166,7 @@
         android:id="@+id/settingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
         android:label="SettingScreen">
-        <action android:id="@+id/actionOpenAccountAndDataScreen" app:destination="@id/accountAndDataScreen"/>
+        <action android:id="@+id/actionOpenProfileScreen" app:destination="@id/profileScreen"/>
         <action android:id="@+id/actionOpenAboutAppScreen" app:destination="@id/aboutAppScreen"/>
         <action android:id="@+id/actionOpenPersonalizationScreen" app:destination="@+id/personalizationScreen"/>
         <action android:id="@+id/actionOpenAppearanceScreen" app:destination="@+id/appearanceScreen"/>
@@ -204,7 +204,7 @@
         android:label="Object-Set-Icon-Picker-Screen" />
 
     <dialog
-        android:id="@+id/accountAndDataScreen"
+        android:id="@+id/profileScreen"
         android:name="com.anytypeio.anytype.ui.settings.AccountAndDataFragment">
     </dialog>
 

@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
@@ -65,7 +66,7 @@ fun NameBlock(
 
     Column(modifier = modifier.padding(start = 20.dp)) {
         Text(
-            text = "Name",
+            text = stringResource(id = R.string.space_name),
             style = Caption1Regular,
             color = colorResource(id = R.color.text_secondary)
         )
@@ -87,7 +88,7 @@ fun NameBlock(
 @Composable
 fun SpaceNameBlock() {
     Text(
-        text = "Space",
+        text = stringResource(id = R.string.personal_space),
         style = Title1,
         color = colorResource(id = R.color.text_primary)
     )

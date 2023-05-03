@@ -161,8 +161,10 @@ private fun DefaultObjectImageIcon(
     Image(
         painter = rememberAsyncImagePainter(model = url),
         contentDescription = "Icon from URI",
-        modifier = modifier.size(iconSize),
-        contentScale = ContentScale.Crop
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(iconSize)
+            .clip(RoundedCornerShape(2.dp))
     )
 }
 

@@ -204,7 +204,7 @@
 
     <dialog
         android:id="@+id/profileScreen"
-        android:name="com.anytypeio.anytype.ui.settings.AccountAndDataFragment">
+        android:name="com.anytypeio.anytype.ui.settings.ProfileFragment">
     </dialog>
 
     <dialog

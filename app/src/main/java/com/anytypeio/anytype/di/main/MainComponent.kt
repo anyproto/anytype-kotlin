@@ -24,7 +24,7 @@ import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
-import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
+import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
@@ -99,7 +99,7 @@ interface MainComponent :
     //region Settings
 
     fun aboutAppComponent(): AboutAppSubComponent.Builder
-    fun accountAndDataComponent(): AccountAndDataSubComponent.Builder
+    fun profileComponent(): ProfileSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder

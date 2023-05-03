@@ -77,7 +77,7 @@ import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
 import com.anytypeio.anytype.di.feature.settings.AboutAppModule
-import com.anytypeio.anytype.di.feature.settings.AccountAndDataModule
+import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
@@ -801,8 +801,8 @@ class ComponentManager(
         main.aboutAppComponent().module(AboutAppModule).build()
     }
 
-    val accountAndDataComponent = Component {
-        main.accountAndDataComponent().module(AccountAndDataModule).build()
+    val profileComponent = Component {
+        main.profileComponent().module(ProfileModule).build()
     }
 
     val logoutWarningComponent = Component {

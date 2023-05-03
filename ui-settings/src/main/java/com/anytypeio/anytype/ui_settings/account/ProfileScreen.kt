@@ -55,22 +55,19 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
-import com.anytypeio.anytype.ui_settings.main.NameBlock
 
 @Composable
-fun AccountAndDataScreen(
+fun ProfileScreen(
     onKeychainPhraseClicked: () -> Unit,
-    onClearFileCachedClicked: () -> Unit,
     onDeleteAccountClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
     onDebugSyncReportClicked: () -> Unit,
     isLogoutInProgress: Boolean,
-    isClearCacheInProgress: Boolean,
     isDebugSyncReportInProgress: Boolean,
     isShowDebug: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
-    account: AccountAndDataViewModel.AccountProfile
+    account: ProfileViewModel.AccountProfile
 ) {
     Column(modifier = Modifier.fillMaxHeight()) {
         Header(
@@ -92,14 +89,6 @@ fun AccountAndDataScreen(
             onClick = onKeychainPhraseClicked
         )
         Divider(paddingStart = 60.dp)
-        Section(stringResource(R.string.data))
-        ActionWithProgressBar(
-            name = stringResource(R.string.clear_file_cache),
-            color = colorResource(R.color.text_primary),
-            onClick = onClearFileCachedClicked,
-            isInProgress = isClearCacheInProgress
-        )
-        Divider()
         if (isShowDebug) {
             ActionWithProgressBar(
                 name = stringResource(R.string.debug_sync_report),
@@ -110,17 +99,17 @@ fun AccountAndDataScreen(
             Divider()
         }
         Section(stringResource(R.string.account))
-        ActionWithProgressBar(
-            name = stringResource(R.string.log_out),
-            color = colorResource(R.color.text_primary),
-            onClick = onLogoutClicked,
-            isInProgress = isLogoutInProgress
-        )
-        Divider()
         Action(
             name = stringResource(R.string.delete_account),
-            color = colorResource(R.color.palette_dark_red),
+            color = colorResource(R.color.text_primary),
             onClick = onDeleteAccountClicked
+        )
+        Divider()
+        ActionWithProgressBar(
+            name = stringResource(R.string.log_out),
+            color = colorResource(R.color.palette_dark_red),
+            onClick = onLogoutClicked,
+            isInProgress = isLogoutInProgress
         )
         Divider()
         Box(Modifier.height(54.dp))
@@ -249,17 +238,17 @@ fun ActionWithProgressBar(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    account: AccountAndDataViewModel.AccountProfile,
+    account: ProfileViewModel.AccountProfile,
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit
 ) {
     when (account) {
-        is AccountAndDataViewModel.AccountProfile.Data -> {
+        is ProfileViewModel.AccountProfile.Data -> {
             Box(modifier = modifier.padding(vertical = 6.dp)) {
                 Dragger()
             }
             Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
-                ProfileNameBlock()
+                ProfileTileBlock()
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
                 ProfileImageBlock(
@@ -268,15 +257,15 @@ private fun Header(
                     onProfileIconClick = onProfileIconClick
                 )
             }
-            NameBlock(name = account.name, onNameSet = onNameSet)
+            ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
-        is AccountAndDataViewModel.AccountProfile.Idle -> {}
+        is ProfileViewModel.AccountProfile.Idle -> {}
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun NameBlock(
+fun ProfileNameBlock(
     modifier: Modifier = Modifier,
     name: String,
     onNameSet: (String) -> Unit
@@ -287,7 +276,7 @@ fun NameBlock(
 
     Column(modifier = modifier.padding(start = 20.dp)) {
         Text(
-            text = "Name",
+            text = stringResource(id = R.string.name),
             color = colorResource(id = R.color.text_secondary),
             fontSize = 13.sp
         )
@@ -350,9 +339,9 @@ fun NameBlock(
 }
 
 @Composable
-fun ProfileNameBlock() {
+fun ProfileTileBlock() {
     Text(
-        text = stringResource(R.string.account_and_data),
+        text = stringResource(R.string.profile),
         style = Title1,
         color = colorResource(id = R.color.text_primary)
     )

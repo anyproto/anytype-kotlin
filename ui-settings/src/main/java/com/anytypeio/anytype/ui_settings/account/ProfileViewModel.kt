@@ -10,10 +10,8 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
@@ -32,8 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class AccountAndDataViewModel(
-    private val clearFileCache: ClearFileCache,
+class ProfileViewModel(
     private val analytics: Analytics,
     private val deleteAccount: DeleteAccount,
     private val debugSyncShareDownloader: DebugSyncShareDownloader,
@@ -47,16 +44,15 @@ class AccountAndDataViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    val isClearFileCacheInProgress = MutableStateFlow(false)
     val isDebugSyncReportInProgress = MutableStateFlow(false)
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
 
     private val profileId = configStorage.get().profile
 
-    val accountData = storelessSubscriptionContainer.subscribe(
+    val profileData = storelessSubscriptionContainer.subscribe(
         StoreSearchByIdsParams(
-            subscription = ACCOUNT_AND_DATA_SUBSCRIPTION_ID,
+            subscription = PROFILE_SUBSCRIPTION_ID,
             keys = listOf(
                 Relations.ID,
                 Relations.NAME,
@@ -78,32 +74,8 @@ class AccountAndDataViewModel(
         AccountProfile.Idle
     )
 
-    fun onClearFileCacheAccepted() {
-        Timber.d("onClearFileCacheAccepted, ")
-        jobs += viewModelScope.launch {
-            clearFileCache(BaseUseCase.None).collect { status ->
-                when (status) {
-                    is Interactor.Status.Started -> {
-                        isClearFileCacheInProgress.value = true
-                    }
-                    is Interactor.Status.Error -> {
-                        isClearFileCacheInProgress.value = false
-                        Timber.e(status.throwable, "Error while clearing file cache")
-                        // TODO send toast
-                    }
-                    Interactor.Status.Success -> {
-                        viewModelScope.sendEvent(
-                            analytics = analytics,
-                            eventName = EventsDictionary.fileOffloadSuccess
-                        )
-                        isClearFileCacheInProgress.value = false
-                    }
-                }
-            }
-        }
-    }
-
     fun onNameChange(name: String) {
+        Timber.d("onNameChange, name:[$name]")
         viewModelScope.launch {
             setObjectDetails.execute(
                 SetObjectDetails.Params(
@@ -119,13 +91,6 @@ class AccountAndDataViewModel(
                 }
             )
         }
-    }
-
-    fun onClearCacheButtonClicked() {
-        jobs += viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.fileOffloadScreenShow
-        )
     }
 
     fun onDeleteAccountClicked() {
@@ -174,7 +139,7 @@ class AccountAndDataViewModel(
         }
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(
-                listOf(ACCOUNT_AND_DATA_SUBSCRIPTION_ID)
+                listOf(PROFILE_SUBSCRIPTION_ID)
             )
         }
     }
@@ -204,7 +169,6 @@ class AccountAndDataViewModel(
     }
 
     class Factory(
-        private val clearFileCache: ClearFileCache,
         private val deleteAccount: DeleteAccount,
         private val debugSyncShareDownloader: DebugSyncShareDownloader,
         private val analytics: Analytics,
@@ -217,8 +181,7 @@ class AccountAndDataViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AccountAndDataViewModel(
-                clearFileCache = clearFileCache,
+            return ProfileViewModel(
                 deleteAccount = deleteAccount,
                 debugSyncShareDownloader = debugSyncShareDownloader,
                 analytics = analytics,
@@ -234,4 +197,4 @@ class AccountAndDataViewModel(
 }
 
 private const val STOP_SUBSCRIPTION_TIMEOUT = 1_000L
-private const val ACCOUNT_AND_DATA_SUBSCRIPTION_ID = "account_and_data_subscription"
+private const val PROFILE_SUBSCRIPTION_ID = "profile_subscription"

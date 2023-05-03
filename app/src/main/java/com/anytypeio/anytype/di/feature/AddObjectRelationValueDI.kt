@@ -43,7 +43,7 @@ object AddObjectRelationValueModule {
     @PerDialog
     fun provideViewModelFactoryForSets(
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         dispatcher: Dispatcher<Payload>,
         createRelationOption: CreateRelationOption,
         analytics: Analytics,
@@ -67,7 +67,7 @@ object AddObjectRelationValueModule {
     @PerDialog
     fun provideViewModelFactoryForObjects(
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         dispatcher: Dispatcher<Payload>,
         createRelationOption: CreateRelationOption,
         updateDetail: UpdateDetail,

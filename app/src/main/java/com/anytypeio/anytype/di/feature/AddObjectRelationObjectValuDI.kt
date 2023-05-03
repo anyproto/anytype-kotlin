@@ -35,7 +35,7 @@ object AddObjectRelationModule {
     @PerDialog
     fun provideViewModelFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider,
+        @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         storeOfObjectTypes: StoreOfObjectTypes,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder,

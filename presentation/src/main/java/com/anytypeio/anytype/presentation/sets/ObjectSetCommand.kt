@@ -77,6 +77,16 @@ sealed class ObjectSetCommand {
         ) : Modal()
 
         object OpenEmptyDataViewSelectQueryScreen: Modal()
+
+        data class EditIntrinsicTextRelation(
+            val ctx: Id,
+            val relation: Key
+        ) : Modal()
+
+        data class EditIntrinsicRelationValue(
+            val ctx: Id,
+            val relation: Key
+        ) : Modal()
     }
 
     sealed class Intent : ObjectSetCommand() {

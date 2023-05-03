@@ -888,6 +888,7 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
+    @Named(INTRINSIC_PROVIDER_TYPE)
     fun provideDefaultObjectValueProvider(
         storage: Editor.Storage
     ): ObjectValueProvider = DefaultObjectValueProvider(storage.details)

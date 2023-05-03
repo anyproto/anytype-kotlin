@@ -37,7 +37,7 @@ object RelationTextValueModule {
     @PerModal
     fun provideRelationTextValueViewModelFactory(
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         reloadObject: ReloadObject,
         analytics: Analytics
     ) = RelationTextValueViewModel.Factory(
@@ -75,7 +75,7 @@ object RelationDateValueModule {
     @PerModal
     fun provideEditGridCellViewModelFactory(
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider
+        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider
     ) = RelationDateValueViewModel.Factory(relations, values)
 }
 
@@ -99,6 +99,6 @@ object RelationDataViewDateValueModule {
     @PerModal
     fun provideEditGridCellViewModelFactory(
         @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider
+        @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider
     ) = RelationDateValueViewModel.Factory(relations, values)
 }

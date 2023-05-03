@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.di.feature
 
-import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
@@ -16,7 +15,6 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationStatusValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
@@ -26,13 +24,29 @@ import dagger.Provides
 import dagger.Subcomponent
 import javax.inject.Named
 
-@Subcomponent(modules = [ObjectSetObjectRelationValueModule::class])
+@Subcomponent(modules = [DataViewRelationValueModule::class])
 @PerModal
-interface ObjectSetObjectRelationValueSubComponent {
+interface DataViewObjectRelationValueSubComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: ObjectSetObjectRelationValueModule): Builder
-        fun build(): ObjectSetObjectRelationValueSubComponent
+        fun module(module: DataViewRelationValueModule): Builder
+        fun build(): DataViewObjectRelationValueSubComponent
+    }
+
+    fun inject(fragment: RelationValueDVFragment)
+
+    fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
+    fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder
+    fun addRelationFileValueAddComponent() : AddFileRelationSubComponent.Builder
+}
+
+@Subcomponent(modules = [SetOrCollectionRelationValueModule::class])
+@PerModal
+interface SetOrCollectionRelationValueSubComponent {
+    @Subcomponent.Builder
+    interface Builder {
+        fun module(module: SetOrCollectionRelationValueModule): Builder
+        fun build(): SetOrCollectionRelationValueSubComponent
     }
 
     fun inject(fragment: RelationValueDVFragment)
@@ -60,21 +74,45 @@ interface ObjectObjectRelationValueSubComponent {
 }
 
 @Module
-object ObjectSetObjectRelationValueModule {
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideCopyFileToCache(
-        context: Context
-    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+object DataViewRelationValueModule {
 
     @JvmStatic
     @Provides
     @PerModal
     fun provideViewModelFactoryForDataView(
         @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider,
+        @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
+        details: ObjectDetailProvider,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        urlBuilder: UrlBuilder,
+        setObjectDetails: UpdateDetail,
+        addFileToObject: AddFileToObject,
+        copyFileToCacheDirectory: CopyFileToCacheDirectory,
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics
+    ): RelationValueDVViewModel.Factory = RelationValueDVViewModel.Factory(
+        relations = relations,
+        values = values,
+        details = details,
+        storeOfObjectTypes = storeOfObjectTypes,
+        urlBuilder = urlBuilder,
+        addFileToObject = addFileToObject,
+        copyFileToCache = copyFileToCacheDirectory,
+        setObjectDetails = setObjectDetails,
+        dispatcher = dispatcher,
+        analytics = analytics
+    )
+}
+
+@Module
+object SetOrCollectionRelationValueModule {
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideViewModelFactoryForDataView(
+        @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE)  values: ObjectValueProvider,
         details: ObjectDetailProvider,
         storeOfObjectTypes: StoreOfObjectTypes,
         urlBuilder: UrlBuilder,
@@ -105,7 +143,7 @@ object ObjectObjectRelationValueModule {
     @PerModal
     fun provideViewModelFactoryForObject(
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         details: ObjectDetailProvider,
         storeOfObjectTypes: StoreOfObjectTypes,
         urlBuilder: UrlBuilder,

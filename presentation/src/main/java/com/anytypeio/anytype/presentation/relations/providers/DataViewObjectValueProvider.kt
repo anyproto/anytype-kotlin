@@ -49,3 +49,40 @@ class DataViewObjectValueProvider(
         is ObjectState.Init -> emptyMap()
     }
 }
+
+class SetOrCollectionObjectValueProvider(
+    private val db: ObjectSetDatabase,
+    private val objectState: StateFlow<ObjectState>
+) : ObjectValueProvider {
+    override suspend fun get(ctx: Id, target: Id): Struct {
+        return parseIntrinsicObjectValues(
+            state = objectState.value,
+            target = target
+        )
+    }
+
+    override suspend fun subscribe(ctx: Id, target: Id): Flow<Struct> {
+        return objectState.map { state ->
+            parseIntrinsicObjectValues(
+                state = state,
+                target = target
+            )
+        }
+    }
+
+    /**
+     * Providing values for relations of a Set of objects or a Collection of objects.
+     * Set or Collection are both considered here as Objects, contrary to objects from database query.
+     * Objects corresponding to data view query should be taken from [db].
+     */
+    private fun parseIntrinsicObjectValues(
+        state: ObjectState,
+        target: Id
+    ) : Struct = when (state) {
+        is ObjectState.DataView.Collection -> state.details[target]?.map ?: emptyMap()
+        is ObjectState.DataView.Set -> state.details[target]?.map ?: emptyMap()
+        is ObjectState.ErrorLayout -> emptyMap()
+        is ObjectState.Init -> emptyMap()
+    }
+}
+

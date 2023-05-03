@@ -34,7 +34,7 @@ object AddFileRelationModule {
     @PerDialog
     fun provideViewModelFactory(
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        values: ObjectValueProvider,
+        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder
     ): AddFileRelationViewModel.Factory = AddFileRelationViewModel.Factory(

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
@@ -66,6 +67,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionRelationProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
@@ -76,6 +78,8 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -104,7 +108,10 @@ interface ObjectSetSubComponent {
     fun viewerFilterBySubComponent(): ViewerFilterSubComponent.Builder
     fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
     fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
-    fun objectRelationValueComponent(): ObjectSetObjectRelationValueSubComponent.Builder
+
+    fun dataViewObjectRelationValueComponent(): DataViewObjectRelationValueSubComponent.Builder
+    fun setOrCollectionRelationValueComponent() : SetOrCollectionRelationValueSubComponent.Builder
+
     fun manageViewerComponent(): ManageViewerSubComponent.Builder
     fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
     fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
@@ -383,10 +390,23 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    @Named(DATA_VIEW_PROVIDER_TYPE)
     fun dataViewObjectValueProvider(
         db: ObjectSetDatabase,
         objectState: MutableStateFlow<ObjectState>,
     ): ObjectValueProvider = DataViewObjectValueProvider(
+        objectState = objectState,
+        db = db
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    @Named(INTRINSIC_PROVIDER_TYPE)
+    fun setOrCollectionObjectValueProvider(
+        db: ObjectSetDatabase,
+        objectState: MutableStateFlow<ObjectState>,
+    ): ObjectValueProvider = SetOrCollectionObjectValueProvider(
         objectState = objectState,
         db = db
     )
@@ -556,6 +576,13 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideAddRelationToObject(repo: BlockRepository) = AddRelationToObject(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCopyFileToCache(
+        context: Context
+    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
 
     @Module
     interface Bindings {

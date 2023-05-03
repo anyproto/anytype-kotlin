@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDividerItemDecoration
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -36,6 +38,8 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
     @Inject
     lateinit var factory: RelationValueDVViewModel.Factory
     override val vm: RelationValueDVViewModel by viewModels { factory }
+
+    val isIntrinsic: Boolean get() = argOrNull<Boolean>(IS_INTRINSIC_KEY) ?: false
 
     override val root: View
         get() = binding.root
@@ -176,10 +180,37 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
     )
 
     override fun injectDependencies() {
-        componentManager().objectSetObjectRelationValueComponent.get(ctx).inject(this)
+        if (isIntrinsic) {
+            componentManager().setOrCollectionRelationValueComponent.get(ctx).inject(this)
+        } else {
+            componentManager().dataViewRelationValueComponent.get(ctx).inject(this)
+        }
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetObjectRelationValueComponent.release(ctx)
+        if (isIntrinsic) {
+            componentManager().setOrCollectionRelationValueComponent.release(ctx)
+        } else {
+            componentManager().dataViewRelationValueComponent.release(ctx)
+        }
+    }
+
+    companion object {
+        fun args(
+            ctx: Id,
+            target: Id,
+            relation: Key,
+            targetTypes: List<Id>,
+            isIntrinsic: Boolean
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            TARGET_KEY to target,
+            RELATION_KEY to relation,
+            TARGET_TYPES_KEY to targetTypes,
+            IS_LOCKED_KEY to false,
+            IS_INTRINSIC_KEY to isIntrinsic
+        )
+
+        private const val IS_INTRINSIC_KEY = "args.relations.edit-value.is-intrinsic"
     }
 }

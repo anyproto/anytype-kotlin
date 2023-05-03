@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.title
@@ -52,9 +53,12 @@ import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.getAnalyticsParams
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -779,7 +783,8 @@ class ObjectSetViewModel(
             ).process(
                 failure = { Timber.e(it, "Error while updating data view record") },
                 success = {
-                    Timber.d("Data view record updated successfully")
+                    dispatcher.send(it)
+                    Timber.d("Relation text value updated successfully")
                 }
             )
         }
@@ -1231,7 +1236,96 @@ class ObjectSetViewModel(
             is ListenerType.Relation.TurnIntoCollection -> {
                 proceedWithConvertingToCollection()
             }
-            else -> {}
+            is ListenerType.Relation.Featured -> {
+                onRelationClickedListMode(
+                    ctx = context,
+                    view = clicked.relation
+                )
+            }
+            else -> {
+                Timber.d("Ignoring click")
+            }
+        }
+    }
+
+    private fun proceedWithTogglingRelationCheckboxValue(view: ObjectRelationView, ctx: Id) {
+        viewModelScope.launch {
+            check(view is ObjectRelationView.Checkbox)
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = ctx,
+                    key = view.key,
+                    value = !view.isChecked
+                )
+            ).process(
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                },
+                failure = { Timber.e(it, "Error while updating checkbox relation") }
+            )
+        }
+    }
+
+    private fun onRelationClickedListMode(ctx: Id, view: ObjectRelationView) {
+        viewModelScope.launch {
+            val relation = storeOfRelations.getById(view.id)
+            if (relation == null) {
+                Timber.w("Couldn't find relation in store by id:${view.id}")
+                return@launch
+            }
+            if (relation.isReadonlyValue) {
+                toast(RelationListViewModel.NOT_ALLOWED_FOR_RELATION)
+                Timber.d("No interaction allowed with this relation")
+                return@launch
+            }
+            when (relation.format) {
+                RelationFormat.SHORT_TEXT,
+                RelationFormat.LONG_TEXT,
+                RelationFormat.NUMBER,
+                RelationFormat.URL,
+                RelationFormat.EMAIL,
+                RelationFormat.PHONE -> {
+                    _commands.emit(
+                        ObjectSetCommand.Modal.EditIntrinsicTextRelation(
+                            ctx = ctx,
+                            relation = relation.key
+                        )
+                    )
+                }
+                RelationFormat.CHECKBOX -> {
+                    proceedWithTogglingRelationCheckboxValue(view, ctx)
+                }
+                RelationFormat.DATE -> {
+                    _commands.emit(
+                        ObjectSetCommand.Modal.EditGridDateCell(
+                            ctx = context,
+                            objectId = context,
+                            relationKey = relation.key
+                        )
+                    )
+                }
+                RelationFormat.STATUS,
+                RelationFormat.TAG,
+                RelationFormat.FILE,
+                RelationFormat.OBJECT -> {
+                    _commands.emit(
+                        ObjectSetCommand.Modal.EditIntrinsicRelationValue(
+                            ctx = context,
+                            relation = relation.key
+                        )
+                    )
+                }
+                RelationFormat.EMOJI,
+                RelationFormat.RELATIONS,
+                RelationFormat.UNDEFINED -> {
+                    toast(RelationListViewModel.NOT_SUPPORTED_UPDATE_VALUE)
+                    Timber.d("Update value of relation with format:[${relation.format}] is not supported")
+                }
+                else -> {
+                    Timber.d("Ignoring")
+                }
+            }
         }
     }
 

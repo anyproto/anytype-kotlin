@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
@@ -166,6 +167,7 @@ interface SplashDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun pathProvider(): PathProvider
     fun featuresConfigProvider(): FeaturesConfigProvider
+    fun featureToggles(): FeatureToggles
     fun configStorage(): ConfigStorage
     fun userSettingsRepository(): UserSettingsRepository
     fun dispatchers(): AppCoroutineDispatchers

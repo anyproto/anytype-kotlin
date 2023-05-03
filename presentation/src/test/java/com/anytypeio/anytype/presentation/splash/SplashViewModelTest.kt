@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -65,6 +66,8 @@ class SplashViewModelTest {
     @Mock
     private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 
+    @Mock lateinit var featureToggles: FeatureToggles
+
     lateinit var vm: SplashViewModel
 
     @Before
@@ -85,7 +88,8 @@ class SplashViewModelTest {
             getLastOpenedObject = getLastOpenedObject,
             createObject = createObject,
             relationsSubscriptionManager = relationsSubscriptionManager,
-            objectTypesSubscriptionManager = objectTypesSubscriptionManager
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+            featureToggles = featureToggles
         )
     }
 

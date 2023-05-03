@@ -12,7 +12,7 @@
             android:id="@+id/pageScreen"
             android:name="com.anytypeio.anytype.ui.editor.EditorFragment"
             android:label="Page screen"
-            tools:layout="@layout/fragment_editor" >
+            tools:layout="@layout/fragment_editor">
             <action
                 android:id="@+id/action_pageScreen_to_objectCoverScreen"
                 app:destination="@id/objectCoverScreen"
@@ -43,19 +43,19 @@
         <dialog
             android:id="@+id/objectMainMenuScreen"
             android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment"
-            android:label="Doc-Menu-Bottom-Sheet-Screen"/>
+            android:label="Doc-Menu-Bottom-Sheet-Screen" />
         <dialog
             android:id="@+id/objectCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
-            android:label="Object-Cover-Screen"/>
+            android:label="Object-Cover-Screen" />
         <dialog
             android:id="@+id/objectCoverUnsplashScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.ObjectUnsplashFragment"
-            android:label="Object-Cover-Unsplash-Screen"/>
+            android:label="Object-Cover-Unsplash-Screen" />
         <dialog
             android:id="@+id/relationAddToObjectBlockFragment"
             android:name="com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment"
-            android:label="RelationAddToObjectBlockFragment" >
+            android:label="RelationAddToObjectBlockFragment">
             <action
                 android:id="@+id/action_relationAddToObjectBlockFragment_to_relationCreateFromScratchForObjectBlockFragment"
                 app:destination="@id/relationCreateFromScratchForObjectBlockFragment"
@@ -76,7 +76,7 @@
         <fragment
             android:id="@+id/objectSetScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetFragment"
-            android:label="ObjectSetScreen" >
+            android:label="ObjectSetScreen">
             <action
                 android:id="@+id/action_objectSetScreen_to_objectSetIconPickerScreen"
                 app:destination="@id/objectSetIconPickerScreen"
@@ -103,7 +103,7 @@
         <dialog
             android:id="@+id/objectSetMainMenuScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment"
-            android:label="Object-SetMenu"/>
+            android:label="Object-SetMenu" />
         <dialog
             android:id="@+id/objectSetIconPickerScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
@@ -111,16 +111,16 @@
             <argument
                 android:name="arg.show_remove_button"
                 android:defaultValue="true"
-                app:argType="boolean"/>
+                app:argType="boolean" />
         </dialog>
         <dialog
             android:id="@+id/objectSetCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment"
-            android:label="Object-Cover-Screen"/>
+            android:label="Object-Cover-Screen" />
         <dialog
             android:id="@+id/objectCoverUnsplashScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.ObjectSetUnsplashFragment"
-            android:label="Object-Cover-Unsplash-Screen"/>
+            android:label="Object-Cover-Unsplash-Screen" />
         <dialog
             android:id="@+id/viewerCardSizeSelectFragment"
             android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment"
@@ -144,7 +144,7 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_open_settings"
-            app:destination="@id/settingsScreen"/>
+            app:destination="@id/settingsScreen" />
     </fragment>
 
     <fragment
@@ -159,8 +159,7 @@
 
     <dialog
         android:id="@+id/selectWidgetTypeScreen"
-        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment">
-    </dialog>
+        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"></dialog>
 
     <dialog
         android:id="@+id/settingsScreen"
@@ -214,13 +213,11 @@
 
     <dialog
         android:id="@+id/logoutWarningScreen"
-        android:name="com.anytypeio.anytype.ui.settings.LogoutWarningFragment" >
-    </dialog>
+        android:name="com.anytypeio.anytype.ui.settings.LogoutWarningFragment"></dialog>
 
     <dialog
         android:id="@+id/deleteAccountWarningScreen"
-        android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning" >
-    </dialog>
+        android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning"></dialog>
 
     <fragment
         android:id="@+id/createAccountScreen"
@@ -241,7 +238,7 @@
         android:id="@+id/setupNewAccountScreen"
         android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
         android:label="SetupAccount"
-        tools:layout="@layout/fragment_setup_new_account"/>
+        tools:layout="@layout/fragment_setup_new_account" />
     <fragment
         android:id="@+id/splashScreen"
         android:name="com.anytypeio.anytype.ui.splash.SplashFragment"
@@ -292,6 +289,15 @@
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_authStart"
+            app:destination="@id/onboarding_nav"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashScreen"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <dialog
@@ -308,6 +314,16 @@
         android:id="@+id/mnemonicReminderDialog"
         android:name="com.anytypeio.anytype.ui.dashboard.MnemonicReminderDialog"
         tools:layout="@layout/alert_mnemonic_reminder" />
+
+    <navigation
+        android:id="@+id/onboarding_nav"
+        app:startDestination="@id/authStartScreen">
+
+        <fragment
+            android:id="@+id/authStartScreen"
+            android:name="com.anytypeio.anytype.ui.onboarding.AuthStartFragment" />
+
+    </navigation>
 
     <navigation
         android:id="@+id/login_nav"
@@ -499,8 +515,7 @@
     <dialog
         android:id="@+id/relationCreationFragment"
         android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromLibraryFragment"
-        android:label="RelationCreationFragment">
-    </dialog>
+        android:label="RelationCreationFragment"></dialog>
 
     <dialog
         android:id="@+id/typeEditingFragment"
@@ -570,17 +585,17 @@
         android:id="@+id/personalizationScreen"
         android:name="com.anytypeio.anytype.ui.settings.OtherSettingsFragment"
         android:label="fragment_user_settings"
-        tools:layout="@layout/fragment_user_settings"/>
+        tools:layout="@layout/fragment_user_settings" />
     <dialog
         android:id="@+id/wallpaperSetScreen"
         android:name="com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment"
         android:label="fragment_wallpaper_set"
-        tools:layout="@layout/fragment_wallpaper_select"/>
+        tools:layout="@layout/fragment_wallpaper_select" />
     <dialog
         android:id="@+id/appearanceScreen"
         android:name="com.anytypeio.anytype.ui.settings.AppearanceFragment"
         android:label="fragment_wallpaper_set"
-        tools:layout="@layout/fragment_wallpaper_select"/>
+        tools:layout="@layout/fragment_wallpaper_select" />
     <dialog
         android:id="@+id/alertUpdateAppFragment"
         android:name="com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment"
@@ -608,10 +623,10 @@
         android:id="@+id/deletedAccountNavigation"
         app:startDestination="@id/deletedAccountScreen">
 
-    <fragment
-        android:id="@+id/deletedAccountScreen"
-        android:name="com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment"
-        android:label="DeletedAccountScreen" />
+        <fragment
+            android:id="@+id/deletedAccountScreen"
+            android:name="com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment"
+            android:label="DeletedAccountScreen" />
 
     </navigation>
 
@@ -625,7 +640,7 @@
         android:id="@+id/templateSelectScreen"
         android:name="com.anytypeio.anytype.ui.templates.TemplateSelectFragment"
         android:label="TemplateSelectScreen"
-        tools:layout="@layout/fragment_template_select"/>
+        tools:layout="@layout/fragment_template_select" />
 
     <fragment
         android:id="@+id/migrationNeededScreen"

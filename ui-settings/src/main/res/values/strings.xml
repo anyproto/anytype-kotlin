@@ -6,8 +6,10 @@
     <string name="library">Library</string>
     <string name="user_id">User ID</string>
     <string name="account_and_data"><![CDATA[Account & Data]]></string>
+    <string name="profile">Profile</string>
     <string name="personalization">Personalization</string>
     <string name="appearance">Appearance</string>
+    <string name="file_storage">Files storage</string>
     <string name="recovery_phrase">Recovery phrase</string>
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
@@ -50,4 +52,6 @@
 
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary: %3$s\nUser\u00A0ID:\u00A0%4$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s \nAndroid version: %2$d App version: %3$s\nBuild number: %4$d\nLibrary: %5$s\nUser\u00A0ID:\u00A0%6$s</string>
+    <string name="space_name">Space name</string>
+    <string name="personal_space">Personal Space</string>
 </resources>

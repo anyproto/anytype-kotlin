@@ -94,7 +94,7 @@ class MainSettingsViewModel(
     private suspend fun dispatchCommand(event: Event) {
         when (event) {
             Event.OnAboutClicked -> commands.emit(Command.OpenAboutScreen)
-            Event.OnAccountAndDataClicked -> commands.emit(Command.OpenAccountAndDataScreen)
+            Event.OnProfileClicked -> commands.emit(Command.OpenProfileScreen)
             Event.OnAppearanceClicked -> commands.emit(Command.OpenAppearanceScreen)
             Event.OnPersonalizationClicked -> commands.emit(Command.OpenPersonalizationScreen)
             Event.OnDebugClicked -> commands.emit(Command.OpenDebugScreen)
@@ -114,7 +114,7 @@ class MainSettingsViewModel(
                     eventName = EventsDictionary.aboutScreenShow
                 )
             }
-            Event.OnAccountAndDataClicked -> {
+            Event.OnProfileClicked -> {
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.accountDataSettingsShow
@@ -190,7 +190,7 @@ class MainSettingsViewModel(
     sealed class Event {
         object OnAboutClicked : Event()
         object OnAppearanceClicked : Event()
-        object OnAccountAndDataClicked : Event()
+        object OnProfileClicked : Event()
         object OnPersonalizationClicked : Event()
         object OnDebugClicked : Event()
         object OnSpaceImageClicked : Event()
@@ -199,7 +199,7 @@ class MainSettingsViewModel(
     sealed class Command {
         object OpenAboutScreen : Command()
         object OpenAppearanceScreen : Command()
-        object OpenAccountAndDataScreen : Command()
+        object OpenProfileScreen : Command()
         object OpenPersonalizationScreen : Command()
         object OpenDebugScreen : Command()
         class OpenSpaceImageSet(val id: Id) : Command()

@@ -41,13 +41,14 @@ import com.anytypeio.anytype.ui_settings.R
 fun MainSettingScreen(
     workspace: MainSettingsViewModel.WorkspaceAndAccount,
     onSpaceIconClick: () -> Unit,
-    onAccountAndDataClicked: () -> Unit,
+    onProfileClicked: () -> Unit,
     onAboutAppClicked: () -> Unit,
     onDebugClicked: () -> Unit,
     onPersonalizationClicked: () -> Unit,
     onAppearanceClicked: () -> Unit,
     onNameSet: (String) -> Unit,
     showDebugMenu: Boolean,
+    onFileStorageClick: () -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
         Header(
@@ -64,13 +65,14 @@ fun MainSettingScreen(
         Divider()
         Spacer(modifier = Modifier.height(26.dp))
         Settings(
-            onAccountAndDataClicked = onAccountAndDataClicked,
+            onProfileClicked = onProfileClicked,
             onPersonalizationClicked = onPersonalizationClicked,
             onAppearanceClicked = onAppearanceClicked,
             onAboutAppClicked = onAboutAppClicked,
             showDebugMenu = showDebugMenu,
             onDebugClicked = onDebugClicked,
-            accountData = workspace
+            accountData = workspace,
+            onFileStorageClick = onFileStorageClick
         )
         Box(modifier = Modifier.height(16.dp))
     }
@@ -78,22 +80,23 @@ fun MainSettingScreen(
 
 @Composable
 private fun Settings(
-    onAccountAndDataClicked: () -> Unit,
+    onProfileClicked: () -> Unit,
     onPersonalizationClicked: () -> Unit,
     onAppearanceClicked: () -> Unit,
     onAboutAppClicked: () -> Unit,
     showDebugMenu: Boolean,
     onDebugClicked: () -> Unit,
-    accountData: MainSettingsViewModel.WorkspaceAndAccount
+    accountData: MainSettingsViewModel.WorkspaceAndAccount,
+    onFileStorageClick: () -> Unit
 ) {
     Section(
         modifier = Modifier.padding(start = 20.dp, bottom = 4.dp),
         title = stringResource(id = R.string.settings)
     )
-    AccountOption(
+    ProfileOption(
         data = (accountData as? MainSettingsViewModel.WorkspaceAndAccount.Account)?.profile,
-        text = stringResource(R.string.account_and_data),
-        onClick = onAccountAndDataClicked
+        text = stringResource(R.string.profile),
+        onClick = onProfileClicked
     )
     Divider(paddingStart = 60.dp)
     Option(
@@ -106,6 +109,12 @@ private fun Settings(
         image = R.drawable.ic_appearance,
         text = stringResource(R.string.appearance),
         onClick = onAppearanceClicked
+    )
+    Divider(paddingStart = 60.dp)
+    Option(
+        image = R.drawable.ic_file_storage,
+        text = stringResource(R.string.file_storage),
+        onClick = onFileStorageClick
     )
     Divider(paddingStart = 60.dp)
     Option(
@@ -156,7 +165,7 @@ private fun Header(
 }
 
 @Composable
-fun AccountOption(
+fun ProfileOption(
     data: MainSettingsViewModel.WorkspaceAndAccount.ProfileData?,
     text: String,
     onClick: () -> Unit = {}

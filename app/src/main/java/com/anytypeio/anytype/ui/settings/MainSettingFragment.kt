@@ -40,8 +40,8 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<MainSettingsViewModel> { factory }
 
-    private val onAccountAndDataClicked = {
-        vm.onOptionClicked(Event.OnAccountAndDataClicked)
+    private val onProfileClicked = {
+        vm.onOptionClicked(Event.OnProfileClicked)
     }
 
     private val onAboutAppClicked = {
@@ -68,6 +68,10 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
         vm.onNameSet(name)
     }
 
+    private val onFileStorageClicked = {
+        //todo
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -81,14 +85,15 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(typography = typography) {
                 MainSettingScreen(
                     workspace = vm.workspaceAndAccount.collectAsStateWithLifecycle().value,
-                    onAccountAndDataClicked = onAccountAndDataClicked,
+                    onProfileClicked = onProfileClicked,
                     onAboutAppClicked = onAboutAppClicked,
                     onAppearanceClicked = onAppearanceClicked,
                     onDebugClicked = onDebugClicked,
                     onPersonalizationClicked = onPersonalizationClicked,
                     showDebugMenu = featureToggles.isDebug,
                     onSpaceIconClick = onSpaceImageClicked,
-                    onNameSet = onNameSet
+                    onNameSet = onNameSet,
+                    onFileStorageClick = onFileStorageClicked
                 )
             }
         }
@@ -117,8 +122,8 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
             is Command.OpenAboutScreen -> {
                 safeNavigate(R.id.actionOpenAboutAppScreen)
             }
-            is Command.OpenAccountAndDataScreen -> {
-                safeNavigate(R.id.actionOpenAccountAndDataScreen)
+            is Command.OpenProfileScreen -> {
+                safeNavigate(R.id.actionOpenProfileScreen)
             }
             is Command.OpenAppearanceScreen -> {
                 safeNavigate(R.id.actionOpenAppearanceScreen)

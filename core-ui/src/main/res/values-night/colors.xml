@@ -24,6 +24,7 @@
     <color name="glyph_accent">#FFB522</color>
     <color name="glyph_white">#FFFFFF</color>
     <color name="glyph_label">#000000</color>
+    <color name="glyph_button">#F3F2EC</color>
 
     <color name="button_text">#000000</color>
     <color name="button_pressed">#BEBCB1</color>

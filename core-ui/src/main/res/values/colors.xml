@@ -137,7 +137,8 @@
     <color name="glyph_accent">#F09C0E</color>
     <color name="glyph_white">#FFFFFF</color>
     <color name="glyph_label">#FFFFFF</color>
-    
+    <color name="glyph_button">#252525</color>
+
     <color name="button_text">#FFFFFF</color>
     <color name="button_pressed">#41403D</color>
 

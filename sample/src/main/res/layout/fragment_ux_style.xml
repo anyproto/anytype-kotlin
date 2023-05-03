@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="UX Title 2 Medium"
-        style="@style/TextView.UXStyle.Titles.2"
+        style="@style/TextView.UXStyle.Titles.2.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="UX Title 2 Regular"
-        style="@style/TextView.UXStyle.Titles.3"
+        style="@style/TextView.UXStyle.Titles.2.Regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />

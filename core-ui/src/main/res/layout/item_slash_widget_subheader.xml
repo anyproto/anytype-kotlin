@@ -8,7 +8,7 @@
         android:id="@+id/subheader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextView.UXStyle.Titles.2"
+        style="@style/TextView.UXStyle.Titles.2.Medium"
         android:layout_gravity="center"
         tools:text="Media"/>
 

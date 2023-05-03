@@ -3,13 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
-import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
@@ -17,8 +11,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
-import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -39,7 +31,6 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
     override val root: View = itemView
     override val container = binding.containerWithBackground
     private val title = binding.bookmarkTitle
-    private val selected = binding.selected
     private val description = binding.bookmarkDescription
     private val url = binding.bookmarkUrl
     private val image = binding.bookmarkImage
@@ -57,18 +48,6 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
-    }
-
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.root.updatePadding(
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
-                bottomMargin = dimen(R.dimen.card_block_extra_space_bottom)
-            }
-        }
     }
 
     private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
@@ -123,7 +102,6 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
             }
         }
         applyBackground(item.background)
-        applyRootMargins(item)
     }
 
     private fun applySearchHighlight(item: BlockView.Media.Bookmark) {
@@ -191,43 +169,10 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         }
     }
 
-    override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            val leftPadding = dimen(R.dimen.default_document_item_padding_start) + item.indent * dimen(R.dimen.indent)
-            root.updatePadding(left = leftPadding)
-        }
-    }
+    override fun indentize(item: BlockView.Indentable) {}
 
     override fun select(isSelected: Boolean) {
-        selected.isSelected = isSelected
-    }
-
-    private fun applyRootMargins(item: BlockView.Media.Bookmark) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            if (item.isPreviousBlockMedia) {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
-                    apply { topMargin = 0 }
-                }
-            } else {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
-                    apply {
-                        topMargin =
-                            root.resources.getDimension(R.dimen.default_link_card_root_margin_top)
-                                .toInt()
-                    }
-                }
-            }
-        }
-    }
-
-    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        super.applyDecorations(decorations)
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.bookmarkRoot,
-                res = itemView.resources
-            )
-        }
+        card.isSelected = isSelected
     }
 
     override fun onDecorationsChanged(decorations: List<BlockView.Decoration>) {

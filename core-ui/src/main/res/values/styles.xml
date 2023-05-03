@@ -882,4 +882,21 @@
         <item name="cornerFamily">rounded</item>
     </style>
 
+
+    <!-- Editor, default block card style-->
+    <style name="DefaultCardBlockStyle">
+        <item name="android:layout_marginStart">@dimen/dp_20</item>
+        <item name="android:layout_marginEnd">@dimen/dp_20</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardForegroundColor">@color/card_color_selector</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="strokeColor">@color/card_stroke_selector</item>
+    </style>
+
+    <!-- Editor, default bookmark card style-->
+    <style name="BookmarkBlockStyle" parent="DefaultCardBlockStyle">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="strokeWidth">0.5dp</item>
+    </style>
+
 </resources>

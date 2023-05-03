@@ -11,50 +11,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <View
-            android:id="@+id/selected"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/item_block_multi_select_mode_selector"
-            tools:background="@drawable/item_block_multi_select_selected" />
     </com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bookmarkRoot"
+        style="@style/BookmarkBlockStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_12"
-        android:layout_marginEnd="@dimen/dp_12"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:rippleColor="@android:color/transparent"
-        app:strokeColor="@color/shape_primary"
-        app:strokeWidth="1dp">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/containerWithBackground"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/dp_16"
+            android:paddingBottom="16dp">
 
             <ImageView
                 android:id="@+id/bookmarkLogo"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="6dp"
+                app:layout_constraintBottom_toBottomOf="@+id/bookmarkUrl"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bookmarkDescription" />
+                app:layout_constraintTop_toTopOf="@+id/bookmarkUrl"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/bookmarkImage"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="82dp"
+                android:layout_height="82dp"
+                android:layout_marginEnd="16dp"
+                android:foreground="@drawable/alpha_overlay_5"
                 android:scaleType="centerCrop"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.333"
-                tools:scaleType="centerCrop" />
+                tools:scaleType="centerCrop"
+                tools:src="@color/shape_tertiary" />
 
             <TextView
                 android:id="@+id/bookmarkTitle"
@@ -62,17 +54,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="13dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="12dp"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:hint="@string/untitled"
+                android:maxLines="2"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_tertiary"
+                app:layout_constraintBottom_toTopOf="@+id/bookmarkDescription"
                 app:layout_constraintEnd_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
                 app:layout_goneMarginEnd="@dimen/dp_16"
-                android:textColorHint="@color/text_tertiary"
-                android:hint="@string/untitled"
-                tools:text="Octoverse spotlight: An analysis of developer productivity, work cadence, and collaboration in the early days of COVID-19" />
+                tools:text="Octoverse spotlight: An analysis of developer productivity, work cadence, and collaboration in the early days of COVID-19"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/bookmarkDescription"
@@ -80,26 +76,33 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="12dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                app:layout_constraintBottom_toTopOf="@+id/bookmarkUrl"
                 app:layout_constraintEnd_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bookmarkTitle"
                 app:layout_goneMarginEnd="@dimen/dp_16"
-                tools:text="We can both help with building an event from scratch, and join... We can both help with building an event from scratch" />
+                tools:text="We can both help with building an event from scratch, and join... We can both help with building an event from scratch"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/bookmarkUrl"
                 style="@style/TextView.ContentStyle.Relations.3"
-                android:textColor="@color/text_secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="12dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_secondary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/bookmarkLogo"
                 app:layout_constraintTop_toBottomOf="@+id/bookmarkDescription"
                 app:layout_goneMarginEnd="@dimen/dp_16"
@@ -110,14 +113,14 @@
                 android:id="@+id/loadBookmarkPictureError"
                 style="@style/TextView.UXStyle.Captions.2.Regular"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="@string/error_while_loading_picture"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"
-                app:layout_constraintStart_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
 

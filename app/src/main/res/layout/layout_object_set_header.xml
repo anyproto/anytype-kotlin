@@ -41,35 +41,22 @@
 
         </FrameLayout>
 
-        <FrameLayout
-            android:id="@+id/docImageIconContainer"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="108dp"
+            android:layout_height="108dp"
             android:layout_gravity="bottom"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="14dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/background_layout_icon_basic_image"
-            android:visibility="gone">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/docImageIconCard"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="4dp"
-                android:transitionName="@string/logo_transition"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="0dp">
-
-                <ImageView
-                    android:id="@+id/imageIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:adjustViewBounds="true" />
-
-            </androidx.cardview.widget.CardView>
-
-        </FrameLayout>
+            android:visibility="gone"
+            android:adjustViewBounds="true"
+            android:background="@color/shape_tertiary"
+            android:padding="4dp"
+            app:shapeAppearance="@style/TitleImageAppearanceOverlay"
+            app:strokeColor="@color/background_primary"
+            app:strokeWidth="4dp"
+            android:transitionName="@string/logo_transition" />
 
     </FrameLayout>
 

@@ -208,7 +208,7 @@
     <dimen name="list_item_object_half_initials_size">24sp</dimen>
     <dimen name="list_item_object_half_text_margin_start">72dp</dimen>
     <dimen name="list_item_object_half_text_margin_end">20dp</dimen>
-    <dimen name="default_cover_height">200dp</dimen>
+    <dimen name="default_cover_height">232dp</dimen>
     <dimen name="default_cover_height_todo">188dp</dimen>
     <dimen name="dp_14">14dp</dimen>
     <dimen name="defaultGalleryViewTextSize">12sp</dimen>

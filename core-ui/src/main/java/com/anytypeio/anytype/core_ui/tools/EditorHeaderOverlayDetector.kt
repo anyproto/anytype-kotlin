@@ -32,7 +32,7 @@ class EditorHeaderOverlayDetector(
                         val root = holder.binding.root
                         val title = holder.binding.title
                         val emojiIconContainer = holder.binding.docEmojiIconContainer
-                        val imageIconContainer = holder.binding.docImageIconContainer
+                        val imageIconContainer = holder.binding.imageIcon
                         onHeaderOverlaid = when {
                             emojiIconContainer.isVisible -> {
                                 (emojiIconContainer.top + root.top >= threshold + thresholdPadding)

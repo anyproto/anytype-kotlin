@@ -300,21 +300,21 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         private fun setupIconVisibility(item: BlockView.Title.Basic) {
             when {
                 item.image != null -> {
-                    binding.docImageIconContainer.visible()
+                    binding.imageIcon.visible()
                     binding.docEmojiIconContainer.gone()
                     binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_12)
                     }
                 }
                 item.emoji != null -> {
-                    binding.docImageIconContainer.gone()
+                    binding.imageIcon.gone()
                     binding.docEmojiIconContainer.visible()
                     binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_8)
                     }
                 }
                 else -> {
-                    binding.docImageIconContainer.gone()
+                    binding.imageIcon.gone()
                     binding.docEmojiIconContainer.gone()
                     if (!item.hasCover) {
                         binding.title.updateLayoutParams<LinearLayout.LayoutParams> {

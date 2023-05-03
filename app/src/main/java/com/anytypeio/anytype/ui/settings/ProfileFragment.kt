@@ -28,24 +28,23 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
-import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
-import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
-import com.anytypeio.anytype.ui_settings.account.AccountAndDataViewModel
+import com.anytypeio.anytype.ui_settings.account.ProfileScreen
+import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
 import timber.log.Timber
 
-class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
+class ProfileFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: AccountAndDataViewModel.Factory
+    lateinit var factory: ProfileViewModel.Factory
 
     @Inject
     lateinit var toggles: FeatureToggles
 
-    private val vm by viewModels<AccountAndDataViewModel> { factory }
+    private val vm by viewModels<ProfileViewModel> { factory }
 
     private val onKeychainPhraseClicked = {
         val bundle =
@@ -74,19 +73,17 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    AccountAndDataScreen(
+                    ProfileScreen(
                         onKeychainPhraseClicked = onKeychainPhraseClicked,
-                        onClearFileCachedClicked = { throttle { proceedWithClearFileCacheWarning() } },
                         onDeleteAccountClicked = { throttle { proceedWithAccountDeletion() } },
                         onLogoutClicked = onLogoutClicked,
                         onDebugSyncReportClicked = { throttle { vm.onDebugSyncReportClicked() } },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
-                        isClearCacheInProgress = vm.isClearFileCacheInProgress.collectAsState().value,
                         isDebugSyncReportInProgress = vm.isDebugSyncReportInProgress.collectAsState().value,
                         isShowDebug = toggles.isTroubleshootingMode,
                         onNameChange = { vm.onNameChange(it) },
                         onProfileIconClick = { proceedWithIconClick() },
-                        vm.accountData.collectAsStateWithLifecycle().value,
+                        account = vm.profileData.collectAsStateWithLifecycle().value,
                     )
                 }
             }
@@ -103,13 +100,6 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
             state = BottomSheetBehavior.STATE_EXPANDED
             skipCollapsed = true
         }
-    }
-
-    private fun proceedWithClearFileCacheWarning() {
-        vm.onClearCacheButtonClicked()
-        val dialog = ClearCacheAlertFragment.new()
-        dialog.onClearAccepted = { vm.onClearFileCacheAccepted() }
-        dialog.show(childFragmentManager, null)
     }
 
     private fun proceedWithAccountDeletion() {
@@ -164,11 +154,11 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().accountAndDataComponent.get().inject(this)
+        componentManager().profileComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().accountAndDataComponent.release()
+        componentManager().profileComponent.release()
     }
 }
 

@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSync
-import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -20,8 +19,8 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
-import com.anytypeio.anytype.ui.settings.AccountAndDataFragment
-import com.anytypeio.anytype.ui_settings.account.AccountAndDataViewModel
+import com.anytypeio.anytype.ui.settings.ProfileFragment
+import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
 import com.anytypeio.anytype.ui_settings.account.repo.DebugSyncShareDownloader
 import com.anytypeio.anytype.ui_settings.account.repo.FileSaver
 import dagger.Binds
@@ -29,27 +28,26 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [AccountAndDataModule::class])
+@Subcomponent(modules = [ProfileModule::class])
 @PerScreen
-interface AccountAndDataSubComponent {
+interface ProfileSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: AccountAndDataModule): Builder
-        fun build(): AccountAndDataSubComponent
+        fun module(module: ProfileModule): Builder
+        fun build(): ProfileSubComponent
     }
 
-    fun inject(fragment: AccountAndDataFragment)
+    fun inject(fragment: ProfileFragment)
 }
 
-@Module(includes = [AccountAndDataModule.Bindings::class])
-object AccountAndDataModule {
+@Module(includes = [ProfileModule.Bindings::class])
+object ProfileModule {
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        clearFileCache: ClearFileCache,
         deleteAccount: DeleteAccount,
         debugSyncShareDownloader: DebugSyncShareDownloader,
         analytics: Analytics,
@@ -59,8 +57,7 @@ object AccountAndDataModule {
         urlBuilder: UrlBuilder,
         setDocumentImageIcon: SetDocumentImageIcon,
         spaceGradientProvider: SpaceGradientProvider
-    ): AccountAndDataViewModel.Factory = AccountAndDataViewModel.Factory(
-        clearFileCache = clearFileCache,
+    ): ProfileViewModel.Factory = ProfileViewModel.Factory(
         deleteAccount = deleteAccount,
         debugSyncShareDownloader = debugSyncShareDownloader,
         analytics = analytics,
@@ -98,11 +95,6 @@ object AccountAndDataModule {
         fileSaver: FileSaver,
         dispatchers: AppCoroutineDispatchers,
     ): DebugSyncShareDownloader = DebugSyncShareDownloader(debugSync, fileSaver, dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun clearFileCache(repo: BlockRepository): ClearFileCache = ClearFileCache(repo)
 
     @JvmStatic
     @PerScreen

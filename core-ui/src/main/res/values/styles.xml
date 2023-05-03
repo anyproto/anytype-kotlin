@@ -342,7 +342,7 @@
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="ViewerSortTitleStyle" parent="TextView.UXStyle.Titles.2">
+    <style name="ViewerSortTitleStyle" parent="TextView.ContentStyle.PreviewTitles.2.Medium">
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
@@ -459,7 +459,7 @@
         <item name="android:maxLines">1</item>
     </style>
 
-    <style name="SlashWidgetStyleItemTitle" parent="TextView.UXStyle.Titles.3">
+    <style name="SlashWidgetStyleItemTitle" parent="TextView.UXStyle.Titles.2.Regular">
         <item name="android:layout_gravity">center_vertical|start</item>
     </style>
 
@@ -505,7 +505,7 @@
     </style>
 
     <!-- Object items in lists -->
-    <style name="ObjectListItemTitle" parent="TextView.UXStyle.Titles.3">
+    <style name="ObjectListItemTitle" parent="TextView.UXStyle.Titles.2.Regular">
         <item name="android:textColorHint">@color/text_tertiary</item>
     </style>
 
@@ -546,7 +546,7 @@
         <item name="android:maxWidth">250dp</item>
     </style>
 
-    <style name="ObjectLayoutTitleStyle" parent="TextView.UXStyle.Titles.2">
+    <style name="ObjectLayoutTitleStyle" parent="TextView.UXStyle.Titles.2.Medium">
         <item name="android:singleLine">true</item>
         <item name="maxLines">1</item>
         <item name="android:ellipsize">end</item>

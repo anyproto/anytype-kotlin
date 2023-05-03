@@ -152,7 +152,7 @@
         <item name="android:letterSpacing">-0.024</item>
     </style>
 
-    <style name="TextView.UXStyle.Titles.2" parent="BaseTextView">
+    <style name="TextView.UXStyle.Titles.2.Medium" parent="BaseTextView">
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">15sp</item>
@@ -160,7 +160,7 @@
         <item name="android:letterSpacing">-0.014</item>
     </style>
 
-    <style name="TextView.UXStyle.Titles.3" parent="BaseTextView">
+    <style name="TextView.UXStyle.Titles.2.Regular" parent="BaseTextView">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>

@@ -93,7 +93,9 @@ fun Cards(onViewAction: (ViewAction) -> Unit) {
                 ClickableText(
                     modifier = Modifier.padding(top = 12.dp),
                     text = text,
-                    style = BodyCallout,
+                    style = BodyCallout.copy(
+                        color = colorResource(id = R.color.text_primary)
+                    ),
                     onClick = { offset ->
                         text.getStringAnnotations(
                             tag = ANNOTATION_TAG,
@@ -104,7 +106,7 @@ fun Cards(onViewAction: (ViewAction) -> Unit) {
                                 onViewAction(ViewAction.DownloadDesktop)
                             }
                         }
-                    }
+                    },
                 )
             },
         )

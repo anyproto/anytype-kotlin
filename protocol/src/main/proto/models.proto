@@ -790,6 +790,7 @@ message InternalFlag {
         editorDeleteEmpty = 0;
         editorSelectType = 1;
         editorSelectTemplate = 2;
+        collectionDontIndexLinks = 3;
     }
 }
 

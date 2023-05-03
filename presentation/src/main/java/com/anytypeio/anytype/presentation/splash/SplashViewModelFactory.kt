@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -28,7 +29,8 @@ class SplashViewModelFactory @Inject constructor(
     private val getLastOpenedObject: GetLastOpenedObject,
     private val createObject: CreateObject,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val featureToggles: FeatureToggles
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -41,6 +43,7 @@ class SplashViewModelFactory @Inject constructor(
             getLastOpenedObject = getLastOpenedObject,
             createObject = createObject,
             relationsSubscriptionManager = relationsSubscriptionManager,
-            objectTypesSubscriptionManager = objectTypesSubscriptionManager
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+            featureToggles = featureToggles
         ) as T
 }

@@ -92,17 +92,22 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id),
                 )
             }
-            SplashViewModel.Command.NavigateToLogin -> {
+            is SplashViewModel.Command.NavigateToLogin -> {
                 findNavController().navigate(
                     R.id.action_splashFragment_to_login_nav
                 )
             }
-            SplashViewModel.Command.NavigateToMigration -> {
+            is SplashViewModel.Command.NavigateToAuthStart -> {
+                findNavController().navigate(
+                    R.id.action_splashFragment_to_authStart
+                )
+            }
+            is SplashViewModel.Command.NavigateToMigration -> {
                 findNavController().navigate(
                     R.id.migrationNeededScreen
                 )
             }
-            SplashViewModel.Command.CheckAppStartIntent -> {
+            is SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = requireActivity().intent
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
                     val bundle = intent.extras

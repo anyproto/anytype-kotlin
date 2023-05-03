@@ -16,6 +16,6 @@ interface FeatureToggles {
 
     val isTroubleshootingMode: Boolean
 
-    val isLibraryEnabled: Boolean
+    val isNewOnBoardingEnabled: Boolean
 
 }

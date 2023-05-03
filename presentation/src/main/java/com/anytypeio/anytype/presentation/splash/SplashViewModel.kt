@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -40,7 +41,8 @@ class SplashViewModel(
     private val getLastOpenedObject: GetLastOpenedObject,
     private val createObject: CreateObject,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val featureToggles: FeatureToggles
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -54,10 +56,15 @@ class SplashViewModel(
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },
                 success = { status ->
-                    if (status == AuthStatus.UNAUTHORIZED)
-                        commands.emit(Command.NavigateToLogin)
-                    else
+                    if (status == AuthStatus.UNAUTHORIZED) {
+                        if (featureToggles.isNewOnBoardingEnabled) {
+                            commands.emit(Command.NavigateToAuthStart)
+                        } else {
+                            commands.emit(Command.NavigateToLogin)
+                        }
+                    } else {
                         proceedWithLaunchingWallet()
+                    }
                 }
             )
         }
@@ -195,6 +202,9 @@ class SplashViewModel(
         object NavigateToDashboard : Command()
         object NavigateToWidgets : Command()
         object NavigateToLogin : Command()
+
+        object NavigateToAuthStart : Command()
+
         object NavigateToMigration: Command()
         object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id) : Command()

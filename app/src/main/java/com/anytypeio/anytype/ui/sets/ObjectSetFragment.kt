@@ -567,7 +567,7 @@ open class ObjectSetFragment :
                 .launchIn(lifecycleScope)
         }
 
-        binding.objectHeader.root.findViewById<ViewGroup>(R.id.docImageIconContainer).apply {
+        binding.objectHeader.root.findViewById<View>(R.id.imageIcon).apply {
             if (title.image != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()

@@ -877,4 +877,9 @@
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
+    <style name="TitleImageAppearanceOverlay" parent="">
+        <item name="cornerSize">8dp</item>
+        <item name="cornerFamily">rounded</item>
+    </style>
+
 </resources>

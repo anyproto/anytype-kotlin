@@ -85,6 +85,7 @@ import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEdi
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
+import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
 import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
@@ -711,6 +712,27 @@ open class ObjectSetFragment :
                     relationKey = command.relationKey
                 )
                 fr.showChildFragment(EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.EditIntrinsicTextRelation -> {
+                val fr = RelationTextValueFragment.new(
+                    ctx = ctx,
+                    objectId = ctx,
+                    flow = RelationTextValueFragment.FLOW_DATAVIEW,
+                    relationKey = command.relation
+                )
+                fr.showChildFragment(EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.EditIntrinsicRelationValue -> {
+                val fr = RelationValueDVFragment().apply {
+                    arguments = RelationValueDVFragment.args(
+                        ctx = command.ctx,
+                        target = command.ctx,
+                        isIntrinsic = true,
+                        targetTypes = emptyList(),
+                        relation = command.relation
+                    )
+                }
+                fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.EditGridDateCell -> {
                 val fr = RelationDateValueFragment.new(

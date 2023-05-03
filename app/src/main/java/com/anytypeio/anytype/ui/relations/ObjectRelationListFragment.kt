@@ -144,12 +144,12 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             is Command.EditRelationValue -> {
                 if (isDataViewFLow) {
                     val fr = RelationValueDVFragment().apply {
-                        arguments = bundleOf(
-                            RelationValueBaseFragment.CTX_KEY to command.ctx,
-                            RelationValueBaseFragment.TARGET_KEY to command.target,
-                            RelationValueBaseFragment.RELATION_KEY to command.relationKey,
-                            RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
-                            RelationValueBaseFragment.IS_LOCKED_KEY to false
+                        arguments = RelationValueDVFragment.args(
+                            ctx = command.ctx,
+                            target = command.target,
+                            relation = command.relationKey,
+                            targetTypes = command.targetObjectTypes,
+                            isIntrinsic = true
                         )
                     }
                     fr.showChildFragment()
@@ -176,12 +176,12 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             is Command.EditStatusRelationValue -> {
                 if (isDataViewFLow) {
                     val fr = RelationValueDVFragment().apply {
-                        arguments = bundleOf(
-                            RelationValueBaseFragment.CTX_KEY to command.ctx,
-                            RelationValueBaseFragment.TARGET_KEY to command.target,
-                            RelationValueBaseFragment.RELATION_KEY to command.relationKey,
-                            RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
-                            RelationValueBaseFragment.IS_LOCKED_KEY to false
+                        arguments = RelationValueDVFragment.args(
+                            ctx = command.ctx,
+                            target = command.target,
+                            relation = command.relationKey,
+                            targetTypes = command.targetObjectTypes,
+                            isIntrinsic = true
                         )
                     }
                     fr.showChildFragment()

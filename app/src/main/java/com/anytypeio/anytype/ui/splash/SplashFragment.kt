@@ -130,7 +130,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     }
 
     private fun showVersion() {
-        binding.version.text = "${BuildConfig.VERSION_NAME}-alpha"
+        binding.version.text = "${BuildConfig.VERSION_NAME}-beta"
     }
 
     override fun injectDependencies() {

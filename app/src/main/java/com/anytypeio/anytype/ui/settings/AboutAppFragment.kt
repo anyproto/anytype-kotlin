@@ -16,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -93,7 +92,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
             if (BuildConfig.DEBUG)
                 "$version-debug"
             else
-                "$version-alpha"
+                "$version-beta"
         } else {
             resources.getString(R.string.unknown)
         }

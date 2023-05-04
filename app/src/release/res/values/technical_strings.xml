@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Anytype</string>
+    <string name="app_name">Anytype Beta</string>
     <color name="ic_app_back_main">#FFFFFF</color>
 </resources>

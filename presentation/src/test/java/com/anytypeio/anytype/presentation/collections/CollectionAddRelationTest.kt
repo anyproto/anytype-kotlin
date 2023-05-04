@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.ID
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
@@ -76,7 +77,13 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
-        val rootObject = ObjectWrapper.Basic(map = mapOf(ID to root, LAYOUT to COLLECTION_LAYOUT))
+        val rootObject = ObjectWrapper.Basic(
+            map = mapOf(
+                ID to root,
+                Relations.NAME to objectCollection.details.details[root]?.name,
+                LAYOUT to COLLECTION_LAYOUT
+            )
+        )
 
         stubOpenObject(
             doc = listOf(

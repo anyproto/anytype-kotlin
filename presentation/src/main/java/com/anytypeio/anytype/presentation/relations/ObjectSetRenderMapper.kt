@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.ext.CURRENT_MONTH
 import com.anytypeio.anytype.core_utils.ext.CURRENT_WEEK
 import com.anytypeio.anytype.core_utils.ext.EXACT_DAY
@@ -24,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_FROM_NOW
 import com.anytypeio.anytype.core_utils.ext.TODAY
 import com.anytypeio.anytype.core_utils.ext.TOMORROW
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -195,20 +195,18 @@ fun title(
     urlBuilder: UrlBuilder,
     details: Map<Id, Block.Fields>
 ): BlockView.Title.Basic {
-
+    val wrapper = ObjectWrapper.Basic(details[ctx]?.map ?: emptyMap())
     val objectDetails = details[ctx]
-    val coverContainer = BlockFieldsCoverWrapper(objectDetails)
-        .getCover(urlBuilder, coverImageHashProvider)
-
+    val coverContainer = BlockFieldsCoverWrapper(objectDetails).getCover(
+        urlBuilder = urlBuilder,
+        coverImageHashProvider = coverImageHashProvider
+    )
     return BlockView.Title.Basic(
         id = title.id,
-        text = title.content<Block.Content.Text>().text,
-        emoji = objectDetails?.iconEmoji?.ifEmpty { null },
-        image = objectDetails?.iconImage?.let { hash ->
-            if (hash.isNotEmpty())
-                urlBuilder.thumbnail(hash = hash)
-            else
-                null
+        text = wrapper.name.orEmpty(),
+        emoji = wrapper.iconEmoji.orNull(),
+        image = wrapper.iconImage.orNull()?.let { hash ->
+            urlBuilder.thumbnail(hash = hash)
         },
         coverImage = coverContainer.coverImage,
         coverColor = coverContainer.coverColor,

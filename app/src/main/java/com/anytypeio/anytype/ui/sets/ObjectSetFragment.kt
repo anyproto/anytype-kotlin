@@ -554,14 +554,16 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun bindHeader(title: BlockView.Title.Basic) {
-        this.title.pauseTextWatchers {
-            this.title.setText(title.text)
+    private fun bindHeader(header: BlockView.Title.Basic) {
+        if (title.text.toString() != header.text) {
+            title.pauseTextWatchers {
+                title.setText(header.text)
+            }
         }
-        binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
+        binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = header.text
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
-            if (title.emoji != null) visible() else gone()
+            if (header.emoji != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()
                 .onEach { vm.onIconClicked() }
@@ -569,7 +571,7 @@ open class ObjectSetFragment :
         }
 
         binding.objectHeader.root.findViewById<View>(R.id.imageIcon).apply {
-            if (title.image != null) visible() else gone()
+            if (header.image != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()
                 .onEach { vm.onIconClicked() }
@@ -577,13 +579,13 @@ open class ObjectSetFragment :
         }
 
         binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
-            .setEmojiOrNull(title.emoji)
+            .setEmojiOrNull(header.emoji)
 
-        if (title.image != null) {
+        if (header.image != null) {
             binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
                 Glide
                     .with(this)
-                    .load(title.image)
+                    .load(header.image)
                     .centerCrop()
                     .into(this)
             }
@@ -592,9 +594,9 @@ open class ObjectSetFragment :
         }
 
         setCover(
-            coverColor = title.coverColor,
-            coverGradient = title.coverGradient,
-            coverImage = title.coverImage
+            coverColor = header.coverColor,
+            coverGradient = header.coverGradient,
+            coverImage = header.coverImage
         )
     }
 

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
 
 class MockCollection(context: String) {
@@ -201,6 +202,7 @@ class MockCollection(context: String) {
             root to Block.Fields(
                 mapOf(
                     Relations.ID to root,
+                    Relations.NAME to MockDataFactory.randomString(),
                     Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()
                 )
             )

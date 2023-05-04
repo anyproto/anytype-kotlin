@@ -61,7 +61,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
 
         assertEquals(
-            expected = mockObjectCollection.title.content.asText().text,
+            expected = mockObjectCollection.details.details[mockObjectCollection.root]?.name,
             actual = headerFlow.awaitItem()?.text
         )
         viewerFlow.expectNoEvents()

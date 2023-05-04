@@ -161,6 +161,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             stateReducer.state
                 .filterIsInstance<ObjectState.DataView>()
+                .distinctUntilChanged()
                 .collectLatest { state ->
                     featured.value = state.featuredRelations(
                         ctx = context,
@@ -221,7 +222,8 @@ class ObjectSetViewModel(
                 .mapLatest { params ->
                     updateText(params).process(
                         failure = { e -> Timber.e(e, "Error while updating title") },
-                        success = { Timber.d("Sets' title updated successfully") }
+                        success = {
+                            Timber.d("Sets' title updated successfully") }
                     )
                 }
                 .collect()

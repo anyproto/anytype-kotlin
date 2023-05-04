@@ -5,6 +5,8 @@ import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
+import com.anytypeio.anytype.persistence.common.toJsonString
+import com.anytypeio.anytype.persistence.common.toStringMap
 
 class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSettingsCache {
 
@@ -57,7 +59,7 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
         val type = prefs.getInt(WALLPAPER_TYPE_KEY, -1)
         if (type != -1) {
             val value = prefs.getString(WALLPAPER_VALUE_KEY, null)
-            if (value != null && value.isNotEmpty()) {
+            if (!value.isNullOrEmpty()) {
                 return when (type) {
                     WALLPAPER_TYPE_COLOR -> {
                         Wallpaper.Color(value)
@@ -68,6 +70,7 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
                     WALLPAPER_TYPE_IMAGE -> {
                         Wallpaper.Image(value)
                     }
+
                     else -> {
                         Wallpaper.Default
                     }
@@ -122,23 +125,26 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
         }
     }
 
-    override suspend fun getWidgetSession(): WidgetSession {
-        return if (prefs.contains(COLLAPSED_WIDGETS_KEY)) {
-            WidgetSession(
-                collapsed = prefs.getStringSet(COLLAPSED_WIDGETS_KEY, emptySet())
-                    .orEmpty()
-                    .toList()
-            )
-        } else
-            WidgetSession(
-                collapsed = emptyList()
-            )
-    }
+    override suspend fun getWidgetSession(): WidgetSession = WidgetSession(
+        collapsed = if (prefs.contains(COLLAPSED_WIDGETS_KEY)) {
+            prefs.getStringSet(COLLAPSED_WIDGETS_KEY, emptySet())
+                .orEmpty()
+                .toList()
+        } else {
+            emptyList()
+        },
+        widgetsToActiveViews = if (prefs.contains(ACTIVE_WIDGETS_VIEWS_KEY)) {
+            prefs.getString(ACTIVE_WIDGETS_VIEWS_KEY, "")!!.toStringMap()
+        } else {
+            emptyMap()
+        }
+    )
 
     override suspend fun saveWidgetSession(session: WidgetSession) {
         prefs
             .edit()
             .putStringSet(COLLAPSED_WIDGETS_KEY, session.collapsed.toSet())
+            .putString(ACTIVE_WIDGETS_VIEWS_KEY, session.widgetsToActiveViews.toJsonString())
             .apply()
     }
 
@@ -167,5 +173,6 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
         const val THEME_TYPE_NIGHT = 3
 
         const val COLLAPSED_WIDGETS_KEY = "prefs.user_settings.collapsed-widgets"
+        const val ACTIVE_WIDGETS_VIEWS_KEY = "prefs.user_settings.active-widget-views"
     }
 }

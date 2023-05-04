@@ -66,6 +66,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.presentation.widgets.getActiveTabViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -305,7 +306,10 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             saveWidgetSession.execute(
                 SaveWidgetSession.Params(
-                    WidgetSession(collapsed = collapsedWidgetStateHolder.get())
+                    WidgetSession(
+                        collapsed = collapsedWidgetStateHolder.get(),
+                        widgetsToActiveViews = views.value.getActiveTabViews()
+                    )
                 )
             )
             val subscriptions = widgets.value.orEmpty().map { widget ->
@@ -718,8 +722,9 @@ class HomeScreenViewModel(
                 val session = withContext(appCoroutineDispatchers.io) {
                     getWidgetSession.execute(Unit).getOrNull()
                 }
-                if (session != null && session.collapsed.isNotEmpty()) {
+                if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
+                    widgetActiveViewStateHolder.init(session.widgetsToActiveViews)
                 }
                 proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
             }

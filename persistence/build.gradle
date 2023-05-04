@@ -13,6 +13,7 @@ dependencies {
     implementation libs.coroutinesAndroid
     implementation libs.gson
     implementation libs.lifecycleLiveData
+    implementation libs.kotlinxSerializationJson
 
     implementation libs.room
     implementation libs.roomKtx

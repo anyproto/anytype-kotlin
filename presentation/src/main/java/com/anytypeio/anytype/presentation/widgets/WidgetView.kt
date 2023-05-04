@@ -150,3 +150,17 @@ fun ObjectWrapper.Basic.widgetElementIcon(builder: UrlBuilder) : ObjectIcon {
         else -> ObjectIcon.None
     }
 }
+
+fun List<WidgetView>.getActiveTabViews() : Map<Id, Id> {
+    return filterIsInstance<WidgetView.SetOfObjects>().mapNotNull { widget ->
+        if (widget.tabs.isNotEmpty()) {
+            val selected =  widget.tabs.firstOrNull { it.isSelected }
+            if (selected != null)
+                widget.id to selected.id
+            else
+                null
+        } else {
+            null
+        }
+    }.toMap()
+}

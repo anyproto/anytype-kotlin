@@ -321,7 +321,7 @@
 
         <fragment
             android:id="@+id/authStartScreen"
-            android:name="com.anytypeio.anytype.ui.onboarding.AuthStartFragment" />
+            android:name="com.anytypeio.anytype.ui.onboarding.OnBoardingFragment" />
 
     </navigation>
 

@@ -38,6 +38,7 @@ object EventsDictionary {
     const val deletionWarningShow = "ShowDeletionWarning"
     const val keychainPhraseScreenShow = "ScreenKeychain"
     const val fileOffloadScreenShow = "ScreenFileOffloadWarning"
+    const val manageFilesScreenShow = "ScreenManageFiles"
     const val relationsScreenShow = "ScreenObjectRelation"
     const val settingsShow = "ScreenSettings"
     const val personalisationSettingsShow = "ScreenSettingsPersonalisation"

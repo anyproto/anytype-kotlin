@@ -69,7 +69,7 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
     }
 
     private val onFileStorageClicked = {
-        //todo
+        vm.onOptionClicked(Event.OnFilesStorageClicked)
     }
 
     override fun onCreateView(
@@ -141,6 +141,9 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                         ARG_SHOW_REMOVE_BUTTON to true
                     )
                 )
+            }
+            Command.OpenFilesStorageScreen -> {
+                safeNavigate(R.id.actionOpenFilesStorageScreen)
             }
         }
     }

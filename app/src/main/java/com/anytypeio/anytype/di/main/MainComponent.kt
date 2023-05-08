@@ -26,6 +26,8 @@ import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
+import com.anytypeio.anytype.di.feature.settings.FilesStorageComponent
+import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectSubComponent
@@ -74,7 +76,8 @@ interface MainComponent :
     SplashDependencies,
     DeletedAccountDependencies,
     MigrationErrorDependencies,
-    BacklinkOrAddToObjectDependencies {
+    BacklinkOrAddToObjectDependencies,
+    FilesStorageDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -176,5 +179,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(BacklinkOrAddToObjectDependencies::class)
     abstract fun provideBackLinkDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(FilesStorageDependencies::class)
+    abstract fun provideFilesStorageDependencies(component: MainComponent): ComponentDependencies
 
 }

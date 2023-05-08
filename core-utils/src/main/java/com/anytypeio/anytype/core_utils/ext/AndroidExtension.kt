@@ -381,3 +381,20 @@ inline fun <T1 : Any, T2 : Any, R : Any> Pair<T1?, T2?>.letNotNull(block: (T1, T
         null
     }
 }
+
+fun getDeviceName(): String {
+    val manufacturer = Build.MANUFACTURER.capitalize()
+    val model = Build.MODEL.capitalize()
+    return if (model.startsWith(manufacturer, ignoreCase = true)) {
+        model
+    } else {
+        "$manufacturer $model"
+    }
+}
+
+fun bytesToHumanReadableSize(bytes: Double): String = when {
+    bytes >= 1 shl 30 -> "%.1f GB".format(bytes / (1 shl 30))
+    bytes >= 1 shl 20 -> "%.1f MB".format(bytes / (1 shl 20))
+    bytes >= 1 shl 10 -> "%.0f kB".format(bytes / (1 shl 10))
+    else -> "$bytes bytes"
+}

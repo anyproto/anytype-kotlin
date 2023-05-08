@@ -103,6 +103,7 @@ class MainSettingsViewModel(
                     configStorage.get().workspace
                 )
             )
+            Event.OnFilesStorageClicked -> commands.emit(Command.OpenFilesStorageScreen)
         }
     }
 
@@ -134,6 +135,7 @@ class MainSettingsViewModel(
             }
             Event.OnSpaceImageClicked -> {}
             Event.OnDebugClicked -> {}
+            Event.OnFilesStorageClicked -> {}
         }
     }
 
@@ -194,6 +196,7 @@ class MainSettingsViewModel(
         object OnPersonalizationClicked : Event()
         object OnDebugClicked : Event()
         object OnSpaceImageClicked : Event()
+        object OnFilesStorageClicked : Event()
     }
 
     sealed class Command {
@@ -203,6 +206,7 @@ class MainSettingsViewModel(
         object OpenPersonalizationScreen : Command()
         object OpenDebugScreen : Command()
         class OpenSpaceImageSet(val id: Id) : Command()
+        object OpenFilesStorageScreen : Command()
     }
 
     sealed class WorkspaceAndAccount {
@@ -227,5 +231,5 @@ class MainSettingsViewModel(
 
 }
 
-private const val SPACE_SUBSCRIPTION_ID = "settings_space_subscription"
-private const val STOP_SUBSCRIPTION_TIMEOUT = 1_000L
+const val SPACE_SUBSCRIPTION_ID = "settings_space_subscription"
+const val STOP_SUBSCRIPTION_TIMEOUT = 1_000L

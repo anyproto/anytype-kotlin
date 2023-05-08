@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
@@ -95,12 +96,18 @@ fun SpaceNameBlock() {
 }
 
 @Composable
-fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
+fun SpaceImageBlock(
+    icon: SpaceIconView?,
+    onSpaceIconClick: () -> Unit,
+    mainSize: Dp = 96.dp,
+    emojiSize: Dp = 48.dp,
+    gradientSize: Dp = 64.dp
+) {
     when (icon) {
         is SpaceIconView.Emoji -> {
             Box(
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(mainSize)
                     .clip(RoundedCornerShape(16.dp))
                     .noRippleClickable {
                         onSpaceIconClick.invoke()
@@ -115,7 +122,7 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
                     contentDescription = "Emoji space icon",
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .size(48.dp)
+                        .size(emojiSize)
                         .clip(RoundedCornerShape(16.dp)),
                     contentScale = ContentScale.Crop
                 )
@@ -130,7 +137,7 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
                 contentDescription = "Custom image space icon",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(mainSize)
                     .clip(RoundedCornerShape(8.dp))
                     .noRippleClickable {
                         onSpaceIconClick.invoke()
@@ -146,7 +153,7 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
             )
             Box(
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(mainSize)
                     .clip(RoundedCornerShape(8.dp))
                     .background(color = colorResource(id = R.color.shape_primary))
                     .noRippleClickable {
@@ -155,7 +162,7 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
             ) {
                 Box(
                     modifier = Modifier.align(Alignment.Center)
-                        .size(64.dp)
+                        .size(gradientSize)
                         .clip(RoundedCornerShape(32.dp))
                         .background(gradient)
                 )
@@ -168,7 +175,7 @@ fun SpaceImageBlock(icon: SpaceIconView, onSpaceIconClick: () -> Unit) {
                 contentDescription = "Placeholder space icon",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(mainSize)
                     .clip(RoundedCornerShape(8.dp))
                     .noRippleClickable {
                         onSpaceIconClick.invoke()

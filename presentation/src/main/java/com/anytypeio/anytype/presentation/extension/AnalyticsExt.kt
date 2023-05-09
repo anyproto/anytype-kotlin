@@ -1275,7 +1275,7 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
 
 fun CoroutineScope.sendChangeWidgetSourceEvent(
     analytics: Analytics,
-    sourceObjectTypeName: String,
+    sourceObjectTypeId: Id,
     isCustomObjectType: Boolean = false,
     isForNewWidget: Boolean
 ) {
@@ -1287,7 +1287,7 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                 if (isCustomObjectType)
                     put(WidgetAnalytics.TYPE, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
                 else
-                    put(WidgetAnalytics.TYPE, sourceObjectTypeName)
+                    put(WidgetAnalytics.TYPE, sourceObjectTypeId)
                 if (isForNewWidget)
                     put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)
             }
@@ -1297,7 +1297,7 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
 
 fun CoroutineScope.sendDeleteWidgetEvent(
     analytics: Analytics,
-    sourceObjectTypeName: String,
+    sourceObjectTypeId: Id,
     isCustomObjectType: Boolean = false,
     isInEditMode: Boolean
 ) {
@@ -1309,7 +1309,7 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                 if (isCustomObjectType)
                     put(WidgetAnalytics.TYPE, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
                 else
-                    put(WidgetAnalytics.TYPE, sourceObjectTypeName)
+                    put(WidgetAnalytics.TYPE, sourceObjectTypeId)
                 if (isInEditMode)
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
                 else
@@ -1383,7 +1383,7 @@ fun CoroutineScope.sendSelectHomeTabEvent(
 
 fun CoroutineScope.sendSelectHomeTabEvent(
     analytics: Analytics,
-    sourceObjectTypeName: String,
+    sourceObjectTypeId: Id,
     isCustomObjectType: Boolean = false
 ) {
     sendEvent(
@@ -1395,7 +1395,7 @@ fun CoroutineScope.sendSelectHomeTabEvent(
                 if (isCustomObjectType)
                     put(WidgetAnalytics.TAB, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
                 else
-                    put(WidgetAnalytics.TAB, sourceObjectTypeName)
+                    put(WidgetAnalytics.TAB, sourceObjectTypeId)
             }
         )
     )
@@ -1403,7 +1403,7 @@ fun CoroutineScope.sendSelectHomeTabEvent(
 
 fun CoroutineScope.sendReorderWidgetEvent(
     analytics: Analytics,
-    sourceObjectTypeName: String,
+    sourceObjectTypeId: Id,
     isCustomObjectType: Boolean = false
 ) {
     sendEvent(
@@ -1414,7 +1414,7 @@ fun CoroutineScope.sendReorderWidgetEvent(
                 if (isCustomObjectType)
                     put(WidgetAnalytics.TYPE, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
                 else
-                    put(WidgetAnalytics.TYPE, sourceObjectTypeName)
+                    put(WidgetAnalytics.TYPE, sourceObjectTypeId)
             }
         )
     )

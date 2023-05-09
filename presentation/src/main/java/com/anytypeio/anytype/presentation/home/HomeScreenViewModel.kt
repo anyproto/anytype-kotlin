@@ -893,7 +893,7 @@ class HomeScreenViewModel(
                         if (objectTypeWrapper != null) {
                             sendDeleteWidgetEvent(
                                 analytics = analytics,
-                                sourceObjectTypeName = objectTypeWrapper.name.orEmpty(),
+                                sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
                                 isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty(),
                                 isInEditMode = mode.value == InteractionMode.Edit
                             )
@@ -919,7 +919,7 @@ class HomeScreenViewModel(
                 if (objectTypeWrapper != null) {
                     sendSelectHomeTabEvent(
                         analytics = analytics,
-                        sourceObjectTypeName = objectTypeWrapper.name.orEmpty(),
+                        sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
                         isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty()
                     )
                 } else {
@@ -954,7 +954,7 @@ class HomeScreenViewModel(
                         if (objectTypeWrapper != null) {
                             sendReorderWidgetEvent(
                                 analytics = analytics,
-                                sourceObjectTypeName = objectTypeWrapper.name.orEmpty(),
+                                sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
                                 isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty()
                             )
                         } else {

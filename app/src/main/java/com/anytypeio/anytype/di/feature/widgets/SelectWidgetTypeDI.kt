@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.widgets
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -37,11 +38,13 @@ object SelectWidgetTypeModule {
         payloadDispatcher: Dispatcher<Payload>,
         widgetDispatcher: Dispatcher<WidgetDispatchEvent>,
         updateWidget: UpdateWidget,
-        appCoroutineDispatchers: AppCoroutineDispatchers
+        appCoroutineDispatchers: AppCoroutineDispatchers,
+        analytics: Analytics
     ): SelectWidgetTypeViewModel.Factory = SelectWidgetTypeViewModel.Factory(
         payloadDispatcher = payloadDispatcher,
         widgetDispatcher = widgetDispatcher,
         updateWidget = updateWidget,
-        appCoroutineDispatchers = appCoroutineDispatchers
+        appCoroutineDispatchers = appCoroutineDispatchers,
+        analytics = analytics
     )
 }

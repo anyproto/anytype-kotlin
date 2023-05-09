@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker.Companion.PROP_MIDDLE
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker.Companion.PROP_RENDER
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
@@ -33,17 +34,24 @@ class AmplitudeTracker(
     }
 
     private suspend fun startRegisteringEvents() {
-        analytics.observeEvents().collect { event ->
-            if (BuildConfig.SEND_EVENTS && event is EventAnalytics.Anytype) {
-                val props = event.props.getEventProperties(
-                    startTime = event.duration?.start,
-                    middleTime = event.duration?.middleware,
-                    renderTime = event.duration?.render
-                )
-                tracker.logEvent(event.name, props)
-                Timber.d("Analytics Amplitude(event = $event)")
+        analytics
+            .observeEvents()
+            .onEach { event ->
+                if (BuildConfig.DEBUG) Timber.d("New analytics event: $event")
             }
-        }
+            .collect { event ->
+                if (BuildConfig.SEND_EVENTS && event is EventAnalytics.Anytype) {
+                    val props = event.props.getEventProperties(
+                        startTime = event.duration?.start,
+                        middleTime = event.duration?.middleware,
+                        renderTime = event.duration?.render
+                    )
+                    tracker.logEvent(event.name, props)
+                    if (BuildConfig.DEBUG) {
+                        Timber.d("Analytics Amplitude(event = $event)")
+                    }
+                }
+            }
     }
 
     private suspend fun startRegisteringUserProps() {

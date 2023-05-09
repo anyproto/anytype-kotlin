@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -148,6 +149,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var getWidgetSession: GetWidgetSession
+
+    @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -1928,7 +1932,8 @@ class HomeScreenViewModelTest {
         analytics = analytics,
         getWidgetSession = getWidgetSession,
         saveWidgetSession = saveWidgetSession,
-        spaceGradientProvider = spaceGradientProvider
+        spaceGradientProvider = spaceGradientProvider,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 
     companion object {

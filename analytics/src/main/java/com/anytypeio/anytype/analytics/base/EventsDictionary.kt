@@ -14,8 +14,6 @@ object EventsDictionary {
     const val cancelDeletion = "CancelDeletion"
 
     // Dashboard view events
-    const val showHome = "ScreenHome"
-    const val selectHomeTab = "SelectHomeTab"
     const val reorderObjects = "ReorderObjects" // reorder in favorite tab
     const val restoreFromBin = "RestoreFromBin"
 
@@ -131,6 +129,17 @@ object EventsDictionary {
     const val libraryScreenRelation = "ScreenRelation"
     const val librarySetTypeName = "SetTypeName"
     const val libraryCreateType = "CreateType"
+
+    // Widgets
+
+    const val addWidget = "AddWidget"
+    const val editWidgets = "EditWidgets"
+    const val changeWidgetSource = "ChangeWidgetSource"
+    const val changeWidgetLayout = "ChangeWidgetLayout"
+    const val reorderWidget = "ReorderWidget"
+    const val deleteWidget = "DeleteWidget"
+    const val screenHome = "ScreenHome"
+    const val selectHomeTab = "SelectHomeTab"
 
     // Routes
     object Routes {

@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -650,12 +651,14 @@ class CollectionViewModel(
 
     fun onHomeClicked() {
         launch {
+            analytics.sendScreenHomeEvent()
             commands.emit(Command.ToDesktop)
         }
     }
 
     fun onPrevClicked() {
         launch {
+            analytics.sendScreenHomeEvent()
             commands.emit(Command.Exit)
         }
     }

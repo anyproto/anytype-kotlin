@@ -7,16 +7,19 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.take
@@ -127,7 +130,13 @@ class SelectWidgetSourceViewModel(
                             source = view.id,
                             target = curr.target
                         )
-                    )
+                    ).also {
+                        sendChangeWidgetSourceEvent(
+                            analytics = analytics,
+                            view = view,
+                            isForNewWidget = true
+                        )
+                    }
                 }
             }
             is Config.ExistingWidget -> {
@@ -139,7 +148,13 @@ class SelectWidgetSourceViewModel(
                             source = view.id,
                             type = curr.type
                         )
-                    )
+                    ).also {
+                        sendChangeWidgetSourceEvent(
+                            analytics = analytics,
+                            view = view,
+                            isForNewWidget = false
+                        )
+                    }
                     isDismissed.value = true
                 }
             }
@@ -160,7 +175,12 @@ class SelectWidgetSourceViewModel(
                             sourceLayout = view.layout?.code ?: -1,
                             target = curr.target
                         )
-                    )
+                    ).also {
+                        dispatchSelectCustomSourceAnalyticEvent(
+                            view = view,
+                            isForNewWidget = true
+                        )
+                    }
                 }
             }
             is Config.ExistingWidget -> {
@@ -172,13 +192,37 @@ class SelectWidgetSourceViewModel(
                             source = view.id,
                             type = curr.type
                         )
-                    )
+                    ).also {
+                        dispatchSelectCustomSourceAnalyticEvent(
+                            view = view,
+                            isForNewWidget = false
+                        )
+                    }
                     isDismissed.value = true
                 }
             }
             is Config.None -> {
                 // Do nothing.
             }
+        }
+    }
+
+    private fun CoroutineScope.dispatchSelectCustomSourceAnalyticEvent(
+        view: DefaultObjectView,
+        isForNewWidget: Boolean
+    ) {
+        val sourceObjectType = types.value.getOrDefault(emptyList()).find { type ->
+            type.id == view.type
+        }
+        if (sourceObjectType != null) {
+            sendChangeWidgetSourceEvent(
+                analytics = analytics,
+                sourceObjectTypeName = sourceObjectType.name.orEmpty(),
+                isCustomObjectType = sourceObjectType.sourceObject.isNullOrEmpty(),
+                isForNewWidget = isForNewWidget
+            )
+        } else {
+            Timber.e("Could not found type for analytics")
         }
     }
 

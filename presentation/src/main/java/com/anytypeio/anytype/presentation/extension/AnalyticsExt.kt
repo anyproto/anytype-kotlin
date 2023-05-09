@@ -22,6 +22,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.turnIntoCollection
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
+import com.anytypeio.anytype.analytics.features.WidgetAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_LAYOUT_NONE
 import com.anytypeio.anytype.core_models.Block
@@ -31,9 +32,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import kotlinx.coroutines.CoroutineScope
 
 fun Block.Prototype.getAnalyticsEvent(
@@ -1179,4 +1183,278 @@ enum class ObjectStateAnalyticsEvent {
     ADD_SORT,
     CHANGE_SORT_VALUE,
     REMOVE_SORT
+}
+
+fun CoroutineScope.sendEditWidgetsEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.editWidgets
+    )
+}
+
+fun CoroutineScope.sendAddWidgetEvent(
+    analytics: Analytics,
+    isInEditMode: Boolean
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.addWidget,
+        props = Props(
+            map = buildMap {
+                if (isInEditMode)
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
+                else
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendChangeWidgetLayoutEvent(
+    analytics: Analytics,
+    layout: WidgetLayout,
+    isInEditMode: Boolean
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.changeWidgetLayout,
+        props = Props(
+            buildMap {
+                when(layout) {
+                    Block.Content.Widget.Layout.TREE -> {
+                        put(WidgetAnalytics.LAYOUT, WidgetAnalytics.WIDGET_LAYOUT_TREE)
+                    }
+                    Block.Content.Widget.Layout.LINK -> {
+                        put(WidgetAnalytics.LAYOUT, WidgetAnalytics.WIDGET_LAYOUT_LINK)
+                    }
+                    Block.Content.Widget.Layout.LIST -> {
+                        put(WidgetAnalytics.LAYOUT, WidgetAnalytics.WIDGET_LAYOUT_LIST)
+                    }
+                }
+                if (isInEditMode)
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
+                else
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendChangeWidgetSourceEvent(
+    analytics: Analytics,
+    view: BundledWidgetSourceView,
+    isForNewWidget: Boolean
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.changeWidgetSource,
+        props = Props(
+            buildMap {
+                when(view) {
+                    BundledWidgetSourceView.Collections -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
+                    }
+                    BundledWidgetSourceView.Favorites -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
+                    }
+                    BundledWidgetSourceView.Recent -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
+                    }
+                    BundledWidgetSourceView.Sets -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                }
+                if (isForNewWidget)
+                    put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendChangeWidgetSourceEvent(
+    analytics: Analytics,
+    sourceObjectTypeName: String,
+    isCustomObjectType: Boolean = false,
+    isForNewWidget: Boolean
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.changeWidgetSource,
+        props = Props(
+            buildMap {
+                if (isCustomObjectType)
+                    put(WidgetAnalytics.TYPE, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
+                else
+                    put(WidgetAnalytics.TYPE, sourceObjectTypeName)
+                if (isForNewWidget)
+                    put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendDeleteWidgetEvent(
+    analytics: Analytics,
+    sourceObjectTypeName: String,
+    isCustomObjectType: Boolean = false,
+    isInEditMode: Boolean
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.deleteWidget,
+        props = Props(
+            buildMap {
+                if (isCustomObjectType)
+                    put(WidgetAnalytics.TYPE, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
+                else
+                    put(WidgetAnalytics.TYPE, sourceObjectTypeName)
+                if (isInEditMode)
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
+                else
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendDeleteWidgetEvent(
+    analytics: Analytics,
+    bundled: Widget.Source.Bundled,
+    isInEditMode: Boolean
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.deleteWidget,
+        props = Props(
+            buildMap {
+                when (bundled) {
+                    Widget.Source.Bundled.Collections -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
+                    }
+                    Widget.Source.Bundled.Favorites -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
+                    }
+                    Widget.Source.Bundled.Recent -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
+                    }
+                    Widget.Source.Bundled.Sets -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                }
+                if (isInEditMode)
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
+                else
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendSelectHomeTabEvent(
+    analytics: Analytics,
+    bundled: Widget.Source.Bundled
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.selectHomeTab,
+        props = Props(
+            buildMap {
+                put(WidgetAnalytics.VIEW, WidgetAnalytics.VIEW_WIDGET)
+                when (bundled) {
+                    Widget.Source.Bundled.Collections -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
+                    }
+                    Widget.Source.Bundled.Favorites -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
+                    }
+                    Widget.Source.Bundled.Recent -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT)
+                    }
+                    Widget.Source.Bundled.Sets -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                }
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendSelectHomeTabEvent(
+    analytics: Analytics,
+    sourceObjectTypeName: String,
+    isCustomObjectType: Boolean = false
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.selectHomeTab,
+        props = Props(
+            buildMap {
+                put(WidgetAnalytics.VIEW, WidgetAnalytics.VIEW_WIDGET)
+                if (isCustomObjectType)
+                    put(WidgetAnalytics.TAB, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
+                else
+                    put(WidgetAnalytics.TAB, sourceObjectTypeName)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendReorderWidgetEvent(
+    analytics: Analytics,
+    sourceObjectTypeName: String,
+    isCustomObjectType: Boolean = false
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.reorderWidget,
+        props = Props(
+            buildMap {
+                if (isCustomObjectType)
+                    put(WidgetAnalytics.TYPE, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
+                else
+                    put(WidgetAnalytics.TYPE, sourceObjectTypeName)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendReorderWidgetEvent(
+    analytics: Analytics,
+    bundled: Widget.Source.Bundled
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.reorderWidget,
+        props = Props(
+            buildMap {
+                when (bundled) {
+                    Widget.Source.Bundled.Collections -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
+                    }
+                    Widget.Source.Bundled.Favorites -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
+                    }
+                    Widget.Source.Bundled.Recent -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
+                    }
+                    Widget.Source.Bundled.Sets -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                }
+            }
+        )
+    )
+}
+
+suspend fun Analytics.sendScreenHomeEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenHome,
+        props = Props(
+            buildMap {
+                put(WidgetAnalytics.VIEW, WidgetAnalytics.VIEW)
+            }
+        )
+    )
 }

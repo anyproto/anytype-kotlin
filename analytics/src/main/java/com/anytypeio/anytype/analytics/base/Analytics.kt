@@ -51,6 +51,25 @@ fun CoroutineScope.sendEvent(
     analytics.registerEvent(event)
 }
 
+suspend fun Analytics.sendEvent(
+    startTime: Long? = null,
+    middleTime: Long? = null,
+    renderTime: Long? = null,
+    eventName: String,
+    props: Props = Props.empty()
+) {
+    val event = EventAnalytics.Anytype(
+        name = eventName,
+        props = props,
+        duration = EventAnalytics.Duration(
+            start = startTime,
+            middleware = middleTime,
+            render = renderTime
+        )
+    )
+    registerEvent(event)
+}
+
 fun CoroutineScope.updateUserProperties(
     analytics: Analytics,
     userProperty: UserProperty

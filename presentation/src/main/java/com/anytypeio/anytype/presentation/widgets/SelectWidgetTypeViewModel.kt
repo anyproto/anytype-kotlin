@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.widgets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendChangeWidgetLayoutEvent
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +24,8 @@ class SelectWidgetTypeViewModel(
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val payloadDispatcher: Dispatcher<Payload>,
     private val widgetDispatcher: Dispatcher<WidgetDispatchEvent>,
-    private val updateWidget: UpdateWidget
+    private val updateWidget: UpdateWidget,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val views = MutableStateFlow(
@@ -84,16 +87,17 @@ class SelectWidgetTypeViewModel(
     ) {
         if (!view.isSelected) {
             viewModelScope.launch {
+                val newLayout = when (view) {
+                    is WidgetTypeView.Link -> WidgetLayout.LINK
+                    is WidgetTypeView.Tree -> WidgetLayout.TREE
+                    is WidgetTypeView.List -> WidgetLayout.LIST
+                }
                 updateWidget(
                     UpdateWidget.Params(
                         ctx = ctx,
                         target = widget,
                         source = source,
-                        type = when (view) {
-                            is WidgetTypeView.Link -> WidgetLayout.LINK
-                            is WidgetTypeView.Tree -> WidgetLayout.TREE
-                            is WidgetTypeView.List -> WidgetLayout.LIST
-                        }
+                        type = newLayout
                     )
                 ).flowOn(appCoroutineDispatchers.io).collect { result ->
                     result.fold(
@@ -101,6 +105,10 @@ class SelectWidgetTypeViewModel(
                             Timber.e(it, "Error while updating widget type")
                         },
                         onSuccess = {
+                            sendChangeWidgetLayoutEvent(
+                                analytics = analytics,
+                                layout = newLayout
+                            )
                             payloadDispatcher.send(it).also {
                                 isDismissed.value = true
                             }
@@ -138,7 +146,8 @@ class SelectWidgetTypeViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val payloadDispatcher: Dispatcher<Payload>,
         private val widgetDispatcher: Dispatcher<WidgetDispatchEvent>,
-        private val updateWidget: UpdateWidget
+        private val updateWidget: UpdateWidget,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -147,7 +156,8 @@ class SelectWidgetTypeViewModel(
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 payloadDispatcher = payloadDispatcher,
                 widgetDispatcher = widgetDispatcher,
-                updateWidget = updateWidget
+                updateWidget = updateWidget,
+                analytics = analytics
             ) as T
         }
     }

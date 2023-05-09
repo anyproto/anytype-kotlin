@@ -34,6 +34,7 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
     private val sourceLayout: Int get() = arg(WIDGET_SOURCE_LAYOUT)
     private val target: Id? get() = argOrNull(TARGET_KEY)
     private val forExistingWidget: Boolean get() = arg(IS_FOR_EXISTING_WIDGET)
+    private val isInEditMode: Boolean get() = arg(IS_IN_EDIT_MODE_KEY)
 
     private val vm by viewModels<SelectWidgetTypeViewModel> { factory }
 
@@ -56,7 +57,8 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
                                 ctx = ctx,
                                 view = view,
                                 widget = widget,
-                                source = source
+                                source = source,
+                                isInEditMode = isInEditMode
                             )
                         } else {
                             vm.onWidgetTypeClicked(
@@ -114,13 +116,15 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
         private const val WIDGET_SOURCE_LAYOUT = "arg.select-widget-type.widget-source-layout"
         private const val IS_FOR_EXISTING_WIDGET = "arg.select-widget-type.for-existing-widget"
         private const val TARGET_KEY = "arg.select-widget-type.target"
+        private const val IS_IN_EDIT_MODE_KEY = "arg.select-widget-type.is-in-edit-mode"
 
         fun args(
             ctx: Id,
             widget: Id,
             source: Id,
             type: Int,
-            layout: Int
+            layout: Int,
+            isInEditMode: Boolean
         ) = bundleOf(
             CTX_KEY to ctx,
             WIDGET_ID_KEY to widget,
@@ -128,20 +132,23 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
             WIDGET_TYPE_KEY to type,
             IS_FOR_EXISTING_WIDGET to true,
             WIDGET_SOURCE_LAYOUT to layout,
-            TARGET_KEY to null
+            TARGET_KEY to null,
+            IS_IN_EDIT_MODE_KEY to isInEditMode
         )
 
         fun args(
             ctx: Id,
             source: Id,
             layout: Int,
-            target: Id?
+            target: Id?,
+            isInEditMode: Boolean
         ) = bundleOf(
             CTX_KEY to ctx,
             WIDGET_SOURCE_KEY to source,
             WIDGET_SOURCE_LAYOUT to layout,
             IS_FOR_EXISTING_WIDGET to false,
-            TARGET_KEY to target
+            TARGET_KEY to target,
+            IS_IN_EDIT_MODE_KEY to isInEditMode
         )
     }
 }

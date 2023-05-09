@@ -83,7 +83,8 @@ class SelectWidgetTypeViewModel(
         ctx: Id,
         widget: Id,
         source: Id,
-        view: WidgetTypeView
+        view: WidgetTypeView,
+        isInEditMode: Boolean
     ) {
         if (!view.isSelected) {
             viewModelScope.launch {
@@ -107,7 +108,8 @@ class SelectWidgetTypeViewModel(
                         onSuccess = {
                             sendChangeWidgetLayoutEvent(
                                 analytics = analytics,
-                                layout = newLayout
+                                layout = newLayout,
+                                isInEditMode = isInEditMode
                             )
                             payloadDispatcher.send(it).also {
                                 isDismissed.value = true

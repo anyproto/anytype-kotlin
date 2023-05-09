@@ -352,7 +352,8 @@ class HomeScreenViewModel(
                                 ctx = configStorage.get().widgets,
                                 source = dispatch.source,
                                 layout = dispatch.sourceLayout,
-                                target = dispatch.target
+                                target = dispatch.target,
+                                isInEditMode = mode.value == InteractionMode.Edit
                             )
                         )
                     }
@@ -362,7 +363,8 @@ class HomeScreenViewModel(
                                 ctx = configStorage.get().widgets,
                                 source = dispatch.source,
                                 layout = ObjectType.Layout.SET.code,
-                                target = dispatch.target
+                                target = dispatch.target,
+                                isInEditMode = mode.value == InteractionMode.Edit
                             )
                         )
                     }
@@ -664,7 +666,8 @@ class HomeScreenViewModel(
                             is Widget.Source.Default -> {
                                 source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                             }
-                        }
+                        },
+                        isInEditMode = mode.value == InteractionMode.Edit
                     )
                 )
             }
@@ -1078,7 +1081,8 @@ sealed class Command {
         val ctx: Id,
         val source: Id,
         val target: Id?,
-        val layout: Int
+        val layout: Int,
+        val isInEditMode: Boolean
     ) : Command()
 
     data class ChangeWidgetSource(
@@ -1093,7 +1097,8 @@ sealed class Command {
         val widget: Id,
         val source: Id,
         val type: Int,
-        val layout: Int
+        val layout: Int,
+        val isInEditMode: Boolean
     ) : Command() {
         companion object {
             const val TYPE_TREE = 0

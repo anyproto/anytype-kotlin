@@ -217,7 +217,7 @@ class SelectWidgetSourceViewModel(
         if (sourceObjectType != null) {
             sendChangeWidgetSourceEvent(
                 analytics = analytics,
-                sourceObjectTypeName = sourceObjectType.name.orEmpty(),
+                sourceObjectTypeId = sourceObjectType.sourceObject.orEmpty(),
                 isCustomObjectType = sourceObjectType.sourceObject.isNullOrEmpty(),
                 isForNewWidget = isForNewWidget
             )

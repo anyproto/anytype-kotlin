@@ -146,7 +146,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                         widget = command.widget,
                         source = command.source,
                         type = command.type,
-                        layout = command.layout
+                        layout = command.layout,
+                        isInEditMode = command.isInEditMode
                     )
                 )
             }
@@ -157,7 +158,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                         ctx = command.ctx,
                         source = command.source,
                         layout = command.layout,
-                        target = command.target
+                        target = command.target,
+                        isInEditMode = command.isInEditMode
                     )
                 )
             }

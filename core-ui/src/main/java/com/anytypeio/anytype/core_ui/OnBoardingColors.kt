@@ -17,3 +17,5 @@ val ColorButtonSecondaryText = Color(0xFF7B7A72)
 
 val ColorPagerIndicator = Color(0xFF262623)
 val ColorPagerIndicatorSelected = Color(0xFFA5A399)
+
+val ColorMnemonicPhrase = Color(0xFFDBDAD4)

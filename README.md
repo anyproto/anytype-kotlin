@@ -84,6 +84,8 @@ com.anytype.ci=true - for CI/CD pipeline
 
 ### Updating MW (basics)
 
+Prerequisite: `brew install jq`
+
 1. Run the following command in Terminal or Makefile:
 
     ```

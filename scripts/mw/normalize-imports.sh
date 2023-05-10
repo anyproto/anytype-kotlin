@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-echo -n "Starting script for normalizing imports"
+echo "Starting script for normalizing imports"
 
-echo -n "Normalizing imports... "
+echo "Normalizing imports... "
 
 cd protocol/src/main/proto/ || exit
 
@@ -18,10 +18,7 @@ sed -i '' 's/pb\/protos\///g' changes.proto
 sed -i '' 's/pkg\/lib\/pb\/model\/protos\///g' localstore.proto
 sed -i '' 's/pb\/protos\///g' localstore.proto
 
-sed -i '' 's/pkg\/lib\/pb\/model\/protos\///g' snapshot.proto
-sed -i '' 's/pb\/protos\///g' snapshot.proto
+echo "Done normalizing imports."
 
-echo -n "Done normalizing imports."
-
-echo -n ">>> Make sure to update mw version in libs.versions.toml >>>"
+echo ">>> Make sure to update mw version in libs.versions.toml >>>"
 

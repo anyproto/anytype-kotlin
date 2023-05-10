@@ -163,7 +163,7 @@ fun InfoCard(
     ) {
         Box {
             Image(
-                painter = painterResource(id = R.drawable.ic_arrow_down),
+                painter = painterResource(id = R.drawable.icon_migration_card_arrow),
                 contentDescription = "",
                 modifier = Modifier
                     .align(Alignment.TopEnd)

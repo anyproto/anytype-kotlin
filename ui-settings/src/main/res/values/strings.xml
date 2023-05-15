@@ -61,4 +61,5 @@
     <string name="offload_files">Offload files</string>
     <string name="local_storage_used">%1$s used</string>
     <string name="space_usage">%1$s of %2$s used</string>
+    <string name="remote_storage">Remote storage</string>
 </resources>

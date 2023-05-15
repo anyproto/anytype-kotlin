@@ -333,7 +333,6 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
 
     companion object {
         const val TARGET_KEY = "arg.rel-create-object-block.target"
-        const val RELATION_NEW_RESULT_KEY = "arg.rel-create-object-block.result"
 
         fun newInstance(
             ctx: Id,

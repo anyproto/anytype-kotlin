@@ -4,6 +4,7 @@ kotlinVersion = '1.7.10'
 androidxCoreVersion = "1.9.0"
 androidxComposeVersion1 = '1.3.1'
 androidxComposeVersion2 = '1.3.2'
+androidxCompose3Version = '1.1.0'
 activityComposeVersion = '1.6.1'
 composeReorderableVersion = '0.9.6'
 accompanistVersion = "0.29.1-alpha"
@@ -75,6 +76,7 @@ composeTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "and
 composeToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidxComposeVersion2" }
 composeFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidxComposeVersion1" }
 composeMaterial = { module = "androidx.compose.material:material", version.ref = "androidxComposeVersion1" }
+composeMaterial3 = { module = "androidx.compose.material3:material3", version.ref = "androidxCompose3Version" }
 composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistVersion" }
 composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
 composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }

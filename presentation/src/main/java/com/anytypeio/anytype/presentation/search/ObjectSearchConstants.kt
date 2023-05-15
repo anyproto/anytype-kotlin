@@ -764,4 +764,27 @@ object ObjectSearchConstants {
             value = ObjectTypeIds.COLLECTION
         )
     )
+
+    fun filesFilters(workspaceId: String) = listOf(
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE,
+            condition = DVFilterCondition.IN,
+            value = listOf(
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO
+            )
+        ),
+        DVFilter(
+            relation = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = workspaceId
+        )
+    )
 }

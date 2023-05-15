@@ -40,6 +40,7 @@ import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -112,6 +113,8 @@ class CollectionViewModel(
     private val views = MutableStateFlow<Resultat<List<CollectionView>>>(Resultat.loading())
     private val interactionMode = MutableStateFlow<InteractionMode>(InteractionMode.View)
     private var operationInProgress = MutableStateFlow(false)
+    val openFileDeleteAlert = MutableStateFlow(false)
+    val toasts = MutableSharedFlow<String>(replay = 0)
 
     private var actionMode: ActionMode = ActionMode.Edit
     private var subscription: Subscription = Subscription.None
@@ -121,12 +124,12 @@ class CollectionViewModel(
             Resultat.success(
                 CollectionUiState(
                     views = views,
-                    mode == InteractionMode.Edit,
-                    mode == InteractionMode.Edit && isAnySelected(),
-                    resourceProvider.subscriptionName(subscription),
-                    resourceProvider.actionModeName(
+                    showEditMode = mode == InteractionMode.Edit,
+                    showWidget = mode == InteractionMode.Edit && isAnySelected(),
+                    collectionName = resourceProvider.subscriptionName(subscription),
+                    actionName = resourceProvider.actionModeName(
                         actionMode = actionMode,
-                        isResultEmpty = when(views) {
+                        isResultEmpty = when (views) {
                             is Resultat.Failure -> true
                             is Resultat.Loading -> true
                             is Resultat.Success -> {
@@ -134,10 +137,10 @@ class CollectionViewModel(
                             }
                         }
                     ),
-                    actionObjectFilter.filter(subscription, selectedViews()),
-                    subscription == Subscription.Favorites && mode == InteractionMode.Edit,
-                    subscription != Subscription.Sets,
-                    operationInProgress
+                    objectActions = actionObjectFilter.filter(subscription, selectedViews()),
+                    inDragMode = subscription == Subscription.Favorites && mode == InteractionMode.Edit,
+                    displayType = subscription != Subscription.Sets || subscription != Subscription.Files,
+                    operationInProgress = operationInProgress
                 )
             )
         }.stateIn(
@@ -162,7 +165,7 @@ class CollectionViewModel(
         .debounce(DEBOUNCE_TIMEOUT)
         .distinctUntilChanged()
         .onEach {
-            if (subscription != Subscription.Bin) {
+            if (subscription != Subscription.Bin && subscription != Subscription.Files) {
                 actionMode = ActionMode.Edit
                 interactionMode.value = InteractionMode.View
             }
@@ -179,7 +182,7 @@ class CollectionViewModel(
     fun onStart(subscription: Subscription) {
         val isFirstLaunch = this.subscription == Subscription.None
         this.subscription = subscription
-        if (isFirstLaunch && subscription == Subscription.Bin) {
+        if (isFirstLaunch && (subscription == Subscription.Bin || subscription == Subscription.Files)) {
             onStartEditMode()
         }
         subscribeObjects()
@@ -197,14 +200,20 @@ class CollectionViewModel(
 
     private fun subscribeObjects() {
         launch {
-            if (subscription == Subscription.Favorites) {
-                favoritesSubsciptionFlow().map { it.map { it as CollectionView } }
-            } else {
-                subscriptionFlow()
-            }
-                .map { update ->
-                    preserveSelectedState(update)
+            when (subscription) {
+                Subscription.Favorites -> {
+                    favoritesSubsciptionFlow().map { it.map { it as CollectionView } }
                 }
+
+                Subscription.Files -> {
+                    filesSubscriptionFlow()
+                }
+
+                else -> {
+                    subscriptionFlow()
+                }
+            }
+                .map { update -> preserveSelectedState(update) }
                 .flowOn(dispatchers.io)
                 .collect {
                     views.value = Resultat.success(it)
@@ -282,10 +291,10 @@ class CollectionViewModel(
                 .flatMapLatest { payloads.scan(it) { s, p -> reduce(s, p) } },
         ) { objs, query, types, favorotiesObj ->
             val result = prepareFavorites(favorotiesObj, objs, query, types)
-                if (result.isEmpty() && query.isNotEmpty())
-                    listOf(CollectionView.EmptySearch(query))
-                else
-                    result
+            if (result.isEmpty() && query.isNotEmpty())
+                listOf(CollectionView.EmptySearch(query))
+            else
+                result
         }
 
     private fun prepareFavorites(
@@ -343,7 +352,7 @@ class CollectionViewModel(
     }
 
     private fun ensureViewMode() {
-        if (isNoneSelected() && subscription != Subscription.Bin) {
+        if (isNoneSelected() && (subscription != Subscription.Bin && subscription != Subscription.Files)) {
             actionMode = ActionMode.Edit
             interactionMode.value = InteractionMode.View
         }
@@ -377,32 +386,22 @@ class CollectionViewModel(
     }
 
     private fun alterActionState(views: List<CollectionView>) {
-        actionMode = if (isAllSelected(views)) {
-            if (subscription == Subscription.Bin) {
-                ActionMode.UnselectAll
-            } else {
-                ActionMode.Done
-            }
-        } else {
-            if (subscription == Subscription.Bin) {
-                ActionMode.SelectAll
-            } else {
-                ActionMode.Done
-            }
+        val isSubscriptionBinOrFiles =
+            subscription == Subscription.Bin || subscription == Subscription.Files
+
+        actionMode = when {
+            isAllSelected(views) && isSubscriptionBinOrFiles -> ActionMode.UnselectAll
+            isAllSelected(views) -> ActionMode.Done
+            isSubscriptionBinOrFiles -> ActionMode.SelectAll
+            else -> ActionMode.Done
         }
     }
 
     fun onActionClicked() {
         when (actionMode) {
-            ActionMode.Edit -> {
-                onStartEditMode()
-            }
-            ActionMode.SelectAll -> {
-                onSelectAll()
-            }
-            ActionMode.UnselectAll -> {
-                onUnselectAll()
-            }
+            ActionMode.Edit -> onStartEditMode()
+            ActionMode.SelectAll -> onSelectAll()
+            ActionMode.UnselectAll -> onUnselectAll()
             ActionMode.Done -> onDone()
         }
     }
@@ -457,20 +456,20 @@ class CollectionViewModel(
     }
 
     private fun onDone() {
-        if (subscription == Subscription.Bin) {
-            actionMode = ActionMode.SelectAll
-        } else {
-            actionMode = ActionMode.Edit
-            interactionMode.value = InteractionMode.View
+        actionMode = when (subscription) {
+            Subscription.Bin, Subscription.Files -> ActionMode.SelectAll
+            else -> {
+                interactionMode.value = InteractionMode.View
+                ActionMode.Edit
+            }
         }
         unselectViews()
     }
 
     private fun onStartEditMode() {
-        actionMode = if (subscription == Subscription.Bin) {
-            ActionMode.SelectAll
-        } else {
-            ActionMode.Done
+        actionMode = when (subscription) {
+            Subscription.Bin, Subscription.Files -> ActionMode.SelectAll
+            else -> ActionMode.Done
         }
         interactionMode.value = InteractionMode.Edit
     }
@@ -492,18 +491,22 @@ class CollectionViewModel(
     }
 
     private fun onSelectAll() {
-        actionMode = if (subscription == Subscription.Bin) {
-            ActionMode.UnselectAll
-        } else {
-            ActionMode.Done
+        actionMode = when (subscription) {
+            Subscription.Bin, Subscription.Files -> ActionMode.UnselectAll
+            else -> ActionMode.Done
         }
         changeSelectionStatus(true)
     }
 
     fun onBackPressed(isExpanded: Boolean) {
-        if (interactionMode.value == InteractionMode.Edit && subscription != Subscription.Bin) {
+        if (interactionMode.value == InteractionMode.Edit
+            && subscription != Subscription.Bin
+            && subscription != Subscription.Files
+        ) {
             onDone()
-        } else if (!(subscription == Subscription.Bin && isExpanded)) {
+            return
+        }
+        if (!(subscription in arrayOf(Subscription.Bin, Subscription.Files) && isExpanded)) {
             onPrevClicked()
         }
     }
@@ -520,6 +523,7 @@ class CollectionViewModel(
             ObjectAction.DELETE -> deleteFromBin(objIds)
             ObjectAction.MOVE_TO_BIN -> changeObjectListBinStatus(objIds, true)
             ObjectAction.RESTORE -> changeObjectListBinStatus(objIds, false)
+            ObjectAction.DELETE_FILES -> deleteFiles()
             else -> {
                 Timber.e("Unexpected action: $action")
             }
@@ -527,6 +531,10 @@ class CollectionViewModel(
     }
 
     private fun List<CollectionObjectView>.toObjIds() = this.map { it.obj.id }
+
+    private fun deleteFiles() {
+        openFileDeleteAlert.value = true
+    }
 
     private fun changeObjectListBinStatus(ids: List<Id>, isArchived: Boolean) {
         launch {
@@ -572,6 +580,50 @@ class CollectionViewModel(
             deleteObjects.stream(DeleteObjects.Params(selected))
                 .collect { it.progressiveFold() }
         }
+    }
+
+    fun onDeletionFilesAccepted() {
+        val selected = selectedViews().toObjIds()
+        val setArchivedParams = SetObjectListIsArchived.Params(
+            targets = selected,
+            isArchived = true
+        )
+        operationInProgress.value = true
+        launch {
+            setObjectListIsArchived.stream(params = setArchivedParams)
+                .collect { archivedResult ->
+                    archivedResult.progressiveFold(
+                        onSuccess = { proceedWithFileDeletion(selected) },
+                        onFailure = { exception ->
+                            operationInProgress.value = false
+                            toasts.emit("Error while deleting files")
+                            Timber.e(exception, "Error while setting file objects as archived")
+                        }
+                    )
+                }
+        }
+    }
+
+    private suspend fun proceedWithFileDeletion(ids: List<Id>) {
+        val params = DeleteObjects.Params(ids)
+        deleteObjects.stream(params = params)
+            .collect { result ->
+                result.progressiveFold(
+                    onSuccess = {
+                        openFileDeleteAlert.value = false
+                        operationInProgress.value = false
+                    },
+                    onFailure = { exception ->
+                        operationInProgress.value = false
+                        toasts.emit("Error while deleting files")
+                        Timber.e(exception, "Error while deleting file objects")
+                    }
+                )
+            }
+    }
+
+    fun onFileDeleteAlertDismiss() {
+        openFileDeleteAlert.value = false
     }
 
     private fun isNoneSelected() =
@@ -693,6 +745,31 @@ class CollectionViewModel(
                     onFailure = { e -> Timber.e(e, "Error while creating a new page") }
                 )
         }
+    }
+
+    @OptIn(FlowPreview::class)
+    private suspend fun filesSubscriptionFlow(): Flow<List<CollectionView>> {
+        return combine(
+            container.subscribe(buildSearchParams()),
+            queryFlow()
+        ) { objects, query ->
+            val result = filterAndMapObjects(objects, query)
+            if (result.isEmpty() && query.isNotEmpty()) {
+                listOf(CollectionView.EmptySearch(query))
+            } else {
+                result
+            }
+        }
+    }
+
+    private fun filterAndMapObjects(
+        objects: List<ObjectWrapper.Basic>,
+        query: String
+    ): List<CollectionView> {
+        return objects
+            .filter { it.getProperName().contains(query, true) }
+            .map { it.mapFileObjectToView() }
+            .tryAddSections()
     }
 
     class Factory @Inject constructor(

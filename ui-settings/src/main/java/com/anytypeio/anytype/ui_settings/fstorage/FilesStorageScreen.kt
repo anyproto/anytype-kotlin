@@ -44,7 +44,8 @@ import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 @Composable
 fun FilesStorageScreen(
     data: FilesStorageScreenState,
-    onOffloadFilesClicked: () -> Unit
+    onOffloadFilesClicked: () -> Unit,
+    onManageFilesClicked: () -> Unit
 ) {
     when (data) {
         FilesStorageScreenState.Idle -> {
@@ -121,7 +122,7 @@ fun FilesStorageScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 ButtonSecondary(
                     text = stringResource(id = R.string.manage_files),
-                    onClick = { /*TODO*/ },
+                    onClick = onManageFilesClicked,
                     size = ButtonSize.XSmall.apply {
                         contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
                     }
@@ -255,7 +256,8 @@ object MockFileStorage {
 fun PreviewFilesStorageScreen() {
     FilesStorageScreen(
         data = mockData,
-        onOffloadFilesClicked = { }
+        onOffloadFilesClicked = { },
+        onManageFilesClicked = {  }
     )
 }
 

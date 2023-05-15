@@ -69,7 +69,8 @@ open class BlockAdapterTestSetup {
             lifecycle = object : Lifecycle() {
                 override fun addObserver(observer: LifecycleObserver) {}
                 override fun removeObserver(observer: LifecycleObserver) {}
-                override fun getCurrentState() = State.DESTROYED
+                override val currentState: State
+                    get() = State.DESTROYED
             },
             onCellSelectionChanged = { _, _ ->  }
         )

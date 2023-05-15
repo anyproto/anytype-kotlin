@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.Guideline
 import androidx.core.view.marginLeft
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -3065,7 +3066,10 @@ class BlockAdapterTest {
 
         // When
 
-        holder.onStateChanged({ TODO("Stub") }, Lifecycle.Event.ON_PAUSE)
+        holder.onStateChanged(object : LifecycleOwner {
+            override val lifecycle: Lifecycle
+                get() = TODO("Not yet implemented")
+        }, Lifecycle.Event.ON_PAUSE)
 
         // Then
 
@@ -3278,7 +3282,9 @@ class BlockAdapterTest {
         }
 
         override fun removeObserver(observer: LifecycleObserver) {}
-        override fun getCurrentState() = State.DESTROYED
+
+        override val currentState: State
+            get() = State.DESTROYED
     }
 }
 

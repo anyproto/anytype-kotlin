@@ -10,5 +10,5 @@
         android:pathData="M7.5,12L11.5,16L17,7"
         android:strokeWidth="1.5"
         android:fillColor="@color/glyph_selected"
-        android:strokeColor="@color/glyph_white" />
+        android:strokeColor="@color/button_text" />
 </vector>

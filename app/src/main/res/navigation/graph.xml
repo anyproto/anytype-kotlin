@@ -158,8 +158,12 @@
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment" />
 
     <dialog
+        android:id="@+id/remoteStorageFragment"
+        android:name="com.anytypeio.anytype.ui.settings.RemoteStorageFragment"/>
+
+    <dialog
         android:id="@+id/selectWidgetTypeScreen"
-        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"></dialog>
+        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"/>
 
     <dialog
         android:id="@+id/settingsScreen"

@@ -190,6 +190,7 @@ dependencies {
     implementation libs.compose
     implementation libs.composeFoundation
     implementation libs.composeMaterial
+    implementation libs.composeMaterial3
     implementation libs.composeToolingPreview
     implementation libs.composeAccompanistPager
     implementation libs.composeAccompanistThemeAdapter

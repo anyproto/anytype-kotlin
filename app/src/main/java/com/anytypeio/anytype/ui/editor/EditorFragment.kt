@@ -30,9 +30,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -138,9 +135,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
-import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment.Companion.RELATION_NEW_RESULT_KEY
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
-import com.anytypeio.anytype.ui.relations.RelationNewResult
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -736,7 +731,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.simpleTableWidget).state =
             BottomSheetBehavior.STATE_HIDDEN
 
-        observeNavBackStack()
     }
 
     private fun setupWindowInsetAnimation() {
@@ -2094,44 +2088,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onObjectTypeChanged(type = id, applyTemplate = true)
     }
 
-    private fun observeNavBackStack() {
-        findNavController().run {
-            val navBackStackEntry = getBackStackEntry(R.id.pageScreen)
-            val savedStateHandle = navBackStackEntry.savedStateHandle
-            val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME) {
-                    proceedWithResult(savedStateHandle)
-                }
-            }
-            navBackStackEntry.lifecycle.addObserver(observer)
-            viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    navBackStackEntry.lifecycle.removeObserver(observer)
-                }
-            })
-        }
-    }
-
     override fun onAddRelationToTarget(target: Id, relationKey: Key) {
         vm.proceedWithAddingRelationToTarget(
             target = target,
             relationKey = relationKey
         )
     }
-
-    private fun proceedWithResult(savedStateHandle: SavedStateHandle) {
-        if (savedStateHandle.contains(RELATION_NEW_RESULT_KEY)) {
-            val resultRelationNew = savedStateHandle.get<RelationNewResult>(RELATION_NEW_RESULT_KEY)
-            savedStateHandle.remove<RelationNewResult>(RELATION_NEW_RESULT_KEY)
-            if (resultRelationNew != null) {
-                vm.proceedWithAddingRelationToTarget(
-                    target = resultRelationNew.target,
-                    relationKey = resultRelationNew.relation
-                )
-            }
-        }
-    }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {

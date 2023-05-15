@@ -23,6 +23,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -121,7 +122,7 @@ fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
             ) {
                 TopBar(vm, uiState)
                 SearchBar(vm, uiState)
-                ListView(vm, uiState)
+                ListView(vm, uiState, stringResource(id = R.string.search_no_results_try))
             }
             Box(Modifier.align(BottomCenter)) {
                 BottomNavigationMenu(
@@ -145,7 +146,7 @@ fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
 }
 
 @Composable
-private fun TopBar(
+fun TopBar(
     vm: CollectionViewModel,
     uiState: CollectionUiState
 ) {
@@ -174,9 +175,10 @@ private fun TopBar(
 }
 
 @Composable
-private fun ListView(
+fun ListView(
     vm: CollectionViewModel,
-    uiState: CollectionUiState
+    uiState: CollectionUiState,
+    emptySearchSubtitle: String? = null
 ) {
 
     val views = remember {
@@ -199,7 +201,8 @@ private fun ListView(
                 modifier = Modifier
                     .reorderable(lazyListState)
                     .fillMaxHeight()
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 180.dp)
             ) {
 
                 items(items = views.value, key = {
@@ -269,26 +272,27 @@ private fun ListView(
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.fillMaxWidth()
                                     )
-                                    Text(
-                                        text = stringResource(id = R.string.search_no_results_try),
-                                        style = UXBody,
-                                        color = colorResource(id = R.color.text_secondary),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
+                                    emptySearchSubtitle?.let {
+                                        Text(
+                                            text = emptySearchSubtitle,
+                                            style = UXBody,
+                                            color = colorResource(id = R.color.text_secondary),
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-
             }
         }
     )
 }
 
 @Composable
-private fun SearchBar(
+fun SearchBar(
     vm: CollectionViewModel,
     uiState: CollectionUiState
 ) {
@@ -559,7 +563,7 @@ fun CollectionScreen(vm: CollectionViewModel) {
                             coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
                         }
 
-                    snapshotFlow { bottomSheetScaffoldState.bottomSheetState.targetValue }
+                    snapshotFlow { bottomSheetScaffoldState.bottomSheetState.currentValue }
                         .distinctUntilChanged()
                         .drop(1)
                         .collect {

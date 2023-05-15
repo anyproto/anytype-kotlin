@@ -38,6 +38,7 @@ class CollectionResourceProvider @Inject constructor(
             Subscription.Bin -> context.getString(R.string.bin)
             Subscription.Collections -> context.getString(R.string.collections)
             Subscription.None -> ""
+            Subscription.Files -> context.getString(R.string.synced_files)
         }
     }
 }

@@ -223,7 +223,8 @@ class ObjectMenuViewModel(
             }
             ObjectAction.MOVE_TO,
             ObjectAction.MOVE_TO_BIN,
-            ObjectAction.USE_AS_TEMPLATE -> {
+            ObjectAction.USE_AS_TEMPLATE,
+            ObjectAction.DELETE_FILES -> {
                 throw IllegalStateException("$action is unsupported")
             }
         }

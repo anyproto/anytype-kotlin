@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.uitests
 
 import android.text.Editable
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.BlockAdapterTest
@@ -69,15 +68,4 @@ fun givenAdapter(
         lifecycle = lifecycle,
         onCellSelectionChanged = { _, _ ->  }
     )
-}
-
-class TestLifecycle(
-    val observers: MutableList<LifecycleObserver> = mutableListOf()
-) : Lifecycle() {
-    override fun addObserver(observer: LifecycleObserver) {
-        observers.add(observer)
-    }
-
-    override fun removeObserver(observer: LifecycleObserver) {}
-    override fun getCurrentState() = State.DESTROYED
 }

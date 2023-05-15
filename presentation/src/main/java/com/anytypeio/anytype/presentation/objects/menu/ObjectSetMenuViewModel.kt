@@ -176,7 +176,8 @@ class ObjectSetMenuViewModel(
             ObjectAction.LOCK,
             ObjectAction.UNLOCK,
             ObjectAction.MOVE_TO_BIN,
-            ObjectAction.USE_AS_TEMPLATE -> throw IllegalStateException("$action is unsupported")
+            ObjectAction.USE_AS_TEMPLATE,
+            ObjectAction.DELETE_FILES -> throw IllegalStateException("$action is unsupported")
         }
     }
 }

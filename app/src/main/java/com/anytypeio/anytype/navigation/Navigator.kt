@@ -15,6 +15,7 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.ui.settings.RemoteStorageFragment
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 
@@ -272,4 +273,8 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.libraryFragment)
     }
 
+    override fun openRemoteStorageScreen(subscription: Id) {
+        navController?.navigate(R.id.remoteStorageFragment,
+            bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription))
+    }
 }

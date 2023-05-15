@@ -103,6 +103,8 @@ sealed class ObjectWrapper {
         val relationOptionColor: String? by default
         val relationReadonlyValue: Boolean? by default
 
+        val sizeInBytes: Double? by default
+
         val internalFlags: List<InternalFlags>
             get() = when (val value = map[Relations.INTERNAL_FLAGS]) {
                 is Double -> buildList {

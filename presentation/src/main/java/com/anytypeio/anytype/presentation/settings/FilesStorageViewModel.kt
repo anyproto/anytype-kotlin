@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,7 +96,7 @@ class FilesStorageViewModel(
     private suspend fun dispatchCommand(event: Event) {
         when (event) {
             Event.OnManageFilesClicked -> {
-                commands.emit(Command.OpenManageFilesScreen)
+                commands.emit(Command.OpenRemoteStorageScreen(subscription = Subscription.Files.id))
             }
             Event.OnOffloadFilesClicked -> {
                 commands.emit(Command.OpenOffloadFilesScreen)
@@ -168,7 +170,7 @@ class FilesStorageViewModel(
 
     sealed class Command {
         object OpenOffloadFilesScreen : Command()
-        object OpenManageFilesScreen : Command()
+        data class OpenRemoteStorageScreen(val subscription: Id) : Command()
     }
 
     class Factory @Inject constructor(

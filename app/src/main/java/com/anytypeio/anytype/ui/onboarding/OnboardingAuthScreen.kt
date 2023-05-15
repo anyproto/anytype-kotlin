@@ -37,11 +37,24 @@ import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    AuthScreen {}
+    AuthScreen({}, {}, {})
 }
 
 @Composable
-fun AuthScreen(contract: (OnboardingScreenContract) -> Unit) {
+fun AuthScreenWrapper(
+    viewModel: OnboardingAuthViewModel,
+    navigateToInviteCode: () -> Unit,
+    navigateToLogin: () -> Unit
+) {
+    AuthScreen(contract = viewModel::onAction, navigateToInviteCode, navigateToLogin)
+}
+
+@Composable
+fun AuthScreen(
+    contract: (OnboardingScreenContract) -> Unit,
+    navigateToInviteCode: () -> Unit,
+    navigateToLogin: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +68,7 @@ fun AuthScreen(contract: (OnboardingScreenContract) -> Unit) {
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            SignButtons(contract)
+            SignButtons(navigateToInviteCode, navigateToLogin)
             TermsAndPolicy(Modifier, contract)
         }
     }
@@ -96,12 +109,12 @@ fun Description(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SignButtons(contract: (OnboardingScreenContract) -> Unit) {
+fun SignButtons(navigateToInviteCode: () -> Unit, navigateToLogin: () -> Unit) {
     Row {
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.on_boarding_join),
             onClick = {
-                contract.invoke(OnboardingScreenContract.JoinClick)
+                navigateToInviteCode.invoke()
             },
             size = ButtonSize.Large,
             modifier = Modifier
@@ -112,7 +125,7 @@ fun SignButtons(contract: (OnboardingScreenContract) -> Unit) {
         OnBoardingButtonSecondary(
             text = stringResource(id = R.string.on_boarding_log_in),
             onClick = {
-                contract.invoke(OnboardingScreenContract.LogInClick)
+                navigateToLogin.invoke()
             },
             size = ButtonSize.Large,
             modifier = Modifier

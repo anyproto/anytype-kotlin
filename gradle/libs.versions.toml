@@ -30,6 +30,7 @@ viewPager2Version = '1.0.0'
 lifecycleVersion = '2.5.1'
 lifecycleRuntimeComposeVersion = '2.6.0-alpha02'
 navigationVersion = '2.5.3'
+navigationComposeVersion = '2.5.3'
 shimmerLayoutVersion = '0.5.0'
 photoViewVersion = '2.3.0'
 daggerVersion = '2.45'
@@ -158,6 +159,7 @@ roomTesting = { module = "androidx.room:room-testing", version.ref = "roomVersio
 amplitude = { module = "com.amplitude:android-sdk", version.ref = "amplitudeVersion" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttpVersion" }
 sentry = { module = "io.sentry:sentry-android", version.ref = "sentryVersion" }
+navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 
 [bundles]
 

@@ -180,6 +180,7 @@ dependencies {
     implementation libs.gson
     implementation libs.pickT
     implementation libs.emojiCompat
+    implementation libs.navigationCompose
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime

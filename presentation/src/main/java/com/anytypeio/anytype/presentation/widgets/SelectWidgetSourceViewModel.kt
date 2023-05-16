@@ -93,9 +93,15 @@ class SelectWidgetSourceViewModel(
         )
     }
 
-    fun onStartWithNewWidget(target: Id?) {
+    fun onStartWithNewWidget(
+        target: Id?,
+        isInEditMode: Boolean
+    ) {
         Timber.d("onStart with picking source for new widget")
-        config = Config.NewWidget(target)
+        config = Config.NewWidget(
+            target = target,
+            isInEditMode = isInEditMode
+        )
         proceedWithSearchQuery()
     }
 
@@ -103,14 +109,16 @@ class SelectWidgetSourceViewModel(
         ctx: Id,
         widget: Id,
         source: Id,
-        type: Int
+        type: Int,
+        isInEditMode: Boolean
     ) {
         Timber.d("onStart with picking source for an existing widget")
         config = Config.ExistingWidget(
             ctx = ctx,
             widget = widget,
             source = source,
-            type = type
+            type = type,
+            isInEditMode = isInEditMode
         )
         proceedWithSearchQuery()
     }
@@ -134,7 +142,8 @@ class SelectWidgetSourceViewModel(
                         sendChangeWidgetSourceEvent(
                             analytics = analytics,
                             view = view,
-                            isForNewWidget = true
+                            isForNewWidget = true,
+                            isInEditMode = curr.isInEditMode
                         )
                     }
                 }
@@ -152,7 +161,8 @@ class SelectWidgetSourceViewModel(
                         sendChangeWidgetSourceEvent(
                             analytics = analytics,
                             view = view,
-                            isForNewWidget = false
+                            isForNewWidget = false,
+                            isInEditMode = curr.isInEditMode
                         )
                     }
                     isDismissed.value = true
@@ -178,7 +188,8 @@ class SelectWidgetSourceViewModel(
                     ).also {
                         dispatchSelectCustomSourceAnalyticEvent(
                             view = view,
-                            isForNewWidget = true
+                            isForNewWidget = true,
+                            isInEditMode = curr.isInEditMode
                         )
                     }
                 }
@@ -195,7 +206,8 @@ class SelectWidgetSourceViewModel(
                     ).also {
                         dispatchSelectCustomSourceAnalyticEvent(
                             view = view,
-                            isForNewWidget = false
+                            isForNewWidget = false,
+                            isInEditMode = curr.isInEditMode
                         )
                     }
                     isDismissed.value = true
@@ -209,7 +221,8 @@ class SelectWidgetSourceViewModel(
 
     private fun CoroutineScope.dispatchSelectCustomSourceAnalyticEvent(
         view: DefaultObjectView,
-        isForNewWidget: Boolean
+        isForNewWidget: Boolean,
+        isInEditMode: Boolean
     ) {
         val sourceObjectType = types.value.getOrDefault(emptyList()).find { type ->
             type.id == view.type
@@ -219,7 +232,8 @@ class SelectWidgetSourceViewModel(
                 analytics = analytics,
                 sourceObjectTypeId = sourceObjectType.sourceObject.orEmpty(),
                 isCustomObjectType = sourceObjectType.sourceObject.isNullOrEmpty(),
-                isForNewWidget = isForNewWidget
+                isForNewWidget = isForNewWidget,
+                isInEditMode = isInEditMode
             )
         } else {
             Timber.e("Could not found type for analytics")
@@ -249,13 +263,17 @@ class SelectWidgetSourceViewModel(
     }
 
     sealed class Config {
-        object None: Config()
-        data class NewWidget(val target: Id?) : Config()
+        object None : Config()
+        data class NewWidget(
+            val target: Id?,
+            val isInEditMode: Boolean
+        ) : Config()
         data class ExistingWidget(
             val ctx: Id,
             val widget: Id,
             val source: Id,
-            val type: Int
+            val type: Int,
+            val isInEditMode: Boolean
         ) : Config()
     }
 }

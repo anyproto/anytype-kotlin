@@ -47,6 +47,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
     private val source: Id get() = arg(WIDGET_SOURCE_KEY)
     private val type: Int get() = arg(WIDGET_TYPE_KEY)
     private val forExistingWidget: Boolean? get() = argOrNull(FLOW_EXISTING_WIDGET)
+    private val isInEditMode: Boolean get() = arg(IS_IN_EDIT_MODE_KEY)
 
     private val vm by viewModels<SelectWidgetSourceViewModel> { factory }
 
@@ -101,10 +102,14 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
                 ctx = ctx,
                 source = source,
                 widget = widget,
-                type = type
+                type = type,
+                isInEditMode = isInEditMode
             )
         } else {
-            vm.onStartWithNewWidget(target = target)
+            vm.onStartWithNewWidget(
+                target = target,
+                isInEditMode = isInEditMode
+            )
         }
         with(lifecycleScope) {
             jobs += subscribe(vm.isDismissed) { isDismissed ->
@@ -243,25 +248,32 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         private const val WIDGET_TYPE_KEY = "arg.select-widget-source.widget-type"
         private const val WIDGET_SOURCE_KEY = "arg.select-widget-source.widget-source"
         private const val TARGET_KEY = "arg.select-widget-source.target"
+        private const val IS_IN_EDIT_MODE_KEY = "arg.select-widget-source.target"
         fun args(
             ctx: Id,
             widget: Id,
             source: Id,
-            type: Int
+            type: Int,
+            isInEditMode: Boolean
         ) = bundleOf(
             CTX_KEY to ctx,
             WIDGET_ID_KEY to widget,
             WIDGET_SOURCE_KEY to source,
             WIDGET_TYPE_KEY to type,
             TARGET_KEY to null,
-            FLOW_EXISTING_WIDGET to true
+            FLOW_EXISTING_WIDGET to true,
+            IS_IN_EDIT_MODE_KEY to isInEditMode
         )
 
         /**
          * Flow for selecting source for new widget.
          */
         fun args(
-            target: Id?
-        ) = bundleOf(TARGET_KEY to target)
+            target: Id?,
+            isInEditMode: Boolean
+        ) = bundleOf(
+            TARGET_KEY to target,
+            IS_IN_EDIT_MODE_KEY to isInEditMode
+        )
     }
 }

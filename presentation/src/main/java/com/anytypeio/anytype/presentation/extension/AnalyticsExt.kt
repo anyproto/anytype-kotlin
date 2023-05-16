@@ -1245,7 +1245,8 @@ fun CoroutineScope.sendChangeWidgetLayoutEvent(
 fun CoroutineScope.sendChangeWidgetSourceEvent(
     analytics: Analytics,
     view: BundledWidgetSourceView,
-    isForNewWidget: Boolean
+    isForNewWidget: Boolean,
+    isInEditMode: Boolean
 ) {
     sendEvent(
         analytics = analytics,
@@ -1268,6 +1269,10 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                 }
                 if (isForNewWidget)
                     put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)
+                if (isInEditMode)
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
+                else
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
             }
         )
     )
@@ -1277,7 +1282,8 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
     analytics: Analytics,
     sourceObjectTypeId: Id,
     isCustomObjectType: Boolean = false,
-    isForNewWidget: Boolean
+    isForNewWidget: Boolean,
+    isInEditMode: Boolean
 ) {
     sendEvent(
         analytics = analytics,
@@ -1290,6 +1296,10 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                     put(WidgetAnalytics.TYPE, sourceObjectTypeId)
                 if (isForNewWidget)
                     put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)
+                if (isInEditMode)
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
+                else
+                    put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
             }
         )
     )

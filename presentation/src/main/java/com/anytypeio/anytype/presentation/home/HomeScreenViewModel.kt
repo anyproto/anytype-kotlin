@@ -353,7 +353,7 @@ class HomeScreenViewModel(
                                 source = dispatch.source,
                                 layout = dispatch.sourceLayout,
                                 target = dispatch.target,
-                                isInEditMode = mode.value == InteractionMode.Edit
+                                isInEditMode = isInEditMode()
                             )
                         )
                     }
@@ -364,7 +364,7 @@ class HomeScreenViewModel(
                                 source = dispatch.source,
                                 layout = ObjectType.Layout.SET.code,
                                 target = dispatch.target,
-                                isInEditMode = mode.value == InteractionMode.Edit
+                                isInEditMode = isInEditMode()
                             )
                         )
                     }
@@ -526,9 +526,13 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             sendAddWidgetEvent(
                 analytics = analytics,
-                isInEditMode = mode.value == InteractionMode.Edit
+                isInEditMode = isInEditMode()
             )
-            commands.emit(Command.SelectWidgetSource())
+            commands.emit(
+                Command.SelectWidgetSource(
+                    isInEditMode = isInEditMode()
+                )
+            )
         }
     }
 
@@ -644,9 +648,14 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             sendAddWidgetEvent(
                 analytics = analytics,
-                isInEditMode = mode.value == InteractionMode.Edit
+                isInEditMode = isInEditMode()
             )
-            commands.emit(Command.SelectWidgetSource(target = widget))
+            commands.emit(
+                Command.SelectWidgetSource(
+                    target = widget,
+                    isInEditMode = isInEditMode()
+                )
+            )
         }
     }
 
@@ -667,7 +676,7 @@ class HomeScreenViewModel(
                                 source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                             }
                         },
-                        isInEditMode = mode.value == InteractionMode.Edit
+                        isInEditMode = isInEditMode()
                     )
                 )
             }
@@ -685,7 +694,8 @@ class HomeScreenViewModel(
                         ctx = configStorage.get().widgets,
                         widget = widget,
                         source = curr.source.id,
-                        type = parseWidgetType(curr)
+                        type = parseWidgetType(curr),
+                        isInEditMode = isInEditMode()
                     )
                 )
             }
@@ -883,7 +893,7 @@ class HomeScreenViewModel(
                     sendDeleteWidgetEvent(
                         analytics = analytics,
                         bundled = source,
-                        isInEditMode = mode.value == InteractionMode.Edit
+                        isInEditMode = isInEditMode()
                     )
                 }
                 is Widget.Source.Default -> {
@@ -895,7 +905,7 @@ class HomeScreenViewModel(
                                 analytics = analytics,
                                 sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
                                 isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty(),
-                                isInEditMode = mode.value == InteractionMode.Edit
+                                isInEditMode = isInEditMode()
                             )
                         } else {
                             Timber.e("Failed to dispatch analytics: source type not found in types storage")
@@ -910,6 +920,8 @@ class HomeScreenViewModel(
             }
         }
     }
+
+    private fun isInEditMode() = mode.value == InteractionMode.Edit
 
     private fun dispatchSelectHomeTabCustomSourceEvent(source: Widget.Source) {
         viewModelScope.launch {
@@ -1075,7 +1087,10 @@ sealed class Command {
     /**
      * [target] optional target, below which new widget will be created
      */
-    data class SelectWidgetSource(val target: Id? = null) : Command()
+    data class SelectWidgetSource(
+        val target: Id? = null,
+        val isInEditMode: Boolean
+    ) : Command()
 
     data class SelectWidgetType(
         val ctx: Id,
@@ -1089,7 +1104,8 @@ sealed class Command {
         val ctx: Id,
         val widget: Id,
         val source: Id,
-        val type: Int
+        val type: Int,
+        val isInEditMode: Boolean
     ) : Command()
 
     data class ChangeWidgetType(

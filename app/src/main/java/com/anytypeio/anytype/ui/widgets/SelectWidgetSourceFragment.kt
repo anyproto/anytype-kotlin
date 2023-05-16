@@ -68,7 +68,6 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupFullHeight()
         setTransparent()
 
         TextInputDialogBottomBehaviorApplier(
@@ -116,6 +115,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
                 if (isDismissed) dismiss()
             }
         }
+        skipCollapsed()
         expand()
     }
 

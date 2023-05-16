@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
@@ -21,8 +22,6 @@ import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import com.anytypeio.anytype.ui.settings.remote.RemoteStorageScreen
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
 
 class RemoteStorageFragment : BaseBottomSheetComposeFragment() {
@@ -56,14 +55,7 @@ class RemoteStorageFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val offsetFromTop = PADDING_TOP
-        (dialog as? BottomSheetDialog)?.behavior?.apply {
-            isFitToContents = false
-            expandedOffset = offsetFromTop
-            state = BottomSheetBehavior.STATE_EXPANDED
-            skipCollapsed = true
-        }
+        setupBottomSheetBehavior(PADDING_TOP)
     }
 
     override fun onStart() {

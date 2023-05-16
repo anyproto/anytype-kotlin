@@ -45,6 +45,9 @@ import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -393,8 +396,17 @@ fun getDeviceName(): String {
 }
 
 fun bytesToHumanReadableSize(bytes: Double): String = when {
-    bytes >= 1 shl 30 -> "%.1f GB".format(bytes / (1 shl 30))
-    bytes >= 1 shl 20 -> "%.1f MB".format(bytes / (1 shl 20))
-    bytes >= 1 shl 10 -> "%.0f kB".format(bytes / (1 shl 10))
+    bytes >= 1 shl 30 -> "%d GB".format((bytes / (1 shl 30)).toInt())
+    bytes >= 1 shl 20 -> "%d MB".format((bytes / (1 shl 20)).toInt())
+    bytes >= 1 shl 10 -> "%d kB".format((bytes / (1 shl 10)).toInt())
     else -> "$bytes bytes"
+}
+
+fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
+    (dialog as? BottomSheetDialog)?.behavior?.apply {
+        isFitToContents = false
+        expandedOffset = paddingTop
+        state = BottomSheetBehavior.STATE_EXPANDED
+        skipCollapsed = true
+    }
 }

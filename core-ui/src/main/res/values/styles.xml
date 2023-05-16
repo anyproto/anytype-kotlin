@@ -40,8 +40,21 @@
         <item name="colorAccent">@color/orange</item>
     </style>
 
+    <style name="AppBottomSecondarySheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyleSecondary</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="colorAccent">@color/orange</item>
+    </style>
+
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/rounded_dialog</item>
+    </style>
+
+    <style name="AppModalStyleSecondary" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog_secondary</item>
     </style>
 
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">

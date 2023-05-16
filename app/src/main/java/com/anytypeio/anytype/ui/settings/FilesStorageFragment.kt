@@ -16,14 +16,13 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.Event
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui_settings.fstorage.FilesStorageScreen
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -58,15 +57,11 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupBottomSheetBehavior(PADDING_TOP)
+        collectCommands()
+    }
 
-        val offsetFromTop = PADDING_TOP
-        (dialog as? BottomSheetDialog)?.behavior?.apply {
-            isFitToContents = false
-            expandedOffset = offsetFromTop
-            state = BottomSheetBehavior.STATE_EXPANDED
-            skipCollapsed = true
-        }
-
+    private fun collectCommands() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.commands.collect { command -> processCommands(command) }
@@ -76,19 +71,25 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
 
     private fun processCommands(command: FilesStorageViewModel.Command) {
         when (command) {
-            FilesStorageViewModel.Command.OpenOffloadFilesScreen -> {
-                val dialog = ClearCacheAlertFragment.new()
-                dialog.onClearAccepted = { vm.onClearFileCacheAccepted() }
-                dialog.show(childFragmentManager, null)
-            }
-            is FilesStorageViewModel.Command.OpenRemoteStorageScreen -> {
-                findNavController().safeNavigate(
-                    R.id.filesStorageScreen,
-                    R.id.remoteStorageFragment,
-                    bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to command.subscription)
-                )
-            }
+            FilesStorageViewModel.Command.OpenOffloadFilesScreen -> showClearCacheDialog()
+            is FilesStorageViewModel.Command.OpenRemoteStorageScreen -> openRemoteStorageScreen(
+                subscription = command.subscription
+            )
         }
+    }
+
+    private fun showClearCacheDialog() {
+        val dialog = ClearCacheAlertFragment.new()
+        dialog.onClearAccepted = { vm.onClearFileCacheAccepted() }
+        dialog.show(childFragmentManager, null)
+    }
+
+    private fun openRemoteStorageScreen(subscription: String) {
+        findNavController().safeNavigate(
+            R.id.filesStorageScreen,
+            R.id.remoteStorageFragment,
+            bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription)
+        )
     }
 
     override fun injectDependencies() {

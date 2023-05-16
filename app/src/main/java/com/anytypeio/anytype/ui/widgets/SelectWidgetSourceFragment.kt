@@ -248,7 +248,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         private const val WIDGET_TYPE_KEY = "arg.select-widget-source.widget-type"
         private const val WIDGET_SOURCE_KEY = "arg.select-widget-source.widget-source"
         private const val TARGET_KEY = "arg.select-widget-source.target"
-        private const val IS_IN_EDIT_MODE_KEY = "arg.select-widget-source.target"
+        private const val IS_IN_EDIT_MODE_KEY = "arg.select-widget-source.is-in-edit-mode"
         fun args(
             ctx: Id,
             widget: Id,

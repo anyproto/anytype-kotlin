@@ -19,6 +19,9 @@ import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
+import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
+import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -61,6 +64,7 @@ class FilesStorageViewModel(
             .onEach { event -> dispatchCommand(event) }
             .launchIn(viewModelScope)
         subscribeToSpace()
+        viewModelScope.launch { analytics.sendSettingsStorageEvent() }
     }
 
     fun onClearFileCacheAccepted() {
@@ -97,9 +101,11 @@ class FilesStorageViewModel(
         when (event) {
             Event.OnManageFilesClicked -> {
                 commands.emit(Command.OpenRemoteStorageScreen(subscription = Subscription.Files.id))
+                analytics.sendSettingsStorageManageEvent()
             }
             Event.OnOffloadFilesClicked -> {
                 commands.emit(Command.OpenOffloadFilesScreen)
+                analytics.sendSettingsOffloadEvent()
             }
         }
     }

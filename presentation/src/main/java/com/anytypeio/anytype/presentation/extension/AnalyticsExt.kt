@@ -1458,3 +1458,21 @@ suspend fun Analytics.sendScreenHomeEvent() {
         )
     )
 }
+
+suspend fun Analytics.sendSettingsStorageEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenSettingsStorage
+    )
+}
+
+suspend fun Analytics.sendSettingsStorageManageEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenSettingsStorageManage
+    )
+}
+
+suspend fun Analytics.sendSettingsOffloadEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenSettingsStorageOffload
+    )
+}

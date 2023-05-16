@@ -34,7 +34,7 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
     private val sourceLayout: Int get() = arg(WIDGET_SOURCE_LAYOUT)
     private val target: Id? get() = argOrNull(TARGET_KEY)
     private val forExistingWidget: Boolean get() = arg(IS_FOR_EXISTING_WIDGET)
-    private val isInEditMode: Boolean get() = arg(IS_IN_EDIT_MODE_KEY)
+    private val isHomeInEditMode: Boolean get() = arg(IS_IN_EDIT_MODE_KEY)
 
     private val vm by viewModels<SelectWidgetTypeViewModel> { factory }
 
@@ -58,7 +58,7 @@ class SelectWidgetTypeFragment : BaseBottomSheetComposeFragment() {
                                 view = view,
                                 widget = widget,
                                 source = source,
-                                isInEditMode = isInEditMode
+                                isInEditMode = isHomeInEditMode
                             )
                         } else {
                             vm.onWidgetTypeClicked(

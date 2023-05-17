@@ -198,11 +198,8 @@ dependencies {
     implementation libs.preference
     implementation libs.activityCompose
     implementation libs.composeReorderable
-    debugImplementation libs.composeTooling
 
     implementation libs.room
-
-    implementation libs.crashlytics
 
     implementation libs.exoPlayerCore
     implementation libs.exoPlayerUi
@@ -216,6 +213,8 @@ dependencies {
 
     implementation libs.androidxSecurityCrypto
     implementation libs.middleware
+
+    implementation libs.wireRuntime
 
     //Unit/Integration tests dependencies
     testImplementation libs.androidXTestCore
@@ -243,8 +242,7 @@ dependencies {
     }
 
     debugImplementation libs.fragmentTesting
-
-    implementation libs.wireRuntime
+    debugImplementation libs.composeTooling
 }
 
 apply plugin: 'com.google.gms.google-services'

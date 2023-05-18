@@ -22,7 +22,11 @@ class ResumeAccount(
     override suspend fun run(params: None) = proceedWithResuming()
 
     private suspend fun proceedWithResuming() = safe {
-        repository.startAccount(
+        repository.recoverWallet(
+            path = pathProvider.providePath(),
+            mnemonic = repository.getMnemonic()
+        )
+        repository.selectAccount(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath()
         ).let { setup ->

@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.domain.auth.interactor.StartAccount
+import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SetupSelectedAccountViewModel(
-    private val startAccount: StartAccount,
+    private val selectAccount: SelectAccount,
     private val pathProvider: PathProvider,
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
@@ -52,8 +52,8 @@ class SetupSelectedAccountViewModel(
     fun selectAccount(id: String) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            startAccount(
-                StartAccount.Params(
+            selectAccount(
+                SelectAccount.Params(
                     id = id,
                     path = pathProvider.providePath()
                 )

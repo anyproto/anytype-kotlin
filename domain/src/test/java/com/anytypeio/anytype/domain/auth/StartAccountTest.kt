@@ -8,13 +8,14 @@ import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.StubAccount
 import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.core_models.StubConfig
-import com.anytypeio.anytype.domain.auth.interactor.StartAccount
+import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -29,7 +30,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoMoreInteractions
-import kotlin.test.assertTrue
 
 class StartAccountTest {
 
@@ -49,14 +49,14 @@ class StartAccountTest {
     @Mock
     lateinit var workspaceManager: WorkspaceManager
 
-    lateinit var startAccount: StartAccount
+    lateinit var selectAccount: SelectAccount
 
     private val config = StubConfig()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        startAccount = StartAccount(
+        selectAccount = SelectAccount(
             repository = repo,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
@@ -70,7 +70,7 @@ class StartAccountTest {
         val id = MockDataFactory.randomString()
         val path = MockDataFactory.randomString()
 
-        val params = StartAccount.Params(
+        val params = SelectAccount.Params(
             id = id,
             path = path
         )
@@ -90,7 +90,7 @@ class StartAccountTest {
 
         repo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = id,
                     path = path
                 )
@@ -102,9 +102,9 @@ class StartAccountTest {
             )
         }
 
-        startAccount.run(params)
+        selectAccount.run(params)
 
-        verify(repo, times(1)).startAccount(
+        verify(repo, times(1)).selectAccount(
             id = id,
             path = path
         )
@@ -122,7 +122,7 @@ class StartAccountTest {
         val id = MockDataFactory.randomString()
         val path = MockDataFactory.randomString()
 
-        val params = StartAccount.Params(
+        val params = SelectAccount.Params(
             id = id,
             path = path
         )
@@ -142,7 +142,7 @@ class StartAccountTest {
 
         repo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = id,
                     path = path
                 )
@@ -154,7 +154,7 @@ class StartAccountTest {
             )
         }
 
-        val result = startAccount.run(params)
+        val result = selectAccount.run(params)
 
         assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
     }
@@ -165,7 +165,7 @@ class StartAccountTest {
         val id = MockDataFactory.randomString()
         val path = MockDataFactory.randomString()
 
-        val params = StartAccount.Params(
+        val params = SelectAccount.Params(
             id = id,
             path = path
         )
@@ -185,7 +185,7 @@ class StartAccountTest {
 
         repo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = id,
                     path = path
                 )
@@ -197,7 +197,7 @@ class StartAccountTest {
             )
         }
 
-        val result = startAccount.run(params)
+        val result = selectAccount.run(params)
 
         verify(featuresConfigProvider, times(1)).set(
             enableDataView = false,
@@ -215,7 +215,7 @@ class StartAccountTest {
         val id = MockDataFactory.randomString()
         val path = MockDataFactory.randomString()
 
-        val params = StartAccount.Params(
+        val params = SelectAccount.Params(
             id = id,
             path = path
         )
@@ -235,7 +235,7 @@ class StartAccountTest {
 
         repo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = id,
                     path = path
                 )
@@ -247,7 +247,7 @@ class StartAccountTest {
             )
         }
 
-        val result = startAccount.run(params)
+        val result = selectAccount.run(params)
 
         verify(featuresConfigProvider, times(1)).set(
             enableDataView = true,
@@ -270,7 +270,7 @@ class StartAccountTest {
 
         repo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = givenAccount.id,
                     path = givenPath
                 )
@@ -283,14 +283,14 @@ class StartAccountTest {
             } doReturn givenAccount.id
         }
 
-        val givenParams = StartAccount.Params(
+        val givenParams = SelectAccount.Params(
             id = givenAccount.id,
             path = givenPath
         )
 
         // TESTING
 
-        startAccount.run(givenParams)
+        selectAccount.run(givenParams)
 
         verifyBlocking(workspaceManager, times(1)) {
             setCurrentWorkspace(

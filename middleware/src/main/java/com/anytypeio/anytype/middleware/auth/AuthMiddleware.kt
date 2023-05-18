@@ -19,7 +19,7 @@ class AuthMiddleware(
     private val events: EventProxy
 ) : AuthRemote {
 
-    override suspend fun startAccount(
+    override suspend fun selectAccount(
         id: String, path: String
     ): AccountSetup = middleware.accountSelect(id, path)
 

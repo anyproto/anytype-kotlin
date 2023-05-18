@@ -11,15 +11,15 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 /**
  * Use case for selecting user account.
  */
-class StartAccount(
+class SelectAccount(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
     private val workspaceManager: WorkspaceManager,
     private val featuresConfigProvider: FeaturesConfigProvider
-) : BaseUseCase<StartAccountResult, StartAccount.Params>() {
+) : BaseUseCase<StartAccountResult, SelectAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        val setup = repository.startAccount(
+        val setup = repository.selectAccount(
             id = params.id,
             path = params.path
         )

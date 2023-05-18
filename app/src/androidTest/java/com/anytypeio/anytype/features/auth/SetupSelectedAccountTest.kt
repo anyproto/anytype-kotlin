@@ -8,7 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.domain.auth.interactor.StartAccount
+import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -46,7 +46,7 @@ class SetupSelectedAccountTest {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private lateinit var startAccount: StartAccount
+    private lateinit var selectAccount: SelectAccount
 
     private val id = MockDataFactory.randomUuid()
 
@@ -82,7 +82,7 @@ class SetupSelectedAccountTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        startAccount = StartAccount(
+        selectAccount = SelectAccount(
             repository = authRepository,
             featuresConfigProvider = featuresConfigProvider,
             configStorage = configStorage,
@@ -90,7 +90,7 @@ class SetupSelectedAccountTest {
         )
         TestSetupSelectedAccountFragment.testViewModelFactory =
             SetupSelectedAccountViewModelFactory(
-                startAccount = startAccount,
+                selectAccount = selectAccount,
                 pathProvider = pathProvider,
                 analytics = analytics,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
@@ -109,7 +109,7 @@ class SetupSelectedAccountTest {
 
         authRepository.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = id,
                     path = path
                 )

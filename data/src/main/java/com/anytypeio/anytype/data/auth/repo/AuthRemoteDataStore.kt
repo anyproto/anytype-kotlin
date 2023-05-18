@@ -10,9 +10,12 @@ class AuthRemoteDataStore(
     private val authRemote: AuthRemote
 ) : AuthDataStore {
 
-    override suspend fun startAccount(
+    override suspend fun selectAccount(
         id: String, path: String
-    ) = authRemote.startAccount(id, path)
+    ) = authRemote.selectAccount(
+        id = id,
+        path = path
+    )
 
     override suspend fun createAccount(
         name: String,

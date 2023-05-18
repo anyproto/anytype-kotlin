@@ -63,20 +63,20 @@ class AuthDataRepositoryTest {
         val features = StubFeatureConfig()
 
         authRemote.stub {
-            onBlocking { startAccount(id = id, path = path) } doReturn StubAccountSetup(
+            onBlocking { selectAccount(id = id, path = path) } doReturn StubAccountSetup(
                 account = account,
                 features = features
             )
         }
 
-        repo.startAccount(
+        repo.selectAccount(
             id = id,
             path = path
         )
 
         verifyNoInteractions(authCache)
 
-        verify(authRemote, times(1)).startAccount(
+        verify(authRemote, times(1)).selectAccount(
             id = id,
             path = path
         )

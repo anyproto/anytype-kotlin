@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.domain.auth
 
-import com.anytypeio.anytype.core_models.AccountSetup
-import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.StubAccount
 import com.anytypeio.anytype.core_models.StubAccountSetup
@@ -24,7 +22,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 
 class ResumeAccountTest {
@@ -75,7 +72,7 @@ class ResumeAccountTest {
 
         repo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = givenAccount.id,
                     path = givenPath
                 )

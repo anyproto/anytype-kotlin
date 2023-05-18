@@ -7,7 +7,7 @@ import com.anytypeio.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRemote {
-    suspend fun startAccount(id: String, path: String): AccountSetup
+    suspend fun selectAccount(id: String, path: String): AccountSetup
     suspend fun createAccount(
         name: String,
         avatarPath: String?,

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthDataStore {
 
-    suspend fun startAccount(id: String, path: String): AccountSetup
+    suspend fun selectAccount(id: String, path: String): AccountSetup
 
     suspend fun createAccount(
         name: String,

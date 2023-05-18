@@ -7,19 +7,20 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.StubConfig
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.auth.interactor.StartAccount
+import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +30,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
 
 class SetupSelectedAccountViewModelTest {
 
@@ -69,12 +69,12 @@ class SetupSelectedAccountViewModelTest {
     @Mock
     private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 
-    private lateinit var startAccount: StartAccount
+    private lateinit var selectAccount: SelectAccount
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        startAccount = StartAccount(
+        selectAccount = SelectAccount(
             repository = authRepo,
             featuresConfigProvider = featuresConfigProvider,
             configStorage = configStorage,
@@ -129,7 +129,7 @@ class SetupSelectedAccountViewModelTest {
         stubProvidePath(path)
         authRepo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = any(),
                     path = any()
                 )
@@ -177,7 +177,7 @@ class SetupSelectedAccountViewModelTest {
         stubProvidePath(path)
         authRepo.stub {
             onBlocking {
-                startAccount(
+                selectAccount(
                     id = id,
                     path = path
                 )
@@ -214,7 +214,7 @@ class SetupSelectedAccountViewModelTest {
 
     private fun buildViewModel(): SetupSelectedAccountViewModel {
         return SetupSelectedAccountViewModel(
-            startAccount = startAccount,
+            selectAccount = selectAccount,
             analytics = analytics,
             pathProvider = pathProvider,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,

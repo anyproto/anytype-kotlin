@@ -31,13 +31,15 @@ fun StubConfig(
     profile: Id = MockDataFactory.randomUuid(),
     gateway: Url = MockDataFactory.randomUuid(),
     workspace: Id = MockDataFactory.randomUuid(),
-    widgets: Id = MockDataFactory.randomUuid()
+    widgets: Id = MockDataFactory.randomUuid(),
+    analytics: Id = MockDataFactory.randomUuid()
 ) : Config = Config(
     home = home,
     profile = profile,
     gateway = gateway,
     workspace = workspace,
-    widgets = widgets
+    widgets = widgets,
+    analytics = analytics
 )
 
 fun StubFeatureConfig(

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
@@ -22,6 +23,7 @@ class MainViewModelFactory(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    private val configStorage: ConfigStorage
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -35,6 +37,7 @@ class MainViewModelFactory(
         logout = logout,
         relationsSubscriptionManager = relationsSubscriptionManager,
         objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-        checkAuthorizationStatus = checkAuthorizationStatus
+        checkAuthorizationStatus = checkAuthorizationStatus,
+        configStorage = configStorage
     ) as T
 }

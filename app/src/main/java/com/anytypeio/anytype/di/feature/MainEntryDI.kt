@@ -55,7 +55,8 @@ object MainEntryModule {
         logout: Logout,
         relationsSubscriptionManager: RelationsSubscriptionManager,
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        checkAuthorizationStatus: CheckAuthorizationStatus
+        checkAuthorizationStatus: CheckAuthorizationStatus,
+        configStorage: ConfigStorage
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -65,7 +66,8 @@ object MainEntryModule {
         logout = logout,
         relationsSubscriptionManager = relationsSubscriptionManager,
         objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-        checkAuthorizationStatus = checkAuthorizationStatus
+        checkAuthorizationStatus = checkAuthorizationStatus,
+        configStorage = configStorage
     )
 
     @JvmStatic

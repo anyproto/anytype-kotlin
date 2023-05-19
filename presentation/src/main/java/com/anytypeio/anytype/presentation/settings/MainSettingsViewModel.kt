@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.settings
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -103,7 +105,13 @@ class MainSettingsViewModel(
                     configStorage.get().workspace
                 )
             )
-            Event.OnFilesStorageClicked -> commands.emit(Command.OpenFilesStorageScreen)
+            Event.OnFilesStorageClicked -> {
+                if (BuildConfig.DEBUG) {
+                    commands.emit(Command.OpenFilesStorageScreen)
+                } else {
+                    commands.emit(Command.Toast("Coming soon"))
+                }
+            }
         }
     }
 
@@ -207,6 +215,7 @@ class MainSettingsViewModel(
         object OpenDebugScreen : Command()
         class OpenSpaceImageSet(val id: Id) : Command()
         object OpenFilesStorageScreen : Command()
+        data class Toast(val msg: String) : Command()
     }
 
     sealed class WorkspaceAndAccount {

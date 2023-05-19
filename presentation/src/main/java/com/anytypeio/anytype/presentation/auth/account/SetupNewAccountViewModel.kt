@@ -12,6 +12,7 @@ import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.model.Session
@@ -36,7 +37,8 @@ class SetupNewAccountViewModel(
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val spaceGradientProvider: SpaceGradientProvider
+    private val spaceGradientProvider: SpaceGradientProvider,
+    private val configStorage: ConfigStorage
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
@@ -103,7 +105,7 @@ class SetupNewAccountViewModel(
                     Timber.e(error, "Error while creating account")
                 },
                 fnR = { account ->
-                    updateUserProps(account.id)
+                    updateUserProps(configStorage.get().analytics)
                     sendAuthEvent(startTime)
                     _state.postValue(SetupNewAccountViewState.Success)
                     relationsSubscriptionManager.onStart()

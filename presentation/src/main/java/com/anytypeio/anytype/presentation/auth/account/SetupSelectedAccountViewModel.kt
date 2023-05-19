@@ -69,10 +69,10 @@ class SetupSelectedAccountViewModel(
                         error.postValue("$ERROR_MESSAGE: $msg")
                     }
                 },
-                success = { (accountId, status) ->
+                success = { (analyticsId, status) ->
                     migrationMessageJob.cancel()
                     isMigrationInProgress.value = false
-                    updateUserProps(accountId)
+                    updateUserProps(analyticsId)
                     sendEvent(startTime)
                     if (status is AccountStatus.PendingDeletion) {
                         navigation.postValue(

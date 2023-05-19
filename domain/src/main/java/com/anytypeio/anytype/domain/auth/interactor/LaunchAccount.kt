@@ -36,7 +36,7 @@ class LaunchAccount(
             )
             configStorage.set(config = setup.config)
             workspaceManager.setCurrentWorkspace(setup.config.workspace)
-            Either.Right(setup.account.id)
+            Either.Right(setup.config.analytics)
         }
     } catch (e: Throwable) {
         Either.Left(e)

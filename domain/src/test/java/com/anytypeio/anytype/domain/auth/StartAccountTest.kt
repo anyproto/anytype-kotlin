@@ -156,7 +156,7 @@ class StartAccountTest {
 
         val result = selectAccount.run(params)
 
-        assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
+        assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }
 
     @Test
@@ -206,7 +206,7 @@ class StartAccountTest {
             enableSpaces = false
         )
 
-        assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
+        assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }
 
     @Test
@@ -256,7 +256,7 @@ class StartAccountTest {
             enableSpaces = false
         )
 
-        assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
+        assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }
 
     @Test

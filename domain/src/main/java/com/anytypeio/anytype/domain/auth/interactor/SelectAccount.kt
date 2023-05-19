@@ -35,7 +35,7 @@ class SelectAccount(
         )
         configStorage.set(config = setup.config)
         workspaceManager.setCurrentWorkspace(setup.config.workspace)
-        StartAccountResult(setup.account.id, setup.status)
+        StartAccountResult(setup.config.analytics, setup.status)
     }
 
     /**

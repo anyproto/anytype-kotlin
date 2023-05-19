@@ -99,8 +99,8 @@ class SplashViewModel(
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             launchAccount(BaseUseCase.None).proceed(
-                success = { accountId ->
-                    updateUserProps(accountId)
+                success = { analyticsId ->
+                    updateUserProps(analyticsId)
                     val props = Props.empty()
                     sendEvent(startTime, openAccount, props)
                     proceedWithGlobalSubscriptions()

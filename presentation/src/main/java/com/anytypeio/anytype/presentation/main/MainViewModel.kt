@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
@@ -35,6 +36,7 @@ class MainViewModel(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    private val configStorage: ConfigStorage
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -105,7 +107,7 @@ class MainViewModel(
                     objectTypesSubscriptionManager.onStart()
                     updateUserProperties(
                         analytics = analytics,
-                        userProperty = UserProperty.AccountId(id)
+                        userProperty = UserProperty.AccountId(configStorage.get().analytics)
                     )
                     Timber.d("Restored account after activity recreation")
                 },

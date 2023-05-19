@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -137,6 +138,10 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
             }
             Command.OpenFilesStorageScreen -> {
                 safeNavigate(R.id.actionOpenFilesStorageScreen)
+            }
+
+            is Command.Toast -> {
+                toast(msg = command.msg)
             }
         }
     }

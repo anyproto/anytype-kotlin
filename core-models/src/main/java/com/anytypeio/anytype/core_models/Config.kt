@@ -12,5 +12,6 @@ data class Config(
     val profile: Id,
     val gateway: Url,
     val workspace: Id,
-    val widgets: Id
+    val widgets: Id,
+    val analytics: Id
 )

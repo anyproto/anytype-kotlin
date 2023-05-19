@@ -210,7 +210,8 @@ object SetupNewAccountModule {
         analytics: Analytics,
         relationsSubscriptionManager: RelationsSubscriptionManager,
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        spaceGradientProvider: SpaceGradientProvider
+        spaceGradientProvider: SpaceGradientProvider,
+        configStorage: ConfigStorage
     ): SetupNewAccountViewModelFactory {
         return SetupNewAccountViewModelFactory(
             createAccount = createAccount,
@@ -218,7 +219,8 @@ object SetupNewAccountModule {
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            configStorage = configStorage
         )
     }
 

@@ -577,6 +577,7 @@ message Account {
         string gatewayUrl = 101; // gateway url for fetching static files
         string localStoragePath = 103; // path to local storage
         string timeZone = 104; // time zone from config
+        string analyticsId = 105;
     }
 
 }

@@ -1835,7 +1835,7 @@ message Rpc {
                 }
 
                 message MarkdownParams {
-                    string path = 1;
+                    repeated string path = 1;
                 }
 
                 message BookmarksParams {
@@ -1926,6 +1926,7 @@ message Rpc {
                                 BAD_INPUT = 4;
                                 FORBIDDEN = 5;
                                 SERVICE_UNAVAILABLE = 6;
+                                ACCOUNT_IS_NOT_RUNNING = 7;
                             }
                         }
                     }

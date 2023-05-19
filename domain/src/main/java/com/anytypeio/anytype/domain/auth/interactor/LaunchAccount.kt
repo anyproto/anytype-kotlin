@@ -7,8 +7,8 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Sets current account for current application session.
@@ -23,7 +23,7 @@ class LaunchAccount(
 ) : BaseUseCase<String, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = try {
-        repository.startAccount(
+        repository.selectAccount(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath()
         ).let { setup ->

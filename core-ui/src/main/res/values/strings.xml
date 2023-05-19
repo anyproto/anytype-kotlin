@@ -235,7 +235,7 @@
 
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
-    <string name="copy">Copy</string>
+    <string name="block_action_copy">Copy</string>
     <string name="paste">Paste</string>
     <string name="select">Select</string>
     <string name="search">Search</string>
@@ -633,5 +633,9 @@
     <string name="random">Random</string>
     <string name="choose">Choose</string>
     <string name="attributes">Attributes</string>
+    <string name="file_delete_alert_title">Are you sure you want to permanently delete the files?</string>
+    <string name="file_delete_alert_subtitle">You can’t undo this action.</string>
+    <string name="file_delete_cancel">Cancel</string>
+    <string name="file_delete_delete">Delete</string>
 
 </resources>

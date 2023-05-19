@@ -1835,7 +1835,7 @@ message Rpc {
                 }
 
                 message MarkdownParams {
-                    string path = 1;
+                    repeated string path = 1;
                 }
 
                 message BookmarksParams {
@@ -1926,6 +1926,7 @@ message Rpc {
                                 BAD_INPUT = 4;
                                 FORBIDDEN = 5;
                                 SERVICE_UNAVAILABLE = 6;
+                                ACCOUNT_IS_NOT_RUNNING = 7;
                             }
                         }
                     }
@@ -2477,6 +2478,36 @@ message Rpc {
             message Response {
                 Error error = 1;
                 ResponseEvent event = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message SpaceUsage {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+                Usage usage = 2;
+
+                message Usage {
+                    uint64 filesCount = 1;
+                    uint64 cidsCount  = 2;
+                    uint64 bytesUsage = 3;
+                    uint64 bytesLeft = 4;
+                    uint64 bytesLimit = 5;
+                    uint64 localBytesUsage = 6;
+                }
+
                 message Error {
                     Code code = 1;
                     string description = 2;

@@ -79,10 +79,10 @@ class BackLinkOrAddToObjectViewModel(
     }
 
     override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
-        objects.emit(
-            Resultat.success(data.filter {
+        objects.value = Resultat.success(
+            data.filter {
                 supported.contains(it.layout)
-            })
+            }
         )
     }
 

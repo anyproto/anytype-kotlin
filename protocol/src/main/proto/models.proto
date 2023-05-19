@@ -501,6 +501,7 @@ message Block {
                 Link = 0;
                 Tree = 1;
                 List = 2;
+                CompactList = 3;
             }
         }
     }
@@ -576,6 +577,7 @@ message Account {
         string gatewayUrl = 101; // gateway url for fetching static files
         string localStoragePath = 103; // path to local storage
         string timeZone = 104; // time zone from config
+        string analyticsId = 105;
     }
 
 }

@@ -24,7 +24,6 @@ import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.toViews
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -56,8 +55,8 @@ open class ObjectSearchViewModel(
             emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
-    protected val types = MutableSharedFlow<Resultat<List<ObjectWrapper.Type>>>(replay = 0)
-    protected val objects = MutableSharedFlow<Resultat<List<ObjectWrapper.Basic>>>(replay = 0)
+    protected val types = MutableStateFlow<Resultat<List<ObjectWrapper.Type>>>(Resultat.Loading())
+    protected val objects = MutableStateFlow<Resultat<List<ObjectWrapper.Basic>>>(Resultat.Loading())
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -65,8 +64,6 @@ open class ObjectSearchViewModel(
 
     init {
         viewModelScope.launch {
-            types.emit(Resultat.loading())
-            objects.emit(Resultat.loading())
             combine(objects, types) { listOfObjects, listOfTypes ->
                 if (listOfObjects.isLoading || listOfTypes.isLoading) {
                     Resultat.Loading()
@@ -126,7 +123,9 @@ open class ObjectSearchViewModel(
             )
             getObjectTypes.execute(params).fold(
                 onFailure = { Timber.e(it, "Error while getting object types") },
-                onSuccess = { types.emit(Resultat.success(it)) }
+                onSuccess = {
+                    types.value = Resultat.success(it)
+                }
             )
         }
     }

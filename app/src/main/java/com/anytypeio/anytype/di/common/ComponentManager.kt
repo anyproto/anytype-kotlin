@@ -63,6 +63,7 @@ import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
+import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingAuthComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -80,6 +81,7 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModu
 import com.anytypeio.anytype.di.feature.settings.AboutAppModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
+import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
@@ -822,6 +824,12 @@ class ComponentManager(
         main.mainSettingsComponent().module(MainSettingsModule).build()
     }
 
+    val filesStorageComponent = Component {
+        DaggerFilesStorageComponent.builder()
+            .withDependencies(findComponentDependencies())
+            .build()
+    }
+
     val appearanceComponent = Component {
         DaggerAppearanceComponent
             .factory()
@@ -886,6 +894,12 @@ class ComponentManager(
 
     val migrationErrorComponent = Component {
         DaggerMigrationErrorComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val onboardingAuthComponent = Component {
+        DaggerOnboardingAuthComponent
             .factory()
             .create(findComponentDependencies())
     }

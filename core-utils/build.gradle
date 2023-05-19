@@ -26,7 +26,6 @@ dependencies {
     implementation libs.gson
 
     implementation libs.timber
-    implementation libs.crashlytics
 
     implementation libs.constraintLayout
     implementation libs.recyclerView

@@ -23,6 +23,8 @@ sealed class ObjectIcon {
 
     data class Bookmark(val image: Url) : ObjectIcon()
 
+    data class File(val mime: String?, val fileName: String?) : ObjectIcon()
+
     companion object {
         fun from(
             obj: ObjectWrapper.Basic,

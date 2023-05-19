@@ -158,14 +158,19 @@
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment" />
 
     <dialog
+        android:id="@+id/remoteStorageFragment"
+        android:name="com.anytypeio.anytype.ui.settings.RemoteStorageFragment"/>
+
+    <dialog
         android:id="@+id/selectWidgetTypeScreen"
-        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"></dialog>
+        android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"/>
 
     <dialog
         android:id="@+id/settingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
         android:label="SettingScreen">
         <action android:id="@+id/actionOpenProfileScreen" app:destination="@id/profileScreen"/>
+        <action android:id="@+id/actionOpenFilesStorageScreen" app:destination="@id/filesStorageScreen"/>
         <action android:id="@+id/actionOpenAboutAppScreen" app:destination="@id/aboutAppScreen"/>
         <action android:id="@+id/actionOpenPersonalizationScreen" app:destination="@+id/personalizationScreen"/>
         <action android:id="@+id/actionOpenAppearanceScreen" app:destination="@+id/appearanceScreen"/>
@@ -205,6 +210,12 @@
     <dialog
         android:id="@+id/profileScreen"
         android:name="com.anytypeio.anytype.ui.settings.ProfileFragment">
+    </dialog>
+
+    <dialog
+        android:id="@+id/filesStorageScreen"
+        android:name="com.anytypeio.anytype.ui.settings.FilesStorageFragment"
+        android:label="Files-Storage-Screen">
     </dialog>
 
     <dialog
@@ -321,7 +332,7 @@
 
         <fragment
             android:id="@+id/authStartScreen"
-            android:name="com.anytypeio.anytype.ui.onboarding.AuthStartFragment" />
+            android:name="com.anytypeio.anytype.ui.onboarding.OnBoardingFragment" />
 
     </navigation>
 

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 import timber.log.Timber
 
 @Deprecated("To be deleted")
@@ -259,5 +260,41 @@ fun ObjectWrapper.Basic.getProperName(): String {
         snippet?.replace("\n", " ")?.take(30).orEmpty()
     } else {
         name.orEmpty()
+    }
+}
+
+fun ObjectWrapper.Basic.mapFileObjectToView(): CollectionView.ObjectView {
+    val fileIcon = getFileObjectIcon()
+    val defaultObjectView = DefaultObjectView(
+        id = id,
+        name = getProperName(),
+        description = fileSize(sizeInBytes = sizeInBytes),
+        layout = layout,
+        icon = fileIcon
+    )
+    return CollectionView.ObjectView(defaultObjectView)
+}
+
+private fun ObjectWrapper.Basic.getFileObjectIcon(): ObjectIcon {
+    return when (layout) {
+        ObjectType.Layout.FILE, ObjectType.Layout.IMAGE ->
+            ObjectIcon.File(
+                mime = fileMimeType,
+                fileName = getProperName()
+            )
+
+        else -> ObjectIcon.None
+    }
+}
+
+private fun fileSize(sizeInBytes: Double?): String {
+    if (sizeInBytes == null) return ""
+
+    val sizeInGb = sizeInBytes / (1024.0 * 1024.0 * 1024.0)
+    val sizeInMb = sizeInBytes / (1024.0 * 1024.0)
+
+    return when {
+        sizeInGb >= 1 -> "%.2f GB".format(sizeInGb)
+        else -> "%.2f MB".format(sizeInMb)
     }
 }

@@ -9,8 +9,8 @@ import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
+import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
-import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -248,14 +248,14 @@ object SetupSelectedAccountModule {
     @Provides
     @PerScreen
     fun provideSetupSelectedAccountViewModelFactory(
-        startAccount: StartAccount,
+        selectAccount: SelectAccount,
         pathProvider: PathProvider,
         analytics: Analytics,
         relationsSubscriptionManager: RelationsSubscriptionManager,
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
     ): SetupSelectedAccountViewModelFactory {
         return SetupSelectedAccountViewModelFactory(
-            startAccount = startAccount,
+            selectAccount = selectAccount,
             pathProvider = pathProvider,
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
@@ -271,8 +271,8 @@ object SetupSelectedAccountModule {
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider,
         workspaceManager: WorkspaceManager
-    ): StartAccount {
-        return StartAccount(
+    ): SelectAccount {
+        return SelectAccount(
             repository = repository,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,

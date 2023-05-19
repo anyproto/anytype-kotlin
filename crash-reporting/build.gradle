@@ -1,7 +1,7 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
-    id "io.sentry.android.gradle" version "3.4.2"
+    id "io.sentry.android.gradle" version "3.6.0"
 }
 
 android {
@@ -21,5 +21,6 @@ android {
 
 dependencies {
     implementation libs.sentry
+    implementation libs.sentryTimber
     implementation project(path: ':core-utils')
 }

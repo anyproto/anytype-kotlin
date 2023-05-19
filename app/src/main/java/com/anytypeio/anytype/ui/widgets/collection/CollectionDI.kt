@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
+import com.anytypeio.anytype.ui.settings.RemoteStorageFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -52,6 +53,7 @@ interface CollectionComponent {
     }
 
     fun inject(fragment: CollectionFragment)
+    fun inject(fragment: RemoteStorageFragment)
 
 }
 

@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -42,7 +43,12 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
+import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
+import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
+import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -66,6 +72,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.presentation.widgets.getActiveTabViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -109,7 +116,8 @@ class HomeScreenViewModel(
     private val analytics: Analytics,
     private val getWidgetSession: GetWidgetSession,
     private val saveWidgetSession: SaveWidgetSession,
-    private val spaceGradientProvider: SpaceGradientProvider
+    private val spaceGradientProvider: SpaceGradientProvider,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -305,7 +313,10 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             saveWidgetSession.execute(
                 SaveWidgetSession.Params(
-                    WidgetSession(collapsed = collapsedWidgetStateHolder.get())
+                    WidgetSession(
+                        collapsed = collapsedWidgetStateHolder.get(),
+                        widgetsToActiveViews = views.value.getActiveTabViews()
+                    )
                 )
             )
             val subscriptions = widgets.value.orEmpty().map { widget ->
@@ -341,7 +352,8 @@ class HomeScreenViewModel(
                                 ctx = configStorage.get().widgets,
                                 source = dispatch.source,
                                 layout = dispatch.sourceLayout,
-                                target = dispatch.target
+                                target = dispatch.target,
+                                isInEditMode = isInEditMode()
                             )
                         )
                     }
@@ -351,7 +363,8 @@ class HomeScreenViewModel(
                                 ctx = configStorage.get().widgets,
                                 source = dispatch.source,
                                 layout = ObjectType.Layout.SET.code,
-                                target = dispatch.target
+                                target = dispatch.target,
+                                isInEditMode = isInEditMode()
                             )
                         )
                     }
@@ -457,6 +470,7 @@ class HomeScreenViewModel(
     private fun proceedWithDeletingWidget(widget: Id) {
         viewModelScope.launch {
             val config = configStorage.get()
+            val target = widgets.value.orEmpty().find { it.id == widget }
             deleteWidget.stream(
                 DeleteWidget.Params(
                     ctx = config.widgets,
@@ -473,8 +487,8 @@ class HomeScreenViewModel(
                         // Do nothing?
                     }
                     is Resultat.Success -> {
-                        launch {
-                            objectPayloadDispatcher.send(status.value)
+                        objectPayloadDispatcher.send(status.value).also {
+                            dispatchDeleteWidgetAnalyticsEvent(target)
                         }
                     }
                 }
@@ -510,16 +524,26 @@ class HomeScreenViewModel(
 
     fun onCreateWidgetClicked() {
         viewModelScope.launch {
-            commands.emit(Command.SelectWidgetSource())
+            sendAddWidgetEvent(
+                analytics = analytics,
+                isInEditMode = isInEditMode()
+            )
+            commands.emit(
+                Command.SelectWidgetSource(
+                    isInEditMode = isInEditMode()
+                )
+            )
         }
     }
 
     fun onEditWidgets() {
-        mode.value = InteractionMode.Edit
+        proceedWithEnteringEditMode().also {
+            viewModelScope.sendEditWidgetsEvent(analytics)
+        }
     }
 
     fun onExitEditMode() {
-        mode.value = InteractionMode.Default
+        proceedWithExitingEditMode()
     }
 
     fun onExpand(path: TreePath) {
@@ -538,23 +562,40 @@ class HomeScreenViewModel(
     fun onWidgetSourceClicked(source: Widget.Source) {
         when (source) {
             is Widget.Source.Bundled.Favorites -> {
+                viewModelScope.sendSelectHomeTabEvent(
+                    analytics = analytics,
+                    bundled = source
+                )
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Favorites))
             }
             is Widget.Source.Bundled.Sets -> {
+                viewModelScope.sendSelectHomeTabEvent(
+                    analytics = analytics,
+                    bundled = source
+                )
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Sets))
             }
             is Widget.Source.Bundled.Recent -> {
+                viewModelScope.sendSelectHomeTabEvent(
+                    analytics = analytics,
+                    bundled = source
+                )
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Recent))
             }
             is Widget.Source.Bundled.Collections -> {
+                viewModelScope.sendSelectHomeTabEvent(
+                    analytics = analytics,
+                    bundled = source
+                )
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Collections))
             }
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {
+                    dispatchSelectHomeTabCustomSourceEvent(source)
                     proceedWithOpeningObject(source.obj)
                 } else {
                     sendToast("Open bin to restore your archived object")
@@ -572,7 +613,7 @@ class HomeScreenViewModel(
                 proceedWithChangingType(widget)
             }
             DropDownMenuAction.EditWidgets -> {
-                onEditWidgets()
+                proceedWithEnteringEditMode()
             }
             DropDownMenuAction.RemoveWidget -> {
                 proceedWithDeletingWidget(widget)
@@ -605,7 +646,16 @@ class HomeScreenViewModel(
 
     private fun proceedWithAddingWidgetBelow(widget: Id) {
         viewModelScope.launch {
-            commands.emit(Command.SelectWidgetSource(target = widget))
+            sendAddWidgetEvent(
+                analytics = analytics,
+                isInEditMode = isInEditMode()
+            )
+            commands.emit(
+                Command.SelectWidgetSource(
+                    target = widget,
+                    isInEditMode = isInEditMode()
+                )
+            )
         }
     }
 
@@ -625,7 +675,8 @@ class HomeScreenViewModel(
                             is Widget.Source.Default -> {
                                 source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                             }
-                        }
+                        },
+                        isInEditMode = isInEditMode()
                     )
                 )
             }
@@ -643,7 +694,8 @@ class HomeScreenViewModel(
                         ctx = configStorage.get().widgets,
                         widget = widget,
                         source = curr.source.id,
-                        type = parseWidgetType(curr)
+                        type = parseWidgetType(curr),
+                        isInEditMode = isInEditMode()
                     )
                 )
             }
@@ -718,8 +770,9 @@ class HomeScreenViewModel(
                 val session = withContext(appCoroutineDispatchers.io) {
                     getWidgetSession.execute(Unit).getOrNull()
                 }
-                if (session != null && session.collapsed.isNotEmpty()) {
+                if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
+                    widgetActiveViewStateHolder.init(session.widgetsToActiveViews)
                 }
                 proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
             }
@@ -736,6 +789,14 @@ class HomeScreenViewModel(
         } catch (e: Exception) {
             Timber.e(e, "Error while closing widget object")
         }
+    }
+
+    private fun proceedWithExitingEditMode() {
+        mode.value = InteractionMode.Default
+    }
+
+    private fun proceedWithEnteringEditMode() {
+        mode.value = InteractionMode.Edit
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
@@ -782,19 +843,23 @@ class HomeScreenViewModel(
     fun onMove(views: List<WidgetView>, from: Int, to: Int) {
         viewModelScope.launch {
             val direction = if (from < to) Position.BOTTOM else Position.TOP
-            val subject = views[to].id
+            val subject = views[to]
             val target = if (direction == Position.TOP) views[to.inc()].id else views[to.dec()].id
             move.stream(
                 Move.Params(
                     context = configStorage.get().widgets,
                     targetId = target,
                     targetContext = configStorage.get().widgets,
-                    blockIds = listOf(subject),
+                    blockIds = listOf(subject.id),
                     position = direction
                 )
             ).collect { result ->
                 result.fold(
-                    onSuccess = { objectPayloadDispatcher.send(it) },
+                    onSuccess = {
+                        objectPayloadDispatcher.send(it).also {
+                            dispatchReorderWidgetAnalyticEvent(subject)
+                        }
+                    },
                     onFailure = { Timber.e(it, "Error while moving blocks") }
                 )
             }
@@ -818,6 +883,104 @@ class HomeScreenViewModel(
                     Timber.d("Error while setting up app shortcuts")
                 }
             )
+        }
+    }
+
+    private fun dispatchDeleteWidgetAnalyticsEvent(target: Widget?) {
+        viewModelScope.launch {
+            when (val source = target?.source) {
+                is Widget.Source.Bundled -> {
+                    sendDeleteWidgetEvent(
+                        analytics = analytics,
+                        bundled = source,
+                        isInEditMode = isInEditMode()
+                    )
+                }
+                is Widget.Source.Default -> {
+                    val sourceObjectType = source.type
+                    if (sourceObjectType != null) {
+                        val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
+                        if (objectTypeWrapper != null) {
+                            sendDeleteWidgetEvent(
+                                analytics = analytics,
+                                sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
+                                isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty(),
+                                isInEditMode = isInEditMode()
+                            )
+                        } else {
+                            Timber.e("Failed to dispatch analytics: source type not found in types storage")
+                        }
+                    } else {
+                        Timber.e("Failed to dispatch analytics: unknown source type")
+                    }
+                }
+                else -> {
+                    Timber.e("Error while dispatching analytics event: source not found")
+                }
+            }
+        }
+    }
+
+    private fun isInEditMode() = mode.value == InteractionMode.Edit
+
+    private fun dispatchSelectHomeTabCustomSourceEvent(source: Widget.Source) {
+        viewModelScope.launch {
+            val sourceObjectType = source.type
+            if (sourceObjectType != null) {
+                val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
+                if (objectTypeWrapper != null) {
+                    sendSelectHomeTabEvent(
+                        analytics = analytics,
+                        sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
+                        isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty()
+                    )
+                } else {
+                    Timber.e("Failed to dispatch analytics: source type not found in types storage")
+                }
+            } else {
+                Timber.e("Failed to dispatch analytics: unknown source type")
+            }
+        }
+    }
+
+    private fun dispatchReorderWidgetAnalyticEvent(subject: WidgetView) {
+        viewModelScope.launch {
+            val source = when (subject) {
+                is WidgetView.Link -> subject.source
+                is WidgetView.ListOfObjects -> subject.source
+                is WidgetView.SetOfObjects -> subject.source
+                is WidgetView.Tree -> subject.source
+                else -> null
+            }
+            when(source) {
+                is Widget.Source.Bundled -> {
+                    sendReorderWidgetEvent(
+                        analytics = analytics,
+                        bundled = source
+                    )
+                }
+                is Widget.Source.Default -> {
+                    val sourceObjectType = source.type
+                    if (sourceObjectType != null) {
+                        val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
+                        if (objectTypeWrapper != null) {
+                            sendReorderWidgetEvent(
+                                analytics = analytics,
+                                sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
+                                isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty()
+                            )
+                        } else {
+                            Timber.e("Failed to dispatch analytics: source type not found in types storage")
+                        }
+                    } else {
+                        Timber.e("Failed to dispatch analytics: unknown source type")
+                    }
+                }
+
+                else -> {
+                    // Do nothing.
+                }
+            }
         }
     }
 
@@ -860,7 +1023,8 @@ class HomeScreenViewModel(
         private val analytics: Analytics,
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
-        private val spaceGradientProvider: SpaceGradientProvider
+        private val spaceGradientProvider: SpaceGradientProvider,
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -889,7 +1053,8 @@ class HomeScreenViewModel(
             analytics = analytics,
             getWidgetSession = getWidgetSession,
             saveWidgetSession = saveWidgetSession,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 
@@ -922,20 +1087,25 @@ sealed class Command {
     /**
      * [target] optional target, below which new widget will be created
      */
-    data class SelectWidgetSource(val target: Id? = null) : Command()
+    data class SelectWidgetSource(
+        val target: Id? = null,
+        val isInEditMode: Boolean
+    ) : Command()
 
     data class SelectWidgetType(
         val ctx: Id,
         val source: Id,
         val target: Id?,
-        val layout: Int
+        val layout: Int,
+        val isInEditMode: Boolean
     ) : Command()
 
     data class ChangeWidgetSource(
         val ctx: Id,
         val widget: Id,
         val source: Id,
-        val type: Int
+        val type: Int,
+        val isInEditMode: Boolean
     ) : Command()
 
     data class ChangeWidgetType(
@@ -943,7 +1113,8 @@ sealed class Command {
         val widget: Id,
         val source: Id,
         val type: Int,
-        val layout: Int
+        val layout: Int,
+        val isInEditMode: Boolean
     ) : Command() {
         companion object {
             const val TYPE_TREE = 0

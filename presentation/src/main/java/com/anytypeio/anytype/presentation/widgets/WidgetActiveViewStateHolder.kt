@@ -8,11 +8,16 @@ import kotlinx.coroutines.flow.mapLatest
 
 interface WidgetActiveViewStateHolder {
 
+    fun init(map: WidgetToActiveView)
     fun onChangeCurrentWidgetView(widget: Id, view: Id)
     fun observeCurrentWidgetView(widget: Id): Flow<Id?>
 
     class Impl @Inject constructor() : WidgetActiveViewStateHolder {
         private val widgetToActiveView = MutableStateFlow<WidgetToActiveView>(mapOf())
+
+        override fun init(map: WidgetToActiveView) {
+            widgetToActiveView.value = map
+        }
 
         override fun onChangeCurrentWidgetView(widget: Id, view: Id) {
             widgetToActiveView.value = widgetToActiveView.value + mapOf(widget to view)

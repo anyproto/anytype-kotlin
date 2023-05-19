@@ -7,11 +7,13 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconBinding
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -140,6 +142,10 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
             is ObjectIcon.Bookmark -> setBookmark(icon.image)
             is ObjectIcon.None -> removeIcon()
+            is ObjectIcon.File -> setFileImage(
+                mime = icon.mime,
+                fileName = icon.fileName
+            )
         }
     }
 
@@ -219,6 +225,19 @@ class ObjectIconWidget @JvmOverloads constructor(
             }
         } else {
             binding.ivEmoji.setImageDrawable(null)
+        }
+    }
+
+    private fun setFileImage(mime: String?, fileName: String?) {
+        val icon = mime.getMimeIcon(fileName)
+        with(binding) {
+            ivImage.visible()
+            ivImage.scaleType = ImageView.ScaleType.CENTER
+            ivImage.setImageResource(icon)
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivBookmark.invisible()
+            emojiContainer.invisible()
         }
     }
 

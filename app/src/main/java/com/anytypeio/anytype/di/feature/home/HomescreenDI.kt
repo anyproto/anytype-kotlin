@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -235,4 +236,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun eventChannel(): EventChannel
     fun dispatchers(): AppCoroutineDispatchers
     fun appActionManager(): AppActionManager
+    fun storeOfObjectTypes(): StoreOfObjectTypes
 }

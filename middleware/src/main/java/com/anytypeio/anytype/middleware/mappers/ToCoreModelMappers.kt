@@ -389,6 +389,7 @@ fun MBlock.toCoreWidget(): Block.Content.Widget {
             MWidgetLayout.Link -> Block.Content.Widget.Layout.LINK
             MWidgetLayout.Tree -> Block.Content.Widget.Layout.TREE
             MWidgetLayout.List -> Block.Content.Widget.Layout.LIST
+            MWidgetLayout.CompactList -> TODO("No worries, folks, this one will be integrated in the next PR!")
         }
     )
 }

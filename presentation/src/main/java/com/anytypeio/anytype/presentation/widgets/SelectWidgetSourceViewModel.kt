@@ -7,16 +7,19 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.take
@@ -90,9 +93,15 @@ class SelectWidgetSourceViewModel(
         )
     }
 
-    fun onStartWithNewWidget(target: Id?) {
+    fun onStartWithNewWidget(
+        target: Id?,
+        isInEditMode: Boolean
+    ) {
         Timber.d("onStart with picking source for new widget")
-        config = Config.NewWidget(target)
+        config = Config.NewWidget(
+            target = target,
+            isInEditMode = isInEditMode
+        )
         proceedWithSearchQuery()
     }
 
@@ -100,14 +109,16 @@ class SelectWidgetSourceViewModel(
         ctx: Id,
         widget: Id,
         source: Id,
-        type: Int
+        type: Int,
+        isInEditMode: Boolean
     ) {
         Timber.d("onStart with picking source for an existing widget")
         config = Config.ExistingWidget(
             ctx = ctx,
             widget = widget,
             source = source,
-            type = type
+            type = type,
+            isInEditMode = isInEditMode
         )
         proceedWithSearchQuery()
     }
@@ -127,7 +138,14 @@ class SelectWidgetSourceViewModel(
                             source = view.id,
                             target = curr.target
                         )
-                    )
+                    ).also {
+                        sendChangeWidgetSourceEvent(
+                            analytics = analytics,
+                            view = view,
+                            isForNewWidget = true,
+                            isInEditMode = curr.isInEditMode
+                        )
+                    }
                 }
             }
             is Config.ExistingWidget -> {
@@ -139,7 +157,14 @@ class SelectWidgetSourceViewModel(
                             source = view.id,
                             type = curr.type
                         )
-                    )
+                    ).also {
+                        sendChangeWidgetSourceEvent(
+                            analytics = analytics,
+                            view = view,
+                            isForNewWidget = false,
+                            isInEditMode = curr.isInEditMode
+                        )
+                    }
                     isDismissed.value = true
                 }
             }
@@ -160,7 +185,13 @@ class SelectWidgetSourceViewModel(
                             sourceLayout = view.layout?.code ?: -1,
                             target = curr.target
                         )
-                    )
+                    ).also {
+                        dispatchSelectCustomSourceAnalyticEvent(
+                            view = view,
+                            isForNewWidget = true,
+                            isInEditMode = curr.isInEditMode
+                        )
+                    }
                 }
             }
             is Config.ExistingWidget -> {
@@ -172,13 +203,40 @@ class SelectWidgetSourceViewModel(
                             source = view.id,
                             type = curr.type
                         )
-                    )
+                    ).also {
+                        dispatchSelectCustomSourceAnalyticEvent(
+                            view = view,
+                            isForNewWidget = false,
+                            isInEditMode = curr.isInEditMode
+                        )
+                    }
                     isDismissed.value = true
                 }
             }
             is Config.None -> {
                 // Do nothing.
             }
+        }
+    }
+
+    private fun CoroutineScope.dispatchSelectCustomSourceAnalyticEvent(
+        view: DefaultObjectView,
+        isForNewWidget: Boolean,
+        isInEditMode: Boolean
+    ) {
+        val sourceObjectType = types.value.getOrDefault(emptyList()).find { type ->
+            type.id == view.type
+        }
+        if (sourceObjectType != null) {
+            sendChangeWidgetSourceEvent(
+                analytics = analytics,
+                sourceObjectTypeId = sourceObjectType.sourceObject.orEmpty(),
+                isCustomObjectType = sourceObjectType.sourceObject.isNullOrEmpty(),
+                isForNewWidget = isForNewWidget,
+                isInEditMode = isInEditMode
+            )
+        } else {
+            Timber.e("Could not found type for analytics")
         }
     }
 
@@ -205,13 +263,17 @@ class SelectWidgetSourceViewModel(
     }
 
     sealed class Config {
-        object None: Config()
-        data class NewWidget(val target: Id?) : Config()
+        object None : Config()
+        data class NewWidget(
+            val target: Id?,
+            val isInEditMode: Boolean
+        ) : Config()
         data class ExistingWidget(
             val ctx: Id,
             val widget: Id,
             val source: Id,
-            val type: Int
+            val type: Int,
+            val isInEditMode: Boolean
         ) : Config()
     }
 }

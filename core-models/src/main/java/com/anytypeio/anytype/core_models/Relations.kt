@@ -45,6 +45,7 @@ object Relations {
     const val RELATION_FORMAT_OBJECT_TYPES = "relationFormatObjectTypes"
     const val SOURCE_OBJECT = "sourceObject"
     const val INTERNAL_FLAGS = "internalFlags"
+    const val SIZE_IN_BYTES = "sizeInBytes"
 
     const val PAGE_COVER = "pageCover"
 

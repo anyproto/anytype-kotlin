@@ -21,11 +21,13 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
+import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectSubComponent
@@ -74,7 +76,9 @@ interface MainComponent :
     SplashDependencies,
     DeletedAccountDependencies,
     MigrationErrorDependencies,
-    BacklinkOrAddToObjectDependencies {
+    BacklinkOrAddToObjectDependencies,
+    FilesStorageDependencies,
+    OnboardingAuthDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -176,5 +180,15 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(BacklinkOrAddToObjectDependencies::class)
     abstract fun provideBackLinkDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(FilesStorageDependencies::class)
+    abstract fun provideFilesStorageDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingAuthDependencies::class)
+    abstract fun provideOnboardingAuthDependencies(component: MainComponent): ComponentDependencies
 
 }

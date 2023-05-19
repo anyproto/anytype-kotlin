@@ -21,6 +21,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -31,8 +32,6 @@ import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -92,14 +91,7 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val offsetFromTop = PADDING_TOP
-        (dialog as? BottomSheetDialog)?.behavior?.apply {
-            isFitToContents = false
-            expandedOffset = offsetFromTop
-            state = BottomSheetBehavior.STATE_EXPANDED
-            skipCollapsed = true
-        }
+        setupBottomSheetBehavior(PADDING_TOP)
     }
 
     private fun proceedWithAccountDeletion() {

@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -25,8 +26,6 @@ import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase.Companion.A
 import com.anytypeio.anytype.ui.sets.ARG_SHOW_REMOVE_BUTTON
 import com.anytypeio.anytype.ui.settings.system.SettingsActivity
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -69,7 +68,7 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
     }
 
     private val onFileStorageClicked = {
-        //todo
+        vm.onOptionClicked(Event.OnFilesStorageClicked)
     }
 
     override fun onCreateView(
@@ -102,13 +101,7 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val offsetFromTop = PADDING_TOP
-        (dialog as? BottomSheetDialog)?.behavior?.apply {
-            isFitToContents = false
-            expandedOffset = offsetFromTop
-            state = BottomSheetBehavior.STATE_EXPANDED
-            skipCollapsed = true
-        }
+        setupBottomSheetBehavior(PADDING_TOP)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -141,6 +134,9 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                         ARG_SHOW_REMOVE_BUTTON to true
                     )
                 )
+            }
+            Command.OpenFilesStorageScreen -> {
+                safeNavigate(R.id.actionOpenFilesStorageScreen)
             }
         }
     }

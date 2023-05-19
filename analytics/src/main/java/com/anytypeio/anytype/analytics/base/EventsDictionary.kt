@@ -14,8 +14,6 @@ object EventsDictionary {
     const val cancelDeletion = "CancelDeletion"
 
     // Dashboard view events
-    const val showHome = "ScreenHome"
-    const val selectHomeTab = "SelectHomeTab"
     const val reorderObjects = "ReorderObjects" // reorder in favorite tab
     const val restoreFromBin = "RestoreFromBin"
 
@@ -38,6 +36,7 @@ object EventsDictionary {
     const val deletionWarningShow = "ShowDeletionWarning"
     const val keychainPhraseScreenShow = "ScreenKeychain"
     const val fileOffloadScreenShow = "ScreenFileOffloadWarning"
+    const val manageFilesScreenShow = "ScreenManageFiles"
     const val relationsScreenShow = "ScreenObjectRelation"
     const val settingsShow = "ScreenSettings"
     const val personalisationSettingsShow = "ScreenSettingsPersonalisation"
@@ -45,6 +44,10 @@ object EventsDictionary {
     const val accountDataSettingsShow = "ScreenSettingsAccountData"
     const val aboutScreenShow = "ScreenSettingsAbout"
     const val appearanceScreenShow = "ScreenSettingsAppearance"
+    const val screenSettingsStorage = "ScreenSettingsStorageIndex"
+    const val screenSettingsStorageManage = "ScreenSettingsStorageManager"
+    const val screenSettingsStorageOffload = "ScreenFileOffloadWarning"
+    const val settingsStorageOffload = "SettingsStorageOffload"
 
     // Object events
     const val objectListDelete = "RemoveCompletely"
@@ -130,6 +133,17 @@ object EventsDictionary {
     const val libraryScreenRelation = "ScreenRelation"
     const val librarySetTypeName = "SetTypeName"
     const val libraryCreateType = "CreateType"
+
+    // Widgets
+
+    const val addWidget = "AddWidget"
+    const val editWidgets = "EditWidgets"
+    const val changeWidgetSource = "ChangeWidgetSource"
+    const val changeWidgetLayout = "ChangeWidgetLayout"
+    const val reorderWidget = "ReorderWidget"
+    const val deleteWidget = "DeleteWidget"
+    const val screenHome = "ScreenHome"
+    const val selectHomeTab = "SelectHomeTab"
 
     // Routes
     object Routes {

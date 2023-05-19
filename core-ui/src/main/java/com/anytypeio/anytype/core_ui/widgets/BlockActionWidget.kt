@@ -78,7 +78,7 @@ class BlockActionWidget @JvmOverloads constructor(
                         icon.setImageResource(R.drawable.ic_action_preview)
                     }
                     ActionItemType.Copy -> {
-                        title.setText(R.string.copy)
+                        title.setText(R.string.block_action_copy)
                         icon.setImageResource(R.drawable.ic_block_action_copy)
                     }
                     ActionItemType.Paste -> {

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
+import com.anytypeio.anytype.presentation.extension.sendSettingsStorageOffloadEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -69,6 +70,9 @@ class FilesStorageViewModel(
 
     fun onClearFileCacheAccepted() {
         Timber.d("onClearFileCacheAccepted")
+        viewModelScope.launch {
+            analytics.sendSettingsStorageOffloadEvent()
+        }
         viewModelScope.launch {
             clearFileCache(BaseUseCase.None).collect { status ->
                 when (status) {

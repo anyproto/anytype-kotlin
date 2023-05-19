@@ -1486,3 +1486,9 @@ suspend fun Analytics.sendSettingsOffloadEvent() {
         eventName = EventsDictionary.screenSettingsStorageOffload
     )
 }
+
+suspend fun Analytics.sendSettingsStorageOffloadEvent() {
+    sendEvent(
+        eventName = EventsDictionary.settingsStorageOffload
+    )
+}

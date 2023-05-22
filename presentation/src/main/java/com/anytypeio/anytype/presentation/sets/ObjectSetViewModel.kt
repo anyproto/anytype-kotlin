@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
-import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -60,7 +59,6 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
-import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -146,8 +144,10 @@ class ObjectSetViewModel(
         MutableStateFlow(DataViewViewState.Init)
     val currentViewer = _currentViewer
 
-    private val _header = MutableStateFlow<BlockView.Title.Basic?>(null)
-    val header: StateFlow<BlockView.Title.Basic?> = _header
+    private val _header = MutableStateFlow<SetOrCollectionHeaderState>(
+        SetOrCollectionHeaderState.None
+    )
+    val header: StateFlow<SetOrCollectionHeaderState> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
 
@@ -168,15 +168,11 @@ class ObjectSetViewModel(
                         urlBuilder = urlBuilder,
                         relations = storeOfRelations.getAll()
                     )
-                    _header.value = state.blocks.title()?.let {
-                        title(
-                            ctx = context,
-                            coverImageHashProvider = coverImageHashProvider,
-                            urlBuilder = urlBuilder,
-                            details = state.details,
-                            title = it
-                        )
-                    }
+                    _header.value = state.header(
+                        ctx = context,
+                        urlBuilder = urlBuilder,
+                        coverImageHashProvider = coverImageHashProvider
+                    )
                 }
         }
 
@@ -567,7 +563,8 @@ class ObjectSetViewModel(
 
     fun onTitleChanged(txt: String) {
         Timber.d("onTitleChanged, txt:[$txt]")
-        val target = header.value?.id
+
+        val target = (header.value as? SetOrCollectionHeaderState.Default)?.title?.id
         if (target != null) {
             viewModelScope.launch {
                 titleUpdateChannel.send(
@@ -597,6 +594,23 @@ class ObjectSetViewModel(
             } else {
                 Timber.e("Skipping dispatching title update, because set of objects was not ready.")
             }
+        }
+    }
+
+    fun onDescriptionChanged(text: String) {
+        viewModelScope.launch {
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = context,
+                    key = Relations.DESCRIPTION,
+                    value = text
+                )
+            ).process(
+                failure = {
+                    Timber.e(it, "Error while updating description")
+                },
+                success = defaultPayloadConsumer
+            )
         }
     }
 

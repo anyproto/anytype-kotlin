@@ -6,29 +6,32 @@ import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
+import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSortUpdate
+import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
+import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
+import com.anytypeio.anytype.core_utils.ext.mapInPlace
+import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.isSystemKey
+import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
-import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSortUpdate
-import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
-import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
-import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
-import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_utils.ext.mapInPlace
-import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
@@ -56,6 +59,38 @@ fun ObjectState.DataView.featuredRelations(
         )
     } else {
         return null
+    }
+}
+
+fun ObjectState.DataView.header(
+    ctx: Id,
+    urlBuilder: UrlBuilder,
+    coverImageHashProvider: CoverImageHashProvider
+) : SetOrCollectionHeaderState {
+    val title = blocks.title()
+    return if (title != null) {
+        val wrapper = ObjectWrapper.Basic(
+            map = details[ctx]?.map ?: emptyMap()
+        )
+        val featured = wrapper.featuredRelations ?: emptyList()
+        SetOrCollectionHeaderState.Default(
+            title = title(
+                ctx = ctx,
+                title = title,
+                urlBuilder = urlBuilder,
+                details = details,
+                coverImageHashProvider = coverImageHashProvider
+            ),
+            description = if (featured.contains(Relations.DESCRIPTION)) {
+                SetOrCollectionHeaderState.Description.Default(
+                    description = wrapper.description.orEmpty()
+                )
+            } else {
+                SetOrCollectionHeaderState.Description.None
+            }
+        )
+    } else {
+        return SetOrCollectionHeaderState.None
     }
 }
 

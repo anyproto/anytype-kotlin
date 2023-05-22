@@ -3,12 +3,12 @@ package com.anytypeio.anytype.presentation.collections
 import app.cash.turbine.testIn
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -54,7 +54,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-        assertNull(headerFlow.awaitItem())
+        assertIs<SetOrCollectionHeaderState.None>(headerFlow.awaitItem())
         assertIs<ObjectState.Init>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
@@ -62,7 +62,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         assertEquals(
             expected = mockObjectCollection.details.details[mockObjectCollection.root]?.name,
-            actual = headerFlow.awaitItem()?.text
+            actual = (headerFlow.awaitItem() as SetOrCollectionHeaderState.Default).title.text
         )
         viewerFlow.expectNoEvents()
 

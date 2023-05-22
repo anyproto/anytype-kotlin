@@ -124,6 +124,15 @@ fun List<Block>.parseWidgets(
                                     )
                                 )
                             }
+                            Block.Content.Widget.Layout.COMPACT_LIST -> {
+                                // Compact list is currently unsupported, fallback to simple list.
+                                add(
+                                    Widget.List(
+                                        id = w.id,
+                                        source = source
+                                    )
+                                )
+                            }
                         }
                     }
                 }

@@ -35,7 +35,7 @@ class ViewerCardSizeSelectViewModel(
                 val viewer = it.viewerById(session.currentViewerId.value) ?: return@collect
                 viewState.value = when (viewer.cardSize) {
                     Block.Content.DataView.Viewer.Size.SMALL -> STATE_SMALL_CARD_SELECTED
-                    Block.Content.DataView.Viewer.Size.MEDIUM -> STATE_LARGE_CARD_SELECTED
+                    Block.Content.DataView.Viewer.Size.MEDIUM -> STATE_SMALL_CARD_SELECTED
                     Block.Content.DataView.Viewer.Size.LARGE -> STATE_LARGE_CARD_SELECTED
                 }
             }

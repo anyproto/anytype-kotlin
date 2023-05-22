@@ -103,7 +103,7 @@ suspend fun DVViewer.render(
                     objectOrderIds = objectOrderIds
                 ),
                 title = name,
-                largeCards = cardSize != DVViewerCardSize.SMALL
+                largeCards = cardSize == DVViewerCardSize.LARGE
             )
         }
         DVViewerType.LIST -> {

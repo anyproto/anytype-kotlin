@@ -27,7 +27,7 @@ version=`curl -H "Authorization: token $TOKEN" -H "Accept: application/vnd.githu
 tag=`echo $version | jq ".tag_name"`
 asset_id=`echo $version | jq ".assets | map(select(.name | match(\"android_lib_\";\"i\")))[0].id"`
 
-if [ "$asset_id" = "" ]; then
+if [ "$asset_id" = "null" ]; then
   echo "ERROR: version not found"
   exit 1
 fi;

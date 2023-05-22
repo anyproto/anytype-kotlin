@@ -90,6 +90,10 @@ message Event {
             Process.Done processDone = 103;
 
             Status.Thread threadStatus = 110;
+
+            File.LimitReached fileLimitReached = 111;
+            File.SpaceUsage fileSpaceUsage = 112;
+            File.LocalUsage fileLocalUsage = 113;
         }
     }
 
@@ -974,6 +978,21 @@ message Event {
                 Synced = 3;
                 Failed = 4;
             }
+        }
+    }
+
+    message File {
+        message LimitReached {
+            string spaceId = 1;
+            string fileId = 2;
+        }
+
+        message SpaceUsage {
+            uint64 bytesUsage = 1;
+        }
+
+        message LocalUsage {
+            uint64 localBytesUsage = 1;
         }
     }
 }

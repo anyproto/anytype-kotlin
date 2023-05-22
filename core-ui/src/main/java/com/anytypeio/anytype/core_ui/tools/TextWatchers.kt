@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.tools
 
 import android.text.Editable
-import android.text.TextWatcher
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.tools.MentionHelper.isMentionDeleted
 import com.anytypeio.anytype.core_ui.tools.MentionHelper.isMentionSuggestTriggered
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -12,7 +12,9 @@ class DefaultTextWatcher(val onTextChanged: (Editable) -> Unit) : TextInputTextW
     private var locked: Boolean = false
 
     override fun afterTextChanged(s: Editable) {
-        Timber.d("OnTextChanged: $s")
+        if (BuildConfig.DEBUG) {
+            Timber.d("OnTextChanged: $s")
+        }
         if (!locked)
             onTextChanged(s)
         else
@@ -27,6 +29,12 @@ class DefaultTextWatcher(val onTextChanged: (Editable) -> Unit) : TextInputTextW
 
     override fun unlock() {
         locked = false
+    }
+
+    fun pause(block: () -> Unit) = synchronized(this) {
+        lock()
+        block()
+        unlock()
     }
 }
 

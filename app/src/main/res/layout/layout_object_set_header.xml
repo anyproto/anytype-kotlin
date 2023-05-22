@@ -71,6 +71,22 @@
         android:hint="@string/hint_title"
         tools:text="Title" />
 
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/tvSetDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
+        android:hint="@string/description"
+        style="@style/TextView.ContentStyle.Relations.2"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:maxLines="3"
+        android:ellipsize="end"
+        android:background="@null"
+        tools:text="Description" />
+
     <com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"

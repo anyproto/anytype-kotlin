@@ -79,7 +79,9 @@ class MyRelationsDelegate @Inject constructor(
                     DVFilter(
                         relation = Relations.RELATION_KEY,
                         condition = DVFilterCondition.NOT_IN,
-                        value = Relations.systemRelationKeys
+                        value = Relations.systemRelationKeys.filter { key ->
+                            key != Relations.DESCRIPTION
+                        }
                     )
                 )
             }

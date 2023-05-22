@@ -112,7 +112,7 @@ fun SpaceImageBlock(
                     .noRippleClickable {
                         onSpaceIconClick.invoke()
                     }
-                    .background(color = colorResource(id = R.color.shape_primary))
+                    .background(color = colorResource(id = R.color.glyph_selected))
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(
@@ -155,7 +155,7 @@ fun SpaceImageBlock(
                 modifier = Modifier
                     .size(mainSize)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(color = colorResource(id = R.color.shape_primary))
+                    .background(color = colorResource(id = R.color.glyph_selected))
                     .noRippleClickable {
                         onSpaceIconClick.invoke()
                     }

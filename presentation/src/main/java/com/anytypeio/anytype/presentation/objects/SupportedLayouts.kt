@@ -26,6 +26,16 @@ object SupportedLayouts {
         ObjectType.Layout.IMAGE,
     )
 
+    val createObjectLayouts = listOf(
+        ObjectType.Layout.BASIC,
+        ObjectType.Layout.PROFILE,
+        ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION,
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.BOOKMARK
+    )
+
     fun isSupported(layout: ObjectType.Layout?) : Boolean {
         return layouts.contains(layout)
     }

@@ -13,6 +13,8 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -5872,9 +5874,22 @@ class EditorViewModel(
             val excludeTypes = orchestrator.stores.details.current().details[context]?.type
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                    workspaceId = workspaceManager.getCurrentWorkspace()
-                ),
+                filters = buildList {
+                    addAll(
+                        ObjectSearchConstants.filterObjectTypeLibrary(
+                            workspaceId = workspaceManager.getCurrentWorkspace()
+                        )
+                    )
+                    add(
+                        DVFilter(
+                            relation = Relations.RECOMMENDED_LAYOUT,
+                            condition = DVFilterCondition.IN,
+                            value = SupportedLayouts.createObjectLayouts.map { layout ->
+                                layout.code.toDouble()
+                            }
+                        )
+                    )
+                },
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.execute(params).fold(

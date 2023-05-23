@@ -361,4 +361,9 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="on_boarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="on_boarding_join">Join</string>
     <string name="on_boarding_log_in">Log in</string>
+
+    <string name="onboarding_invite_code_title">Enter your invite code</string>
+    <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
+    <string name="onboarding_void_title">This is your Void</string>
+    <string name="onboarding_void_description">Everything you create will be stored here. It is a special encrypted place, which exist on your machine and is backed up to the network.</string>
 </resources>

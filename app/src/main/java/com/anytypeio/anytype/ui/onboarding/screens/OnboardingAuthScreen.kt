@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.onboarding
+package com.anytypeio.anytype.ui.onboarding.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +32,8 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
+import com.anytypeio.anytype.ui.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.ui.onboarding.OnboardingScreenContract
 
 
 @Preview
@@ -60,7 +62,7 @@ fun AuthScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
             Title(modifier = Modifier)
             Description()
         }
@@ -79,8 +81,7 @@ fun Title(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(top = 226.dp),
+            .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {
         Text(

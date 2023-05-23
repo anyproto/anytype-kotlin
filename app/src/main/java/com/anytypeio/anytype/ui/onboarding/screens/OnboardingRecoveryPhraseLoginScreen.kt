@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.onboarding
+package com.anytypeio.anytype.ui.onboarding.screens
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable

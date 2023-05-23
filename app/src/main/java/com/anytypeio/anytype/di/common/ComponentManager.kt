@@ -64,6 +64,7 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingAuthComponent
+import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingInviteCodeComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -900,6 +901,12 @@ class ComponentManager(
 
     val onboardingAuthComponent = Component {
         DaggerOnboardingAuthComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val onboardingInviteCodeComponent = Component {
+        DaggerOnboardingInviteCodeComponent
             .factory()
             .create(findComponentDependencies())
     }

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingInviteCodeDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
@@ -78,7 +79,8 @@ interface MainComponent :
     MigrationErrorDependencies,
     BacklinkOrAddToObjectDependencies,
     FilesStorageDependencies,
-    OnboardingAuthDependencies {
+    OnboardingAuthDependencies,
+    OnboardingInviteCodeDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -190,5 +192,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(OnboardingAuthDependencies::class)
     abstract fun provideOnboardingAuthDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingInviteCodeDependencies::class)
+    abstract fun provideOnboardingInviteCodeDependencies(component: MainComponent): ComponentDependencies
 
 }

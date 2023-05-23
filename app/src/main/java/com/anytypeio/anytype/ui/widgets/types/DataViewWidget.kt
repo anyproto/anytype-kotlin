@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -83,7 +83,10 @@ fun DataViewListWidgetCard(
                     is Widget.Source.Default -> {
                         source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
                     }
-                    is Widget.Source.Bundled -> { stringResource(id = source.res()) }
+
+                    is Widget.Source.Bundled -> {
+                        stringResource(id = source.res())
+                    }
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
@@ -145,13 +148,12 @@ private fun DataViewTabs(
     LazyRow(
         modifier = Modifier
             .height(40.dp)
-            .fillMaxWidth()
-            .padding(end = 16.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(
+        itemsIndexed(
             items = item.tabs,
-            itemContent = { tab ->
+            itemContent = { index, tab ->
                 Text(
                     text = tab.name,
                     style = PreviewTitle2Medium,
@@ -160,7 +162,10 @@ private fun DataViewTabs(
                     else
                         colorResource(id = R.color.text_secondary_widgets),
                     modifier = Modifier
-                        .padding(start = 16.dp)
+                        .padding(
+                            start = 16.dp,
+                            end = if (index == item.tabs.lastIndex) 16.dp else 0.dp
+                        )
                         .noRippleClickable {
                             onChangeWidgetView(item.id, tab.id)
                         },
@@ -239,7 +244,7 @@ fun ListWidgetElement(
 }
 
 @StringRes
-fun Widget.Source.Bundled.res() : Int = when(this) {
+fun Widget.Source.Bundled.res(): Int = when (this) {
     Widget.Source.Bundled.Favorites -> R.string.favorites
     Widget.Source.Bundled.Recent -> R.string.recent
     Widget.Source.Bundled.Sets -> R.string.sets

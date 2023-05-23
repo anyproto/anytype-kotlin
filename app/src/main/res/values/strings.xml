@@ -256,7 +256,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="if_you_lose_recovery_phrase_warning">If you lose the recovery phrase and get logged out you will not be able to ever access your data again. Save this recovery phrase outside of Anytype for data recovery.</string>
     <string name="card_size">Card size</string>
     <string name="clear_cache">Clear cache</string>
-    <string name="download_from_node">All files will be deleted from your current device. They can be downloaded again from a backup node or another device.</string>
+    <string name="clear_cache_title">Are you sure?</string>
+    <string name="download_from_node">All media files stored in Anytype will be deleted from your current device. They can be downloaded again from a backup node or another device.</string>
 
     <string name="new_profile">New profile</string>
     <string name="back_up_your_phrase">Back up phrase</string>

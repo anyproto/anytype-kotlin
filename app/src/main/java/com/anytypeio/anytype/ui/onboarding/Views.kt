@@ -33,9 +33,9 @@ import com.anytypeio.anytype.core_ui.ColorMnemonicPhrase
 import com.anytypeio.anytype.core_ui.ColorPagerIndicator
 import com.anytypeio.anytype.core_ui.ColorPagerIndicatorCurrent
 import com.anytypeio.anytype.core_ui.ColorPagerIndicatorText
+import com.anytypeio.anytype.core_ui.ColorPlaceholderText
 import com.anytypeio.anytype.core_ui.ColorTextInput
 import com.anytypeio.anytype.core_ui.ColorTextInputCursor
-import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -126,7 +126,7 @@ fun MnemonicPhraseWidgetPreview() {
 fun OnboardingInput(
     modifier: Modifier = Modifier,
     text: MutableState<String>,
-    placeholder: String
+    placeholder: String? = null
 ) {
     TextField(
         modifier = modifier.then(
@@ -149,6 +149,11 @@ fun OnboardingInput(
             unfocusedBorderColor = Color.Transparent,
             cursorColor = ColorTextInputCursor
         ),
+        placeholder = {
+           placeholder?.let { 
+               Text(text = it, style = UXBody.copy(color = ColorPlaceholderText))
+           } 
+        },
         singleLine = true,
     )
 }

@@ -32,13 +32,24 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.ui.onboarding.conditional
 
 @Composable
-fun MnemonicPhraseScreenWrapper(viewModel: OnboardingMnemonicViewModel) {
+fun MnemonicPhraseScreenWrapper(
+    viewModel: OnboardingMnemonicViewModel,
+    openSoulCreation: () -> Unit
+) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
-    MnemonicPhraseScreen(state) { viewModel.openMnemonic() }
+    MnemonicPhraseScreen(
+        state = state,
+        reviewMnemonic = { viewModel.openMnemonic() },
+        openSoulCreation = openSoulCreation
+    )
 }
 
 @Composable
-fun MnemonicPhraseScreen(state: OnboardingMnemonicViewModel.State, openMnemonic: () -> Unit) {
+fun MnemonicPhraseScreen(
+    state: OnboardingMnemonicViewModel.State,
+    reviewMnemonic: () -> Unit,
+    openSoulCreation: () -> Unit
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -52,13 +63,18 @@ fun MnemonicPhraseScreen(state: OnboardingMnemonicViewModel.State, openMnemonic:
         }
         MnemonicButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
-            openMnemonic = openMnemonic
+            openMnemonic = reviewMnemonic,
+            openSoulCreation = openSoulCreation
         )
     }
 }
 
 @Composable
-fun MnemonicButtons(modifier: Modifier = Modifier, openMnemonic: () -> Unit) {
+fun MnemonicButtons(
+    modifier: Modifier = Modifier,
+    openMnemonic: () -> Unit,
+    openSoulCreation: () -> Unit
+) {
     Column(modifier.wrapContentHeight()) {
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.onboarding_mnemonic_show_key),
@@ -80,7 +96,7 @@ fun MnemonicButtons(modifier: Modifier = Modifier, openMnemonic: () -> Unit) {
                     bottom = 56.dp
                 ),
             onClick = {
-                // todo
+                openSoulCreation.invoke()
             }, size = ButtonSize.Large
         )
     }

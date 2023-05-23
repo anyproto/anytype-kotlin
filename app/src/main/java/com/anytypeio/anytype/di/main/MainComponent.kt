@@ -24,6 +24,7 @@ import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingInviteCodeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
@@ -82,7 +83,8 @@ interface MainComponent :
     FilesStorageDependencies,
     OnboardingAuthDependencies,
     OnboardingInviteCodeDependencies,
-    OnboardingMnemonicDependencies {
+    OnboardingMnemonicDependencies,
+    OnboardingSoulCreationDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -204,5 +206,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(OnboardingMnemonicDependencies::class)
     abstract fun provideOnboardingMnemonicDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingSoulCreationDependencies::class)
+    abstract fun provideOnboardingSoulCreationDependencies(component: MainComponent): ComponentDependencies
 
 }

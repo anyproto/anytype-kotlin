@@ -31,6 +31,8 @@ import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.InviteCodeScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.RecoveryScreenWrapper
@@ -129,8 +131,39 @@ class OnboardingFragment : BaseComposeFragment() {
                     state = Lifecycle.State.DESTROYED
                 )
                 MnemonicPhraseScreenWrapper(
-                    viewModel = daggerViewModel { component.get().getViewModel() }
+                    viewModel = daggerViewModel { component.get().getViewModel() },
+                    openSoulCreation = {
+                        navController.navigate(OnboardingNavigation.createSoul)
+                    }
                 )
+            }
+            composable(OnboardingNavigation.createSoul) {
+                currentPage.value = Page.SOUL_CREATION
+                val component = componentManager().onboardingSoulCreationComponent.ReleaseOn(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    state = Lifecycle.State.DESTROYED
+                )
+                val viewModel = daggerViewModel { component.get().getViewModel() }
+                CreateSoulWrapper(viewModel)
+                val navigationCommands =
+                    viewModel.navigationFlow.collectAsState(
+                        initial = OnboardingSoulCreationViewModel.Navigation.Idle
+                    )
+                LaunchedEffect(key1 = navigationCommands.value) {
+                    when (navigationCommands.value) {
+                        is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {
+                            navController.navigate(
+                                route = OnboardingNavigation.createSoulAnim
+                            )
+                        }
+                        else -> {
+
+                        }
+                    }
+                }
+            }
+            composable(OnboardingNavigation.createSoulAnim) {
+                CreateSoulAnimWrapper()
             }
         }
     }

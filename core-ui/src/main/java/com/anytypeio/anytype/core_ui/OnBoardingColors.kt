@@ -27,3 +27,4 @@ val ColorTextInput = Color(0xFFDBDAD4)
 val ColorTextInputCursor = Color(0xFFDBDAD4)
 
 val ColorBackgroundField = Color(0x26DAD7CA)
+val ColorPlaceholderText = Color(0x4DFFFFFF)

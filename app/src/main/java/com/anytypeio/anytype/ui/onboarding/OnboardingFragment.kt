@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -20,18 +21,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
+import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.InviteCodeScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
 
-class OnBoardingFragment : BaseComposeFragment() {
+class OnboardingFragment : BaseComposeFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,12 +72,12 @@ class OnBoardingFragment : BaseComposeFragment() {
         NavHost(navController, startDestination = OnboardingNavigation.auth) {
             composable(OnboardingNavigation.auth) {
                 currentPage.value = Page.AUTH
-                val component = componentManager().onboardingAuthComponent.get()
-                val viewModel: OnboardingAuthViewModel = daggerViewModel {
-                    component.getViewModel()
-                }
+                val component = componentManager().onboardingAuthComponent.ReleaseOn(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    state = Lifecycle.State.DESTROYED
+                )
                 AuthScreenWrapper(
-                    viewModel = viewModel,
+                    viewModel = daggerViewModel { component.get().getViewModel() },
                     navigateToInviteCode = {
                         navController.navigate(OnboardingNavigation.inviteCode)
                     },
@@ -83,10 +88,15 @@ class OnBoardingFragment : BaseComposeFragment() {
             }
             composable(OnboardingNavigation.inviteCode) {
                 currentPage.value = Page.INVITE_CODE
-                val component = componentManager().onboardingInviteCodeComponent.get()
+                val component = componentManager().onboardingInviteCodeComponent.ReleaseOn(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    state = Lifecycle.State.DESTROYED
+                )
+
                 val viewModel: OnboardingInviteCodeViewModel = daggerViewModel {
-                    component.getViewModel()
+                    component.get().getViewModel()
                 }
+
                 InviteCodeScreenWrapper(viewModel = viewModel)
                 val navigationCommands =
                     viewModel.navigationFlow.collectAsState(
@@ -108,7 +118,19 @@ class OnBoardingFragment : BaseComposeFragment() {
             }
             composable(OnboardingNavigation.void) {
                 currentPage.value = Page.VOID
-                VoidScreenWrapper()
+                VoidScreenWrapper {
+                    navController.navigate(OnboardingNavigation.mnemonic)
+                }
+            }
+            composable(OnboardingNavigation.mnemonic) {
+                currentPage.value = Page.MNEMONIC
+                val component = componentManager().onboardingMnemonicComponent.ReleaseOn(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    state = Lifecycle.State.DESTROYED
+                )
+                MnemonicPhraseScreenWrapper(
+                    viewModel = daggerViewModel { component.get().getViewModel() }
+                )
             }
         }
     }
@@ -117,6 +139,25 @@ class OnBoardingFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {}
 
+}
+
+@Composable
+fun <T> ComponentManager.Component<T>.ReleaseOn(
+    viewLifecycleOwner: LifecycleOwner,
+    state: Lifecycle.State
+): ComponentManager.Component<T> {
+    val that = this
+    DisposableEffect(
+        key1 = viewLifecycleOwner.lifecycle.currentState.isAtLeast(state),
+        effect = {
+            onDispose {
+                if (viewLifecycleOwner.lifecycle.currentState == state) {
+                    that.release()
+                }
+            }
+        }
+    )
+    return that
 }
 
 fun Modifier.conditional(

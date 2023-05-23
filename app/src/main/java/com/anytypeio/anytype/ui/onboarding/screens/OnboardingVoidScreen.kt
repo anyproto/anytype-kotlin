@@ -19,16 +19,20 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
+import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
-fun VoidScreenWrapper() {
-    VoidScreen()
+fun VoidScreenWrapper(navigateToMnemonicPhrase: () -> Unit) {
+    VoidScreen(
+        navigateToMnemonicPhrase
+    )
 }
 
 @Composable
-fun VoidScreen() {
+fun VoidScreen(navigateToMnemonicPhrase: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -39,6 +43,15 @@ fun VoidScreen() {
             Spacer(modifier = Modifier.height(12.dp))
             VoidDescription()
         }
+        OnBoardingButtonPrimary(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 56.dp)
+                .align(Alignment.BottomCenter),
+            text = stringResource(id = R.string.next),
+            onClick = { navigateToMnemonicPhrase.invoke() },
+            size = ButtonSize.Large
+        )
     }
 }
 
@@ -47,7 +60,8 @@ private fun VoidTitle() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight(), contentAlignment = Alignment.Center
+            .wrapContentHeight(),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             modifier = Modifier,

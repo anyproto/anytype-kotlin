@@ -65,6 +65,7 @@ import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingAuthComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingInviteCodeComponent
+import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -907,6 +908,12 @@ class ComponentManager(
 
     val onboardingInviteCodeComponent = Component {
         DaggerOnboardingInviteCodeComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val onboardingMnemonicComponent = Component {
+        DaggerOnboardingMnemonicComponent
             .factory()
             .create(findComponentDependencies())
     }

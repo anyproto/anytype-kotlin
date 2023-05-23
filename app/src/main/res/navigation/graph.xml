@@ -332,7 +332,7 @@
 
         <fragment
             android:id="@+id/authStartScreen"
-            android:name="com.anytypeio.anytype.ui.onboarding.OnBoardingFragment" />
+            android:name="com.anytypeio.anytype.ui.onboarding.OnboardingFragment" />
 
     </navigation>
 

@@ -85,7 +85,7 @@ fun Title(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(id = R.string.on_boarding_auth_title),
+            text = stringResource(id = R.string.onboarding_auth_title),
             textAlign = TextAlign.Center,
             style = HeadlineOnBoardingTitle.copy(color = OnBoardingTextPrimaryColor)
         )
@@ -102,7 +102,7 @@ fun Description(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(id = R.string.on_boarding_auth_description),
+            text = stringResource(id = R.string.onboarding_auth_description),
             textAlign = TextAlign.Center,
             style = HeadlineOnBoardingDescription.copy(color = OnBoardingTextSecondaryColor),
         )
@@ -113,7 +113,7 @@ fun Description(modifier: Modifier = Modifier) {
 fun SignButtons(navigateToInviteCode: () -> Unit, navigateToLogin: () -> Unit) {
     Row {
         OnBoardingButtonPrimary(
-            text = stringResource(id = R.string.on_boarding_join),
+            text = stringResource(id = R.string.onboarding_join),
             onClick = {
                 navigateToInviteCode.invoke()
             },
@@ -124,7 +124,7 @@ fun SignButtons(navigateToInviteCode: () -> Unit, navigateToLogin: () -> Unit) {
                 .padding(start = 32.dp, end = 6.dp)
         )
         OnBoardingButtonSecondary(
-            text = stringResource(id = R.string.on_boarding_log_in),
+            text = stringResource(id = R.string.onboarding_log_in),
             onClick = {
                 navigateToLogin.invoke()
             },
@@ -144,22 +144,22 @@ fun TermsAndPolicy(
 ) {
     val annotatedString = buildAnnotatedString {
         append(
-            stringResource(id = R.string.on_boarding_terms_and_policy_prefix)
+            stringResource(id = R.string.onboarding_terms_and_policy_prefix)
         )
 
         pushStringAnnotation(tag = TermsOfUseTag, annotation = "")
         withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(id = R.string.on_boarding_terms_and_policy_terms))
+            append(stringResource(id = R.string.onboarding_terms_and_policy_terms))
         }
         pop()
 
         append(
-            stringResource(id = R.string.on_boarding_terms_and_policy_infix)
+            stringResource(id = R.string.onboarding_terms_and_policy_infix)
         )
 
         pushStringAnnotation(tag = PrivacyPolicyTag, annotation = "")
         withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(id = R.string.on_boarding_terms_and_policy_privacy))
+            append(stringResource(id = R.string.onboarding_terms_and_policy_privacy))
         }
         pop()
     }

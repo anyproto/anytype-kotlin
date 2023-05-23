@@ -353,17 +353,20 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="visit_forum">Visit forum</string>
     <string name="migration_error_msg">Something might have gone wrong. Please visit our forum, read the migration instructions, and ask questions to our team.</string>
 
-    <string name="on_boarding_auth_title">the\neverything\napp</string>
-    <string name="on_boarding_auth_description">Welcome to Anytype: a place to securely write notes and documents, manage tasks, and save important content from the web.</string>
-    <string name="on_boarding_terms_and_policy_prefix">"By continuing you agree to "</string>
-    <string name="on_boarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
-    <string name="on_boarding_terms_and_policy_infix">" and "</string>
-    <string name="on_boarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="on_boarding_join">Join</string>
-    <string name="on_boarding_log_in">Log in</string>
-
+    <string name="onboarding_auth_title">the\neverything\napp</string>
+    <string name="onboarding_auth_description">Welcome to Anytype: a place to securely write notes and documents, manage tasks, and save important content from the web.</string>
+    <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
+    <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
+    <string name="onboarding_terms_and_policy_infix">" and "</string>
+    <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
+    <string name="onboarding_join">Join</string>
+    <string name="onboarding_log_in">Log in</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">Everything you create will be stored here. It is a special encrypted place, which exist on your machine and is backed up to the network.</string>
+    <string name="onboarding_mnemonic_title">Your Void is encrypted by the Key</string>
+    <string name="onboarding_mnemonic_description">The Key is a set of 12 words. It is unique for the Void and can’t be changed. You only one person who knows the Key. If you lose it, no one, including us, can help restore your Void. Store it securely.</string>
+    <string name="onboarding_mnemonic_show_key">Show me the Key</string>
+    <string name="onboarding_mnemonic_check_later">Check later</string>
 </resources>

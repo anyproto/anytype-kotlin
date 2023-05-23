@@ -87,7 +87,6 @@ class OnboardingInviteCodeViewModel @Inject constructor(
                             )
                         }
                         else -> {
-                            println("KEK: ${error.message.toString()}")
                             state.value = InviteCodeViewState.Error(
                                 "Error while creating an account: ${error.message ?: "Unknown error"}"
                             )

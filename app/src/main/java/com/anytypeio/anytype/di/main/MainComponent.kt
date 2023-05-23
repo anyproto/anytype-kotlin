@@ -23,6 +23,7 @@ import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingInviteCodeDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
@@ -80,7 +81,8 @@ interface MainComponent :
     BacklinkOrAddToObjectDependencies,
     FilesStorageDependencies,
     OnboardingAuthDependencies,
-    OnboardingInviteCodeDependencies {
+    OnboardingInviteCodeDependencies,
+    OnboardingMnemonicDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -197,5 +199,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(OnboardingInviteCodeDependencies::class)
     abstract fun provideOnboardingInviteCodeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingMnemonicDependencies::class)
+    abstract fun provideOnboardingMnemonicDependencies(component: MainComponent): ComponentDependencies
 
 }

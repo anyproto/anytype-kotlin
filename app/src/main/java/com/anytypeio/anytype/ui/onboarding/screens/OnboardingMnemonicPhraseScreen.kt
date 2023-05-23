@@ -1,1 +1,157 @@
 package com.anytypeio.anytype.ui.onboarding.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.ColorBackgroundField
+import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
+import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
+import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
+import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
+import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
+import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
+import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicViewModel
+import com.anytypeio.anytype.ui.onboarding.conditional
+
+@Composable
+fun MnemonicPhraseScreenWrapper(viewModel: OnboardingMnemonicViewModel) {
+    val state = viewModel.state.collectAsStateWithLifecycle().value
+    MnemonicPhraseScreen(state) { viewModel.openMnemonic() }
+}
+
+@Composable
+fun MnemonicPhraseScreen(state: OnboardingMnemonicViewModel.State, openMnemonic: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            MnemonicTitle()
+            MnemonicPhrase(state)
+            MnemonicDescription()
+        }
+        MnemonicButtons(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            openMnemonic = openMnemonic
+        )
+    }
+}
+
+@Composable
+fun MnemonicButtons(modifier: Modifier = Modifier, openMnemonic: () -> Unit) {
+    Column(modifier.wrapContentHeight()) {
+        OnBoardingButtonPrimary(
+            text = stringResource(id = R.string.onboarding_mnemonic_show_key),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            onClick = {
+                openMnemonic.invoke()
+            }, size = ButtonSize.Large
+        )
+        OnBoardingButtonSecondary(
+            text = stringResource(id = R.string.onboarding_mnemonic_check_later),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = 14.dp,
+                    end = 16.dp,
+                    bottom = 56.dp
+                ),
+            onClick = {
+                // todo
+            }, size = ButtonSize.Large
+        )
+    }
+}
+
+@Composable
+fun MnemonicTitle() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .wrapContentHeight(), contentAlignment = Alignment.Center
+    ) {
+        Text(
+            modifier = Modifier,
+            text = stringResource(R.string.onboarding_mnemonic_title),
+            style = Title1.copy(
+                color = OnBoardingTextPrimaryColor
+            )
+        )
+    }
+}
+
+@Composable
+fun MnemonicPhrase(state: OnboardingMnemonicViewModel.State) {
+    when (state) {
+        is OnboardingMnemonicViewModel.State.Idle -> {}
+        is OnboardingMnemonicViewModel.State.Mnemonic -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .background(color = ColorBackgroundField, shape = RoundedCornerShape(24.dp))
+                    .wrapContentHeight()
+            ) {
+                MnemonicPhraseWidget(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .conditional(
+                            !state.visible, ifTrue = {
+                                blur(15.dp)
+                            }
+                        )
+                        .padding(
+                            start = 16.dp,
+                            top = 16.dp,
+                            end = 16.dp,
+                            bottom = 16.dp
+                        ),
+                    mnemonic = state.mnemonicPhrase
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MnemonicDescription() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .wrapContentHeight(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.onboarding_mnemonic_description),
+            style = HeadlineOnBoardingDescription.copy(
+                color = OnBoardingTextSecondaryColor,
+                textAlign = TextAlign.Center
+            )
+        )
+    }
+}

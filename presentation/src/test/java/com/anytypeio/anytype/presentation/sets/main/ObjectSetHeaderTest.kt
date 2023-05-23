@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
@@ -70,7 +71,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
 
             assertEquals(
                 expected = mockObjectSet.title.id,
-                actual = viewModel.header.value?.id
+                actual = (viewModel.header.value as SetOrCollectionHeaderState.Default).title.id
             )
 
             assertEquals(
@@ -125,7 +126,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
 
             assertEquals(
                 expected = mockObjectSet.title.id,
-                actual = viewModel.header.value?.id
+                actual = (viewModel.header.value as SetOrCollectionHeaderState.Default).title.id
             )
 
             assertEquals(

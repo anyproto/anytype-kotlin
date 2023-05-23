@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -66,11 +67,11 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
+import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
@@ -94,7 +95,6 @@ import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
 import javax.inject.Inject
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -108,6 +108,15 @@ open class ObjectSetFragment :
 
     private val title: TextInputWidget
         get() = binding.objectHeader.root.findViewById(R.id.tvSetTitle)
+
+    private val tvDescription: AppCompatEditText
+        get() = binding.objectHeader.root.findViewById(R.id.tvSetDescription)
+
+    private val tvDescriptionTextWatcher by lazy {
+        DefaultTextWatcher {
+            vm.onDescriptionChanged(it.toString())
+        }
+    }
 
     private val header: LinearLayout
         get() = binding.objectHeader.root
@@ -283,6 +292,9 @@ open class ObjectSetFragment :
         title.addTextChangedListener(
             DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
         )
+
+        tvDescription.syncFocusWithImeVisibility()
+        tvDescription.addTextChangedListener(tvDescriptionTextWatcher)
 
         setFragmentResultListener(BaseObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val query = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
@@ -554,16 +566,16 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun bindHeader(header: BlockView.Title.Basic) {
-        if (title.text.toString() != header.text) {
+    private fun bindHeader(header: SetOrCollectionHeaderState.Default) {
+        if (title.text.toString() != header.title.text) {
             title.pauseTextWatchers {
-                title.setText(header.text)
+                title.setText(header.title.text)
             }
         }
-        binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = header.text
+        binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = header.title.text
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
-            if (header.emoji != null) visible() else gone()
+            if (header.title.emoji != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()
                 .onEach { vm.onIconClicked() }
@@ -571,7 +583,7 @@ open class ObjectSetFragment :
         }
 
         binding.objectHeader.root.findViewById<View>(R.id.imageIcon).apply {
-            if (header.image != null) visible() else gone()
+            if (header.title.image != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()
                 .onEach { vm.onIconClicked() }
@@ -579,13 +591,13 @@ open class ObjectSetFragment :
         }
 
         binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
-            .setEmojiOrNull(header.emoji)
+            .setEmojiOrNull(header.title.emoji)
 
-        if (header.image != null) {
+        if (header.title.image != null) {
             binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
                 Glide
                     .with(this)
-                    .load(header.image)
+                    .load(header.title.image)
                     .centerCrop()
                     .into(this)
             }
@@ -593,10 +605,23 @@ open class ObjectSetFragment :
             binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
         }
 
+        val description = header.description
+
+        if (description is SetOrCollectionHeaderState.Description.Default) {
+            tvDescriptionTextWatcher.pause {
+                if (tvDescription.text.toString() != description.description) {
+                    tvDescription.setText(description.description)
+                }
+            }
+            tvDescription.visible()
+        } else {
+            tvDescription.gone()
+        }
+
         setCover(
-            coverColor = header.coverColor,
-            coverGradient = header.coverGradient,
-            coverImage = header.coverImage
+            coverColor = header.title.coverColor,
+            coverGradient = header.title.coverGradient,
+            coverImage = header.title.coverImage
         )
     }
 
@@ -928,7 +953,16 @@ open class ObjectSetFragment :
     override fun onStart() {
         super.onStart()
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
-        jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { bindHeader(it) }
+        jobs += lifecycleScope.subscribe(vm.header) { header ->
+            when(header) {
+                is SetOrCollectionHeaderState.Default -> {
+                    bindHeader(header)
+                }
+                is SetOrCollectionHeaderState.None -> {
+
+                }
+            }
+        }
         jobs += lifecycleScope.subscribe(vm.currentViewer) { setupDataViewViewState(it) }
         jobs += lifecycleScope.subscribe(vm.error) { err ->
             if (err.isNullOrEmpty())

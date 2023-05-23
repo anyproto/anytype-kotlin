@@ -54,7 +54,7 @@ class ObjectSetSettingsViewModel(
                                 result.add(ViewerRelationListView.Setting.CardSize.Small)
                             }
                             Block.Content.DataView.Viewer.Size.MEDIUM -> {
-                                result.add(ViewerRelationListView.Setting.CardSize.Large)
+                                result.add(ViewerRelationListView.Setting.CardSize.Small)
                             }
                             Block.Content.DataView.Viewer.Size.LARGE -> {
                                 result.add(ViewerRelationListView.Setting.CardSize.Large)

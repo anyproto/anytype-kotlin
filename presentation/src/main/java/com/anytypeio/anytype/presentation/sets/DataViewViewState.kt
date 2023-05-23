@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 sealed class DataViewViewState {
@@ -19,4 +20,17 @@ sealed class DataViewViewState {
 
     object Init: DataViewViewState()
     data class Error(val msg: String) : DataViewViewState()
+}
+
+sealed class SetOrCollectionHeaderState {
+    object None : SetOrCollectionHeaderState()
+    data class Default(
+        val title: BlockView.Title.Basic,
+        val description: Description
+    ) : SetOrCollectionHeaderState()
+
+    sealed class Description {
+        object None: Description()
+        data class Default(val description: String) : Description()
+    }
 }

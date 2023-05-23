@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -2118,6 +2119,15 @@ class Middleware(
         val response = service.setObjectSource(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun fileSpaceUsage(): FileLimits {
+        val request = Rpc.File.SpaceUsage.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceUsage(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toCoreModel()
     }
 
     private fun logRequest(any: Any) {

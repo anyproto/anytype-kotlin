@@ -84,6 +84,8 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -336,6 +338,10 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var getObjectTypes: GetObjectTypes
 
+    @Mock
+    lateinit var fileLimitsEventChannel: FileLimitsEventChannel
+    lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
+
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
         val storage = Editor.Storage()
@@ -414,6 +420,7 @@ open class EditorPresentationTestSetup {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
 
+        interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
         return EditorViewModel(
             openPage = openPage,
             closePage = closePage,
@@ -447,14 +454,15 @@ open class EditorPresentationTestSetup {
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
             createObject = createObject,
-            featureToggles = mock(),
             objectToSet = objectToSet,
+            objectToCollection = convertObjectToCollection,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
+            featureToggles = mock(),
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
-            objectToCollection = convertObjectToCollection
+            interceptFileLimitEvents = interceptFileLimitEvents
         )
     }
 

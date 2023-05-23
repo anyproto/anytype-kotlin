@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -392,4 +393,5 @@ interface BlockRepository {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
+    suspend fun fileSpaceUsage(): FileLimits
 }

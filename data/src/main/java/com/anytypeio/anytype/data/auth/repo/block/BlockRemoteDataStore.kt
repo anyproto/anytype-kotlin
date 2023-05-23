@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -726,5 +727,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return remote.setQueryToSet(command)
+    }
+
+    override suspend fun fileSpaceUsage(): FileLimits {
+        return remote.fileSpaceUsage()
     }
 }

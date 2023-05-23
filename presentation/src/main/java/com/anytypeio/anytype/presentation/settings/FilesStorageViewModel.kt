@@ -1,16 +1,18 @@
 package com.anytypeio.anytype.presentation.settings
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
+import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
@@ -23,17 +25,21 @@ import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageOffloadEvent
+import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -45,32 +51,80 @@ class FilesStorageViewModel(
     private val clearFileCache: ClearFileCache,
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
-    private val appCoroutineDispatchers: AppCoroutineDispatchers
+    private val appCoroutineDispatchers: AppCoroutineDispatchers,
+    private val fileSpaceUsage: FileSpaceUsage,
+    private val interceptFileLimitEvents: InterceptFileLimitEvents,
+    private val buildProvider: BuildProvider
 ) : ViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val isClearFileCacheInProgress = MutableStateFlow(false)
 
-    private val _state = MutableStateFlow<FilesStorageScreenState>(FilesStorageScreenState.Idle)
-    val state: StateFlow<FilesStorageScreenState> = _state
+    private val _state = MutableStateFlow(ScreenState.empty())
+    val state: StateFlow<ScreenState> = _state
+    val toasts = MutableSharedFlow<String>(replay = 0)
 
-    private val profileId = configStorage.get().profile
-    private val workspaceId = configStorage.get().workspace
+    private val jobs = mutableListOf<Job>()
 
     init {
+        subscribeToViewEvents()
+    }
+
+    fun onStart() {
+        subscribeToSpace()
+        subscribeToFileLimitEvents()
+    }
+
+    fun onStop() {
+        viewModelScope.launch {
+            storelessSubscriptionContainer.unsubscribe(listOf(SPACE_STORAGE_SUBSCRIPTION_ID))
+        }
+        jobs.cancel()
+    }
+
+    private fun subscribeToViewEvents() {
         events
             .throttleFirst()
-            .onEach { event -> dispatchAnalyticsEvent(event) }
-            .onEach { event -> dispatchCommand(event) }
+            .onEach { event ->
+                dispatchAnalyticsEvent(event)
+                dispatchCommand(event)
+            }
             .launchIn(viewModelScope)
-        subscribeToSpace()
         viewModelScope.launch { analytics.sendSettingsStorageEvent() }
+    }
+
+    private fun subscribeToFileLimitEvents() {
+        jobs += viewModelScope.launch {
+            interceptFileLimitEvents.run(Unit)
+                .onEach { events ->
+                    val currentState = _state.value
+                    val newState = currentState.updateState(events)
+                    _state.value = newState
+                }
+                .collect()
+        }
+    }
+
+    private fun ScreenState.updateState(events: List<FileLimitsEvent>): ScreenState {
+        var newState = this
+        events.forEach { event ->
+            newState = when (event) {
+                is FileLimitsEvent.LocalUsage -> newState.copy(
+                    localUsage = bytesToHumanReadableSize(event.bytesUsage)
+                )
+                is FileLimitsEvent.SpaceUsage -> newState.copy(
+                    spaceUsage = bytesToHumanReadableSize(event.bytesUsage)
+                )
+                else -> newState
+            }
+        }
+        return newState
     }
 
     fun onClearFileCacheAccepted() {
         Timber.d("onClearFileCacheAccepted")
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             analytics.sendSettingsStorageOffloadEvent()
         }
         viewModelScope.launch {
@@ -82,7 +136,7 @@ class FilesStorageViewModel(
                     is Interactor.Status.Error -> {
                         isClearFileCacheInProgress.value = false
                         Timber.e(status.throwable, "Error while clearing file cache")
-                        // TODO send toast
+                        toasts.emit("Error while clearing the file cache")
                     }
                     Interactor.Status.Success -> {
                         viewModelScope.sendEvent(
@@ -104,7 +158,7 @@ class FilesStorageViewModel(
     private suspend fun dispatchCommand(event: Event) {
         when (event) {
             Event.OnManageFilesClicked -> {
-                commands.emit(Command.OpenRemoteStorageScreen(subscription = Subscription.Files.id))
+                commands.emit(Command.OpenRemoteStorageScreen(Subscription.Files.id))
                 analytics.sendSettingsStorageManageEvent()
             }
             Event.OnOffloadFilesClicked -> {
@@ -132,40 +186,52 @@ class FilesStorageViewModel(
     }
 
     private fun subscribeToSpace() {
-        viewModelScope.launch {
-            storelessSubscriptionContainer.subscribe(
-                StoreSearchByIdsParams(
-                    subscription = SPACE_SUBSCRIPTION_ID,
-                    targets = listOf(workspaceId, profileId),
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.NAME,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_OPTION
-                    )
+        val workspaceId = configStorage.get().workspace
+        val profileId = configStorage.get().profile
+        jobs += viewModelScope.launch {
+            val subscribeParams = StoreSearchByIdsParams(
+                subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
+                targets = listOf(workspaceId, profileId),
+                keys = listOf(
+                    Relations.ID,
+                    Relations.NAME,
+                    Relations.ICON_EMOJI,
+                    Relations.ICON_IMAGE,
+                    Relations.ICON_OPTION
                 )
-            ).map { result ->
+            )
+            combine(
+                fileSpaceUsage.asFlow(Unit),
+                storelessSubscriptionContainer.subscribe(subscribeParams)
+            ) { spaceUsage, result ->
                 val workspace = result.find { it.id == workspaceId }
-                val spaceUsage = (500 * 1024 * 1024).toDouble()
-                val spaceLimit = (1024 * 1024 * 1024).toDouble()
-                val localUsage = (104 * 1024 * 1024).toDouble()
-                FilesStorageScreenState.SpaceData(
-                    spaceName = workspace?.name,
+                val bytesUsage = spaceUsage.bytesUsage
+                val bytesLimit = spaceUsage.bytesLimit
+                val percentUsage =
+                    if (bytesUsage != null && bytesLimit != null && bytesLimit != 0L) {
+                        (bytesUsage.toFloat() / bytesLimit.toFloat())
+                    } else {
+                        null
+                    }
+                ScreenState(
+                    spaceName = workspace?.name.orEmpty(),
                     spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
-                    spaceUsage = bytesToHumanReadableSize(spaceUsage),
-                    percentUsage = (spaceUsage / spaceLimit).toFloat(),
+                    spaceUsage = bytesUsage?.let { bytesToHumanReadableSize(it) }.orEmpty(),
+                    percentUsage = percentUsage,
                     device = getDeviceName(),
-                    localUsage = bytesToHumanReadableSize(localUsage),
-                    spaceLimit = bytesToHumanReadableSize(spaceLimit)
+                    localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSize(it) }
+                        .orEmpty(),
+                    spaceLimit = bytesLimit?.let { bytesToHumanReadableSize(it) }.orEmpty(),
                 )
-            }.flowOn(appCoroutineDispatchers.io).collect { _state.value = it }
+            }
+                .flowOn(appCoroutineDispatchers.io)
+                .collect { _state.value = it }
         }
     }
 
     private fun getDeviceName(): String {
-        val manufacturer = Build.MANUFACTURER.capitalize()
-        val model = Build.MODEL.capitalize()
+        val manufacturer = buildProvider.getManufacturer().capitalize()
+        val model = buildProvider.getModel().capitalize()
         return if (model.startsWith(manufacturer, ignoreCase = true)) {
             model
         } else {
@@ -190,7 +256,10 @@ class FilesStorageViewModel(
         private val clearFileCache: ClearFileCache,
         private val urlBuilder: UrlBuilder,
         private val spaceGradientProvider: SpaceGradientProvider,
-        private val appCoroutineDispatchers: AppCoroutineDispatchers
+        private val appCoroutineDispatchers: AppCoroutineDispatchers,
+        private val fileSpaceUsage: FileSpaceUsage,
+        private val interceptFileLimitEvents: InterceptFileLimitEvents,
+        private val buildProvider: BuildProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -198,26 +267,36 @@ class FilesStorageViewModel(
         ): T = FilesStorageViewModel(
             analytics = analytics,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            clearFileCache = clearFileCache,
             configStorage = configStorage,
+            clearFileCache = clearFileCache,
             urlBuilder = urlBuilder,
             spaceGradientProvider = spaceGradientProvider,
-            appCoroutineDispatchers = appCoroutineDispatchers
+            appCoroutineDispatchers = appCoroutineDispatchers,
+            fileSpaceUsage = fileSpaceUsage,
+            interceptFileLimitEvents = interceptFileLimitEvents,
+            buildProvider = buildProvider
         ) as T
     }
-}
 
-sealed class FilesStorageScreenState {
-
-    object Idle : FilesStorageScreenState()
-
-    data class SpaceData(
+    data class ScreenState(
         val spaceIcon: SpaceIconView?,
-        val spaceName: String?,
+        val spaceName: String,
         val spaceLimit: String,
         val spaceUsage: String,
-        val percentUsage: Float,
+        val percentUsage: Float?,
         val device: String?,
         val localUsage: String
-    ): FilesStorageScreenState()
+    ) {
+        companion object {
+            fun empty() = ScreenState(
+                spaceIcon = null,
+                spaceName = "",
+                spaceLimit = "",
+                spaceUsage = "",
+                percentUsage = null,
+                device = null,
+                localUsage = ""
+            )
+        }
+    }
 }

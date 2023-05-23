@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -795,5 +796,9 @@ class BlockDataRepository(
 
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return remote.setQueryToSet(command)
+    }
+
+    override suspend fun fileSpaceUsage(): FileLimits {
+        return remote.fileSpaceUsage()
     }
 }

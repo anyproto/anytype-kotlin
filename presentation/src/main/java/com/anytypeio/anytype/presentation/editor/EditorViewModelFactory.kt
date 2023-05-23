@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -75,7 +76,8 @@ open class  EditorViewModelFactory(
     private val tableDelegate: EditorTableDelegate,
     private val workspaceManager: WorkspaceManager,
     private val getObjectTypes: GetObjectTypes,
-    private val objectToCollection: ConvertObjectToCollection
+    private val objectToCollection: ConvertObjectToCollection,
+    private val interceptFileLimitEvents: InterceptFileLimitEvents
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -83,15 +85,15 @@ open class  EditorViewModelFactory(
         return EditorViewModel(
             openPage = openPage,
             closePage = closeObject,
+            createBlockLinkWithObject = createBlockLinkWithObject,
+            createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
-            createBlockLinkWithObject = createBlockLinkWithObject,
             reducer = documentEventReducer,
             urlBuilder = urlBuilder,
             renderer = renderer,
-            createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             orchestrator = orchestrator,
             analytics = analytics,
             dispatcher = dispatcher,
@@ -108,13 +110,14 @@ open class  EditorViewModelFactory(
             templateDelegate = editorTemplateDelegate,
             createObject = createObject,
             objectToSet = objectToSet,
+            objectToCollection = objectToCollection,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = featureToggles,
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
-            objectToCollection = objectToCollection
+            interceptFileLimitEvents = interceptFileLimitEvents
         ) as T
     }
 }

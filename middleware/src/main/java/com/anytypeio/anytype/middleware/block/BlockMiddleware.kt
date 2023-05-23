@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -759,5 +760,9 @@ class BlockMiddleware(
 
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return middleware.setQueryToSet(command)
+    }
+
+    override suspend fun fileSpaceUsage(): FileLimits {
+        return middleware.fileSpaceUsage()
     }
 }

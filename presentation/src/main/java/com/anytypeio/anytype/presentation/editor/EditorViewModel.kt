@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
@@ -83,6 +84,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
@@ -274,7 +276,8 @@ class EditorViewModel(
     private val featureToggles: FeatureToggles,
     private val tableDelegate: EditorTableDelegate,
     private val workspaceManager: WorkspaceManager,
-    private val getObjectTypes: GetObjectTypes
+    private val getObjectTypes: GetObjectTypes,
+    private val interceptFileLimitEvents: InterceptFileLimitEvents
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -966,6 +969,9 @@ class EditorViewModel(
                 .filter { it.context == context }
                 .collect { orchestrator.proxies.payloads.send(it) }
         }
+
+        observeFileLimitsEvents()
+
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             openPage.execute(id).fold(
@@ -6830,7 +6836,20 @@ class EditorViewModel(
             }
         }
     }
+    //endregion
 
+    //region FILE LIMITS
+    private fun observeFileLimitsEvents() {
+        jobs += viewModelScope.launch {
+            interceptFileLimitEvents
+                .run(Unit)
+                .collect { event ->
+                    if (event.any { it is FileLimitsEvent.FileLimitReached }) {
+                        _toasts.emit("You exceeded file limit upload")
+                    }
+                }
+        }
+    }
     //endregion
 }
 

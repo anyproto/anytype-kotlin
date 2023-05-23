@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature.settings
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -11,6 +12,9 @@ import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
+import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.FilesStorageFragment
@@ -65,6 +69,22 @@ object FilesStorageModule {
     @PerScreen
     fun clearFileCache(repo: BlockRepository): ClearFileCache = ClearFileCache(repo)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSpaceUsage(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): FileSpaceUsage = FileSpaceUsage(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideFileLimitEvents(
+        channel: FileLimitsEventChannel,
+        dispatchers: AppCoroutineDispatchers
+    ) : InterceptFileLimitEvents = InterceptFileLimitEvents(channel, dispatchers)
+
     @Module
     interface Declarations {
 
@@ -81,4 +101,6 @@ interface FilesStorageDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun configStorage(): ConfigStorage
     fun channel(): SubscriptionEventChannel
+    fun fileEventsChannel(): FileLimitsEventChannel
+    fun buildProvider(): BuildProvider
 }

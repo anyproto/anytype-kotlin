@@ -59,7 +59,7 @@ sealed class Subscription(
 
     object Files : Subscription(
         id = Subscriptions.SUBSCRIPTION_FILES,
-        keys = SUBSCRIPTION_DEFAULT_KEYS + Relations.SIZE_IN_BYTES + Relations.FILE_MIME_TYPE + Relations.FILE_EXT,
+        keys = SUBSCRIPTION_DEFAULT_KEYS + Relations.SIZE_IN_BYTES + Relations.FILE_MIME_TYPE + Relations.FILE_EXT + Relations.FILE_SYNC_STATUS,
         sorts = listOf(
             DVSort(
                 relationKey = Relations.SIZE_IN_BYTES,

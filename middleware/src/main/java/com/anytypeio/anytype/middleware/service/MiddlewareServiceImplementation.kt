@@ -1584,4 +1584,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun spaceUsage(request: Rpc.File.SpaceUsage.Request): Rpc.File.SpaceUsage.Response {
+        val encoded = Service.fileSpaceUsage(
+            Rpc.File.SpaceUsage.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.File.SpaceUsage.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.File.SpaceUsage.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.data.auth.account.AccountStatusDataChannel
 import com.anytypeio.anytype.data.auth.account.AccountStatusRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventDataChannel
 import com.anytypeio.anytype.data.auth.event.EventRemoteChannel
+import com.anytypeio.anytype.data.auth.event.FileLimitsDataChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionDataChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
 import com.anytypeio.anytype.data.auth.status.ThreadStatusDataChannel
@@ -12,6 +13,8 @@ import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.data.auth.event.FileLimitsRemoteChannel
+import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.*
 import dagger.Binds
@@ -109,6 +112,20 @@ object EventModule {
     fun provideSubscriptionEventRemoteChannel(
         proxy: EventProxy
     ): SubscriptionEventRemoteChannel = MiddlewareSubscriptionEventChannel(events = proxy)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideFileLimitsRemoteChannel(
+        proxy: EventProxy
+    ): FileLimitsRemoteChannel = FileLimitsMiddlewareChannel(events = proxy)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideFileLimitsDataChannel(
+        channel: FileLimitsRemoteChannel
+    ): FileLimitsEventChannel = FileLimitsDataChannel(channel = channel)
 
     @Module
     interface Bindings {

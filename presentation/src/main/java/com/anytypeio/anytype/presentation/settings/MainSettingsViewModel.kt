@@ -48,7 +48,7 @@ class MainSettingsViewModel(
 
     val workspaceAndAccount = storelessSubscriptionContainer.subscribe(
         StoreSearchByIdsParams(
-            subscription = SPACE_SUBSCRIPTION_ID,
+            subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
             targets = listOf(workspaceId, profileId),
             keys = listOf(
                 Relations.ID,
@@ -151,7 +151,7 @@ class MainSettingsViewModel(
         super.onCleared()
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(
-                listOf(SPACE_SUBSCRIPTION_ID)
+                listOf(SPACE_STORAGE_SUBSCRIPTION_ID)
             )
         }
     }
@@ -240,5 +240,5 @@ class MainSettingsViewModel(
 
 }
 
-const val SPACE_SUBSCRIPTION_ID = "settings_space_subscription"
+const val SPACE_STORAGE_SUBSCRIPTION_ID = "settings_space_storage_subscription"
 const val STOP_SUBSCRIPTION_TIMEOUT = 1_000L

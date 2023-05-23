@@ -86,6 +86,8 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
@@ -336,6 +338,10 @@ open class EditorViewModelTest {
     lateinit var convertObjectToCollection: ConvertObjectToCollection
 
     private lateinit var updateDetail: UpdateDetail
+
+    @Mock
+    lateinit var fileLimitsEventChannel: FileLimitsEventChannel
+    lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var vm: EditorViewModel
 
@@ -3890,6 +3896,7 @@ open class EditorViewModelTest {
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         clearBlockContent = ClearBlockContent(repo)
         clearBlockStyle = ClearBlockStyle(repo)
+        interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
 
         workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
         runBlocking {
@@ -3900,7 +3907,7 @@ open class EditorViewModelTest {
         vm = EditorViewModel(
             openPage = openPage,
             closePage = closePage,
-            createObject = createObject,
+            createBlockLinkWithObject = createBlockLinkWithObject,
             createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
@@ -3972,15 +3979,16 @@ open class EditorViewModelTest {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             templateDelegate = editorTemplateDelegate,
-            createBlockLinkWithObject = createBlockLinkWithObject,
-            featureToggles = mock(),
+            createObject = createObject,
             objectToSet = objectToSet,
+            objectToCollection = convertObjectToCollection,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
+            featureToggles = mock(),
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
-            objectToCollection = convertObjectToCollection
+            interceptFileLimitEvents = interceptFileLimitEvents
         )
     }
 

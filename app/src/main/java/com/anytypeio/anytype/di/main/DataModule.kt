@@ -22,6 +22,8 @@ import com.anytypeio.anytype.data.auth.repo.block.BlockRemoteDataStore
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
+import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -283,6 +285,11 @@ object DataModule {
         remote = remote
     )
     //endregion
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideBuildProvider(): BuildProvider = DefaultBuildProvider()
 
     @Module
     interface Bindings {

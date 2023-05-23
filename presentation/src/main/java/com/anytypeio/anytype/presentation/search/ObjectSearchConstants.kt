@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
@@ -785,6 +786,11 @@ object ObjectSearchConstants {
             relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
+        ),
+        DVFilter(
+            relation = Relations.FILE_SYNC_STATUS,
+            condition = DVFilterCondition.EQUAL,
+            value = FileSyncStatus.SYNCED.value.toDouble()
         )
     )
 }

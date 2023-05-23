@@ -46,6 +46,7 @@ object Relations {
     const val SOURCE_OBJECT = "sourceObject"
     const val INTERNAL_FLAGS = "internalFlags"
     const val SIZE_IN_BYTES = "sizeInBytes"
+    const val FILE_SYNC_STATUS = "fileSyncStatus"
 
     const val PAGE_COVER = "pageCover"
 

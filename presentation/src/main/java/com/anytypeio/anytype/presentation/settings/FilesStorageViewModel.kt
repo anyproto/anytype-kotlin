@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
@@ -62,6 +63,8 @@ class FilesStorageViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val isClearFileCacheInProgress = MutableStateFlow(false)
 
+    private val _fileLimitsState = MutableStateFlow(FileLimits.empty())
+
     private val _state = MutableStateFlow(ScreenState.empty())
     val state: StateFlow<ScreenState> = _state
     val toasts = MutableSharedFlow<String>(replay = 0)
@@ -73,6 +76,7 @@ class FilesStorageViewModel(
     }
 
     fun onStart() {
+        subscribeToFileLimits()
         subscribeToSpace()
         subscribeToFileLimitEvents()
     }
@@ -82,6 +86,14 @@ class FilesStorageViewModel(
             storelessSubscriptionContainer.unsubscribe(listOf(SPACE_STORAGE_SUBSCRIPTION_ID))
         }
         jobs.cancel()
+    }
+
+    private fun subscribeToFileLimits() {
+        jobs += viewModelScope.launch {
+            fileSpaceUsage.asFlow(Unit).collect { fileLimits ->
+                _fileLimitsState.value = fileLimits
+            }
+        }
     }
 
     private fun subscribeToViewEvents() {
@@ -99,23 +111,23 @@ class FilesStorageViewModel(
         jobs += viewModelScope.launch {
             interceptFileLimitEvents.run(Unit)
                 .onEach { events ->
-                    val currentState = _state.value
+                    val currentState = _fileLimitsState.value
                     val newState = currentState.updateState(events)
-                    _state.value = newState
+                    _fileLimitsState.value = newState
                 }
                 .collect()
         }
     }
 
-    private fun ScreenState.updateState(events: List<FileLimitsEvent>): ScreenState {
+    private fun FileLimits.updateState(events: List<FileLimitsEvent>): FileLimits {
         var newState = this
         events.forEach { event ->
             newState = when (event) {
                 is FileLimitsEvent.LocalUsage -> newState.copy(
-                    localUsage = bytesToHumanReadableSizeLocal(event.bytesUsage)
+                    localBytesUsage = event.bytesUsage
                 )
                 is FileLimitsEvent.SpaceUsage -> newState.copy(
-                    spaceUsage = bytesToHumanReadableSize(event.bytesUsage)
+                    bytesUsage = event.bytesUsage
                 )
                 else -> newState
             }
@@ -202,7 +214,7 @@ class FilesStorageViewModel(
                 )
             )
             combine(
-                fileSpaceUsage.asFlow(Unit),
+                _fileLimitsState,
                 storelessSubscriptionContainer.subscribe(subscribeParams)
             ) { spaceUsage, result ->
                 val workspace = result.find { it.id == workspaceId }

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
@@ -268,7 +269,7 @@ fun ObjectWrapper.Basic.mapFileObjectToView(): CollectionView.ObjectView {
     val defaultObjectView = DefaultObjectView(
         id = id,
         name = getProperName(),
-        description = fileSize(sizeInBytes = sizeInBytes),
+        description = bytesToHumanReadableSize(bytes = sizeInBytes?.toLong() ?: 0L),
         layout = layout,
         icon = fileIcon
     )
@@ -284,17 +285,5 @@ private fun ObjectWrapper.Basic.getFileObjectIcon(): ObjectIcon {
             )
 
         else -> ObjectIcon.None
-    }
-}
-
-private fun fileSize(sizeInBytes: Double?): String {
-    if (sizeInBytes == null) return ""
-
-    val sizeInGb = sizeInBytes / (1024.0 * 1024.0 * 1024.0)
-    val sizeInMb = sizeInBytes / (1024.0 * 1024.0)
-
-    return when {
-        sizeInGb >= 1 -> "%.2f GB".format(sizeInGb)
-        else -> "%.2f MB".format(sizeInMb)
     }
 }

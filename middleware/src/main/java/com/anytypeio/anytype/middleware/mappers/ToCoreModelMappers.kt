@@ -28,7 +28,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -722,10 +721,7 @@ fun MDVViewCardSize.toCodeModels(): DVViewerCardSize = when (this) {
 
 fun Rpc.File.SpaceUsage.Response.toCoreModel(): FileLimits {
     return FileLimits(
-        filesCount = usage?.filesCount,
-        cidsCount = usage?.cidsCount,
         bytesUsage = usage?.bytesUsage,
-        bytesLeft = usage?.bytesLeft,
         bytesLimit = usage?.bytesLimit,
         localBytesUsage = usage?.localBytesUsage
     )

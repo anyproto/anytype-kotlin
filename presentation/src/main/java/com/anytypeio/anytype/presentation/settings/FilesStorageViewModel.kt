@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
+import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.device.BuildProvider
@@ -111,7 +112,7 @@ class FilesStorageViewModel(
         events.forEach { event ->
             newState = when (event) {
                 is FileLimitsEvent.LocalUsage -> newState.copy(
-                    localUsage = bytesToHumanReadableSize(event.bytesUsage)
+                    localUsage = bytesToHumanReadableSizeLocal(event.bytesUsage)
                 )
                 is FileLimitsEvent.SpaceUsage -> newState.copy(
                     spaceUsage = bytesToHumanReadableSize(event.bytesUsage)
@@ -219,7 +220,7 @@ class FilesStorageViewModel(
                     spaceUsage = bytesUsage?.let { bytesToHumanReadableSize(it) }.orEmpty(),
                     percentUsage = percentUsage,
                     device = getDeviceName(),
-                    localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSize(it) }
+                    localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSizeLocal(it) }
                         .orEmpty(),
                     spaceLimit = bytesLimit?.let { bytesToHumanReadableSize(it) }.orEmpty(),
                 )

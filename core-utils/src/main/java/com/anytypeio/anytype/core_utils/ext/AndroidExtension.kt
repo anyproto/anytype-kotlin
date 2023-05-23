@@ -402,6 +402,13 @@ fun bytesToHumanReadableSize(bytes: Long): String = when {
     else -> "$bytes bytes"
 }
 
+fun bytesToHumanReadableSizeLocal(bytes: Long): String = when {
+    bytes >= 1 shl 30 -> "%d GB".format((bytes / (1 shl 30)).toInt())
+    bytes >= 1 shl 20 -> "%d MB".format((bytes / (1 shl 20)).toInt())
+    bytes >= 1 shl 10 -> if (bytes <= 1048000L) "0 MB" else "%d kB".format((bytes / (1 shl 10)).toInt())
+    else -> "$bytes bytes"
+}
+
 fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
     (dialog as? BottomSheetDialog)?.behavior?.apply {
         isFitToContents = false

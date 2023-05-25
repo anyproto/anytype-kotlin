@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -35,6 +34,7 @@ import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -90,6 +90,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
+/**
+ * TODO
+ * Corner cases to handle:
+ * close object object session if it was opened by one of widgets containers and not used by another.
+ *      - if it was deleted
+ *      - when leaving this screen
+ *
+ * Change subscription IDs for bundled widgets?
+ */
 class HomeScreenViewModel(
     private val configStorage: ConfigStorage,
     private val openObject: OpenObject,
@@ -117,7 +126,8 @@ class HomeScreenViewModel(
     private val getWidgetSession: GetWidgetSession,
     private val saveWidgetSession: SaveWidgetSession,
     private val spaceGradientProvider: SpaceGradientProvider,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val objectWatcher: ObjectWatcher
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -192,7 +202,9 @@ class HomeScreenViewModel(
                             isWidgetCollapsed = isCollapsed(widget.id),
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
-                            workspace = config.workspace
+                            workspace = config.workspace,
+                            config = config,
+                            objectWatcher = objectWatcher
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -202,7 +214,9 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
-                                isSessionActive = isSessionActive
+                                isSessionActive = isSessionActive,
+                                objectWatcher = objectWatcher,
+                                config = config
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -719,7 +733,7 @@ class HomeScreenViewModel(
                     curr = curr.copy(blocks = curr.blocks + e.blocks)
                 }
                 is Event.Command.DeleteBlock -> {
-                    interceptWidgetDeletion(curr, e)
+                    interceptWidgetDeletion(e)
                     curr = curr.copy(
                         blocks = curr.blocks.filter { !e.targets.contains(it.id) }
                     )
@@ -746,19 +760,24 @@ class HomeScreenViewModel(
     }
 
     private fun interceptWidgetDeletion(
-        curr: ObjectView,
         e: Event.Command.DeleteBlock
     ) {
-        val deletedWidgets: List<Id> = curr.blocks.mapNotNull { block ->
-            if (e.targets.contains(block.id) && block.content is Block.Content.Widget)
-                block.id
+        val currentWidgets = widgets.value ?: emptyList()
+        val deletedWidgets = currentWidgets.filter { widget ->
+            e.targets.contains(widget.id)
+        }
+        val expiredSubscriptions = deletedWidgets.map { widget ->
+            if (widget.source is Widget.Source.Bundled)
+                widget.source.id
             else
-                null
+                widget.id
         }
         if (deletedWidgets.isNotEmpty()) {
             viewModelScope.launch {
-                collapsedWidgetStateHolder.onWidgetDeleted(deletedWidgets)
-                unsubscriber.unsubscribe(deletedWidgets)
+                collapsedWidgetStateHolder.onWidgetDeleted(
+                    widgets = deletedWidgets.map { it.id }
+                )
+                unsubscriber.unsubscribe(expiredSubscriptions)
             }
         }
     }
@@ -1024,7 +1043,8 @@ class HomeScreenViewModel(
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
         private val spaceGradientProvider: SpaceGradientProvider,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val objectWatcher: ObjectWatcher
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1054,7 +1074,8 @@ class HomeScreenViewModel(
             getWidgetSession = getWidgetSession,
             saveWidgetSession = saveWidgetSession,
             spaceGradientProvider = spaceGradientProvider,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            objectWatcher = objectWatcher
         ) as T
     }
 

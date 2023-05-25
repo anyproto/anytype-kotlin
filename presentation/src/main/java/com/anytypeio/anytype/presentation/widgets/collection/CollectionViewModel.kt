@@ -772,6 +772,11 @@ class CollectionViewModel(
             .tryAddSections()
     }
 
+    override fun onCleared() {
+        // TODO close object if it was opened.
+        super.onCleared()
+    }
+
     class Factory @Inject constructor(
         private val container: StorelessSubscriptionContainer,
         private val workspaceManager: WorkspaceManager,

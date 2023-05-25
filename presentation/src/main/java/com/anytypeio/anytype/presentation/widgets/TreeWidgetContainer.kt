@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -7,9 +8,11 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -19,10 +22,12 @@ import kotlinx.coroutines.flow.map
 class TreeWidgetContainer(
     private val widget: Widget.Tree,
     private val workspace: Id,
+    private val config: Config,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val expandedBranches: Flow<List<TreePath>>,
     private val isWidgetCollapsed: Flow<Boolean>,
+    private val objectWatcher: ObjectWatcher,
     isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
@@ -43,13 +48,7 @@ class TreeWidgetContainer(
     }.flatMapLatest { (paths, isWidgetCollapsed) ->
         when (val source = widget.source) {
             is Widget.Source.Bundled -> {
-                container.subscribe(
-                    ListWidgetContainer.params(
-                        subscription = widget.source.id,
-                        workspace = workspace,
-                        keys = keys
-                    )
-                ).map { rootLevelObjects ->
+                fetchRootLevelBundledSourceObjects().map { rootLevelObjects ->
                     rootLevelObjects.map { it.id }
                 }.flatMapLatest { rootLevelObjects ->
                     container.subscribe(
@@ -89,6 +88,7 @@ class TreeWidgetContainer(
                     )
                 }
             }
+
             is Widget.Source.Default -> {
                 container.subscribe(
                     StoreSearchByIdsParams(
@@ -124,6 +124,34 @@ class TreeWidgetContainer(
                     )
                 }
             }
+        }
+    }
+
+    private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
+        return if (widget.source.id == BundledWidgetSourceIds.FAVORITE) {
+            combine(
+                objectWatcher
+                    .watch(config.home)
+                    .map { obj -> obj.orderOfRootObjects(obj.root) }
+                    .catch { emit(emptyMap()) },
+                container.subscribe(
+                    ListWidgetContainer.params(
+                        subscription = widget.source.id,
+                        workspace = workspace,
+                        keys = keys
+                    )
+                )
+            ) { order, rootLevelObjects ->
+                rootLevelObjects.sortedBy { obj -> order[obj.id] }
+            }
+        } else {
+            container.subscribe(
+                ListWidgetContainer.params(
+                    subscription = widget.source.id,
+                    workspace = workspace,
+                    keys = keys
+                )
+            )
         }
     }
 

@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -152,6 +153,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
+
+    @Mock
+    lateinit var objectWatcher: ObjectWatcher
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -565,6 +569,7 @@ class HomeScreenViewModelTest {
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenObject(givenObjectView)
+        stubFavoritesObjectWatcher()
 
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
@@ -1308,6 +1313,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
         stubCloseObject()
+        stubFavoritesObjectWatcher()
 
         val vm = buildViewModel()
 
@@ -1509,7 +1515,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
-
+        stubFavoritesObjectWatcher()
         stubCloseObject()
 
         val vm = buildViewModel()
@@ -1906,6 +1912,18 @@ class HomeScreenViewModelTest {
         }
     }
 
+    private fun stubFavoritesObjectWatcher() {
+        objectWatcher.stub {
+            on {
+                watch(config.home)
+            } doReturn flowOf(
+                StubObjectView(
+                    root = config.home
+                )
+            )
+        }
+    }
+
     private fun buildViewModel() = HomeScreenViewModel(
         configStorage = configStorage,
         interceptEvents = interceptEvents,
@@ -1933,7 +1951,8 @@ class HomeScreenViewModelTest {
         getWidgetSession = getWidgetSession,
         saveWidgetSession = saveWidgetSession,
         spaceGradientProvider = spaceGradientProvider,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        objectWatcher = objectWatcher
     )
 
     companion object {

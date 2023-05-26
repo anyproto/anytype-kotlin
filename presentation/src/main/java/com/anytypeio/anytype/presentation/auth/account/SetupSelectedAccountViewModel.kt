@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -31,7 +32,8 @@ class SetupSelectedAccountViewModel(
     private val pathProvider: PathProvider,
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val crashReporter: com.anytypeio.anytype.CrashReporter
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val isMigrationInProgress = MutableStateFlow(false)
@@ -72,6 +74,7 @@ class SetupSelectedAccountViewModel(
                 success = { (analyticsId, status) ->
                     migrationMessageJob.cancel()
                     isMigrationInProgress.value = false
+                    crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     sendEvent(startTime)
                     if (status is AccountStatus.PendingDeletion) {

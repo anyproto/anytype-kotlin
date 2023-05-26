@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -79,6 +80,9 @@ class SetupSelectedAccountTest {
     @Mock
     private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 
+    @Mock
+    private lateinit var crashReporter: CrashReporter
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -94,7 +98,8 @@ class SetupSelectedAccountTest {
                 pathProvider = pathProvider,
                 analytics = analytics,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-                relationsSubscriptionManager = relationsSubscriptionManager
+                relationsSubscriptionManager = relationsSubscriptionManager,
+                crashReporter = crashReporter
             )
     }
 

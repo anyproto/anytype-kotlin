@@ -3,7 +3,7 @@ package com.anytypeio.anytype.app
 import android.app.Application
 import com.amplitude.api.Amplitude
 import com.anytypeio.anytype.BuildConfig
-import com.anytypeio.anytype.SentryCrashReporter
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker
 import com.anytypeio.anytype.di.common.ComponentDependenciesProvider
 import com.anytypeio.anytype.di.common.ComponentManager
@@ -28,7 +28,7 @@ class AndroidApplication : Application(), HasComponentDependencies {
     lateinit var discoveryManager: MDNSProvider
 
     @Inject
-    lateinit var sentryCrashReporter: SentryCrashReporter
+    lateinit var crashReporter: CrashReporter
 
     @Inject
     override lateinit var dependencies: ComponentDependenciesProvider
@@ -50,7 +50,7 @@ class AndroidApplication : Application(), HasComponentDependencies {
         main.inject(this)
         setupAnalytics()
         setupTimber()
-        setupSentry()
+        setupCrashReporter()
         setupLocalNetworkAddressHandler()
     }
 
@@ -58,10 +58,8 @@ class AndroidApplication : Application(), HasComponentDependencies {
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
     }
 
-    private fun setupSentry() {
-        sentryCrashReporter.init(
-            withTimber = !BuildConfig.DEBUG
-        )
+    private fun setupCrashReporter() {
+        crashReporter.init()
     }
 
     private fun setupAnalytics() {

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.CrashReporter
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 
@@ -15,7 +16,8 @@ class SetupSelectedAccountViewModelFactory(
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val crashReporter: com.anytypeio.anytype.CrashReporter
+    private val crashReporter: CrashReporter,
+    private val configStorage: ConfigStorage
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -26,7 +28,8 @@ class SetupSelectedAccountViewModelFactory(
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            crashReporter = crashReporter
+            crashReporter = crashReporter,
+            configStorage = configStorage
         ) as T
     }
 }

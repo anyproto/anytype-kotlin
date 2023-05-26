@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -42,7 +43,8 @@ class SplashViewModel(
     private val createObject: CreateObject,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val featureToggles: FeatureToggles
+    private val featureToggles: FeatureToggles,
+    private val crashReporter: com.anytypeio.anytype.CrashReporter
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -100,6 +102,7 @@ class SplashViewModel(
         viewModelScope.launch {
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
+                    crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     val props = Props.empty()
                     sendEvent(startTime, openAccount, props)

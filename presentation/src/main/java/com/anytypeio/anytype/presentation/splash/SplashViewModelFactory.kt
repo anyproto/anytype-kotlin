@@ -8,9 +8,7 @@ import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
-import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -30,7 +28,8 @@ class SplashViewModelFactory @Inject constructor(
     private val createObject: CreateObject,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val featureToggles: FeatureToggles
+    private val featureToggles: FeatureToggles,
+    private val crashReporter: com.anytypeio.anytype.CrashReporter
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -44,6 +43,7 @@ class SplashViewModelFactory @Inject constructor(
             createObject = createObject,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            featureToggles = featureToggles
+            featureToggles = featureToggles,
+            crashReporter = crashReporter
         ) as T
 }

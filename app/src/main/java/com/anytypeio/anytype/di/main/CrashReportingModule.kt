@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.di.main
 
 import android.content.Context
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.SentryCrashReporter
 import com.anytypeio.anytype.core_utils.tools.AppInfo
+import com.anytypeio.anytype.device.BuildProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -15,7 +17,11 @@ object CrashReportingModule {
     @Singleton
     fun provideCrashReporter(
         context: Context,
-        appInfo: AppInfo
-    ): SentryCrashReporter = SentryCrashReporter(context, appInfo)
-
+        appInfo: AppInfo,
+        buildProvider: BuildProvider
+    ): CrashReporter = SentryCrashReporter(
+        context = context,
+        appInfo = appInfo,
+        withTimber = !buildProvider.isDebug()
+    )
 }

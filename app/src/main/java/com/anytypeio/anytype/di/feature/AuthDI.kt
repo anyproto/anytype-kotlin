@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -254,14 +255,16 @@ object SetupSelectedAccountModule {
         pathProvider: PathProvider,
         analytics: Analytics,
         relationsSubscriptionManager: RelationsSubscriptionManager,
-        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+        crashReporter: CrashReporter
     ): SetupSelectedAccountViewModelFactory {
         return SetupSelectedAccountViewModelFactory(
             selectAccount = selectAccount,
             pathProvider = pathProvider,
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
-            objectTypesSubscriptionManager = objectTypesSubscriptionManager
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+            crashReporter = crashReporter
         )
     }
 

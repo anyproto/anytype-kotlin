@@ -21,6 +21,7 @@ dependencies {
     implementation project(':library-emojifier')
     implementation project(':analytics')
     implementation project(':core-models')
+    implementation project(':crash-reporting')
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid

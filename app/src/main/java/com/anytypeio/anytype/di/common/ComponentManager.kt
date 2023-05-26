@@ -81,7 +81,7 @@ import com.anytypeio.anytype.di.feature.sets.PickConditionModule
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
-import com.anytypeio.anytype.di.feature.settings.AboutAppModule
+import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
@@ -812,7 +812,7 @@ class ComponentManager(
     // Settings
 
     val aboutAppComponent = Component {
-        main.aboutAppComponent().module(AboutAppModule).build()
+        DaggerAboutAppComponent.factory().create(findComponentDependencies())
     }
 
     val profileComponent = Component {

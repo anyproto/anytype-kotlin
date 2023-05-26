@@ -27,7 +27,7 @@ import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencie
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
-import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
+import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
@@ -84,7 +84,8 @@ interface MainComponent :
     OnboardingAuthDependencies,
     OnboardingInviteCodeDependencies,
     OnboardingMnemonicDependencies,
-    OnboardingSoulCreationDependencies {
+    OnboardingSoulCreationDependencies,
+    AboutAppDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -108,7 +109,6 @@ interface MainComponent :
 
     //region Settings
 
-    fun aboutAppComponent(): AboutAppSubComponent.Builder
     fun profileComponent(): ProfileSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
@@ -212,4 +212,8 @@ private abstract class ComponentDependenciesModule private constructor() {
     @ComponentDependenciesKey(OnboardingSoulCreationDependencies::class)
     abstract fun provideOnboardingSoulCreationDependencies(component: MainComponent): ComponentDependencies
 
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(AboutAppDependencies::class)
+    abstract fun provideAboutAppDependencies(component: MainComponent): ComponentDependencies
 }

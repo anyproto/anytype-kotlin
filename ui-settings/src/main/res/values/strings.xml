@@ -23,6 +23,7 @@
     <string name="pin_code">Pin code</string>
     <string name="access">Access</string>
     <string name="wallpaper">Wallpaper</string>
+    <string name="tech_info">Tech info</string>
 
     <string name="light">Light</string>
     <string name="dark">Dark</string>
@@ -50,8 +51,8 @@
     <string name="about_terms_and_conditions_link">https://anytype.io/terms.pdf</string>
     <string name="about_privacy_policy_link">https://anytype.io/Anytype_Privacy_Statement.pdf</string>
 
-    <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary: %3$s\nUser\u00A0ID:\u00A0%4$s</string>
-    <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary: %5$s\nUser\u00A0ID:\u00A0%6$s</string>
+    <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nAnalytics\u00A0ID:\u00A0%5$s</string>
+    <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nAnalytics\u00A0ID:\u00A0%7$s</string>
     <string name="space_name">Space name</string>
     <string name="personal_space">Personal Space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our\nencrypted backup node for free. If you reach the\nlimit, files will be stored only locally.</string>

@@ -16,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +53,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         version = getVersionText(),
                         buildNumber = getBuildNumber(),
                         libraryVersion = vm.libraryVersion.collectAsState().value,
-                        anytypeId = vm.userId.collectAsState().value,
+                        accountId = vm.accountId.collectAsState().value,
+                        analyticsId = vm.analyticsId.collectAsState().value,
                         onMetaClicked = { copyMetaToClipboard() }
                     ) {
                         vm.onExternalLinkClicked(it)
@@ -115,7 +115,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         getVersionText(),
                         getBuildNumber(),
                         vm.libraryVersion.value,
-                        vm.userId.value
+                        vm.accountId.value,
+                        vm.analyticsId.value
                     )
                 )
             clipboard.setPrimaryClip(clip)

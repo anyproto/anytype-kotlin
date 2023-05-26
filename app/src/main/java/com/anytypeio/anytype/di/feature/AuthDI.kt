@@ -212,7 +212,8 @@ object SetupNewAccountModule {
         relationsSubscriptionManager: RelationsSubscriptionManager,
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         spaceGradientProvider: SpaceGradientProvider,
-        configStorage: ConfigStorage
+        configStorage: ConfigStorage,
+        crashReporter: CrashReporter
     ): SetupNewAccountViewModelFactory {
         return SetupNewAccountViewModelFactory(
             createAccount = createAccount,
@@ -221,7 +222,8 @@ object SetupNewAccountModule {
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             spaceGradientProvider = spaceGradientProvider,
-            configStorage = configStorage
+            configStorage = configStorage,
+            crashReporter = crashReporter
         )
     }
 
@@ -256,7 +258,8 @@ object SetupSelectedAccountModule {
         analytics: Analytics,
         relationsSubscriptionManager: RelationsSubscriptionManager,
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        crashReporter: CrashReporter
+        crashReporter: CrashReporter,
+        configStorage: ConfigStorage
     ): SetupSelectedAccountViewModelFactory {
         return SetupSelectedAccountViewModelFactory(
             selectAccount = selectAccount,
@@ -264,7 +267,8 @@ object SetupSelectedAccountModule {
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            crashReporter = crashReporter
+            crashReporter = crashReporter,
+            configStorage = configStorage
         )
     }
 

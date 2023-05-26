@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.auth.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -17,7 +18,8 @@ class SetupNewAccountViewModelFactory(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val spaceGradientProvider: SpaceGradientProvider,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val crashReporter: CrashReporter
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -29,7 +31,8 @@ class SetupNewAccountViewModelFactory(
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             spaceGradientProvider = spaceGradientProvider,
-            configStorage = configStorage
+            configStorage = configStorage,
+            crashReporter = crashReporter
         ) as T
     }
 }

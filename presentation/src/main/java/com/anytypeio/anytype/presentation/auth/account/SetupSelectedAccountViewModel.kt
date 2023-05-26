@@ -5,9 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
-import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.base.updateUserProperties
-import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
@@ -15,8 +12,10 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.CrashReporter
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.Job
@@ -33,7 +32,8 @@ class SetupSelectedAccountViewModel(
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val crashReporter: com.anytypeio.anytype.CrashReporter
+    private val crashReporter: CrashReporter,
+    private val configStorage: ConfigStorage
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val isMigrationInProgress = MutableStateFlow(false)
@@ -74,9 +74,12 @@ class SetupSelectedAccountViewModel(
                 success = { (analyticsId, status) ->
                     migrationMessageJob.cancel()
                     isMigrationInProgress.value = false
+                    analytics.proceedWithAccountEvent(
+                        configStorage = configStorage,
+                        startTime = startTime,
+                        eventName = openAccount
+                    )
                     crashReporter.setUser(analyticsId)
-                    updateUserProps(analyticsId)
-                    sendEvent(startTime)
                     if (status is AccountStatus.PendingDeletion) {
                         navigation.postValue(
                             EventWrapper(
@@ -104,23 +107,6 @@ class SetupSelectedAccountViewModel(
 
     private fun navigateToMigrationErrorScreen() {
         navigation.postValue(EventWrapper(AppNavigation.Command.MigrationErrorScreen))
-    }
-
-    private fun updateUserProps(id: String) {
-        viewModelScope.updateUserProperties(
-            analytics = analytics,
-            userProperty = UserProperty.AccountId(id)
-        )
-    }
-
-    private fun sendEvent(startTime: Long) {
-        val middleTime = System.currentTimeMillis()
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            startTime = startTime,
-            middleTime = middleTime,
-            eventName = openAccount
-        )
     }
 
     private fun proceedWithGlobalSubscriptions() {

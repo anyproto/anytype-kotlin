@@ -83,6 +83,9 @@ class SetupSelectedAccountTest {
     @Mock
     private lateinit var crashReporter: CrashReporter
 
+    @Mock
+    private lateinit var config: ConfigStorage
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -99,7 +102,8 @@ class SetupSelectedAccountTest {
                 analytics = analytics,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 relationsSubscriptionManager = relationsSubscriptionManager,
-                crashReporter = crashReporter
+                crashReporter = crashReporter,
+                configStorage = configStorage
             )
     }
 

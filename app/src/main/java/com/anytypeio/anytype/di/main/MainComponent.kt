@@ -24,6 +24,7 @@ import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingInviteCodeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationAnimDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
@@ -85,7 +86,8 @@ interface MainComponent :
     OnboardingInviteCodeDependencies,
     OnboardingMnemonicDependencies,
     OnboardingSoulCreationDependencies,
-    AboutAppDependencies {
+    AboutAppDependencies,
+    OnboardingSoulCreationAnimDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -180,7 +182,7 @@ private abstract class ComponentDependenciesModule private constructor() {
     @Binds
     @IntoMap
     @ComponentDependenciesKey(MigrationErrorDependencies::class)
-    abstract fun migrationErrorDependencies(component: MainComponent) : ComponentDependencies
+    abstract fun migrationErrorDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap
@@ -216,4 +218,10 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(AboutAppDependencies::class)
     abstract fun provideAboutAppDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingSoulCreationAnimDependencies::class)
+    abstract fun provideOnboardingSoulCreationAnimDependencies(component: MainComponent): ComponentDependencies
+
 }

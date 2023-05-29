@@ -26,6 +26,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
@@ -163,7 +165,18 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             }
             composable(OnboardingNavigation.createSoulAnim) {
-                CreateSoulAnimWrapper()
+                val component = componentManager().onboardingSoulCreationAnimComponent.ReleaseOn(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    state = Lifecycle.State.DESTROYED
+                )
+
+                CreateSoulAnimWrapper(
+                    viewModel = daggerViewModel { component.get().getViewModel() }
+                ) {
+                    findNavController().navigate(
+                        R.id.homeScreen
+                    )
+                }
             }
         }
     }

@@ -373,4 +373,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_soul_creation_title">Create your Soul</string>
     <string name="onboarding_soul_creation_description">Think of it like an identity, or a profile within\nAnytype.</string>
     <string name="onboarding_soul_creation_placeholder">Call it whatever you want</string>
+    <string name="onboarding_soul_creation">Creating your Soul</string>
+    <string name="onboarding_soul_space_creation">Setting up your Personal Space</string>
+    <string name="onboarding_soul_creation_personal_space">Personal Space</string>
 </resources>

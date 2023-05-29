@@ -12,5 +12,5 @@ class DebugTreeShareDownloader(
 ) : MiddlewareShareDownloader(context, uriFileProvider, dispatchers) {
 
     override suspend fun downloadFile(hash: String, path: String) =
-        repo.debugTree(objectId = hash, path = path)
+        repo.debugObject(objectId = hash, path = path)
 }

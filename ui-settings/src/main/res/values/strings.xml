@@ -17,6 +17,7 @@
     <string name="account">Account</string>
     <string name="reset_account">Reset account</string>
     <string name="delete_account">Delete account</string>
+    <string name="space_debug">Space debug</string>
     <string name="data">Data</string>
     <string name="mode">Mode</string>
     <string name="log_out">Logout</string>

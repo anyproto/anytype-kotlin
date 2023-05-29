@@ -742,17 +742,34 @@ class Middleware(
 
     @Throws(Exception::class)
     fun debugExportLocalStore(path: String): String {
-        TODO()
+        val request = Rpc.Debug.ExportLocalstore.Request(
+            path = path
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugExportLocalStore(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.path
     }
 
     @Throws(Exception::class)
-    fun debugSync(): String {
-        TODO()
+    fun debugSpace(): String {
+        val request = Rpc.Debug.SpaceSummary.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugSpace(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.infos.toCoreModel()
     }
 
     @Throws(Exception::class)
-    fun debugTree(objectId: Id, path: String): String {
-        TODO()
+    fun debugObject(objectId: Id, path: String): String {
+        val request = Rpc.Debug.Tree.Request(
+            treeId = objectId,
+            path = path
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugObject(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.filename
     }
 
     @Throws(Exception::class)

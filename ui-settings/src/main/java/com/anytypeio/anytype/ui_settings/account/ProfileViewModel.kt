@@ -21,7 +21,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.ui_settings.account.repo.DebugSyncShareDownloader
+import com.anytypeio.anytype.ui_settings.account.repo.DebugSpaceShareDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,7 +33,7 @@ import timber.log.Timber
 class ProfileViewModel(
     private val analytics: Analytics,
     private val deleteAccount: DeleteAccount,
-    private val debugSyncShareDownloader: DebugSyncShareDownloader,
+    private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
@@ -44,7 +44,7 @@ class ProfileViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    val isDebugSyncReportInProgress = MutableStateFlow(false)
+    val isDebugSpaceReportInProgress = MutableStateFlow(false)
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
 
@@ -111,19 +111,19 @@ class ProfileViewModel(
         }
     }
 
-    fun onDebugSyncReportClicked() {
+    fun onSpaceDebugClicked() {
         Timber.d("onDebugSyncReportClicked, ")
         jobs += viewModelScope.launch {
-            debugSyncShareDownloader.stream(Unit).collect { result ->
+            debugSpaceShareDownloader.stream(Unit).collect { result ->
                 result.fold(
                     onSuccess = { report ->
-                        isDebugSyncReportInProgress.value = false
+                        isDebugSpaceReportInProgress.value = false
                         debugSyncReportUri.value = report
                         Timber.d(report.toString())
                     },
-                    onLoading = { isDebugSyncReportInProgress.value = true },
+                    onLoading = { isDebugSpaceReportInProgress.value = true },
                     onFailure = { e ->
-                        isDebugSyncReportInProgress.value = false
+                        isDebugSpaceReportInProgress.value = false
                         Timber.e(e, "Error while creating a debug sync report")
                     }
                 )
@@ -170,7 +170,7 @@ class ProfileViewModel(
 
     class Factory(
         private val deleteAccount: DeleteAccount,
-        private val debugSyncShareDownloader: DebugSyncShareDownloader,
+        private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
         private val analytics: Analytics,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val setObjectDetails: SetObjectDetails,
@@ -183,7 +183,7 @@ class ProfileViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ProfileViewModel(
                 deleteAccount = deleteAccount,
-                debugSyncShareDownloader = debugSyncShareDownloader,
+                debugSpaceShareDownloader = debugSpaceShareDownloader,
                 analytics = analytics,
                 storelessSubscriptionContainer = storelessSubscriptionContainer,
                 setObjectDetails = setObjectDetails,

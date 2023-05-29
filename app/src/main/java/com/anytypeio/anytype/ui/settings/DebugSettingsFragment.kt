@@ -21,7 +21,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
 import com.anytypeio.anytype.domain.debugging.DebugLocalStore
-import com.anytypeio.anytype.domain.debugging.DebugSync
+import com.anytypeio.anytype.domain.debugging.DebugSpace
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
@@ -38,7 +38,7 @@ class DebugSettingsFragment : BaseFragment<FragmentDebugSettingsBinding>(R.layou
     lateinit var getDebugSettings: GetDebugSettings
 
     @Inject
-    lateinit var debugSync: DebugSync
+    lateinit var debugSpace: DebugSpace
 
     @Inject
     lateinit var debugLocalStore: DebugLocalStore
@@ -55,7 +55,7 @@ class DebugSettingsFragment : BaseFragment<FragmentDebugSettingsBinding>(R.layou
 
         binding.btnSync.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                debugSync.execute(Unit).fold(
+                debugSpace.execute(Unit).fold(
                     onSuccess = { status -> saveToFile(status) }
                 )
             }

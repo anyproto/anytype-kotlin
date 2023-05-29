@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.debugging.DebugSync
+import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -21,7 +21,7 @@ import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.settings.ProfileFragment
 import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
-import com.anytypeio.anytype.ui_settings.account.repo.DebugSyncShareDownloader
+import com.anytypeio.anytype.ui_settings.account.repo.DebugSpaceShareDownloader
 import com.anytypeio.anytype.ui_settings.account.repo.FileSaver
 import dagger.Binds
 import dagger.Module
@@ -49,7 +49,7 @@ object ProfileModule {
     @PerScreen
     fun provideViewModelFactory(
         deleteAccount: DeleteAccount,
-        debugSyncShareDownloader: DebugSyncShareDownloader,
+        debugSpaceShareDownloader: DebugSpaceShareDownloader,
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         setObjectDetails: SetObjectDetails,
@@ -59,7 +59,7 @@ object ProfileModule {
         spaceGradientProvider: SpaceGradientProvider
     ): ProfileViewModel.Factory = ProfileViewModel.Factory(
         deleteAccount = deleteAccount,
-        debugSyncShareDownloader = debugSyncShareDownloader,
+        debugSpaceShareDownloader = debugSpaceShareDownloader,
         analytics = analytics,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         setObjectDetails = setObjectDetails,
@@ -78,7 +78,7 @@ object ProfileModule {
     fun provideDebugSync(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): DebugSync = DebugSync(repo = repo, dispatchers = dispatchers)
+    ): DebugSpace = DebugSpace(repo = repo, dispatchers = dispatchers)
 
     @Provides
     @PerScreen
@@ -91,10 +91,10 @@ object ProfileModule {
     @Provides
     @PerScreen
     fun providesDebugSyncShareDownloader(
-        debugSync: DebugSync,
+        debugSpace: DebugSpace,
         fileSaver: FileSaver,
         dispatchers: AppCoroutineDispatchers,
-    ): DebugSyncShareDownloader = DebugSyncShareDownloader(debugSync, fileSaver, dispatchers)
+    ): DebugSpaceShareDownloader = DebugSpaceShareDownloader(debugSpace, fileSaver, dispatchers)
 
     @JvmStatic
     @PerScreen

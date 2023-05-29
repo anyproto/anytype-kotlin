@@ -586,41 +586,40 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-//todo revive debug methods
-//    override fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response {
-//        val encoded = Service.debugExportLocalstore(
-//            Rpc.Debug.ExportLocalstore.Request.ADAPTER.encode(request)
-//        )
-//        val response = Rpc.Debug.ExportLocalstore.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.Debug.ExportLocalstore.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
-//    }
-//
-//    override fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response {
-//        val encoded = Service.debugTree(Rpc.Debug.Tree.Request.ADAPTER.encode(request))
-//        val response = Rpc.Debug.Tree.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.Debug.Tree.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
-//    }
-//
-//    override fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response {
-//        val encoded = Service.debugSync(Rpc.Debug.Sync.Request.ADAPTER.encode(request))
-//        val response = Rpc.Debug.Sync.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.Debug.Sync.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
-//    }
+    override fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response {
+        val encoded = Service.debugExportLocalstore(
+            Rpc.Debug.ExportLocalstore.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Debug.ExportLocalstore.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.ExportLocalstore.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun debugSpace(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response {
+        val encoded = Service.debugSpaceSummary(Rpc.Debug.SpaceSummary.Request.ADAPTER.encode(request))
+        val response = Rpc.Debug.SpaceSummary.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.SpaceSummary.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun debugObject(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response {
+        val encoded = Service.debugTree(Rpc.Debug.Tree.Request.ADAPTER.encode(request))
+        val response = Rpc.Debug.Tree.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.Tree.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 
     override fun fileListOffload(request: Rpc.File.ListOffload.Request): Rpc.File.ListOffload.Response {
         val encoded = Service.fileListOffload(

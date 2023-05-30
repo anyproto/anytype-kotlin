@@ -978,7 +978,6 @@ class EditorViewModel(
                 onSuccess = { result ->
                     when (result) {
                         is Result.Success -> {
-                            val middleTime = System.currentTimeMillis()
                             session.value = Session.OPEN
                             onStartFocusing(result.data)
                             orchestrator.proxies.payloads.send(result.data)
@@ -996,11 +995,7 @@ class EditorViewModel(
                                     }
                                     sendAnalyticsObjectShowEvent(
                                         analytics = analytics,
-                                        startTime = startTime,
-                                        middleTime = middleTime,
-                                        type = event.details.details[context]?.type?.firstOrNull(),
-                                        layoutCode = event.details.details[context]?.layout,
-                                        context = analyticsContext
+                                        startTime = startTime
                                     )
                                 }
                             }
@@ -1209,7 +1204,6 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            dispatchObjectCreateEvent()
             proceedWithHidingObjectTypeWidget()
         }
     }
@@ -1227,7 +1221,6 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            dispatchObjectCreateEvent()
             proceedWithHidingObjectTypeWidget()
         }
     }
@@ -1256,7 +1249,6 @@ class EditorViewModel(
 
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            dispatchObjectCreateEvent()
             proceedWithHidingObjectTypeWidget()
         }
     }
@@ -1436,7 +1428,6 @@ class EditorViewModel(
         Timber.d("onEndLineEnterClicked, id:[$id] text:[$text] marks:[$marks]")
 
         if (isObjectTypesWidgetVisible) {
-            dispatchObjectCreateEvent()
             proceedWithHidingObjectTypeWidget()
         }
 
@@ -1884,8 +1875,7 @@ class EditorViewModel(
         }
         viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
             analytics = analytics,
-            type = type,
-            context = analyticsContext
+            type = type
         )
     }
 
@@ -2909,7 +2899,6 @@ class EditorViewModel(
         Timber.d("onOutsideClicked, ")
 
         if (isObjectTypesWidgetVisible) {
-            dispatchObjectCreateEvent()
             proceedWithHidingObjectTypeWidget()
         }
 
@@ -3129,17 +3118,13 @@ class EditorViewModel(
                     Timber.e(it, "Error while creating new object with params: $params")
                 },
                 onSuccess = { result ->
-                    val middleTime = System.currentTimeMillis()
                     orchestrator.proxies.payloads.send(result.payload)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        objType = type,
-                        layout = null,
+                        type = type,
+                        storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objPowerTool,
-                        startTime = startTime,
-                        middleTime = middleTime,
-                        context = analyticsContext,
-                        originalId = analyticsOriginalId
+                        startTime = startTime
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -3163,18 +3148,13 @@ class EditorViewModel(
             createObject.execute(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
-                        if (result.appliedTemplate != null) {
-                            val middleTime = System.currentTimeMillis()
-                            sendAnalyticsObjectCreateEvent(
-                                analytics = analytics,
-                                objType = result.type,
-                                route = EventsDictionary.Routes.objPowerTool,
-                                context = analyticsContext,
-                                originalId = analyticsOriginalId,
-                                startTime = startTime,
-                                middleTime = middleTime
-                            )
-                        }
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            type = result.type,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            route = EventsDictionary.Routes.objPowerTool,
+                            startTime = startTime
+                        )
                         proceedWithOpeningObject(result.objectId)
                     },
                     onFailure = { e -> Timber.e(e, "Error while creating a new page") }
@@ -4283,11 +4263,9 @@ class EditorViewModel(
                     proceedWithUpdateObjectType(type = type)
                     sendAnalyticsObjectTypeChangeEvent(
                         analytics = analytics,
-                        typeId = type,
-                        context = analyticsContext
+                        objType = storeOfObjectTypes.get(type)
                     )
                     if (isObjectTypesWidgetVisible) {
-                        dispatchObjectCreateEvent()
                         proceedWithHidingObjectTypeWidget()
                     }
                     if (applyTemplate) {
@@ -5273,7 +5251,6 @@ class EditorViewModel(
         when (event) {
             is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
                 if (isObjectTypesWidgetVisible) {
-                    dispatchObjectCreateEvent()
                     proceedWithHidingObjectTypeWidget()
                 }
                 proceedWithTitleEnterClicked(
@@ -5669,22 +5646,17 @@ class EditorViewModel(
                     Timber.e(it, "Error while creating new page with params: $params")
                 },
                 onSuccess = { result ->
-                    val middleTime = System.currentTimeMillis()
                     onCreateMentionInText(
                         id = result.id,
                         name = result.name.getMentionName(MENTION_TITLE_EMPTY),
                         mentionTrigger = mentionText
                     )
-//                    val type = objectType?.let { storeOfObjectTypes.get(it) }
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        objType = objectType,
-                        layout = null,
+                        type = objectType,
+                        storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objCreateMention,
-                        startTime = startTime,
-                        middleTime = middleTime,
-                        context = analyticsContext,
-                        originalId = analyticsOriginalId
+                        startTime = startTime
                     )
                 }
             )
@@ -5931,44 +5903,6 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide)
     }
 
-    private fun dispatchObjectCreateEvent(objectType: String? = null) {
-        val details = orchestrator.stores.details.current()
-        val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        if (objectType != null) {
-            viewModelScope.launch {
-                val type = storeOfObjectTypes.get(objectType)
-                if (type != null) {
-                    viewModelScope.sendAnalyticsObjectCreateEvent(
-                        analytics = analytics,
-                        objType = type.name,
-                        layout = wrapper.layout?.code?.toDouble(),
-                        route = EventsDictionary.Routes.objCreateHome,
-                        context = analyticsContext,
-                        originalId = analyticsOriginalId
-                    )
-                }
-            }
-        } else {
-            viewModelScope.launch {
-                val type = if (wrapper.type.isNotEmpty()) wrapper.type.first().let {
-                    storeOfObjectTypes.get(it)
-                } else {
-                    null
-                }
-                if (type != null) {
-                    viewModelScope.sendAnalyticsObjectCreateEvent(
-                        analytics = analytics,
-                        objType = type.name,
-                        layout = wrapper.layout?.code?.toDouble(),
-                        route = EventsDictionary.Routes.objCreateHome,
-                        context = analyticsContext,
-                        originalId = analyticsOriginalId
-                    )
-                }
-            }
-        }
-    }
-
     private fun proceedWithOpeningSelectingObjectTypeScreen() {
         val excludeTypes = orchestrator.stores.details.current().details[context]?.type
         val command = if (isObjectTypesWidgetVisible) {
@@ -6055,18 +5989,13 @@ class EditorViewModel(
         createObjectAsMentionOrLink.execute(params).fold(
             onFailure = { Timber.e(it, "Error while creating new page with params: $params") },
             onSuccess = { result ->
-                val middleTime = System.currentTimeMillis()
                 proceedToAddObjectToTextAsLink(id = result.id)
-//                val objType = objectTypesProvider.get().firstOrNull { it.url == type }
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    objType = type,
-                    layout = null,
+                    type = type,
+                    storeOfObjectTypes = storeOfObjectTypes,
                     route = EventsDictionary.Routes.objTurnInto,
-                    context = analyticsContext,
-                    originalId = analyticsOriginalId,
-                    startTime = startTime,
-                    middleTime = middleTime
+                    startTime = startTime
                 )
             }
         )

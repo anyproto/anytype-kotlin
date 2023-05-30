@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -49,9 +50,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
-import com.anytypeio.anytype.presentation.extension.getAnalyticsParams
 import com.anytypeio.anytype.presentation.extension.logEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -116,7 +115,8 @@ class ObjectSetViewModel(
     private val workspaceManager: WorkspaceManager,
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
-    private val objectToCollection: ConvertObjectToCollection
+    private val objectToCollection: ConvertObjectToCollection,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -876,11 +876,11 @@ class ObjectSetViewModel(
     }
 
     private fun proceedWithAddingObjectToCollection() {
-        proceedWithCreatingDataViewObject(CreateDataViewObject.Params.Collection) { objectId ->
+        proceedWithCreatingDataViewObject(CreateDataViewObject.Params.Collection) { result ->
             val params = AddObjectToCollection.Params(
                 ctx = context,
                 after = "",
-                targets = listOf(objectId)
+                targets = listOf(result.objectId)
             )
             viewModelScope.launch {
                 addObjectToCollection.execute(params).fold(
@@ -893,14 +893,19 @@ class ObjectSetViewModel(
 
     private fun proceedWithCreatingDataViewObject(
         params: CreateDataViewObject.Params,
-        action: ((Id) -> Unit)? = null
+        action: ((CreateDataViewObject.Result) -> Unit)? = null
     ) {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             createDataViewObject.execute(params).fold(
                 onFailure = { Timber.e(it, "Error while creating new record") },
-                onSuccess = { newObject ->
-                    proceedWithNewDataViewObject(params, newObject)
-                    action?.invoke(newObject)
+                onSuccess = { result ->
+                    proceedWithNewDataViewObject(params, result.objectId)
+                    action?.invoke(result)
+                    sendAnalyticsObjectCreateEvent(
+                        startTime = startTime,
+                        objectType = result.objectType,
+                    )
                 }
             )
         }
@@ -1190,12 +1195,10 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null)).fold(
                 onSuccess = { result ->
-                    if (result.appliedTemplate != null) {
-                        sendAnalyticsObjectCreateEvent(
-                            startTime = startTime,
-                            type = result.type
-                        )
-                    }
+                    sendAnalyticsObjectCreateEvent(
+                        startTime = startTime,
+                        objectType = result.type
+                    )
                     proceedWithOpeningObject(result.objectId)
                 },
                 onFailure = { e ->
@@ -1206,21 +1209,17 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun sendAnalyticsObjectCreateEvent(startTime: Long, type: String?) {
-        val state = (stateReducer.state.value as? ObjectState.DataView) ?: return
-        val middleTime = System.currentTimeMillis()
-        val params = state.getAnalyticsParams()
-        val analyticsContext = params.first
-        val analyticsObjectId = params.second
-        viewModelScope.sendAnalyticsObjectCreateEvent(
-            analytics = analytics,
-            objType = type,
-            route = EventsDictionary.Routes.objCreateSet,
-            startTime = startTime,
-            middleTime = middleTime,
-            context = analyticsContext,
-            originalId = analyticsObjectId
-        )
+    private fun sendAnalyticsObjectCreateEvent(startTime: Long, objectType: String?) {
+        viewModelScope.launch {
+            val sourceType = objectType?.let { storeOfObjectTypes.get(it) }
+            logEvent(
+                state = stateReducer.state.value,
+                analytics = analytics,
+                event = ObjectStateAnalyticsEvent.OBJECT_CREATE,
+                startTime = startTime,
+                type = sourceType?.sourceObject
+            )
+        }
     }
 
     fun onSearchButtonClicked() {

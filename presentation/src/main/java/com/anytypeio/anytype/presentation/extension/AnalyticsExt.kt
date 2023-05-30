@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
@@ -25,20 +26,24 @@ import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.features.WidgetAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_LAYOUT_NONE
+import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 fun Block.Prototype.getAnalyticsEvent(
     eventName: String,
@@ -235,34 +240,26 @@ fun Relation.Format.getPropName() = when (this) {
  */
 fun CoroutineScope.sendAnalyticsObjectShowEvent(
     analytics: Analytics,
-    startTime: Long,
-    middleTime: Long,
-    type: String?,
-    layoutCode: Double?,
-    context: String? = null
+    startTime: Long
 ) {
     sendEvent(
         analytics = analytics,
         eventName = objectScreenShow,
-        props = propsForObjectEvents(type = type, layoutCode = layoutCode, context = context),
+        props = propsForObjectEvents(),
         startTime = startTime,
-        middleTime = middleTime,
+        middleTime = System.currentTimeMillis(),
         renderTime = System.currentTimeMillis()
     )
 }
 
 private fun propsForObjectEvents(
-    type: String?,
-    layoutCode: Double?,
+    layoutCode: Double? = null,
     route: String? = null,
     context: String? = null,
-    originalId: String? = null
+    originalId: String? = null,
+    sourceObject: String? = null
 ): Props {
-    val objType = when {
-        type == null -> null
-        type.startsWith(Props.CHAR_TYPE_BUNDLED, ignoreCase = true) -> type
-        else -> Props.OBJ_TYPE_CUSTOM
-    }
+    val objType = sourceObject ?: OBJ_TYPE_CUSTOM
     val layout = layoutCode?.toInt()?.let { code ->
         ObjectType.Layout.values().find { layout ->
             layout.code == code
@@ -581,19 +578,16 @@ fun CoroutineScope.sendAnalyticsBlockAlignEvent(
 
 fun CoroutineScope.sendAnalyticsObjectTypeChangeEvent(
     analytics: Analytics,
-    typeId: Id,
-    context: String? = null
+    objType: ObjectWrapper.Type?
 ) {
-    val objType = Props.mapType(typeId)
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.objectTypeChanged,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.objectType to objType,
-                EventsPropertiesKey.context to context
-            )
-        )
+        props = propsForObjectEvents(
+            context = analytics.getContext(),
+            originalId = analytics.getOriginalId(),
+            sourceObject = objType?.sourceObject
+        ),
     )
 }
 
@@ -667,28 +661,25 @@ fun CoroutineScope.sendAnalyticsRelationDeleteEvent(
 
 fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     analytics: Analytics,
-    objType: String?,
-    layout: Double? = null,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    type: String?,
     route: String,
-    startTime: Long? = null,
-    middleTime: Long? = null,
-    context: String? = null,
-    originalId: String? = null
+    startTime: Long? = null
 ) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.objectCreate,
-        props = propsForObjectEvents(
-            type = objType,
-            layoutCode = layout,
-            route = route,
-            context = context,
-            originalId = originalId
-        ),
-        startTime = startTime,
-        middleTime = middleTime,
-        renderTime = System.currentTimeMillis()
-    )
+    this.launch {
+        val objType = type?.let { storeOfObjectTypes.get(it) }
+        analytics.sendEvent(
+            eventName = objectCreate,
+            props = propsForObjectEvents(
+                route = route,
+                context = analytics.getContext(),
+                originalId = analytics.getOriginalId(),
+                sourceObject = objType?.sourceObject
+            ),
+            startTime = startTime,
+            middleTime = System.currentTimeMillis()
+        )
+    }
 }
 
 fun CoroutineScope.sendAnalyticsSetTitleEvent(
@@ -1145,6 +1136,24 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+        ObjectStateAnalyticsEvent.OBJECT_CREATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = objectCreate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    objectType = type ?: OBJ_TYPE_CUSTOM,
+                    route = route
+                )
+            )
+        }
     }
 }
 
@@ -1154,7 +1163,8 @@ private fun buildProps(
     embedType: String? = null,
     type: String? = null,
     objectType: String? = null,
-    condition: DVFilterCondition? = null
+    condition: DVFilterCondition? = null,
+    route: String? = null
 ): Props {
     return Props(
         map = buildMap {
@@ -1164,6 +1174,7 @@ private fun buildProps(
             if (type != null) put("type", type)
             if (objectType != null) put("objectType", objectType)
             if (condition != null) put("condition", condition.getPropName())
+            if (route != null) put("route", route)
         }
     )
 }
@@ -1182,7 +1193,8 @@ enum class ObjectStateAnalyticsEvent {
     REMOVE_FILTER,
     ADD_SORT,
     CHANGE_SORT_VALUE,
-    REMOVE_SORT
+    REMOVE_SORT,
+    OBJECT_CREATE
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(

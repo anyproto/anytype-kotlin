@@ -835,20 +835,17 @@ class HomeScreenViewModel(
     fun onCreateNewObjectClicked() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            createObject.stream(CreateObject.Param(null)).collect { result ->
-                result.fold(
-                    onSuccess = {
-                        if (it.appliedTemplate != null) {
-                            val middleTime = System.currentTimeMillis()
-                            sendAnalyticsObjectCreateEvent(
-                                analytics = analytics,
-                                objType = it.type,
-                                route = EventsDictionary.Routes.objPowerTool,
-                                startTime = startTime,
-                                middleTime = middleTime
-                            )
-                        }
-                        navigate(Navigation.OpenObject(it.objectId))
+            createObject.stream(CreateObject.Param(null)).collect { createObjectResponse ->
+                createObjectResponse.fold(
+                    onSuccess = { result ->
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            type = result.type,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            route = EventsDictionary.Routes.objCreateHome,
+                            startTime = startTime,
+                        )
+                        navigate(Navigation.OpenObject(result.objectId))
                     },
                     onFailure = {
                         Timber.e(it, "Error while creating object")

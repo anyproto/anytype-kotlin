@@ -31,7 +31,8 @@ fun AboutAppScreen(
     version: String,
     buildNumber: Int,
     onMetaClicked: () -> Unit,
-    onExternalLinkClicked: (AboutAppViewModel.ExternalLink) -> Unit
+    onContactUsClicked: () -> Unit,
+    onExternalLinkClicked: (AboutAppViewModel.ExternalLink) -> Unit,
 ) {
     Column {
         Box(
@@ -66,6 +67,10 @@ fun AboutAppScreen(
         Divider()
         Option(title = stringResource(id = R.string.about_help_and_tutorials)) {
             onExternalLinkClicked(AboutAppViewModel.ExternalLink.HelpAndTutorials)
+        }
+        Divider()
+        Option(title = stringResource(id = R.string.contact_us)) {
+            onContactUsClicked()
         }
         Divider()
         Section(title = stringResource(id = R.string.about_legal))
@@ -162,6 +167,7 @@ fun PreviewAboutAppScreen() {
         version = "1.0.0",
         buildNumber = 1,
         onMetaClicked = {},
-        onExternalLinkClicked = {}
+        onExternalLinkClicked = {},
+        onContactUsClicked = {}
     )
 }

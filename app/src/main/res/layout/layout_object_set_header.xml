@@ -79,6 +79,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="8dp"
         android:hint="@string/description"
+        android:textColorHint="@color/text_tertiary"
         style="@style/TextView.ContentStyle.Relations.2"
         android:imeOptions="actionDone"
         android:inputType="text"

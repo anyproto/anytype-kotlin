@@ -26,6 +26,7 @@ import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.features.WidgetAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_LAYOUT_NONE
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -1505,5 +1507,21 @@ suspend fun Analytics.sendSettingsOffloadEvent() {
 suspend fun Analytics.sendSettingsStorageOffloadEvent() {
     sendEvent(
         eventName = EventsDictionary.settingsStorageOffload
+    )
+}
+
+suspend fun Analytics.proceedWithAccountEvent(
+    configStorage: ConfigStorage,
+    startTime: Long,
+    eventName: String
+) {
+    val analyticsId = configStorage.get().analytics
+    val userProperty = UserProperty.AccountId(analyticsId)
+    updateUserProperty(userProperty)
+    sendEvent(
+        startTime = startTime,
+        middleTime = System.currentTimeMillis(),
+        eventName = eventName,
+        props = Props(map = mapOf("accountId" to analyticsId))
     )
 }

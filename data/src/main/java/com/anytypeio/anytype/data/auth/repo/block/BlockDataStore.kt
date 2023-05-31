@@ -158,9 +158,9 @@ interface BlockDataStore {
     suspend fun addRelationToObject(ctx: Id, relation: Key) : Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
-    suspend fun debugSync(): String
+    suspend fun debugSpace(): String
 
-    suspend fun debugTree(objectId: Id, path: String): String
+    suspend fun debugObject(objectId: Id, path: String): String
 
     suspend fun debugLocalStore(path: String): String
 

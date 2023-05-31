@@ -12,8 +12,6 @@ interface FeatureToggles {
 
     val isLogEditorControlPanelMachine: Boolean
 
-    val isDebug: Boolean
-
     val isTroubleshootingMode: Boolean
 
     val isNewOnBoardingEnabled: Boolean

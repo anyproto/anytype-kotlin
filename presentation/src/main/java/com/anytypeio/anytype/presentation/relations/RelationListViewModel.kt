@@ -11,11 +11,13 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
@@ -33,6 +35,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -46,7 +49,8 @@ class RelationListViewModel(
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val analytics: Analytics,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val addRelationToObject: AddRelationToObject
 ) : BaseViewModel() {
 
     val isEditMode = MutableStateFlow(false)
@@ -125,11 +129,47 @@ class RelationListViewModel(
     }
 
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
-        if (isInAddMode.value) {
-            onRelationClickedAddMode(target = target, view = view)
-        } else {
-            onRelationClickedListMode(ctx = ctx, view = view)
+        viewModelScope.launch {
+            if (isInAddMode.value) {
+                onRelationClickedAddMode(target = target, view = view)
+            } else {
+                checkRelationIsInObject(ctx = ctx, view = view)
+            }
         }
+    }
+
+    private suspend fun checkRelationIsInObject(ctx: Id, view: ObjectRelationView) {
+        val relationLinks = getRelationLinks()
+        if (isRelationPresentInObject(relationLinks, view)) {
+            onRelationClickedListMode(ctx, view)
+        } else {
+            addRelationToObject(ctx, view)
+        }
+    }
+
+    private suspend fun getRelationLinks(): List<RelationLink> {
+        return relationListProvider.links.stateIn(viewModelScope).value
+    }
+
+    private fun isRelationPresentInObject(
+        relationLinks: List<RelationLink>,
+        view: ObjectRelationView
+    ): Boolean {
+        return relationLinks.any { it.key == view.key }
+    }
+
+    private suspend fun addRelationToObject(ctx: Id, view: ObjectRelationView) {
+        val params = AddRelationToObject.Params(
+            ctx = ctx,
+            relationKey = view.key
+        )
+        addRelationToObject.run(params).process(
+            failure = { Timber.e(it, "Error while adding relation to object") },
+            success = {
+                dispatcher.send(it)
+                onRelationClickedListMode(ctx = ctx, view = view)
+            }
+        )
     }
 
     fun onCheckboxClicked(ctx: Id, view: ObjectRelationView) {
@@ -223,19 +263,17 @@ class RelationListViewModel(
         return isEditMode.value && !Relations.systemRelationKeys.contains(relationKey)
     }
 
-    private fun onRelationClickedAddMode(
+    private suspend fun onRelationClickedAddMode(
         target: Id?,
         view: ObjectRelationView
     ) {
         checkNotNull(target)
-        viewModelScope.launch {
-            commands.emit(
-                Command.SetRelationKey(
-                    blockId = target,
-                    key = view.key
-                )
+        commands.emit(
+            Command.SetRelationKey(
+                blockId = target,
+                key = view.key
             )
-        }
+        )
     }
 
     private fun onRelationClickedListMode(ctx: Id, view: ObjectRelationView) {

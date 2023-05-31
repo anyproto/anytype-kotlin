@@ -2090,7 +2090,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val obj = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
         val views = mapFeaturedRelations(
             ctx = ctx,
-            keys = obj.featuredRelations ?: emptyList(),
+            keys = obj.featuredRelations,
             details = details
         )
         return BlockView.FeaturedRelation(

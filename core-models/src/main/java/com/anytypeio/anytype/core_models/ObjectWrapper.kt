@@ -65,7 +65,7 @@ sealed class ObjectWrapper {
 
         val url: String? by default
 
-        val featuredRelations: List<String>? by default
+        val featuredRelations: List<Key> get() = getValues(Relations.FEATURED_RELATIONS)
 
         val smartBlockTypes: List<Double>
             get() = when (val value = map[Relations.SMARTBLOCKTYPES]) {

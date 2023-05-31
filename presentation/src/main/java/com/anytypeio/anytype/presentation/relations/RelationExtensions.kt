@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.*
@@ -313,4 +314,16 @@ fun ColumnView.getDateRelationFormat(): String {
     } else {
         format
     }
+}
+
+suspend fun objectRelations(
+    relationLinks: List<RelationLink>,
+    recommendedRelations: List<Id>,
+    systemRelations: List<Key>,
+    storeOfRelations: StoreOfRelations
+): List<ObjectWrapper.Relation> {
+    val recommendedKeys = storeOfRelations.getById(recommendedRelations).map { it.key }
+    val r = relationLinks.map { it.key } + recommendedKeys
+    val objectRelationKeys = r.filterNot { it in systemRelations }
+    return storeOfRelations.getByKeys(objectRelationKeys).distinctBy { it.key }
 }

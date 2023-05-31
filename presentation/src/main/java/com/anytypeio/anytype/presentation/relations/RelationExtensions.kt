@@ -316,6 +316,16 @@ fun ColumnView.getDateRelationFormat(): String {
     }
 }
 
+/**
+ * Retrieves a list of distinct [ObjectWrapper.Relation] relations of Object using the given relation links, recommended relations, and system relations.
+ *
+ * @param relationLinks The list of relation links (@see [RelationLink] class) used to identify the relations.
+ * @param recommendedRelations The list of ids of the recommended relations.
+ * @param systemRelations The list of keys of the system relations. Final list will be filtered by this list.
+ * @param storeOfRelations The store of relations to retrieve the relations from.
+ *
+ * @return A list of distinct [ObjectWrapper.Relation] object relations.
+ */
 suspend fun objectRelations(
     relationLinks: List<RelationLink>,
     recommendedRelations: List<Id>,

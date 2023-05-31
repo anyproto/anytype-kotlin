@@ -153,6 +153,7 @@ sealed class ObjectWrapper {
         val isArchived: Boolean? by default
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
+        val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

@@ -57,6 +57,7 @@ object Relations {
     const val FILE_MIME_TYPE = "fileMimeType"
 
     const val RECOMMENDED_LAYOUT = "recommendedLayout"
+    const val RECOMMENDED_RELATIONS = "recommendedRelations"
 
     val systemRelationKeys = listOf(
         "id",

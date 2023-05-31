@@ -73,7 +73,7 @@ class SetupSelectedAccountViewModelTest {
     private lateinit var selectAccount: SelectAccount
 
     @Mock
-    private lateinit var crashReporter: com.anytypeio.anytype.CrashReporter
+    private lateinit var crashReporter: CrashReporter
 
     @Before
     fun setup() {
@@ -223,7 +223,9 @@ class SetupSelectedAccountViewModelTest {
             pathProvider = pathProvider,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             relationsSubscriptionManager = relationsSubscriptionManager,
-            crashReporter = crashReporter
+            crashReporter = crashReporter,
+            configStorage = configStorage
+
         )
     }
 }

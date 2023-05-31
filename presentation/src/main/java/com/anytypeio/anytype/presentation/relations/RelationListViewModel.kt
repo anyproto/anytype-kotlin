@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -67,16 +69,26 @@ class RelationListViewModel(
                 relationListProvider.links,
                 relationListProvider.details
             ) { _, relationLinks, details ->
-                val relations = relationLinks.mapNotNull { storeOfRelations.getByKey(it.key) }
-                val detail = details.details[ctx]
-                val values = detail?.map ?: emptyMap()
-                val featured = detail?.featuredRelations ?: emptyList()
-                relations.views(
+
+                val objectDetails = details.details[ctx]?.map ?: emptyMap()
+                val objectWrapper = ObjectWrapper.Basic(objectDetails)
+                val objectType = objectWrapper.getProperType()
+                val objectTypeWrapper =
+                    ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
+
+                val objectRelations = objectRelations(
+                    systemRelations = listOf(),
+                    relationLinks = relationLinks,
+                    recommendedRelations = objectTypeWrapper.recommendedRelations,
+                    storeOfRelations = storeOfRelations
+                )
+
+                objectRelations.views(
                     context = ctx,
                     details = details,
-                    values = values,
+                    values = objectDetails,
                     urlBuilder = urlBuilder,
-                    featured = featured
+                    featured = objectWrapper.featuredRelations
                 ).map { view ->
                     Model.Item(
                         view = view,

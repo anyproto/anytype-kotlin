@@ -32,31 +32,6 @@ fun Context.avatarColor(
     return color
 }
 
-fun Context.formatIcon(
-    format: ColumnView.Format
-): Drawable = drawable(
-    when (format) {
-        ColumnView.Format.SHORT_TEXT -> R.drawable.ic_text
-        ColumnView.Format.LONG_TEXT -> R.drawable.ic_text
-        ColumnView.Format.NUMBER -> R.drawable.ic_number
-        ColumnView.Format.STATUS -> R.drawable.ic_select
-        ColumnView.Format.DATE -> R.drawable.ic_date
-        ColumnView.Format.FILE -> R.drawable.ic_file
-        ColumnView.Format.CHECKBOX -> R.drawable.ic_checkbox
-        ColumnView.Format.URL -> R.drawable.ic_url
-        ColumnView.Format.EMAIL -> R.drawable.ic_email
-        ColumnView.Format.PHONE -> R.drawable.ic_phone
-        ColumnView.Format.EMOJI -> R.drawable.ic_person
-        //todo Add proper icon for object
-        ColumnView.Format.OBJECT -> R.drawable.ic_multiselect
-        ColumnView.Format.TAG -> R.drawable.ic_multiselect
-        else -> {
-            // TODO
-            R.drawable.circle_solid_default
-        }
-    }
-)
-
 fun ColumnView.Format.relationIcon(isMedium: Boolean = false): Int = when (this) {
     ColumnView.Format.SHORT_TEXT, ColumnView.Format.LONG_TEXT -> {
         if (isMedium)

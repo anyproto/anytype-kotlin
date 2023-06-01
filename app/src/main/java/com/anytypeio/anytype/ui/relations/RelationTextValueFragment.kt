@@ -140,7 +140,7 @@ open class RelationTextValueFragment :
             vm.onStart(
                 ctx = ctx,
                 relationKey = relationKey,
-                recordId = objectId,
+                objectId = objectId,
                 isLocked = isLocked,
             )
         }

@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -34,7 +33,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -130,10 +128,7 @@ class RelationListViewModel(
                     }
                 }
                 result
-            }.collect {
-                Timber.d("onStartListMode, relation views: $it")
-                views.value = it
-            }
+            }.collect { views.value = it }
         }
     }
 
@@ -151,36 +146,54 @@ class RelationListViewModel(
 
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
         Timber.d("onRelationClicked, ctx: $ctx, target: $target, view: $view")
+        val isLocked = resolveIsLockedState(ctx)
+        if (isLocked) {
+            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+            return
+        }
         viewModelScope.launch {
             if (isInAddMode.value) {
                 onRelationClickedAddMode(target = target, view = view)
             } else {
-                checkRelationIsInObject(ctx = ctx, view = view)
+                if (checkRelationIsInObject(view)) {
+                    onRelationClickedListMode(ctx, view)
+                } else {
+                    proceedWithAddingRelationToObject(ctx, view) {
+                        onRelationClickedListMode(ctx, view)
+                    }
+                }
             }
         }
     }
 
-    private suspend fun checkRelationIsInObject(ctx: Id, view: ObjectRelationView) {
-        val relationLinks = getRelationLinks()
-        if (isRelationPresentInObject(relationLinks, view)) {
-            onRelationClickedListMode(ctx, view)
-        } else {
-            addRelationToObject(ctx, view)
+    fun onCheckboxClicked(ctx: Id, view: ObjectRelationView) {
+        Timber.d("onCheckboxClicked, ctx: $ctx, view: $view")
+        val isLocked = resolveIsLockedState(ctx)
+        if (isLocked) {
+            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+            return
+        }
+        viewModelScope.launch {
+            if (checkRelationIsInObject(view)) {
+                proceedWithUpdatingFeaturedRelations(view, ctx)
+            } else {
+                proceedWithAddingRelationToObject(ctx, view) {
+                    proceedWithUpdatingFeaturedRelations(view, ctx)
+                }
+            }
         }
     }
 
-    private suspend fun getRelationLinks(): List<RelationLink> {
-        return relationListProvider.links.stateIn(viewModelScope).value
-    }
-
-    private fun isRelationPresentInObject(
-        relationLinks: List<RelationLink>,
-        view: ObjectRelationView
-    ): Boolean {
+    private suspend fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
+        val relationLinks = relationListProvider.links.stateIn(viewModelScope).value
         return relationLinks.any { it.key == view.key }
     }
 
-    private suspend fun addRelationToObject(ctx: Id, view: ObjectRelationView) {
+    private suspend fun proceedWithAddingRelationToObject(
+        ctx: Id,
+        view: ObjectRelationView,
+        action: () -> Unit
+    ) {
         val params = AddRelationToObject.Params(
             ctx = ctx,
             relationKey = view.key
@@ -189,19 +202,9 @@ class RelationListViewModel(
             failure = { Timber.e(it, "Error while adding relation to object") },
             success = {
                 dispatcher.send(it)
-                onRelationClickedListMode(ctx = ctx, view = view)
+                action.invoke()
             }
         )
-    }
-
-    fun onCheckboxClicked(ctx: Id, view: ObjectRelationView) {
-        Timber.d("onCheckboxClicked, ctx: $ctx, view: $view")
-        val isLocked = resolveIsLockedState(ctx)
-        if (isLocked) {
-            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
-        } else {
-            proceedWithUpdatingFeaturedRelations(view, ctx)
-        }
     }
 
     private fun proceedWithUpdatingFeaturedRelations(
@@ -404,13 +407,14 @@ class RelationListViewModel(
 
     private fun getRelations(ctx: Id) {
         viewModelScope.launch {
-            val relations = relationListProvider.getLinks().mapNotNull { storeOfRelations.getByKey(it.key) }
+            val relations =
+                relationListProvider.getLinks().mapNotNull { storeOfRelations.getByKey(it.key) }
             val details = relationListProvider.getDetails()
             val values = details.details[ctx]?.map ?: emptyMap()
             views.value = relations.views(
-                    details = details,
-                    values = values,
-                    urlBuilder = urlBuilder
+                details = details,
+                values = values,
+                urlBuilder = urlBuilder
             ).map { Model.Item(it) }
         }
     }

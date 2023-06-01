@@ -254,6 +254,7 @@ class DocumentRelationAdapter(
         }
         RelationListViewModel.Model.Section.Featured -> R.layout.item_relation_list_section
         RelationListViewModel.Model.Section.Other -> R.layout.item_relation_list_section
+        is RelationListViewModel.Model.Section.TypeFrom -> R.layout.item_relation_list_section
         else -> throw IllegalStateException("Unexpected item type: $item")
     }
 
@@ -275,6 +276,10 @@ class DocumentRelationAdapter(
                 RelationListViewModel.Model.Section.Other -> {
                     itemView.findViewById<TextView>(R.id.tvSectionName)
                         .setText(R.string.other_relations)
+                }
+                is RelationListViewModel.Model.Section.TypeFrom -> {
+                    val text = itemView.resources.getString(R.string.from_type, section.typeName)
+                    itemView.findViewById<TextView>(R.id.tvSectionName).text = text
                 }
                 else -> throw IllegalStateException("Unexpected item type: $section")
             }

@@ -153,7 +153,7 @@ class RelationListViewModel(
         ).map { view ->
             Model.Item(
                 view = view,
-                isRemovable = false
+                isRecommended = true
             )
         }
     }
@@ -324,7 +324,7 @@ class RelationListViewModel(
         } else {
             isEditMode.value = !isEditMode.value
             views.value = views.value.map { view ->
-                if (view is Model.Item) {
+                if (view is Model.Item && !view.isRecommended) {
                     view.copy(isRemovable = isPossibleToRemoveRelation(relationKey = view.view.key))
                 } else {
                     view
@@ -506,7 +506,8 @@ class RelationListViewModel(
 
         data class Item(
             val view: ObjectRelationView,
-            val isRemovable: Boolean = false
+            val isRemovable: Boolean = false,
+            val isRecommended: Boolean = false
         ) : Model() {
             override val identifier: String get() = view.identifier
         }

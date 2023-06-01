@@ -259,7 +259,6 @@ class DocumentRelationAdapter(
     }
 
     fun update(update: List<RelationListViewModel.Model>) {
-        Timber.d("Updating adapter: $update")
         val differ = Differ(old = items, new = update)
         val result = DiffUtil.calculateDiff(differ, false)
         items = update

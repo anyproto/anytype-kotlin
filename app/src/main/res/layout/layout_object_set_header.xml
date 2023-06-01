@@ -49,14 +49,14 @@
             android:layout_marginStart="14dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:visibility="gone"
             android:adjustViewBounds="true"
             android:background="@color/shape_tertiary"
             android:padding="4dp"
+            android:transitionName="@string/logo_transition"
+            android:visibility="gone"
             app:shapeAppearance="@style/TitleImageAppearanceOverlay"
             app:strokeColor="@color/background_primary"
-            app:strokeWidth="4dp"
-            android:transitionName="@string/logo_transition" />
+            app:strokeWidth="4dp" />
 
     </FrameLayout>
 
@@ -73,27 +73,27 @@
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/tvSetDescription"
+        style="@style/TextView.ContentStyle.Relations.2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         android:layout_marginTop="8dp"
-        android:hint="@string/description"
-        style="@style/TextView.ContentStyle.Relations.2"
-        android:imeOptions="actionDone"
-        android:inputType="text"
-        android:maxLines="3"
-        android:ellipsize="end"
+        android:layout_marginEnd="20dp"
         android:background="@null"
+        android:ellipsize="end"
+        android:hint="@string/description"
+        android:inputType="textMultiLine"
+        android:maxLines="3"
+        android:textColorHint="@color/text_tertiary"
         tools:text="Description" />
 
     <com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         android:id="@+id/featuredRelationsWidget"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="16dp" />
 
 </LinearLayout>

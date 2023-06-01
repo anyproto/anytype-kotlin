@@ -6,11 +6,14 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
+import android.text.TextUtils
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
 import android.widget.FrameLayout
@@ -293,8 +296,12 @@ open class ObjectSetFragment :
             DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
         )
 
-        tvDescription.syncFocusWithImeVisibility()
-        tvDescription.addTextChangedListener(tvDescriptionTextWatcher)
+        with(tvDescription) {
+            syncFocusWithImeVisibility()
+            addTextChangedListener(tvDescriptionTextWatcher)
+            imeOptions = IME_ACTION_DONE
+            setRawInputType(InputType.TYPE_CLASS_TEXT)
+        }
 
         setFragmentResultListener(BaseObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val query = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
@@ -605,6 +612,14 @@ open class ObjectSetFragment :
             binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
         }
 
+        setCover(
+            coverColor = header.title.coverColor,
+            coverGradient = header.title.coverGradient,
+            coverImage = header.title.coverImage
+        )
+
+        if (tvDescription.hasFocus()) return
+
         val description = header.description
 
         if (description is SetOrCollectionHeaderState.Description.Default) {
@@ -617,12 +632,6 @@ open class ObjectSetFragment :
         } else {
             tvDescription.gone()
         }
-
-        setCover(
-            coverColor = header.title.coverColor,
-            coverGradient = header.title.coverGradient,
-            coverImage = header.title.coverImage
-        )
     }
 
     private fun setCover(

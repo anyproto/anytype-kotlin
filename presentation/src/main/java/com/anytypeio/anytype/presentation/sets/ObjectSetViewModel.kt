@@ -300,52 +300,56 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             combine(
                 stateReducer.state,
-                paginator.offset
-            ) { state, offset -> state to offset }
-                .flatMapLatest { (state, offset) ->
-                    when (state) {
-                        is ObjectState.DataView.Collection -> {
-                            Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
-                            if (state.isInitialized) {
-                                dataViewSubscription.startObjectCollectionSubscription(
-                                    collection = context,
-                                    state = state,
-                                    session = session,
-                                    offset = offset,
-                                    context = context,
-                                    workspaceId = workspaceManager.getCurrentWorkspace(),
-                                    storeOfRelations = storeOfRelations
-                                )
-                            } else {
-                                emptyFlow()
-                            }
-                        }
-                        is ObjectState.DataView.Set -> {
-                            Timber.d("subscribeToObjectState, NEW SET STATE")
-                            if (state.isInitialized) {
-                                dataViewSubscription.startObjectSetSubscription(
-                                    state = state,
-                                    session = session,
-                                    offset = offset,
-                                    context = context,
-                                    workspaceId = workspaceManager.getCurrentWorkspace(),
-                                    storeOfRelations = storeOfRelations
-                                )
-                            } else {
-                                emptyFlow()
-                            }
-                        }
-                        else -> {
-                            Timber.d("subscribeToObjectState, NEW STATE, $state")
+                paginator.offset,
+                session.currentViewerId,
+            ) { state, offset, view ->
+                Triple(state, offset, view)
+            }.flatMapLatest { (state, offset, view) ->
+                when (state) {
+                    is ObjectState.DataView.Collection -> {
+                        Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
+                        if (state.isInitialized) {
+                            dataViewSubscription.startObjectCollectionSubscription(
+                                collection = context,
+                                state = state,
+                                currentViewerId = view,
+                                offset = offset,
+                                context = context,
+                                workspaceId = workspaceManager.getCurrentWorkspace(),
+                                storeOfRelations = storeOfRelations
+                            )
+                        } else {
                             emptyFlow()
                         }
                     }
-                }.onEach { dataViewState ->
-                    if (dataViewState is DataViewState.Loaded) {
-                        Timber.d("subscribeToObjectState, New index size: ${dataViewState.objects.size}")
+
+                    is ObjectState.DataView.Set -> {
+                        Timber.d("subscribeToObjectState, NEW SET STATE")
+                        if (state.isInitialized) {
+                            dataViewSubscription.startObjectSetSubscription(
+                                state = state,
+                                currentViewerId = view,
+                                offset = offset,
+                                context = context,
+                                workspaceId = workspaceManager.getCurrentWorkspace(),
+                                storeOfRelations = storeOfRelations
+                            )
+                        } else {
+                            emptyFlow()
+                        }
                     }
-                    database.update(dataViewState)
+
+                    else -> {
+                        Timber.d("subscribeToObjectState, NEW STATE, $state")
+                        emptyFlow()
+                    }
                 }
+            }.onEach { dataViewState ->
+                if (dataViewState is DataViewState.Loaded) {
+                    Timber.d("subscribeToObjectState, New index size: ${dataViewState.objects.size}")
+                }
+                database.update(dataViewState)
+            }
                 .catch { error ->
                     Timber.e("subscribeToObjectState error : $error")
                     _currentViewer.value =

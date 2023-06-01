@@ -1,10 +1,9 @@
-package com.anytypeio.anytype.presentation.extension
+package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
-import com.anytypeio.anytype.presentation.relations.objectRelations
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -61,7 +60,7 @@ class ObjectWrapperExtensionTest {
         advanceUntilIdle()
 
         // When
-        val objectRelations = objectRelations(
+        val objectRelations = getObjectIncludedAndRecommendedRelations(
             relationLinks = relationLinks,
             systemRelations = systemRelations,
             recommendedRelations = recommendedRelations,

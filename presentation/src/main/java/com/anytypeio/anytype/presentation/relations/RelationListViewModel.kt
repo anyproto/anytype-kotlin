@@ -62,6 +62,7 @@ class RelationListViewModel(
     val views = MutableStateFlow<List<Model>>(emptyList())
 
     fun onStartListMode(ctx: Id) {
+        Timber.d("onStartListMode, ctx: $ctx")
         isInAddMode.value = false
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -80,14 +81,11 @@ class RelationListViewModel(
                 val objectTypeWrapper =
                     ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
 
-                val objectRelations = objectRelations(
+                val objectRelations = getObjectRelations(
                     systemRelations = listOf(),
                     relationLinks = relationLinks,
-                    recommendedRelations = objectTypeWrapper.recommendedRelations,
                     storeOfRelations = storeOfRelations
-                )
-
-                objectRelations.views(
+                ).views(
                     context = ctx,
                     details = details,
                     values = objectDetails,
@@ -99,9 +97,25 @@ class RelationListViewModel(
                         isRemovable = isPossibleToRemoveRelation(relationKey = view.key)
                     )
                 }
-            }.map { views ->
+
+                val recommendedRelations = getNotIncludedRecommendedRelations(
+                    relationLinks = relationLinks,
+                    recommendedRelations = objectTypeWrapper.recommendedRelations,
+                    storeOfRelations = storeOfRelations
+                ).views(
+                    context = ctx,
+                    details = details,
+                    values = objectDetails,
+                    urlBuilder = urlBuilder
+                ).map { view ->
+                    Model.Item(
+                        view = view,
+                        isRemovable = false
+                    )
+                }
+
                 val result = mutableListOf<Model>().apply {
-                    val (isFeatured, other) = views.partition { it.view.featured }
+                    val (isFeatured, other) = objectRelations.partition { it.view.featured }
                     if (isFeatured.isNotEmpty()) {
                         add(Model.Section.Featured)
                         addAll(isFeatured)
@@ -110,9 +124,16 @@ class RelationListViewModel(
                         add(Model.Section.Other)
                         addAll(other)
                     }
+                    if (recommendedRelations.isNotEmpty()) {
+                        add(Model.Section.TypeFrom(objectTypeWrapper.name.orEmpty()))
+                        addAll(recommendedRelations)
+                    }
                 }
                 result
-            }.collect { views.value = it }
+            }.collect {
+                Timber.d("onStartListMode, relation views: $it")
+                views.value = it
+            }
         }
     }
 
@@ -129,6 +150,7 @@ class RelationListViewModel(
     }
 
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
+        Timber.d("onRelationClicked, ctx: $ctx, target: $target, view: $view")
         viewModelScope.launch {
             if (isInAddMode.value) {
                 onRelationClickedAddMode(target = target, view = view)
@@ -173,6 +195,7 @@ class RelationListViewModel(
     }
 
     fun onCheckboxClicked(ctx: Id, view: ObjectRelationView) {
+        Timber.d("onCheckboxClicked, ctx: $ctx, view: $view")
         val isLocked = resolveIsLockedState(ctx)
         if (isLocked) {
             sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
@@ -422,6 +445,10 @@ class RelationListViewModel(
 
             object Other : Section() {
                 override val identifier: String get() = "Section_Other"
+            }
+
+            data class TypeFrom(val typeName: String) : Section() {
+                override val identifier: String get() = "Section_TypeFrom"
             }
         }
 

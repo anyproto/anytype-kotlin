@@ -81,6 +81,7 @@ import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -217,10 +218,8 @@ import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.getObjectRelations
-import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -283,7 +282,8 @@ class EditorViewModel(
     private val tableDelegate: EditorTableDelegate,
     private val workspaceManager: WorkspaceManager,
     private val getObjectTypes: GetObjectTypes,
-    private val interceptFileLimitEvents: InterceptFileLimitEvents
+    private val interceptFileLimitEvents: InterceptFileLimitEvents,
+    private val addRelationToObject: AddRelationToObject
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -6762,6 +6762,7 @@ class EditorViewModel(
     private fun proceedWithRelationBlockClicked(
         relationView: ObjectRelationView
     ) {
+        Timber.d("proceedWithRelationBlockClicked, relationView:${relationView}")
         val relationId = relationView.id
         viewModelScope.launch {
             val relation = storeOfRelations.getById(relationId)
@@ -6774,50 +6775,95 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this relation")
                 return@launch
             }
-            when (relation.format) {
-                RelationFormat.SHORT_TEXT,
-                RelationFormat.LONG_TEXT,
-                RelationFormat.URL,
-                RelationFormat.PHONE,
-                RelationFormat.NUMBER,
-                RelationFormat.EMAIL -> {
-                    dispatch(
-                        Command.OpenObjectRelationScreen.Value.Text(
-                            ctx = context,
-                            target = context,
-                            relationKey = relation.key,
-                            isLocked = mode == EditorMode.Locked
-                        )
+            if (checkRelationIsInObject(relationView)) {
+                openRelationValueScreen(
+                    relation = relation,
+                    relationView = relationView
+                )
+            } else {
+                proceedWithAddingRelationToObject(context, relationView) {
+                    openRelationValueScreen(
+                        relation = relation,
+                        relationView = relationView
                     )
                 }
-                RelationFormat.CHECKBOX -> {
-                    check(relationView is ObjectRelationView.Checkbox)
-                    proceedWithSetObjectDetails(
+            }
+            openRelationValueScreen(relation, relationView)
+        }
+    }
+
+    private fun checkRelationIsInObject(
+        view: ObjectRelationView
+    ): Boolean {
+        val relationLinks = orchestrator.stores.relationLinks.current()
+        return relationLinks.any { it.key == view.key }
+    }
+
+    private suspend fun proceedWithAddingRelationToObject(
+        ctx: Id,
+        view: ObjectRelationView,
+        action: () -> Unit
+    ) {
+        val params = AddRelationToObject.Params(
+            ctx = ctx,
+            relationKey = view.key
+        )
+        addRelationToObject.run(params).process(
+            failure = { Timber.e(it, "Error while adding relation to object") },
+            success = {
+                dispatcher.send(it)
+                action.invoke()
+            }
+        )
+    }
+
+    private fun openRelationValueScreen(
+        relation: ObjectWrapper.Relation,
+        relationView: ObjectRelationView
+    ) {
+        when (relation.format) {
+            RelationFormat.SHORT_TEXT,
+            RelationFormat.LONG_TEXT,
+            RelationFormat.URL,
+            RelationFormat.PHONE,
+            RelationFormat.NUMBER,
+            RelationFormat.EMAIL -> {
+                dispatch(
+                    Command.OpenObjectRelationScreen.Value.Text(
                         ctx = context,
-                        key = relation.key,
-                        value = !relationView.isChecked
+                        target = context,
+                        relationKey = relation.key,
+                        isLocked = mode == EditorMode.Locked
                     )
-                }
-                RelationFormat.DATE -> {
-                    dispatch(
-                        Command.OpenObjectRelationScreen.Value.Date(
-                            ctx = context,
-                            target = context,
-                            relationKey = relation.key
-                        )
+                )
+            }
+            RelationFormat.CHECKBOX -> {
+                check(relationView is ObjectRelationView.Checkbox)
+                proceedWithSetObjectDetails(
+                    ctx = context,
+                    key = relation.key,
+                    value = !relationView.isChecked
+                )
+            }
+            RelationFormat.DATE -> {
+                dispatch(
+                    Command.OpenObjectRelationScreen.Value.Date(
+                        ctx = context,
+                        target = context,
+                        relationKey = relation.key
                     )
-                }
-                else -> {
-                    dispatch(
-                        Command.OpenObjectRelationScreen.Value.Default(
-                            ctx = context,
-                            target = context,
-                            relationKey = relation.key,
-                            targetObjectTypes = relation.relationFormatObjectTypes,
-                            isLocked = mode == EditorMode.Locked
-                        )
+                )
+            }
+            else -> {
+                dispatch(
+                    Command.OpenObjectRelationScreen.Value.Default(
+                        ctx = context,
+                        target = context,
+                        relationKey = relation.key,
+                        targetObjectTypes = relation.relationFormatObjectTypes,
+                        isLocked = mode == EditorMode.Locked
                     )
-                }
+                )
             }
         }
     }

@@ -74,6 +74,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -270,6 +271,8 @@ open class EditorTestSetup {
 
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
+    lateinit var addRelationToObject: AddRelationToObject
+
     val root: String = "rootId123"
     val workspaceId = MockDataFactory.randomString()
 
@@ -367,7 +370,7 @@ open class EditorTestSetup {
         )
 
         featureToggles = mock<DefaultFeatureToggles>()
-
+        addRelationToObject = AddRelationToObject(repo)
 
         workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
         runBlocking {
@@ -462,7 +465,8 @@ open class EditorTestSetup {
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
             objectToCollection = objectToCollection,
-            interceptFileLimitEvents = interceptFileLimitEvents
+            interceptFileLimitEvents = interceptFileLimitEvents,
+            addRelationToObject = addRelationToObject
         )
     }
 

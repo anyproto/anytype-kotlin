@@ -317,7 +317,7 @@ fun ColumnView.getDateRelationFormat(): String {
 }
 
 /**
- * Retrieves a list of distinct [ObjectWrapper.Relation] relations of Object using the given relation links, recommended relations, and system relations.
+ * Retrieves a list of distinct [ObjectWrapper.Relation] relations of Object using the given relation links and recommended relations.
  *
  * @param relationLinks The list of relation links (@see [RelationLink] class) used to identify the relations.
  * @param recommendedRelations The list of ids of the recommended relations.
@@ -326,7 +326,7 @@ fun ColumnView.getDateRelationFormat(): String {
  *
  * @return A list of distinct [ObjectWrapper.Relation] object relations.
  */
-suspend fun objectRelations(
+suspend fun getObjectIncludedAndRecommendedRelations(
     relationLinks: List<RelationLink>,
     recommendedRelations: List<Id>,
     systemRelations: List<Key>,
@@ -336,4 +336,42 @@ suspend fun objectRelations(
     val r = relationLinks.map { it.key } + recommendedKeys
     val objectRelationKeys = r.filterNot { it in systemRelations }
     return storeOfRelations.getByKeys(objectRelationKeys).distinctBy { it.key }
+}
+
+/**
+ * Retrieves a list of distinct [ObjectWrapper.Relation] relations of Object using the given relation links filtered by system relations.
+ *
+ * @param relationLinks The list of relation links (@see [RelationLink] class) used to identify the relations.
+ * @param systemRelations The list of keys of the system relations. Final list will be filtered by this list.
+ * @param storeOfRelations The store of relations to retrieve the relations from.
+ *
+ * @return A list of distinct [ObjectWrapper.Relation] object relations.
+ */
+suspend fun getObjectRelations(
+    relationLinks: List<RelationLink>,
+    systemRelations: List<Key>,
+    storeOfRelations: StoreOfRelations
+): List<ObjectWrapper.Relation> {
+    val systemRelationKeys = systemRelations.toSet()
+    val objectRelationKeys = relationLinks.map { it.key }.filterNot { it in systemRelationKeys }
+    return storeOfRelations.getByKeys(objectRelationKeys).distinctBy { it.key }
+}
+
+/**
+ * Retrieves a list of filtered [ObjectWrapper.Relation] recommended relations of Object.
+ *
+ * @param relationLinks The list of relation links (@see [RelationLink] class) used to identify the relations.
+ * @param recommendedRelations The list of ids of the recommended relations.
+ * @param storeOfRelations The store of relations to retrieve the relations from.
+ *
+ * @return A list of distinct [ObjectWrapper.Relation] object recommended relations.
+ */
+suspend fun getNotIncludedRecommendedRelations(
+    relationLinks: List<RelationLink>,
+    recommendedRelations: List<Id>,
+    storeOfRelations: StoreOfRelations
+): List<ObjectWrapper.Relation> {
+    val relationLinkKeys = relationLinks.map { it.key }.toSet()
+    return storeOfRelations.getById(recommendedRelations)
+        .filterNot { recommended -> recommended.key in relationLinkKeys }
 }

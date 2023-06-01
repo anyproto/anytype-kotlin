@@ -6,11 +6,13 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationFeatu
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationUnfeature
 import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -72,63 +74,109 @@ class RelationListViewModel(
                 relationListProvider.links,
                 relationListProvider.details
             ) { _, relationLinks, details ->
-
-                val objectDetails = details.details[ctx]?.map ?: emptyMap()
-                val objectWrapper = ObjectWrapper.Basic(objectDetails)
-                val objectType = objectWrapper.getProperType()
-                val objectTypeWrapper =
-                    ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
-
-                val objectRelations = getObjectRelations(
-                    systemRelations = listOf(),
-                    relationLinks = relationLinks,
-                    storeOfRelations = storeOfRelations
-                ).views(
-                    context = ctx,
-                    details = details,
-                    values = objectDetails,
-                    urlBuilder = urlBuilder,
-                    featured = objectWrapper.featuredRelations
-                ).map { view ->
-                    Model.Item(
-                        view = view,
-                        isRemovable = isPossibleToRemoveRelation(relationKey = view.key)
-                    )
-                }
-
-                val recommendedRelations = getNotIncludedRecommendedRelations(
-                    relationLinks = relationLinks,
-                    recommendedRelations = objectTypeWrapper.recommendedRelations,
-                    storeOfRelations = storeOfRelations
-                ).views(
-                    context = ctx,
-                    details = details,
-                    values = objectDetails,
-                    urlBuilder = urlBuilder
-                ).map { view ->
-                    Model.Item(
-                        view = view,
-                        isRemovable = false
-                    )
-                }
-
-                val result = mutableListOf<Model>().apply {
-                    val (isFeatured, other) = objectRelations.partition { it.view.featured }
-                    if (isFeatured.isNotEmpty()) {
-                        add(Model.Section.Featured)
-                        addAll(isFeatured)
-                    }
-                    if (other.isNotEmpty()) {
-                        add(Model.Section.Other)
-                        addAll(other)
-                    }
-                    if (recommendedRelations.isNotEmpty()) {
-                        add(Model.Section.TypeFrom(objectTypeWrapper.name.orEmpty()))
-                        addAll(recommendedRelations)
-                    }
-                }
-                result
+                constructViews(ctx, relationLinks, details)
             }.collect { views.value = it }
+        }
+    }
+
+    private suspend fun constructViews(
+        ctx: Id,
+        relationLinks: List<RelationLink>,
+        details: Block.Details
+    ): List<Model> {
+
+        val objectDetails = details.details[ctx]?.map ?: emptyMap()
+        val objectWrapper = ObjectWrapper.Basic(objectDetails)
+        val objectType = objectWrapper.getProperType()
+        val objectTypeWrapper = ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
+
+        val objectRelationViews = getObjectRelationsView(
+            ctx = ctx,
+            objectDetails = objectDetails,
+            relationLinks = relationLinks,
+            details = details,
+            objectWrapper = objectWrapper
+        )
+
+        val recommendedRelationViews = getRecommendedRelations(
+            ctx = ctx,
+            objectDetails = objectDetails,
+            relationLinks = relationLinks,
+            objectTypeWrapper = objectTypeWrapper,
+            details = details
+        )
+
+        return buildFinalList(objectRelationViews, recommendedRelationViews, objectTypeWrapper)
+    }
+
+    private suspend fun getObjectRelationsView(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        relationLinks: List<RelationLink>,
+        details: Block.Details,
+        objectWrapper: ObjectWrapper.Basic
+    ): List<Model.Item> {
+        return getObjectRelations(
+            systemRelations = listOf(),
+            relationLinks = relationLinks,
+            storeOfRelations = storeOfRelations
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder,
+            featured = objectWrapper.featuredRelations
+        ).map { view ->
+            Model.Item(
+                view = view,
+                isRemovable = isPossibleToRemoveRelation(relationKey = view.key)
+            )
+        }
+    }
+
+    private suspend fun getRecommendedRelations(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        relationLinks: List<RelationLink>,
+        objectTypeWrapper: ObjectWrapper.Type,
+        details: Block.Details
+    ): List<Model.Item> {
+        return getNotIncludedRecommendedRelations(
+            relationLinks = relationLinks,
+            recommendedRelations = objectTypeWrapper.recommendedRelations,
+            storeOfRelations = storeOfRelations
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder
+        ).map { view ->
+            Model.Item(
+                view = view,
+                isRemovable = false
+            )
+        }
+    }
+
+    private fun buildFinalList(
+        objectRelations: List<Model.Item>,
+        recommendedRelations: List<Model.Item>,
+        objectTypeWrapper: ObjectWrapper.Type
+    ): MutableList<Model> {
+        return mutableListOf<Model>().apply {
+            val (isFeatured, other) = objectRelations.partition { it.view.featured }
+            if (isFeatured.isNotEmpty()) {
+                add(Model.Section.Featured)
+                addAll(isFeatured)
+            }
+            if (other.isNotEmpty()) {
+                add(Model.Section.Other)
+                addAll(other)
+            }
+            if (recommendedRelations.isNotEmpty()) {
+                add(Model.Section.TypeFrom(objectTypeWrapper.name.orEmpty()))
+                addAll(recommendedRelations)
+            }
         }
     }
 

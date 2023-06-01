@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.TextBlock
@@ -213,9 +214,14 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
+import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.view
+import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
@@ -4793,23 +4799,73 @@ class EditorViewModel(
     }
 
     private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
-        val relationLinks = orchestrator.stores.relationLinks.current()
         val details = orchestrator.stores.details.current()
-        val detail = details.details[context]
-        val values = detail?.map ?: emptyMap()
+        val objectDetails = details.details[context]?.map ?: emptyMap()
+        val objectWrapper = ObjectWrapper.Basic(objectDetails)
+        val objectType = objectWrapper.getProperType()
+        val objectTypeWrapper = ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
+        val relationLinks = orchestrator.stores.relationLinks.current()
+
         viewModelScope.launch {
-            val update = relationLinks.mapNotNull { relationLink ->
-                val relation =
-                    storeOfRelations.getByKey(relationLink.key) ?: return@mapNotNull null
-                val relationView = relation.view(
-                    details = details,
-                    values = values,
-                    urlBuilder = urlBuilder
-                ) ?: return@mapNotNull null
-                SlashRelationView.Item(relationView)
-            }
+            val objectRelationViews = getObjectRelationsView(
+                ctx = context,
+                objectDetails = objectDetails,
+                relationLinks = relationLinks,
+                details = details,
+                objectWrapper = objectWrapper
+            )
+
+            val recommendedRelationViews = getRecommendedRelations(
+                ctx = context,
+                objectDetails = objectDetails,
+                relationLinks = relationLinks,
+                objectTypeWrapper = objectTypeWrapper,
+                details = details
+            )
+            val update =
+                (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
+
             action.invoke(update)
         }
+    }
+
+    private suspend fun getObjectRelationsView(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        relationLinks: List<RelationLink>,
+        details: Block.Details,
+        objectWrapper: ObjectWrapper.Basic
+    ): List<ObjectRelationView> {
+        return getObjectRelations(
+            systemRelations = listOf(),
+            relationLinks = relationLinks,
+            storeOfRelations = storeOfRelations
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder,
+            featured = objectWrapper.featuredRelations
+        )
+    }
+
+    private suspend fun getRecommendedRelations(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        relationLinks: List<RelationLink>,
+        objectTypeWrapper: ObjectWrapper.Type,
+        details: Block.Details
+    ): List<ObjectRelationView> {
+        return getNotIncludedRecommendedRelations(
+            relationLinks = relationLinks,
+            recommendedRelations = objectTypeWrapper.recommendedRelations,
+            storeOfRelations = storeOfRelations
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder
+        )
     }
 
     private fun proceedWithObjectTypes(objectTypes: List<ObjectTypeView>) {

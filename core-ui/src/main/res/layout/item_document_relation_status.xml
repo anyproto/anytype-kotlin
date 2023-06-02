@@ -3,28 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:layout_height="@dimen/object_settings_relations_item_height">
 
     <TextView
         android:id="@+id/tvRelationTitle"
         style="@style/RelationListViewTitleStyle"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
+        android:layout_height="match_parent"
         android:layout_weight="0.4"
-        android:gravity="top"
-        android:paddingTop="@dimen/dp_6"
-        android:paddingBottom="@dimen/dp_6"
+        android:drawableStart="@drawable/ic_system_relation"
+        android:drawablePadding="@dimen/dp_6"
+        android:gravity="center_vertical"
+        android:paddingEnd="@dimen/dp_12"
         tools:text="Description of something" />
 
     <TextView
         android:id="@+id/tvRelationValue"
         style="@style/RelationListViewValueStyle"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_height="match_parent"
         android:layout_weight="0.6"
+        android:gravity="center_vertical"
         android:hint="@string/select_status"
+        android:paddingEnd="@dimen/dp_12"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

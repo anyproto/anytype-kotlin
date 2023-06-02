@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:layout_height="@dimen/object_settings_relations_item_height">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -15,8 +16,12 @@
     <TextView
         android:id="@+id/tvRelationTitle"
         style="@style/RelationListViewTitleStyle"
+        android:drawableStart="@drawable/ic_system_relation"
+        android:drawablePadding="@dimen/dp_6"
+        android:gravity="center_vertical"
+        android:paddingEnd="@dimen/dp_12"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,12 +31,19 @@
     <TextView
         android:id="@+id/tvPlaceholder"
         style="@style/RelationPlaceholderTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
         android:text="@string/select_files"
         android:visibility="gone"
+        android:paddingEnd="@dimen/dp_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/guideline3"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/default_text_placeholder" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="@string/default_text_placeholder"
+        tools:visibility="gone" />
 
     <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
         android:id="@+id/file0"

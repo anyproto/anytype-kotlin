@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
+import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeFloatingPoint
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
@@ -229,7 +230,7 @@ class FilesStorageViewModel(
                 ScreenState(
                     spaceName = workspace?.name.orEmpty(),
                     spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
-                    spaceUsage = bytesUsage?.let { bytesToHumanReadableSize(it) }.orEmpty(),
+                    spaceUsage = bytesUsage?.let { bytesToHumanReadableSizeFloatingPoint(it) }.orEmpty(),
                     percentUsage = percentUsage,
                     device = getDeviceName(),
                     localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSizeLocal(it) }

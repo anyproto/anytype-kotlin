@@ -10,6 +10,7 @@
         android:id="@+id/ivActionDelete"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:paddingEnd="@dimen/dp_10"
         android:src="@drawable/ic_relation_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +22,6 @@
         layout="@layout/item_document_relation_default"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/dp_10"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/featuredRelationCheckbox"
         app:layout_constraintStart_toEndOf="@id/ivActionDelete"
@@ -30,9 +30,10 @@
 
     <ImageView
         android:id="@+id/featuredRelationCheckbox"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_vertical"
+        android:paddingStart="@dimen/dp_12"
         android:src="@drawable/ic_featured_relation_checkbox"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

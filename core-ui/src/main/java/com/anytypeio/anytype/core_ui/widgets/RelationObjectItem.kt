@@ -1,12 +1,12 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetRelationObjectBinding
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -27,7 +27,7 @@ class RelationObjectItem @JvmOverloads constructor(
     fun setupAsNonExistent() = with(binding) {
         tvName.visible()
         tvName.setText(R.string.non_existent_object)
-        tvName.setTextColor(Color.parseColor("#CBC9BD"))
+        tvName.setTextColor(context.color(R.color.text_tertiary))
         objectIcon.setNonExistentIcon()
     }
 }

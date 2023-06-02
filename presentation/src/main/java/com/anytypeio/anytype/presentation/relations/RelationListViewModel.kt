@@ -240,7 +240,7 @@ class RelationListViewModel(
     private suspend fun proceedWithAddingRelationToObject(
         ctx: Id,
         view: ObjectRelationView,
-        action: () -> Unit
+        success: () -> Unit
     ) {
         val params = AddRelationToObject.Params(
             ctx = ctx,
@@ -250,7 +250,7 @@ class RelationListViewModel(
             failure = { Timber.e(it, "Error while adding relation to object") },
             success = {
                 dispatcher.send(it)
-                action.invoke()
+                success.invoke()
             }
         )
     }

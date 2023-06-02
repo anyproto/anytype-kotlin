@@ -1,28 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:layout_height="@dimen/object_settings_relations_item_height">
 
-    <TextView android:id="@+id/tvRelationTitle"
+    <TextView
+        android:id="@+id/tvRelationTitle"
         style="@style/RelationListViewTitleStyle"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0.4"
+        android:drawableStart="@drawable/ic_system_relation"
+        android:drawablePadding="@dimen/dp_6"
+        android:gravity="center_vertical"
+        android:paddingEnd="@dimen/dp_12"
         tools:text="Description of something" />
 
     <FrameLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/dp_2"
+        android:layout_height="match_parent"
         android:layout_weight="0.6">
 
         <ImageView
             android:id="@+id/ivRelationCheckbox"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
+            android:paddingEnd="@dimen/dp_16"
             android:src="@drawable/ic_relation_checkbox_selector" />
     </FrameLayout>
 </LinearLayout>

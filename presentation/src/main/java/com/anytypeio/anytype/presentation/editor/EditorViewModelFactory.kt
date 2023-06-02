@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -77,7 +78,8 @@ open class  EditorViewModelFactory(
     private val workspaceManager: WorkspaceManager,
     private val getObjectTypes: GetObjectTypes,
     private val objectToCollection: ConvertObjectToCollection,
-    private val interceptFileLimitEvents: InterceptFileLimitEvents
+    private val interceptFileLimitEvents: InterceptFileLimitEvents,
+    private val addRelationToObject: AddRelationToObject
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -117,7 +119,8 @@ open class  EditorViewModelFactory(
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
-            interceptFileLimitEvents = interceptFileLimitEvents
+            interceptFileLimitEvents = interceptFileLimitEvents,
+            addRelationToObject = addRelationToObject
         ) as T
     }
 }

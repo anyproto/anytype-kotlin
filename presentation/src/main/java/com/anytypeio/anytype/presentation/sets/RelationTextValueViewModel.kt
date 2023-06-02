@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -49,6 +50,7 @@ class RelationTextValueViewModel(
         name: String,
         value: Long?,
     ) {
+        Timber.d("onDateStart, name:[$name], value:[$value]")
         title.value = name
         views.value = listOf(
             RelationTextValueView.Number(
@@ -60,14 +62,16 @@ class RelationTextValueViewModel(
     fun onStart(
         ctx: Id,
         relationKey: Key,
-        recordId: String,
+        objectId: Id,
         isLocked: Boolean = false
     ) {
+        Timber.d("onStart, ctx:[$ctx], relationKey:[$relationKey], object:[$objectId], isLocked:[$isLocked]")
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.observe(relationKey),
-                values.subscribe(ctx = ctx, target = recordId)
+                values.subscribe(ctx = ctx, target = objectId)
             ) { relation, values ->
+                Timber.d("combine, relation:[$relation], values:[$values]")
                 val obj = ObjectWrapper.Basic(values)
                 val value = values[relationKey]?.toString()
                 val isValueReadOnly = values[Relations.IS_READ_ONLY] as? Boolean ?: false
@@ -146,7 +150,7 @@ class RelationTextValueViewModel(
                     }
                     else -> throw  IllegalArgumentException("Wrong format:${relation.format}")
                 }
-            }
+            }.catch { Timber.e(it, "Error getting relation") }
             pipeline.collect()
         }
     }
@@ -159,6 +163,7 @@ class RelationTextValueViewModel(
         target: Id,
         action: RelationValueAction
     ) {
+        Timber.d("onAction, target:[$target], action:[$action]")
         when (action) {
             is RelationValueAction.Email.Copy -> {
                 viewModelScope.launch {

@@ -15,7 +15,9 @@ import kotlinx.coroutines.sync.withLock
 interface StoreOfRelations {
     val size: Int
     suspend fun getByKey(key: Key): ObjectWrapper.Relation?
+    suspend fun getByKeys(keys: List<Key>): List<ObjectWrapper.Relation>
     suspend fun getById(id: Id): ObjectWrapper.Relation?
+    suspend fun getById(ids: List<Id>): List<ObjectWrapper.Relation>
     suspend fun getAll(): List<ObjectWrapper.Relation>
     suspend fun merge(relations: List<ObjectWrapper.Relation>)
     suspend fun amend(target: Id, diff: Map<Id, Any?>)
@@ -50,8 +52,16 @@ class DefaultStoreOfRelations : StoreOfRelations {
             null
     }
 
+    override suspend fun getByKeys(keys: List<Key>): List<ObjectWrapper.Relation> = mutex.withLock {
+        keys.mapNotNull { key -> keysToIds[key]?.let { store[it] } }
+    }
+
     override suspend fun getById(id: Id): ObjectWrapper.Relation? = mutex.withLock {
         store[id]
+    }
+
+    override suspend fun getById(ids: List<Id>): List<ObjectWrapper.Relation> = mutex.withLock {
+        ids.mapNotNull { id -> store[id] }
     }
 
     override suspend fun getAll(): List<ObjectWrapper.Relation> = mutex.withLock {

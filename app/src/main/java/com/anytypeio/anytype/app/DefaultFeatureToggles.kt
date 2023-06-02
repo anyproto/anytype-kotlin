@@ -17,7 +17,7 @@ class DefaultFeatureToggles @Inject constructor(
     override val isLogFromMiddlewareLibrary =
         BuildConfig.LOG_FROM_MW_LIBRARY && buildProvider.isDebug()
     override val isLogMiddlewareInteraction =
-        BuildConfig.LOG_DASHBOARD_REDUCER && buildProvider.isDebug()
+        BuildConfig.LOG_MW_INTERACTION && buildProvider.isDebug()
     override val isLogDashboardReducer =
         BuildConfig.LOG_DASHBOARD_REDUCER && buildProvider.isDebug()
     override val isLogEditorViewModelEvents =

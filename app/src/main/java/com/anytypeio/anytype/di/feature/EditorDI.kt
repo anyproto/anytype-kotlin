@@ -271,7 +271,8 @@ object EditorSessionModule {
         workspaceManager: WorkspaceManager,
         getObjectTypes: GetObjectTypes,
         objectToCollection: ConvertObjectToCollection,
-        interceptFileLimitEvents: InterceptFileLimitEvents
+        interceptFileLimitEvents: InterceptFileLimitEvents,
+        addRelationToObject: AddRelationToObject
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -307,7 +308,8 @@ object EditorSessionModule {
         workspaceManager = workspaceManager,
         getObjectTypes = getObjectTypes,
         objectToCollection = objectToCollection,
-        interceptFileLimitEvents = interceptFileLimitEvents
+        interceptFileLimitEvents = interceptFileLimitEvents,
+        addRelationToObject = addRelationToObject
     )
 
 

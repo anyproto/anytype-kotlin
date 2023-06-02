@@ -246,7 +246,7 @@ fun List<ObjectWrapper.Basic>.toRelationFileValueView(
     }
 
 private fun ObjectWrapper.Basic.getProperLayout() = layout ?: ObjectType.Layout.BASIC
-private fun ObjectWrapper.Basic.getProperType() = type.firstOrNull()
+fun ObjectWrapper.Basic.getProperType() = type.firstOrNull()
 private fun ObjectWrapper.Basic.getProperFileExt() = fileExt.orEmpty()
 private fun ObjectWrapper.Basic.getProperFileMime() = fileMimeType.orEmpty()
 

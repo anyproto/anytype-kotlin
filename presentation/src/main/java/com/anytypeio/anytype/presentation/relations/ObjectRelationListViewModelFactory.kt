@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
@@ -24,7 +25,8 @@ class ObjectRelationListViewModelFactory(
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val analytics: Analytics,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val addRelationToObject: AddRelationToObject
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -39,7 +41,8 @@ class ObjectRelationListViewModelFactory(
             removeFromFeaturedRelations = removeFromFeaturedRelations,
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            addRelationToObject = addRelationToObject
         ) as T
     }
 }

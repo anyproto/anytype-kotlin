@@ -64,6 +64,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -324,6 +325,9 @@ open class EditorPresentationTestSetup {
     lateinit var moveTableColumn: MoveTableColumn
 
     @Mock
+    lateinit var addRelationToObject: AddRelationToObject
+
+    @Mock
     lateinit var setTableRowHeader: SetTableRowHeader
 
     lateinit var workspaceManager: WorkspaceManager
@@ -462,7 +466,8 @@ open class EditorPresentationTestSetup {
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
-            interceptFileLimitEvents = interceptFileLimitEvents
+            interceptFileLimitEvents = interceptFileLimitEvents,
+            addRelationToObject = addRelationToObject
         )
     }
 

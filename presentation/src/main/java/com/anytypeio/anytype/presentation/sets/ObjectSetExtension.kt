@@ -72,7 +72,7 @@ fun ObjectState.DataView.header(
         val wrapper = ObjectWrapper.Basic(
             map = details[ctx]?.map ?: emptyMap()
         )
-        val featured = wrapper.featuredRelations ?: emptyList()
+        val featured = wrapper.featuredRelations
         SetOrCollectionHeaderState.Default(
             title = title(
                 ctx = ctx,

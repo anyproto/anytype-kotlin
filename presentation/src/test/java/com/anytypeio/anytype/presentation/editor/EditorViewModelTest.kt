@@ -76,6 +76,7 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -3882,6 +3883,8 @@ open class EditorViewModelTest {
 
     lateinit var getObjectTypes: GetObjectTypes
 
+    lateinit var addRelationToObject: AddRelationToObject
+
     fun givenViewModel(urlBuilder: UrlBuilder = builder) {
 
         val storage = Editor.Storage()
@@ -3889,6 +3892,7 @@ open class EditorViewModelTest {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
+        addRelationToObject = AddRelationToObject(repo)
         objectToSet = ConvertObjectToSet(repo, dispatchers)
         updateDetail = UpdateDetail(repo)
         setDocCoverImage = SetDocCoverImage(repo)
@@ -3988,7 +3992,8 @@ open class EditorViewModelTest {
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
-            interceptFileLimitEvents = interceptFileLimitEvents
+            interceptFileLimitEvents = interceptFileLimitEvents,
+            addRelationToObject = addRelationToObject
         )
     }
 

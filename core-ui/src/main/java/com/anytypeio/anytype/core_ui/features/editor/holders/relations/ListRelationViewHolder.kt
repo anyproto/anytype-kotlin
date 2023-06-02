@@ -229,9 +229,9 @@ sealed class ListRelationViewHolder(
         }
     }
 
-    fun setIsRemovable(isRemoveable: Boolean) {
+    fun setIsRemovable(isRemovable: Boolean) {
         itemView.findViewById<View>(R.id.actionsLeftContainer).apply {
-            if (isRemoveable) visible() else gone()
+            if (isRemovable) visible() else gone()
         }
     }
 

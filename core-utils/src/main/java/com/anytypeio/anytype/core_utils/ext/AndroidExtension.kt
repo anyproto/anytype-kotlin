@@ -396,6 +396,13 @@ fun getDeviceName(): String {
 }
 
 fun bytesToHumanReadableSize(bytes: Long): String = when {
+    bytes >= 1 shl 30 -> "%d GB".format((bytes / (1 shl 30)).toInt())
+    bytes >= 1 shl 20 -> "%d MB".format((bytes / (1 shl 20)).toInt())
+    bytes >= 1 shl 10 -> "%d kB".format((bytes / (1 shl 10)).toInt())
+    else -> "$bytes bytes"
+}
+
+fun bytesToHumanReadableSizeFloatingPoint(bytes: Long): String = when {
     bytes >= 1 shl 30 -> "%.1f GB".format((bytes / (1 shl 30).toDouble()))
     bytes >= 1 shl 20 -> "%.1f MB".format((bytes / (1 shl 20).toDouble()))
     bytes >= 1 shl 10 -> "%.1f kB".format((bytes / (1 shl 10).toDouble()))

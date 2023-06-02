@@ -56,7 +56,7 @@
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nAnalytics\u00A0ID:\u00A0%7$s</string>
     <string name="space_name">Space name</string>
     <string name="personal_space">Personal Space</string>
-    <string name="you_can_store">You can store up to %1$s of your files on our\nencrypted backup node for free. If you reach the\nlimit, files will be stored only locally.</string>
+    <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">In order to save space on your local device, you can offload all your files to our encrypted backup node. The files will be loaded back when you open them.</string>
     <string name="manage_files">Manage files</string>
     <string name="local_storage">Local storage</string>

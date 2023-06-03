@@ -98,6 +98,7 @@
     <dimen name="dp_20">20dp</dimen>
     <dimen name="dp_104">104dp</dimen>
     <dimen name="dp_45">45dp</dimen>
+    <dimen name="dp_80">80dp</dimen>
     <dimen name="dp_203">203dp</dimen>
 
     <dimen name="roundedTextBorderRadius">4dp</dimen>
@@ -208,7 +209,7 @@
     <dimen name="list_item_object_half_initials_size">24sp</dimen>
     <dimen name="list_item_object_half_text_margin_start">72dp</dimen>
     <dimen name="list_item_object_half_text_margin_end">20dp</dimen>
-    <dimen name="default_cover_height">232dp</dimen>
+    <dimen name="default_cover_height">188dp</dimen>
     <dimen name="default_cover_height_todo">188dp</dimen>
     <dimen name="dp_14">14dp</dimen>
     <dimen name="defaultGalleryViewTextSize">12sp</dimen>

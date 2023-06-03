@@ -309,8 +309,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 item.emoji != null -> {
                     binding.imageIcon.gone()
                     binding.docEmojiIconContainer.visible()
-                    binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_8)
+                    binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_12)
                     }
                 }
                 else -> {

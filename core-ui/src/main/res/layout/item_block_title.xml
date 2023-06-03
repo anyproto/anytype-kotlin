@@ -22,11 +22,11 @@
 
     <FrameLayout
         android:id="@+id/docEmojiIconContainer"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="124dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="120dp"
         android:background="@drawable/background_layout_icon_basic"
         android:transitionName="@string/logo_transition"
         app:layout_constraintStart_toStartOf="parent"

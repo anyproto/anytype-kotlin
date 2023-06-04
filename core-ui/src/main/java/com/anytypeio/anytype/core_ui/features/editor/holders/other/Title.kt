@@ -2,15 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
@@ -41,13 +38,9 @@ import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
-    val ivCover: ImageView? = itemView.findViewById(R.id.cover)
-    private val title: View = itemView.findViewById(R.id.title)
-    private val coverAndIconContainer: ViewGroup? =
-        itemView.findViewById(R.id.coverAndIconContainer)
     private val cover: ImageView? = itemView.findViewById(R.id.cover)
 
-    abstract val icon: FrameLayout
+    abstract val icon: View
     abstract val image: ImageView
     override val root: View = itemView
 
@@ -65,16 +58,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         )
         if (item.mode == BlockView.Mode.READ) {
             enableReadMode()
-            content.pauseTextWatchers {
-                content.setText(item.text, TextView.BufferType.EDITABLE)
-            }
         } else {
             enableEditMode()
-            content.pauseTextWatchers {
-                content.setText(item.text, TextView.BufferType.EDITABLE)
-            }
             if (item.isFocused) setCursor(item)
             focus(item.isFocused)
+        }
+        content.pauseTextWatchers {
+            content.setText(item.text, TextView.BufferType.EDITABLE)
         }
         cover?.setOnClickListener { onCoverClicked() }
     }
@@ -93,35 +83,38 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     }
 
     private fun setCoverless() {
-        ivCover?.apply {
+        cover?.apply {
             setImageDrawable(null)
             setBackgroundColor(0)
             gone()
         }
-        coverAndIconContainer?.updatePadding(top = dimen(R.dimen.dp_48))
     }
 
     private fun setCoverGradient(coverGradient: String) {
-        ivCover?.apply {
+        cover?.apply {
             setImageDrawable(null)
             setBackgroundColor(0)
-            when (coverGradient) {
-                CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow)
-                CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red)
-                CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue)
-                CoverGradient.TEAL -> setBackgroundResource(R.drawable.cover_gradient_teal)
-                CoverGradient.PINK_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_1)
-                CoverGradient.BLUE_PINK -> setBackgroundResource(R.drawable.wallpaper_gradient_2)
-                CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
-                CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
+            val resourceId = when (coverGradient) {
+                CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
+                CoverGradient.RED -> R.drawable.cover_gradient_red
+                CoverGradient.BLUE -> R.drawable.cover_gradient_blue
+                CoverGradient.TEAL -> R.drawable.cover_gradient_teal
+                CoverGradient.PINK_ORANGE -> R.drawable.wallpaper_gradient_1
+                CoverGradient.BLUE_PINK -> R.drawable.wallpaper_gradient_2
+                CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
+                CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
+                else -> {
+                    Timber.e("Unknown cover gradient: $coverGradient")
+                    0
+                }
             }
+            setBackgroundResource(resourceId)
             visible()
         }
-        addPaddingForCover()
     }
 
     private fun setCoverImage(coverImage: String) {
-        ivCover?.apply {
+        cover?.apply {
             visible()
             setBackgroundColor(0)
             Glide
@@ -130,23 +123,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 .centerCrop()
                 .into(this)
         }
-        addPaddingForCover()
     }
 
     private fun setColorCover(coverColor: CoverColor) {
-        ivCover?.apply {
+        cover?.apply {
             visible()
             setImageDrawable(null)
             setBackgroundColor(coverColor.color)
         }
-        addPaddingForCover()
-    }
-
-    protected open fun addPaddingForCover() {
-        title.updateLayoutParams<LinearLayout.LayoutParams> {
-            topMargin = dimen(R.dimen.dp_8)
-        }
-        coverAndIconContainer?.updatePadding(top = 0)
     }
 
     fun applySearchHighlights(item: BlockView.Searchable) {
@@ -268,7 +252,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Document(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.docEmojiIconContainer
+        override val icon: View = binding.docEmojiIconContainer
         override val image: ImageView = binding.imageIcon
         private val emoji: ImageView = binding.emojiIcon
 

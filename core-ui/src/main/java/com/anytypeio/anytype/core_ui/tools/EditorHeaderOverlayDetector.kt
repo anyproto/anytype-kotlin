@@ -47,7 +47,7 @@ class EditorHeaderOverlayDetector(
                     }
                     is Title.Todo -> {
                         val root = holder.binding.root
-                        val title = holder.binding.titleContainer
+                        val title = holder.binding.title
                         onHeaderOverlaid = if (holder.binding.cover.isVisible) {
                             root.top + title.bottom >= threshold + thresholdPadding
                         } else {

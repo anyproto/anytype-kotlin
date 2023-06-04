@@ -301,12 +301,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     binding.imageIcon.gone()
                     binding.docEmojiIconContainer.gone()
                     if (!item.hasCover) {
-                        binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                            topMargin = dimen(R.dimen.dp_48)
+                        content.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            topMargin = dimen(R.dimen.dp_80)
                         }
                     } else {
-                        binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                            topMargin = dimen(R.dimen.dp_8)
+                        content.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            topMargin = dimen(R.dimen.dp_32)
                         }
                     }
                 }
@@ -323,6 +323,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     if (payload.isTitleIconChanged) {
                         setEmoji(item)
                         setImage(item)
+                        setupIconVisibility(item)
+                    }
+                    if (payload.isCoverChanged) {
                         setupIconVisibility(item)
                     }
                     if (payload.isSearchHighlightChanged) {

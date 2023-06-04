@@ -379,7 +379,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Archive(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.docEmojiIconContainer
+        override val icon: View = binding.docEmojiIconContainer
         override val image: ImageView = binding.imageIcon
 
         override val root: View = itemView
@@ -412,7 +412,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Profile(val binding: ItemBlockTitleProfileBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.docProfileIconContainer
+        override val icon: View = binding.docProfileIconContainer
         override val image: ImageView = binding.imageIcon
         override val content: TextInputWidget = binding.title
 
@@ -498,8 +498,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Todo(val binding: ItemBlockTitleTodoBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.documentIconContainer
-        override val image: ImageView = binding.imageIcon
+        override val icon: View = binding.todoTitleCheckbox
+        override val image: ImageView = binding.todoTitleCheckbox
 
         val checkbox = binding.todoTitleCheckbox
         var isLocked: Boolean = false
@@ -523,12 +523,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             setLocked(item.mode)
             checkbox.isSelected = item.isChecked
             applySearchHighlights(item)
-            if (item.mode == BlockView.Mode.EDIT) {
-                icon.setOnClickListener { onPageIconClicked() }
-            }
         }
-
-        override fun addPaddingForCover() {}
 
         private fun setLocked(mode: BlockView.Mode) {
             isLocked = mode == BlockView.Mode.READ
@@ -559,7 +554,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyBackground(item: BlockView.Title) {
-            binding.titleContainer.setBlockBackgroundColor(item.background)
+            content.setBlockBackgroundColor(item.background)
         }
     }
 }

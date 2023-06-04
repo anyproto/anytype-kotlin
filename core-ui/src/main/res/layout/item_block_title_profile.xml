@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <ImageView
+        android:id="@+id/cover"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/default_cover_height"
+        android:contentDescription="@string/content_description_document_cover"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
     <FrameLayout
-        android:id="@+id/coverAndIconContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:id="@+id/docProfileIconContainer"
+        android:layout_width="112dp"
+        android:layout_height="112dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginTop="92dp"
+        android:background="@drawable/circle_profile_icon"
+        android:transitionName="@string/logo_transition"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/cover"
+            android:id="@+id/imageIcon"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_cover_height"
-            android:layout_marginBottom="24dp"
-            android:contentDescription="@string/content_description_document_cover"
-            android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:layout_margin="4dp" />
 
-        <FrameLayout
-            android:id="@+id/docProfileIconContainer"
-            android:layout_width="112dp"
-            android:layout_height="112dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/circle_profile_icon"
-            android:transitionName="@string/logo_transition">
-
-            <ImageView
-                android:layout_margin="4dp"
-                android:id="@+id/imageIcon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <TextView
-                android:id="@+id/imageText"
-                style="@style/TextView.ContentStyle.Initials"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="64sp"
-                tools:text="S" />
-
-        </FrameLayout>
-
+        <TextView
+            android:id="@+id/imageText"
+            style="@style/TextView.ContentStyle.Initials"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="64sp"
+            tools:text="S" />
     </FrameLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:layout_marginTop="12dp"
-        android:paddingEnd="20dp"
-        android:layout_marginBottom="13dp"
+        android:layout_marginTop="16dp"
         android:background="@null"
-        android:textAlignment="center"
         android:hint="@string/untitled"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textAlignment="center"
         app:ignoreDragAndDrop="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/docProfileIconContainer"
         app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

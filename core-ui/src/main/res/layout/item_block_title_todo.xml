@@ -27,7 +27,6 @@
         android:layout_marginTop="@dimen/dp_32"
         android:paddingStart="@dimen/dp_20"
         android:paddingEnd="@dimen/dp_6"
-        android:paddingBottom="@dimen/dp_12"
         android:paddingTop="3dp"
         android:src="@drawable/ic_todo_title_checkbox_selector"
         app:layout_constraintStart_toStartOf="parent"

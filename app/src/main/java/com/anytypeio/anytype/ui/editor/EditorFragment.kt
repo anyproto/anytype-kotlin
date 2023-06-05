@@ -530,26 +530,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 .launchIn(lifecycleScope)
         }
 
-        binding.bottomMenu
-            .doneClicks()
-            .onEach { vm.onExitMultiSelectModeClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomMenu
-            .deleteClicks()
-            .onEach { vm.onMultiSelectModeDeleteClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomMenu
-            .copyClicks()
-            .onEach { vm.onMultiSelectCopyClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomMenu
-            .enterScrollAndMove()
-            .onEach { vm.onEnterScrollAndMoveClicked() }
-            .launchIn(lifecycleScope)
-
         binding.scrollAndMoveBottomAction
             .apply
             .clicks()
@@ -565,16 +545,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .clicks()
             .throttleFirst()
             .onEach { vm.onExitScrollAndMoveClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomMenu
-            .turnIntoClicks()
-            .onEach { vm.onMultiSelectTurnIntoButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomMenu
-            .styleClicks()
-            .onEach { vm.onMultiSelectStyleButtonClicked() }
             .launchIn(lifecycleScope)
 
         binding.multiSelectTopToolbar
@@ -1338,7 +1308,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     visible()
                 }
 
-                binding.bottomMenu.update(count)
                 binding.recycler.apply {
                     if (itemAnimator == null) itemAnimator = DefaultItemAnimator()
                 }
@@ -1834,7 +1803,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         hideTopScrollAndMoveToolbar()
         binding.scrollAndMoveBottomAction.hide()
         binding.targeter.invisible()
-        binding.bottomMenu.hideScrollAndMoveModeControls()
         scrollAndMoveTargetDescriptor.clear()
     }
 

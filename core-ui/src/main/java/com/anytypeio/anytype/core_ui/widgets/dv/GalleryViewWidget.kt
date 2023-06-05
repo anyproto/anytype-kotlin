@@ -238,8 +238,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                 titleDescContainer.setupDescription(item = item)
                 applyContentItems(item)
                 cover.bind(
-                    cover = item.cover,
-                    fitImage = item.fitImage,
+                    item = item,
                     coverSpace = binding.coverSizeSpace
                 )
                 updateConstraints(item = item)
@@ -250,10 +249,13 @@ class GalleryViewWidget @JvmOverloads constructor(
                 item: Viewer.GalleryView.Item.Cover
             ) {
                 payload(payload, item)
-                if (payload.contains(COVER_CHANGED) || payload.contains(FIT_IMAGE_CHANGED)) {
+                if (
+                    payload.contains(COVER_CHANGED) ||
+                    payload.contains(FIT_IMAGE_CHANGED) ||
+                    payload.contains(LARGE_SIZE_CHANGED)
+                ) {
                     cover.bind(
-                        cover = item.cover,
-                        fitImage = item.fitImage,
+                        item = item,
                         coverSpace = binding.coverSizeSpace
                     )
                     updateConstraints(item = item)
@@ -402,6 +404,9 @@ class GalleryViewWidget @JvmOverloads constructor(
                 if (oldItem.fitImage != newItem.fitImage) {
                     changes.add(FIT_IMAGE_CHANGED)
                 }
+                if (oldItem.isLargeSize != newItem.isLargeSize) {
+                    changes.add(LARGE_SIZE_CHANGED)
+                }
             }
 
             return changes.ifEmpty {
@@ -425,5 +430,6 @@ class GalleryViewWidget @JvmOverloads constructor(
 
         const val COVER_CHANGED = 4
         const val FIT_IMAGE_CHANGED = 5
+        const val LARGE_SIZE_CHANGED = 6
     }
 }

@@ -5,7 +5,7 @@
 - Remove all other golang installations (`which go` should report that nothing found)
 - Make a dir for golang `mkdir -p $HOME/golang`
 - Update brew by `brew update`
-- Install from brew only a golang version mentioned here: [here](https://github.com/anytypeio/go-anytype-middleware#build-from-source)
+- Install from brew only a golang version mentioned here: [here](https://github.com/anyproto/anytype-heart#build-from-source)
 For example: `brew install go@1.xx`
 - Remember a golang install path (`/<path-to-golang>/go@1.xx/`) reported by brew 
 

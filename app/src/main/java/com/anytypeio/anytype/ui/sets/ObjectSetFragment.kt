@@ -753,7 +753,7 @@ open class ObjectSetFragment :
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,
                     objectId = ctx,
-                    flow = RelationTextValueFragment.FLOW_DATAVIEW,
+                    flow = RelationTextValueFragment.FLOW_SET_OR_COLLECTION,
                     relationKey = command.relation
                 )
                 fr.showChildFragment(EMPTY_TAG)

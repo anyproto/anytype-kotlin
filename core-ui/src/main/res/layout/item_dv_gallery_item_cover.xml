@@ -49,15 +49,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cover"/>
 
-        <Space
-            android:id="@+id/titleDescContainerSpace"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/default_dv_gallery_title_desc_height"
-            android:layout_marginTop="@dimen/dp_12"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cover"/>
-
         <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewContentWidget
             android:id="@+id/contentContainer"
             android:layout_width="match_parent"
@@ -68,9 +59,18 @@
             app:itemIntervalMargin="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleDescContainerSpace"
+            app:layout_constraintTop_toBottomOf="@+id/titleDescContainer"
             app:marginAfterIcon="4dp"
             app:marginAfterText="6dp" />
+
+        <Space
+            android:id="@+id/coverSizeSpace"
+            android:layout_width="0dp"
+            android:layout_height="98dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contentContainer"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

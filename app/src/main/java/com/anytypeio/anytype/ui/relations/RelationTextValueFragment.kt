@@ -190,18 +190,36 @@ open class RelationTextValueFragment :
     }
 
     override fun injectDependencies() {
-        if (flow == FLOW_DATAVIEW || flow == FLOW_CHANGE_DATE) {
-            componentManager().relationTextValueDVComponent.get(ctx).inject(this)
-        } else {
-            componentManager().relationTextValueComponent.get(ctx).inject(this)
+        when (flow) {
+            FLOW_DATAVIEW, FLOW_CHANGE_DATE -> {
+                componentManager().dataViewRelationTextValueComponent
+                    .get(ctx)
+                    .inject(this)
+            }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().setOrCollectionRelationTextValueComponent
+                    .get(ctx)
+                    .inject(this)
+            }
+            else -> {
+                componentManager().relationTextValueComponent
+                    .get(ctx)
+                    .inject(this)
+            }
         }
     }
 
     override fun releaseDependencies() {
-        if (flow == FLOW_DATAVIEW || flow == FLOW_CHANGE_DATE) {
-            componentManager().relationTextValueDVComponent.release(ctx)
-        } else {
-            componentManager().relationTextValueComponent.release(ctx)
+        when (flow) {
+            FLOW_DATAVIEW, FLOW_CHANGE_DATE -> {
+                componentManager().dataViewRelationTextValueComponent.release(ctx)
+            }
+            FLOW_SET_OR_COLLECTION -> {
+                componentManager().setOrCollectionRelationTextValueComponent.release(ctx)
+            }
+            else -> {
+                componentManager().relationTextValueComponent.release(ctx)
+            }
         }
     }
 
@@ -247,7 +265,8 @@ open class RelationTextValueFragment :
 
         const val FLOW_DEFAULT = 0
         const val FLOW_DATAVIEW = 1
-        const val FLOW_CHANGE_DATE = 2
+        const val FLOW_SET_OR_COLLECTION = 2
+        const val FLOW_CHANGE_DATE = 3
     }
 
     interface TextValueEditReceiver {

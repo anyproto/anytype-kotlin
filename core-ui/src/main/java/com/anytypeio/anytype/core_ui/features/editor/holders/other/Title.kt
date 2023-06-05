@@ -2,15 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
@@ -41,13 +38,9 @@ import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
-    val ivCover: ImageView? = itemView.findViewById(R.id.cover)
-    private val title: View = itemView.findViewById(R.id.title)
-    private val coverAndIconContainer: ViewGroup? =
-        itemView.findViewById(R.id.coverAndIconContainer)
     private val cover: ImageView? = itemView.findViewById(R.id.cover)
 
-    abstract val icon: FrameLayout
+    abstract val icon: View
     abstract val image: ImageView
     override val root: View = itemView
 
@@ -65,16 +58,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         )
         if (item.mode == BlockView.Mode.READ) {
             enableReadMode()
-            content.pauseTextWatchers {
-                content.setText(item.text, TextView.BufferType.EDITABLE)
-            }
         } else {
             enableEditMode()
-            content.pauseTextWatchers {
-                content.setText(item.text, TextView.BufferType.EDITABLE)
-            }
             if (item.isFocused) setCursor(item)
             focus(item.isFocused)
+        }
+        content.pauseTextWatchers {
+            content.setText(item.text, TextView.BufferType.EDITABLE)
         }
         cover?.setOnClickListener { onCoverClicked() }
     }
@@ -93,35 +83,38 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     }
 
     private fun setCoverless() {
-        ivCover?.apply {
+        cover?.apply {
             setImageDrawable(null)
             setBackgroundColor(0)
             gone()
         }
-        coverAndIconContainer?.updatePadding(top = dimen(R.dimen.dp_48))
     }
 
     private fun setCoverGradient(coverGradient: String) {
-        ivCover?.apply {
+        cover?.apply {
             setImageDrawable(null)
             setBackgroundColor(0)
-            when (coverGradient) {
-                CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow)
-                CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red)
-                CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue)
-                CoverGradient.TEAL -> setBackgroundResource(R.drawable.cover_gradient_teal)
-                CoverGradient.PINK_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_1)
-                CoverGradient.BLUE_PINK -> setBackgroundResource(R.drawable.wallpaper_gradient_2)
-                CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
-                CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
+            val resourceId = when (coverGradient) {
+                CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
+                CoverGradient.RED -> R.drawable.cover_gradient_red
+                CoverGradient.BLUE -> R.drawable.cover_gradient_blue
+                CoverGradient.TEAL -> R.drawable.cover_gradient_teal
+                CoverGradient.PINK_ORANGE -> R.drawable.wallpaper_gradient_1
+                CoverGradient.BLUE_PINK -> R.drawable.wallpaper_gradient_2
+                CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
+                CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
+                else -> {
+                    Timber.e("Unknown cover gradient: $coverGradient")
+                    0
+                }
             }
+            setBackgroundResource(resourceId)
             visible()
         }
-        addPaddingForCover()
     }
 
     private fun setCoverImage(coverImage: String) {
-        ivCover?.apply {
+        cover?.apply {
             visible()
             setBackgroundColor(0)
             Glide
@@ -130,23 +123,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 .centerCrop()
                 .into(this)
         }
-        addPaddingForCover()
     }
 
     private fun setColorCover(coverColor: CoverColor) {
-        ivCover?.apply {
+        cover?.apply {
             visible()
             setImageDrawable(null)
             setBackgroundColor(coverColor.color)
         }
-        addPaddingForCover()
-    }
-
-    protected open fun addPaddingForCover() {
-        title.updateLayoutParams<LinearLayout.LayoutParams> {
-            topMargin = dimen(R.dimen.dp_8)
-        }
-        coverAndIconContainer?.updatePadding(top = 0)
     }
 
     fun applySearchHighlights(item: BlockView.Searchable) {
@@ -268,7 +252,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Document(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.docEmojiIconContainer
+        override val icon: View = binding.docEmojiIconContainer
         override val image: ImageView = binding.imageIcon
         private val emoji: ImageView = binding.emojiIcon
 
@@ -302,27 +286,27 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 item.image != null -> {
                     binding.imageIcon.visible()
                     binding.docEmojiIconContainer.gone()
-                    binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_12)
+                    binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_10)
                     }
                 }
                 item.emoji != null -> {
                     binding.imageIcon.gone()
                     binding.docEmojiIconContainer.visible()
-                    binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_8)
+                    binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_12)
                     }
                 }
                 else -> {
                     binding.imageIcon.gone()
                     binding.docEmojiIconContainer.gone()
                     if (!item.hasCover) {
-                        binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                            topMargin = dimen(R.dimen.dp_48)
+                        content.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            topMargin = dimen(R.dimen.dp_80)
                         }
                     } else {
-                        binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                            topMargin = dimen(R.dimen.dp_8)
+                        content.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            topMargin = dimen(R.dimen.dp_32)
                         }
                     }
                 }
@@ -339,6 +323,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     if (payload.isTitleIconChanged) {
                         setEmoji(item)
                         setImage(item)
+                        setupIconVisibility(item)
+                    }
+                    if (payload.isCoverChanged) {
                         setupIconVisibility(item)
                     }
                     if (payload.isSearchHighlightChanged) {
@@ -379,7 +366,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Archive(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.docEmojiIconContainer
+        override val icon: View = binding.docEmojiIconContainer
         override val image: ImageView = binding.imageIcon
 
         override val root: View = itemView
@@ -412,7 +399,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Profile(val binding: ItemBlockTitleProfileBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.docProfileIconContainer
+        override val icon: View = binding.docProfileIconContainer
         override val image: ImageView = binding.imageIcon
         override val content: TextInputWidget = binding.title
 
@@ -498,8 +485,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Todo(val binding: ItemBlockTitleTodoBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = binding.documentIconContainer
-        override val image: ImageView = binding.imageIcon
+        override val icon: View = binding.todoTitleCheckbox
+        override val image: ImageView = binding.todoTitleCheckbox
 
         val checkbox = binding.todoTitleCheckbox
         var isLocked: Boolean = false
@@ -523,12 +510,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             setLocked(item.mode)
             checkbox.isSelected = item.isChecked
             applySearchHighlights(item)
-            if (item.mode == BlockView.Mode.EDIT) {
-                icon.setOnClickListener { onPageIconClicked() }
-            }
         }
-
-        override fun addPaddingForCover() {}
 
         private fun setLocked(mode: BlockView.Mode) {
             isLocked = mode == BlockView.Mode.READ
@@ -559,7 +541,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyBackground(item: BlockView.Title) {
-            binding.titleContainer.setBlockBackgroundColor(item.background)
+            content.setBlockBackgroundColor(item.background)
         }
     }
 }

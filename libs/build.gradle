@@ -7,8 +7,8 @@ afterEvaluate {
         publications {
             myLocalPublication(MavenPublication) {
                 artifact(file('lib.aar'))
-                groupId 'io.anytype'
-                artifactId 'android-mw'
+                groupId 'io.anyproto'
+                artifactId 'anytype-heart-android'
                 version = '2.3.0'
             }
         }

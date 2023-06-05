@@ -418,7 +418,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                         }
                         Content.Text.Style.DESCRIPTION -> {
                             val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
-                            val featured = detail.featuredRelations ?: emptyList()
+                            val obj = ObjectWrapper.Basic(detail.map)
+                            val featured = obj.featuredRelations
                             if (featured.contains(Relations.DESCRIPTION)) {
                                 mCounter = 0
                                 result.add(
@@ -427,7 +428,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         content = content,
                                         mode = mode,
                                         restrictions = restrictions,
-                                        focus = focus
+                                        focus = focus,
+                                        isToDoLayout = obj.layout == ObjectType.Layout.TODO
                                     )
                                 )
                             }
@@ -825,7 +827,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         mode: EditorMode,
         restrictions: List<ObjectRestriction>,
-        focus: Focus
+        focus: Focus,
+        isToDoLayout: Boolean
     ): BlockView.Description {
         val blockMode = if (restrictions.contains(ObjectRestriction.RELATIONS)) {
             BlockView.Mode.READ
@@ -836,7 +839,8 @@ class DefaultBlockViewRenderer @Inject constructor(
             id = block.id,
             text = content.text,
             mode = blockMode,
-            isFocused = resolveIsFocused(focus, block)
+            isFocused = resolveIsFocused(focus, block),
+            isTodoLayout = isToDoLayout
         )
     }
 
@@ -2096,7 +2100,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,
-            allowChangingObjectType = !obj.type.contains(BOOKMARK)
+            allowChangingObjectType = !obj.type.contains(BOOKMARK),
+            isTodoLayout = obj.layout == ObjectType.Layout.TODO
         )
     }
 

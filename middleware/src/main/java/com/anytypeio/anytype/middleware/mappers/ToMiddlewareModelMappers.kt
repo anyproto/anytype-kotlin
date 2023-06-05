@@ -99,8 +99,17 @@ fun Block.Content.Bookmark.toMiddlewareModel(): MBBookmark = MBBookmark(
     faviconHash = favicon.orEmpty(),
     title = title.orEmpty(),
     url = url.orEmpty(),
-    imageHash = image.orEmpty()
+    imageHash = image.orEmpty(),
+    state = state.toMiddlewareModel(),
+    targetObjectId = targetObjectId.orEmpty()
 )
+
+fun Block.Content.Bookmark.State.toMiddlewareModel(): MBookmarkState = when (this) {
+    Block.Content.Bookmark.State.EMPTY -> MBookmarkState.Empty
+    Block.Content.Bookmark.State.DONE -> MBookmarkState.Done
+    Block.Content.Bookmark.State.ERROR -> MBookmarkState.Error
+    Block.Content.Bookmark.State.FETCHING -> MBookmarkState.Fetching
+}
 
 fun Block.Content.File.toMiddlewareModel(): MBFile = MBFile(
     hash = hash.orEmpty(),

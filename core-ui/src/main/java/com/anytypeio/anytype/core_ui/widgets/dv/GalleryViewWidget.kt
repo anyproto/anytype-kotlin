@@ -212,7 +212,7 @@ class GalleryViewWidget @JvmOverloads constructor(
 
             fun bind(item: Viewer.GalleryView.Item.Default) {
                 applyTextAndIcon(item)
-                titleDescContainer.setupDescription(item = item, space = null)
+                titleDescContainer.setupDescription(item = item)
                 applyContentItems(item)
             }
 
@@ -235,9 +235,13 @@ class GalleryViewWidget @JvmOverloads constructor(
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
                 applyTextAndIcon(item)
-                titleDescContainer.setupDescription(item = item, space = binding.titleDescContainerSpace)
+                titleDescContainer.setupDescription(item = item)
                 applyContentItems(item)
-                cover.bind(cover = item.cover, fitImage = item.fitImage)
+                cover.bind(
+                    cover = item.cover,
+                    fitImage = item.fitImage,
+                    coverSpace = binding.coverSizeSpace
+                )
                 updateConstraints(item = item)
             }
 
@@ -247,7 +251,11 @@ class GalleryViewWidget @JvmOverloads constructor(
             ) {
                 payload(payload, item)
                 if (payload.contains(COVER_CHANGED) || payload.contains(FIT_IMAGE_CHANGED)) {
-                    cover.bind(cover = item.cover, fitImage = item.fitImage)
+                    cover.bind(
+                        cover = item.cover,
+                        fitImage = item.fitImage,
+                        coverSpace = binding.coverSizeSpace
+                    )
                     updateConstraints(item = item)
                 }
             }

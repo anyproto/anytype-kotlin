@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -377,10 +378,10 @@ class BlockMiddleware(
         relation = relation
     )
 
-    override suspend fun debugSync(): String = middleware.debugSync()
+    override suspend fun debugSpace(): String = middleware.debugSpace()
 
-    override suspend fun debugTree(objectId: Id, path: String): String =
-        middleware.debugTree(objectId = objectId, path = path)
+    override suspend fun debugObject(objectId: Id, path: String): String =
+        middleware.debugObject(objectId = objectId, path = path)
 
     override suspend fun debugLocalStore(path: String): String =
         middleware.debugExportLocalStore(path)
@@ -759,5 +760,9 @@ class BlockMiddleware(
 
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return middleware.setQueryToSet(command)
+    }
+
+    override suspend fun fileSpaceUsage(): FileLimits {
+        return middleware.fileSpaceUsage()
     }
 }

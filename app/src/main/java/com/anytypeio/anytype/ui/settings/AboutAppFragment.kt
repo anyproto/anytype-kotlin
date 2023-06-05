@@ -23,8 +23,11 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui_settings.about.AboutAppScreen
@@ -53,8 +56,23 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         version = getVersionText(),
                         buildNumber = getBuildNumber(),
                         libraryVersion = vm.libraryVersion.collectAsState().value,
-                        anytypeId = vm.userId.collectAsState().value,
-                        onMetaClicked = { copyMetaToClipboard() }
+                        accountId = vm.accountId.collectAsState().value,
+                        analyticsId = vm.analyticsId.collectAsState().value,
+                        onMetaClicked = { copyMetaToClipboard() },
+                        onContactUsClicked = {
+                            proceedWithAction(
+                                SystemAction.MailTo(
+                                    generateSupportMail(
+                                        account = vm.accountId.value,
+                                        analytics = vm.analyticsId.value,
+                                        version = getVersionText(),
+                                        library = vm.libraryVersion.value,
+                                        os = getOsVersion(),
+                                        device = getDevice()
+                                    )
+                                )
+                            )
+                        }
                     ) {
                         vm.onExternalLinkClicked(it)
                     }
@@ -99,6 +117,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun getBuildNumber() = BuildConfig.VERSION_CODE
+    private fun getOsVersion() = Build.VERSION.RELEASE
+    private fun getDevice() = Build.MODEL
 
     private fun copyMetaToClipboard() {
         try {
@@ -114,7 +134,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         getVersionText(),
                         getBuildNumber(),
                         vm.libraryVersion.value,
-                        vm.userId.value
+                        vm.accountId.value,
+                        vm.analyticsId.value
                     )
                 )
             clipboard.setPrimaryClip(clip)
@@ -139,6 +160,25 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
         return if (model.startsWith(manufacturer)) {
             model
         } else "$model $manufacturer"
+    }
+
+    private fun generateSupportMail(
+        account: Id,
+        device: String,
+        version: String,
+        library: String,
+        analytics: Id,
+        os: String
+    ) : String {
+        return "mailto:support@anytype.io" +
+                "?subject=Support%20request%2C%20Account%20ID%20$account" +
+                "&body=%0D%0A%0D%0ATechnical%20information" +
+                "%0D%0ADevice%3A%20$device" +
+                "%0D%0AOS%20version%3A%20$os" +
+                "%0D%0AApp%20version%3A%20$version" +
+                "%0D%0ALibrary%20version%3A%20$library" +
+                "%0D%0AAccount%20ID%3A%20$account" +
+                "%0D%0AAnalytics%20ID%3A%20$analytics"
     }
 
     override fun injectDependencies() {

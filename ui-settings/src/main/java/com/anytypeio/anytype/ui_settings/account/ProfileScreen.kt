@@ -61,9 +61,9 @@ fun ProfileScreen(
     onKeychainPhraseClicked: () -> Unit,
     onDeleteAccountClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
-    onDebugSyncReportClicked: () -> Unit,
+    onSpaceDebugClicked: () -> Unit,
     isLogoutInProgress: Boolean,
-    isDebugSyncReportInProgress: Boolean,
+    isDebugSpaceReportInProgress: Boolean,
     isShowDebug: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
@@ -89,15 +89,6 @@ fun ProfileScreen(
             onClick = onKeychainPhraseClicked
         )
         Divider(paddingStart = 60.dp)
-        if (isShowDebug) {
-            ActionWithProgressBar(
-                name = stringResource(R.string.debug_sync_report),
-                color = colorResource(R.color.text_primary),
-                onClick = onDebugSyncReportClicked,
-                isInProgress = isDebugSyncReportInProgress
-            )
-            Divider()
-        }
         Section(stringResource(R.string.account))
         Action(
             name = stringResource(R.string.delete_account),
@@ -112,6 +103,14 @@ fun ProfileScreen(
             isInProgress = isLogoutInProgress
         )
         Divider()
+        if (isShowDebug) {
+            ActionWithProgressBar(
+                name = stringResource(R.string.space_debug),
+                color = colorResource(R.color.text_primary),
+                onClick = onSpaceDebugClicked,
+                isInProgress = isDebugSpaceReportInProgress
+            )
+        }
         Box(Modifier.height(54.dp))
     }
 }

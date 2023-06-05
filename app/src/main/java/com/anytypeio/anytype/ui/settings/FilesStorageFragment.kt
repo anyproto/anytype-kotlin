@@ -17,7 +17,9 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
+import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.Event
@@ -59,6 +61,17 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(PADDING_TOP)
         collectCommands()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        proceed(vm.toasts) { toast(it) }
+        vm.onStart()
+    }
+
+    override fun onStop() {
+        vm.onStop()
+        super.onStop()
     }
 
     private fun collectCommands() {

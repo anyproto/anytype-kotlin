@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.relations
 
 import android.view.View
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
@@ -25,12 +26,13 @@ sealed class ListRelationViewHolder(
     view: View
 ) : RecyclerView.ViewHolder(view) {
 
+    private val systemIconDrawable = itemView.context.getDrawable(R.drawable.ic_system_relation)
+
     class Default(binding: ItemRelationListRelationDefaultBinding) :
         ListRelationViewHolder(binding.root) {
 
         private val tvTitle = binding.content.tvRelationTitle
         private val tvValue = binding.content.tvRelationValue
-        private val systemIcon = binding.icSystem
 
         fun bind(item: ObjectRelationView) {
             tvTitle.text = item.name
@@ -49,7 +51,7 @@ sealed class ListRelationViewHolder(
                     }
                 }
             }
-            setLockIcon(systemIcon, item.readOnly)
+            setLockIcon(tvTitle, item.readOnly)
         }
     }
 
@@ -58,12 +60,11 @@ sealed class ListRelationViewHolder(
 
         private val tvTitle = binding.content.tvRelationTitle
         private val ivCheckbox = binding.content.ivRelationCheckbox
-        private val systemIcon = binding.icSystem
 
         fun bind(item: ObjectRelationView.Checkbox) = with(itemView) {
             tvTitle.text = item.name
             ivCheckbox.isSelected = item.isChecked
-            setLockIcon(systemIcon, item.system)
+            setLockIcon(tvTitle, item.system)
         }
     }
 
@@ -72,7 +73,6 @@ sealed class ListRelationViewHolder(
 
         private val tvTitle = binding.content.tvRelationTitle
         private val tvValue = binding.content.tvRelationValue
-        private val systemIcon = binding.icSystem
 
         fun bind(item: ObjectRelationView.Status) {
             tvTitle.text = item.name
@@ -91,7 +91,7 @@ sealed class ListRelationViewHolder(
                     text = null
                 }
             }
-            setLockIcon(systemIcon, item.system)
+            setLockIcon(tvTitle, item.system)
         }
     }
 
@@ -100,7 +100,6 @@ sealed class ListRelationViewHolder(
         private val placeholder = binding.content.tvPlaceholder
         private val content = binding.content
         private val tvTitle = binding.content.tvRelationTitle
-        private val systemIcon = binding.icSystem
 
         fun bind(item: ObjectRelationView.Tags) = with(itemView) {
             tvTitle.text = item.name
@@ -109,7 +108,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setLockIcon(systemIcon, item.system)
+            setLockIcon(tvTitle, item.system)
             for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
             item.tags.forEachIndexed { index, tagView ->
                 when (index) {
@@ -142,7 +141,7 @@ sealed class ListRelationViewHolder(
 
         private val placeholder = binding.content.tvPlaceholder
         private val content = binding.content
-        private val systemIcon = binding.icSystem
+        private val tvTitle = binding.content.tvRelationTitle
 
         fun bind(item: ObjectRelationView.Object) {
             content.tvRelationTitle.text = item.name
@@ -151,7 +150,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setLockIcon(systemIcon, item.system)
+            setLockIcon(tvTitle, item.system)
             for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
             item.objects.forEachIndexed { index, objectView ->
                 when (index) {
@@ -189,7 +188,6 @@ sealed class ListRelationViewHolder(
         private val placeholder = binding.content.tvPlaceholder
         private val content = binding.content
         private val tvTitle = binding.content.tvRelationTitle
-        private val systemIcon = binding.icSystem
 
         fun bind(item: ObjectRelationView.File) = with(itemView) {
             tvTitle.text = item.name
@@ -198,7 +196,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setLockIcon(systemIcon, item.system)
+            setLockIcon(tvTitle, item.system)
             item.files.forEachIndexed { index, fileView ->
                 when (index) {
                     in 0..MAX_VISIBLE_FILES_INDEX -> {
@@ -229,9 +227,9 @@ sealed class ListRelationViewHolder(
         }
     }
 
-    fun setIsRemovable(isRemoveable: Boolean) {
-        itemView.findViewById<View>(R.id.actionsLeftContainer).apply {
-            if (isRemoveable) visible() else gone()
+    fun setIsRemovable(isRemovable: Boolean) {
+        itemView.findViewById<View>(R.id.ivActionDelete).apply {
+            if (isRemovable) visible() else gone()
         }
     }
 
@@ -239,11 +237,12 @@ sealed class ListRelationViewHolder(
         itemView.setBlockBackgroundColor(color)
     }
 
-    fun setLockIcon(view: View, isReadOnly: Boolean) {
+    fun setLockIcon(view: TextView, isReadOnly: Boolean) {
         if (isReadOnly) {
+            view.setCompoundDrawablesWithIntrinsicBounds(systemIconDrawable, null, null, null)
             view.visible()
         } else {
-            view.gone()
+            view.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
         }
     }
 }

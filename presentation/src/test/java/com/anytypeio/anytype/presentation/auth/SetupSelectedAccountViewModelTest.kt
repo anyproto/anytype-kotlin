@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -70,6 +71,9 @@ class SetupSelectedAccountViewModelTest {
     private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 
     private lateinit var selectAccount: SelectAccount
+
+    @Mock
+    private lateinit var crashReporter: CrashReporter
 
     @Before
     fun setup() {
@@ -218,7 +222,10 @@ class SetupSelectedAccountViewModelTest {
             analytics = analytics,
             pathProvider = pathProvider,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            relationsSubscriptionManager = relationsSubscriptionManager
+            relationsSubscriptionManager = relationsSubscriptionManager,
+            crashReporter = crashReporter,
+            configStorage = configStorage
+
         )
     }
 }

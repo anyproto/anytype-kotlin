@@ -4,12 +4,14 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.widgets.TreePath
@@ -43,6 +45,9 @@ class TreeWidgetContainerTest {
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
+    @Mock
+    lateinit var objectWatcher: ObjectWatcher
+
     val dispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.dispatcher,
         main = coroutineTestRule.dispatcher,
@@ -51,7 +56,9 @@ class TreeWidgetContainerTest {
 
     private lateinit var urlBuilder: UrlBuilder
 
-    private val workspace = MockDataFactory.randomUuid()
+
+    private val config = StubConfig()
+    private val workspace = config.workspace
 
     @Before
     fun setup() {
@@ -88,7 +95,9 @@ class TreeWidgetContainerTest {
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
                 workspace = workspace,
-                isSessionActive = flowOf(true)
+                isSessionActive = flowOf(true),
+                config = config,
+                objectWatcher = objectWatcher
             )
 
             stubObjectSearch(
@@ -156,7 +165,9 @@ class TreeWidgetContainerTest {
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
             workspace = workspace,
-            isSessionActive = flowOf(true)
+            isSessionActive = flowOf(true),
+            config = config,
+            objectWatcher = objectWatcher
         )
 
         stubObjectSearch(
@@ -239,7 +250,9 @@ class TreeWidgetContainerTest {
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
                 workspace = workspace,
-                isSessionActive = flowOf(true)
+                isSessionActive = flowOf(true),
+                config = config,
+                objectWatcher = objectWatcher
             )
 
             stubObjectSearch(
@@ -377,7 +390,9 @@ class TreeWidgetContainerTest {
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
             workspace = workspace,
-            isSessionActive = flowOf(true)
+            isSessionActive = flowOf(true),
+            config = config,
+            objectWatcher = objectWatcher
         )
 
         stubObjectSearch(
@@ -432,7 +447,9 @@ class TreeWidgetContainerTest {
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
             workspace = workspace,
-            isSessionActive = flowOf(true)
+            isSessionActive = flowOf(true),
+            config = config,
+            objectWatcher = objectWatcher
         )
 
         stubObjectSearch(

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -157,9 +158,9 @@ interface BlockDataStore {
     suspend fun addRelationToObject(ctx: Id, relation: Key) : Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
-    suspend fun debugSync(): String
+    suspend fun debugSpace(): String
 
-    suspend fun debugTree(objectId: Id, path: String): String
+    suspend fun debugObject(objectId: Id, path: String): String
 
     suspend fun debugLocalStore(path: String): String
 
@@ -348,4 +349,5 @@ interface BlockDataStore {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
+    suspend fun fileSpaceUsage(): FileLimits
 }

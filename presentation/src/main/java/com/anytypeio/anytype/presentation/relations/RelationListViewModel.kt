@@ -6,15 +6,19 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationFeatu
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationUnfeature
 import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
@@ -23,6 +27,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -30,7 +35,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -44,7 +49,8 @@ class RelationListViewModel(
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val analytics: Analytics,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val addRelationToObject: AddRelationToObject
 ) : BaseViewModel() {
 
     val isEditMode = MutableStateFlow(false)
@@ -56,6 +62,7 @@ class RelationListViewModel(
     val views = MutableStateFlow<List<Model>>(emptyList())
 
     fun onStartListMode(ctx: Id) {
+        Timber.d("onStartListMode, ctx: $ctx")
         isInAddMode.value = false
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -67,36 +74,109 @@ class RelationListViewModel(
                 relationListProvider.links,
                 relationListProvider.details
             ) { _, relationLinks, details ->
-                val relations = relationLinks.mapNotNull { storeOfRelations.getByKey(it.key) }
-                val detail = details.details[ctx]
-                val values = detail?.map ?: emptyMap()
-                val featured = detail?.featuredRelations ?: emptyList()
-                relations.views(
-                    context = ctx,
-                    details = details,
-                    values = values,
-                    urlBuilder = urlBuilder,
-                    featured = featured
-                ).map { view ->
-                    Model.Item(
-                        view = view,
-                        isRemovable = isPossibleToRemoveRelation(relationKey = view.key)
-                    )
-                }
-            }.map { views ->
-                val result = mutableListOf<Model>().apply {
-                    val (isFeatured, other) = views.partition { it.view.featured }
-                    if (isFeatured.isNotEmpty()) {
-                        add(Model.Section.Featured)
-                        addAll(isFeatured)
-                    }
-                    if (other.isNotEmpty()) {
-                        add(Model.Section.Other)
-                        addAll(other)
-                    }
-                }
-                result
+                constructViews(ctx, relationLinks, details)
             }.collect { views.value = it }
+        }
+    }
+
+    private suspend fun constructViews(
+        ctx: Id,
+        relationLinks: List<RelationLink>,
+        details: Block.Details
+    ): List<Model> {
+
+        val objectDetails = details.details[ctx]?.map ?: emptyMap()
+        val objectWrapper = ObjectWrapper.Basic(objectDetails)
+        val objectType = objectWrapper.getProperType()
+        val objectTypeWrapper = ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
+
+        val objectRelationViews = getObjectRelationsView(
+            ctx = ctx,
+            objectDetails = objectDetails,
+            relationLinks = relationLinks,
+            details = details,
+            objectWrapper = objectWrapper
+        )
+
+        val recommendedRelationViews = getRecommendedRelations(
+            ctx = ctx,
+            objectDetails = objectDetails,
+            relationLinks = relationLinks,
+            objectTypeWrapper = objectTypeWrapper,
+            details = details
+        )
+
+        return buildFinalList(objectRelationViews, recommendedRelationViews, objectTypeWrapper)
+    }
+
+    private suspend fun getObjectRelationsView(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        relationLinks: List<RelationLink>,
+        details: Block.Details,
+        objectWrapper: ObjectWrapper.Basic
+    ): List<Model.Item> {
+        return getObjectRelations(
+            systemRelations = listOf(),
+            relationLinks = relationLinks,
+            storeOfRelations = storeOfRelations
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder,
+            featured = objectWrapper.featuredRelations
+        ).map { view ->
+            Model.Item(
+                view = view,
+                isRemovable = isPossibleToRemoveRelation(relationKey = view.key)
+            )
+        }
+    }
+
+    private suspend fun getRecommendedRelations(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        relationLinks: List<RelationLink>,
+        objectTypeWrapper: ObjectWrapper.Type,
+        details: Block.Details
+    ): List<Model.Item> {
+        return getNotIncludedRecommendedRelations(
+            relationLinks = relationLinks,
+            recommendedRelations = objectTypeWrapper.recommendedRelations,
+            storeOfRelations = storeOfRelations
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder
+        ).map { view ->
+            Model.Item(
+                view = view,
+                isRecommended = true
+            )
+        }
+    }
+
+    private fun buildFinalList(
+        objectRelations: List<Model.Item>,
+        recommendedRelations: List<Model.Item>,
+        objectTypeWrapper: ObjectWrapper.Type
+    ): MutableList<Model> {
+        return mutableListOf<Model>().apply {
+            val (isFeatured, other) = objectRelations.partition { it.view.featured }
+            if (isFeatured.isNotEmpty()) {
+                add(Model.Section.Featured)
+                addAll(isFeatured)
+            }
+            if (other.isNotEmpty()) {
+                add(Model.Section.Other)
+                addAll(other)
+            }
+            if (recommendedRelations.isNotEmpty()) {
+                add(Model.Section.TypeFrom(objectTypeWrapper.name.orEmpty()))
+                addAll(recommendedRelations)
+            }
         }
     }
 
@@ -113,20 +193,66 @@ class RelationListViewModel(
     }
 
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
-        if (isInAddMode.value) {
-            onRelationClickedAddMode(target = target, view = view)
-        } else {
-            onRelationClickedListMode(ctx = ctx, view = view)
+        Timber.d("onRelationClicked, ctx: $ctx, target: $target, view: $view")
+        val isLocked = resolveIsLockedState(ctx)
+        if (isLocked) {
+            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+            return
+        }
+        viewModelScope.launch {
+            if (isInAddMode.value) {
+                onRelationClickedAddMode(target = target, view = view)
+            } else {
+                if (checkRelationIsInObject(view)) {
+                    onRelationClickedListMode(ctx, view)
+                } else {
+                    proceedWithAddingRelationToObject(ctx, view) {
+                        onRelationClickedListMode(ctx, view)
+                    }
+                }
+            }
         }
     }
 
     fun onCheckboxClicked(ctx: Id, view: ObjectRelationView) {
+        Timber.d("onCheckboxClicked, ctx: $ctx, view: $view")
         val isLocked = resolveIsLockedState(ctx)
         if (isLocked) {
             sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
-        } else {
-            proceedWithUpdatingFeaturedRelations(view, ctx)
+            return
         }
+        viewModelScope.launch {
+            if (checkRelationIsInObject(view)) {
+                proceedWithUpdatingFeaturedRelations(view, ctx)
+            } else {
+                proceedWithAddingRelationToObject(ctx, view) {
+                    proceedWithUpdatingFeaturedRelations(view, ctx)
+                }
+            }
+        }
+    }
+
+    private suspend fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
+        val relationLinks = relationListProvider.links.stateIn(viewModelScope).value
+        return relationLinks.any { it.key == view.key }
+    }
+
+    private suspend fun proceedWithAddingRelationToObject(
+        ctx: Id,
+        view: ObjectRelationView,
+        success: () -> Unit
+    ) {
+        val params = AddRelationToObject.Params(
+            ctx = ctx,
+            relationKey = view.key
+        )
+        addRelationToObject.run(params).process(
+            failure = { Timber.e(it, "Error while adding relation to object") },
+            success = {
+                dispatcher.send(it)
+                success.invoke()
+            }
+        )
     }
 
     private fun proceedWithUpdatingFeaturedRelations(
@@ -198,7 +324,7 @@ class RelationListViewModel(
         } else {
             isEditMode.value = !isEditMode.value
             views.value = views.value.map { view ->
-                if (view is Model.Item) {
+                if (view is Model.Item && !view.isRecommended) {
                     view.copy(isRemovable = isPossibleToRemoveRelation(relationKey = view.view.key))
                 } else {
                     view
@@ -211,19 +337,17 @@ class RelationListViewModel(
         return isEditMode.value && !Relations.systemRelationKeys.contains(relationKey)
     }
 
-    private fun onRelationClickedAddMode(
+    private suspend fun onRelationClickedAddMode(
         target: Id?,
         view: ObjectRelationView
     ) {
         checkNotNull(target)
-        viewModelScope.launch {
-            commands.emit(
-                Command.SetRelationKey(
-                    blockId = target,
-                    key = view.key
-                )
+        commands.emit(
+            Command.SetRelationKey(
+                blockId = target,
+                key = view.key
             )
-        }
+        )
     }
 
     private fun onRelationClickedListMode(ctx: Id, view: ObjectRelationView) {
@@ -331,13 +455,14 @@ class RelationListViewModel(
 
     private fun getRelations(ctx: Id) {
         viewModelScope.launch {
-            val relations = relationListProvider.getLinks().mapNotNull { storeOfRelations.getByKey(it.key) }
+            val relations =
+                relationListProvider.getLinks().mapNotNull { storeOfRelations.getByKey(it.key) }
             val details = relationListProvider.getDetails()
             val values = details.details[ctx]?.map ?: emptyMap()
             views.value = relations.views(
-                    details = details,
-                    values = values,
-                    urlBuilder = urlBuilder
+                details = details,
+                values = values,
+                urlBuilder = urlBuilder
             ).map { Model.Item(it) }
         }
     }
@@ -373,11 +498,16 @@ class RelationListViewModel(
             object Other : Section() {
                 override val identifier: String get() = "Section_Other"
             }
+
+            data class TypeFrom(val typeName: String) : Section() {
+                override val identifier: String get() = "Section_TypeFrom"
+            }
         }
 
         data class Item(
             val view: ObjectRelationView,
-            val isRemovable: Boolean = false
+            val isRemovable: Boolean = false,
+            val isRecommended: Boolean = false
         ) : Model() {
             override val identifier: String get() = view.identifier
         }

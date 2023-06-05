@@ -47,7 +47,6 @@ fun MainSettingScreen(
     onPersonalizationClicked: () -> Unit,
     onAppearanceClicked: () -> Unit,
     onNameSet: (String) -> Unit,
-    showDebugMenu: Boolean,
     onFileStorageClick: () -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
@@ -69,7 +68,6 @@ fun MainSettingScreen(
             onPersonalizationClicked = onPersonalizationClicked,
             onAppearanceClicked = onAppearanceClicked,
             onAboutAppClicked = onAboutAppClicked,
-            showDebugMenu = showDebugMenu,
             onDebugClicked = onDebugClicked,
             accountData = workspace,
             onFileStorageClick = onFileStorageClick
@@ -84,7 +82,6 @@ private fun Settings(
     onPersonalizationClicked: () -> Unit,
     onAppearanceClicked: () -> Unit,
     onAboutAppClicked: () -> Unit,
-    showDebugMenu: Boolean,
     onDebugClicked: () -> Unit,
     accountData: MainSettingsViewModel.WorkspaceAndAccount,
     onFileStorageClick: () -> Unit
@@ -123,14 +120,12 @@ private fun Settings(
         onClick = onAboutAppClicked
     )
     Divider(paddingStart = 60.dp)
-    if (showDebugMenu) {
-        Option(
-            image = R.drawable.ic_debug,
-            text = stringResource(R.string.debug),
-            onClick = onDebugClicked
-        )
-        Divider(paddingStart = 60.dp)
-    }
+    Option(
+        image = R.drawable.ic_debug,
+        text = stringResource(R.string.debug),
+        onClick = onDebugClicked
+    )
+    Divider(paddingStart = 60.dp)
 }
 
 @Composable

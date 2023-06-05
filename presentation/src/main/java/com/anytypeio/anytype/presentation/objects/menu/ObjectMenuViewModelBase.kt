@@ -307,7 +307,9 @@ abstract class ObjectMenuViewModelBase(
     }
 
     open fun onDiagnosticsClicked(ctx: Id) {
-        throw IllegalStateException("You should not call diagnostics for sets")
+        viewModelScope.launch {
+            _toasts.emit("You should not call diagnostics for sets")
+        }
     }
 
     sealed class Command {

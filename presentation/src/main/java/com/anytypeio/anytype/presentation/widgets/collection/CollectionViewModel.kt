@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -89,6 +90,7 @@ class CollectionViewModel(
     private val move: Move,
     private val analytics: Analytics,
     private val dateProvider: DateProvider,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModel(), Reducer<CoreObjectView, Payload> {
 
     val payloads: Flow<Payload>
@@ -728,18 +730,18 @@ class CollectionViewModel(
             props = Props(mapOf(EventsPropertiesKey.context to null))
         )
 
+        val startTime = System.currentTimeMillis()
         launch {
             createObject.execute(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
-                        if (result.appliedTemplate != null) {
-                            sendAnalyticsObjectCreateEvent(
-                                analytics = analytics,
-                                objType = result.type,
-                                route = EventsDictionary.Routes.objPowerTool,
-                                context = null
-                            )
-                        }
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            type = result.type,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            route = EventsDictionary.Routes.objCreateHome,
+                            startTime = startTime
+                        )
                         commands.emit(Command.LaunchDocument(result.objectId))
                     },
                     onFailure = { e -> Timber.e(e, "Error while creating a new page") }
@@ -772,6 +774,11 @@ class CollectionViewModel(
             .tryAddSections()
     }
 
+    override fun onCleared() {
+        // TODO close object if it was opened.
+        super.onCleared()
+    }
+
     class Factory @Inject constructor(
         private val container: StorelessSubscriptionContainer,
         private val workspaceManager: WorkspaceManager,
@@ -790,7 +797,8 @@ class CollectionViewModel(
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val move: Move,
         private val analytics: Analytics,
-        private val dateProvider: DateProvider
+        private val dateProvider: DateProvider,
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -814,6 +822,7 @@ class CollectionViewModel(
                 move = move,
                 analytics = analytics,
                 dateProvider = dateProvider,
+                storeOfObjectTypes = storeOfObjectTypes
             ) as T
         }
     }

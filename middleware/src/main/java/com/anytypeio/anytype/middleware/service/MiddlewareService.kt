@@ -172,6 +172,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun fileDownload(request: Rpc.File.Download.Request): Rpc.File.Download.Response
 
+    @Throws(Exception::class)
+    fun spaceUsage(request: Rpc.File.SpaceUsage.Request): Rpc.File.SpaceUsage.Response
+
     //endregion
 
     //region UNSPLASH commands
@@ -409,16 +412,14 @@ interface MiddlewareService {
     //endregion
 
     //region DEBUG commands
-//todo revive debug methods
-//    @Throws(Exception::class)
-//    fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response
-//
-//    @Throws(Exception::class)
-//    fun debugTree(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response
-//
-//    @Throws(Exception::class)
-//    fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
+    @Throws(Exception::class)
+    fun debugSpace(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response
 
+    @Throws(Exception::class)
+    fun debugObject(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response
+
+    @Throws(Exception::class)
+    fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
     //endregion
 
     //region WIDGETS commands

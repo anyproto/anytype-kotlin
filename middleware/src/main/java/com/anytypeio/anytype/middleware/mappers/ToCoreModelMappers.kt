@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.middleware.interactor.toCoreModels
+import com.google.gson.GsonBuilder
 
 // ---------------------- PAYLOAD ------------------------
 fun ResponseEvent?.toPayload(): Payload {
@@ -716,4 +718,16 @@ fun MDVViewCardSize.toCodeModels(): DVViewerCardSize = when (this) {
     MDVViewCardSize.Small -> DVViewerCardSize.SMALL
     MDVViewCardSize.Medium -> DVViewerCardSize.MEDIUM
     MDVViewCardSize.Large -> DVViewerCardSize.LARGE
+}
+
+fun Rpc.File.SpaceUsage.Response.toCoreModel(): FileLimits {
+    return FileLimits(
+        bytesUsage = usage?.bytesUsage,
+        bytesLimit = usage?.bytesLimit,
+        localBytesUsage = usage?.localBytesUsage
+    )
+}
+
+fun List<Rpc.Debug.TreeInfo>.toCoreModel(): String {
+    return GsonBuilder().setPrettyPrinting().create().toJson(this)
 }

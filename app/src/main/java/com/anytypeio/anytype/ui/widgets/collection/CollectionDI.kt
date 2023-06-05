@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -211,6 +212,6 @@ interface CollectionDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun eventChannel(): EventChannel
     fun userSettingsRepository(): UserSettingsRepository
-
+    fun storeOfObjectTypes(): StoreOfObjectTypes
     fun dispatchers(): AppCoroutineDispatchers
 }

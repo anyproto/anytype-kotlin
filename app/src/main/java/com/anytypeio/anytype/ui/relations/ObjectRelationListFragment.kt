@@ -8,7 +8,6 @@ import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -19,7 +18,6 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.argStringOrNull
-import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -94,11 +92,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         binding.recycler.apply {
             adapter = docRelationAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(drawable(R.drawable.divider_relations))
-                }
-            )
         }
         binding.btnPlus.setOnClickListener {
             if (!isLocked) {

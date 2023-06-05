@@ -54,7 +54,7 @@ class StyleMenuHolder(
                 tvTitle.setText(R.string.slash_widget_style_checkbox)
                 tvSubtitle.visible()
                 tvSubtitle.setText(R.string.slash_widget_style_checkbox_subtitle)
-                ivIcon.setImageResource(R.drawable.ic_slash_style_checkbox)
+                ivIcon.setImageResource(R.drawable.ic_checkbox_checked)
             }
             is SlashItem.Style.Type.Heading -> {
                 tvTitle.setText(R.string.slash_widget_style_heading)

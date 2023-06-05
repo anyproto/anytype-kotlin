@@ -74,6 +74,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -85,6 +86,8 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -263,6 +266,13 @@ open class EditorTestSetup {
     @Mock
     lateinit var objectToCollection: ConvertObjectToCollection
 
+    @Mock
+    lateinit var fileLimitsEventChannel: FileLimitsEventChannel
+
+    lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
+
+    lateinit var addRelationToObject: AddRelationToObject
+
     val root: String = "rootId123"
     val workspaceId = MockDataFactory.randomString()
 
@@ -360,12 +370,14 @@ open class EditorTestSetup {
         )
 
         featureToggles = mock<DefaultFeatureToggles>()
-
+        addRelationToObject = AddRelationToObject(repo)
 
         workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
         runBlocking {
             workspaceManager.setCurrentWorkspace(workspaceId)
         }
+
+        interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
 
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
@@ -452,7 +464,9 @@ open class EditorTestSetup {
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
-            objectToCollection = objectToCollection
+            objectToCollection = objectToCollection,
+            interceptFileLimitEvents = interceptFileLimitEvents,
+            addRelationToObject = addRelationToObject
         )
     }
 

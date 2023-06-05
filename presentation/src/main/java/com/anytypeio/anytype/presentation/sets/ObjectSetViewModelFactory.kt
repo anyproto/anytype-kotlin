@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -58,7 +59,8 @@ class ObjectSetViewModelFactory(
     private val workspaceManager: WorkspaceManager,
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
-    private val objectToCollection: ConvertObjectToCollection
+    private val objectToCollection: ConvertObjectToCollection,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -90,7 +92,8 @@ class ObjectSetViewModelFactory(
             workspaceManager = workspaceManager,
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
-            objectToCollection = objectToCollection
+            objectToCollection = objectToCollection,
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 }

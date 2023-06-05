@@ -22,7 +22,7 @@ interface DataViewSubscription {
         context: Id,
         workspaceId: Id,
         state: ObjectState.DataView.Set,
-        session: ObjectSetSession,
+        currentViewerId: Id?,
         offset: Long,
         storeOfRelations: StoreOfRelations
     ): Flow<DataViewState>
@@ -32,7 +32,7 @@ interface DataViewSubscription {
         collection: Id,
         workspaceId: Id,
         state: ObjectState.DataView.Collection,
-        session: ObjectSetSession,
+        currentViewerId: Id?,
         offset: Long,
         storeOfRelations: StoreOfRelations
     ): Flow<DataViewState>
@@ -47,7 +47,7 @@ class DefaultDataViewSubscription(
         collection: Id,
         workspaceId: Id,
         state: ObjectState.DataView.Collection,
-        session: ObjectSetSession,
+        currentViewerId: Id?,
         offset: Long,
         storeOfRelations: StoreOfRelations
     ): Flow<DataViewState> {
@@ -55,7 +55,6 @@ class DefaultDataViewSubscription(
             Timber.w("Data view collection subscription: context or collection is empty")
             return emptyFlow()
         }
-        val currentViewerId = session.currentViewerId.value
         val activeViewer = state.viewerById(currentViewerId)
         if (activeViewer == null) {
             Timber.w("Data view collection subscription: active viewer is null")
@@ -85,7 +84,7 @@ class DefaultDataViewSubscription(
         context: Id,
         workspaceId: Id,
         state: ObjectState.DataView.Set,
-        session: ObjectSetSession,
+        currentViewerId: Id?,
         offset: Long,
         storeOfRelations: StoreOfRelations
     ): Flow<DataViewState> {
@@ -93,7 +92,6 @@ class DefaultDataViewSubscription(
             Timber.w("Data view set subscription: context is empty")
             return emptyFlow()
         }
-        val currentViewerId = session.currentViewerId.value
         val activeViewer = state.viewerById(currentViewerId)
         if (activeViewer == null) {
             Timber.w("Data view set subscription: active viewer is null")

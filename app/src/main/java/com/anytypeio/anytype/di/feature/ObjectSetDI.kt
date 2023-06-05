@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -191,7 +192,8 @@ object ObjectSetModule {
         workspaceManager: WorkspaceManager,
         @Named("object-set-store") objectStore: ObjectStore,
         addObjectToCollection: AddObjectToCollection,
-        convertObjectToCollection: ConvertObjectToCollection
+        convertObjectToCollection: ConvertObjectToCollection,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -220,7 +222,8 @@ object ObjectSetModule {
         workspaceManager = workspaceManager,
         objectStore = objectStore,
         addObjectToCollection = addObjectToCollection,
-        objectToCollection = convertObjectToCollection
+        objectToCollection = convertObjectToCollection,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 
     @JvmStatic

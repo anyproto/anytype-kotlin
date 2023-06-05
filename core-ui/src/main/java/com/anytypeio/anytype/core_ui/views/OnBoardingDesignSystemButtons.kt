@@ -13,9 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.ColorButtonPrimaryActive
+import com.anytypeio.anytype.core_ui.ColorButtonPrimaryInactive
+import com.anytypeio.anytype.core_ui.ColorButtonPrimaryInactiveText
 import com.anytypeio.anytype.core_ui.ColorButtonPrimaryPressed
 import com.anytypeio.anytype.core_ui.ColorButtonPrimaryText
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryActive
@@ -50,8 +53,8 @@ fun OnBoardingButtonPrimary(
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = backgroundColor,
                 contentColor = ColorButtonPrimaryText,
-                disabledBackgroundColor = colorResource(id = R.color.shape_tertiary),
-                disabledContentColor = colorResource(id = R.color.text_tertiary)
+                disabledBackgroundColor = ColorButtonPrimaryInactive,
+                disabledContentColor = ColorButtonPrimaryInactiveText
             ),
             modifier = modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),

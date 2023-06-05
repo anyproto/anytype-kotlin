@@ -153,6 +153,7 @@ object EventsDictionary {
         const val searchMenu = "MenuSearch"
         const val objCreateSet = "Set"
         const val objCreateHome = "Home"
+        const val objCreateCollection = "Collection"
         const val objCreateMention = "Mention"
         const val objPowerTool = "Powertool"
         const val objTurnInto = "TurnInto"

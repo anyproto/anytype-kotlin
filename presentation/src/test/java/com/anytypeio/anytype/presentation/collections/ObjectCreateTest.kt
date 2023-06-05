@@ -47,6 +47,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         stubWorkspaceManager(mockObjectSet.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubStoreOfObjectTypes()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details
@@ -61,7 +62,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
         )
         val newObjectId = "objNewNote-${RandomString.make()}"
-        doReturn(Resultat.success(newObjectId)).`when`(createDataViewObject).execute(
+        val result = CreateDataViewObject.Result(
+            objectId = newObjectId,
+            objectType = ObjectTypeIds.NOTE
+        )
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.SetByType(
                 type = ObjectTypeIds.NOTE,
                 filters = mockObjectSet.filters
@@ -113,7 +118,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
         )
         val newObjectId = "objNewPage-${RandomString.make()}"
-        doReturn(Resultat.success(newObjectId)).`when`(createDataViewObject).execute(
+        val result = CreateDataViewObject.Result(
+            objectId = newObjectId,
+            objectType = ObjectTypeIds.PAGE
+        )
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.SetByType(
                 type = ObjectTypeIds.PAGE,
                 filters = mockObjectSet.filters
@@ -168,7 +177,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
         )
         val newObjectId = "objNew-${RandomString.make()}"
-        doReturn(Resultat.success(newObjectId)).`when`(createDataViewObject).execute(
+        val result = CreateDataViewObject.Result(
+            objectId = newObjectId,
+            objectType = ObjectTypeIds.NOTE
+        )
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.SetByRelation(
                 relations = listOf(mockObjectSet.relationObject3.id),
                 filters = mockObjectSet.filters
@@ -226,7 +239,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         val newObjectId = "objNew-${RandomString.make()}"
-        doReturn(Resultat.success(newObjectId)).`when`(createDataViewObject).execute(
+        val result = CreateDataViewObject.Result(
+            objectId = newObjectId,
+            objectType = ObjectTypeIds.NOTE
+        )
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.Collection
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).execute(objectCollection.root)

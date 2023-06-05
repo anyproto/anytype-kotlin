@@ -121,15 +121,6 @@
         android:id="@+id/topToolbar"
         layout="@layout/layout_object_set_top_toolbar" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
-        android:id="@+id/bottomToolbar"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/default_toolbar_height"
-        app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
     <com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
         android:id="@+id/dataViewInfo"
         android:layout_width="0dp"
@@ -138,6 +129,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dataViewHeader"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
+        android:id="@+id/bottomToolbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/default_toolbar_height"
+        app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
 
     <include

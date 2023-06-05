@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
@@ -81,6 +82,9 @@ class ObjectRelationListTest {
     lateinit var relationListProvider: RelationListProvider
 
     @Mock
+    lateinit var addRelationToObject: AddRelationToObject
+
+    @Mock
     lateinit var lockedStateProvider: LockedStateProvider
 
     private lateinit var updateDetail: UpdateDetail
@@ -111,7 +115,8 @@ class ObjectRelationListTest {
             removeFromFeaturedRelations = removeFromFeaturedRelations,
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            addRelationToObject = addRelationToObject
         )
     }
 

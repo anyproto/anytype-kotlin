@@ -18,4 +18,5 @@ class OnboardingAuthViewModel @Inject constructor(): ViewModel() {
             ) as T
         }
     }
+
 }

@@ -94,6 +94,8 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -226,6 +228,14 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
+    @PerScreen
+    fun provideFileLimitEvents(
+        channel: FileLimitsEventChannel,
+        dispatchers: AppCoroutineDispatchers
+    ) : InterceptFileLimitEvents = InterceptFileLimitEvents(channel, dispatchers)
+
+    @JvmStatic
+    @Provides
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: CloseBlock,
@@ -260,7 +270,9 @@ object EditorSessionModule {
         tableDelegate: EditorTableDelegate,
         workspaceManager: WorkspaceManager,
         getObjectTypes: GetObjectTypes,
-        objectToCollection: ConvertObjectToCollection
+        objectToCollection: ConvertObjectToCollection,
+        interceptFileLimitEvents: InterceptFileLimitEvents,
+        addRelationToObject: AddRelationToObject
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -295,7 +307,9 @@ object EditorSessionModule {
         tableDelegate = tableDelegate,
         workspaceManager = workspaceManager,
         getObjectTypes = getObjectTypes,
-        objectToCollection = objectToCollection
+        objectToCollection = objectToCollection,
+        interceptFileLimitEvents = interceptFileLimitEvents,
+        addRelationToObject = addRelationToObject
     )
 
 

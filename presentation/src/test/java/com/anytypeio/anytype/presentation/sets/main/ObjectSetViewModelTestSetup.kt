@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -143,6 +144,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var addObjectToCollection: AddObjectToCollection
 
+    @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
+
     var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
@@ -205,7 +209,8 @@ open class ObjectSetViewModelTestSetup {
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
-            setQueryToObjectSet = setQueryToObjectSet
+            setQueryToObjectSet = setQueryToObjectSet,
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 
@@ -346,5 +351,11 @@ open class ObjectSetViewModelTestSetup {
                 mockObjectSet.relationObject5
             )
         )
+    }
+
+    fun stubStoreOfObjectTypes() {
+        storeOfObjectTypes.stub {
+            onBlocking { get(any()) } doReturn ObjectWrapper.Type(map = emptyMap())
+        }
     }
 }

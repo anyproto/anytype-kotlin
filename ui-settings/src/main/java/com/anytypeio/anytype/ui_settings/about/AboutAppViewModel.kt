@@ -9,6 +9,8 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.config.ConfigStorage
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 class AboutAppViewModel(
     private val getAccount: GetAccount,
     private val getLibraryVersion: GetLibraryVersion,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val configStorage: ConfigStorage
 ) : ViewModel() {
 
     val navigation = MutableSharedFlow<Navigation>()
@@ -40,16 +43,21 @@ class AboutAppViewModel(
     }
 
     val libraryVersion = MutableStateFlow("")
-    val userId = MutableStateFlow("")
+    val accountId = MutableStateFlow("")
+    val analyticsId = MutableStateFlow("")
 
     init {
         viewModelScope.launch {
             getAccount(BaseUseCase.None).process(
                 failure = {},
                 success = { acc ->
-                    userId.value = acc.id
+                    accountId.value = acc.id
                 }
             )
+        }
+        viewModelScope.launch {
+            val config = configStorage.get()
+            analyticsId.value = config.analytics
         }
         viewModelScope.launch {
             getLibraryVersion(BaseUseCase.None).process(
@@ -92,10 +100,11 @@ class AboutAppViewModel(
         )
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val getAccount: GetAccount,
         private val getLibraryVersion: GetLibraryVersion,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val configStorage: ConfigStorage
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -103,7 +112,8 @@ class AboutAppViewModel(
             return AboutAppViewModel(
                 getAccount = getAccount,
                 getLibraryVersion = getLibraryVersion,
-                analytics = analytics
+                analytics = analytics,
+                configStorage = configStorage
             ) as T
         }
     }

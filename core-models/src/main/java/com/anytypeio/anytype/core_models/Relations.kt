@@ -46,6 +46,7 @@ object Relations {
     const val SOURCE_OBJECT = "sourceObject"
     const val INTERNAL_FLAGS = "internalFlags"
     const val SIZE_IN_BYTES = "sizeInBytes"
+    const val FILE_SYNC_STATUS = "fileSyncStatus"
 
     const val PAGE_COVER = "pageCover"
 
@@ -56,6 +57,7 @@ object Relations {
     const val FILE_MIME_TYPE = "fileMimeType"
 
     const val RECOMMENDED_LAYOUT = "recommendedLayout"
+    const val RECOMMENDED_RELATIONS = "recommendedRelations"
 
     val systemRelationKeys = listOf(
         "id",

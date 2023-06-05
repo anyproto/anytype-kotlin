@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -122,6 +123,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var createObject: CreateObject
+
+    @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
@@ -237,7 +241,8 @@ abstract class TestObjectSetSetup {
             objectToCollection = convertObjectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             objectStore = objectStore,
-            addObjectToCollection = addObjectToCollection
+            addObjectToCollection = addObjectToCollection,
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 

@@ -27,9 +27,9 @@ class CreateDataViewObject(
     private val getDefaultPageType: GetDefaultPageType,
     private val storeOfRelations: StoreOfRelations,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<CreateDataViewObject.Params, Id>(dispatchers.io) {
+) : ResultInteractor<CreateDataViewObject.Params, CreateDataViewObject.Result>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): Id {
+    override suspend fun doWork(params: Params): Result {
         return when (params) {
             is Params.SetByType -> {
                 val command = Command.CreateObject(
@@ -41,7 +41,10 @@ class CreateDataViewObject(
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate)
                 )
                 val result = repo.createObject(command)
-                result.id
+                Result(
+                    objectId = result.id,
+                    objectType = params.type
+                )
             }
             is Params.SetByRelation -> {
                 val type = resolveDefaultObjectType()
@@ -58,7 +61,10 @@ class CreateDataViewObject(
                     )
                 )
                 val result = repo.createObject(command)
-                result.id
+                Result(
+                    objectId = result.id,
+                    objectType = type
+                )
             }
             Params.Collection -> {
                 val type = resolveDefaultObjectType()
@@ -75,7 +81,10 @@ class CreateDataViewObject(
                     )
                 )
                 val result = repo.createObject(command)
-                result.id
+                Result(
+                    objectId = result.id,
+                    objectType = type
+                )
             }
         }
     }
@@ -181,6 +190,11 @@ class CreateDataViewObject(
 
         object Collection : Params()
     }
+
+    data class Result(
+        val objectId : Id,
+        val objectType: Id?
+    )
 
     companion object {
         const val EMPTY_STRING_VALUE = ""

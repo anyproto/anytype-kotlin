@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -741,17 +742,34 @@ class Middleware(
 
     @Throws(Exception::class)
     fun debugExportLocalStore(path: String): String {
-        TODO()
+        val request = Rpc.Debug.ExportLocalstore.Request(
+            path = path
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugExportLocalStore(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.path
     }
 
     @Throws(Exception::class)
-    fun debugSync(): String {
-        TODO()
+    fun debugSpace(): String {
+        val request = Rpc.Debug.SpaceSummary.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugSpace(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.infos.toCoreModel()
     }
 
     @Throws(Exception::class)
-    fun debugTree(objectId: Id, path: String): String {
-        TODO()
+    fun debugObject(objectId: Id, path: String): String {
+        val request = Rpc.Debug.Tree.Request(
+            treeId = objectId,
+            path = path
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugObject(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.filename
     }
 
     @Throws(Exception::class)
@@ -2118,6 +2136,15 @@ class Middleware(
         val response = service.setObjectSource(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun fileSpaceUsage(): FileLimits {
+        val request = Rpc.File.SpaceUsage.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceUsage(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toCoreModel()
     }
 
     private fun logRequest(any: Any) {

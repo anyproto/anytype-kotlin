@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -68,6 +69,9 @@ class SplashViewModelTest {
 
     @Mock lateinit var featureToggles: FeatureToggles
 
+    @Mock
+    private lateinit var crashReporter: com.anytypeio.anytype.CrashReporter
+
     lateinit var vm: SplashViewModel
 
     @Before
@@ -89,7 +93,8 @@ class SplashViewModelTest {
             createObject = createObject,
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            featureToggles = featureToggles
+            featureToggles = featureToggles,
+            crashReporter = crashReporter
         )
     }
 

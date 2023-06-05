@@ -65,7 +65,7 @@ sealed class ObjectWrapper {
 
         val url: String? by default
 
-        val featuredRelations: List<String>? by default
+        val featuredRelations: List<Key> get() = getValues(Relations.FEATURED_RELATIONS)
 
         val smartBlockTypes: List<Double>
             get() = when (val value = map[Relations.SMARTBLOCKTYPES]) {
@@ -153,6 +153,7 @@ sealed class ObjectWrapper {
         val isArchived: Boolean? by default
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
+        val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

@@ -81,7 +81,8 @@ sealed class Viewer {
                 override val hideIcon: Boolean,
                 val fitImage: Boolean,
                 val cover: CoverView? = null,
-                val withDescription: Boolean
+                val withDescription: Boolean,
+                val isLargeSize: Boolean
             ) : Item()
         }
     }

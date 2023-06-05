@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 
@@ -18,8 +19,8 @@ class GalleryCoverWidget @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : AppCompatImageView(context, attrs) {
 
-    fun bind(cover: CoverView?, fitImage: Boolean = false, coverSpace: View) {
-        when (cover) {
+    fun bind(item: Viewer.GalleryView.Item.Cover, coverSpace: View) {
+        when (val cover = item.cover) {
             is CoverView.Color -> {
                 visible()
                 setImageDrawable(null)
@@ -48,7 +49,7 @@ class GalleryCoverWidget @JvmOverloads constructor(
                 setImageDrawable(null)
                 setBackgroundColor(0)
                 setBackgroundResource(0)
-                if (fitImage) {
+                if (item.fitImage) {
                     Glide
                         .with(this)
                         .load(cover.url)
@@ -67,7 +68,7 @@ class GalleryCoverWidget @JvmOverloads constructor(
             }
             null -> {
                 invisible()
-                coverSpace.visible()
+                if (item.isLargeSize) coverSpace.gone() else coverSpace.visible()
             }
         }
     }

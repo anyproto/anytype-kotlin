@@ -46,6 +46,7 @@ import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
 import com.anytypeio.anytype.di.feature.OtherSettingsModule
 import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
+import com.anytypeio.anytype.di.feature.RelationDataViewTextValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
 import com.anytypeio.anytype.di.feature.RelationTextValueModule
 import com.anytypeio.anytype.di.feature.SelectAccountModule
@@ -380,11 +381,19 @@ class ComponentManager(
             .build()
     }
 
-    val relationTextValueDVComponent = DependentComponentMap { ctx ->
+    val setOrCollectionRelationTextValueComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
             .relationTextValueComponent()
             .module(RelationTextValueModule)
+            .build()
+    }
+
+    val dataViewRelationTextValueComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .relationDataViewTextValueComponent()
+            .module(RelationDataViewTextValueModule)
             .build()
     }
 

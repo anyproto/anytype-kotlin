@@ -624,6 +624,7 @@ sealed class BlockView : ViewType {
         override var cursor: Int? = null,
         override val color: ThemeColor = ThemeColor.DEFAULT,
         override val background: ThemeColor = ThemeColor.DEFAULT,
+        val isTodoLayout: Boolean = false
     ) : BlockView(), TextSupport, Focusable, Cursor, Permission {
         override fun getViewType(): Int = HOLDER_DESCRIPTION
     }
@@ -1250,7 +1251,8 @@ sealed class BlockView : ViewType {
     data class FeaturedRelation(
         override val id: String,
         val relations: List<ObjectRelationView>,
-        val allowChangingObjectType: Boolean = true
+        val allowChangingObjectType: Boolean = true,
+        val isTodoLayout: Boolean = false
     ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }

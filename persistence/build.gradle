@@ -29,4 +29,5 @@ dependencies {
     testImplementation libs.mockitoKotlin
     testImplementation libs.robolectric
     testImplementation libs.archCoreTesting
+    testImplementation libs.coroutineTesting
 }

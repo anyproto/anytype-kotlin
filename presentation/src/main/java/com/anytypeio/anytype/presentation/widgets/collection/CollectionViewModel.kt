@@ -68,6 +68,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import com.anytypeio.anytype.core_models.ObjectView as CoreObjectView
 
@@ -176,7 +177,9 @@ class CollectionViewModel(
 
     fun onStop() {
         launch {
-            container.unsubscribe(listOf(subscription.id))
+            withContext(dispatchers.io) {
+                container.unsubscribe(listOf(subscription.id))
+            }
             jobs.cancel()
         }
     }

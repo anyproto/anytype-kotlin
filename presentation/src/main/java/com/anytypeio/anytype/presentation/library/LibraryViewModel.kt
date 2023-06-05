@@ -23,6 +23,8 @@ import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -357,13 +359,13 @@ class LibraryViewModel(
     }
 
     override fun onCleared() {
-        super.onCleared()
-        viewModelScope.launch {
+        GlobalScope.launch {
             myRelationsDelegate.unsubscribe()
             libraryRelationsDelegate.unsubscribe()
             myTypesDelegate.unsubscribe()
             libraryTypesDelegate.unsubscribe()
         }
+        super.onCleared()
     }
 
     class Factory @Inject constructor(

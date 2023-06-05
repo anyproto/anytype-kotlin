@@ -67,7 +67,7 @@ coilComposeVersion = '2.2.2'
 sentryVersion = '5.0.1'
 
 [libraries]
-middleware = { module = "io.anytype:android-mw", version.ref = "middlewareVersion" }
+middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
 androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCoreVersion" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinVersion" }
 kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinVersion" }

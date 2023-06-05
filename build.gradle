@@ -28,7 +28,7 @@ buildscript {
         maven { url "https://jitpack.io" }
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/anytypeio/go-anytype-middleware")
+            url = uri("https://maven.pkg.github.com/anyproto/anytype-heart")
             credentials {
                 username = githubProperties['gpr.usr']
                 password = githubProperties['gpr.key']

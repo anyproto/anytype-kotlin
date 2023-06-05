@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds.IMAGE
@@ -57,7 +58,8 @@ suspend fun DVViewer.buildGalleryViews(
                     details = details,
                     store = objectStore,
                     relations = relations,
-                    filteredRelations = filteredRelations
+                    filteredRelations = filteredRelations,
+                    isLargeSize = cardSize == DVViewerCardSize.LARGE
                 )
             } else {
                 obj.mapToDefaultItem(
@@ -109,7 +111,8 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
-    filteredRelations: List<ObjectWrapper.Relation>
+    filteredRelations: List<ObjectWrapper.Relation>,
+    isLargeSize: Boolean
 ): Viewer.GalleryView.Item {
     val obj = this
     var cover: CoverView? = null
@@ -173,6 +176,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         ),
         cover = cover,
         fitImage = dvViewer.coverFit,
-        withDescription = filteredRelations.any { it.key == Relations.DESCRIPTION }
+        withDescription = filteredRelations.any { it.key == Relations.DESCRIPTION },
+        isLargeSize = isLargeSize
     )
 }

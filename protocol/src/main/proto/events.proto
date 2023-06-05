@@ -494,9 +494,14 @@ message Event {
             message Widget {
                 string id = 1;
                 Layout layout = 2;
+                Limit limit = 3;
 
                 message Layout {
                     anytype.model.Block.Content.Widget.Layout value = 1;
+                }
+
+                message Limit {
+                    int32 value = 1;
                 }
             }
         }

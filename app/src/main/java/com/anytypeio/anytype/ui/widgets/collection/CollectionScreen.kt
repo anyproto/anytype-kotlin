@@ -594,7 +594,7 @@ private fun BlockWidget(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .absolutePadding(16.dp, 0.dp, 16.dp, 48.dp),
+            .absolutePadding(16.dp, 0.dp, 16.dp, 0.dp),
         factory = { context ->
             CollectionActionWidget(context).apply {
                 layoutParams = LinearLayout.LayoutParams(

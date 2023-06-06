@@ -219,15 +219,11 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.START,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Toggle(
                 isEmpty = false,
@@ -239,15 +235,11 @@ class DefaultBlockViewRendererTest {
                 color = toggle.content<Block.Content.Text>().parseThemeTextColor(),
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = toggle.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = toggle.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -357,15 +349,11 @@ class DefaultBlockViewRendererTest {
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.END,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Toggle(
                 isEmpty = false,
@@ -377,15 +365,11 @@ class DefaultBlockViewRendererTest {
                 color = toggle.content<Block.Content.Text>().parseThemeTextColor(),
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = toggle.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = toggle.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Checkbox(
                 isFocused = false,
@@ -395,18 +379,14 @@ class DefaultBlockViewRendererTest {
                 color = checkbox.content<Block.Content.Text>().parseThemeTextColor(),
                 text = checkbox.content<Block.Content.Text>().text,
                 indent = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = toggle.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = toggle.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -489,15 +469,11 @@ class DefaultBlockViewRendererTest {
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = null,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -580,15 +556,11 @@ class DefaultBlockViewRendererTest {
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -684,15 +656,11 @@ class DefaultBlockViewRendererTest {
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -786,15 +754,11 @@ class DefaultBlockViewRendererTest {
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -906,15 +870,11 @@ class DefaultBlockViewRendererTest {
                 color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 1,
@@ -925,18 +885,14 @@ class DefaultBlockViewRendererTest {
                 color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 2,
@@ -947,21 +903,17 @@ class DefaultBlockViewRendererTest {
                 color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = c.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = c.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -1072,15 +1024,11 @@ class DefaultBlockViewRendererTest {
                 background = a.parseThemeBackgroundColor(),
                 color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Checkbox(
                 indent = 1,
@@ -1090,18 +1038,14 @@ class DefaultBlockViewRendererTest {
                 background = b.parseThemeBackgroundColor(),
                 color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Checkbox(
                 indent = 2,
@@ -1111,21 +1055,17 @@ class DefaultBlockViewRendererTest {
                 background = c.parseThemeBackgroundColor(),
                 color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = c.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = c.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -1236,15 +1176,11 @@ class DefaultBlockViewRendererTest {
                 background = a.parseThemeBackgroundColor(),
                 color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Bulleted(
                 indent = 1,
@@ -1254,18 +1190,14 @@ class DefaultBlockViewRendererTest {
                 background = b.parseThemeBackgroundColor(),
                 color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Bulleted(
                 indent = 2,
@@ -1275,21 +1207,17 @@ class DefaultBlockViewRendererTest {
                 background = c.parseThemeBackgroundColor(),
                 color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = c.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = c.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -1605,15 +1533,11 @@ class DefaultBlockViewRendererTest {
                 ),
                 isFocused = true,
                 alignment = Alignment.START,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -1794,15 +1718,11 @@ class DefaultBlockViewRendererTest {
                 ),
                 isFocused = true,
                 alignment = Alignment.START,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -1984,15 +1904,11 @@ class DefaultBlockViewRendererTest {
                 ),
                 isFocused = true,
                 alignment = Alignment.START,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -2167,15 +2083,11 @@ class DefaultBlockViewRendererTest {
                 ),
                 isFocused = true,
                 alignment = Alignment.START,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -2326,15 +2238,11 @@ class DefaultBlockViewRendererTest {
                 ),
                 isFocused = true,
                 alignment = Alignment.START,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -2431,15 +2339,11 @@ class DefaultBlockViewRendererTest {
                 ),
                 isFocused = true,
                 alignment = Alignment.START,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -2619,15 +2523,11 @@ class DefaultBlockViewRendererTest {
                 ),
                 isFocused = true,
                 alignment = Alignment.START,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -2711,16 +2611,12 @@ class DefaultBlockViewRendererTest {
                 background = a.parseThemeBackgroundColor(),
                 isPreviousBlockMedia = false,
                 objectTypeName = null,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Card
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Card
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -2846,15 +2742,11 @@ class DefaultBlockViewRendererTest {
                 color = a.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 1,
@@ -2865,18 +2757,14 @@ class DefaultBlockViewRendererTest {
                 color = b.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 2,
@@ -2887,21 +2775,17 @@ class DefaultBlockViewRendererTest {
                 color = c.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 2,
@@ -2912,21 +2796,17 @@ class DefaultBlockViewRendererTest {
                 color = d.content<Block.Content.Text>().parseThemeTextColor(),
                 text = d.content<Block.Content.Text>().text,
                 number = 2,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -3084,15 +2964,11 @@ class DefaultBlockViewRendererTest {
                 color = a1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -3103,15 +2979,11 @@ class DefaultBlockViewRendererTest {
                 color = a2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 1,
@@ -3122,18 +2994,14 @@ class DefaultBlockViewRendererTest {
                 color = b1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 1,
@@ -3144,18 +3012,14 @@ class DefaultBlockViewRendererTest {
                 color = b2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b2.content<Block.Content.Text>().text,
                 number = 2,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 1,
@@ -3166,18 +3030,14 @@ class DefaultBlockViewRendererTest {
                 color = b3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b3.content<Block.Content.Text>().text,
                 number = 3,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b3.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b3.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -3188,15 +3048,11 @@ class DefaultBlockViewRendererTest {
                 color = a3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a3.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a3.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -3207,15 +3063,11 @@ class DefaultBlockViewRendererTest {
                 color = a4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a4.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a4.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
         )
 
@@ -3349,15 +3201,11 @@ class DefaultBlockViewRendererTest {
                 color = a1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -3368,15 +3216,11 @@ class DefaultBlockViewRendererTest {
                 color = a2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 1,
@@ -3387,18 +3231,14 @@ class DefaultBlockViewRendererTest {
                 color = b1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -3409,15 +3249,11 @@ class DefaultBlockViewRendererTest {
                 color = a3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a3.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a3.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -3428,15 +3264,11 @@ class DefaultBlockViewRendererTest {
                 color = a4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a4.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a4.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
         )
 
@@ -3562,15 +3394,11 @@ class DefaultBlockViewRendererTest {
                 id = block.id,
                 text = block.content<TXT>().text,
                 number = idx.inc(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = block.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = block.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         }
 
@@ -3701,15 +3529,11 @@ class DefaultBlockViewRendererTest {
                 id = block.id,
                 text = block.content<TXT>().text,
                 number = idx.inc(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = block.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = block.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         }
 
@@ -3904,126 +3728,94 @@ class DefaultBlockViewRendererTest {
                 text = div1num1.content<TXT>().text,
                 number = 1,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = div1num1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = div1num1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 id = div1num2.id,
                 text = div1num2.content<TXT>().text,
                 number = 2,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = div1num2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = div1num2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 id = div2num1.id,
                 text = div2num1.content<TXT>().text,
                 number = 3,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = div2num1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = div2num1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 id = div2num2.id,
                 text = div2num2.content<TXT>().text,
                 number = 4,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = div2num2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = div2num2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 id = div2num2num1.id,
                 text = div2num2num1.content<TXT>().text,
                 number = 1,
                 indent = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = div2num2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = div2num2num1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = div2num2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = div2num2num1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 id = div2num2num2.id,
                 text = div2num2num2.content<TXT>().text,
                 number = 2,
                 indent = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = div2num2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = div2num2num2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = div2num2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = div2num2num2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 id = afterDiv2Num1.id,
                 text = afterDiv2Num1.content<TXT>().text,
                 number = 5,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = afterDiv2Num1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = afterDiv2Num1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 id = afterDiv2Num2.id,
                 text = afterDiv2Num2.content<TXT>().text,
                 number = 6,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = afterDiv2Num2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = afterDiv2Num2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -4205,15 +3997,11 @@ class DefaultBlockViewRendererTest {
                 color = a1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -4224,15 +4012,11 @@ class DefaultBlockViewRendererTest {
                 color = a2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 1,
@@ -4243,18 +4027,14 @@ class DefaultBlockViewRendererTest {
                 color = b1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 2,
@@ -4265,21 +4045,17 @@ class DefaultBlockViewRendererTest {
                 color = c1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c1.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b1.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = c1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b1.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = c1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 2,
@@ -4290,21 +4066,17 @@ class DefaultBlockViewRendererTest {
                 color = c2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c2.content<Block.Content.Text>().text,
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b1.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = c2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b1.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = c2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 2,
@@ -4315,21 +4087,17 @@ class DefaultBlockViewRendererTest {
                 color = c3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c3.content<Block.Content.Text>().text,
                 number = 2,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b1.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = c3.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b1.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = c3.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 2,
@@ -4340,21 +4108,17 @@ class DefaultBlockViewRendererTest {
                 color = c4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = c4.content<Block.Content.Text>().text,
                 number = 3,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a2.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = b1.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = c4.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a2.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = b1.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = c4.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -4365,15 +4129,11 @@ class DefaultBlockViewRendererTest {
                 color = a3.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a3.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a3.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Numbered(
                 indent = 0,
@@ -4384,15 +4144,11 @@ class DefaultBlockViewRendererTest {
                 color = a4.content<Block.Content.Text>().parseThemeTextColor(),
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = a4.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a4.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
         )
 
@@ -4470,18 +4226,14 @@ class DefaultBlockViewRendererTest {
                 background = quote.parseThemeBackgroundColor(),
                 color = quote.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                hasChildren = true
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            hasChildren = true
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 1,
@@ -4491,19 +4243,15 @@ class DefaultBlockViewRendererTest {
                 background = child.parseThemeBackgroundColor(),
                 color = child.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.End
-                        ),
-                        BlockView.Decoration(
-                            background = child.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.End
+                    ),
+                    BlockView.Decoration(
+                        background = child.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
         )
 
@@ -4577,18 +4325,14 @@ class DefaultBlockViewRendererTest {
                 background = quote1.parseThemeBackgroundColor(),
                 color = quote1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote1.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                hasChildren = true
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            hasChildren = true
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Highlight(
                 indent = 1,
@@ -4598,22 +4342,18 @@ class DefaultBlockViewRendererTest {
                 background = quote2.parseThemeBackgroundColor(),
                 color = quote2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote2.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.End
-                        ),
-                        BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                hasChildren = false
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.End
+                    ),
+                    BlockView.Decoration(
+                        background = quote2.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            hasChildren = false
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -4700,18 +4440,14 @@ class DefaultBlockViewRendererTest {
                 background = quote1.parseThemeBackgroundColor(),
                 color = quote1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote1.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                hasChildren = true
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            hasChildren = true
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Highlight(
                 indent = 1,
@@ -4721,22 +4457,18 @@ class DefaultBlockViewRendererTest {
                 background = quote2.parseThemeBackgroundColor(),
                 color = quote2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote2.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Middle
-                        ),
-                        BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                hasChildren = true
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Middle
+                    ),
+                    BlockView.Decoration(
+                        background = quote2.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            hasChildren = true
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 2,
@@ -4746,23 +4478,19 @@ class DefaultBlockViewRendererTest {
                 background = paragraph.parseThemeBackgroundColor(),
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.End
-                        ),
-                        BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.End
-                        ),
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.End
+                    ),
+                    BlockView.Decoration(
+                        background = quote2.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.End
+                    ),
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
         )
 
@@ -4862,18 +4590,14 @@ class DefaultBlockViewRendererTest {
                 background = quote1.parseThemeBackgroundColor(),
                 color = quote1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote1.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                true
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            true
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Highlight(
                 indent = 1,
@@ -4883,22 +4607,18 @@ class DefaultBlockViewRendererTest {
                 background = quote2.parseThemeBackgroundColor(),
                 color = quote2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote2.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Middle
-                        ),
-                        BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                true
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Middle
+                    ),
+                    BlockView.Decoration(
+                        background = quote2.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            true
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 2,
@@ -4908,23 +4628,19 @@ class DefaultBlockViewRendererTest {
                 background = paragraph1.parseThemeBackgroundColor(),
                 color = paragraph1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph1.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Middle
-                        ),
-                        BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Middle
-                        ),
-                        BlockView.Decoration(
-                            background = paragraph1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Middle
+                    ),
+                    BlockView.Decoration(
+                        background = quote2.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Middle
+                    ),
+                    BlockView.Decoration(
+                        background = paragraph1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 2,
@@ -4934,23 +4650,19 @@ class DefaultBlockViewRendererTest {
                 background = paragraph2.parseThemeBackgroundColor(),
                 color = paragraph2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph2.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = quote1.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.End
-                        ),
-                        BlockView.Decoration(
-                            background = quote2.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.End
-                        ),
-                        BlockView.Decoration(
-                            background = paragraph2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = quote1.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.End
+                    ),
+                    BlockView.Decoration(
+                        background = quote2.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.End
+                    ),
+                    BlockView.Decoration(
+                        background = paragraph2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5050,15 +4762,11 @@ class DefaultBlockViewRendererTest {
                 background = paragraph.parseThemeBackgroundColor(),
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Highlight(
                 indent = 1,
@@ -5068,21 +4776,17 @@ class DefaultBlockViewRendererTest {
                 background = quote.parseThemeBackgroundColor(),
                 color = quote.content<Block.Content.Text>().parseThemeTextColor(),
                 text = quote.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = quote.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Itself(
-                                hasChildren = true
-                            )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = quote.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Itself(
+                            hasChildren = true
                         )
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 2,
@@ -5092,22 +4796,18 @@ class DefaultBlockViewRendererTest {
                 background = paragraph1.parseThemeBackgroundColor(),
                 color = paragraph1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph1.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor(),
-                        ),
-                        BlockView.Decoration(
-                            background = quote.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.Middle
-                        ),
-                        BlockView.Decoration(
-                            background = paragraph1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor(),
+                    ),
+                    BlockView.Decoration(
+                        background = quote.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.Middle
+                    ),
+                    BlockView.Decoration(
+                        background = paragraph1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 2,
@@ -5117,22 +4817,18 @@ class DefaultBlockViewRendererTest {
                 background = paragraph2.parseThemeBackgroundColor(),
                 color = paragraph2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph2.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        ),
-                        BlockView.Decoration(
-                            background = quote.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Highlight.End
-                        ),
-                        BlockView.Decoration(
-                            background = paragraph2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
+                    ),
+                    BlockView.Decoration(
+                        background = quote.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Highlight.End
+                    ),
+                    BlockView.Decoration(
+                        background = paragraph2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5201,13 +4897,9 @@ class DefaultBlockViewRendererTest {
                 background = paragraph.parseThemeBackgroundColor(),
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(background = ThemeColor.YELLOW)
-                    )
-                } else {
-                    emptyList()
-                }
+                decorations = listOf(
+                    BlockView.Decoration(background = ThemeColor.YELLOW)
+                )
             ),
             BlockView.Media.Bookmark(
                 id = bookmark.id,
@@ -5217,17 +4909,13 @@ class DefaultBlockViewRendererTest {
                 description = bookmarkDescription,
                 isPreviousBlockMedia = false,
                 background = bookmark.parseThemeBackgroundColor(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(background = ThemeColor.YELLOW),
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Card,
-                            background = ThemeColor.ORANGE
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(background = ThemeColor.YELLOW),
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Card,
+                        background = ThemeColor.ORANGE
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5278,30 +4966,22 @@ class DefaultBlockViewRendererTest {
                 background = paragraph.parseThemeBackgroundColor(),
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(background = ThemeColor.DEFAULT)
-                    )
-                } else {
-                    emptyList()
-                }
+                decorations = listOf(
+                    BlockView.Decoration(background = ThemeColor.DEFAULT)
+                )
             ),
             BlockView.MediaPlaceholder.Bookmark(
                 id = bookmark.id,
                 indent = 1,
                 isPreviousBlockMedia = false,
                 background = bookmark.parseThemeBackgroundColor(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(background = ThemeColor.DEFAULT),
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Card,
-                            background = ThemeColor.ORANGE
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(background = ThemeColor.DEFAULT),
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Card,
+                        background = ThemeColor.ORANGE
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5350,30 +5030,22 @@ class DefaultBlockViewRendererTest {
                 background = paragraph.parseThemeBackgroundColor(),
                 color = paragraph.content<Block.Content.Text>().parseThemeTextColor(),
                 text = paragraph.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(background = ThemeColor.DEFAULT)
-                    )
-                } else {
-                    emptyList()
-                }
+                decorations = listOf(
+                    BlockView.Decoration(background = ThemeColor.DEFAULT)
+                )
             ),
             BlockView.MediaPlaceholder.Bookmark(
                 id = bookmark.id,
                 indent = 1,
                 isPreviousBlockMedia = false,
                 background = bookmark.parseThemeBackgroundColor(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(background = ThemeColor.DEFAULT),
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Card,
-                            background = ThemeColor.DEFAULT
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(background = ThemeColor.DEFAULT),
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Card,
+                        background = ThemeColor.DEFAULT
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5419,16 +5091,12 @@ class DefaultBlockViewRendererTest {
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
                 text = callout.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Callout.Full,
-                            background = callout.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Full,
+                        background = callout.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                },
+                ),
                 icon = ObjectIcon.Basic.Emoji("💡")
             )
         )
@@ -5482,16 +5150,12 @@ class DefaultBlockViewRendererTest {
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
                 text = callout.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Callout.Start,
-                            background = callout.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Start,
+                        background = callout.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                },
+                ),
                 icon = ObjectIcon.Basic.Emoji("💡")
             ),
             BlockView.Text.Paragraph(
@@ -5502,19 +5166,15 @@ class DefaultBlockViewRendererTest {
                 background = child.parseThemeBackgroundColor(),
                 color = child.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = callout.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Callout.End
-                        ),
-                        BlockView.Decoration(
-                            background = child.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = callout.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Callout.End
+                    ),
+                    BlockView.Decoration(
+                        background = child.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5568,16 +5228,12 @@ class DefaultBlockViewRendererTest {
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
                 text = callout.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Callout.Start,
-                            background = callout.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Start,
+                        background = callout.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                },
+                ),
                 icon = ObjectIcon.Basic.Emoji("💡")
             ),
             BlockView.Text.Paragraph(
@@ -5588,19 +5244,15 @@ class DefaultBlockViewRendererTest {
                 background = child1.parseThemeBackgroundColor(),
                 color = child1.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child1.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = callout.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Callout.Middle
-                        ),
-                        BlockView.Decoration(
-                            background = child1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = callout.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Callout.Middle
+                    ),
+                    BlockView.Decoration(
+                        background = child1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             ),
             BlockView.Text.Paragraph(
                 indent = 1,
@@ -5610,19 +5262,15 @@ class DefaultBlockViewRendererTest {
                 background = child2.parseThemeBackgroundColor(),
                 color = child2.content<Block.Content.Text>().parseThemeTextColor(),
                 text = child2.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = callout.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Callout.End
-                        ),
-                        BlockView.Decoration(
-                            background = child2.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = callout.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Callout.End
+                    ),
+                    BlockView.Decoration(
+                        background = child2.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5679,36 +5327,28 @@ class DefaultBlockViewRendererTest {
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
                 text = callout.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Callout.Start,
-                            background = callout.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Start,
+                        background = callout.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                },
+                ),
                 icon = ObjectIcon.Basic.Emoji("💡")
             ),
             BlockView.Upload.File(
                 indent = 1,
                 id = child1.id,
                 background = child1.parseThemeBackgroundColor(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = callout.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Callout.End
-                        ),
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Card,
-                            background = child1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = callout.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Callout.End
+                    ),
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Card,
+                        background = child1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -5765,36 +5405,28 @@ class DefaultBlockViewRendererTest {
                 marks = emptyList(),
                 background = callout.parseThemeBackgroundColor(),
                 text = callout.content<Block.Content.Text>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Callout.Start,
-                            background = callout.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Start,
+                        background = callout.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                },
+                ),
                 icon = ObjectIcon.Basic.Emoji("💡")
             ),
             BlockView.MediaPlaceholder.File(
                 indent = 1,
                 id = child1.id,
                 background = child1.parseThemeBackgroundColor(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = callout.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Callout.End
-                        ),
-                        BlockView.Decoration(
-                            style = BlockView.Decoration.Style.Card,
-                            background = child1.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = callout.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Callout.End
+                    ),
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Card,
+                        background = child1.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                },
+                ),
                 isPreviousBlockMedia = false
             )
         )

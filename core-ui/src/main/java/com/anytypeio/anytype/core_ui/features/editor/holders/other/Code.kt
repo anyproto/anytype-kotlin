@@ -125,12 +125,9 @@ class Code(
         }
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                leftMargin = item.indent * dimen(R.dimen.indent)
-            }
-        }
+        // Do nothing.
     }
 
     fun processChangePayload(
@@ -251,13 +248,11 @@ class Code(
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = rect.left
-                    marginEnd = rect.right
-                    bottomMargin = rect.bottom
-                }
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = rect.left
+                marginEnd = rect.right
+                bottomMargin = rect.bottom
             }
         }
     }

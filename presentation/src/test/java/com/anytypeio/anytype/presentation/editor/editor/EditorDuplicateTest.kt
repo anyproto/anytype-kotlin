@@ -179,42 +179,30 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
                         id = a.id,
                         text = a.content<Block.Content.Text>().text,
                         mode = BlockView.Mode.READ,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = a.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = a.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.DividerLine(
                         id = b.id,
                         isSelected = true,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = b.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = b.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Paragraph(
                         id = c.id,
                         text = c.content<Block.Content.Text>().text,
                         mode = BlockView.Mode.READ,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = c.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = c.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )
@@ -244,55 +232,39 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
                         id = a.id,
                         text = a.content<Block.Content.Text>().text,
                         mode = BlockView.Mode.READ,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = a.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = a.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.DividerLine(
                         id = b.id,
                         isSelected = true,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = b.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = b.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.DividerLine(
                         id = copy.id,
                         isSelected = false,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = copy.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = copy.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Paragraph(
                         id = c.id,
                         text = c.content<Block.Content.Text>().text,
                         mode = BlockView.Mode.READ,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = c.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = c.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )
@@ -356,15 +328,11 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
                         text = a.content<Block.Content.Text>().text,
                         mode = BlockView.Mode.READ,
                         isSelected = true,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = a.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = a.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Paragraph(
                         id = b.id,
@@ -372,32 +340,24 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
                         mode = BlockView.Mode.READ,
                         isSelected = true,
                         indent = 1,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = b.parseThemeBackgroundColor()
-                                ),
-                                BlockView.Decoration(
-                                    background = c.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = b.parseThemeBackgroundColor()
+                            ),
+                            BlockView.Decoration(
+                                background = c.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Paragraph(
                         id = c.id,
                         text = c.content<Block.Content.Text>().text,
                         mode = BlockView.Mode.READ,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = c.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = c.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )

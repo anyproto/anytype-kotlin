@@ -249,15 +249,11 @@ class TableBlockRendererTest {
             BlockView.Text.Bulleted(
                 id = block.id,
                 text = block.content<TXT>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = block.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = block.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         } + listOf(
             BlockView.Table(
@@ -275,15 +271,11 @@ class TableBlockRendererTest {
                 id = block.id,
                 text = block.content<TXT>().text,
                 number = idx.inc(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = block.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = block.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         }
 
@@ -420,15 +412,11 @@ class TableBlockRendererTest {
             BlockView.Text.Bulleted(
                 id = block.id,
                 text = block.content<TXT>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         } + listOf(
             BlockView.Table(
@@ -446,15 +434,11 @@ class TableBlockRendererTest {
                 id = block.id,
                 text = block.content<TXT>().text,
                 number = idx.inc(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         }
 
@@ -764,15 +748,11 @@ class TableBlockRendererTest {
             BlockView.Text.Bulleted(
                 id = block.id,
                 text = block.content<TXT>().text,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         } + listOf(
             BlockView.Table(
@@ -790,15 +770,11 @@ class TableBlockRendererTest {
                 id = block.id,
                 text = block.content<TXT>().text,
                 number = idx.inc(),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         }
 

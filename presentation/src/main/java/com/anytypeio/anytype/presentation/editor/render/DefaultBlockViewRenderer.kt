@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
@@ -332,14 +331,10 @@ class DefaultBlockViewRenderer @Inject constructor(
                         }
                         Content.Text.Style.QUOTE -> {
                             mCounter = 0
-                            val normalized: NestedDecorationData = if (NESTED_DECORATION_ENABLED) {
-                                normalizeNestedDecorationData(
-                                    block = block,
-                                    parentScheme = parentScheme
-                                )
-                            } else {
-                                emptyList()
-                            }
+                            val normalized: NestedDecorationData = normalizeNestedDecorationData(
+                                block = block,
+                                parentScheme = parentScheme
+                            )
                             val current = DecorationData(
                                 style = DecorationData.Style.Highlight(
                                     start = block.id,
@@ -356,7 +351,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     indent = indent,
                                     details = details,
                                     selection = selection,
-                                    scheme = if (NESTED_DECORATION_ENABLED) normalized else emptyList()
+                                    scheme = normalized
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -372,10 +367,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = if (NESTED_DECORATION_ENABLED)
-                                            (normalized + current)
-                                        else
-                                            emptyList()
+                                        parentScheme = (normalized + current)
                                     )
                                 )
                             }
@@ -1058,18 +1050,14 @@ class DefaultBlockViewRenderer @Inject constructor(
             details = details,
             marks = marks
         )
-        val current = if (NESTED_DECORATION_ENABLED) {
-            listOf(
-                BlockView.Decoration(
-                    background = block.parseThemeBackgroundColor(),
-                    style = BlockView.Decoration.Style.Highlight.Itself(
-                        hasChildren = block.children.isNotEmpty()
-                    )
+        val current = listOf(
+            BlockView.Decoration(
+                background = block.parseThemeBackgroundColor(),
+                style = BlockView.Decoration.Style.Highlight.Itself(
+                    hasChildren = block.children.isNotEmpty()
                 )
             )
-        } else {
-            emptyList()
-        }
+        )
         return BlockView.Text.Highlight(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,

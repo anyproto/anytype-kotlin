@@ -37,24 +37,19 @@ class LinkToObjectDelete(
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(
         item: BlockView.LinkToObject.Deleted,
         clicked: (ListenerType) -> Unit
     ) {
-        indentize(item)
         itemView.isSelected = item.isSelected
         itemView.setOnClickListener { clicked(ListenerType.LinkToObjectDeleted(item.id)) }
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = item.indent * dimen(R.dimen.indent)
-            }
-        }
+        // Do nothing.
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
@@ -67,37 +62,20 @@ class LinkToObjectDelete(
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = if (rect.bottom > 0) {
-                        rect.bottom
-                    } else {
-                        dimen(R.dimen.dp_2)
-                    }
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = if (rect.bottom > 0) {
+                    rect.bottom
+                } else {
+                    dimen(R.dimen.dp_2)
                 }
-                binding.content.updatePadding(
-                    left = dimen(R.dimen.default_document_content_padding_start),
-                    right = dimen(R.dimen.default_document_item_padding_end)
-                )
             }
-        }
-    }
-
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             binding.content.updatePadding(
                 left = dimen(R.dimen.default_document_content_padding_start),
                 right = dimen(R.dimen.default_document_item_padding_end)
             )
-            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.default_document_item_padding_start)
-                marginEnd = dimen(R.dimen.default_document_item_padding_end)
-                topMargin = dimen(R.dimen.dp_1)
-                bottomMargin = dimen(R.dimen.dp_1)
-            }
         }
     }
 }

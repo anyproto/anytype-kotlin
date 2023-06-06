@@ -460,15 +460,11 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
                     background = paragraph.parseThemeBackgroundColor(),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = paragraph.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -689,29 +685,21 @@ open class EditorViewModelTest {
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
                         background = paragraph.parseThemeBackgroundColor(),
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = paragraph.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Paragraph(
                         id = added.id,
                         text = added.content.asText().text,
                         background = added.parseThemeBackgroundColor(),
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = added.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = added.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )
@@ -834,15 +822,11 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     background = paragraph.parseThemeBackgroundColor(),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = paragraph.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -964,15 +948,11 @@ open class EditorViewModelTest {
                             to = firstTimeRange.last()
                         )
                     ),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = paragraph.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -1015,15 +995,11 @@ open class EditorViewModelTest {
                             to = secondTimeRange.last()
                         )
                     ),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = paragraph.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -1122,15 +1098,11 @@ open class EditorViewModelTest {
                             to = firstTimeRange.last()
                         )
                     ),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = paragraph.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -1176,15 +1148,11 @@ open class EditorViewModelTest {
                             to = secondTimeRange.last()
                         )
                     ),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = paragraph.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -1338,15 +1306,11 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     background = paragraph.parseThemeBackgroundColor(),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = paragraph.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = paragraph.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -1666,15 +1630,11 @@ open class EditorViewModelTest {
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
                         background = paragraph.parseThemeBackgroundColor(),
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = paragraph.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )
@@ -1694,31 +1654,23 @@ open class EditorViewModelTest {
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
                         background = paragraph.parseThemeBackgroundColor(),
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = paragraph.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = paragraph.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Header.One(
                         id = new.id,
                         text = new.content<Block.Content.Text>().text,
                         background = new.parseThemeBackgroundColor(),
                         indent = 0,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = new.parseThemeBackgroundColor(),
-                                    style = BlockView.Decoration.Style.Header.H1
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = new.parseThemeBackgroundColor(),
+                                style = BlockView.Decoration.Style.Header.H1
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )
@@ -1917,29 +1869,21 @@ open class EditorViewModelTest {
                         id = firstChild.id,
                         text = firstChild.content<Block.Content.Text>().text,
                         background = firstChild.parseThemeBackgroundColor(),
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = firstChild.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = firstChild.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Paragraph(
                         id = secondChild.id,
                         text = secondChild.content<Block.Content.Text>().text,
                         background = secondChild.parseThemeBackgroundColor(),
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = secondChild.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = secondChild.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )
@@ -1969,15 +1913,11 @@ open class EditorViewModelTest {
                     id = secondChild.id,
                     text = secondChild.content<Block.Content.Text>().text,
                     background = secondChild.parseThemeBackgroundColor(),
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = secondChild.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = secondChild.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -3227,15 +3167,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[1].let { p ->
@@ -3243,15 +3179,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[2].let { p ->
@@ -3259,15 +3191,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             }
         )
@@ -3410,15 +3338,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             }
         )
@@ -3507,16 +3431,12 @@ open class EditorViewModelTest {
                 id = picture.id,
                 mode = BlockView.Mode.EDIT,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.Card
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT,
+                        style = BlockView.Decoration.Style.Card
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -3586,16 +3506,12 @@ open class EditorViewModelTest {
                 id = video.id,
                 mode = BlockView.Mode.EDIT,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.Card
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT,
+                        style = BlockView.Decoration.Style.Card
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -3660,16 +3576,12 @@ open class EditorViewModelTest {
                 id = file.id,
                 mode = BlockView.Mode.EDIT,
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.Card
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT,
+                        style = BlockView.Decoration.Style.Card
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -4055,15 +3967,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[1].let { p ->
@@ -4071,15 +3979,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[2].let { p ->
@@ -4087,15 +3991,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             }
         )
@@ -4170,15 +4070,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[1].let { p ->
@@ -4186,15 +4082,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[2].let { p ->
@@ -4202,15 +4094,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             }
         )
@@ -4289,15 +4177,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[1].let { p ->
@@ -4305,15 +4189,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             },
             paragraphs[2].let { p ->
@@ -4321,15 +4201,11 @@ open class EditorViewModelTest {
                     id = p.id,
                     marks = emptyList(),
                     text = p.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = p.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = p.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             }
         )

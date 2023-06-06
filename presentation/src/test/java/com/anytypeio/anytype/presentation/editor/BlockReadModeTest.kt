@@ -4,7 +4,6 @@ import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
@@ -59,25 +58,6 @@ class BlockReadModeTest : EditorViewModelTest() {
         )
     ) + listOf(header, title) + blocks
 
-    private val blockViewsReadMode = listOf<BlockView>(
-        blocks[0].let { p ->
-            BlockView.Text.Paragraph(
-                id = p.id,
-                marks = emptyList(),
-                text = p.content<Block.Content.Text>().text,
-                mode = BlockView.Mode.READ
-            )
-        },
-        blocks[1].let { p ->
-            BlockView.Text.Paragraph(
-                id = p.id,
-                marks = emptyList(),
-                text = p.content<Block.Content.Text>().text,
-                mode = BlockView.Mode.READ
-            )
-        }
-    )
-
     private val blockViewsReadModeSelected = listOf<BlockView>(
         blocks[0].let { p ->
             BlockView.Text.Paragraph(
@@ -85,15 +65,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                 marks = emptyList(),
                 text = p.content<Block.Content.Text>().text,
                 mode = BlockView.Mode.READ,
-                decorations = if (NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = p.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = p.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         },
         blocks[1].let { p ->
@@ -103,15 +79,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                 text = p.content<Block.Content.Text>().text,
                 mode = BlockView.Mode.READ,
                 isSelected = true,
-                decorations = if (NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = p.parseThemeBackgroundColor()
-                        )
+                decorations =  listOf(
+                    BlockView.Decoration(
+                        background = p.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         }
     )
@@ -123,15 +95,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                 marks = emptyList(),
                 text = p.content<Block.Content.Text>().text,
                 mode = BlockView.Mode.EDIT,
-                decorations = if (NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = p.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = p.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         },
         blocks[1].let { p ->
@@ -140,15 +108,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                 marks = emptyList(),
                 text = p.content<Block.Content.Text>().text,
                 mode = BlockView.Mode.EDIT,
-                decorations = if (NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = p.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = p.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         }
     )
@@ -212,15 +176,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                             marks = emptyList(),
                             text = p.content<Block.Content.Text>().text,
                             mode = BlockView.Mode.READ,
-                            decorations = if (NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = p.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = p.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     },
                     blocks[1].let { p ->
@@ -230,15 +190,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                             text = p.content<Block.Content.Text>().text,
                             mode = BlockView.Mode.READ,
                             isSelected = true,
-                            decorations = if (NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = p.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = p.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     }
                 )
@@ -314,15 +270,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                             marks = emptyList(),
                             text = p.content<Block.Content.Text>().text,
                             mode = BlockView.Mode.READ,
-                            decorations = if (NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = p.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = p.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     },
                     blocks[1].let { p ->
@@ -332,15 +284,11 @@ class BlockReadModeTest : EditorViewModelTest() {
                             marks = emptyList(),
                             text = p.content<Block.Content.Text>().text,
                             mode = BlockView.Mode.READ,
-                            decorations = if (NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = p.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = p.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     }
                 )

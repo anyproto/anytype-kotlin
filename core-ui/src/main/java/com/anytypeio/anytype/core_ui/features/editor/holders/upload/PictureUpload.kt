@@ -27,14 +27,9 @@ class PictureUpload(
         clicked(ListenerType.Video.Upload(target))
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.indentize(
-                indent = item.indent,
-                defIndent = dimen(R.dimen.indent),
-                margin = dimen(R.dimen.bookmark_default_margin_start)
-            )
-        }
+        // Do nothing.
     }
 
     override fun select(isSelected: Boolean) {

@@ -156,15 +156,11 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
                             isFocused = false,
                             text = p.content<TXT>().text,
                             mode = BlockView.Mode.EDIT,
-                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = p.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = p.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         ),
                         BlockView.Latex(
                             id = latex.id,

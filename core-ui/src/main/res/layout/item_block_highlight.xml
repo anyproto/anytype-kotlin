@@ -16,9 +16,7 @@
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
         android:addStatesFromChildren="true"
-        android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
-        tools:background="@drawable/item_block_multi_select_selected"
         tools:ignore="UselessParent">
 
         <View
@@ -49,5 +47,12 @@
             tools:text="@string/default_text_placeholder" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/item_block_multi_select_mode_selector" />
 
 </FrameLayout>

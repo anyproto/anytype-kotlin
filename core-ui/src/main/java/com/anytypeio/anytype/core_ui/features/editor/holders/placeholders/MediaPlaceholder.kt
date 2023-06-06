@@ -49,17 +49,6 @@ abstract class MediaPlaceholder(
     )
 
     init {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.card.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.default_media_placeholder_card_margin_start)
-                marginEnd = dimen(R.dimen.default_media_placeholder_card_margin_end)
-                bottomMargin = dimen(R.dimen.default_media_placeholder_root_margin_bottom)
-            }
-            binding.root.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end),
-            )
-        }
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
@@ -68,10 +57,7 @@ abstract class MediaPlaceholder(
         clicked: (ListenerType) -> Unit
     ) {
         setup()
-        applyRootMargins(item)
-        indentize(item)
         select(item.isSelected)
-        applyBackground(item.background)
         with(itemView) {
             setOnClickListener { placeholderClick(item.id, clicked) }
         }
@@ -83,67 +69,26 @@ abstract class MediaPlaceholder(
             if (payload.isSelectionChanged) {
                 select(item.isSelected)
             }
-            if (payload.isBackgroundColorChanged) {
-                applyBackground(item.background)
-            }
-        }
-    }
-
-    private fun applyRootMargins(item: BlockView.MediaPlaceholder) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            if (item.isPreviousBlockMedia) {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
-                    apply { topMargin = 0 }
-                }
-            } else {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
-                    apply {
-                        topMargin =
-                            root.resources.getDimension(R.dimen.default_media_placeholder_root_margin_top)
-                                .toInt()
-                    }
-                }
-            }
         }
     }
 
     private fun select(isSelected: Boolean) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.isSelected = isSelected
-        } else {
-            binding.selected.isSelected = isSelected
-        }
+        binding.selected.isSelected = isSelected
     }
 
-    private fun applyBackground(
-        bg: ThemeColor
-    ) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) return
-        if (bg != ThemeColor.DEFAULT) {
-            card.setCardBackgroundColor(card.resources.veryLight(bg, 0))
-        } else {
-            card.setCardBackgroundColor(0)
-        }
-    }
-
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            val leftPadding =
-                dimen(R.dimen.default_document_item_padding_start) + item.indent * dimen(R.dimen.indent)
-            root.updatePadding(left = leftPadding)
-        }
+        // Do nothing.
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.card,
-                res = itemView.resources
-            )
-            card.setCardBackgroundColor(
-                card.resources.veryLight(decorations.last().background, 0)
-            )
-        }
+        binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+            content = binding.card,
+            res = itemView.resources
+        )
+        card.setCardBackgroundColor(
+            card.resources.veryLight(decorations.last().background, 0)
+        )
     }
 }

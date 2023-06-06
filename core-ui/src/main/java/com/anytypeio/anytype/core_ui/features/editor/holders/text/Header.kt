@@ -22,11 +22,8 @@ abstract class Header<T : BlockView.Text.Header>(
 
     abstract val header: TextInputWidget
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            header.updatePadding(
-                left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
-            )
-        }
+        // Do nothing.
     }
 }

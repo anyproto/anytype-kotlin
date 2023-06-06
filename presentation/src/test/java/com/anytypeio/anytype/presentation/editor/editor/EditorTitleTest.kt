@@ -329,15 +329,11 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 BlockView.Text.Bulleted(
                     id = block.id,
                     text = block.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -359,15 +355,11 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 BlockView.Text.Bulleted(
                     id = block.id,
                     text = block.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -461,15 +453,11 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 BlockView.Text.Bulleted(
                     id = block.id,
                     text = block.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )

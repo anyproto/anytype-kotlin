@@ -15,7 +15,6 @@ class LinkToObjectLoading(binding: ItemBlockObjectLinkLoadingBinding) :
     BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder {
 
-    private val root = binding.root
     private val container = binding.container
 
     fun bind(
@@ -41,11 +40,8 @@ class LinkToObjectLoading(binding: ItemBlockObjectLinkLoadingBinding) :
         }
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = item.indent * dimen(R.dimen.indent)
-            }
-        }
+        // Do nothing.
     }
 }

@@ -9,7 +9,6 @@ android {
 
     defaultConfig {
         buildConfigField "boolean", "ENABLE_LINK_APPERANCE_MENU", "true"
-        buildConfigField "boolean", "NESTED_DECORATION_ENABLED", "true"
         buildConfigField "boolean", "USE_SIMPLE_TABLES_IN_EDITOR_EDDITING", "true"
         buildConfigField "boolean", "ENABLE_WIDGETS", "false"
     }

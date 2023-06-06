@@ -144,30 +144,22 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                     number = 1,
                     mode = BlockView.Mode.READ,
                     isSelected = false,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = b.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = b.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 ),
                 BlockView.Text.Paragraph(
                     id = b.id,
                     text = b.content<TXT>().text,
                     mode = BlockView.Mode.READ,
                     isSelected = true,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = b.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = b.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -260,30 +252,22 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                         number = 1,
                         mode = BlockView.Mode.EDIT,
                         isSelected = false,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = a.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = a.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     ),
                     BlockView.Text.Paragraph(
                         id = b.id,
                         text = b.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,
                         isSelected = false,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = b.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = b.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )

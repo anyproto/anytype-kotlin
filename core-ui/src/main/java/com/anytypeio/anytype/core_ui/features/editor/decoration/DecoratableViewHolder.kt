@@ -11,7 +11,6 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
 import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -28,13 +27,11 @@ interface DecoratableCardViewHolder : DecoratableViewHolder {
 
     @CallSuper
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                decoratableCard.applyCardDecorations<FrameLayout.LayoutParams>(
-                    rect = rect,
-                    res = decoratableCard.resources
-                )
-            }
+        decoratableContainer.decorate(decorations) { rect ->
+            decoratableCard.applyCardDecorations<FrameLayout.LayoutParams>(
+                rect = rect,
+                res = decoratableCard.resources
+            )
         }
     }
 }

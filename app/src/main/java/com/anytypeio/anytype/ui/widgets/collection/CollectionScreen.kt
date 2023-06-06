@@ -14,6 +14,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -98,6 +99,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.google.accompanist.themeadapter.material.createMdcTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -545,21 +547,23 @@ fun CollectionScreen(vm: CollectionViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     uiState.fold(
-        onSuccess = { uiState ->
+        onSuccess = { state ->
             BottomSheetScaffold(
                 sheetElevation = 0.dp,
                 sheetBackgroundColor = Color.Transparent,
                 scaffoldState = bottomSheetScaffoldState,
-                sheetContent = { BlockWidget(localDensity, vm, uiState) },
+                sheetContent = { BlockWidget(localDensity, vm, state) },
                 sheetPeekHeight = 0.dp
             ) {
-                ScreenContent(vm, uiState)
+                ScreenContent(vm, state)
 
-                LaunchedEffect(uiState) {
+                LaunchedEffect(state) {
 
-                        if (uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                            coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() }
-                        } else if (!uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                        if (state.showWidget && bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                            coroutineScope.launch {
+                                bottomSheetScaffoldState.bottomSheetState.expand()
+                            }
+                        } else if (!state.showWidget && bottomSheetScaffoldState.bottomSheetState.isExpanded) {
                             coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
                         }
 

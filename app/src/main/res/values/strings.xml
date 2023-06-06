@@ -369,7 +369,9 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_mnemonic_title">Your Void is encrypted by the Key</string>
     <string name="onboarding_mnemonic_description">The Key is a set of 12 words. It is unique for the Void and can’t be changed. You only one person who knows the Key. If you lose it, no one, including us, can help restore your Void. Store it securely.</string>
     <string name="onboarding_mnemonic_show_key">Show me the Key</string>
+    <string name="onboarding_mnemonic_key_saved">I saved my key</string>
     <string name="onboarding_mnemonic_check_later">Check later</string>
+    <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
     <string name="onboarding_soul_creation_title">Create your Soul</string>
     <string name="onboarding_soul_creation_description">Think of it like an identity, or a profile within\nAnytype.</string>
     <string name="onboarding_soul_creation_placeholder">Call it whatever you want</string>

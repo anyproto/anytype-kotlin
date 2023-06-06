@@ -55,6 +55,44 @@ object RelationTextValueModule {
     ): ReloadObject = ReloadObject(repo)
 }
 
+@Subcomponent(modules = [RelationDataViewTextValueModule::class])
+@PerModal
+interface RelationDataViewTextValueSubComponent {
+
+    @Subcomponent.Builder
+    interface Builder {
+        fun module(module: RelationDataViewTextValueModule): Builder
+        fun build(): RelationDataViewTextValueSubComponent
+    }
+
+    fun inject(fragment: RelationTextValueFragment)
+}
+
+@Module
+object RelationDataViewTextValueModule {
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideRelationTextValueViewModelFactory(
+        @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
+        @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
+        reloadObject: ReloadObject,
+        analytics: Analytics
+    ) = RelationTextValueViewModel.Factory(
+        relations = relations,
+        values = values,
+        reloadObject = reloadObject,
+        analytics = analytics
+    )
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideReloadObjectUseCase(
+        repo: BlockRepository
+    ): ReloadObject = ReloadObject(repo)
+}
+
 @Subcomponent(modules = [RelationDateValueModule::class])
 @PerModal
 interface DefaultRelationDataValueSubComponent {

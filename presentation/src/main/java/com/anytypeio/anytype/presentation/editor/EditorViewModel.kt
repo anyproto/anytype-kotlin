@@ -5556,33 +5556,6 @@ class EditorViewModel(
         proceedWithMultiStyleToolbarEvent()
     }
 
-    fun onMultiSelectTurnIntoButtonClicked() {
-        Timber.d("onMultiSelectTurnIntoButtonClicked, ")
-
-        val targets = currentSelection()
-
-        val blocks = blocks.filter { targets.contains(it.id) }
-
-        val hasTextBlocks = blocks.any { it.content is Content.Text }
-
-        when {
-            hasTextBlocks -> {
-                proceedUpdateBlockStyle(
-                    targets = currentSelection().toList(),
-                    uiBlock = UiBlock.PAGE,
-                    action = {
-                        clearSelections()
-                        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
-                    },
-                    errorAction = { sendToast("Cannot convert selected blocks to PAGE") }
-                )
-            }
-            else -> {
-                sendToast("Cannot turn selected blocks into page")
-            }
-        }
-    }
-
     fun onExitMultiSelectModeClicked() {
         when (mode) {
             is EditorMode.Table -> proceedWithExitingTableMode()

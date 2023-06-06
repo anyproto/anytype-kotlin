@@ -125,7 +125,9 @@ interface ObjectSetSubComponent {
     fun modifyFilterComponent(): ModifyFilterSubComponent.Builder
     fun viewerSortComponent(): ViewerSortSubComponent.Builder
     fun modifyViewerSortComponent(): ModifyViewerSortSubComponent.Builder
+
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
+    fun relationDataViewTextValueComponent(): RelationDataViewTextValueSubComponent.Builder
 
     fun relationDateValueComponent(): DefaultRelationDataValueSubComponent.Builder
     fun dataViewRelationDateValueComponent(): DataViewRelationDataValueSubComponent.Builder

@@ -1,87 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/cover"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/default_cover_height"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/content_description_document_cover"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/orange"
+        tools:visibility="gone" />
 
     <FrameLayout
-        android:id="@+id/coverAndIconContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:id="@+id/docEmojiIconContainer"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/background_layout_icon_basic"
+        android:transitionName="@string/logo_transition"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
 
         <ImageView
-            android:id="@+id/cover"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/default_cover_height"
-            android:layout_marginBottom="16dp"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/content_description_document_cover"
-            android:scaleType="fitXY"
-            android:visibility="gone"
-            tools:background="@color/orange"
-            tools:visibility="visible" />
-
-        <FrameLayout
-            android:id="@+id/docEmojiIconContainer"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            tools:visibility="gone"
-            android:background="@drawable/background_layout_icon_basic"
-            android:transitionName="@string/logo_transition"
-            >
-
-            <ImageView
-                android:id="@+id/emojiIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center" />
-
-        </FrameLayout>
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageIcon"
-            android:layout_width="108dp"
-            android:layout_height="108dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:adjustViewBounds="true"
-            android:background="@color/shape_tertiary"
-            android:padding="4dp"
-            app:shapeAppearance="@style/TitleImageAppearanceOverlay"
-            app:strokeColor="@color/background_primary"
-            app:strokeWidth="4dp"
-            android:transitionName="@string/logo_transition" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:theme="@style/WhiteProgressBar"
-            android:visibility="gone"/>
+            android:id="@+id/emojiIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center" />
 
     </FrameLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imageIcon"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="102dp"
+        android:adjustViewBounds="true"
+        android:background="@color/shape_tertiary"
+        android:padding="4dp"
+        android:transitionName="@string/logo_transition"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/TitleImageAppearanceOverlay"
+        app:strokeColor="@color/background_primary"
+        app:strokeWidth="4dp"
+        tools:visibility="gone" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
-        android:paddingStart="20dp"
-        android:layout_marginTop="0dp"
-        android:paddingEnd="20dp"
+        android:layout_width="0dp"
         android:hint="@string/untitled"
-        android:paddingTop="0dp"
-        android:layout_marginBottom="6dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         app:ignoreDragAndDrop="true"
+        android:layout_marginTop="@dimen/dp_32"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/barrier"
         app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
 
-</LinearLayout>
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="docEmojiIconContainer,imageIcon,cover,root" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

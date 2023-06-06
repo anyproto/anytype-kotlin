@@ -99,8 +99,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             obj = obj,
             layout = obj.layout,
             builder = urlBuilder
-        ),
-        withDescription = filteredRelations.any { it.key == Relations.DESCRIPTION }
+        )
     )
 }
 
@@ -176,7 +175,6 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         ),
         cover = cover,
         fitImage = dvViewer.coverFit,
-        withDescription = filteredRelations.any { it.key == Relations.DESCRIPTION },
         isLargeSize = isLargeSize
     )
 }

@@ -69,11 +69,7 @@ abstract class LinkToObjectCard(
         item: BlockView.LinkToObject.Default.Card,
         clicked: (ListenerType) -> Unit
     ) {
-        indentize(item)
-
         selected(item)
-
-        applyRootMargins(item)
 
         applyName(item)
 
@@ -166,12 +162,9 @@ abstract class LinkToObjectCard(
         titleView.editableText?.removeSpans<SearchTargetHighlightSpan>()
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            rootView.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = item.indent * dimen(R.dimen.indent)
-            }
-        }
+        // Do nothing.
     }
 
     protected fun processChangeBasePayloads(
@@ -254,24 +247,6 @@ abstract class LinkToObjectCard(
         containerView.setBlockBackgroundColor(background)
     }
 
-    private fun applyRootMargins(item: BlockView.LinkToObject.Default.Card) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            if (item.isPreviousBlockMedia) {
-                rootView.updateLayoutParams<RecyclerView.LayoutParams> {
-                    apply { topMargin = 0 }
-                }
-            } else {
-                rootView.updateLayoutParams<RecyclerView.LayoutParams> {
-                    apply {
-                        topMargin =
-                            rootView.resources.getDimension(R.dimen.default_link_card_root_margin_top)
-                                .toInt()
-                    }
-                }
-            }
-        }
-    }
-
     private fun applyObjectType(item: BlockView.LinkToObject.Default.Card) {
         if (!item.objectTypeName.isNullOrBlank()) {
             objectTypeView.text = item.objectTypeName
@@ -281,30 +256,12 @@ abstract class LinkToObjectCard(
         }
     }
 
-    protected fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            rootView.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            rootView.updateLayoutParams<RecyclerView.LayoutParams> {
-                bottomMargin = dimen(R.dimen.dp_10)
-            }
-            decoratableCard.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.dp_12)
-                marginEnd = dimen(R.dimen.dp_12)
-            }
-        }
-    }
-
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            selectedView.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = decoratableCard,
-                res = itemView.resources
-            )
-        }
+        selectedView.applySelectorOffset<FrameLayout.LayoutParams>(
+            content = decoratableCard,
+            res = itemView.resources
+        )
     }
 }
 
@@ -323,7 +280,6 @@ class LinkToObjectCardSmallIcon(binding: ItemBlockObjectLinkCardSmallIconBinding
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(
@@ -358,7 +314,6 @@ class LinkToObjectCardMediumIcon(binding: ItemBlockObjectLinkCardMediumIconBindi
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(
@@ -394,7 +349,6 @@ class LinkToObjectCardSmallIconCover(binding: ItemBlockObjectLinkCardSmallIconCo
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(
@@ -434,7 +388,6 @@ class LinkToObjectCardMediumIconCover(binding: ItemBlockObjectLinkCardMediumIcon
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(

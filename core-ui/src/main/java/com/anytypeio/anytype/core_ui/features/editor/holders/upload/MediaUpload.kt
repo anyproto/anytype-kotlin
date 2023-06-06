@@ -31,20 +31,6 @@ abstract class MediaUpload(
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            view.updatePadding(
-                top = dimen(R.dimen.dp_6),
-                left = dimen(R.dimen.dp_12),
-                right = dimen(R.dimen.dp_12),
-                bottom = dimen(R.dimen.dp_6)
-            )
-            view.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = dimen(R.dimen.dp_8)
-                marginEnd = dimen(R.dimen.dp_8)
-                bottomMargin = dimen(R.dimen.dp_1)
-                topMargin = dimen(R.dimen.dp_1)
-            }
-        }
     }
 
     fun bind(

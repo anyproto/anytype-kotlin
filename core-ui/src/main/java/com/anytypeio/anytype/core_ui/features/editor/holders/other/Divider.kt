@@ -40,40 +40,12 @@ abstract class Divider(view: View) : BlockViewHolder(view),
         clicked: (ListenerType) -> Unit,
         background: ThemeColor
     ) = with(itemView) {
-        indentize(item)
         container.isSelected = isItemSelected
-        applyBackground(background)
         setOnClickListener { clicked(ListenerType.DividerClick(id)) }
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            divider.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = item.indent * dimen(R.dimen.indent)
-            }
-        }
+        // Do nothing.
     }
-
-    private fun applyBackground(background: ThemeColor) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.setBlockBackgroundColor(background)
-        }
-    }
-
-    protected fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            container.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            root.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                bottomMargin = dimen(R.dimen.dp_2)
-            }
-        }
-    }
-
 }

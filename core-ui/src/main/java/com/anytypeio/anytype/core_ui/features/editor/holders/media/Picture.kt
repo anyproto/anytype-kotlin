@@ -38,20 +38,6 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.root.updatePadding(
-                top = dimen(R.dimen.dp_6),
-                left = dimen(R.dimen.dp_12),
-                right = dimen(R.dimen.dp_12),
-                bottom = dimen(R.dimen.dp_6)
-            )
-            binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = dimen(R.dimen.dp_8)
-                marginEnd = dimen(R.dimen.dp_8)
-                bottomMargin = dimen(R.dimen.dp_1)
-                topMargin = dimen(R.dimen.dp_1)
-            }
-        }
     }
 
     private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
@@ -88,31 +74,20 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
         clicked(ListenerType.Picture.View(item.id))
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            itemView.indentize(
-                indent = item.indent,
-                defIndent = dimen(R.dimen.indent),
-                margin = dimen(R.dimen.picture_default_margin_start)
-            )
-        }
+        // Do nothing.
     }
 
     override fun select(isSelected: Boolean) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            itemView.isSelected = isSelected
-        } else {
-            binding.selected.isSelected = isSelected
-        }
+        binding.selected.isSelected = isSelected
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.card,
-                res = itemView.resources
-            )
-        }
+        binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+            content = binding.card,
+            res = itemView.resources
+        )
     }
 }

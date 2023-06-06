@@ -46,7 +46,6 @@ class LinkToObjectArchive(
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(
@@ -123,37 +122,20 @@ class LinkToObjectArchive(
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = if (rect.bottom > 0) {
-                        rect.bottom
-                    } else {
-                        dimen(R.dimen.dp_2)
-                    }
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = if (rect.bottom > 0) {
+                    rect.bottom
+                } else {
+                    dimen(R.dimen.dp_2)
                 }
-                binding.content.updatePadding(
-                    left = dimen(R.dimen.default_document_content_padding_start),
-                    right = dimen(R.dimen.default_document_item_padding_end)
-                )
             }
-        }
-    }
-
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             binding.content.updatePadding(
                 left = dimen(R.dimen.default_document_content_padding_start),
                 right = dimen(R.dimen.default_document_item_padding_end)
             )
-            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.default_document_item_padding_start)
-                marginEnd = dimen(R.dimen.default_document_item_padding_end)
-                topMargin = dimen(R.dimen.dp_1)
-                bottomMargin = dimen(R.dimen.dp_1)
-            }
         }
     }
 }

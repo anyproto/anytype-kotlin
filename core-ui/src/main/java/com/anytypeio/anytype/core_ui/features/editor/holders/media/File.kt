@@ -33,14 +33,12 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
     override val clickContainer: View = binding.text
     private val icon = binding.graphic
     private val name = binding.text
-    private val guideline = binding.guideline
 
     override val decoratableContainer: EditorDecorationContainer
         get() = binding.decorationContainer
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(item: BlockView.Media.File, clicked: (ListenerType) -> Unit) {
@@ -113,10 +111,9 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
         clicked(ListenerType.File.View(item.id))
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
-        }
+        // Do nothing.
     }
 
     override fun select(isSelected: Boolean) {
@@ -136,33 +133,18 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
         }
     }
 
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            container.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.default_document_item_padding_start)
-                marginEnd = dimen(R.dimen.default_document_item_padding_end)
-                topMargin = dimen(R.dimen.default_graphic_text_root_margin_top)
-                bottomMargin = dimen(R.dimen.default_graphic_text_root_margin_bottom)
-            }
-        }
-    }
-
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         Timber.w("Trying to apply decorations $decorations")
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.container.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = if (rect.bottom > 0) {
-                        rect.bottom
-                    } else {
-                        dimen(R.dimen.dp_2)
-                    }
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.container.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = if (rect.bottom > 0) {
+                    rect.bottom
+                } else {
+                    dimen(R.dimen.dp_2)
                 }
             }
         }
     }
-
-
 }

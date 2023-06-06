@@ -31,8 +31,6 @@ class Highlight(
 
     override val content: TextInputWidget = binding.highlightContent
     override val root: View = itemView
-    private val indent = binding.highlightIndent
-    private val container = binding.highlightBlockContentContainer
 
     override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
@@ -54,25 +52,6 @@ class Highlight(
             mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_16)
             mentionInitialsSize = resources.getDimension(R.dimen.mention_span_initials_size_default)
         }
-
-        applyDefaultOffsets()
-    }
-
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.root.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
-                topMargin = dimen(R.dimen.default_highlight_content_margin_top)
-                bottomMargin = dimen(R.dimen.default_highlight_content_margin_bottom)
-            }
-            binding.highlightBlockContentContainer.updatePadding(
-                left = dimen(R.dimen.default_document_content_padding_start),
-                right = dimen(R.dimen.default_document_content_padding_end)
-            )
-        }
     }
 
     override fun select(item: BlockView.Selectable) {
@@ -85,10 +64,9 @@ class Highlight(
         }
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            indent.updateLayoutParams { width = item.indent * dimen(R.dimen.indent) }
-        }
+        // Do nothing.
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize
@@ -98,40 +76,38 @@ class Highlight(
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.highlightBlockContentContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.default_indent) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                }
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.highlightBlockContentContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.default_indent) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom
             }
-            if (decorations.isNotEmpty()) {
-                when (val style = decorations.last().style) {
-                    is BlockView.Decoration.Style.Highlight.End -> {
-                        binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
-                            bottomMargin = dimen(R.dimen.dp_6)
-                        }
-                    }
-                    is BlockView.Decoration.Style.Highlight.Itself -> {
-                        binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
-                            bottomMargin = if (style.hasChildren) 0 else dimen(R.dimen.dp_6)
-                        }
-                    }
-                    else -> {
-                        binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
-                            bottomMargin = 0
-                        }
+        }
+        if (decorations.isNotEmpty()) {
+            when (val style = decorations.last().style) {
+                is BlockView.Decoration.Style.Highlight.End -> {
+                    binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                        bottomMargin = dimen(R.dimen.dp_6)
                     }
                 }
+                is BlockView.Decoration.Style.Highlight.Itself -> {
+                    binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                        bottomMargin = if (style.hasChildren) 0 else dimen(R.dimen.dp_6)
+                    }
+                }
+                else -> {
+                    binding.highlightGlyphContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                        bottomMargin = 0
+                    }
+                }
             }
-            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.highlightBlockContentContainer,
-                res = itemView.resources
-            )
-            binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginEnd = dimen(R.dimen.dp_8)
-            }
+        }
+        binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+            content = binding.highlightBlockContentContainer,
+            res = itemView.resources
+        )
+        binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
+            marginEnd = dimen(R.dimen.dp_8)
         }
     }
 }

@@ -51,24 +51,6 @@ class Bulleted(
             mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_16)
             mentionInitialsSize = resources.getDimension(R.dimen.mention_span_initials_size_default)
         }
-        applyDefaultOffsets()
-    }
-
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.root.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
-                topMargin = dimen(R.dimen.default_document_item_margin_top)
-                bottomMargin = dimen(R.dimen.default_document_item_margin_bottom)
-            }
-            binding.graphicPlusTextContainer.updatePadding(
-                left = dimen(R.dimen.default_document_content_padding_start),
-                right = dimen(R.dimen.default_document_content_padding_end),
-            )
-        }
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize
@@ -97,10 +79,9 @@ class Bulleted(
         DrawableCompat.setTint(bullet.drawable, color)
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            indent.updateLayoutParams { width = item.indent * dimen(R.dimen.indent) }
-        }
+        // Do nothing.
     }
 
     override fun select(item: BlockView.Selectable) {

@@ -106,11 +106,7 @@ class MainSettingsViewModel(
                 )
             )
             Event.OnFilesStorageClicked -> {
-                if (BuildConfig.DEBUG) {
-                    commands.emit(Command.OpenFilesStorageScreen)
-                } else {
-                    commands.emit(Command.Toast("Coming soon"))
-                }
+                commands.emit(Command.OpenFilesStorageScreen)
             }
         }
     }

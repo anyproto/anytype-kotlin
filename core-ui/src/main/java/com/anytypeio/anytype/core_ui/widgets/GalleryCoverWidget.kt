@@ -19,14 +19,13 @@ class GalleryCoverWidget @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : AppCompatImageView(context, attrs) {
 
-    fun bind(item: Viewer.GalleryView.Item.Cover, coverSpace: View) {
+    fun bind(item: Viewer.GalleryView.Item.Cover) {
         when (val cover = item.cover) {
             is CoverView.Color -> {
                 visible()
                 setImageDrawable(null)
                 setBackgroundResource(0)
                 setBackgroundColor(cover.coverColor.color)
-                coverSpace.gone()
             }
             is CoverView.Gradient -> {
                 visible()
@@ -42,7 +41,6 @@ class GalleryCoverWidget @JvmOverloads constructor(
                     CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
                     CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
                 }
-                coverSpace.gone()
             }
             is CoverView.Image -> {
                 visible()
@@ -64,11 +62,9 @@ class GalleryCoverWidget @JvmOverloads constructor(
                         )
                         .into(this)
                 }
-                coverSpace.gone()
             }
             null -> {
-                invisible()
-                if (item.isLargeSize) coverSpace.gone() else coverSpace.visible()
+                gone()
             }
         }
     }

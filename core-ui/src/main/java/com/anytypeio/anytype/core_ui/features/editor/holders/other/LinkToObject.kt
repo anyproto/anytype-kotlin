@@ -53,29 +53,18 @@ class LinkToObject(
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-        applyDefaultOffsets()
     }
 
     fun bind(
         item: BlockView.LinkToObject.Default.Text,
         clicked: (ListenerType) -> Unit
     ) {
-        indentize(item)
-
         applySelectedState(item)
-
         applyText(item)
-
         applyDescription(item)
-
         applyObjectType(item)
-
         applySearchHighlight(item)
-
         applyImageOrEmoji(item)
-
-        applyBackground(item.background)
-
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
 
@@ -181,12 +170,9 @@ class LinkToObject(
         title.editableText?.removeSpans<SearchTargetHighlightSpan>()
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = item.indent * dimen(R.dimen.indent)
-            }
-        }
+        // Do nothing.
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
@@ -204,9 +190,6 @@ class LinkToObject(
             if (payload.isObjectIconChanged) {
                 applyImageOrEmoji(item)
             }
-            if (payload.isBackgroundColorChanged) {
-                applyBackground(item.background)
-            }
             if (payload.isObjectDescriptionChanged) {
                 applyDescription(item)
             }
@@ -216,35 +199,16 @@ class LinkToObject(
         }
     }
 
-    private fun applyBackground(background: ThemeColor) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.setBlockBackgroundColor(background)
-        }
-    }
-
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.container.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = if (rect.bottom > 0) {
-                        rect.bottom
-                    } else {
-                        dimen(R.dimen.dp_2)
-                    }
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.container.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = if (rect.bottom > 0) {
+                    rect.bottom
+                } else {
+                    dimen(R.dimen.dp_2)
                 }
-            }
-        }
-    }
-
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            container.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.default_document_item_padding_start)
-                marginEnd = dimen(R.dimen.default_document_item_padding_end)
-                topMargin = dimen(R.dimen.default_graphic_text_root_margin_top)
-                bottomMargin = dimen(R.dimen.default_graphic_text_root_margin_bottom)
             }
         }
     }

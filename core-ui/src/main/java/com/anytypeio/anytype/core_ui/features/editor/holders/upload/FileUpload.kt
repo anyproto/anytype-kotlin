@@ -28,31 +28,20 @@ class FileUpload(
         clicked(ListenerType.File.Upload(target))
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.indentize(
-                indent = item.indent,
-                defIndent = dimen(R.dimen.indent),
-                margin = dimen(R.dimen.bookmark_default_margin_start)
-            )
-        }
+        // Do nothing.
     }
 
     override fun select(isSelected: Boolean) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.isSelected = isSelected
-        } else {
-            binding.selected.isSelected = isSelected
-        }
+        binding.selected.isSelected = isSelected
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.card,
-                res = itemView.resources
-            )
-        }
+        binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+            content = binding.card,
+            res = itemView.resources
+        )
     }
 }

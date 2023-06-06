@@ -111,15 +111,11 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
                 BlockView.Text.Checkbox(
                     id = checkbox.id,
                     text = checkbox.content<Block.Content.Text>().text,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = checkbox.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = checkbox.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -137,15 +133,11 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
                     id = checkbox.id,
                     text = checkbox.content<Block.Content.Text>().text,
                     isChecked = true,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = checkbox.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = checkbox.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )

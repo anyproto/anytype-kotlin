@@ -13,7 +13,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
     private val getMnemonic: GetMnemonic
 ) : ViewModel() {
 
-    val state = MutableStateFlow<State>(State.Idle)
+    val state = MutableStateFlow<State>(State.Idle(""))
 
     init {
         viewModelScope.launch {
@@ -22,9 +22,9 @@ class OnboardingMnemonicViewModel @Inject constructor(
     }
 
     fun openMnemonic() {
-        state.value = (state.value as? State.Mnemonic)?.copy(
-            visible = true
-        ) ?: state.value
+        if (state.value is State.Mnemonic) {
+            state.value = State.MnemonicOpened((state.value as State.Mnemonic).mnemonicPhrase)
+        }
     }
 
     private suspend fun proceedWithMnemonicPhrase() {
@@ -38,9 +38,13 @@ class OnboardingMnemonicViewModel @Inject constructor(
     }
 
 
-    sealed class State {
-        object Idle : State()
-        data class Mnemonic(val mnemonicPhrase: String, val visible: Boolean = false) : State()
+    sealed interface State {
+
+        val mnemonicPhrase: String
+
+        class Idle(override val mnemonicPhrase: String): State
+        class Mnemonic(override val mnemonicPhrase: String): State
+        class MnemonicOpened(override val mnemonicPhrase: String): State
     }
 
     class Factory @Inject constructor(

@@ -391,15 +391,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     isChecked = false,
                     indent = 0,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -439,15 +435,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     id = child,
                     text = "",
                     isFocused = true,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -525,15 +517,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     text = "",
                     isFocused = false,
                     indent = 0,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -573,15 +561,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     id = child,
                     text = "",
                     isFocused = true,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -680,15 +664,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     indent = 0,
                     isEmpty = true,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -728,15 +708,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     id = child,
                     text = "",
                     isFocused = true,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -815,15 +791,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     indent = 0,
                     number = 1,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -863,15 +835,11 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                     id = child,
                     text = "",
                     isFocused = true,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = ThemeColor.DEFAULT
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )

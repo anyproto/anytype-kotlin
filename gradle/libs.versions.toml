@@ -80,6 +80,7 @@ composeMaterial3 = { module = "androidx.compose.material3:material3", version.re
 composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistVersion" }
 composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
 composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }
+composeAccompanistNavAnimation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistVersion" }
 composeReorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composeReorderableVersion" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }

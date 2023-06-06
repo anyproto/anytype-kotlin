@@ -52,14 +52,12 @@ class HeaderThree(
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.box.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = rect.left
-                    marginEnd = rect.right
-                    bottomMargin = rect.bottom
-                    // TODO handle top and bottom offsets
-                }
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.box.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = rect.left
+                marginEnd = rect.right
+                bottomMargin = rect.bottom
+                // TODO handle top and bottom offsets
             }
         }
     }

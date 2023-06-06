@@ -284,15 +284,11 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         text = a.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,
                         isSelected = false,
-                        decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                            listOf(
-                                BlockView.Decoration(
-                                    background = a.parseThemeBackgroundColor()
-                                )
+                        decorations = listOf(
+                            BlockView.Decoration(
+                                background = a.parseThemeBackgroundColor()
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
                     )
                 )
             )

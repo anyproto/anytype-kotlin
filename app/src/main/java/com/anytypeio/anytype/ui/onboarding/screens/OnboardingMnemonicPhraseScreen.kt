@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.res.stringResource
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorBackgroundField
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
+import com.anytypeio.anytype.core_ui.extensions.conditional
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
@@ -29,18 +31,19 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicViewModel
-import com.anytypeio.anytype.ui.onboarding.conditional
 
 @Composable
 fun MnemonicPhraseScreenWrapper(
     viewModel: OnboardingMnemonicViewModel,
-    openSoulCreation: () -> Unit
+    openSoulCreation: () -> Unit,
+    copyMnemonicToClipboard: (String) -> Unit
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     MnemonicPhraseScreen(
         state = state,
         reviewMnemonic = { viewModel.openMnemonic() },
-        openSoulCreation = openSoulCreation
+        openSoulCreation = openSoulCreation,
+        copyMnemonicToClipboard = copyMnemonicToClipboard
     )
 }
 
@@ -48,7 +51,8 @@ fun MnemonicPhraseScreenWrapper(
 fun MnemonicPhraseScreen(
     state: OnboardingMnemonicViewModel.State,
     reviewMnemonic: () -> Unit,
-    openSoulCreation: () -> Unit
+    openSoulCreation: () -> Unit,
+    copyMnemonicToClipboard: (String) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -58,13 +62,14 @@ fun MnemonicPhraseScreen(
             verticalArrangement = Arrangement.Center
         ) {
             MnemonicTitle()
-            MnemonicPhrase(state)
+            MnemonicPhrase(state, copyMnemonicToClipboard)
             MnemonicDescription()
         }
         MnemonicButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
             openMnemonic = reviewMnemonic,
-            openSoulCreation = openSoulCreation
+            openSoulCreation = openSoulCreation,
+            state = state
         )
     }
 }
@@ -73,34 +78,51 @@ fun MnemonicPhraseScreen(
 fun MnemonicButtons(
     modifier: Modifier = Modifier,
     openMnemonic: () -> Unit,
-    openSoulCreation: () -> Unit
+    openSoulCreation: () -> Unit,
+    state: OnboardingMnemonicViewModel.State
 ) {
     Column(modifier.wrapContentHeight()) {
-        OnBoardingButtonPrimary(
-            text = stringResource(id = R.string.onboarding_mnemonic_show_key),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            onClick = {
-                openMnemonic.invoke()
-            }, size = ButtonSize.Large
-        )
-        OnBoardingButtonSecondary(
-            text = stringResource(id = R.string.onboarding_mnemonic_check_later),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    top = 14.dp,
-                    end = 16.dp,
-                    bottom = 56.dp
-                ),
-            onClick = {
-                openSoulCreation.invoke()
-            }, size = ButtonSize.Large
-        )
+        when (state) {
+            is OnboardingMnemonicViewModel.State.MnemonicOpened -> {
+                OnBoardingButtonPrimary(
+                    text = stringResource(id = R.string.onboarding_mnemonic_key_saved),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 56.dp),
+                    onClick = {
+                        openSoulCreation.invoke()
+                    }, size = ButtonSize.Large
+                )
+            }
+            else -> {
+                OnBoardingButtonPrimary(
+                    text = stringResource(id = R.string.onboarding_mnemonic_show_key),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onClick = {
+                        openMnemonic.invoke()
+                    }, size = ButtonSize.Large
+                )
+                OnBoardingButtonSecondary(
+                    text = stringResource(id = R.string.onboarding_mnemonic_check_later),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 16.dp,
+                            top = 14.dp,
+                            end = 16.dp,
+                            bottom = 56.dp
+                        ),
+                    onClick = {
+                        openSoulCreation.invoke()
+                    }, size = ButtonSize.Large
+                )
+            }
+        }
     }
 }
+
 
 @Composable
 fun MnemonicTitle() {
@@ -121,34 +143,54 @@ fun MnemonicTitle() {
 }
 
 @Composable
-fun MnemonicPhrase(state: OnboardingMnemonicViewModel.State) {
+fun MnemonicPhrase(
+    state: OnboardingMnemonicViewModel.State,
+    copyMnemonicToClipboard: (String) -> Unit
+) {
     when (state) {
         is OnboardingMnemonicViewModel.State.Idle -> {}
-        is OnboardingMnemonicViewModel.State.Mnemonic -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-                    .background(color = ColorBackgroundField, shape = RoundedCornerShape(24.dp))
+        else -> {
+            Column(
+                Modifier
                     .wrapContentHeight()
+                    .fillMaxWidth()
             ) {
-                MnemonicPhraseWidget(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .conditional(
-                            !state.visible, ifTrue = {
-                                blur(15.dp)
-                            }
-                        )
-                        .padding(
-                            start = 16.dp,
-                            top = 16.dp,
-                            end = 16.dp,
-                            bottom = 16.dp
-                        ),
-                    mnemonic = state.mnemonicPhrase
-                )
+                        .padding(bottom = 16.dp)
+                        .background(color = ColorBackgroundField, shape = RoundedCornerShape(24.dp))
+                        .wrapContentHeight()
+                ) {
+                    MnemonicPhraseWidget(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .conditional(
+                                condition = state is OnboardingMnemonicViewModel.State.MnemonicOpened,
+                                positive = { blur(15.dp) }
+                            )
+                            .padding(
+                                start = 16.dp,
+                                top = 16.dp,
+                                end = 16.dp,
+                                bottom = 16.dp
+                            ),
+                        mnemonic = state.mnemonicPhrase
+                    )
+                }
+                if (state is OnboardingMnemonicViewModel.State.MnemonicOpened) {
+                    OnBoardingButtonSecondary(
+                        text = stringResource(id = R.string.onboarding_mnemonic_copy),
+                        modifier = Modifier
+                            .align(CenterHorizontally)
+                            .padding(bottom = 12.dp),
+                        onClick = {
+                            copyMnemonicToClipboard.invoke(state.mnemonicPhrase)
+                        }, size = ButtonSize.SmallSecondary
+                    )
+                }
             }
+
         }
     }
 }

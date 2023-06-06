@@ -16,9 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,7 +33,7 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingSoulCreationViewModel
 @Composable
 fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel) {
     CreateSoulScreen {
-        viewModel.setAccountName(it)
+        viewModel.setAccountAndSpaceName(it)
     }
 }
 
@@ -44,14 +41,13 @@ fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel) {
 private fun CreateSoulScreen(
     onCreateSoulClicked: (String) -> Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
         val text = remember { mutableStateOf("") }
         CreateSoulTitle(modifier = Modifier.padding(bottom = 16.dp))
-        CreateSoulInput(text, focusRequester)
+        CreateSoulInput(text)
         Spacer(modifier = Modifier.height(9.dp))
         CreateSoulDescription()
         Spacer(modifier = Modifier.height(18.dp))
@@ -79,14 +75,10 @@ fun CreateSoulTitle(modifier: Modifier) {
 }
 
 @Composable
-fun CreateSoulInput(text: MutableState<String>, focusRequester: FocusRequester) {
+fun CreateSoulInput(text: MutableState<String>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester)
-            .onGloballyPositioned {
-                focusRequester.requestFocus()
-            }
             .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {

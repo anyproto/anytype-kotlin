@@ -125,15 +125,11 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                             indent = 0,
                             text = "Start Foobar End",
                             mode = BlockView.Mode.EDIT,
-                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = block.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = block.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     )
                 )
@@ -292,15 +288,11 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                     indent = 0,
                     text = "Start Link Object Mention End",
                     mode = BlockView.Mode.EDIT,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -467,15 +459,11 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                     indent = 0,
                     text = "Start Link Object Mention End",
                     mode = BlockView.Mode.EDIT,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )

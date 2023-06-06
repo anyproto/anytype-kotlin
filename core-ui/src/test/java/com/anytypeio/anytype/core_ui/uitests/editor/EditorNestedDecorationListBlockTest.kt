@@ -56,7 +56,6 @@ class EditorNestedDecorationListBlockTest {
      */
     @Test
     fun `numbered should have two backgrounds with indentation - when current block of another block`() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) return
         scenario.onFragment {
 
             // SETUP
@@ -108,7 +107,6 @@ class EditorNestedDecorationListBlockTest {
      */
     @Test
     fun `bulleted should have two backgrounds with indentation - when current block of another block`() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) return
         scenario.onFragment {
 
             // SETUP
@@ -160,7 +158,6 @@ class EditorNestedDecorationListBlockTest {
      */
     @Test
     fun `checkbox should have two backgrounds with indentation - when current block of another block`() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) return
         scenario.onFragment {
 
             // SETUP
@@ -212,7 +209,6 @@ class EditorNestedDecorationListBlockTest {
      */
     @Test
     fun `toggle should have two backgrounds with indentation - when current block of another block`() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) return
         scenario.onFragment {
 
             // SETUP

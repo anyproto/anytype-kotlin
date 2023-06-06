@@ -54,46 +54,30 @@ sealed class RelationBlockViewHolder(
         applySelection(item)
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     fun indent(item: BlockView.Indentable, view: View) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            val indent = dimen(R.dimen.indent) * item.indent
-            view.updatePadding(left = indent)
-        }
-    }
-
-    private fun applyDefaultOffsets(root: View) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                bottomMargin = dimen(R.dimen.dp_2)
-            }
-        }
+        // Do nothing
     }
 
     fun applyContentDecorations(
         root: View,
         decorations: List<BlockView.Decoration>
     ) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            if (decorations.isEmpty() || (decorations.size == 1 && decorations[0].style == BlockView.Decoration.Style.None)) {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
-                    bottomMargin = dimen(R.dimen.dp_2)
-                }
+        if (decorations.isEmpty() || (decorations.size == 1 && decorations[0].style == BlockView.Decoration.Style.None)) {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                bottomMargin = dimen(R.dimen.dp_2)
             }
-            decoratableContainer.decorate(decorations = decorations) { rect ->
-                content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                }
-                selected.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                }
+        }
+        decoratableContainer.decorate(decorations = decorations) { rect ->
+            content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom
+            }
+            selected.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom
             }
         }
     }
@@ -132,10 +116,6 @@ sealed class RelationBlockViewHolder(
     }
 
     abstract fun applyRelationValue(item: ObjectRelationView)
-
-    init {
-        applyDefaultOffsets(itemView)
-    }
 
     class Placeholder(binding: ItemBlockRelationPlaceholderBinding) :
         RelationBlockViewHolder(binding.root) {

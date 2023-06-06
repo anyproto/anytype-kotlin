@@ -16,9 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.layout.onGloballyPositioned
+
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,9 +32,7 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 import com.anytypeio.anytype.ui.onboarding.OnboardingInviteCodeViewModel
 
 @Composable
-fun InviteCodeScreenWrapper(
-    viewModel: OnboardingInviteCodeViewModel,
-) {
+fun InviteCodeScreenWrapper(viewModel: OnboardingInviteCodeViewModel) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     InviteCodeScreen(
         state = state,
@@ -51,8 +47,6 @@ fun InviteCodeScreen(
     state: OnboardingInviteCodeViewModel.InviteCodeViewState,
     onInviteCodeEntered: (String) -> Unit,
 ) {
-    val focusRequester = remember { FocusRequester() }
-
     when (state) {
         is OnboardingInviteCodeViewModel.InviteCodeViewState.WalletCreating -> {}
         else -> {
@@ -62,7 +56,7 @@ fun InviteCodeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 InviteCodeTitle(modifier = Modifier.padding(bottom = 16.dp))
-                InviteCodeInput(inviteCode, focusRequester)
+                InviteCodeInput(inviteCode)
                 Spacer(modifier = Modifier.height(9.dp))
                 InviteCodeDescription()
                 Spacer(modifier = Modifier.height(18.dp))
@@ -95,14 +89,10 @@ fun InviteCodeTitle(modifier: Modifier) {
 }
 
 @Composable
-fun InviteCodeInput(text: MutableState<String>, focusRequester: FocusRequester) {
+fun InviteCodeInput(text: MutableState<String>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester)
-            .onGloballyPositioned {
-                focusRequester.requestFocus()
-            }
             .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {

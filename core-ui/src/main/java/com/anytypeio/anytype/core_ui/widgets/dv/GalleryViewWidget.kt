@@ -236,10 +236,11 @@ class GalleryViewWidget @JvmOverloads constructor(
 
             private fun setupHolderHeight(item: Viewer.GalleryView.Item.Cover) {
                 itemView.updateLayoutParams<GridLayoutManager.LayoutParams> {
-                    height = if (item.isLargeSize) {
-                        GridLayoutManager.LayoutParams.WRAP_CONTENT
+                    if (item.isLargeSize) {
+                        height = GridLayoutManager.LayoutParams.WRAP_CONTENT
+                        binding.rootConstraint.setPadding(0,0,0, dimen(R.dimen.dp_16))
                     } else {
-                        calculateHolderHeight(
+                        height = calculateHolderHeight(
                             withCover = true,
                             relationsSize = item.relations.size
                         )

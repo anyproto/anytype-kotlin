@@ -23,13 +23,11 @@ fun StubParagraphView(
     searchFields: List<BlockView.Searchable.Field> = emptyList(),
     backgroundColor: ThemeColor = ThemeColor.DEFAULT,
     mode: BlockView.Mode = BlockView.Mode.EDIT,
-    decorations: List<BlockView.Decoration> = if (BuildConfig.NESTED_DECORATION_ENABLED)
-        listOf(
-            BlockView.Decoration(
-                background = backgroundColor
-            )
-        ) else
-        emptyList(),
+    decorations: List<BlockView.Decoration> = listOf(
+        BlockView.Decoration(
+            background = backgroundColor
+        )
+    ),
     ghostSelection: IntRange? = null,
     cursor: Int? = null,
     alignment: Alignment? = null
@@ -223,15 +221,12 @@ fun StubBookmarkPlaceholderView(
     indent: Indent = MockDataFactory.randomInt(),
     isPreviousBlockMedia: Boolean = false,
     background: ThemeColor = ThemeColor.DEFAULT,
-    decorations: List<BlockView.Decoration> = if (BuildConfig.NESTED_DECORATION_ENABLED)
-        listOf(
-            BlockView.Decoration(
-                style = BlockView.Decoration.Style.Card,
-                background = background
-            )
+    decorations: List<BlockView.Decoration> = listOf(
+        BlockView.Decoration(
+            style = BlockView.Decoration.Style.Card,
+            background = background
         )
-    else
-        emptyList()
+    )
 ): BlockView.MediaPlaceholder.Bookmark = BlockView.MediaPlaceholder.Bookmark(
     id = id,
     indent = indent,
@@ -245,15 +240,12 @@ fun StubPicturePlaceholderView(
     indent: Indent = MockDataFactory.randomInt(),
     isPreviousBlockMedia: Boolean = false,
     background: ThemeColor = ThemeColor.DEFAULT,
-    decorations: List<BlockView.Decoration> = if (BuildConfig.NESTED_DECORATION_ENABLED)
-        listOf(
-            BlockView.Decoration(
-                style = BlockView.Decoration.Style.Card,
-                background = background
-            )
+    decorations: List<BlockView.Decoration> = listOf(
+        BlockView.Decoration(
+            style = BlockView.Decoration.Style.Card,
+            background = background
         )
-    else
-        emptyList()
+    )
 ): BlockView.MediaPlaceholder.Picture = BlockView.MediaPlaceholder.Picture(
     id = id,
     indent = indent,
@@ -267,15 +259,12 @@ fun StubVideoPlaceholderView(
     indent: Indent = MockDataFactory.randomInt(),
     isPreviousBlockMedia: Boolean = false,
     background: ThemeColor = ThemeColor.DEFAULT,
-    decorations: List<BlockView.Decoration> = if (BuildConfig.NESTED_DECORATION_ENABLED)
-        listOf(
-            BlockView.Decoration(
-                style = BlockView.Decoration.Style.Card,
-                background = background
-            )
+    decorations: List<BlockView.Decoration> = listOf(
+        BlockView.Decoration(
+            style = BlockView.Decoration.Style.Card,
+            background = background
         )
-    else
-        emptyList()
+    )
 ): BlockView.MediaPlaceholder.Video = BlockView.MediaPlaceholder.Video(
     id = id,
     indent = indent,
@@ -289,15 +278,12 @@ fun StubFilePlaceholderView(
     indent: Indent = MockDataFactory.randomInt(),
     isPreviousBlockMedia: Boolean = false,
     background: ThemeColor = ThemeColor.DEFAULT,
-    decorations: List<BlockView.Decoration> = if (BuildConfig.NESTED_DECORATION_ENABLED)
-        listOf(
-            BlockView.Decoration(
-                style = BlockView.Decoration.Style.Card,
-                background = background
-            )
+    decorations: List<BlockView.Decoration> = listOf(
+        BlockView.Decoration(
+            style = BlockView.Decoration.Style.Card,
+            background = background
         )
-    else
-        emptyList()
+    )
 ): BlockView.MediaPlaceholder.File = BlockView.MediaPlaceholder.File(
     id = id,
     indent = indent,

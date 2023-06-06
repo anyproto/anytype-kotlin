@@ -63,23 +63,21 @@ sealed class RelationBlockViewHolder(
         root: View,
         decorations: List<BlockView.Decoration>
     ) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            if (decorations.isEmpty() || (decorations.size == 1 && decorations[0].style == BlockView.Decoration.Style.None)) {
-                root.updateLayoutParams<RecyclerView.LayoutParams> {
-                    bottomMargin = dimen(R.dimen.dp_2)
-                }
+        if (decorations.isEmpty() || (decorations.size == 1 && decorations[0].style == BlockView.Decoration.Style.None)) {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                bottomMargin = dimen(R.dimen.dp_2)
             }
-            decoratableContainer.decorate(decorations = decorations) { rect ->
-                content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                }
-                selected.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                }
+        }
+        decoratableContainer.decorate(decorations = decorations) { rect ->
+            content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom
+            }
+            selected.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom
             }
         }
     }

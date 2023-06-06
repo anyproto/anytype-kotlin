@@ -70,12 +70,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            assertEquals(
-                actual = holder.content.paddingLeft,
-                expected = padding + (indent.toInt() * 2)
-            )
-        }
+        // TODO check apply decorations
     }
 
     @Test
@@ -125,12 +120,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            assertEquals(
-                actual = holder.content.paddingLeft,
-                expected = padding + (indent.toInt() * 2)
-            )
-        }
+        // TODO check apply decorations
     }
 
     @Test
@@ -180,12 +170,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            assertEquals(
-                actual = holder.content.paddingLeft,
-                expected = padding + (indent.toInt() * 2)
-            )
-        }
+        // TODO check apply decorations
     }
 
     @Test
@@ -235,12 +220,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            assertEquals(
-                actual = holder.content.paddingLeft,
-                expected = padding + (indent.toInt() * 2)
-            )
-        }
+        // TODO check apply decorations
     }
 
     @Test
@@ -289,12 +269,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            assertEquals(
-                actual = holder.checkbox.paddingLeft,
-                expected = indent.toInt() * 2
-            )
-        }
+        // TODO check apply decorations
     }
 
     @Test
@@ -344,11 +319,6 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
 
         adapter.onBindViewHolder(holder, 0, payloads = payload)
 
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            assertEquals(
-                actual = holder.number.marginLeft,
-                expected = indent.toInt() * 2
-            )
-        }
+        // TODO check apply decorations
     }
 }

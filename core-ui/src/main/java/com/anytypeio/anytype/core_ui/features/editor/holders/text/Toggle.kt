@@ -89,10 +89,9 @@ class Toggle(
     override fun getMentionUncheckedIcon(): Drawable? = mentionUncheckedIcon
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            line.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
-        }
+        // Do nothing.
     }
 
     override fun select(item: BlockView.Selectable) {

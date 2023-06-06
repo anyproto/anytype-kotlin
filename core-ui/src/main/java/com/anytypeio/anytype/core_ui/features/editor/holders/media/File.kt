@@ -127,9 +127,6 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
             }
-            if (payload.isBackgroundColorChanged && !BuildConfig.NESTED_DECORATION_ENABLED) {
-                applyBackground(item.background)
-            }
         }
     }
 

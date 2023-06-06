@@ -69,12 +69,9 @@ class LinkToObjectArchive(
         itemView.setOnClickListener { clicked(ListenerType.LinkToObjectArchived(item.id)) }
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = item.indent * dimen(R.dimen.indent)
-            }
-        }
+        // Do nothing.
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {

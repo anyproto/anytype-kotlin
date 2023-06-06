@@ -89,14 +89,12 @@ class Checkbox(
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations = decorations) { rect ->
-                binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.default_indent) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                    // TODO handle top and bottom offsets
-                }
+        decoratableContainer.decorate(decorations = decorations) { rect ->
+            binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.default_indent) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom
+                // TODO handle top and bottom offsets
             }
         }
     }

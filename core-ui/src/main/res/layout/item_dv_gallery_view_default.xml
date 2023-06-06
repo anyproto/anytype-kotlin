@@ -15,7 +15,7 @@
         <FrameLayout
             android:id="@+id/cardIconContainer"
             android:layout_width="32dp"
-            android:layout_height="30dp"
+            android:layout_height="34dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible">
@@ -36,17 +36,18 @@
 
         </FrameLayout>
 
-        <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewTitleDescriptionWidget
-            android:id="@+id/titleDescContainer"
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/GalleryViewTitleWidgetStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_12"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginEnd="@dimen/dp_16"
-            app:layout_constraintBottom_toTopOf="@+id/contentContainer"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Virgil Abloh’s Lecture at Harvard’s School of Design AAAAA" />
 
         <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewContentWidget
             android:id="@+id/contentContainer"
@@ -58,7 +59,7 @@
             app:itemIntervalMargin="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleDescContainer"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             app:marginAfterIcon="4dp"
             app:marginAfterText="6dp" />
 

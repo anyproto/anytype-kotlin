@@ -320,4 +320,10 @@
     <dimen name="default_dv_gallery_title_height">38dp</dimen>
     <dimen name="default_dv_gallery_title_desc_height">57dp</dimen>
 
+    <!-- DataView, Gallery items-->
+    <dimen name="dv_gallery_cover_height">102dp</dimen>
+    <dimen name="dv_gallery_title_min_height">40dp</dimen>
+    <dimen name="dv_gallery_relation_height">16dp</dimen>
+    <dimen name="dv_gallery_relation_margin_top">4dp</dimen>
+
 </resources>

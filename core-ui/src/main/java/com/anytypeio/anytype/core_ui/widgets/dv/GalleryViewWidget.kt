@@ -229,7 +229,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                     cover.bind(item = item)
                 }
                 if (payload.contains(CONTENT_CHANGED)) {
-                    if (!item.isLargeSize) setupHolderHeight(item = item)
+                    setupHolderHeight(item = item)
                     applyContentItems(item)
                 }
             }

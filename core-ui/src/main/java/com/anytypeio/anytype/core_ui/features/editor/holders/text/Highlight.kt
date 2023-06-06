@@ -15,9 +15,12 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -73,7 +76,13 @@ class Highlight(
     }
 
     override fun select(item: BlockView.Selectable) {
-        container.isSelected = item.isSelected
+        if (item.isSelected) {
+            binding.selected.isSelected = true
+            binding.selected.visible()
+        } else {
+            binding.selected.isSelected = false
+            binding.selected.gone()
+        }
     }
 
     override fun indentize(item: BlockView.Indentable) {
@@ -115,6 +124,13 @@ class Highlight(
                         }
                     }
                 }
+            }
+            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+                content = binding.highlightBlockContentContainer,
+                res = itemView.resources
+            )
+            binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginEnd = dimen(R.dimen.dp_8)
             }
         }
     }

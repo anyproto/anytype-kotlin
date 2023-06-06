@@ -95,24 +95,14 @@ class Callout(
         binding.selectionView.isSelected = item.isSelected
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.calloutCardContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = indentOffset + (item.indent * indentOffset)
-                marginEnd = indentOffset
-            }
-        }
+        // Do nothing.
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun setBackgroundColor(background: ThemeColor) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.calloutCardContainer.setBlockBackgroundTintColor(
-                color = background,
-                default = itemView.resources.veryLight(
-                    color = ThemeColor.GREY
-                )
-            )
-        }
+        // Do nothing.
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize
@@ -122,33 +112,31 @@ class Callout(
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            val indent = decorations.lastIndex
-            val last = decorations.last()
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.calloutCardContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = if (indent == 0) rect.left + indentOffset else rect.left
-                    marginEnd = rect.right
-                    bottomMargin = rect.bottom
-                }
+        val indent = decorations.lastIndex
+        val last = decorations.last()
+        decoratableContainer.decorate(decorations) { rect ->
+            binding.calloutCardContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = if (indent == 0) rect.left + indentOffset else rect.left
+                marginEnd = rect.right
+                bottomMargin = rect.bottom
             }
-            when (last.style) {
-                is BlockView.Decoration.Style.Callout.Start -> {
-                    binding.calloutCardContainer.setBackgroundResource(R.drawable.rect_callout_start)
-                }
-                is BlockView.Decoration.Style.Callout.Full -> {
-                    binding.calloutCardContainer.setBackgroundResource(R.drawable.rect_callout_full)
-                }
-                else -> {}
-            }
-            binding.calloutCardContainer.setBlockBackgroundTintColor(
-                color = last.background,
-                default = itemView.resources.getColor(R.color.palette_very_light_grey, null)
-            )
-            binding.selectionView.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.calloutCardContainer,
-                res = itemView.resources
-            )
         }
+        when (last.style) {
+            is BlockView.Decoration.Style.Callout.Start -> {
+                binding.calloutCardContainer.setBackgroundResource(R.drawable.rect_callout_start)
+            }
+            is BlockView.Decoration.Style.Callout.Full -> {
+                binding.calloutCardContainer.setBackgroundResource(R.drawable.rect_callout_full)
+            }
+            else -> {}
+        }
+        binding.calloutCardContainer.setBlockBackgroundTintColor(
+            color = last.background,
+            default = itemView.resources.getColor(R.color.palette_very_light_grey, null)
+        )
+        binding.selectionView.applySelectorOffset<FrameLayout.LayoutParams>(
+            content = binding.calloutCardContainer,
+            res = itemView.resources
+        )
     }
 }

@@ -50,7 +50,7 @@ fun buildNestedDecorationData(
         style = DecorationData.Style.None,
         background = block.parseThemeBackgroundColor()
     )
-): NestedDecorationData = if (BuildConfig.NESTED_DECORATION_ENABLED) buildList {
+): NestedDecorationData = buildList {
     // Normalizing parent scheme
     parentScheme.forEach { holder ->
         when (val style = holder.style) {
@@ -87,7 +87,7 @@ fun buildNestedDecorationData(
     }
     // Adding current style
     add(currentDecoration)
-} else emptyList()
+}
 
 fun NestedDecorationData.toBlockViewDecoration(block: Block): List<BlockView.Decoration> {
     return map { holder ->

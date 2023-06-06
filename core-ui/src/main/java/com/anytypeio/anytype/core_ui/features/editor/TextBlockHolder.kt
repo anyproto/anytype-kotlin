@@ -127,15 +127,9 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
-    /**
-     * If nested decoration is enabled, [DecoratableViewHolder] should draw background for this block.
-     * @see [DecoratableViewHolder]
-     * @see [EditorDecorationContainer]
-     */
+    @Deprecated("Pre-nested-styling legacy.")
     fun setBackgroundColor(background: ThemeColor = ThemeColor.DEFAULT) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.setBlockBackgroundColor(background)
-        }
+        // Do nothing.
     }
 
     fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit, textColor: Int) {

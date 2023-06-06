@@ -48,20 +48,6 @@ class Paragraph(
             mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_16)
             mentionInitialsSize = resources.getDimension(R.dimen.mention_span_initials_size_default)
         }
-        applyDefaultOffsets()
-    }
-
-    private fun applyDefaultOffsets() {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.root.updatePadding(
-                left = dimen(R.dimen.default_document_item_padding_start),
-                right = dimen(R.dimen.default_document_item_padding_end)
-            )
-            binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
-                topMargin = dimen(R.dimen.default_document_item_margin_top)
-                bottomMargin = dimen(R.dimen.default_document_item_margin_bottom)
-            }
-        }
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize
@@ -70,28 +56,19 @@ class Paragraph(
     override fun getMentionUncheckedIcon(): Drawable? = mentionUncheckedIcon
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
-    /**
-     * Basic indentation is skipped if [BuildConfig.NESTED_DECORATION_ENABLED]
-     * @see applyDecorations method.
-     */
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            content.updatePadding(
-                left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
-            )
-        }
+        // Do nothing.
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(
-                decorations = decorations
-            ) { rect ->
-                content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8) + rect.right
-                    bottomMargin = rect.bottom
-                }
+        decoratableContainer.decorate(
+            decorations = decorations
+        ) { rect ->
+            content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom
             }
         }
     }

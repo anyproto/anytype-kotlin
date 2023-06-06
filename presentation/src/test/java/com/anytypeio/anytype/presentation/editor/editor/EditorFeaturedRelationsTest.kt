@@ -172,15 +172,11 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 text = block.content<Block.Content.Text>().text,
                 alignment = block.content<Block.Content.Text>().align?.toView(),
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = block.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = block.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -281,15 +277,11 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
 
@@ -390,15 +382,11 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
 
@@ -511,15 +499,11 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
 
@@ -651,15 +635,11 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
 
@@ -773,15 +753,11 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
                     number = 1,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = block.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
 
@@ -901,15 +877,11 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 text = block.content<Block.Content.Text>().text,
                 alignment = block.content<Block.Content.Text>().align?.toView(),
                 number = 1,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = block.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = block.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 

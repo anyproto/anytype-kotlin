@@ -232,15 +232,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             indent = 0,
                             text = "page about Avant-Garde Jazz  music",
                             mode = BlockView.Mode.EDIT,
-                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = a.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = a.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     )
                 )
@@ -400,15 +396,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             indent = 0,
                             text = "page about Jazz  music",
                             mode = BlockView.Mode.EDIT,
-                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = a.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = a.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     )
                 )
@@ -568,15 +560,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             indent = 0,
                             text = "page about Untitled  music",
                             mode = BlockView.Mode.EDIT,
-                            decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                                listOf(
-                                    BlockView.Decoration(
-                                        background = a.parseThemeBackgroundColor()
-                                    )
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = a.parseThemeBackgroundColor()
                                 )
-                            } else {
-                                emptyList()
-                            }
+                            )
                         )
                     )
                 )
@@ -937,15 +925,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     indent = 0,
                     text = "Start Foob end",
                     mode = BlockView.Mode.EDIT,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = a.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = a.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )
@@ -1084,15 +1068,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     indent = 0,
                     text = "Start Untitled end",
                     mode = BlockView.Mode.EDIT,
-                    decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                        listOf(
-                            BlockView.Decoration(
-                                background = a.parseThemeBackgroundColor()
-                            )
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = a.parseThemeBackgroundColor()
                         )
-                    } else {
-                        emptyList()
-                    }
+                    )
                 )
             )
         )

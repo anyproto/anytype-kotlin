@@ -8,7 +8,6 @@ android {
 
     defaultConfig {
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
-        buildConfigField "boolean", "NESTED_DECORATION_ENABLED", "true"
     }
 
     composeOptions {

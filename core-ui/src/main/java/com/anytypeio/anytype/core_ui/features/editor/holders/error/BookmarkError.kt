@@ -37,17 +37,9 @@ class BookmarkError(
         }
     }
 
+    @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
-        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.indentize(
-                indent = item.indent,
-                defIndent = dimen(R.dimen.indent),
-                margin = 0
-            )
-            binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.default_indent) * item.indent
-            }
-        }
+        // Do nothing.
     }
 
     override fun select(isSelected: Boolean) {
@@ -56,11 +48,9 @@ class BookmarkError(
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-                content = binding.card,
-                res = itemView.resources
-            )
-        }
+        binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+            content = binding.card,
+            res = itemView.resources
+        )
     }
 }

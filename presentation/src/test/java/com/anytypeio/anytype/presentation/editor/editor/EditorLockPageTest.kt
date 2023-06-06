@@ -99,15 +99,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 id = child.id,
                 text = child.content<TXT>().text,
                 mode = BlockView.Mode.EDIT,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = child.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = child.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -168,15 +164,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 id = child.id,
                 text = child.content<TXT>().text,
                 mode = BlockView.Mode.EDIT,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = child.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = child.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -237,15 +229,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 id = child.id,
                 text = child.content<TXT>().text,
                 mode = BlockView.Mode.READ,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = child.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = child.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -309,15 +297,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.LinkToObject.Default.Text(
                 id = link.id,
                 icon = ObjectIcon.None,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = link.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = link.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -424,15 +408,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     )
                 ),
                 mode = BlockView.Mode.READ,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = paragraph.parseThemeBackgroundColor()
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = paragraph.parseThemeBackgroundColor()
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -531,16 +511,12 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 title = bookmarkTitle,
                 mode = BlockView.Mode.READ,
                 isPreviousBlockMedia = false,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = bookmark.parseThemeBackgroundColor(),
-                            style = BlockView.Decoration.Style.Card
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = bookmark.parseThemeBackgroundColor(),
+                        style = BlockView.Decoration.Style.Card
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -624,16 +600,12 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 name = null,
                 size = null,
                 url = builder.file(file.content<Block.Content.File>().hash),
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.None
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT,
+                        style = BlockView.Decoration.Style.None
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 
@@ -718,16 +690,12 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 size = null,
                 url = builder.image(picture.content<Block.Content.File>().hash),
                 indent = 0,
-                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    listOf(
-                        BlockView.Decoration(
-                            background = ThemeColor.DEFAULT,
-                            style = BlockView.Decoration.Style.Card
-                        )
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = ThemeColor.DEFAULT,
+                        style = BlockView.Decoration.Style.Card
                     )
-                } else {
-                    emptyList()
-                }
+                )
             )
         )
 

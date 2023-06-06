@@ -18,10 +18,6 @@ class DividerLine(
     override val decoratableContainer = binding.decorationContainer
     override val container: View = binding.container
 
-    init {
-        applyDefaultOffsets()
-    }
-
     fun bind(item: BlockView.DividerLine, clicked: (ListenerType) -> Unit) {
         super.bind(
             id = item.id,
@@ -33,14 +29,12 @@ class DividerLine(
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                val defaultIndentOffset = dimen(R.dimen.default_indent)
-                container.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = rect.left + defaultIndentOffset
-                    marginEnd = rect.right + defaultIndentOffset
-                    bottomMargin = rect.bottom + dimen(R.dimen.divider_extra_space_bottom)
-                }
+        decoratableContainer.decorate(decorations) { rect ->
+            val defaultIndentOffset = dimen(R.dimen.default_indent)
+            container.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = rect.left + defaultIndentOffset
+                marginEnd = rect.right + defaultIndentOffset
+                bottomMargin = rect.bottom + dimen(R.dimen.divider_extra_space_bottom)
             }
         }
     }

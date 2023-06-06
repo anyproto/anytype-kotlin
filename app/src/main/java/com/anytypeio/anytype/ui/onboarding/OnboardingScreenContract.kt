@@ -12,5 +12,6 @@ enum class Page(val num: Int, val visible: Boolean) {
     INVITE_CODE(1, true),
     VOID(2, true),
     MNEMONIC(3, true),
-    SOUL_CREATION(4, true)
+    SOUL_CREATION(4, true),
+    SOUL_CREATION_ANIM(5, false)
 }

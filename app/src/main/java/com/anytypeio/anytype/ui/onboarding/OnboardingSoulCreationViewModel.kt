@@ -19,25 +19,36 @@ class OnboardingSoulCreationViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val accountId = configStorage.get().profile
+    private val workspaceId = configStorage.get().workspace
 
     private val _navigationFlow = MutableSharedFlow<Navigation>()
     val navigationFlow: SharedFlow<Navigation> = _navigationFlow
 
-    fun setAccountName(name: String) {
+    fun setAccountAndSpaceName(name: String) {
         viewModelScope.launch {
             setObjectDetails.execute(
-                SetObjectDetails.Params(
-                    ctx = accountId,
-                    details = mapOf(
-                        Relations.NAME to name
-                    )
-                )
+                SetObjectDetails.Params(ctx = accountId, details = mapOf(Relations.NAME to name))
             ).fold(
                 onFailure = {
                     Timber.e(it, "Error while updating object details")
                 },
                 onSuccess = {
-                   _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
+                    setWorkspaceName(name)
+                }
+            )
+        }
+    }
+
+    private fun setWorkspaceName(name: String) {
+        viewModelScope.launch {
+            setObjectDetails.execute(
+                SetObjectDetails.Params(ctx = workspaceId, details = mapOf(Relations.NAME to name))
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while updating object details")
+                },
+                onSuccess = {
+                    _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
                 }
             )
         }

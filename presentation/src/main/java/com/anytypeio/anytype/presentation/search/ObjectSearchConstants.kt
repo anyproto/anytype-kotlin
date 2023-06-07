@@ -73,7 +73,8 @@ object ObjectSearchConstants {
     val sortsSearchObjects = listOf(
         DVSort(
             relationKey = Relations.LAST_OPENED_DATE,
-            type = DVSortType.DESC
+            type = DVSortType.DESC,
+            includeTime = true
         )
     )
     //endregion
@@ -126,7 +127,8 @@ object ObjectSearchConstants {
     val sortLinkTo = listOf(
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
-            type = DVSortType.DESC
+            type = DVSortType.DESC,
+            includeTime = true
         )
     )
     //endregion
@@ -173,7 +175,8 @@ object ObjectSearchConstants {
     val sortMoveTo = listOf(
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
-            type = DVSortType.DESC
+            type = DVSortType.DESC,
+            includeTime = true
         )
     )
     //endregion
@@ -353,7 +356,8 @@ object ObjectSearchConstants {
     val sortTabRecent = listOf(
         DVSort(
             relationKey = Relations.LAST_OPENED_DATE,
-            type = DVSortType.DESC
+            type = DVSortType.DESC,
+            includeTime = true
         )
     )
 
@@ -393,7 +397,8 @@ object ObjectSearchConstants {
     val sortTabSets = listOf(
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
-            type = DVSortType.DESC
+            type = DVSortType.DESC,
+            includeTime = true
         )
     )
     //endregion
@@ -481,7 +486,8 @@ object ObjectSearchConstants {
     val sortBackLinkOrAddToObject = listOf(
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
-            type = DVSortType.DESC
+            type = DVSortType.DESC,
+            includeTime = true
         )
     )
     //endregion

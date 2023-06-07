@@ -47,6 +47,7 @@ object Relations {
     const val INTERNAL_FLAGS = "internalFlags"
     const val SIZE_IN_BYTES = "sizeInBytes"
     const val FILE_SYNC_STATUS = "fileSyncStatus"
+    const val CREATED_DATE = "createdDate"
 
     const val PAGE_COVER = "pageCover"
 

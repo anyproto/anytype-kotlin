@@ -179,16 +179,16 @@ fun Block.Content.Text.Mark.Type.getPropName() = when (this) {
 }
 
 fun Markup.Type.getPropName() = when (this) {
-    Markup.Type.ITALIC -> "italic"
-    Markup.Type.BOLD -> "bold"
-    Markup.Type.STRIKETHROUGH -> "strikethrough"
-    Markup.Type.TEXT_COLOR -> "color"
-    Markup.Type.BACKGROUND_COLOR -> "bgcolor"
-    Markup.Type.LINK -> "linkURL"
-    Markup.Type.KEYBOARD -> "code"
-    Markup.Type.MENTION -> "mention"
-    Markup.Type.OBJECT -> "linkObject"
-    Markup.Type.UNDERLINE -> "underline"
+    Markup.Type.ITALIC -> "Italic"
+    Markup.Type.BOLD -> "Bold"
+    Markup.Type.STRIKETHROUGH -> "Strike"
+    Markup.Type.TEXT_COLOR -> "Color"
+    Markup.Type.BACKGROUND_COLOR -> "BgColor"
+    Markup.Type.LINK -> "Link"
+    Markup.Type.KEYBOARD -> "Code"
+    Markup.Type.MENTION -> "Mention"
+    Markup.Type.OBJECT -> "Object"
+    Markup.Type.UNDERLINE -> "Underline"
 }
 
 fun DVViewerType.getPropName() = when (this) {

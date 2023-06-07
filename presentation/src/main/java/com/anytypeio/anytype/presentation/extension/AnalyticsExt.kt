@@ -714,6 +714,17 @@ fun CoroutineScope.sendAnalyticsSetTitleEvent(
     )
 }
 
+fun CoroutineScope.sendAnalyticsBlockMoveToEvent(
+    analytics: Analytics,
+    count: Int
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.blockMove,
+        props = Props(mapOf(EventsPropertiesKey.count to count))
+    )
+}
+
 fun CoroutineScope.sendAnalyticsSetDescriptionEvent(
     analytics: Analytics,
     context: String? = null

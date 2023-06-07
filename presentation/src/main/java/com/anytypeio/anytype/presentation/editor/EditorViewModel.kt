@@ -189,6 +189,7 @@ import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockMoveToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBookmarkOpen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
@@ -5198,6 +5199,7 @@ class EditorViewModel(
                                 isSet
                             )
                         )
+                        viewModelScope.sendAnalyticsBlockMoveToEvent(analytics, blocks.size)
                     }
                 )
             )

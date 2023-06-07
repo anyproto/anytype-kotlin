@@ -91,6 +91,7 @@ object EventsDictionary {
     const val blockReorder = "ReorderBlock"
     const val blockUpload = "UploadMedia"
     const val blockDownload = "DownloadMedia"
+    const val blockMove = "MoveBlock"
 
     // Relations
     const val relationAdd = "AddExistingRelation"

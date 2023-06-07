@@ -542,6 +542,18 @@ class BlockDataRepository(
         return remote.clearBlockContent(ctx, blockIds)
     }
 
+    override suspend fun setDataViewViewerPosition(
+        ctx: Id,
+        dv: Id,
+        view: Id,
+        pos: Int
+    ): Payload = remote.setDataViewViewerPosition(
+        ctx = ctx,
+        dv = dv,
+        view = view,
+        pos = pos
+    )
+
     override suspend fun blockDataViewSetSource(
         ctx: Id,
         block: Id,

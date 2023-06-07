@@ -283,20 +283,14 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockDataViewViewDelete(request: Rpc.BlockDataview.View.Delete.Request): Rpc.BlockDataview.View.Delete.Response
 
-//    @Throws(Exception::class)
-//    fun blockDataViewRecordCreate(request: Rpc.BlockDataviewRecord.Create.Request): Rpc.BlockDataviewRecord.Create.Response
-//
-//    @Throws(Exception::class)
-//    fun blockDataViewRecordUpdate(request: Rpc.BlockDataviewRecord.Update.Request): Rpc.BlockDataviewRecord.Update.Response
-//
-//    @Throws(Exception::class)
-//    fun blockDataViewRecordRelationOptionAdd(request: Rpc.BlockDataviewRecord.RelationOption.Add.Request): Rpc.BlockDataviewRecord.RelationOption.Add.Response
-
     @Throws(Exception::class)
     fun blockDataViewRelationAdd(request: Rpc.BlockDataview.Relation.Add.Request): Rpc.BlockDataview.Relation.Add.Response
 
     @Throws(Exception::class)
     fun blockDataViewRelationDelete(request: Rpc.BlockDataview.Relation.Delete.Request): Rpc.BlockDataview.Relation.Delete.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewViewSetPosition(request: Rpc.BlockDataview.View.SetPosition.Request): Rpc.BlockDataview.View.SetPosition.Response
 
     @Throws(Exception::class)
     fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response

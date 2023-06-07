@@ -18,7 +18,7 @@ import timber.log.Timber
 open class DefaultDragAndDropBehavior(
     private val onItemMoved: (Int, Int) -> Boolean,
     private val onItemDropped: (Int) -> Unit
-) : ItemTouchHelper.Callback() {
+) : Callback() {
 
     override fun isLongPressDragEnabled() = true
 

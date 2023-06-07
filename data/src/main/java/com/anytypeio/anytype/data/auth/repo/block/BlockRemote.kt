@@ -98,6 +98,13 @@ interface BlockRemote {
         limit: Int
     ): Payload
 
+    suspend fun setDataViewViewerPosition(
+        ctx: Id,
+        dv: Id,
+        view: Id,
+        pos: Int
+    ): Payload
+
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
     suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Id): Payload
 

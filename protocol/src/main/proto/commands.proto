@@ -324,7 +324,6 @@ message Rpc {
                         WALLET_RECOVER_NOT_PERFORMED = 106;
                         FAILED_TO_STOP_RUNNING_NODE = 107;
                         ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
-                        ACCOUNT_IS_DELETED = 109;
                     }
                 }
             }
@@ -390,6 +389,8 @@ message Rpc {
                         FAILED_TO_STOP_SEARCHER_NODE = 106;
                         FAILED_TO_RECOVER_PREDEFINED_BLOCKS = 107;
                         ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
+                        ACCOUNT_IS_DELETED = 109;
+                        FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION = 110;
 
                     }
                 }
@@ -3056,6 +3057,7 @@ message Rpc {
                 anytype.model.Block.Position position = 4;
                 anytype.model.Block.Content.Widget.Layout widgetLayout = 5;
                 int32 objectLimit = 6;
+                string viewId = 7;
             }
 
             message Response {
@@ -5179,6 +5181,31 @@ message Rpc {
                 }
             }
         }
+
+        message SetViewId {
+            message Request {
+                string contextId = 1;
+                string blockId = 2;
+                string viewId = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
     }
 
     message Debug {

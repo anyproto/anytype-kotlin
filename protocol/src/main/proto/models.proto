@@ -497,6 +497,7 @@ message Block {
         message Widget {
             Layout layout = 1;
             int32 limit = 2;
+            string viewId = 3;
 
             enum Layout {
                 Link = 0;

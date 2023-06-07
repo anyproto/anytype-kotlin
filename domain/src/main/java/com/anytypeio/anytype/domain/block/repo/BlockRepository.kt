@@ -274,6 +274,13 @@ interface BlockRepository {
     suspend fun objectToSet(ctx: Id, source: List<String>)
     suspend fun objectToCollection(ctx: Id)
 
+    suspend fun setDataViewViewerPosition(
+        ctx: Id,
+        dv: Id,
+        view: Id,
+        pos: Int
+    ): Payload
+
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
     suspend fun createRelation(

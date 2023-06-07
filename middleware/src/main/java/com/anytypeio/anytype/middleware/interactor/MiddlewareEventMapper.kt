@@ -188,6 +188,15 @@ fun anytype.Event.Message.toCoreModels(
             viewer = event.viewId
         )
     }
+    blockDataviewViewOrder != null -> {
+        val event = blockDataviewViewOrder
+        checkNotNull(event)
+        Event.Command.DataView.OrderViews(
+            context = context,
+            dv = event.id,
+            order = event.viewIds
+        )
+    }
     blockDataviewTargetObjectIdSet != null -> {
         val event = blockDataviewTargetObjectIdSet
         checkNotNull(event)

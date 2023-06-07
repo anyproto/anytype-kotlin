@@ -37,12 +37,19 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     private val manageViewerEditAdapter by lazy {
         ManageViewerEditAdapter(
             onDragListener = this,
-            onButtonMoreClicked = { vm.onViewerActionClicked(it) }
+            onButtonMoreClicked = vm::onViewerActionClicked,
+            onDeleteView = {
+                vm.onDeleteView(
+                    ctx = ctx,
+                    dv = dv,
+                    view = it
+                )
+            }
         )
     }
 
-    private val ctx: String get() = arg(CTX_KEY)
-    private val dataview: String get() = arg(DATA_VIEW_KEY)
+    private val ctx: Id get() = arg(CTX_KEY)
+    private val dv: Id get() = arg(DATA_VIEW_KEY)
 
     @Inject
     lateinit var factory: ManageViewerViewModel.Factory
@@ -53,7 +60,14 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     private val dndBehavior by lazy {
         DefaultDragAndDropBehavior(
             onItemMoved = { from, to -> manageViewerEditAdapter.onItemMove(from, to) },
-            onItemDropped = { vm.onOrderChanged(ctx, manageViewerEditAdapter.order) }
+            onItemDropped = { newPosition ->
+                vm.onOrderChanged(
+                    ctx = ctx,
+                    dv = dv,
+                    newOrder = manageViewerEditAdapter.order,
+                    newPosition = newPosition
+                )
+            }
         )
     }
 
@@ -89,8 +103,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
                         btnAddNewViewer.invisible()
                         dataViewViewerRecycler.apply {
                             adapter = manageViewerEditAdapter
-                            //ToDo temporary blocked, because of missing middleware command
-                            //dndItemTouchHelper.attachToRecyclerView(this)
+                            dndItemTouchHelper.attachToRecyclerView(this)
 
                         }
                     }
@@ -100,8 +113,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
                         btnAddNewViewer.visible()
                         dataViewViewerRecycler.apply {
                             adapter = manageViewerAdapter
-                            //ToDo temporary blocked, because of missing middleware command
-                            //dndItemTouchHelper.attachToRecyclerView(null)
+                            dndItemTouchHelper.attachToRecyclerView(null)
                         }
                     }
                 }
@@ -122,7 +134,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
             ManageViewerViewModel.Command.OpenCreateScreen -> {
                 val dialog = CreateDataViewViewerFragment.new(
                     ctx = ctx,
-                    target = dataview
+                    target = dv
                 )
                 dialog.show(parentFragmentManager, null)
             }
@@ -145,8 +157,8 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     )
 
     companion object {
-        fun new(ctx: Id, dataview: Id): ManageViewerFragment = ManageViewerFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, DATA_VIEW_KEY to dataview)
+        fun new(ctx: Id, dv: Id): ManageViewerFragment = ManageViewerFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, DATA_VIEW_KEY to dv)
         }
 
         const val CTX_KEY = "arg.manage-data-view-viewer.ctx"

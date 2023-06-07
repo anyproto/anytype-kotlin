@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
+import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -1535,5 +1536,17 @@ suspend fun Analytics.sendDeletionWarning() {
 suspend fun Analytics.sendScreenSettingsDeleteEvent() {
     sendEvent(
         eventName = EventsDictionary.screenSettingsDelete
+    )
+}
+
+suspend fun Analytics.sendChangeThemeEvent(theme: ThemeMode) {
+    val name = when (theme) {
+        ThemeMode.Light -> "light"
+        ThemeMode.Night -> "dark"
+        ThemeMode.System -> "system"
+    }
+    sendEvent(
+        eventName = EventsDictionary.changeTheme,
+        props = Props(map = mapOf("type" to name))
     )
 }

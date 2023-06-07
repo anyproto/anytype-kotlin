@@ -22,6 +22,7 @@ object EventsDictionary {
     const val keychainCopy = "KeychainCopy"
     const val defaultTypeChanged = "DefaultTypeChanged"
     const val fileOffloadSuccess = "FileOffload"
+    const val changeTheme = "ThemeSet"
 
     // Screen show events
     const val objectScreenShow = "ScreenObject"

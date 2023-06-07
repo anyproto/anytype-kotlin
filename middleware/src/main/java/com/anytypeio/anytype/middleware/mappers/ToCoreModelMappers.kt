@@ -584,7 +584,8 @@ fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {
 fun MDVSort.toCoreModels(): Block.Content.DataView.Sort = DVSort(
     id = id,
     relationKey = RelationKey,
-    type = type.toCoreModels()
+    type = type.toCoreModels(),
+    includeTime = includeTime
 )
 
 fun MDVSortType.toCoreModels(): DVSortType = when (this) {

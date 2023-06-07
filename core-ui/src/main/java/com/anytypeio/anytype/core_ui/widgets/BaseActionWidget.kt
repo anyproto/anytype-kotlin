@@ -26,6 +26,7 @@ abstract class BaseActionWidget<T> @JvmOverloads constructor(
 
     init {
         binding.blockActionRecycler.apply {
+            itemAnimator = null
             adapter = this@BaseActionWidget.adapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(

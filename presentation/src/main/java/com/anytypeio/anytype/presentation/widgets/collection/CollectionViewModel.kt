@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectAction
@@ -549,6 +550,9 @@ class CollectionViewModel(
     }
 
     private fun deleteFromBin(ids: List<Id>) {
+        launch {
+            analytics.sendDeletionWarning()
+        }
         launch {
             commands.emit(Command.ConfirmRemoveFromBin(ids.size))
         }

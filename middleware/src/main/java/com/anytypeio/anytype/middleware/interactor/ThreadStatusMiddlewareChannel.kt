@@ -30,6 +30,7 @@ class ThreadStatusMiddlewareChannel(
                 SyncStatus.Syncing -> SyncStatusEntity.SYNCING
                 SyncStatus.Synced -> SyncStatusEntity.SYNCED
                 SyncStatus.Failed -> SyncStatusEntity.FAILED
+                SyncStatus.IncompatibleVersion -> SyncStatusEntity.INCOMPATIBLE_VERSION
             }
         }
 }

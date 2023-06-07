@@ -5,5 +5,6 @@ enum class SyncStatus {
     OFFLINE,
     SYNCING,
     SYNCED,
-    FAILED
+    FAILED,
+    INCOMPATIBLE_VERSION
 }

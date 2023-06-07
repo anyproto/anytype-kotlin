@@ -1531,3 +1531,9 @@ suspend fun Analytics.sendDeletionWarning() {
         eventName = EventsDictionary.deletionWarningShow
     )
 }
+
+suspend fun Analytics.sendScreenSettingsDeleteEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenSettingsDelete
+    )
+}

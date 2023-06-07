@@ -48,6 +48,7 @@ object EventsDictionary {
     const val screenSettingsStorageManage = "ScreenSettingsStorageManager"
     const val screenSettingsStorageOffload = "ScreenFileOffloadWarning"
     const val settingsStorageOffload = "SettingsStorageOffload"
+    const val screenSettingsDelete = "ScreenSettingsDelete"
 
     // Object events
     const val objectListDelete = "RemoveCompletely"

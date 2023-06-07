@@ -83,7 +83,6 @@ class ObjectAppearanceSettingViewModel(
     fun onItemClicked(item: ObjectAppearanceMainSettingsView) {
         viewModelScope.launch {
             when (item) {
-                is Cover -> commands.emit(Command.CoverScreen)
                 is Icon -> commands.emit(Command.IconScreen)
                 is PreviewLayout -> commands.emit(Command.PreviewLayoutScreen)
                 is Relation.Description -> commands.emit(Command.DescriptionScreen)
@@ -116,6 +115,25 @@ class ObjectAppearanceSettingViewModel(
         }
     }
 
+    fun updateCoverAppearance(ctx: Id, blockId: Id, isCoverVisible: Boolean) {
+        val block = storage.document.get().find { it.id == blockId }
+        if (block != null && block.content is Link) {
+            val content = block.content as Link
+            val newContent = updateAppearance(isCoverVisible, content)
+            setLinkAppearance(ctx, blockId, newContent)
+        }
+    }
+
+    private fun updateAppearance(isCoverVisible: Boolean, oldContent: Link): Link {
+        val relations = oldContent.relations
+        val updatedRelations = if (isCoverVisible) {
+            relations + Relations.COVER
+        } else {
+            relations - Relations.COVER
+        }
+        return oldContent.copy(relations = updatedRelations)
+    }
+
     private fun setLinkAppearance(ctx: Id, blockId: Id, content: Link) {
         viewModelScope.launch {
             setLinkAppearance(
@@ -138,7 +156,6 @@ class ObjectAppearanceSettingViewModel(
 
     sealed class Command {
         object IconScreen : Command()
-        object CoverScreen : Command()
         object PreviewLayoutScreen : Command()
         object DescriptionScreen : Command()
     }

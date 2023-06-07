@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/coverName"
+        style="@style/TextView.UXStyle.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="12dp"
+        android:layout_weight="1.0"
+        android:ellipsize="end"
+        android:text="@string/cover"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/coverSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="0dp"
+        app:useMaterialThemeColors="false"
+        app:splitTrack="false"
+        app:thumbTint="@drawable/viewer_relation_switch_thumb"
+        app:trackTint="@drawable/viewer_relation_switch_track"/>
+
+</LinearLayout>

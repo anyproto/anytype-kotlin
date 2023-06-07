@@ -12,7 +12,7 @@ sealed interface ObjectAppearanceMainSettingsView {
     sealed interface List : ObjectAppearanceMainSettingsView
     data class PreviewLayout(val previewLayoutState: MenuItem.PreviewLayout) : List
     data class Icon(val icon: MenuItem.Icon) : List
-    data class Cover(val coverState: MenuItem.Cover) : List
+    data class Cover(val coverState: MenuItem.Cover): ObjectAppearanceMainSettingsView
 
     object FeaturedRelationsSection : ObjectAppearanceMainSettingsView
 

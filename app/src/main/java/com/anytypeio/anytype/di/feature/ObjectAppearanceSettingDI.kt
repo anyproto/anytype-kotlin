@@ -5,13 +5,11 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceSettingViewModel
-import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseCoverViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseDescriptionViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseIconViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChoosePreviewLayoutViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
-import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseCoverFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseDescriptionFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseIconFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChoosePreviewLayoutFragment
@@ -119,40 +117,6 @@ object ObjectAppearancePreviewLayoutModule {
     }
 }
 //endregion
-
-//region COVER
-@Subcomponent(modules = [ObjectAppearanceCoverModule::class])
-@PerModal
-interface ObjectAppearanceCoverSubComponent {
-
-    @Subcomponent.Builder
-    interface Builder {
-        fun module(module: ObjectAppearanceCoverModule): Builder
-        fun build(): ObjectAppearanceCoverSubComponent
-    }
-
-    fun inject(fragment: ObjectAppearanceChooseCoverFragment)
-}
-
-@Module
-object ObjectAppearanceCoverModule {
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideObjectAppearanceCoverViewModelFactory(
-        storage: Editor.Storage,
-        setLinkAppearance: SetLinkAppearance,
-        dispatcher: Dispatcher<Payload>
-    ): ObjectAppearanceChooseCoverViewModel.Factory {
-        return ObjectAppearanceChooseCoverViewModel.Factory(
-            storage = storage,
-            setLinkAppearance = setLinkAppearance,
-            dispatcher = dispatcher
-        )
-    }
-}
-//endregion
-
 
 @Subcomponent(modules = [ObjectAppearanceChooseDescriptionModule::class])
 @PerModal

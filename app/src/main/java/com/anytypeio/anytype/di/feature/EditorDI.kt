@@ -177,7 +177,6 @@ interface EditorSubComponent {
     fun objectAppearanceSettingComponent(): ObjectAppearanceSettingSubComponent.Builder
     fun objectAppearanceIconComponent(): ObjectAppearanceIconSubComponent.Builder
     fun objectAppearancePreviewLayoutComponent(): ObjectAppearancePreviewLayoutSubComponent.Builder
-    fun objectAppearanceCoverComponent(): ObjectAppearanceCoverSubComponent.Builder
     fun objectAppearanceChooseDescription(): ObjectAppearanceChooseDescriptionSubComponent.Builder
 
     fun setBlockTextValueComponent(): SetBlockTextValueSubComponent.Builder

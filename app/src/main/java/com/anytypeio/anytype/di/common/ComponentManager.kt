@@ -25,7 +25,6 @@ import com.anytypeio.anytype.di.feature.MainEntryModule
 import com.anytypeio.anytype.di.feature.ManageViewerModule
 import com.anytypeio.anytype.di.feature.ModifyViewerSortModule
 import com.anytypeio.anytype.di.feature.MoveToModule
-import com.anytypeio.anytype.di.feature.ObjectAppearanceCoverModule
 import com.anytypeio.anytype.di.feature.ObjectAppearanceIconModule
 import com.anytypeio.anytype.di.feature.ObjectAppearancePreviewLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectAppearanceSettingModule
@@ -295,14 +294,6 @@ class ComponentManager(
             .get(ctx)
             .objectAppearancePreviewLayoutComponent()
             .module(ObjectAppearancePreviewLayoutModule)
-            .build()
-    }
-
-    val objectAppearanceCoverComponent = DependentComponentMap { ctx ->
-        editorComponent
-            .get(ctx)
-            .objectAppearanceCoverComponent()
-            .module(ObjectAppearanceCoverModule)
             .build()
     }
 

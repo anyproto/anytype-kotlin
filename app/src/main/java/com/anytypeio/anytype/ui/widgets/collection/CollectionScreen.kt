@@ -545,21 +545,23 @@ fun CollectionScreen(vm: CollectionViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     uiState.fold(
-        onSuccess = { uiState ->
+        onSuccess = { state ->
             BottomSheetScaffold(
                 sheetElevation = 0.dp,
                 sheetBackgroundColor = Color.Transparent,
                 scaffoldState = bottomSheetScaffoldState,
-                sheetContent = { BlockWidget(localDensity, vm, uiState) },
+                sheetContent = { BlockWidget(localDensity, vm, state) },
                 sheetPeekHeight = 0.dp
             ) {
-                ScreenContent(vm, uiState)
+                ScreenContent(vm, state)
 
-                LaunchedEffect(uiState) {
+                LaunchedEffect(state) {
 
-                        if (uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                            coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() }
-                        } else if (!uiState.showWidget && bottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                        if (state.showWidget && bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                            coroutineScope.launch {
+                                bottomSheetScaffoldState.bottomSheetState.expand()
+                            }
+                        } else if (!state.showWidget && bottomSheetScaffoldState.bottomSheetState.isExpanded) {
                             coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
                         }
 
@@ -594,7 +596,7 @@ private fun BlockWidget(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .absolutePadding(16.dp, 0.dp, 16.dp, 48.dp),
+            .absolutePadding(16.dp, 0.dp, 16.dp, 0.dp),
         factory = { context ->
             CollectionActionWidget(context).apply {
                 layoutParams = LinearLayout.LayoutParams(

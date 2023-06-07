@@ -76,6 +76,7 @@ object EventsDictionary {
     const val objectSetDescription = "SetObjectDescription"
     const val objectOpenAs = "OpenAsObject "
     const val objectReload = "ReloadSourceData"
+    const val objectDuplicate = "DuplicateObject"
 
     // Blocks events
     const val blockCreate = "CreateBlock"

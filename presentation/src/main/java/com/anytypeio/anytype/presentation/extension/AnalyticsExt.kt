@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
@@ -402,6 +403,18 @@ fun CoroutineScope.sendAnalyticsMoveToBinEvent(
     sendEvent(
         analytics = analytics,
         eventName = objectMoveToBin
+    )
+}
+
+fun CoroutineScope.sendAnalyticsDuplicateEvent(
+    analytics: Analytics,
+    startTime: Long
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = objectDuplicate,
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }
 

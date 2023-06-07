@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects.menu
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToCollectionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsDuplicateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
@@ -292,6 +294,7 @@ abstract class ObjectMenuViewModelBase(
 
     fun proceedWithDuplication(ctx: Id) {
         Timber.d("proceedWithDuplication, ctx:[$ctx]")
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             duplicateObject(ctx).process(
                 failure = {
@@ -301,6 +304,10 @@ abstract class ObjectMenuViewModelBase(
                 success = {
                     _toasts.emit("Your object is duplicated")
                     delegator.delegate(Action.Duplicate(it))
+                    sendAnalyticsDuplicateEvent(
+                        analytics = analytics,
+                        startTime = startTime
+                    )
                 }
             )
         }

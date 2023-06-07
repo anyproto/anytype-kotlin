@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.sets
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.AbstractAdapter
@@ -35,14 +36,9 @@ class ManageViewerEditAdapter(
             false
         )
     ).apply {
-        //ToDo temporary blocked, because of missing middleware command
-//        itemView.dndDragger.setOnTouchListener { _, event ->
-//            if (event.action == MotionEvent.ACTION_DOWN) onDragListener.onStartDrag(this)
-//            false
-//        }
-
-        binding.dndDragger.setOnClickListener {
-            itemView.context.toast("Coming soon...")
+        binding.dndDragger.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) onDragListener.onStartDrag(this)
+            false
         }
         binding.btnActionMore.setOnClickListener {
             onButtonMoreClicked(items[bindingAdapterPosition])

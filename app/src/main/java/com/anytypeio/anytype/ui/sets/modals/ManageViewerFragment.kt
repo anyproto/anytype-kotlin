@@ -53,7 +53,9 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     private val dndBehavior by lazy {
         DefaultDragAndDropBehavior(
             onItemMoved = { from, to -> manageViewerEditAdapter.onItemMove(from, to) },
-            onItemDropped = { vm.onOrderChanged(ctx, manageViewerEditAdapter.order) }
+            onItemDropped = {
+                vm.onOrderChanged(ctx, manageViewerEditAdapter.order)
+            }
         )
     }
 
@@ -89,8 +91,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
                         btnAddNewViewer.invisible()
                         dataViewViewerRecycler.apply {
                             adapter = manageViewerEditAdapter
-                            //ToDo temporary blocked, because of missing middleware command
-                            //dndItemTouchHelper.attachToRecyclerView(this)
+                            dndItemTouchHelper.attachToRecyclerView(this)
 
                         }
                     }
@@ -100,8 +101,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
                         btnAddNewViewer.visible()
                         dataViewViewerRecycler.apply {
                             adapter = manageViewerAdapter
-                            //ToDo temporary blocked, because of missing middleware command
-                            //dndItemTouchHelper.attachToRecyclerView(null)
+                            dndItemTouchHelper.attachToRecyclerView(null)
                         }
                     }
                 }

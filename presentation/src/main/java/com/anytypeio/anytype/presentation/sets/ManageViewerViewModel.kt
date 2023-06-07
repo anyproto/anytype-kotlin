@@ -51,7 +51,7 @@ class ManageViewerViewModel(
     }
 
     fun onOrderChanged(ctx: Id, order: List<String>) {
-
+        Timber.d("New order: $order")
     }
 
     fun onViewerActionClicked(view: ViewerView) {

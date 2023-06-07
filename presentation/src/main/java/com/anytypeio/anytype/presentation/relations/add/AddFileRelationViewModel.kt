@@ -147,7 +147,8 @@ class AddFileRelationViewModel(
         val sorts = arrayListOf(
             DVSort(
                 relationKey = Relations.LAST_MODIFIED_DATE,
-                type = Block.Content.DataView.Sort.Type.DESC
+                type = Block.Content.DataView.Sort.Type.DESC,
+                includeTime = true
             )
         )
         viewModelScope.launch {

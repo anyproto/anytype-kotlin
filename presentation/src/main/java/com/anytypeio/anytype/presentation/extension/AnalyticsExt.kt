@@ -1525,3 +1525,9 @@ suspend fun Analytics.proceedWithAccountEvent(
         props = Props(map = mapOf("accountId" to analyticsId))
     )
 }
+
+suspend fun Analytics.sendDeletionWarning() {
+    sendEvent(
+        eventName = EventsDictionary.deletionWarningShow
+    )
+}

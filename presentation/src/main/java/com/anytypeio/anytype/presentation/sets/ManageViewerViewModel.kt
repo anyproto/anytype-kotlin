@@ -19,8 +19,6 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -61,11 +59,17 @@ class ManageViewerViewModel(
         ctx: Id,
         dv: Id,
         newPosition: Int,
-        order: List<Id>,
+        newOrder: List<Id>,
     ) {
-        val viewer = order.getOrNull(newPosition)
+        val currentOrder = views.value.map { it.id }
+        if (newOrder == currentOrder) return
+        val viewer = newOrder.getOrNull(newPosition)
         if (viewer != null) {
             viewModelScope.launch {
+                // Workaround for preserving the previously first view as the active view
+                if (newPosition == 0 && session.currentViewerId.value.isNullOrEmpty()) {
+                    session.currentViewerId.value = views.value.firstOrNull()?.id
+                }
                 setDataViewViewerPosition.stream(
                     params = SetDataViewViewerPosition.Params(
                         ctx = ctx,

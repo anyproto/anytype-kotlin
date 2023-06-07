@@ -64,7 +64,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
                 vm.onOrderChanged(
                     ctx = ctx,
                     dv = dv,
-                    order = manageViewerEditAdapter.order,
+                    newOrder = manageViewerEditAdapter.order,
                     newPosition = newPosition
                 )
             }

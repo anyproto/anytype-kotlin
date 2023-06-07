@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="26dp"
         android:paddingBottom="8dp"
-        android:text="@string/attributes"
+        android:text="@string/relations"
         android:textColor="@color/text_secondary"
         android:gravity="start|center_vertical"
         tools:text="Relations"/>

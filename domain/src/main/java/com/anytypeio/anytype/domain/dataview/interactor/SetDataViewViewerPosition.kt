@@ -6,6 +6,9 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+/**
+ * Use-case for ordering views of the data view.
+ */
 class SetDataViewViewerPosition(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
@@ -18,6 +21,12 @@ class SetDataViewViewerPosition(
         pos = params.pos
     )
 
+    /**
+     * @property [ctx] set or collection id
+     * @property [dv] data view block id
+     * @property [viewer] view id, whose position is changed
+     * @property [pos] new position of the [viewer]
+     */
     data class Params(
         val ctx: Id,
         val dv: Id,

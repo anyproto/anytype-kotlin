@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -156,6 +157,12 @@ class ProfileViewModel(
                     // do nothing
                 }
             )
+        }
+    }
+
+    fun proceedWithAccountDeletion() {
+        viewModelScope.launch {
+            analytics.sendScreenSettingsDeleteEvent()
         }
     }
 

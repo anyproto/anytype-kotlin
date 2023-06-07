@@ -189,6 +189,7 @@ import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockMoveToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBookmarkOpen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
@@ -206,6 +207,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
+import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -2984,6 +2986,7 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         views.onEach { if (it is Focusable) it.isFocused = false }
         viewModelScope.launch { renderCommand.send(Unit) }
+        viewModelScope.launch { analytics.sendHideKeyboardEvent() }
     }
 
     private fun proceedWithClearingFocus() {
@@ -5196,6 +5199,7 @@ class EditorViewModel(
                                 isSet
                             )
                         )
+                        viewModelScope.sendAnalyticsBlockMoveToEvent(analytics, blocks.size)
                     }
                 )
             )

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
+import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -178,16 +180,16 @@ fun Block.Content.Text.Mark.Type.getPropName() = when (this) {
 }
 
 fun Markup.Type.getPropName() = when (this) {
-    Markup.Type.ITALIC -> "italic"
-    Markup.Type.BOLD -> "bold"
-    Markup.Type.STRIKETHROUGH -> "strikethrough"
-    Markup.Type.TEXT_COLOR -> "color"
-    Markup.Type.BACKGROUND_COLOR -> "bgcolor"
-    Markup.Type.LINK -> "linkURL"
-    Markup.Type.KEYBOARD -> "code"
-    Markup.Type.MENTION -> "mention"
-    Markup.Type.OBJECT -> "linkObject"
-    Markup.Type.UNDERLINE -> "underline"
+    Markup.Type.ITALIC -> "Italic"
+    Markup.Type.BOLD -> "Bold"
+    Markup.Type.STRIKETHROUGH -> "Strike"
+    Markup.Type.TEXT_COLOR -> "Color"
+    Markup.Type.BACKGROUND_COLOR -> "BgColor"
+    Markup.Type.LINK -> "Link"
+    Markup.Type.KEYBOARD -> "Code"
+    Markup.Type.MENTION -> "Mention"
+    Markup.Type.OBJECT -> "Object"
+    Markup.Type.UNDERLINE -> "Underline"
 }
 
 fun DVViewerType.getPropName() = when (this) {
@@ -401,6 +403,18 @@ fun CoroutineScope.sendAnalyticsMoveToBinEvent(
     sendEvent(
         analytics = analytics,
         eventName = objectMoveToBin
+    )
+}
+
+fun CoroutineScope.sendAnalyticsDuplicateEvent(
+    analytics: Analytics,
+    startTime: Long
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = objectDuplicate,
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }
 
@@ -697,6 +711,17 @@ fun CoroutineScope.sendAnalyticsSetTitleEvent(
         analytics = analytics,
         eventName = EventsDictionary.objectSetTitle,
         props = props
+    )
+}
+
+fun CoroutineScope.sendAnalyticsBlockMoveToEvent(
+    analytics: Analytics,
+    count: Int
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.blockMove,
+        props = Props(mapOf(EventsPropertiesKey.count to count))
     )
 }
 
@@ -1529,5 +1554,29 @@ suspend fun Analytics.proceedWithAccountEvent(
 suspend fun Analytics.sendDeletionWarning() {
     sendEvent(
         eventName = EventsDictionary.deletionWarningShow
+    )
+}
+
+suspend fun Analytics.sendScreenSettingsDeleteEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenSettingsDelete
+    )
+}
+
+suspend fun Analytics.sendChangeThemeEvent(theme: ThemeMode) {
+    val name = when (theme) {
+        ThemeMode.Light -> "light"
+        ThemeMode.Night -> "dark"
+        ThemeMode.System -> "system"
+    }
+    sendEvent(
+        eventName = EventsDictionary.changeTheme,
+        props = Props(map = mapOf("id" to name))
+    )
+}
+
+suspend fun Analytics.sendHideKeyboardEvent() {
+    sendEvent(
+        eventName = EventsDictionary.hideKeyboard
     )
 }

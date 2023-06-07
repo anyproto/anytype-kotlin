@@ -20,7 +20,7 @@ object EventsDictionary {
     // Settings events
     const val wallpaperSet = "SettingsWallpaperSet"
     const val keychainCopy = "KeychainCopy"
-    const val defaultTypeChanged = "DefaultTypeChanged"
+    const val defaultTypeChanged = "DefaultTypeChange"
     const val fileOffloadSuccess = "FileOffload"
     const val changeTheme = "ThemeSet"
 

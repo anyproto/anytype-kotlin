@@ -68,9 +68,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Account.Recover.Response.Error.Code.NULL) {
             when (error.code) {
-                Rpc.Account.Recover.Response.Error.Code.ACCOUNT_IS_DELETED -> {
-                    throw AccountIsDeletedException()
-                }
                 else -> {
                     throw Exception(error.description)
                 }
@@ -88,6 +85,9 @@ class MiddlewareServiceImplementation @Inject constructor(
             when(error.code) {
                 Rpc.Account.Select.Response.Error.Code.FAILED_TO_FIND_ACCOUNT_INFO -> {
                     throw MigrationNeededException()
+                }
+                Rpc.Account.Select.Response.Error.Code.ACCOUNT_IS_DELETED -> {
+                    throw AccountIsDeletedException()
                 }
                 else -> throw Exception(error.description)
             }

@@ -44,7 +44,6 @@ import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.InviteCodeScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
@@ -99,30 +98,6 @@ class OnboardingFragment : BaseComposeFragment() {
                 Auth(navController)
             }
             composable(
-                route = OnboardingNavigation.inviteCode,
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        OnboardingNavigation.void -> {
-                            slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
-                        }
-                        else -> null
-                    }
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        OnboardingNavigation.auth -> {
-                            fadeOut(tween(ANIMATION_LENGTH_FADE))
-                        }
-                        else -> {
-                            slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
-                        }
-                    }
-                }
-            ) {
-                currentPage.value = Page.INVITE_CODE
-                InviteCode(navController)
-            }
-            composable(
                 route = OnboardingNavigation.recovery,
                 enterTransition = {
                     when (initialState.destination.route) {
@@ -144,8 +119,8 @@ class OnboardingFragment : BaseComposeFragment() {
                 route = OnboardingNavigation.void,
                 enterTransition = {
                     when (initialState.destination.route) {
-                        OnboardingNavigation.inviteCode -> {
-                            slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
+                        OnboardingNavigation.auth -> {
+                            fadeIn(tween(ANIMATION_LENGTH_FADE))
                         }
                         else -> {
                             slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
@@ -154,11 +129,11 @@ class OnboardingFragment : BaseComposeFragment() {
                 },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        OnboardingNavigation.mnemonic -> {
-                            slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
+                        OnboardingNavigation.auth -> {
+                            fadeOut(tween(ANIMATION_LENGTH_FADE))
                         }
                         else -> {
-                            slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
+                            slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
                     }
                 }
@@ -180,7 +155,16 @@ class OnboardingFragment : BaseComposeFragment() {
                         }
                     }
                 },
-                exitTransition = { fadeOut(tween(ANIMATION_LENGTH_SLIDE)) }
+                exitTransition = {
+                    when (targetState.destination.route) {
+                        OnboardingNavigation.void -> {
+                            slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
+                        }
+                        else -> {
+                            slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
+                        }
+                    }
+                }
             ) {
                 currentPage.value = Page.MNEMONIC
                 Mnemonic(navController)
@@ -188,7 +172,16 @@ class OnboardingFragment : BaseComposeFragment() {
             composable(
                 route = OnboardingNavigation.createSoul,
                 enterTransition = { slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE)) },
-                exitTransition = { fadeOut(tween(ANIMATION_LENGTH_FADE)) }
+                exitTransition = {
+                    when (targetState.destination.route) {
+                        OnboardingNavigation.mnemonic -> {
+                            slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
+                        }
+                        else -> {
+                            fadeOut(tween(ANIMATION_LENGTH_FADE))
+                        }
+                    }
+                }
             ) {
                 currentPage.value = Page.SOUL_CREATION
                 CreateSoul(navController)
@@ -273,24 +266,24 @@ class OnboardingFragment : BaseComposeFragment() {
     }
 
     @Composable
-    private fun InviteCode(navController: NavHostController) {
-        val component = componentManager().onboardingInviteCodeComponent.ReleaseOn(
+    private fun Auth(navController: NavHostController) {
+        val component = componentManager().onboardingAuthComponent.ReleaseOn(
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
-
-        val viewModel: OnboardingInviteCodeViewModel = daggerViewModel {
-            component.get().getViewModel()
-        }
-
-        InviteCodeScreenWrapper(viewModel = viewModel)
-        val navigationCommands =
-            viewModel.navigationFlow.collectAsState(
-                initial = OnboardingInviteCodeViewModel.InviteCodeNavigation.Idle
-            )
+        val viewModel = daggerViewModel { component.get().getViewModel() }
+        AuthScreenWrapper(
+            viewModel = viewModel,
+            navigateToLogin = {
+                navController.navigate(OnboardingNavigation.recovery)
+            }
+        )
+        val navigationCommands = viewModel.navigationFlow.collectAsState(
+            initial = OnboardingAuthViewModel.InviteCodeNavigation.Idle
+        )
         LaunchedEffect(key1 = navigationCommands.value) {
             when (navigationCommands.value) {
-                is OnboardingInviteCodeViewModel.InviteCodeNavigation.Void -> {
+                is OnboardingAuthViewModel.InviteCodeNavigation.Void -> {
                     navController.navigate(OnboardingNavigation.void)
                 }
                 else -> {
@@ -298,23 +291,6 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             }
         }
-    }
-
-    @Composable
-    private fun Auth(navController: NavHostController) {
-        val component = componentManager().onboardingAuthComponent.ReleaseOn(
-            viewLifecycleOwner = viewLifecycleOwner,
-            state = Lifecycle.State.DESTROYED
-        )
-        AuthScreenWrapper(
-            viewModel = daggerViewModel { component.get().getViewModel() },
-            navigateToInviteCode = {
-                navController.navigate(OnboardingNavigation.inviteCode)
-            },
-            navigateToLogin = {
-                navController.navigate(OnboardingNavigation.recovery)
-            }
-        )
     }
 
     override fun injectDependencies() {}

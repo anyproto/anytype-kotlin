@@ -22,7 +22,6 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
-import com.anytypeio.anytype.di.feature.onboarding.OnboardingInviteCodeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationAnimDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationDependencies
@@ -83,7 +82,6 @@ interface MainComponent :
     BacklinkOrAddToObjectDependencies,
     FilesStorageDependencies,
     OnboardingAuthDependencies,
-    OnboardingInviteCodeDependencies,
     OnboardingMnemonicDependencies,
     OnboardingSoulCreationDependencies,
     AboutAppDependencies,
@@ -198,11 +196,6 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(OnboardingAuthDependencies::class)
     abstract fun provideOnboardingAuthDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(OnboardingInviteCodeDependencies::class)
-    abstract fun provideOnboardingInviteCodeDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

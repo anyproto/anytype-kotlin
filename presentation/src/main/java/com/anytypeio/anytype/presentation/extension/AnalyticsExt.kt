@@ -1563,3 +1563,9 @@ suspend fun Analytics.sendChangeThemeEvent(theme: ThemeMode) {
         props = Props(map = mapOf("id" to name))
     )
 }
+
+suspend fun Analytics.sendHideKeyboardEvent() {
+    sendEvent(
+        eventName = EventsDictionary.hideKeyboard
+    )
+}

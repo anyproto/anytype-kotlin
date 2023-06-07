@@ -123,6 +123,7 @@ object EventsDictionary {
 
     const val goBack = "HistoryBack"
     const val bookmarkOpenUrl = "BlockBookmarkOpenUrl"
+    const val hideKeyboard = "KeyboardBarHideKeyboardMenu"
 
     // Toolbars
     const val slashMenu = "KeyboardBarSlashMenu"

@@ -60,8 +60,13 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     private val dndBehavior by lazy {
         DefaultDragAndDropBehavior(
             onItemMoved = { from, to -> manageViewerEditAdapter.onItemMove(from, to) },
-            onItemDropped = {
-                vm.onOrderChanged(ctx, manageViewerEditAdapter.order)
+            onItemDropped = { newPosition ->
+                vm.onOrderChanged(
+                    ctx = ctx,
+                    dv = dv,
+                    order = manageViewerEditAdapter.order,
+                    newPosition = newPosition
+                )
             }
         )
     }

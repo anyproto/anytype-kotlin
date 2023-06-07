@@ -240,6 +240,12 @@ sealed class Event {
                 val viewer: String
             ) : DataView()
 
+            data class OrderViews(
+                override val context: String,
+                val dv: Id,
+                val order: List<Id>
+            ) : DataView()
+
             data class SetTargetObjectId(
                 override val context: String,
                 val dv: String,

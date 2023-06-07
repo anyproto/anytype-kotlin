@@ -246,6 +246,18 @@ class BlockMiddleware(
         limit = limit
     )
 
+    override suspend fun setDataViewViewerPosition(
+        ctx: Id,
+        dv: Id,
+        view: Id,
+        pos: Int
+    ): Payload = middleware.blockDataViewViewSetPosition(
+        ctx = ctx,
+        dv = dv,
+        view = view,
+        pos = pos
+    )
+
     override suspend fun addRelationToDataView(
         ctx: Id,
         dv: Id,

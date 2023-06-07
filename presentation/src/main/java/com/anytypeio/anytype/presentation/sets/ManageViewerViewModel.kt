@@ -7,7 +7,9 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
@@ -17,6 +19,8 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -26,7 +30,8 @@ class ManageViewerViewModel(
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-    private val deleteDataViewViewer: DeleteDataViewViewer
+    private val deleteDataViewViewer: DeleteDataViewViewer,
+    private val setDataViewViewerPosition: SetDataViewViewerPosition
 ) : BaseListViewModel<ViewerView>() {
 
     val isEditEnabled = MutableStateFlow(false)
@@ -52,8 +57,32 @@ class ManageViewerViewModel(
         }
     }
 
-    fun onOrderChanged(ctx: Id, order: List<String>) {
-        Timber.d("New order: $order")
+    fun onOrderChanged(
+        ctx: Id,
+        dv: Id,
+        newPosition: Int,
+        order: List<Id>,
+    ) {
+        val viewer = order.getOrNull(newPosition)
+        if (viewer != null) {
+            viewModelScope.launch {
+                setDataViewViewerPosition.stream(
+                    params = SetDataViewViewerPosition.Params(
+                        ctx = ctx,
+                        dv = dv,
+                        viewer = viewer,
+                        pos = newPosition
+                    )
+                ).collect { result ->
+                    result.fold(
+                        onSuccess = { dispatcher.send(it) },
+                        onFailure = { Timber.e(it, "Error while changing view order") }
+                    )
+                }
+            }
+        } else {
+            sendToast("Something went wrong. Please, try again later.")
+        }
     }
 
     fun onViewerActionClicked(view: ViewerView) {
@@ -125,7 +154,8 @@ class ManageViewerViewModel(
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
-        private val deleteDataViewViewer: DeleteDataViewViewer
+        private val deleteDataViewViewer: DeleteDataViewViewer,
+        private val setDataViewViewerPosition: SetDataViewViewerPosition
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -134,7 +164,8 @@ class ManageViewerViewModel(
                 session = session,
                 dispatcher = dispatcher,
                 analytics = analytics,
-                deleteDataViewViewer = deleteDataViewViewer
+                deleteDataViewViewer = deleteDataViewViewer,
+                setDataViewViewerPosition = setDataViewViewerPosition
             ) as T
         }
     }

@@ -73,6 +73,9 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is Command.DataView.DeleteView -> {
                 handleDeleteView(state, event)
             }
+            is Command.DataView.OrderViews -> {
+                handleOrderViews(state, event)
+            }
             is Command.DataView.SetRelation -> {
                 handelSetRelation(state, event)
             }
@@ -229,6 +232,33 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             )
             is ObjectState.DataView.Set -> state.updateBlockContent(
                 target = event.target,
+                blockContentUpdate = updateBlockContent
+            )
+            else -> state
+        }
+    }
+
+    /**
+     * @see Command.DataView.DeleteView
+     */
+    private fun handleOrderViews(
+        state: ObjectState,
+        event: Command.DataView.OrderViews
+    ): ObjectState {
+        val updateBlockContent = { content: Block.Content.DataView ->
+            content.copy(
+                viewers = content.viewers.sortedBy { viewer ->
+                    event.order.indexOf(viewer.id)
+                }
+            )
+        }
+        return when (state) {
+            is ObjectState.DataView.Collection -> state.updateBlockContent(
+                target = event.dv,
+                blockContentUpdate = updateBlockContent
+            )
+            is ObjectState.DataView.Set -> state.updateBlockContent(
+                target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
             else -> state

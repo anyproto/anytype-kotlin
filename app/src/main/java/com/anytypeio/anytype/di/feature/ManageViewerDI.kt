@@ -3,8 +3,10 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -29,6 +31,7 @@ interface ManageViewerSubComponent {
 
 @Module
 object ManageViewerModule {
+
     @JvmStatic
     @Provides
     @PerModal
@@ -37,18 +40,32 @@ object ManageViewerModule {
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        deleteDataViewViewer: DeleteDataViewViewer
+        deleteDataViewViewer: DeleteDataViewViewer,
+        setDataViewViewerPosition: SetDataViewViewerPosition
     ): ManageViewerViewModel.Factory = ManageViewerViewModel.Factory(
         objectState = state,
         session = session,
         dispatcher = dispatcher,
         analytics = analytics,
-        deleteDataViewViewer = deleteDataViewViewer
+        deleteDataViewViewer = deleteDataViewViewer,
+        setDataViewViewerPosition = setDataViewViewerPosition
     )
+
     @JvmStatic
     @Provides
     @PerModal
     fun provideDeleteDataViewViewerUseCase(
         repo: BlockRepository
     ): DeleteDataViewViewer = DeleteDataViewViewer(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideSetDataViewViewerPosition(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewViewerPosition = SetDataViewViewerPosition(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 }

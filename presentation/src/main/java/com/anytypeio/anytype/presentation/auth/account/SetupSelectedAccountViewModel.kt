@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.CrashReporter
+import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -62,13 +63,19 @@ class SetupSelectedAccountViewModel(
             ).process(
                 failure = {e ->
                     Timber.e(e, "Error while selecting account with id: $id")
-                    if (e is MigrationNeededException) {
-                        navigateToMigrationErrorScreen()
-                    } else {
-                        migrationMessageJob.cancel()
-                        isMigrationInProgress.value = false
-                        val msg = e.message ?: "Unknown error"
-                        error.postValue("$ERROR_MESSAGE: $msg")
+                    when (e) {
+                        is MigrationNeededException -> {
+                            navigateToMigrationErrorScreen()
+                        }
+                        is AccountIsDeletedException -> {
+                            error.postValue("This account is deleted. Try using another account or create a new one.")
+                        }
+                        else -> {
+                            migrationMessageJob.cancel()
+                            isMigrationInProgress.value = false
+                            val msg = e.message ?: "Unknown error"
+                            error.postValue("$ERROR_MESSAGE: $msg")
+                        }
                     }
                 },
                 success = { (analyticsId, status) ->

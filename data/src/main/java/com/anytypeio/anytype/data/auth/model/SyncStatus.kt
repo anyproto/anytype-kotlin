@@ -5,5 +5,6 @@ enum class SyncStatusEntity {
     OFFLINE,
     SYNCING,
     SYNCED,
-    FAILED
+    FAILED,
+    INCOMPATIBLE_VERSION
 }

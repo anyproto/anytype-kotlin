@@ -378,4 +378,5 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_soul_creation">Creating your Soul</string>
     <string name="onboarding_soul_space_creation">Setting up your Personal Space</string>
     <string name="onboarding_soul_creation_personal_space">Personal Space</string>
+    <string name="sync_status_incompatible">Incompatible version</string>
 </resources>

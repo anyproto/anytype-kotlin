@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
@@ -24,7 +25,8 @@ class ManageViewerViewModel(
     private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val deleteDataViewViewer: DeleteDataViewViewer
 ) : BaseListViewModel<ViewerView>() {
 
     val isEditEnabled = MutableStateFlow(false)
@@ -57,6 +59,25 @@ class ManageViewerViewModel(
     fun onViewerActionClicked(view: ViewerView) {
         viewModelScope.launch {
             commands.emit(Command.OpenEditScreen(view.id, view.name))
+        }
+    }
+
+    fun onDeleteView(
+        ctx: Id,
+        dv: Id,
+        view: ViewerView
+    ) {
+        viewModelScope.launch {
+            deleteDataViewViewer(
+                DeleteDataViewViewer.Params(
+                    ctx = ctx,
+                    dataview = dv,
+                    viewer = view.id
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while deleting view") },
+                success = { dispatcher.send(it) }
+            )
         }
     }
 
@@ -103,7 +124,8 @@ class ManageViewerViewModel(
         private val objectState: StateFlow<ObjectState>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val deleteDataViewViewer: DeleteDataViewViewer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -111,7 +133,8 @@ class ManageViewerViewModel(
                 objectState = objectState,
                 session = session,
                 dispatcher = dispatcher,
-                analytics = analytics
+                analytics = analytics,
+                deleteDataViewViewer = deleteDataViewViewer
             ) as T
         }
     }

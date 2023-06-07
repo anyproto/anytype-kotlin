@@ -3,6 +3,8 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -34,11 +36,19 @@ object ManageViewerModule {
         state: MutableStateFlow<ObjectState>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
-        analytics: Analytics
+        analytics: Analytics,
+        deleteDataViewViewer: DeleteDataViewViewer
     ): ManageViewerViewModel.Factory = ManageViewerViewModel.Factory(
         objectState = state,
         session = session,
         dispatcher = dispatcher,
-        analytics = analytics
+        analytics = analytics,
+        deleteDataViewViewer = deleteDataViewViewer
     )
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideDeleteDataViewViewerUseCase(
+        repo: BlockRepository
+    ): DeleteDataViewViewer = DeleteDataViewViewer(repo = repo)
 }

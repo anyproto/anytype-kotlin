@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.AbstractAdapter
 import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
@@ -20,7 +21,8 @@ import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 
 class ManageViewerEditAdapter(
     private val onDragListener: OnStartDragListener,
-    private val onButtonMoreClicked: (ViewerView) -> Unit
+    private val onButtonMoreClicked: (ViewerView) -> Unit,
+    private val onDeleteView: (ViewerView) -> Unit
 ) : AbstractAdapter<ViewerView>(emptyList()), SupportDragAndDropBehavior {
 
     val order: List<String> get() = items.map { it.id }
@@ -40,8 +42,17 @@ class ManageViewerEditAdapter(
             if (event.action == MotionEvent.ACTION_DOWN) onDragListener.onStartDrag(this)
             false
         }
+        binding.icRemove.setOnClickListener {
+            val pos = bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onDeleteView(items[pos])
+            }
+        }
         binding.btnActionMore.setOnClickListener {
-            onButtonMoreClicked(items[bindingAdapterPosition])
+            val pos = bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onButtonMoreClicked(items[pos])
+            }
         }
     }
 

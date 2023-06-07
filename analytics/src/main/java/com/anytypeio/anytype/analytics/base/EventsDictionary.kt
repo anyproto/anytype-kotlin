@@ -20,8 +20,9 @@ object EventsDictionary {
     // Settings events
     const val wallpaperSet = "SettingsWallpaperSet"
     const val keychainCopy = "KeychainCopy"
-    const val defaultTypeChanged = "DefaultTypeChanged"
+    const val defaultTypeChanged = "DefaultTypeChange"
     const val fileOffloadSuccess = "FileOffload"
+    const val changeTheme = "ThemeSet"
 
     // Screen show events
     const val objectScreenShow = "ScreenObject"
@@ -39,15 +40,16 @@ object EventsDictionary {
     const val manageFilesScreenShow = "ScreenManageFiles"
     const val relationsScreenShow = "ScreenObjectRelation"
     const val settingsShow = "ScreenSettings"
-    const val personalisationSettingsShow = "ScreenSettingsPersonalisation"
+    const val personalisationSettingsShow = "ScreenSettingsPersonal"
     const val wallpaperScreenShow = "ScreenSettingsWallpaper"
-    const val accountDataSettingsShow = "ScreenSettingsAccountData"
+    const val accountDataSettingsShow = "ScreenSettingsAccount"
     const val aboutScreenShow = "ScreenSettingsAbout"
     const val appearanceScreenShow = "ScreenSettingsAppearance"
     const val screenSettingsStorage = "ScreenSettingsStorageIndex"
     const val screenSettingsStorageManage = "ScreenSettingsStorageManager"
     const val screenSettingsStorageOffload = "ScreenFileOffloadWarning"
     const val settingsStorageOffload = "SettingsStorageOffload"
+    const val screenSettingsDelete = "ScreenSettingsDelete"
 
     // Object events
     const val objectListDelete = "RemoveCompletely"
@@ -74,6 +76,7 @@ object EventsDictionary {
     const val objectSetDescription = "SetObjectDescription"
     const val objectOpenAs = "OpenAsObject "
     const val objectReload = "ReloadSourceData"
+    const val objectDuplicate = "DuplicateObject"
 
     // Blocks events
     const val blockCreate = "CreateBlock"
@@ -88,6 +91,7 @@ object EventsDictionary {
     const val blockReorder = "ReorderBlock"
     const val blockUpload = "UploadMedia"
     const val blockDownload = "DownloadMedia"
+    const val blockMove = "MoveBlock"
 
     // Relations
     const val relationAdd = "AddExistingRelation"
@@ -120,6 +124,7 @@ object EventsDictionary {
 
     const val goBack = "HistoryBack"
     const val bookmarkOpenUrl = "BlockBookmarkOpenUrl"
+    const val hideKeyboard = "KeyboardBarHideKeyboardMenu"
 
     // Toolbars
     const val slashMenu = "KeyboardBarSlashMenu"

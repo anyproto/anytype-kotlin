@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationToggle
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSectionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSettingBinding
 import com.anytypeio.anytype.core_ui.extensions.drawable
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Cover
@@ -139,7 +140,7 @@ class ObjectAppearanceSettingAdapter(
                         MenuItem.Description.ADDED -> R.string.object_description
                         MenuItem.Description.CONTENT -> R.string.description_content
                         MenuItem.Description.NONE -> R.string.description_none
-                    }
+                    }.also { binding.relIcon.visible() }
                     is Icon -> {
                         when (item.icon) {
                             MenuItem.Icon.NONE -> R.string.none

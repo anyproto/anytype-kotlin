@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewCoverBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationNameBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSectionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSettingBinding
 import com.anytypeio.anytype.core_ui.extensions.drawable
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Cover
@@ -23,7 +25,8 @@ import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMai
 
 class ObjectAppearanceSettingAdapter(
     private val onItemClick: (ObjectAppearanceMainSettingsView) -> Unit,
-    private val onSettingToggleChanged: (Toggle, Boolean) -> Unit
+    private val onSettingToggleChanged: (Toggle, Boolean) -> Unit,
+    private val onCoverToggleChanged: (Boolean) -> Unit
 ) : RecyclerView.Adapter<ObjectAppearanceSettingAdapter.ViewHolder>() {
 
     private val items: MutableList<ObjectAppearanceMainSettingsView> = mutableListOf()
@@ -73,6 +76,19 @@ class ObjectAppearanceSettingAdapter(
                     }
                 }
             }
+            TYPE_ITEM_COVER ->
+                ViewHolder.Cover(
+                    binding = ItemObjectPreviewCoverBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
+                    binding.coverSwitch.setOnCheckedChangeListener { _, isChecked ->
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCoverToggleChanged(isChecked)
+                        }
+                    }
+                }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -87,6 +103,7 @@ class ObjectAppearanceSettingAdapter(
             is ViewHolder.Section -> {}
             is ViewHolder.Relation.Toggle -> holder.bind(getItem(position) as Toggle)
             is ViewHolder.List -> holder.bind(getItem(position) as ObjectAppearanceMainSettingsView.List)
+            is ViewHolder.Cover -> holder.bind(getItem(position) as Cover)
         }
     }
 
@@ -94,8 +111,8 @@ class ObjectAppearanceSettingAdapter(
         FeaturedRelationsSection -> TYPE_ITEM_SECTION
         is Description,
         is Icon,
-        is PreviewLayout,
-        is Cover -> TYPE_ITEM_SETTING_LIST
+        is PreviewLayout -> TYPE_ITEM_SETTING_LIST
+        is Cover -> TYPE_ITEM_COVER
         is Relation.Name -> TYPE_ITEM_RELATION_NAME
         is Relation.ObjectType -> TYPE_ITEM_RELATION_TOGGLE
     }
@@ -123,13 +140,7 @@ class ObjectAppearanceSettingAdapter(
                         MenuItem.Description.ADDED -> R.string.object_description
                         MenuItem.Description.CONTENT -> R.string.description_content
                         MenuItem.Description.NONE -> R.string.description_none
-                    }
-                    is Cover -> {
-                        when (item.coverState) {
-                            MenuItem.Cover.WITH -> R.string.visible
-                            MenuItem.Cover.WITHOUT -> R.string.none
-                        }
-                    }
+                    }.also { binding.relIcon.visible() }
                     is Icon -> {
                         when (item.icon) {
                             MenuItem.Icon.NONE -> R.string.none
@@ -150,7 +161,6 @@ class ObjectAppearanceSettingAdapter(
             @StringRes
             private fun getName(item: ObjectAppearanceMainSettingsView.List): Int {
                 return when (item) {
-                    is Cover -> R.string.cover
                     is Description -> R.string.description
                     is Icon -> R.string.icon
                     is PreviewLayout -> R.string.preview_layout
@@ -188,6 +198,18 @@ class ObjectAppearanceSettingAdapter(
 
             }
         }
+
+        class Cover(
+            val binding: ItemObjectPreviewCoverBinding
+        ) : ViewHolder(binding.root) {
+
+            fun bind(item: ObjectAppearanceMainSettingsView.Cover) {
+                when (item.coverState) {
+                    MenuItem.Cover.WITH -> binding.coverSwitch.isChecked = true
+                    MenuItem.Cover.WITHOUT -> binding.coverSwitch.isChecked = false
+                }
+            }
+        }
     }
 
     companion object {
@@ -195,5 +217,6 @@ class ObjectAppearanceSettingAdapter(
         private const val TYPE_ITEM_SETTING_LIST = 2
         private const val TYPE_ITEM_RELATION_NAME = 5
         private const val TYPE_ITEM_RELATION_TOGGLE = 6
+        private const val TYPE_ITEM_COVER = 7
     }
 }

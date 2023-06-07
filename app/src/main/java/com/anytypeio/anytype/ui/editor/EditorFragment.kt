@@ -820,6 +820,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             SyncStatus.OFFLINE -> tvStatus.setText(R.string.sync_status_offline)
             SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
             SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
+            SyncStatus.INCOMPATIBLE_VERSION -> tvStatus.setText(R.string.sync_status_incompatible)
             else -> {
                 // Do nothing
             }

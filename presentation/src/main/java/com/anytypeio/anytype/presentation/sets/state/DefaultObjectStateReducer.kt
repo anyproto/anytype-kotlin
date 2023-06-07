@@ -239,7 +239,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
     }
 
     /**
-     * @see Command.DataView.DeleteView
+     * @see Command.DataView.OrderViews
      */
     private fun handleOrderViews(
         state: ObjectState,

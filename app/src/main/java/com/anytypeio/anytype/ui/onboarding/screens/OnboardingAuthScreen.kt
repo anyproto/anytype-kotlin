@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
@@ -31,29 +32,31 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
 import com.anytypeio.anytype.ui.onboarding.OnboardingAuthViewModel
-import com.anytypeio.anytype.ui.onboarding.OnboardingScreenContract
 
 
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    AuthScreen({}, {}, {})
+    AuthScreen({}, {}, OnboardingAuthViewModel.JoinFlowState.Active)
 }
 
 @Composable
 fun AuthScreenWrapper(
     viewModel: OnboardingAuthViewModel,
-    navigateToInviteCode: () -> Unit,
     navigateToLogin: () -> Unit
 ) {
-    AuthScreen(contract = viewModel::onAction, navigateToInviteCode, navigateToLogin)
+    AuthScreen(
+        viewModel::signUp,
+        navigateToLogin,
+        viewModel.joinFlowState.collectAsStateWithLifecycle().value
+    )
 }
 
 @Composable
 fun AuthScreen(
-    contract: (OnboardingScreenContract) -> Unit,
-    navigateToInviteCode: () -> Unit,
-    navigateToLogin: () -> Unit
+    signup: () -> Unit,
+    navigateToLogin: () -> Unit,
+    joinState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Box(
         modifier = Modifier
@@ -67,8 +70,8 @@ fun AuthScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            SignButtons(navigateToInviteCode, navigateToLogin)
-            TermsAndPolicy(Modifier, contract)
+            SignButtons(signup, navigateToLogin, joinState)
+            TermsAndPolicy(Modifier)
         }
     }
 }
@@ -107,13 +110,18 @@ fun Description(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SignButtons(navigateToInviteCode: () -> Unit, navigateToLogin: () -> Unit) {
+fun SignButtons(
+    signup: () -> Unit,
+    navigateToLogin: () -> Unit,
+    joinFlowState: OnboardingAuthViewModel.JoinFlowState
+) {
     Row {
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.onboarding_join),
             onClick = {
-                navigateToInviteCode.invoke()
+                signup.invoke()
             },
+            enabled = joinFlowState is OnboardingAuthViewModel.JoinFlowState.Active,
             size = ButtonSize.Large,
             modifier = Modifier
                 .weight(1f)
@@ -137,7 +145,6 @@ fun SignButtons(navigateToInviteCode: () -> Unit, navigateToLogin: () -> Unit) {
 @Composable
 fun TermsAndPolicy(
     modifier: Modifier = Modifier,
-    contract: (OnboardingScreenContract) -> Unit
 ) {
     val annotatedString = buildAnnotatedString {
         append(
@@ -169,11 +176,11 @@ fun TermsAndPolicy(
         onClick = {
             annotatedString.getStringAnnotations(TermsOfUseTag, it, it)
                 .firstOrNull()?.let {
-                    contract.invoke(OnboardingScreenContract.TermsOfUseClick)
+                    // do nothing
                 }
             annotatedString.getStringAnnotations(PrivacyPolicyTag, it, it)
                 .firstOrNull()?.let {
-                    contract.invoke(OnboardingScreenContract.PrivacyPolicyClick)
+                    // do nothing
                 }
         }
     )

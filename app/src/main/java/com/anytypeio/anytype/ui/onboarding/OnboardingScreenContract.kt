@@ -9,9 +9,8 @@ sealed interface OnboardingScreenContract {
 
 enum class Page(val num: Int, val visible: Boolean) {
     AUTH(0, false),
-    INVITE_CODE(1, true),
-    VOID(2, true),
-    MNEMONIC(3, true),
-    SOUL_CREATION(4, true),
-    SOUL_CREATION_ANIM(5, false)
+    VOID(1, true),
+    MNEMONIC(2, true),
+    SOUL_CREATION(3, true),
+    SOUL_CREATION_ANIM(4, false)
 }

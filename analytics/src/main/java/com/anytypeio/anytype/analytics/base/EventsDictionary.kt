@@ -39,7 +39,7 @@ object EventsDictionary {
     const val manageFilesScreenShow = "ScreenManageFiles"
     const val relationsScreenShow = "ScreenObjectRelation"
     const val settingsShow = "ScreenSettings"
-    const val personalisationSettingsShow = "ScreenSettingsPersonalisation"
+    const val personalisationSettingsShow = "ScreenSettingsPersonal"
     const val wallpaperScreenShow = "ScreenSettingsWallpaper"
     const val accountDataSettingsShow = "ScreenSettingsAccount"
     const val aboutScreenShow = "ScreenSettingsAbout"

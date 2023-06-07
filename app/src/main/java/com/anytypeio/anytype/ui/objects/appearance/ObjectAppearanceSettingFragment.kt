@@ -20,7 +20,6 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectAppearanceSettingBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceSettingViewModel
-import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseCoverFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseDescriptionFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseIconFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChoosePreviewLayoutFragment
@@ -83,9 +82,6 @@ class ObjectAppearanceSettingFragment :
 
     private fun observeCommands(command: ObjectAppearanceSettingViewModel.Command) {
         val fr = when (command) {
-            ObjectAppearanceSettingViewModel.Command.CoverScreen -> {
-                ObjectAppearanceChooseCoverFragment.new(block = block, ctx = ctx)
-            }
             ObjectAppearanceSettingViewModel.Command.IconScreen -> {
                 ObjectAppearanceChooseIconFragment.new(block = block, ctx = ctx)
             }

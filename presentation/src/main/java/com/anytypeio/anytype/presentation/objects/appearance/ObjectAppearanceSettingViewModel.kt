@@ -83,7 +83,6 @@ class ObjectAppearanceSettingViewModel(
     fun onItemClicked(item: ObjectAppearanceMainSettingsView) {
         viewModelScope.launch {
             when (item) {
-                is Cover -> commands.emit(Command.CoverScreen)
                 is Icon -> commands.emit(Command.IconScreen)
                 is PreviewLayout -> commands.emit(Command.PreviewLayoutScreen)
                 is Relation.Description -> commands.emit(Command.DescriptionScreen)
@@ -138,7 +137,6 @@ class ObjectAppearanceSettingViewModel(
 
     sealed class Command {
         object IconScreen : Command()
-        object CoverScreen : Command()
         object PreviewLayoutScreen : Command()
         object DescriptionScreen : Command()
     }

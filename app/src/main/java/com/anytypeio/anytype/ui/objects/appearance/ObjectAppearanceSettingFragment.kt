@@ -44,6 +44,13 @@ class ObjectAppearanceSettingFragment :
                     ctx = ctx,
                     isChecked = isChecked
                 )
+            },
+            onCoverToggleChanged = { isChecked ->
+                vm.updateCoverAppearance(
+                    blockId = block,
+                    ctx = ctx,
+                    isCoverVisible = isChecked
+                )
             }
         )
     }

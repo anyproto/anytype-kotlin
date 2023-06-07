@@ -115,6 +115,25 @@ class ObjectAppearanceSettingViewModel(
         }
     }
 
+    fun updateCoverAppearance(ctx: Id, blockId: Id, isCoverVisible: Boolean) {
+        val block = storage.document.get().find { it.id == blockId }
+        if (block != null && block.content is Link) {
+            val content = block.content as Link
+            val newContent = updateAppearance(isCoverVisible, content)
+            setLinkAppearance(ctx, blockId, newContent)
+        }
+    }
+
+    private fun updateAppearance(isCoverVisible: Boolean, oldContent: Link): Link {
+        val relations = oldContent.relations
+        val updatedRelations = if (isCoverVisible) {
+            relations + Relations.COVER
+        } else {
+            relations - Relations.COVER
+        }
+        return oldContent.copy(relations = updatedRelations)
+    }
+
     private fun setLinkAppearance(ctx: Id, blockId: Id, content: Link) {
         viewModelScope.launch {
             setLinkAppearance(

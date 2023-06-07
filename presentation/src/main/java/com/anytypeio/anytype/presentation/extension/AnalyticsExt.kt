@@ -1547,6 +1547,6 @@ suspend fun Analytics.sendChangeThemeEvent(theme: ThemeMode) {
     }
     sendEvent(
         eventName = EventsDictionary.changeTheme,
-        props = Props(map = mapOf("type" to name))
+        props = Props(map = mapOf("id" to name))
     )
 }

@@ -134,7 +134,7 @@ fun FilesStorageScreen(
             ButtonSecondary(
                 text = stringResource(id = R.string.manage_files),
                 onClick = onManageFilesClicked,
-                size = ButtonSize.XSmall.apply {
+                size = ButtonSize.Small.apply {
                     contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
                 }
             )
@@ -200,7 +200,7 @@ fun FilesStorageScreen(
             ButtonSecondary(
                 text = stringResource(id = R.string.offload_files),
                 onClick = onOffloadFilesClicked,
-                size = ButtonSize.XSmall.apply {
+                size = ButtonSize.Small.apply {
                     contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
                 }
             )

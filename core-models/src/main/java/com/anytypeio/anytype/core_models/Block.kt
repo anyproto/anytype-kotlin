@@ -322,7 +322,8 @@ data class Block(
             data class Sort(
                 val id: Id = "",
                 val relationKey: String,
-                val type: Type
+                val type: Type,
+                val includeTime: Boolean = false
             ) {
                 enum class Type(val formattedName: String) {
                     ASC("ascending"),

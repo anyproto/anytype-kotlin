@@ -95,6 +95,7 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun proceedWithAccountDeletion() {
+        vm.proceedWithAccountDeletion()
         val dialog = DeleteAccountWarning()
         dialog.onDeletionAccepted = {
             dialog.dismiss()

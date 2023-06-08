@@ -7,13 +7,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
-import android.text.TextUtils
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
 import android.widget.FrameLayout
@@ -810,7 +808,7 @@ open class ObjectSetFragment :
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ManageViewer -> {
-                val fr = ManageViewerFragment.new(ctx = command.ctx, dataview = command.dataview)
+                val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenSettings -> {

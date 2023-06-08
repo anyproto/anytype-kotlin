@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 
 /**
  * Use-case for updating data view's viewer.
@@ -61,7 +62,8 @@ class UpdateDataViewViewer(
                     dv = params.dv,
                     view = params.view,
                     relationKey = params.sort.relationKey,
-                    type = params.sort.type
+                    type = params.sort.type,
+                    includeTime = sortIncludeTimeKeys.contains(params.sort.relationKey)
                 )
                 repo.addDataViewSort(command)
             }
@@ -75,11 +77,16 @@ class UpdateDataViewViewer(
                 repo.removeDataViewSort(command)
             }
             is Params.Sort.Replace -> {
+                val sort = if (sortIncludeTimeKeys.contains(params.sort.relationKey)) {
+                    params.sort.copy(includeTime = true)
+                } else {
+                    params.sort
+                }
                 val command = Command.ReplaceSort(
                     ctx = params.ctx,
                     dv = params.dv,
                     view = params.view,
-                    sort = params.sort
+                    sort = sort
                 )
                 repo.replaceDataViewSort(command)
             }
@@ -185,4 +192,10 @@ class UpdateDataViewViewer(
             val viewer: DVViewer
         ) : Params()
     }
+
+    private val sortIncludeTimeKeys = listOf(
+        Relations.LAST_OPENED_DATE,
+        Relations.LAST_MODIFIED_DATE,
+        Relations.CREATED_DATE
+    )
 }

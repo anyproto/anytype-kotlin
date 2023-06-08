@@ -221,6 +221,25 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun blockDataViewViewSetPosition(
+        ctx: Id,
+        dv: Id,
+        view: Id,
+        pos: Int
+    ): Payload {
+        val request = Rpc.BlockDataview.View.SetPosition.Request(
+            contextId = ctx,
+            blockId = dv,
+            viewId = view,
+            position = pos
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewSetPosition(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
     fun blockDataViewRelationAdd(
         ctx: Id,
         dv: Id,

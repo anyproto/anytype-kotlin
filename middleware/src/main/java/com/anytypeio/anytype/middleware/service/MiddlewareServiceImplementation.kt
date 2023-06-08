@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
-import com.anytypeio.anytype.middleware.BuildConfig
 import javax.inject.Inject
 import service.Service
 
@@ -18,13 +17,6 @@ class MiddlewareServiceImplementation @Inject constructor(
 
     init {
         if (!featureToggles.isLogFromMiddlewareLibrary) {
-            Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
-        }
-    }
-
-    init {
-        // Comment these lines if you want to have more verbose go logs.
-        if (BuildConfig.DEBUG) {
             Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
         }
     }
@@ -181,48 +173,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    //todo relations refactoring
-//    override fun blockDataViewRecordCreate(request: Rpc.BlockDataviewRecord.Create.Request): Rpc.BlockDataviewRecord.Create.Response {
-//        val encoded = Service.blockDataviewRecordCreate(
-//            Rpc.BlockDataviewRecord.Create.Request.ADAPTER.encode(request)
-//        )
-//        val response = Rpc.BlockDataviewRecord.Create.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.BlockDataviewRecord.Create.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
-//    }
-//
-//    override fun blockDataViewRecordRelationOptionAdd(
-//        request: Rpc.BlockDataviewRecord.RelationOption.Add.Request
-//    ): Rpc.BlockDataviewRecord.RelationOption.Add.Response {
-//        val encoded = Service.blockDataviewRecordRelationOptionAdd(
-//            Rpc.BlockDataviewRecord.RelationOption.Add.Request.ADAPTER.encode(request)
-//        )
-//        val response = Rpc.BlockDataviewRecord.RelationOption.Add.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.BlockDataviewRecord.RelationOption.Add.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
-//    }
-//
-//    override fun blockDataViewRecordUpdate(request: Rpc.BlockDataviewRecord.Update.Request): Rpc.BlockDataviewRecord.Update.Response {
-//        val encoded = Service.blockDataviewRecordUpdate(
-//            Rpc.BlockDataviewRecord.Update.Request.ADAPTER.encode(request)
-//        )
-//        val response = Rpc.BlockDataviewRecord.Update.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.BlockDataviewRecord.Update.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
-//    }
-
     override fun blockDataViewRelationAdd(request: Rpc.BlockDataview.Relation.Add.Request): Rpc.BlockDataview.Relation.Add.Response {
         val encoded = Service.blockDataviewRelationAdd(
             Rpc.BlockDataview.Relation.Add.Request.ADAPTER.encode(request)
@@ -243,6 +193,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.BlockDataview.Relation.Delete.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.BlockDataview.Relation.Delete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewViewSetPosition(request: Rpc.BlockDataview.View.SetPosition.Request): Rpc.BlockDataview.View.SetPosition.Response {
+        val encoded = Service.blockDataviewViewSetPosition(
+            Rpc.BlockDataview.View.SetPosition.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.View.SetPosition.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.View.SetPosition.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

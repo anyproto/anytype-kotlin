@@ -3,10 +3,12 @@ package com.anytypeio.anytype.ui_settings.appearance
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.theme.SetTheme
+import com.anytypeio.anytype.presentation.extension.sendChangeThemeEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -16,6 +18,7 @@ class AppearanceViewModel(
     private val getTheme: GetTheme,
     private val setTheme: SetTheme,
     private val themeApplicator: ThemeApplicator,
+    private val analytics: Analytics
 ) : ViewModel() {
 
     val selectedTheme = MutableStateFlow<ThemeMode>(ThemeMode.System)
@@ -33,6 +36,9 @@ class AppearanceViewModel(
     }
 
     private fun saveTheme(mode: ThemeMode) {
+        viewModelScope.launch {
+            analytics.sendChangeThemeEvent(mode)
+        }
         viewModelScope.launch {
             setTheme(params = mode).proceed(
                 success = {
@@ -70,13 +76,15 @@ class AppearanceViewModel(
         private val getTheme: GetTheme,
         private val setTheme: SetTheme,
         private val themeApplicator: ThemeApplicator,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AppearanceViewModel(
                 getTheme = getTheme,
                 setTheme = setTheme,
-                themeApplicator = themeApplicator
+                themeApplicator = themeApplicator,
+                analytics = analytics
             ) as T
         }
     }

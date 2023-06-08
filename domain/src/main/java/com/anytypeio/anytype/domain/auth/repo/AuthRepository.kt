@@ -19,7 +19,6 @@ interface AuthRepository {
     suspend fun createAccount(
         name: String,
         avatarPath: String?,
-        invitationCode: String,
         icon: Int
     ): AccountSetup
 

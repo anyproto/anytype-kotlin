@@ -26,12 +26,10 @@ class AuthMiddleware(
     override suspend fun createAccount(
         name: String,
         avatarPath: String?,
-        invitationCode: String,
         iconGradientValue: Int,
     ) : AccountSetup = middleware.accountCreate(
         name = name,
         path = avatarPath,
-        invitationCode = invitationCode,
         iconGradientValue = iconGradientValue
     )
 

@@ -20,12 +20,10 @@ class AuthRemoteDataStore(
     override suspend fun createAccount(
         name: String,
         avatarPath: String?,
-        invitationCode: String,
         iconGradientValue: Int
     ) : AccountSetup = authRemote.createAccount(
         name = name,
         avatarPath = avatarPath,
-        invitationCode = invitationCode,
         iconGradientValue = iconGradientValue
     )
 

@@ -258,7 +258,7 @@ message Rpc {
                 string storePath = 3; // Path to local storage
                 int64 icon = 4; // Option of pre-installed icon
 
-                string alphaInviteCode = 20;
+                string alphaInviteCode = 20; // DEPRECATED
             }
 
             /**

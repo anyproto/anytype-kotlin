@@ -163,7 +163,6 @@ fun Warning(
         )
         Row(
             modifier = Modifier
-                .height(68.dp)
                 .padding(
                     top = 10.dp,
                     start = 20.dp,
@@ -190,6 +189,7 @@ fun Warning(
                     .weight(1f)
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 

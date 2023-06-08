@@ -35,6 +35,7 @@ open class CreateAccount(
      * @property avatarPath optional avatar image file path
      * @property name username
      * @property iconGradientValue random icon gradient value for new account/space background
+     * @property invitationCode optional invite code
      */
     class Params(
         val name: String,

@@ -164,6 +164,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttpVersion"
 sentry = { module = "io.sentry:sentry-android", version.ref = "sentryVersion" }
 sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sentryVersion" }
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
+appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
 
 [bundles]
 

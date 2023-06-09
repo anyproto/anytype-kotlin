@@ -32,6 +32,8 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
+import com.github.javiersantos.appupdater.AppUpdater
+import com.github.javiersantos.appupdater.enums.UpdateFrom
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -65,6 +67,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         inject()
         setupTheme()
         super.onCreate(savedInstanceState)
+
+        startAppUpdater()
+
         if (savedInstanceState != null) vm.onRestore()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -102,6 +107,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
             }
         }
+    }
+
+    private fun startAppUpdater() {
+        AppUpdater(this)
+            .setUpdateFrom(UpdateFrom.JSON)
+            .setUpdateJSON("https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json")
+            .setButtonDoNotShowAgain("")
+            .start()
     }
 
     private fun setupWindowInsets() {

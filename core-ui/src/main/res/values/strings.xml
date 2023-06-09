@@ -291,7 +291,7 @@
     <string name="sync_status_toast_syncing">Downloading or uploading data to some node</string>
     <string name="sync_status_toast_synced">Backed up on one node at least</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
-    <string name="sync_status_toast_incompatible">Version outdated. Please update anytype</string>
+    <string name="sync_status_toast_incompatible">Version outdated. Please update Anytype</string>
 
     <string name="relation_format_description">Description</string>
     <string name="relation_format_title">Title</string>

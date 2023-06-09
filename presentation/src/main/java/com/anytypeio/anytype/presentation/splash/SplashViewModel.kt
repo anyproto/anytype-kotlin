@@ -224,6 +224,6 @@ class SplashViewModel(
 
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account..."
-        const val ERROR_NEED_UPDATE = "Unable to retrieve account data due to incompatible version on remote nodes. Please update Anytype to the latest version."
+        const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
     }
 }

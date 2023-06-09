@@ -24,9 +24,8 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import javax.inject.Inject
 
-
-class InvitationFragment :
-    NavigationFragment<FragmentInvitationBinding>(R.layout.fragment_invitation) {
+@Deprecated("To be deleted")
+class InvitationFragment : NavigationFragment<FragmentInvitationBinding>(R.layout.fragment_invitation) {
 
     @Inject
     lateinit var analytics: Analytics

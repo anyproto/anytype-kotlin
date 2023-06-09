@@ -21,7 +21,10 @@ class StatusBadgeWidget @JvmOverloads constructor(
 
     fun bind(status: SyncStatus?) {
         when (status) {
-            SyncStatus.UNKNOWN, SyncStatus.FAILED, SyncStatus.OFFLINE -> tint(
+            SyncStatus.UNKNOWN,
+            SyncStatus.FAILED,
+            SyncStatus.OFFLINE,
+            SyncStatus.INCOMPATIBLE_VERSION -> tint(
                 color = context.color(R.color.sync_status_red)
             )
             SyncStatus.SYNCING -> tint(

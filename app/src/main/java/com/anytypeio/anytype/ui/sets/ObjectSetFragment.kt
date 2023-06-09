@@ -98,6 +98,7 @@ import com.bumptech.glide.Glide
 import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 open class ObjectSetFragment :
     NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
@@ -395,6 +396,19 @@ open class ObjectSetFragment :
             SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
             SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
             SyncStatus.INCOMPATIBLE_VERSION -> tvStatus.setText(R.string.sync_status_incompatible)
+        }
+        topToolbarStatusContainer.setOnClickListener {
+            when (status) {
+                SyncStatus.UNKNOWN -> toast(getString(R.string.sync_status_toast_unknown))
+                SyncStatus.FAILED -> toast(getString(R.string.sync_status_toast_failed))
+                SyncStatus.OFFLINE -> toast(getString(R.string.sync_status_toast_offline))
+                SyncStatus.SYNCING -> toast(getString(R.string.sync_status_toast_syncing))
+                SyncStatus.SYNCED -> toast(getString(R.string.sync_status_toast_synced))
+                SyncStatus.INCOMPATIBLE_VERSION -> toast(getString(R.string.sync_status_toast_incompatible))
+                else -> {
+                    Timber.i("Missed sync status")
+                }
+            }
         }
     }
 

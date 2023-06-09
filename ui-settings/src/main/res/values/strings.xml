@@ -50,7 +50,7 @@
     <string name="about_anytype_community_link">https://community.anytype.io</string>
     <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
     <string name="about_terms_and_conditions_link">https://anytype.io/terms.pdf</string>
-    <string name="about_privacy_policy_link">https://anytype.io/Anytype_Privacy_Statement.pdf</string>
+    <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
 
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nAnalytics\u00A0ID:\u00A0%5$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nAnalytics\u00A0ID:\u00A0%7$s</string>

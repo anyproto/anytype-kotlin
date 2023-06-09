@@ -66,7 +66,6 @@ class SetupNewAccountViewModel(
             params = CreateAccount.Params(
                 name = session.name ?: throw IllegalStateException("Name not set"),
                 avatarPath = session.avatarPath,
-                invitationCode = session.invitationCode,
                 iconGradientValue = spaceGradientProvider.randomId()
             )
         ) { result ->

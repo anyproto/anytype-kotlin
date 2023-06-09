@@ -11,7 +11,6 @@ interface AuthRemote {
     suspend fun createAccount(
         name: String,
         avatarPath: String?,
-        invitationCode: String,
         iconGradientValue: Int
     ): AccountSetup
     suspend fun deleteAccount() : AccountStatus

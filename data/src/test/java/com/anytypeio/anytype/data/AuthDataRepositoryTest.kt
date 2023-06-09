@@ -100,7 +100,6 @@ class AuthDataRepositoryTest {
                 createAccount(
                     name = name,
                     avatarPath = path,
-                    invitationCode = "code",
                     iconGradientValue = icon
                 )
             } doReturn setup
@@ -109,7 +108,6 @@ class AuthDataRepositoryTest {
         repo.createAccount(
             name = name,
             avatarPath = path,
-            invitationCode = "code",
             icon = icon
         )
 
@@ -118,7 +116,6 @@ class AuthDataRepositoryTest {
         verify(authRemote, times(1)).createAccount(
             name = name,
             avatarPath = path,
-            invitationCode = "code",
             iconGradientValue = icon
         )
 

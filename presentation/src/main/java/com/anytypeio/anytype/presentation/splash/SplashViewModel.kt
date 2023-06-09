@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.CrashReporter
+import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -111,10 +112,16 @@ class SplashViewModel(
                 },
                 failure = { e ->
                     Timber.e(e, "Error while launching account")
-                    if (e is MigrationNeededException) {
-                        commands.emit(Command.NavigateToMigration)
-                    } else {
-                        commands.emit(Command.Error(ERROR_MESSAGE))
+                    when (e) {
+                        is MigrationNeededException -> {
+                            commands.emit(Command.NavigateToMigration)
+                        }
+                        is NeedToUpdateApplicationException -> {
+                            commands.emit(Command.Error(ERROR_NEED_UPDATE))
+                        }
+                        else -> {
+                            commands.emit(Command.Error(ERROR_MESSAGE))
+                        }
                     }
                 }
             )
@@ -217,5 +224,6 @@ class SplashViewModel(
 
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account..."
+        const val ERROR_NEED_UPDATE = "Unable to retrieve account data due to incompatible version on remote nodes. Please update Anytype to the latest version."
     }
 }

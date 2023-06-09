@@ -13,12 +13,14 @@ import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
+import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,6 +71,9 @@ class SetupSelectedAccountViewModel(
                         }
                         is AccountIsDeletedException -> {
                             error.postValue("This account is deleted. Try using another account or create a new one.")
+                        }
+                        is NeedToUpdateApplicationException -> {
+                            error.postValue(SplashViewModel.ERROR_NEED_UPDATE)
                         }
                         else -> {
                             migrationMessageJob.cancel()

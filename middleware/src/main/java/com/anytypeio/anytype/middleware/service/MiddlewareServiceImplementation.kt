@@ -4,6 +4,7 @@ import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
+import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
@@ -80,6 +81,9 @@ class MiddlewareServiceImplementation @Inject constructor(
                 }
                 Rpc.Account.Select.Response.Error.Code.ACCOUNT_IS_DELETED -> {
                     throw AccountIsDeletedException()
+                }
+                Rpc.Account.Select.Response.Error.Code.FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION -> {
+                    throw NeedToUpdateApplicationException()
                 }
                 else -> throw Exception(error.description)
             }

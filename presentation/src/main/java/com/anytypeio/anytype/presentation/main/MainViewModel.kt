@@ -8,6 +8,8 @@ import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
+import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -20,6 +22,7 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -112,6 +115,14 @@ class MainViewModel(
                     Timber.d("Restored account after activity recreation")
                 },
                 failure = { error ->
+                    when (error) {
+                        is NeedToUpdateApplicationException -> {
+                            commands.emit(Command.Error(SplashViewModel.ERROR_NEED_UPDATE))
+                        }
+                        else -> {
+                            commands.emit(Command.Error(SplashViewModel.ERROR_MESSAGE))
+                        }
+                    }
                     Timber.e(error, "Error while launching account after activity recreation")
                 }
             )
@@ -136,5 +147,6 @@ class MainViewModel(
         object LogoutDueToAccountDeletion : Command()
 
         class OpenCreateNewType(val type: Id) : Command()
+        data class Error(val msg: String) : Command()
     }
 }

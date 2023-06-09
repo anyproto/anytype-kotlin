@@ -201,6 +201,7 @@ dependencies {
     implementation libs.composeReorderable
 
     implementation libs.room
+    implementation libs.appUpdater
 
     implementation libs.exoPlayerCore
     implementation libs.exoPlayerUi

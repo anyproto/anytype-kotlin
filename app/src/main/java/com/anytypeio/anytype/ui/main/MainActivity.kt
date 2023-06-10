@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     private fun startAppUpdater() {
         AppUpdater(this)
             .setUpdateFrom(UpdateFrom.JSON)
-            .setUpdateJSON("https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json")
+            .setUpdateJSON(LATEST_ANDROID_VERSION_URL)
             .setButtonDoNotShowAgain("")
             .start()
     }
@@ -204,5 +204,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     fun release() {
         componentManager().mainEntryComponent.release()
+    }
+
+    companion object {
+        const val val LATEST_ANDROID_VERSION_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
     }
 }

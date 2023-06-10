@@ -166,7 +166,7 @@ fun MnemonicPhrase(
                         modifier = Modifier
                             .fillMaxWidth()
                             .conditional(
-                                condition = state is OnboardingMnemonicViewModel.State.MnemonicOpened,
+                                condition = state is OnboardingMnemonicViewModel.State.Mnemonic,
                                 positive = { blur(15.dp) }
                             )
                             .padding(

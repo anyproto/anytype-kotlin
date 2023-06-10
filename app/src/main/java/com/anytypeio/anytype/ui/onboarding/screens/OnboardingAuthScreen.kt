@@ -59,8 +59,7 @@ fun AuthScreen(
     joinState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
             Title(modifier = Modifier)

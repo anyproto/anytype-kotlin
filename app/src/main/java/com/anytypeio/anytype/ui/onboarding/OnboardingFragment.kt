@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.onboarding
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,16 +27,22 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.ComponentManager
@@ -50,6 +57,15 @@ import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import com.google.android.exoplayer2.util.Util
 
 
 class OnboardingFragment : BaseComposeFragment() {
@@ -69,6 +85,7 @@ class OnboardingFragment : BaseComposeFragment() {
                             .background(Color.Black)
                     ) {
                         val currentPage = remember { mutableStateOf(Page.AUTH) }
+                        BackgroundCircle()
                         PagerIndicator(
                             modifier = Modifier
                                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
@@ -188,7 +205,9 @@ class OnboardingFragment : BaseComposeFragment() {
             }
             composable(
                 route = OnboardingNavigation.createSoulAnim,
-                enterTransition = { fadeIn(tween(ANIMATION_LENGTH_FADE)) }
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                }
             ) {
                 currentPage.value = Page.SOUL_CREATION_ANIM
                 CreateSoulAnimation()
@@ -291,6 +310,52 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             }
         }
+    }
+
+    @Composable
+    fun BackgroundCircle() {
+        val context = LocalContext.current
+        val videoPath = RawResourceDataSource.buildRawResourceUri(R.raw.shader)
+
+        val paddingTop = LocalConfiguration.current.screenHeightDp / 5
+        val padding = remember {
+            paddingTop
+        }
+
+        val exoPlayer = remember { getVideoPlayer(context, videoPath) }
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = padding.dp)
+                    .scale(1.7f),
+                factory = {
+                    PlayerView(context).apply {
+                        player = exoPlayer
+                        useController = false
+                    }
+                }
+            )
+        }
+    }
+
+    private fun getVideoPlayer(context: Context, videoPath: Uri): Player {
+        val player = ExoPlayer.Builder(context).build()
+        val source = DefaultDataSource.Factory(
+            context,
+            DefaultHttpDataSource.Factory().setUserAgent(
+                Util.getUserAgent(context, BuildConfig.LIBRARY_PACKAGE_NAME)
+            )
+        )
+        val mediaSource = ProgressiveMediaSource
+            .Factory(source)
+            .createMediaSource(MediaItem.fromUri(videoPath))
+        player.seekTo(0)
+        player.setMediaSource(mediaSource)
+        player.playWhenReady = true
+        player.repeatMode = Player.REPEAT_MODE_ALL
+        player.prepare()
+        return player
     }
 
     override fun injectDependencies() {}

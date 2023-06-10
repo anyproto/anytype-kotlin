@@ -51,23 +51,21 @@ class CreateAccountTest {
     fun `should create account and save it and set as current user account and save config in storage`() = runTest {
             val name = MockDataFactory.randomString()
             val path = null
-            val code = "code"
             val icon = 1
             val setup = StubAccountSetup()
             val param = CreateAccount.Params(
                 name = name,
                 avatarPath = path,
-                invitationCode = code,
                 iconGradientValue = icon
             )
 
             repo.stub {
-                onBlocking { createAccount(name, path, code, icon) } doReturn setup
+                onBlocking { createAccount(name, path, icon) } doReturn setup
             }
 
             createAccount.run(param)
 
-            verify(repo, times(1)).createAccount(name, path, code, icon)
+            verify(repo, times(1)).createAccount(name, path, icon)
             verify(repo, times(1)).saveAccount(setup.account)
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
             verifyNoMoreInteractions(repo)
@@ -79,19 +77,17 @@ class CreateAccountTest {
 
         val name = MockDataFactory.randomString()
         val path = null
-        val code = "code"
         val icon = 1
         val setup = StubAccountSetup()
 
         val param = CreateAccount.Params(
             name = name,
             avatarPath = path,
-            invitationCode = code,
             iconGradientValue = icon
         )
 
         repo.stub {
-            onBlocking { createAccount(name, path, code, icon) } doReturn setup
+            onBlocking { createAccount(name, path, icon) } doReturn setup
         }
 
         createAccount.run(param)

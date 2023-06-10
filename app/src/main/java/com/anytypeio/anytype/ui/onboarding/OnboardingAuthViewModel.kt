@@ -55,7 +55,6 @@ class OnboardingAuthViewModel @Inject constructor(
             params = CreateAccount.Params(
                 name = "",
                 avatarPath = null,
-                invitationCode = "elbrus",
                 iconGradientValue = spaceGradientProvider.randomId()
             )
         ) { result ->

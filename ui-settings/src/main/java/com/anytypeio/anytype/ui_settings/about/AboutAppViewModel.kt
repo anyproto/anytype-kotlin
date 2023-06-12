@@ -45,6 +45,7 @@ class AboutAppViewModel(
     val libraryVersion = MutableStateFlow("")
     val accountId = MutableStateFlow("")
     val analyticsId = MutableStateFlow("")
+    val deviceId = MutableStateFlow("")
 
     init {
         viewModelScope.launch {
@@ -58,6 +59,7 @@ class AboutAppViewModel(
         viewModelScope.launch {
             val config = configStorage.get()
             analyticsId.value = config.analytics
+            deviceId.value = config.device
         }
         viewModelScope.launch {
             getLibraryVersion(BaseUseCase.None).process(

@@ -10,7 +10,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -56,7 +56,7 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -133,8 +133,6 @@ fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
                 )
             }
         }
-
-
         if (uiState.operationInProgress) {
             LinearProgressIndicator(
                 modifier = Modifier
@@ -219,12 +217,9 @@ fun ListView(
                                 lazyListState,
                                 key = item.obj.id,
                             ) { isDragging ->
-                                val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
-
+                                val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f)
                                 Column(
-                                    modifier =
-                                    Modifier
-                                        .shadow(elevation.value)
+                                    modifier = Modifier
                                         .then(
                                             if (uiState.inDragMode) {
                                                 Modifier.detectReorderAfterLongPress(
@@ -234,6 +229,8 @@ fun ListView(
                                                 Modifier
                                             }
                                         )
+                                        .background(colorResource(id = R.color.background_primary))
+                                        .alpha(alpha.value)
                                 ) {
                                     CollectionItem(
                                         view = item,

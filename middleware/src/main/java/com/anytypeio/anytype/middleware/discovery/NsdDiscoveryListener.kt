@@ -21,11 +21,19 @@ class NsdDiscoveryListener(
     private val resolveSemaphore = Semaphore(1)
 
     fun registerObserver(observer: DiscoveryObserver) {
-        this.observer = observer
+        try {
+            this.observer = observer
+        } catch (e: Exception) {
+            Timber.e("Error while registering observer")
+        }
     }
 
     fun unregisterObserver() {
-        this.observer = null
+        try {
+            this.observer = null
+        } catch (e: Exception) {
+            Timber.e("Error while unregistering observer")
+        }
     }
 
     override fun onDiscoveryStarted(regType: String) {
@@ -34,9 +42,7 @@ class NsdDiscoveryListener(
 
     override fun onServiceFound(service: NsdServiceInfo) {
         scope.launch(dispatcher) {
-
             val observer = observer ?: return@launch
-
             resolveSemaphore.acquire()
             nsdManager.resolveService(service, ResolveListener(observer, resolveSemaphore))
         }

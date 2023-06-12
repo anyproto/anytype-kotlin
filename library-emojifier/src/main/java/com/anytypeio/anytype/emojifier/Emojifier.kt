@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.emojifier
 
 import com.anytypeio.anytype.emojifier.data.Emoji
+import timber.log.Timber
 
 object Emojifier {
 
@@ -37,6 +38,28 @@ object Emojifier {
         return uri(page, index)
     }
 
+    fun safeUri(unicode: String): String {
+       try {
+            var result = search(unicode)
+            if (result == null) {
+                if (unicode.last() == SEPARATOR) {
+                    val sb = StringBuilder()
+                    unicode.forEachIndexed { index, char ->
+                        if (index < unicode.length.dec()) sb.append(char)
+                    }
+                    result = search(sb.toString())
+                }
+            }
+            checkNotNull(result) { "Could not find emoji for: $unicode" }
+            val (page, index) = result
+            return uri(page, index)
+        } catch (e: Exception) {
+           return Config.EMPTY_URI.also {
+               Timber.e(e, "Error while searching for uri")
+           }
+        }
+    }
+
     /**
      * @param page emoji's page (emoji category)
      * @param index emoji's index on the [page]
@@ -71,6 +94,7 @@ object Emojifier {
 
     object Config {
         const val EMOJI_FILE = "emoji.json"
+        const val EMPTY_URI = ""
     }
 
 }

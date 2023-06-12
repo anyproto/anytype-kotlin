@@ -347,7 +347,7 @@ class CollectionViewModel(
                 ObjectType.Layout.BOOKMARK -> {
                     commands.emit(Command.LaunchDocument(id = target))
                 }
-                ObjectType.Layout.SET -> {
+                ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                     commands.emit(Command.LaunchObjectSet(target = target))
                 }
                 else -> {

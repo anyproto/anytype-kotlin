@@ -1047,7 +1047,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         icon = command.icon,
                         middleString = R.string.snack_move_to
                     ) {
-                        if (command.isSet) {
+                        if (command.isDataView) {
                             vm.proceedWithOpeningDataViewObject(command.id)
                         } else {
                             vm.proceedWithOpeningObject(command.id)
@@ -1992,14 +1992,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         blocks: List<Id>,
         text: String,
         icon: ObjectIcon,
-        isSet: Boolean
+        isDataView: Boolean
     ) {
         vm.proceedWithMoveToAction(
             target = target,
             text = text,
             icon = icon,
             blocks = blocks,
-            isSet = isSet
+            isDataView = isDataView
         )
     }
 
@@ -2014,10 +2014,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onLinkTo(
         link: Id,
         target: Id,
-        isBookmark: Boolean,
-        text: String,
-        icon: ObjectIcon,
-        isSet: Boolean
+        isBookmark: Boolean
     ) {
         vm.proceedWithLinkToAction(
             link = link,

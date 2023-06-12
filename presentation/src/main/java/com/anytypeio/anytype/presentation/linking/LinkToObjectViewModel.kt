@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -51,10 +50,7 @@ class LinkToObjectViewModel(
             commands.emit(
                 Command.Link(
                     link = view.id,
-                    text = view.name,
-                    icon = view.icon,
-                    isBookmark = view.layout == ObjectType.Layout.BOOKMARK,
-                    isSet = view.layout == ObjectType.Layout.SET || view.layout == ObjectType.Layout.COLLECTION
+                    isBookmark = view.layout == ObjectType.Layout.BOOKMARK
                 )
             )
         }
@@ -78,10 +74,7 @@ class LinkToObjectViewModel(
         object Exit : Command()
         data class Link(
             val link: Id,
-            val isBookmark: Boolean,
-            val text: String,
-            val icon: ObjectIcon,
-            val isSet: Boolean
+            val isBookmark: Boolean
         ) : Command()
     }
 }

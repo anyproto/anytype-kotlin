@@ -67,7 +67,7 @@ fun TreeWidgetObjectIcon(
         }
         is ObjectIcon.Basic.Emoji -> {
             UriImage(
-                uri = Emojifier.uri(icon.unicode),
+                uri = Emojifier.safeUri(icon.unicode),
                 modifier = Modifier.padding(start = paddingStart, end = paddingEnd)
             )
         }

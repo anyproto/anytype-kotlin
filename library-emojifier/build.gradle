@@ -9,6 +9,7 @@ dependencies {
     implementation project(':core-utils')
     implementation libs.gson
     implementation libs.coroutinesAndroid
+    implementation libs.timber
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest

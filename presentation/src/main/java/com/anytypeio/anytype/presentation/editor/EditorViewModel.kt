@@ -5170,7 +5170,7 @@ class EditorViewModel(
         text: String,
         icon: ObjectIcon,
         blocks: List<Id>,
-        isSet: Boolean
+        isDataView: Boolean
     ) {
         if (BuildConfig.DEBUG) {
             Timber.d("onMoveToTargetClicked, target:[$target], blocks:[$blocks]")
@@ -5195,8 +5195,8 @@ class EditorViewModel(
                                 id = target,
                                 fromText = "${blocks.size} block${if (blocks.size > 1) "s" else ""} ",
                                 toText = text,
-                                icon,
-                                isSet
+                                icon = icon,
+                                isDataView = isDataView
                             )
                         )
                         viewModelScope.sendAnalyticsBlockMoveToEvent(analytics, blocks.size)

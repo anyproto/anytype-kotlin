@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -182,7 +182,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
                             text = command.view.name,
                             icon = command.view.icon,
                             blocks = blocks,
-                            isSet = command.view.layout == ObjectType.Layout.SET
+                            isDataView = command.view.layout.isDataView()
                         )
                     }
                     textInput.hideKeyboard()
@@ -290,7 +290,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 }
 
 interface OnMoveToAction {
-    fun onMoveTo(target: Id, blocks: List<Id>, text: String, icon: ObjectIcon, isSet: Boolean)
+    fun onMoveTo(target: Id, blocks: List<Id>, text: String, icon: ObjectIcon, isDataView: Boolean)
     fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?)
 }
 

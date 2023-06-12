@@ -489,7 +489,7 @@ abstract class RelationValueBaseViewModel(
                         navigation.emit(AppNavigation.Command.OpenObject(id))
                     }
                 }
-                ObjectType.Layout.SET -> {
+                ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                     viewModelScope.launch {
                         navigation.emit(AppNavigation.Command.OpenSetOrCollection(id))
                     }

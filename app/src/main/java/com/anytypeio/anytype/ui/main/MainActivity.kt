@@ -19,6 +19,7 @@ import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
@@ -59,6 +60,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     @Inject
     lateinit var mdnsProvider: MDNSProvider
+
+    @Inject
+    lateinit var featureToggles: FeatureToggles
 
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
@@ -110,11 +114,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     private fun startAppUpdater() {
-        AppUpdater(this)
-            .setUpdateFrom(UpdateFrom.JSON)
-            .setUpdateJSON("https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json")
-            .setButtonDoNotShowAgain("")
-            .start()
+        if (featureToggles.isAutoUpdateEnabled) {
+            AppUpdater(this)
+                .setUpdateFrom(UpdateFrom.JSON)
+                .setUpdateJSON(AUTO_UPDATE_URL)
+                .setButtonDoNotShowAgain("")
+                .start()
+        }
     }
 
     private fun setupWindowInsets() {
@@ -204,5 +210,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     fun release() {
         componentManager().mainEntryComponent.release()
+    }
+
+    companion object {
+        const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
     }
 }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import service.AndroidDiscoveryProxy
 import service.DiscoveryObserver
+import timber.log.Timber
 
 class MDNSDelegate(
     private val scope: CoroutineScope,
@@ -18,18 +19,26 @@ class MDNSDelegate(
     private var observer: DiscoveryObserver? = null
 
     fun start() {
-        isStarted = true
-        scope.launch(dispatcher) {
-            observer?.let { observer ->
-                resolver.start(observer)
+        try {
+            isStarted = true
+            scope.launch(dispatcher) {
+                observer?.let { observer ->
+                    resolver.start(observer)
+                }
             }
+        } catch (e: Exception) {
+            Timber.e(e, "Error while starting MDNS delegate")
         }
     }
 
     fun stop() {
-        isStarted = false
-        scope.launch(dispatcher) {
-            resolver.stop()
+        try {
+            isStarted = false
+            scope.launch(dispatcher) {
+                resolver.stop()
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error while stopping MDNS delegate")
         }
     }
 

@@ -456,7 +456,7 @@
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="ObjectDescriptionTextStyle" parent="TextView.ContentStyle.Relations.2">
+    <style name="ObjectDescriptionTextStyle" parent="TextView.ContentStyle.Relations.1">
         <item name="android:maxLines">3</item>
         <item name="android:ellipsize">end</item>
         <item name="android:background">@null</item>

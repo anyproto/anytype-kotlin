@@ -5195,8 +5195,8 @@ class EditorViewModel(
                                 id = target,
                                 fromText = "${blocks.size} block${if (blocks.size > 1) "s" else ""} ",
                                 toText = text,
-                                icon,
-                                isSet
+                                icon = icon,
+                                isSet = isSet
                             )
                         )
                         viewModelScope.sendAnalyticsBlockMoveToEvent(analytics, blocks.size)

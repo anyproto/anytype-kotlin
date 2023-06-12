@@ -29,7 +29,8 @@ fun Rpc.Account.Create.Response.toAccountSetup() : AccountSetup {
             gateway = info.gatewayUrl,
             workspace = info.accountSpaceId,
             widgets = info.widgetsId,
-            analytics = info.analyticsId
+            analytics = info.analyticsId,
+            device = info.deviceId
         ),
         status = status?.core() ?: AccountStatus.Unknown
     )
@@ -56,7 +57,8 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
             gateway = info.gatewayUrl,
             workspace = info.accountSpaceId,
             widgets = info.widgetsId,
-            analytics = info.analyticsId
+            analytics = info.analyticsId,
+            device = info.deviceId
         ),
         status = status?.core() ?: AccountStatus.Unknown
     )

@@ -30,4 +30,5 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isNewOnBoardingEnabled: Boolean = false
 
+    override val isAutoUpdateEnabled: Boolean = false
 }

@@ -2014,10 +2014,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onLinkTo(
         link: Id,
         target: Id,
-        isBookmark: Boolean,
-        text: String,
-        icon: ObjectIcon,
-        isSet: Boolean
+        isBookmark: Boolean
     ) {
         vm.proceedWithLinkToAction(
             link = link,

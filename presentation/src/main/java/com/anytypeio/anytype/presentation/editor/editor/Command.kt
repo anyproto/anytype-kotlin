@@ -40,7 +40,7 @@ sealed class Command {
         val fromText: String,
         val toText: String,
         val icon: ObjectIcon,
-        val isSet: Boolean,
+        val isDataView: Boolean,
     ) : Command()
 
     object PopBackStack : Command()

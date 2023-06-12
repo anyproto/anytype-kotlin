@@ -1047,7 +1047,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         icon = command.icon,
                         middleString = R.string.snack_move_to
                     ) {
-                        if (command.isSet) {
+                        if (command.isDataView) {
                             vm.proceedWithOpeningDataViewObject(command.id)
                         } else {
                             vm.proceedWithOpeningObject(command.id)
@@ -1999,7 +1999,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             text = text,
             icon = icon,
             blocks = blocks,
-            isSet = isDataView
+            isDataView = isDataView
         )
     }
 

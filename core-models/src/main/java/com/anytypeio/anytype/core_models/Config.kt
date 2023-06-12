@@ -13,5 +13,6 @@ data class Config(
     val gateway: Url,
     val workspace: Id,
     val widgets: Id,
-    val analytics: Id
+    val analytics: Id,
+    val device: Id
 )

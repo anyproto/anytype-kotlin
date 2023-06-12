@@ -58,6 +58,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         libraryVersion = vm.libraryVersion.collectAsState().value,
                         accountId = vm.accountId.collectAsState().value,
                         analyticsId = vm.analyticsId.collectAsState().value,
+                        deviceId = vm.deviceId.collectAsState().value,
                         onMetaClicked = { copyMetaToClipboard() },
                         onContactUsClicked = {
                             proceedWithAction(
@@ -68,7 +69,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                                         version = getVersionText(),
                                         library = vm.libraryVersion.value,
                                         os = getOsVersion(),
-                                        device = getDevice()
+                                        device = getDevice(),
+                                        deviceId = vm.deviceId.value,
                                     )
                                 )
                             )
@@ -168,6 +170,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
         version: String,
         library: String,
         analytics: Id,
+        deviceId: Id,
         os: String
     ) : String {
         return "mailto:support@anytype.io" +
@@ -178,6 +181,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                 "%0D%0AApp%20version%3A%20$version" +
                 "%0D%0ALibrary%20version%3A%20$library" +
                 "%0D%0AAccount%20ID%3A%20$account" +
+                "%0D%0ADevice%20ID%3A%20$deviceId" +
                 "%0D%0AAnalytics%20ID%3A%20$analytics"
     }
 

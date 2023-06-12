@@ -28,6 +28,7 @@ fun AboutAppScreen(
     libraryVersion: String,
     accountId: String,
     analyticsId: String,
+    deviceId: String,
     version: String,
     buildNumber: Int,
     onMetaClicked: () -> Unit,
@@ -110,6 +111,7 @@ fun AboutAppScreen(
                     buildNumber,
                     libraryVersion,
                     accountId,
+                    deviceId,
                     analyticsId
                 ),
                 style = Caption2Regular.copy(
@@ -164,6 +166,7 @@ fun PreviewAboutAppScreen() {
         libraryVersion = "1.0.0",
         accountId = "1234567890",
         analyticsId = "1234567890",
+        deviceId = "123132323",
         version = "1.0.0",
         buildNumber = 1,
         onMetaClicked = {},

@@ -56,3 +56,8 @@ data class ObjectType(
         val emoji: String
     )
 }
+
+fun ObjectType.Layout?.isSetOrCollection(): Boolean {
+    if (this == null) return false
+    return this == ObjectType.Layout.SET || this == ObjectType.Layout.COLLECTION
+}

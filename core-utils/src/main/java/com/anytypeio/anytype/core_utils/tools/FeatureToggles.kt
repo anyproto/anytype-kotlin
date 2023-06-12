@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_utils.tools
 
 interface FeatureToggles {
 
+    val isAutoUpdateEnabled: Boolean
+
     val isLogFromMiddlewareLibrary: Boolean
 
     val isLogMiddlewareInteraction: Boolean

@@ -1992,14 +1992,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         blocks: List<Id>,
         text: String,
         icon: ObjectIcon,
-        isSet: Boolean
+        isDataView: Boolean
     ) {
         vm.proceedWithMoveToAction(
             target = target,
             text = text,
             icon = icon,
             blocks = blocks,
-            isSet = isSet
+            isSet = isDataView
         )
     }
 

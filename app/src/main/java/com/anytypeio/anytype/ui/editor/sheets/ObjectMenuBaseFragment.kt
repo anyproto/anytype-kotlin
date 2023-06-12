@@ -226,7 +226,7 @@ abstract class ObjectMenuBaseFragment :
         blocks: List<Id>,
         text: String,
         icon: ObjectIcon,
-        isSet: Boolean
+        isDataView: Boolean
     ) {
         vm.onLinkedMyselfTo(myself = ctx, addTo = target, fromName)
     }

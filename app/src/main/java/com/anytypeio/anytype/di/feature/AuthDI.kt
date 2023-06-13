@@ -17,6 +17,9 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.CrashReporter
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -213,7 +216,8 @@ object SetupNewAccountModule {
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         spaceGradientProvider: SpaceGradientProvider,
         configStorage: ConfigStorage,
-        crashReporter: CrashReporter
+        crashReporter: CrashReporter,
+        setupMobileUseCaseSkip: SetupMobileUseCaseSkip
     ): SetupNewAccountViewModelFactory {
         return SetupNewAccountViewModelFactory(
             createAccount = createAccount,
@@ -223,7 +227,8 @@ object SetupNewAccountModule {
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             spaceGradientProvider = spaceGradientProvider,
             configStorage = configStorage,
-            crashReporter = crashReporter
+            crashReporter = crashReporter,
+            setupMobileUseCaseSkip = setupMobileUseCaseSkip
         )
     }
 
@@ -244,6 +249,18 @@ object SetupNewAccountModule {
         configStorage = configStorage,
         workspaceManager = workspaceManager
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideImportUseCase(
+        dispatchers: AppCoroutineDispatchers,
+        blockRepository: BlockRepository
+    ) = SetupMobileUseCaseSkip(
+        repo = blockRepository,
+        dispatchers = dispatchers
+    )
+
 }
 
 @Module

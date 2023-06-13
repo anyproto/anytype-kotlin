@@ -19,17 +19,18 @@ import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
+import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageOffloadEvent
-import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
-import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -91,9 +92,18 @@ class FilesStorageViewModel(
 
     private fun subscribeToFileLimits() {
         jobs += viewModelScope.launch {
-            fileSpaceUsage.asFlow(Unit).collect { fileLimits ->
-                _fileLimitsState.value = fileLimits
-            }
+            fileSpaceUsage
+                .stream(Unit)
+                .collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            _fileLimitsState.value = it
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error while getting file space usage")
+                        }
+                    )
+                }
         }
     }
 

@@ -80,6 +80,8 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        setFullHeightSheet()
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = editCellTagAdapter
@@ -96,7 +98,6 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
             clearSearchText.invisible()
         }
         with(lifecycleScope) {
-            subscribe(view.clicks()) { dismiss() }
             subscribe(binding.btnAdd.clicks()) { onAddButtonClicked() }
             subscribe(searchRelationInput.textChanges()) {
                 if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
@@ -105,26 +106,6 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
             subscribe(searchRelationInput.focusChanges()) { hasFocus ->
                 if (hasFocus) behavior?.state = BottomSheetBehavior.STATE_EXPANDED
             }
-        }
-
-        if (vm.isMultiple.value) {
-            binding.btnAdd.visible()
-        }
-
-        behavior?.apply {
-            skipCollapsed = true
-            state = BottomSheetBehavior.STATE_EXPANDED
-            addBottomSheetCallback(
-                object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        // Do nothing.
-                    }
-
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) dismiss()
-                    }
-                }
-            )
         }
     }
 

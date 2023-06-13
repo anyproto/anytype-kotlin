@@ -137,6 +137,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         getBuildNumber(),
                         vm.libraryVersion.value,
                         vm.accountId.value,
+                        vm.deviceId.value,
                         vm.analyticsId.value
                     )
                 )

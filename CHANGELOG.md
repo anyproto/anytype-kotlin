@@ -8,14 +8,16 @@
 * App | New Space screen (...)
 * App | Introduce library of Types and Relations (#2856, ...)
 * App | New "About app" screen (...)
-* App | File storage screen (...)
+* App | File storage limits screen (...)
 * Sets or Collections | Unblock Relations in Object menu (#2974, #2975, #3012, #3035, #3054)
 
 ### Fixes & tech 🚒
 
+* App | Removed invite code screen (#40)
 * Editor | Do not allow changing icon when object is locked (#2990)
 * Editor | Do not allow formatting text when object is locked (#2964)
 * Editor | Allow editing bookmark block with invalid link (#3010)
+* App | Allow debugging your workspace or a specific object (...)
 
 ### Design & UX 🔳
 

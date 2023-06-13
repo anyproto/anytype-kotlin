@@ -1146,7 +1146,7 @@ message Rpc {
                 int32 offset = 4;
                 int32 limit = 5;
                 // additional filter by objectTypes
-                repeated string objectTypeFilter = 6; // deprecated, to be removed
+                repeated string objectTypeFilter = 6; // DEPRECATED
                 // needed keys in details for return, when empty - will return all
                 repeated string keys = 7;
             }
@@ -1174,7 +1174,7 @@ message Rpc {
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
                 int32 limit = 2;
                 // additional filter by objectTypes
-                repeated string objectTypeFilter = 3;
+                repeated string objectTypeFilter = 3; // DEPRECATED
                 repeated string keys = 4;
             }
 
@@ -1965,6 +1965,34 @@ message Rpc {
                     Html = 2;
                     Txt = 3;
                 };
+            }
+        }
+
+        message ImportUseCase {
+            message Request {
+                UseCase useCase = 1;
+
+                enum UseCase {
+                    SKIP = 0;
+                    PERSONAL_PROJECTS = 1;
+                    KNOWLEDGE_BASE = 2;
+                    NOTES_DIARY = 3;
+                }
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
             }
         }
     }
@@ -5344,6 +5372,7 @@ message Rpc {
             message Request {
                 option (no_auth) = true;
                 string platform = 1;
+                string version = 2;
             }
 
             message Response {

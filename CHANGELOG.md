@@ -23,6 +23,7 @@
 
 * Editor | Design review fixes (...)
 * Sets or Collections | Design review fixes (...)
+* Settings | Profile screen redesign (...)
 
 ## Version 0.14.0
 

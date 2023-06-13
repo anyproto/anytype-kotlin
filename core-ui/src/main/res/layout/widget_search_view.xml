@@ -32,7 +32,7 @@
         android:inputType="textNoSuggestions"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColorHint="@color/text_tertiary"
+        android:textColorHint="@color/glyph_active"
         app:layout_constraintBottom_toBottomOf="@+id/searchIcon"
         app:layout_constraintEnd_toStartOf="@+id/clearSearchText"
         app:layout_constraintStart_toEndOf="@+id/searchIcon"

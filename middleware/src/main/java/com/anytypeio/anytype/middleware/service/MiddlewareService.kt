@@ -123,6 +123,9 @@ interface MiddlewareService {
     fun objectUndo(request: Rpc.Object.Undo.Request): Rpc.Object.Undo.Response
 
     @Throws(Exception::class)
+    fun objectImportUseCase(request: Rpc.Object.ImportUseCase.Request): Rpc.Object.ImportUseCase.Response
+
+    @Throws(Exception::class)
     fun objectRedo(request: Rpc.Object.Redo.Request): Rpc.Object.Redo.Response
 
     @Throws(Exception::class)

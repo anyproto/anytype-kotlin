@@ -220,6 +220,8 @@ class BlockDataRepository(
         Undo.Result.Exhausted
     }
 
+    override suspend fun importUseCaseSkip() = remote.importUseCaseSkip()
+
     override suspend fun redo(
         command: Command.Redo
     ): Redo.Result = try {

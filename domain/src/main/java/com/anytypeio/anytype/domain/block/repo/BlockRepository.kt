@@ -129,6 +129,9 @@ interface BlockRepository {
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
 
     suspend fun undo(command: Command.Undo): Undo.Result
+
+    suspend fun importUseCaseSkip()
+
     suspend fun redo(command: Command.Redo): Redo.Result
 
     suspend fun copy(command: Command.Copy): Response.Clipboard.Copy

@@ -17,8 +17,10 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +46,10 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
 fun Section(modifier: Modifier = Modifier, title: String) {
@@ -55,6 +61,7 @@ fun Section(modifier: Modifier = Modifier, title: String) {
     )
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 fun NameBlock(
     modifier: Modifier = Modifier,
@@ -64,6 +71,16 @@ fun NameBlock(
 
     val nameValue = remember { mutableStateOf(name) }
     val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(nameValue.value) {
+        snapshotFlow { nameValue.value }
+            .debounce(SPACE_NAME_CHANGE_DELAY)
+            .distinctUntilChanged()
+            .filter { it.isNotEmpty() }
+            .collect { query ->
+               onNameSet(query)
+            }
+    }
 
     Column(modifier = modifier.padding(start = 20.dp)) {
         Text(
@@ -78,7 +95,6 @@ fun NameBlock(
             },
             keyboardActions = KeyboardActions(
                 onDone = {
-                    onNameSet.invoke(nameValue.value)
                     focusManager.clearFocus()
                 }
             ),
@@ -242,3 +258,5 @@ fun SettingsTextField(
         }
     )
 }
+
+private const val SPACE_NAME_CHANGE_DELAY = 300L

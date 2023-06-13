@@ -203,6 +203,7 @@ Do the computation of an expensive paragraph of text on a background thread:
 
     <string name="remove">Remove</string>
     <string name="choose_options">Choose options</string>
+    <string name="search_tags">Search tags</string>
     <string name="choose_relation_to_filter">Choose a relation to filter</string>
     <string name="choose_relation_to_sort">Choose a relation to sort</string>
     <string name="btn_apply_new_object">Add to list</string>
@@ -379,4 +380,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_soul_space_creation">Setting up your Personal Space</string>
     <string name="onboarding_soul_creation_personal_space">Personal Space</string>
     <string name="sync_status_incompatible">Incompatible version</string>
+    <string name="base_add_options_empty_title">No tags found</string>
+    <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
 </resources>

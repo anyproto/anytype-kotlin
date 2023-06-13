@@ -112,7 +112,10 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         with(lifecycleScope) {
-            subscribe(vm.ui) { editCellTagAdapter.update(it) }
+            subscribe(vm.ui) {
+                editCellTagAdapter.update(it)
+                setupEmptyState(it)
+            }
             subscribe(vm.counter) { binding.btnAdd.setNumber(it.toString()) }
             subscribe(vm.isAddButtonVisible) { isVisible ->
                 if (!isVisible) binding.btnAdd.gone() else binding.btnAdd.visible()
@@ -129,17 +132,30 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
             }
             subscribe(vm.isMultiple) { isMultiple ->
                 if (isMultiple) {
+                    binding.btnAdd.visible()
                     binding.recycler.updatePadding(
                         bottom = dimen(R.dimen.multiple_option_value_bottom_list_margin)
                     )
-                    searchRelationInput.setHint(R.string.choose_options)
+                    searchRelationInput.setHint(R.string.search_tags)
                 } else {
+                    binding.btnAdd.invisible()
                     binding.recycler.updatePadding(
                         bottom = dimen(R.dimen.single_option_value_bottom_list_margin)
                     )
                     searchRelationInput.setHint(R.string.choose_option)
                 }
             }
+        }
+    }
+
+    private fun setupEmptyState(views: List<RelationValueView>) {
+        if (vm.isMultiple.value && views.isEmpty()) {
+            binding.emptyStateContainer.visible()
+            binding.btnAdd.enabled(false)
+        } else {
+            val anySelected = views.any { it is RelationValueView.Option.Tag && it.isSelected }
+            binding.btnAdd.enabled(anySelected)
+            binding.emptyStateContainer.gone()
         }
     }
 
@@ -157,6 +173,7 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
 
     override fun onStart() {
         super.onStart()
+        expand()
         vm.onStart(
             ctx = ctx,
             target = target,

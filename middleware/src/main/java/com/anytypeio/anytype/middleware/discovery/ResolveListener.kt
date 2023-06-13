@@ -6,23 +6,33 @@ import kotlinx.coroutines.sync.Semaphore
 import service.DiscoveryObserver
 import timber.log.Timber
 
-class ResolveListener(private val observer: DiscoveryObserver, private val resolved: Semaphore) :
-    NsdManager.ResolveListener {
+class ResolveListener(
+    private val observer: DiscoveryObserver,
+    private val semaphore: Semaphore
+) : NsdManager.ResolveListener {
 
     override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
         Timber.e("Mdns discovery resolve failed: $serviceInfo, error: $errorCode")
-        resolved.release()
+        try {
+            semaphore.release()
+        } catch (e: Exception) {
+            Timber.e(e, "Error while releasing semaphore")
+        }
     }
 
     override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-        Timber.e("Mdns discovery resolve succeed: $serviceInfo")
-        observer.observeChange(
-            DiscoveryResult(
-                serviceInfo.host.hostAddress ?: "",
-                serviceInfo.serviceName,
-                serviceInfo.port
+        Timber.d("Mdns discovery resolve succeed: $serviceInfo")
+        try {
+            observer.observeChange(
+                DiscoveryResult(
+                    serviceInfo.host.hostAddress.orEmpty(),
+                    serviceInfo.serviceName,
+                    serviceInfo.port
+                )
             )
-        )
-        resolved.release()
+            semaphore.release()
+        } catch (e: Exception) {
+            Timber.e(e, "Error after onServiceResolved")
+        }
     }
 }

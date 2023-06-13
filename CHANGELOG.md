@@ -7,6 +7,8 @@
 * App | New Home screen or Widgets (#2792, #2878, #2882, #2887, #2884, #2904, #2907, #2900, #2912, #2942, #2967, #2969, #2946, #2960, #2988, #2902, #3028, #2901, #2959...)
 * App | New Space screen (...)
 * App | Introduce library of Types and Relations (#2856, ...)
+* App | New "About app" screen (...)
+* App | File storage screen (...)
 * Sets or Collections | Unblock Relations in Object menu (#2974, #2975, #3012, #3035, #3054)
 
 ### Fixes & tech 🚒

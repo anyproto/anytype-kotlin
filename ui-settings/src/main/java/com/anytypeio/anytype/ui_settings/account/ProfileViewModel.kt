@@ -26,6 +26,7 @@ import com.anytypeio.anytype.ui_settings.account.repo.DebugSpaceShareDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ class ProfileViewModel(
     ).map { result ->
         val obj = result.firstOrNull()
         AccountProfile.Data(
-            name = obj?.name ?: "",
+            name = obj?.name.orEmpty(),
             icon = obj?.profileIcon(urlBuilder, spaceGradientProvider) ?: ProfileIconView.Placeholder
         )
     }.stateIn(

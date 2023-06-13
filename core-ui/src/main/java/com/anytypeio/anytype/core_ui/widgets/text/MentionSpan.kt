@@ -15,8 +15,8 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import timber.log.Timber
 import java.lang.ref.WeakReference
+import timber.log.Timber
 
 class MentionSpan constructor(
     emoji: String? = null,
@@ -58,7 +58,7 @@ class MentionSpan constructor(
         placeholder?.setBounds(imageSize)
 
         if (!emoji.isNullOrBlank()) try {
-            Glide.with(context).load(Emojifier.uri(emoji)).into(target)
+            Glide.with(context).load(Emojifier.safeUri(emoji)).into(target)
         } catch (e: Throwable) {
             Timber.e(e, "Error while loading emoji: $emoji for mention span")
         }

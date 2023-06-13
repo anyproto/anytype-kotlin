@@ -116,7 +116,7 @@ fun SpaceImageBlock(
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(
-                        model = Emojifier.uri(icon.unicode),
+                        model = Emojifier.safeUri(icon.unicode),
                         error = painterResource(id = R.drawable.ic_home_widget_space)
                     ),
                     contentDescription = "Emoji space icon",

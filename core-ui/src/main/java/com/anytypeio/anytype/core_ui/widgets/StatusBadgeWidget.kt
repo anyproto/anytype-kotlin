@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import com.anytypeio.anytype.core_models.SyncStatus
@@ -16,24 +15,22 @@ class StatusBadgeWidget @JvmOverloads constructor(
 
     init {
         setBackgroundResource(R.drawable.circle_solid_default)
-        tint(Color.WHITE)
+        tint(color = context.color(R.color.palette_dark_grey))
     }
 
     fun bind(status: SyncStatus?) {
         when (status) {
-            SyncStatus.UNKNOWN,
             SyncStatus.FAILED,
-            SyncStatus.OFFLINE,
             SyncStatus.INCOMPATIBLE_VERSION -> tint(
-                color = context.color(R.color.sync_status_red)
+                color = context.color(R.color.palette_system_red)
             )
             SyncStatus.SYNCING -> tint(
-                color = context.color(R.color.sync_status_orange)
+                color = context.color(R.color.palette_system_amber_100)
             )
             SyncStatus.SYNCED -> tint(
-                color = context.color(R.color.sync_status_green)
+                color = context.color(R.color.palette_system_green)
             )
-            else -> tint(Color.TRANSPARENT)
+            else -> tint(color = context.color(R.color.palette_dark_grey))
         }
     }
 }

@@ -1,14 +1,23 @@
 # Change log for Android @Anytype app.
 
-## Version 0.22.0 (WIP)
+## Version 0.22.0
 
 ### New features & enhancements 🚀
+
+* App | New Home screen or Widgets (#2792, #2878, #2882, #2887, #2884, #2904, #2907, #2900, #2912, #2942, #2967, #2969, #2946, #2960, #2988, #2902, #3028, #2901, #2959...)
+* App | Introduce library of Types and Relations (#2856, ...)
+* Sets or Collections | Unblock Relations in Object menu (#2974, #2975, #3012, #3035, #3054)
 
 ### Fixes & tech 🚒
 
 * Editor | Do not allow changing icon when object is locked (#2990)
+* Editor | Do not allow formatting text when object is locked (#2964)
+* Editor | Allow editing bookmark block with invalid link (#3010)
 
 ### Design & UX 🔳
+
+* Editor | Design review fixes (...)
+* Sets or Collections | Design review fixes (...)
 
 ## Version 0.14.0
 

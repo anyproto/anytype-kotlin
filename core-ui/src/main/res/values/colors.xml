@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="sync_status_red">#F55522</color>
-    <color name="sync_status_green">#57C600</color>
-    <color name="sync_status_orange">#FFB522</color>
-
-    <color name="anytype_shadow_main">#8C000000</color>
-
     <color name="debug">#F44336</color>
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>

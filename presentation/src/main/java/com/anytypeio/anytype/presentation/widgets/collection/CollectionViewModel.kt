@@ -58,6 +58,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -208,7 +209,7 @@ class CollectionViewModel(
         launch {
             when (subscription) {
                 Subscription.Favorites -> {
-                    favoritesSubsciptionFlow().map { it.map { it as CollectionView } }
+                    favoritesSubscriptionFlow().map { it.map { it as CollectionView } }
                 }
 
                 Subscription.Files -> {
@@ -256,6 +257,8 @@ class CollectionViewModel(
                 listOf(CollectionView.EmptySearch(query))
             else
                 result
+        }.catch {
+            Timber.e(it, "Error in subscription flow")
         }
 
     private fun List<ObjectView>.tryAddSections() =
@@ -288,7 +291,7 @@ class CollectionViewModel(
     }
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private suspend fun favoritesSubsciptionFlow() =
+    private suspend fun favoritesSubscriptionFlow() =
         combine(
             container.subscribe(buildSearchParams()),
             queryFlow(),
@@ -301,6 +304,8 @@ class CollectionViewModel(
                 listOf(CollectionView.EmptySearch(query))
             else
                 result
+        }.catch {
+            Timber.e(it, "Error in favorites subscription flow")
         }
 
     private fun prepareFavorites(
@@ -768,6 +773,8 @@ class CollectionViewModel(
             } else {
                 result
             }
+        }.catch {
+            Timber.e(it, "Error in file subscription flow")
         }
     }
 

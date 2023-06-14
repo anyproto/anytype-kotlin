@@ -26,7 +26,7 @@ class DefaultFeatureToggles @Inject constructor(
         BuildConfig.LOG_EDITOR_CONTROL_PANEL && buildProvider.isDebug()
 
     override val isTroubleshootingMode
-        get() = prefs.getBoolean(context.getString(R.string.trouble_mode), BuildConfig.DEBUG)
+        get() = prefs.getBoolean(context.getString(R.string.trouble_mode), true)
 
     override val isNewOnBoardingEnabled: Boolean = false
 

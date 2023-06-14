@@ -1553,6 +1553,16 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun objectImportUseCaseSkip() {
+        val request = Rpc.Object.ImportUseCase.Request(
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.SKIP
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectImportUseCase(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun versionGet(): Rpc.App.GetVersion.Response {
         val request = Rpc.App.GetVersion.Request()
         if (BuildConfig.DEBUG) logRequest(request)

@@ -10,7 +10,9 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.model.Session
@@ -38,7 +40,8 @@ class SetupNewAccountViewModel(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val configStorage: ConfigStorage,
-    private val crashReporter: CrashReporter
+    private val crashReporter: CrashReporter,
+    private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
@@ -96,7 +99,7 @@ class SetupNewAccountViewModel(
                         else -> {
                             _state.postValue(
                                 SetupNewAccountViewState.Error(
-                                    "Error while creating an account: ${error.message ?:"Unknown error"}"
+                                    "Error while creating an account: ${error.message ?: "Unknown error"}"
                                 )
                             )
                         }
@@ -109,6 +112,20 @@ class SetupNewAccountViewModel(
                     _state.postValue(SetupNewAccountViewState.Success)
                     relationsSubscriptionManager.onStart()
                     objectTypesSubscriptionManager.onStart()
+                    setupUseCase()
+                }
+            )
+        }
+    }
+
+    private fun setupUseCase() {
+        viewModelScope.launch {
+            setupMobileUseCaseSkip.execute(Unit).fold(
+                onFailure = {
+                    Timber.e(it, "Error while importing use case")
+                    navigateToDashboard()
+                },
+                onSuccess = {
                     navigateToDashboard()
                 }
             )

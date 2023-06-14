@@ -72,6 +72,7 @@ abstract class ResultatInteractor<in P, out R> {
 abstract class ResultInteractor<in P, R>(
     private val context: CoroutineContext
 ) {
+    @Throws(Exception::class)
     fun asFlow(params: P): Flow<R> = flow { emit(doWork(params)) }.flowOn(context)
 
     fun stream(params: P): Flow<Resultat<R>> {

@@ -25,9 +25,6 @@ class DefaultFeatureToggles @Inject constructor(
     override val isLogEditorControlPanelMachine =
         BuildConfig.LOG_EDITOR_CONTROL_PANEL && buildProvider.isDebug()
 
-    override val isTroubleshootingMode
-        get() = prefs.getBoolean(context.getString(R.string.trouble_mode), true)
-
     override val isNewOnBoardingEnabled: Boolean = false
 
     override val isAutoUpdateEnabled: Boolean = false

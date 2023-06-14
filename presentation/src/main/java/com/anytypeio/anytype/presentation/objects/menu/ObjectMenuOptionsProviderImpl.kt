@@ -61,14 +61,14 @@ class ObjectMenuOptionsProviderImpl(
                     hasIcon = hasIcon,
                     hasCover = hasCover,
                     hasLayout = hasLayout,
-                    hasDiagnosticsVisibility = featureToggles.isTroubleshootingMode,
+                    hasDiagnosticsVisibility = true
                 )
                 ObjectType.Layout.TODO -> Options(
                     hasIcon = false,
                     hasCover = hasCover,
                     hasLayout = hasLayout,
                     hasRelations = true,
-                    hasDiagnosticsVisibility = featureToggles.isTroubleshootingMode,
+                    hasDiagnosticsVisibility = true,
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -76,7 +76,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasCover = false,
                     hasLayout = hasLayout,
                     hasRelations = true,
-                    hasDiagnosticsVisibility = featureToggles.isTroubleshootingMode,
+                    hasDiagnosticsVisibility = true,
                 )
             }
         } else {
@@ -85,7 +85,7 @@ class ObjectMenuOptionsProviderImpl(
                 hasIcon = hasIcon,
                 hasCover = hasCover,
                 hasLayout = hasLayout,
-                hasDiagnosticsVisibility = featureToggles.isTroubleshootingMode,
+                hasDiagnosticsVisibility = true,
             )
         }
         return options

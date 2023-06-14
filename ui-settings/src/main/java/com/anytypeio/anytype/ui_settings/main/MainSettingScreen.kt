@@ -120,12 +120,6 @@ private fun Settings(
         onClick = onAboutAppClicked
     )
     Divider(paddingStart = 60.dp)
-    Option(
-        image = R.drawable.ic_debug,
-        text = stringResource(R.string.debug),
-        onClick = onDebugClicked
-    )
-    Divider(paddingStart = 60.dp)
 }
 
 @Composable

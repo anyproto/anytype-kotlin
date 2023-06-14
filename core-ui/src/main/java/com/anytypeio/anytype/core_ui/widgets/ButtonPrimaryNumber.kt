@@ -35,4 +35,13 @@ class ButtonPrimaryNumber @JvmOverloads constructor(
     fun showNumber() {
         binding.tvNumber.visible()
     }
+
+    fun enabled(isEnabled: Boolean) {
+        binding.button.isEnabled = isEnabled
+        if (isEnabled) {
+            binding.tvNumber.visible()
+        } else {
+            binding.tvNumber.invisible()
+        }
+    }
 }

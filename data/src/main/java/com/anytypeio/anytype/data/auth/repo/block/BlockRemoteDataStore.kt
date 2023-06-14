@@ -166,6 +166,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun undo(command: Command.Undo) = remote.undo(command)
 
+    override suspend fun importUseCaseSkip() = remote.importUseCaseSkip()
+
     override suspend fun redo(command: Command.Redo) = remote.redo(command)
 
     override suspend fun turnIntoDocument(

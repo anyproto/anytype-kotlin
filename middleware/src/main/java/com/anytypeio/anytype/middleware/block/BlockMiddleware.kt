@@ -186,6 +186,8 @@ class BlockMiddleware(
         command: Command.Undo
     ): Payload = middleware.objectUndo(command)
 
+    override suspend fun importUseCaseSkip() = middleware.objectImportUseCaseSkip()
+
     override suspend fun redo(
         command: Command.Redo
     ): Payload = middleware.objectRedo(command)

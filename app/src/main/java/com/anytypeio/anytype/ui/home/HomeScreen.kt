@@ -545,7 +545,7 @@ fun HomeScreenBottomToolbar(
                 is SpaceIconView.Emoji -> {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = Emojifier.uri(spaceIconView.unicode),
+                            model = Emojifier.safeUri(spaceIconView.unicode),
                             error = painterResource(id = R.drawable.ic_home_widget_space)
                         ),
                         contentDescription = "Emoji space icon",

@@ -7,12 +7,12 @@ import "models.proto";
 
 message ObjectInfo {
     string id = 1;
-    repeated string objectTypeUrls = 2; // deprecated
+    repeated string objectTypeUrls = 2; // DEPRECATED
     google.protobuf.Struct details = 3;
-    repeated Relation relations = 4;
+    repeated Relation relations = 4; // DEPRECATED
 
     string snippet = 5;
-    bool hasInboundLinks = 6;
+    bool hasInboundLinks = 6; // DEPRECATED
     SmartBlockType objectType = 7;
 }
 

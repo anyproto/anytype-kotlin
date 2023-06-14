@@ -155,7 +155,7 @@ private fun DataViewTabs(
             items = item.tabs,
             itemContent = { index, tab ->
                 Text(
-                    text = tab.name,
+                    text = tab.name.ifEmpty { stringResource(id = R.string.untitled) },
                     style = PreviewTitle2Medium,
                     color = if (tab.isSelected)
                         colorResource(id = R.color.text_primary)

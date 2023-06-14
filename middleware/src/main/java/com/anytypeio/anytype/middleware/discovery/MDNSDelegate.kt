@@ -43,16 +43,24 @@ class MDNSDelegate(
     }
 
     override fun setObserver(localObserver: DiscoveryObserver?) {
-        scope.launch(dispatcher) {
-            observer = localObserver
-            if (isStarted) start()
+        try {
+            scope.launch(dispatcher) {
+                observer = localObserver
+                if (isStarted) start()
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error while setting observer")
         }
     }
 
     override fun removeObserver() {
-        scope.launch(dispatcher) {
-            observer = null
-            stop()
+        try {
+            scope.launch(dispatcher) {
+                observer = null
+                stop()
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error while removing observer")
         }
     }
 }

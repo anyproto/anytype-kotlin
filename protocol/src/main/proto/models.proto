@@ -638,16 +638,6 @@ message Restrictions {
     }
 }
 
-message ThreadDeeplinkPayload {
-    string key = 1;
-    repeated string addrs = 2;
-}
-
-message ThreadCreateQueueEntry {
-    string collectionThread = 1;
-    string threadId = 2;
-}
-
 message Object {
     message ChangePayload {
         SmartBlockType smartBlockType = 1;

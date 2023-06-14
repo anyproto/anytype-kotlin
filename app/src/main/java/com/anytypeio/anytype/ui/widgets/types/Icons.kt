@@ -242,7 +242,7 @@ private fun DefaultEmojiObjectIcon(
             )
     ) {
         Image(
-            painter = rememberAsyncImagePainter(Emojifier.uri(icon.unicode)),
+            painter = rememberAsyncImagePainter(Emojifier.safeUri(icon.unicode)),
             contentDescription = "Icon from URI",
             modifier = Modifier
                 .size(24.dp)

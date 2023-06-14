@@ -7,6 +7,8 @@ import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.tint
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 
 class StatusBadgeWidget @JvmOverloads constructor(
     context: Context,
@@ -21,16 +23,23 @@ class StatusBadgeWidget @JvmOverloads constructor(
     fun bind(status: SyncStatus?) {
         when (status) {
             SyncStatus.FAILED,
-            SyncStatus.INCOMPATIBLE_VERSION -> tint(
-                color = context.color(R.color.palette_system_red)
-            )
-            SyncStatus.SYNCING -> tint(
-                color = context.color(R.color.palette_system_amber_100)
-            )
-            SyncStatus.SYNCED -> tint(
-                color = context.color(R.color.palette_system_green)
-            )
-            else -> tint(color = context.color(R.color.palette_dark_grey))
+            SyncStatus.INCOMPATIBLE_VERSION -> {
+                visible()
+                tint(color = context.color(R.color.palette_system_red))
+            }
+            SyncStatus.SYNCING -> {
+                visible()
+                tint(color = context.color(R.color.palette_system_amber_100))
+            }
+            SyncStatus.SYNCED -> {
+                visible()
+                tint(color = context.color(R.color.palette_system_green))
+            }
+            SyncStatus.UNKNOWN,
+            SyncStatus.OFFLINE,
+            null -> {
+                gone()
+            }
         }
     }
 }

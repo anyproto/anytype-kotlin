@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--typography, buttons 05.04-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.anytypeio.anytype.ui.relations.add.BaseAddOptionsRelationFragment">
 
@@ -32,15 +33,53 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="20dp" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/divider_relations"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
-            tools:listitem="@layout/item_edit_cell_tag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginStart="20dp" />
+            tools:listitem="@layout/item_edit_cell_tag"
+            tools:visibility="gone" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/emptyStateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/emptyStateTitle"
+            style="@style/TextView.UXStyle.Body.Callout.Regular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20"
+            android:text="@string/base_add_options_empty_title"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:id="@+id/emptyStateSubTitle"
+            style="@style/TextView.UXStyle.Captions.1.Regular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_4"
+            android:text="@string/base_add_options_empty_subtitle"
+            android:textColor="@color/text_secondary" />
     </LinearLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.ButtonPrimaryNumber

@@ -41,6 +41,7 @@ class CreateAccountTest {
 
     private lateinit var createAccount: CreateAccount
 
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
@@ -53,7 +54,8 @@ class CreateAccountTest {
     }
 
     @Test
-    fun `should create account and save it and set as current user account and save config in storage`() = runTest {
+    fun `should create account and save it and set as current user account and save config in storage`() =
+        runTest {
             val name = MockDataFactory.randomString()
             val path = null
             val icon = 1
@@ -68,14 +70,23 @@ class CreateAccountTest {
                 onBlocking { createAccount(name, path, icon) } doReturn setup
             }
 
+            val version = MockDataFactory.randomString()
+            val platform = MockDataFactory.randomString()
+
+            stubMetricsProvider(version, platform)
+
             createAccount.run(param)
 
             verify(repo, times(1)).createAccount(name, path, icon)
             verify(repo, times(1)).saveAccount(setup.account)
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
+            verify(repo, times(1)).setMetrics(
+                platform = platform,
+                version = version
+            )
             verifyNoMoreInteractions(repo)
             verify(configStorage, times(1)).set(setup.config)
-    }
+        }
 
     @Test
     fun `should set current workspace id after creating account`() = runTest {
@@ -100,5 +111,16 @@ class CreateAccountTest {
         verify(workspaceManager, times(1)).setCurrentWorkspace(
             setup.config.workspace
         )
+    }
+
+    private fun stubMetricsProvider(version: String, platform: String) {
+        metricsProvider.stub {
+            onBlocking {
+                getVersion()
+            } doReturn version
+            onBlocking {
+                getPlatform()
+            } doReturn platform
+        }
     }
 }

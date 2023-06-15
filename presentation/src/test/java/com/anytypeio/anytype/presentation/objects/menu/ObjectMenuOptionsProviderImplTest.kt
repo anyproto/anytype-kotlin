@@ -31,7 +31,7 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = false,
             hasLayout = true,
             hasRelations = true,
-            hasDiagnosticsVisibility = false
+            hasDiagnosticsVisibility = true
         )
 
         assertOptions(
@@ -49,7 +49,7 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = true,
             hasLayout = true,
             hasRelations = true,
-            hasDiagnosticsVisibility = false
+            hasDiagnosticsVisibility = true
         )
 
         assertOptions(
@@ -64,7 +64,7 @@ class ObjectMenuOptionsProviderImplTest {
         )
 
         assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = false)
+            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = true)
         )
     }
 
@@ -76,7 +76,7 @@ class ObjectMenuOptionsProviderImplTest {
         )
 
         assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = false)
+            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = true)
         )
     }
 
@@ -90,7 +90,7 @@ class ObjectMenuOptionsProviderImplTest {
         assertOptions(
             expected = ObjectMenuOptionsProvider.Options.ALL.copy(
                 hasLayout = false,
-                hasDiagnosticsVisibility = false
+                hasDiagnosticsVisibility = true
             )
         )
     }
@@ -108,7 +108,7 @@ class ObjectMenuOptionsProviderImplTest {
                 hasCover = false,
                 hasLayout = false,
                 hasRelations = true,
-                hasDiagnosticsVisibility = false
+                hasDiagnosticsVisibility = true
             )
         )
     }

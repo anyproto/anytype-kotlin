@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 /**
@@ -12,10 +13,15 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 open class CreateAccount(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
-    private val workspaceManager: WorkspaceManager
+    private val workspaceManager: WorkspaceManager,
+    private val metricsProvider: MetricsProvider
 ) : BaseUseCase<Account, CreateAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
+        repository.setMetrics(
+            version = metricsProvider.getVersion(),
+            platform = metricsProvider.getPlatform()
+        )
         val setup = repository.createAccount(
             name = params.name,
             avatarPath = params.avatarPath,
@@ -34,7 +40,6 @@ open class CreateAccount(
      * @property avatarPath optional avatar image file path
      * @property name username
      * @property iconGradientValue random icon gradient value for new account/space background
-     * @property invitationCode optional invite code
      */
     class Params(
         val name: String,

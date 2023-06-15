@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import androidx.compose.material.ExperimentalMaterialApi
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerFeature
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
@@ -13,13 +14,13 @@ import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.CrashReporter
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -243,11 +244,13 @@ object SetupNewAccountModule {
     fun provideCreateAccountUseCase(
         repository: AuthRepository,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        metricsProvider: MetricsProvider
     ): CreateAccount = CreateAccount(
         repository = repository,
         configStorage = configStorage,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        metricsProvider = metricsProvider
     )
 
     @JvmStatic

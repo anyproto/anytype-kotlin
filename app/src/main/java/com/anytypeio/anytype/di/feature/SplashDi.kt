@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -18,9 +19,9 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
-import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -70,13 +71,15 @@ object SplashModule {
         pathProvider: PathProvider,
         featuresConfigProvider: FeaturesConfigProvider,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        metricsProvider: MetricsProvider
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         featuresConfigProvider = featuresConfigProvider,
         configStorage = configStorage,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        metricsProvider = metricsProvider
     )
 
     @JvmStatic
@@ -173,4 +176,5 @@ interface SplashDependencies : ComponentDependencies {
     fun userSettingsRepository(): UserSettingsRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun crashReporter(): CrashReporter
+    fun metricsProvider(): MetricsProvider
 }

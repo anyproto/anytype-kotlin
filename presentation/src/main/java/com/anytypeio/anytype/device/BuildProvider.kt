@@ -9,7 +9,7 @@ interface BuildProvider {
     fun isDebug(): Boolean
 }
 
-class DefaultBuildProvider() : BuildProvider {
+class DefaultBuildProvider : BuildProvider {
     override fun getManufacturer(): String {
         return Build.MANUFACTURER
     }

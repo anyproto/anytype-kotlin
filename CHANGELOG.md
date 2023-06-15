@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.22.0
+## Version 0.22.6
 
 ### New features & enhancements 🚀
 

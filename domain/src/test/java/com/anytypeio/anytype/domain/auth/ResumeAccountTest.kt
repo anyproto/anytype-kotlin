@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,6 +46,9 @@ class ResumeAccountTest {
     @Mock
     lateinit var pathProvider: PathProvider
 
+    @Mock
+    lateinit var metricsProvider: MetricsProvider
+
     lateinit var resumeAccount: ResumeAccount
 
     private val config = StubConfig()
@@ -57,7 +61,8 @@ class ResumeAccountTest {
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
             workspaceManager = workspaceManager,
-            pathProvider = pathProvider
+            pathProvider = pathProvider,
+            metricsProvider = metricsProvider
         )
     }
 

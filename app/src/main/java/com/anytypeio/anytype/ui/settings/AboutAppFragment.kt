@@ -112,7 +112,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
             if (BuildConfig.DEBUG)
                 "$version-debug"
             else
-                "$version-alpha"
+                "$version"
         } else {
             resources.getString(R.string.unknown)
         }

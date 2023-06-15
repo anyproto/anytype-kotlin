@@ -15,7 +15,7 @@ class DefaultMetricsProvider : MetricsProvider {
     override fun getPlatform(): String = PLATFORM_NAME
 
     companion object {
-        const val PLATFORM_NAME = "kotlin"
+        const val PLATFORM_NAME = "android"
         const val DEV_PREFIX = "-dev"
     }
 }

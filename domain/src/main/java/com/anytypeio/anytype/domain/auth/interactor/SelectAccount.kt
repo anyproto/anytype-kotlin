@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 /**
@@ -15,10 +16,15 @@ class SelectAccount(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
     private val workspaceManager: WorkspaceManager,
-    private val featuresConfigProvider: FeaturesConfigProvider
+    private val featuresConfigProvider: FeaturesConfigProvider,
+    private val metricsProvider: MetricsProvider
 ) : BaseUseCase<StartAccountResult, SelectAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
+        repository.setMetrics(
+            version = metricsProvider.getVersion(),
+            platform = metricsProvider.getPlatform()
+        )
         val setup = repository.selectAccount(
             id = params.id,
             path = params.path

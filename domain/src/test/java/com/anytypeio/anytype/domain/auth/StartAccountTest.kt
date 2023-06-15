@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
@@ -49,9 +50,15 @@ class StartAccountTest {
     @Mock
     lateinit var workspaceManager: WorkspaceManager
 
+    @Mock
+    lateinit var metricsProvider: MetricsProvider
+
     lateinit var selectAccount: SelectAccount
 
     private val config = StubConfig()
+
+    private val platform = MockDataFactory.randomString()
+    private val version = MockDataFactory.randomString()
 
     @Before
     fun setup() {
@@ -60,7 +67,8 @@ class StartAccountTest {
             repository = repo,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            metricsProvider = metricsProvider
         )
     }
 
@@ -102,6 +110,11 @@ class StartAccountTest {
             )
         }
 
+        stubMetricsProvider(
+            version = version,
+            platform = platform
+        )
+
         selectAccount.run(params)
 
         verify(repo, times(1)).selectAccount(
@@ -112,6 +125,11 @@ class StartAccountTest {
         verify(repo, times(1)).saveAccount(account)
 
         verify(repo, times(1)).setCurrentAccount(account.id)
+
+        verify(repo, times(1)).setMetrics(
+            platform = platform,
+            version = version
+        )
 
         verifyNoMoreInteractions(repo)
     }
@@ -296,6 +314,17 @@ class StartAccountTest {
             setCurrentWorkspace(
                 givenAccountSetup.config.workspace
             )
+        }
+    }
+
+    private fun stubMetricsProvider(version: String, platform: String) {
+        metricsProvider.stub {
+            onBlocking {
+                getVersion()
+            } doReturn version
+            onBlocking {
+                getPlatform()
+            } doReturn platform
         }
     }
 }

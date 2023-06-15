@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.auth
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
@@ -13,8 +14,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -65,6 +66,9 @@ class SetupSelectedAccountViewModelTest {
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
+    lateinit var metricsProvider: MetricsProvider
+
+    @Mock
     private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
 
     @Mock
@@ -82,7 +86,8 @@ class SetupSelectedAccountViewModelTest {
             repository = authRepo,
             featuresConfigProvider = featuresConfigProvider,
             configStorage = configStorage,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            metricsProvider = metricsProvider
         )
     }
 

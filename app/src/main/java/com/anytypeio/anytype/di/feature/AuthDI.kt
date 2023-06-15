@@ -299,13 +299,15 @@ object SetupSelectedAccountModule {
         repository: AuthRepository,
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        metricsProvider: MetricsProvider
     ): SelectAccount {
         return SelectAccount(
             repository = repository,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            metricsProvider = metricsProvider
         )
     }
 }

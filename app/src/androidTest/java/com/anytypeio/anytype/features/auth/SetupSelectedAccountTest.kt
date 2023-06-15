@@ -6,6 +6,7 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
@@ -14,7 +15,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.CrashReporter
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -84,6 +85,9 @@ class SetupSelectedAccountTest {
     private lateinit var crashReporter: CrashReporter
 
     @Mock
+    private lateinit var metricsProvider: MetricsProvider
+
+    @Mock
     private lateinit var config: ConfigStorage
 
     @Before
@@ -93,7 +97,8 @@ class SetupSelectedAccountTest {
             repository = authRepository,
             featuresConfigProvider = featuresConfigProvider,
             configStorage = configStorage,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            metricsProvider = metricsProvider
         )
         TestSetupSelectedAccountFragment.testViewModelFactory =
             SetupSelectedAccountViewModelFactory(

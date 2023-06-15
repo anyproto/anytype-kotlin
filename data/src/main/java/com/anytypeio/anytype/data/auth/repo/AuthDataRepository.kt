@@ -14,6 +14,13 @@ class AuthDataRepository(
     private val factory: AuthDataStoreFactory
 ) : AuthRepository {
 
+    override suspend fun setMetrics(platform: String, version: String) {
+        factory.remote.setMetrics(
+            platform = platform,
+            version = version
+        )
+    }
+
     override suspend fun selectAccount(
         id: String, path: String
     ): AccountSetup = factory.remote.selectAccount(

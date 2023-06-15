@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,6 +36,9 @@ class CreateAccountTest {
     @Mock
     lateinit var workspaceManager: WorkspaceManager
 
+    @Mock
+    lateinit var metricsProvider: MetricsProvider
+
     private lateinit var createAccount: CreateAccount
 
     @Before
@@ -43,7 +47,8 @@ class CreateAccountTest {
         createAccount = CreateAccount(
             repository = repo,
             configStorage = configStorage,
-            workspaceManager = workspaceManager
+            workspaceManager = workspaceManager,
+            metricsProvider = metricsProvider
         )
     }
 

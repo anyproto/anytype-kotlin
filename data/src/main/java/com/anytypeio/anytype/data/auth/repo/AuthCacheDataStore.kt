@@ -84,6 +84,10 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         throw UnsupportedOperationException()
     }
 
+    override suspend fun setMetrics(platform: String, version: String) {
+        throw UnsupportedOperationException()
+    }
+
     override suspend fun saveLastOpenedObject(id: Id) { cache.saveLastOpenedObject(id) }
     override suspend fun getLastOpenedObject(): Id? = cache.getLastOpenedObject()
     override suspend fun clearLastOpenedObject() { cache.clearLastOpenedObject() }

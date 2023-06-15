@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
 
+    suspend fun setMetrics(platform: String, version: String)
+
     /**
      * Launches an account.
      * @param id user account id

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
@@ -19,10 +20,15 @@ class LaunchAccount(
     private val context: CoroutineContext = Dispatchers.IO,
     private val configStorage: ConfigStorage,
     private val featuresConfigProvider: FeaturesConfigProvider,
-    private val workspaceManager: WorkspaceManager
+    private val workspaceManager: WorkspaceManager,
+    private val metricsProvider: MetricsProvider
 ) : BaseUseCase<String, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = try {
+        repository.setMetrics(
+            version = metricsProvider.getVersion(),
+            platform = metricsProvider.getPlatform()
+        )
         repository.selectAccount(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath()

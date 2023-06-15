@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
@@ -78,13 +79,15 @@ object MainEntryModule {
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        metricsProvider: MetricsProvider
     ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
         featuresConfigProvider = featuresConfigProvider,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        metricsProvider = metricsProvider
     )
 
     @JvmStatic

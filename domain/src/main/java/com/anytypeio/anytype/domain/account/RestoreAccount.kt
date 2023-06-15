@@ -4,12 +4,13 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import kotlinx.coroutines.Dispatchers
 
 class RestoreAccount(
     private val repo: AuthRepository,
     dispatchers: AppCoroutineDispatchers,
 ) : BaseUseCase<AccountStatus, BaseUseCase.None>(context = dispatchers.io) {
 
-    override suspend fun run(params: None) = safe { repo.restoreAccount() }
+    override suspend fun run(params: None) = safe {
+        repo.restoreAccount()
+    }
 }

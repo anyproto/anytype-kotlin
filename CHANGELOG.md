@@ -4,19 +4,20 @@
 
 ### New features & enhancements 🚀
 
-* App | New Home screen or Widgets (#2792, #2878, #2882, #2887, #2884, #2904, #2907, #2900, #2912, #2942, #2967, #2969, #2946, #2960, #2988, #2902, #3028, #2901, #2959...)
+* App | New Home screen or Widgets (...)
 * App | New Space screen (...)
 * App | Introduce library of Types and Relations (#2856, ...)
 * App | New "About app" screen (...)
 * App | File storage limits screen (...)
-* Sets or Collections | Unblock Relations in Object menu (#2974, #2975, #3012, #3035, #3054)
+* App | New object type - Collection (...)
+* Sets or Collections | Unblock Relations in Object menu (...)
 
 ### Fixes & tech 🚒
 
 * App | Removed invite code screen (#40)
-* Editor | Do not allow changing icon when object is locked (#2990)
-* Editor | Do not allow formatting text when object is locked (#2964)
-* Editor | Allow editing bookmark block with invalid link (#3010)
+* Editor | Do not allow changing icon when object is locked (...)
+* Editor | Do not allow formatting text when object is locked (...)
+* Editor | Allow editing bookmark block with invalid link (...)
 * App | Allow debugging your workspace or a specific object (...)
 
 ### Design & UX 🔳

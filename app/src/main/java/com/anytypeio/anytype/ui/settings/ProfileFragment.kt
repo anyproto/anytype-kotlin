@@ -79,7 +79,7 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
                         onSpaceDebugClicked = { throttle { vm.onSpaceDebugClicked() } },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         isDebugSpaceReportInProgress = vm.isDebugSpaceReportInProgress.collectAsState().value,
-                        isShowDebug = toggles.isTroubleshootingMode,
+                        isShowDebug = true,
                         onNameChange = { vm.onNameChange(it) },
                         onProfileIconClick = { proceedWithIconClick() },
                         account = vm.profileData.collectAsStateWithLifecycle().value,

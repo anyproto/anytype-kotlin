@@ -1103,6 +1103,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectImportUseCase(request: Rpc.Object.ImportUseCase.Request): Rpc.Object.ImportUseCase.Response {
+        val encoded = Service.objectImportUseCase(Rpc.Object.ImportUseCase.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.ImportUseCase.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.ImportUseCase.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun unsplashDownload(request: Rpc.Unsplash.Download.Request): Rpc.Unsplash.Download.Response {
         val encoded = Service.unsplashDownload(
             Rpc.Unsplash.Download.Request.ADAPTER.encode(request)

@@ -72,6 +72,7 @@ interface BlockDataStore {
     suspend fun createBookmarkObject(url: Url): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
+    suspend fun importUseCaseSkip()
     suspend fun redo(command: Command.Redo): Payload
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>
     suspend fun paste(command: Command.Paste): Response.Clipboard.Paste

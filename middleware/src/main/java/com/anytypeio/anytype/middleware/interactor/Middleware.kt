@@ -1572,6 +1572,20 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun metricsSetParameters(
+        platform: String,
+        version: String
+    ) {
+        val request = Rpc.Metrics.SetParameters.Request(
+            platform = platform,
+            version = version
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.metricsSetParameters(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun walletConvert(entropy: String): String {
         val request = Rpc.Wallet.Convert.Request(entropy = entropy)
         if (BuildConfig.DEBUG) logRequest(request)

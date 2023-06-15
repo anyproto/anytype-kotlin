@@ -42,6 +42,7 @@ interface AuthDataStore {
     suspend fun setCurrentAccount(id: String)
 
     suspend fun getVersion(): String
+    suspend fun setMetrics(platform: String, version: String)
 
     suspend fun saveLastOpenedObject(id: Id)
     suspend fun getLastOpenedObject() : Id?

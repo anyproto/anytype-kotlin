@@ -1151,6 +1151,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun metricsSetParameters(request: Rpc.Metrics.SetParameters.Request): Rpc.Metrics.SetParameters.Response {
+        val encoded = Service.metricsSetParameters(Rpc.Metrics.SetParameters.Request.ADAPTER.encode(request))
+        val response = Rpc.Metrics.SetParameters.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Metrics.SetParameters.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun walletConvert(request: Rpc.Wallet.Convert.Request): Rpc.Wallet.Convert.Response {
         val encoded = Service.walletConvert(Rpc.Wallet.Convert.Request.ADAPTER.encode(request))
         val response = Rpc.Wallet.Convert.Response.ADAPTER.decode(encoded)

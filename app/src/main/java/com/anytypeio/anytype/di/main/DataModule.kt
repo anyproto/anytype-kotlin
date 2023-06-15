@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.app.DefaultAppActionManager
+import com.anytypeio.anytype.app.DefaultMetricsProvider
 import com.anytypeio.anytype.data.auth.config.DefaultFeaturesConfigProvider
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
@@ -33,8 +33,10 @@ import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
@@ -290,6 +292,11 @@ object DataModule {
     @Provides
     @Singleton
     fun provideBuildProvider(): BuildProvider = DefaultBuildProvider()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideMetricsProvider(): MetricsProvider = DefaultMetricsProvider()
 
     @Module
     interface Bindings {

@@ -76,4 +76,11 @@ class AuthMiddleware(
     override suspend fun getVersion(): String {
         return middleware.versionGet().version
     }
+
+    override suspend fun setMetrics(platform: String, version: String) {
+        middleware.metricsSetParameters(
+            platform = platform,
+            version = version
+        )
+    }
 }

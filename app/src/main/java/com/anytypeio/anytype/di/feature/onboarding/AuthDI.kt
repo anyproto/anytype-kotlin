@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -50,11 +51,13 @@ object OnboardingAuthModule {
     fun provideCreateAccountUseCase(
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        metricsProvider: MetricsProvider
     ): CreateAccount = CreateAccount(
         repository = authRepository,
         configStorage = configStorage,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        metricsProvider = metricsProvider
     )
 
     @JvmStatic
@@ -83,6 +86,7 @@ interface OnboardingAuthDependencies : ComponentDependencies {
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun pathProvider(): PathProvider
+    fun metricsProvider(): MetricsProvider
 }
 
 @Scope

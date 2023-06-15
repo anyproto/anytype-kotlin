@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,14 +38,16 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicViewModel
 fun MnemonicPhraseScreenWrapper(
     viewModel: OnboardingMnemonicViewModel,
     openSoulCreation: () -> Unit,
-    copyMnemonicToClipboard: (String) -> Unit
+    copyMnemonicToClipboard: (String) -> Unit,
+    contentPaddingTop: Int
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     MnemonicPhraseScreen(
         state = state,
         reviewMnemonic = { viewModel.openMnemonic() },
         openSoulCreation = openSoulCreation,
-        copyMnemonicToClipboard = copyMnemonicToClipboard
+        copyMnemonicToClipboard = copyMnemonicToClipboard,
+        contentPaddingTop = contentPaddingTop
     )
 }
 
@@ -52,15 +56,17 @@ fun MnemonicPhraseScreen(
     state: OnboardingMnemonicViewModel.State,
     reviewMnemonic: () -> Unit,
     openSoulCreation: () -> Unit,
-    copyMnemonicToClipboard: (String) -> Unit
+    copyMnemonicToClipboard: (String) -> Unit,
+    contentPaddingTop: Int
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
+            Spacer(modifier = Modifier.height(contentPaddingTop.dp))
             MnemonicTitle()
             MnemonicPhrase(state, copyMnemonicToClipboard)
             MnemonicDescription()

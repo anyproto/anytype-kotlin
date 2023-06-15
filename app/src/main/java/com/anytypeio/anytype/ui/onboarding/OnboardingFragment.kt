@@ -156,7 +156,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = Page.VOID
-                VoidScreenWrapper {
+                VoidScreenWrapper(ContentPaddingTop()) {
                     navController.navigate(OnboardingNavigation.mnemonic)
                 }
             }
@@ -184,7 +184,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = Page.MNEMONIC
-                Mnemonic(navController)
+                Mnemonic(navController, ContentPaddingTop())
             }
             composable(
                 route = OnboardingNavigation.createSoul,
@@ -201,7 +201,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = Page.SOUL_CREATION
-                CreateSoul(navController)
+                CreateSoul(navController, ContentPaddingTop())
             }
             composable(
                 route = OnboardingNavigation.createSoulAnim,
@@ -210,7 +210,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = Page.SOUL_CREATION_ANIM
-                CreateSoulAnimation()
+                CreateSoulAnimation(ContentPaddingTop())
                 BackHandler {
                     // do nothing
                 }
@@ -219,13 +219,19 @@ class OnboardingFragment : BaseComposeFragment() {
     }
 
     @Composable
-    private fun CreateSoulAnimation() {
+    private fun ContentPaddingTop(): Int {
+        return LocalConfiguration.current.screenHeightDp * 2 / 6
+    }
+
+    @Composable
+    private fun CreateSoulAnimation(contentPaddingTop: Int) {
         val component = componentManager().onboardingSoulCreationAnimComponent.ReleaseOn(
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
 
         CreateSoulAnimWrapper(
+            contentPaddingTop = contentPaddingTop,
             viewModel = daggerViewModel { component.get().getViewModel() }
         ) {
             findNavController().navigate(R.id.action_openHome)
@@ -233,13 +239,13 @@ class OnboardingFragment : BaseComposeFragment() {
     }
 
     @Composable
-    private fun CreateSoul(navController: NavHostController) {
+    private fun CreateSoul(navController: NavHostController, contentPaddingTop: Int) {
         val component = componentManager().onboardingSoulCreationComponent.ReleaseOn(
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
         val viewModel = daggerViewModel { component.get().getViewModel() }
-        CreateSoulWrapper(viewModel)
+        CreateSoulWrapper(viewModel, contentPaddingTop)
         val navigationCommands =
             viewModel.navigationFlow.collectAsState(
                 initial = OnboardingSoulCreationViewModel.Navigation.Idle
@@ -257,12 +263,13 @@ class OnboardingFragment : BaseComposeFragment() {
     }
 
     @Composable
-    private fun Mnemonic(navController: NavHostController) {
+    private fun Mnemonic(navController: NavHostController, contentPaddingTop: Int) {
         val component = componentManager().onboardingMnemonicComponent.ReleaseOn(
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
         MnemonicPhraseScreenWrapper(
+            contentPaddingTop = contentPaddingTop,
             viewModel = daggerViewModel { component.get().getViewModel() },
             openSoulCreation = {
                 navController.navigate(OnboardingNavigation.createSoul)

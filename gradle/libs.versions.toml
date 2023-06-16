@@ -64,7 +64,7 @@ roomVersion = '2.4.3'
 amplitudeVersion = '2.36.1'
 okhttpVersion = '4.2.2'
 coilComposeVersion = '2.2.2'
-sentryVersion = '5.0.1'
+sentryVersion = '6.0.0'
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }

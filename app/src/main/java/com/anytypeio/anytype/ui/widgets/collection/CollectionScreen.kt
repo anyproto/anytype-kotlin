@@ -176,7 +176,8 @@ fun TopBar(
 fun ListView(
     vm: CollectionViewModel,
     uiState: CollectionUiState,
-    emptySearchSubtitle: String? = null
+    emptySearchSubtitle: String? = null,
+    itemBackground: Color = colorResource(id = R.color.background_primary)
 ) {
 
     val views = remember {
@@ -202,7 +203,6 @@ fun ListView(
                     .fillMaxWidth(),
                 contentPadding = PaddingValues(bottom = 180.dp)
             ) {
-
                 items(items = views.value, key = {
                     when (it) {
                         is ObjectView -> it.obj.id
@@ -229,7 +229,7 @@ fun ListView(
                                                 Modifier
                                             }
                                         )
-                                        .background(colorResource(id = R.color.background_primary))
+                                        .background(itemBackground)
                                         .alpha(alpha.value)
                                 ) {
                                     CollectionItem(

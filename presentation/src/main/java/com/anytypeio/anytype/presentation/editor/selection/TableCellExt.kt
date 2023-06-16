@@ -463,7 +463,7 @@ fun BlockView.Table.Column.getTableWidgetItemsByColumn(
     if (index.value > 0) add(MoveLeft(column = column))
     if (index.value < columnsSize - 1) add(MoveRight(column = column))
     add(SimpleTableWidgetItem.Column.Duplicate(id))
-    add(SimpleTableWidgetItem.Column.Delete(id))
+    if (columnsSize > 1) add(SimpleTableWidgetItem.Column.Delete(id))
 }
 
 fun BlockView.Table.Row.getTableWidgetItemsByRow(
@@ -474,7 +474,7 @@ fun BlockView.Table.Row.getTableWidgetItemsByRow(
     add(InsertBelow(id))
     if (index.value > 0) add(MoveUp(row = row))
     if (index.value < rowSize - 1) add(MoveDown(row = row))
-    add(SimpleTableWidgetItem.Row.Delete(id))
+    if (rowSize > 1) add(SimpleTableWidgetItem.Row.Delete(id))
     add(SimpleTableWidgetItem.Row.Duplicate(id))
 }
 

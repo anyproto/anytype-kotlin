@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.selection.TableCellsSelectionState
+import timber.log.Timber
 
 class TableBlockHolder(
     binding: ItemBlockTableBinding,
@@ -123,7 +124,11 @@ class TableBlockHolder(
     }
 
     private fun applyRowCount(item: BlockView.Table) {
-        lm.spanCount = item.rows.size
+        if (item.rows.isNotEmpty()) {
+            lm.spanCount = item.rows.size
+        } else {
+            Timber.e("Block simple table rows are empty on applyRowCount")
+        }
     }
 
     private fun updateCellsSelection(item: BlockView.Table) {

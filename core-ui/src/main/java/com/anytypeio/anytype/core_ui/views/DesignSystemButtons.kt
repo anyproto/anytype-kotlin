@@ -158,9 +158,7 @@ fun ButtonSecondary(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     val backgroundColor =
-        if (isPressed.value) colorResource(id = R.color.shape_transparent) else colorResource(
-            id = R.color.background_primary
-        )
+        if (isPressed.value) colorResource(id = R.color.shape_transparent) else Color.Transparent
     val borderColor = if (enabled) colorResource(id = R.color.shape_primary) else colorResource(
         id = R.color.shape_secondary
     )
@@ -175,7 +173,7 @@ fun ButtonSecondary(
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = backgroundColor,
                 contentColor = colorResource(id = R.color.text_primary),
-                disabledBackgroundColor = colorResource(id = R.color.background_primary),
+                disabledBackgroundColor = Color.Transparent,
                 disabledContentColor = colorResource(id = R.color.text_tertiary)
             ),
             modifier = modifier
@@ -216,7 +214,7 @@ fun ButtonWarning(
             shape = RoundedCornerShape(size.cornerSize),
             border = BorderStroke(width = 1.dp, color = borderColor),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.background_primary),
+                backgroundColor = Color.Transparent,
                 contentColor = contentColor
             ),
             modifier = modifier

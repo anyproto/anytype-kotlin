@@ -55,7 +55,8 @@ class DataViewListWidgetContainer(
                             source = widget.source,
                             tabs = emptyList(),
                             elements = emptyList(),
-                            isExpanded = false
+                            isExpanded = false,
+                            isCompact = widget.isCompact
                         )
                     )
                 } else {
@@ -70,10 +71,11 @@ class DataViewListWidgetContainer(
                                 elements = objects.map { obj ->
                                     WidgetView.SetOfObjects.Element(
                                         obj = obj,
-                                        icon = obj.widgetElementIcon(urlBuilder)
+                                        objectIcon = obj.widgetElementIcon(urlBuilder)
                                     )
                                 },
-                                isExpanded = true
+                                isExpanded = true,
+                                isCompact = widget.isCompact
                             )
                         }
                     } else {
@@ -91,7 +93,8 @@ class DataViewListWidgetContainer(
         source = widget.source,
         tabs = emptyList(),
         elements = emptyList(),
-        isExpanded = true
+        isExpanded = true,
+        isCompact = widget.isCompact
     )
 
     fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList {

@@ -45,7 +45,8 @@ class ListWidgetContainer(
                     source = widget.source,
                     type = resolveType(),
                     elements = emptyList(),
-                    isExpanded = false
+                    isExpanded = false,
+                    isCompact = widget.isCompact
                 )
             )
         } else {
@@ -81,10 +82,11 @@ class ListWidgetContainer(
         elements = objects.map { obj ->
             WidgetView.ListOfObjects.Element(
                 obj = obj,
-                icon = obj.widgetElementIcon(urlBuilder)
+                objectIcon = obj.widgetElementIcon(urlBuilder)
             )
         },
         isExpanded = true,
+        isCompact = widget.isCompact
     )
 
     private fun buildParams() = params(

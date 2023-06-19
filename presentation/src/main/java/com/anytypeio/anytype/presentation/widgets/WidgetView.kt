@@ -9,6 +9,11 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class WidgetView {
 
+    interface Element {
+        val objectIcon: ObjectIcon
+        val obj: ObjectWrapper.Basic
+    }
+
     abstract val id: Id
 
     data class Tree(
@@ -44,7 +49,8 @@ sealed class WidgetView {
         val source: Widget.Source,
         val tabs: List<Tab>,
         val elements: List<Element>,
-        val isExpanded: Boolean
+        val isExpanded: Boolean,
+        val isCompact: Boolean = false
     ) : WidgetView(), Draggable {
         data class Tab(
             val id: Id,
@@ -52,9 +58,9 @@ sealed class WidgetView {
             val isSelected: Boolean
         )
         data class Element(
-            val icon: ObjectIcon,
-            val obj: ObjectWrapper.Basic
-        )
+            override val objectIcon: ObjectIcon,
+            override val obj: ObjectWrapper.Basic
+        ) : WidgetView.Element
     }
 
     data class ListOfObjects(
@@ -62,12 +68,13 @@ sealed class WidgetView {
         val source: Widget.Source,
         val type: Type,
         val elements: List<Element>,
-        val isExpanded: Boolean
+        val isExpanded: Boolean,
+        val isCompact: Boolean = false
     ) : WidgetView(), Draggable {
         data class Element(
-            val icon: ObjectIcon,
-            val obj: ObjectWrapper.Basic
-        )
+            override val objectIcon: ObjectIcon,
+            override val obj: ObjectWrapper.Basic
+        ) : WidgetView.Element
         sealed class Type {
             object Recent : Type()
             object Favorites : Type()

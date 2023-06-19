@@ -54,6 +54,7 @@ class SelectWidgetTypeViewModel(
             if (objectLayout.isDataView()) {
                 views.value = listOf(
                     WidgetTypeView.List().setIsSelected(currentType),
+                    WidgetTypeView.CompactList().setIsSelected(currentType),
                     WidgetTypeView.Link().setIsSelected(currentType)
                 )
             } else {
@@ -74,6 +75,7 @@ class SelectWidgetTypeViewModel(
             if (objectLayout.isDataView()) {
                 views.value = listOf(
                     WidgetTypeView.List(isSelected = false),
+                    WidgetTypeView.CompactList(isSelected = false),
                     WidgetTypeView.Link(isSelected = false)
                 )
             }
@@ -93,6 +95,7 @@ class SelectWidgetTypeViewModel(
                     is WidgetTypeView.Link -> WidgetLayout.LINK
                     is WidgetTypeView.Tree -> WidgetLayout.TREE
                     is WidgetTypeView.List -> WidgetLayout.LIST
+                    is WidgetTypeView.CompactList -> WidgetLayout.COMPACT_LIST
                 }
                 updateWidget(
                     UpdateWidget.Params(
@@ -137,6 +140,7 @@ class SelectWidgetTypeViewModel(
                             is WidgetTypeView.Link -> Command.ChangeWidgetType.TYPE_LINK
                             is WidgetTypeView.Tree -> Command.ChangeWidgetType.TYPE_TREE
                             is WidgetTypeView.List -> Command.ChangeWidgetType.TYPE_LIST
+                            is WidgetTypeView.CompactList -> Command.ChangeWidgetType.TYPE_COMPACT_LIST
                         }
                     )
                 )

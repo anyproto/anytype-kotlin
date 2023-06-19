@@ -135,29 +135,31 @@ fun CompactListWidgetList(
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit
 ) {
     elements.forEachIndexed { idx, element ->
-        Row(
-            modifier = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-                .then(
-                    if (mode is InteractionMode.Default)
-                        Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
-                    else
-                        Modifier
+        Column() {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .then(
+                        if (mode is InteractionMode.Default)
+                            Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
+                        else
+                            Modifier
+                    )
+            ) {
+                TreeWidgetObjectIcon(
+                    icon = element.objectIcon,
+                    paddingStart = 8.dp,
+                    paddingEnd = 4.dp
                 )
-        ) {
-            TreeWidgetObjectIcon(
-                icon = element.objectIcon,
-                paddingStart = 8.dp,
-                paddingEnd = 4.dp
-            )
-            Text(
-                text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
-                modifier = Modifier.padding(start = 8.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary),
-            )
+                Text(
+                    text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
+                    modifier = Modifier.padding(start = 8.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = PreviewTitle2Medium,
+                    color = colorResource(id = R.color.text_primary),
+                )
+            }
             if (idx != elements.lastIndex) {
                 Divider(
                     thickness = 0.5.dp,

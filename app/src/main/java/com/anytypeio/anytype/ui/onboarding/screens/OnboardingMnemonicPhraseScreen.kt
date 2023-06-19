@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.onboarding.screens
 
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +34,7 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
+import com.anytypeio.anytype.ui.onboarding.MnemonicStub
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicViewModel
 
 @Composable
@@ -168,21 +171,25 @@ fun MnemonicPhrase(
                         .background(color = ColorBackgroundField, shape = RoundedCornerShape(24.dp))
                         .wrapContentHeight()
                 ) {
-                    MnemonicPhraseWidget(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .conditional(
-                                condition = state is OnboardingMnemonicViewModel.State.Mnemonic,
-                                positive = { blur(15.dp) }
-                            )
-                            .padding(
-                                start = 16.dp,
-                                top = 16.dp,
-                                end = 16.dp,
-                                bottom = 16.dp
-                            ),
-                        mnemonic = state.mnemonicPhrase
-                    )
+                    if (Build.VERSION.SDK_INT <= VERSION_CODES.R && state is OnboardingMnemonicViewModel.State.Mnemonic) {
+                        MnemonicStub()
+                    } else {
+                        MnemonicPhraseWidget(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .conditional(
+                                    condition = state is OnboardingMnemonicViewModel.State.Mnemonic,
+                                    positive = { blur(15.dp) }
+                                )
+                                .padding(
+                                    start = 16.dp,
+                                    top = 16.dp,
+                                    end = 16.dp,
+                                    bottom = 16.dp
+                                ),
+                            mnemonic = state.mnemonicPhrase
+                        )
+                    }
                 }
                 if (state is OnboardingMnemonicViewModel.State.MnemonicOpened) {
                     OnBoardingButtonSecondary(

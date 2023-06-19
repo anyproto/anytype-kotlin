@@ -70,6 +70,7 @@ import com.google.android.exoplayer2.util.Util
 
 class OnboardingFragment : BaseComposeFragment() {
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -79,6 +80,7 @@ class OnboardingFragment : BaseComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme {
+                    val navController = rememberAnimatedNavController()
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -90,9 +92,12 @@ class OnboardingFragment : BaseComposeFragment() {
                             modifier = Modifier
                                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
                             pageCount = Page.values().filter { it.visible }.size,
-                            page = currentPage
+                            page = currentPage,
+                            onBackClick = {
+                                navController.popBackStack()
+                            }
                         )
-                        Onboarding(currentPage)
+                        Onboarding(currentPage, navController)
                     }
                 }
             }
@@ -101,8 +106,7 @@ class OnboardingFragment : BaseComposeFragment() {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    private fun Onboarding(currentPage: MutableState<Page>) {
-        val navController = rememberAnimatedNavController()
+    private fun Onboarding(currentPage: MutableState<Page>, navController: NavHostController) {
         AnimatedNavHost(navController, startDestination = OnboardingNavigation.auth) {
             composable(
                 route = OnboardingNavigation.auth,
@@ -217,6 +221,7 @@ class OnboardingFragment : BaseComposeFragment() {
             }
         }
     }
+
 
     @Composable
     private fun ContentPaddingTop(): Int {
@@ -369,25 +374,26 @@ class OnboardingFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {}
 
-}
 
-@Composable
-fun <T> ComponentManager.Component<T>.ReleaseOn(
-    viewLifecycleOwner: LifecycleOwner,
-    state: Lifecycle.State
-): ComponentManager.Component<T> {
-    val that = this
-    DisposableEffect(
-        key1 = viewLifecycleOwner.lifecycle.currentState.isAtLeast(state),
-        effect = {
-            onDispose {
-                if (viewLifecycleOwner.lifecycle.currentState == state) {
-                    that.release()
+    @Composable
+    fun <T> ComponentManager.Component<T>.ReleaseOn(
+        viewLifecycleOwner: LifecycleOwner,
+        state: Lifecycle.State
+    ): ComponentManager.Component<T> {
+        val that = this
+        DisposableEffect(
+            key1 = viewLifecycleOwner.lifecycle.currentState.isAtLeast(state),
+            effect = {
+                onDispose {
+                    if (viewLifecycleOwner.lifecycle.currentState == state) {
+                        that.release()
+                    }
                 }
             }
-        }
-    )
-    return that
+        )
+        return that
+    }
+
 }
 
 private const val ANIMATION_LENGTH_SLIDE = 700

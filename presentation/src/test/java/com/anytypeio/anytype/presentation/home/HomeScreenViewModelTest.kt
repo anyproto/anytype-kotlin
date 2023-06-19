@@ -500,6 +500,200 @@ class HomeScreenViewModelTest {
     }
 
     @Test
+    fun `should emit list without elements, library and bin`() = runTest {
+
+        // SETUP
+
+        val firstLink = StubObject(
+            id = "First link",
+            layout = ObjectType.Layout.BASIC.code.toDouble()
+        )
+        val secondLink = StubObject(
+            id = "Second link",
+            layout = ObjectType.Layout.BASIC.code.toDouble()
+        )
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = listOf(firstLink.id, secondLink.id)
+        )
+
+        val sourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.LIST,
+            children = listOf(sourceLink.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLink
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenObject(givenObjectView)
+
+        stubSearchByIds(
+            subscription = widgetBlock.id,
+            targets = listOf(firstLink.id, secondLink.id),
+            results = listOf(firstLink, secondLink)
+        )
+
+        stubCollapsedWidgetState(any())
+        stubWidgetActiveView(widgetBlock)
+        stubGetWidgetSession()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = emptyList()
+            )
+            val secondTimeState = awaitItem()
+            assertEquals(
+                expected = buildList {
+                    add(
+                        WidgetView.SetOfObjects(
+                            id = widgetBlock.id,
+                            source = Widget.Source.Default(sourceObject),
+                            elements = emptyList(),
+                            isExpanded = true,
+                            isCompact = false,
+                            tabs = emptyList()
+                        )
+                    )
+                    add(WidgetView.Library)
+                    add(binWidget)
+                    addAll(HomeScreenViewModel.actions)
+                },
+                actual = secondTimeState
+            )
+        }
+    }
+
+    @Test
+    fun `should emit compact list without elements, library and bin`() = runTest {
+
+        // SETUP
+
+        val firstLink = StubObject(
+            id = "First link",
+            layout = ObjectType.Layout.BASIC.code.toDouble()
+        )
+        val secondLink = StubObject(
+            id = "Second link",
+            layout = ObjectType.Layout.BASIC.code.toDouble()
+        )
+
+        val sourceObject = StubObject(
+            id = "SOURCE OBJECT",
+            links = listOf(firstLink.id, secondLink.id)
+        )
+
+        val sourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = sourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.COMPACT_LIST,
+            children = listOf(sourceLink.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLink
+            ),
+            details = mapOf(
+                sourceObject.id to sourceObject.map
+            )
+        )
+
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenObject(givenObjectView)
+
+        stubSearchByIds(
+            subscription = widgetBlock.id,
+            targets = listOf(firstLink.id, secondLink.id),
+            results = listOf(firstLink, secondLink)
+        )
+
+        stubCollapsedWidgetState(any())
+        stubWidgetActiveView(widgetBlock)
+        stubGetWidgetSession()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = emptyList()
+            )
+            val secondTimeState = awaitItem()
+            assertEquals(
+                expected = buildList {
+                    add(
+                        WidgetView.SetOfObjects(
+                            id = widgetBlock.id,
+                            source = Widget.Source.Default(sourceObject),
+                            elements = emptyList(),
+                            isExpanded = true,
+                            isCompact = true,
+                            tabs = emptyList()
+                        )
+                    )
+                    add(WidgetView.Library)
+                    add(binWidget)
+                    addAll(HomeScreenViewModel.actions)
+                },
+                actual = secondTimeState
+            )
+        }
+    }
+
+    @Test
     fun `should emit three bundled widgets, each having 2 elements, library and bin`() = runTest {
 
         // SETUP

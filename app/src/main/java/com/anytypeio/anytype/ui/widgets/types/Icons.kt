@@ -28,15 +28,14 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.widgets.WidgetView
 
 @Composable
 fun TreeWidgetObjectIcon(
-    element: WidgetView.Tree.Element,
+    icon: ObjectIcon,
     paddingStart: Dp,
     paddingEnd: Dp
 ) {
-    when (val icon = element.objectIcon) {
+    when (icon) {
         is ObjectIcon.Profile.Avatar -> {
             Box(
                 modifier = Modifier

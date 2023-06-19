@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.widgets
 
-import android.graphics.Color
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
@@ -33,6 +31,7 @@ fun MySelectWidgetTypeScreen() {
     SelectWidgetTypeScreen(
         views = listOf(
             WidgetTypeView.List(isSelected = true),
+            WidgetTypeView.CompactList(isSelected = true),
             WidgetTypeView.Link(isSelected = true),
             WidgetTypeView.Tree(isSelected = true)
         ),
@@ -77,6 +76,17 @@ fun SelectWidgetTypeScreen(
                         R.string.widget_type_list_description
                     ),
                     icon = R.drawable.ic_widget_type_list,
+                    isChecked = type.isSelected,
+                    onClick = { onViewClicked(type) }
+                )
+                is WidgetTypeView.CompactList -> WidgetTypeItem(
+                    title = stringResource(
+                        R.string.widget_type_compact_list
+                    ),
+                    subtitle = stringResource(
+                        R.string.widget_type_compact_list_description
+                    ),
+                    icon = R.drawable.ic_widget_type_compact_list,
                     isChecked = type.isSelected,
                     onClick = { onViewClicked(type) }
                 )

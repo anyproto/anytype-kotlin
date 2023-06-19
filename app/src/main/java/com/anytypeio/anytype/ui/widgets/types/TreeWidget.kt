@@ -198,7 +198,7 @@ private fun TreeWidgetTreeItems(
             }
             if (element.objectIcon != ObjectIcon.None && element.objectIcon !is ObjectIcon.Basic.Avatar) {
                 TreeWidgetObjectIcon(
-                    element = element,
+                    icon = element.objectIcon,
                     paddingStart = 8.dp,
                     paddingEnd = 4.dp
                 )

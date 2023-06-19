@@ -186,68 +186,12 @@
 
     </FrameLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/shape_primary" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <FrameLayout
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_create_viewer_kanban" />
-
-        </FrameLayout>
-
-        <TextView
-            style="@style/TextView.UXStyle.Body"
-            android:textColor="@color/text_tertiary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="44dp"
-            android:text="@string/viewer_kanban" />
-
-        <ImageView
-            android:id="@+id/isKanbanChosen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_viewer_chosen"
-            android:visibility="invisible" />
-
-        <TextView
-            style="@style/TextView.UXStyle.Captions.1.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:textAllCaps="true"
-            android:textColor="@color/text_tertiary"
-            android:text="@string/soon" />
-
-    </FrameLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/shape_primary" />
-
     <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
         android:id="@+id/btnCreateViewer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="20dp"
         android:text="@string/create" />
 
 </LinearLayout>

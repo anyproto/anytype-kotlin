@@ -151,7 +151,7 @@ class DataViewListWidgetContainer(
                     ),
                 )
             },
-            limit = MAX_COUNT,
+            limit = resolveLimit(),
             source = source.setOf,
             collection = if (source.type.contains(ObjectTypeIds.COLLECTION))
                 source.id
@@ -160,7 +160,22 @@ class DataViewListWidgetContainer(
         )
     }
 
+    private fun resolveLimit(): Int {
+        if (widget.isCompact) {
+            return if (widget.limit == 0) {
+                DEFAULT_COMPACT_LIST_MAX_COUNT
+            } else
+                return widget.limit
+        } else {
+            return if (widget.limit == 0) {
+                DEFAULT_LIST_MAX_COUNT
+            } else
+                return widget.limit
+        }
+    }
+
     companion object {
-        const val MAX_COUNT = 3
+        const val DEFAULT_LIST_MAX_COUNT = 4
+        const val DEFAULT_COMPACT_LIST_MAX_COUNT = 6
     }
 }

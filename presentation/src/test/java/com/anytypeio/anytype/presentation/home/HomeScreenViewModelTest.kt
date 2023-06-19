@@ -49,6 +49,7 @@ import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
+import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -789,7 +790,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
-                keys = TreeWidgetContainer.keys
+                keys = TreeWidgetContainer.keys,
+                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -798,7 +800,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
-                keys = TreeWidgetContainer.keys
+                keys = TreeWidgetContainer.keys,
+                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -807,7 +810,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
-                keys = TreeWidgetContainer.keys
+                keys = TreeWidgetContainer.keys,
+                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1347,7 +1351,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
-                keys = ListWidgetContainer.keys
+                keys = ListWidgetContainer.keys,
+                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1356,7 +1361,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
-                keys = ListWidgetContainer.keys
+                keys = ListWidgetContainer.keys,
+                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1365,7 +1371,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
-                keys = ListWidgetContainer.keys
+                keys = ListWidgetContainer.keys,
+                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1480,7 +1487,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
-                keys = TreeWidgetContainer.keys
+                keys = TreeWidgetContainer.keys,
+                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1489,7 +1497,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
-                keys = TreeWidgetContainer.keys
+                keys = TreeWidgetContainer.keys,
+                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1498,7 +1507,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
-                keys = TreeWidgetContainer.keys
+                keys = TreeWidgetContainer.keys,
+                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1524,7 +1534,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
-                    keys = TreeWidgetContainer.keys
+                    keys = TreeWidgetContainer.keys,
+                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
                 )
             )
         }
@@ -1534,7 +1545,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
                     workspace = config.workspace,
-                    keys = TreeWidgetContainer.keys
+                    keys = TreeWidgetContainer.keys,
+                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
                 )
             )
         }
@@ -1544,7 +1556,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
                     workspace = config.workspace,
-                    keys = TreeWidgetContainer.keys
+                    keys = TreeWidgetContainer.keys,
+                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
                 )
             )
         }
@@ -1574,7 +1587,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
-                    keys = TreeWidgetContainer.keys
+                    keys = TreeWidgetContainer.keys,
+                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
                 )
             )
         }
@@ -1584,7 +1598,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
                     workspace = config.workspace,
-                    keys = TreeWidgetContainer.keys
+                    keys = TreeWidgetContainer.keys,
+                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
                 )
             )
         }
@@ -1594,7 +1609,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
                     workspace = config.workspace,
-                    keys = TreeWidgetContainer.keys
+                    keys = TreeWidgetContainer.keys,
+                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
                 )
             )
         }
@@ -1683,7 +1699,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
-                keys = ListWidgetContainer.keys
+                keys = ListWidgetContainer.keys,
+                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1692,7 +1709,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
-                keys = ListWidgetContainer.keys
+                keys = ListWidgetContainer.keys,
+                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1701,7 +1719,8 @@ class HomeScreenViewModelTest {
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
-                keys = ListWidgetContainer.keys
+                keys = ListWidgetContainer.keys,
+                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1727,7 +1746,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
-                    keys = ListWidgetContainer.keys
+                    keys = ListWidgetContainer.keys,
+                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1737,7 +1757,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
                     workspace = config.workspace,
-                    keys = ListWidgetContainer.keys
+                    keys = ListWidgetContainer.keys,
+                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1747,7 +1768,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
                     workspace = config.workspace,
-                    keys = ListWidgetContainer.keys
+                    keys = ListWidgetContainer.keys,
+                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1777,7 +1799,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
-                    keys = ListWidgetContainer.keys
+                    keys = ListWidgetContainer.keys,
+                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1787,7 +1810,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
                     workspace = config.workspace,
-                    keys = ListWidgetContainer.keys
+                    keys = ListWidgetContainer.keys,
+                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1797,7 +1821,8 @@ class HomeScreenViewModelTest {
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
                     workspace = config.workspace,
-                    keys = ListWidgetContainer.keys
+                    keys = ListWidgetContainer.keys,
+                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }

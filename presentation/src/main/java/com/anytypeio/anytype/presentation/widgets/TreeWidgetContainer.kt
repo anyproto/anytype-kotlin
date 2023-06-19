@@ -138,7 +138,8 @@ class TreeWidgetContainer(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
                         workspace = workspace,
-                        keys = keys
+                        keys = keys,
+                        limit = resolveLimit()
                     )
                 )
             ) { order, rootLevelObjects ->
@@ -149,7 +150,8 @@ class TreeWidgetContainer(
                 ListWidgetContainer.params(
                     subscription = widget.source.id,
                     workspace = workspace,
-                    keys = keys
+                    keys = keys,
+                    limit = resolveLimit()
                 )
             )
         }
@@ -233,10 +235,18 @@ class TreeWidgetContainer(
         )
     }
 
+    private fun resolveLimit(): Int {
+        return if (widget.limit == 0) {
+            DEFAULT_TREE_MAX_COUNT
+        } else
+            return widget.limit
+    }
+
     companion object {
         const val ROOT_INDENT = 0
         const val MAX_INDENT = 3
         const val SEPARATOR = "/"
+        const val DEFAULT_TREE_MAX_COUNT = 6
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)

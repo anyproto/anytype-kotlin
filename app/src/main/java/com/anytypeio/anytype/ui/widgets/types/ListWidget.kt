@@ -138,7 +138,7 @@ fun CompactListWidgetList(
         Column() {
             Row(
                 modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .padding(vertical = 10.dp, horizontal = 16.dp)
                     .then(
                         if (mode is InteractionMode.Default)
                             Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }

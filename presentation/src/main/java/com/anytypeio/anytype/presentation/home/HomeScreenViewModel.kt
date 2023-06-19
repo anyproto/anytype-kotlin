@@ -416,6 +416,7 @@ class HomeScreenViewModel(
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
                         else -> WidgetLayout.LINK
                     },
                     target = target,

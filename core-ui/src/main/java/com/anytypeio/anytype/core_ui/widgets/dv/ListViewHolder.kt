@@ -55,7 +55,7 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(item: Viewer.ListView.Item.Default, payloads: List<Int>) {
             payloads.forEach { payload ->
                 when (payload) {
-                    ListViewDiffer.PAYLOAD_NAME, ListViewDiffer.PAYLOAD_ICON -> {
+                    ListViewDiffer.PAYLOAD_NAME, ListViewDiffer.PAYLOAD_ICON, ListViewDiffer.PAYLOAD_HIDE_ICON -> {
                         updateTitleAndIcon(item)
                     }
                     ListViewDiffer.PAYLOAD_DESCRIPTION -> {
@@ -100,7 +100,7 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(item: Viewer.ListView.Item.Profile, payloads: List<Int>) {
             payloads.forEach { payload ->
                 when (payload) {
-                    ListViewDiffer.PAYLOAD_NAME, ListViewDiffer.PAYLOAD_ICON -> {
+                    ListViewDiffer.PAYLOAD_NAME, ListViewDiffer.PAYLOAD_ICON, ListViewDiffer.PAYLOAD_HIDE_ICON -> {
                         updateTitleAndIcon(item)
                     }
                     ListViewDiffer.PAYLOAD_DESCRIPTION -> {

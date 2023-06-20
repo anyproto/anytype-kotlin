@@ -10,6 +10,7 @@ object ListViewDiffer : DiffUtil.ItemCallback<Viewer.ListView.Item>() {
     const val PAYLOAD_ICON = 3
     const val PAYLOAD_DESCRIPTION = 4
     const val PAYLOAD_RELATION = 5
+    const val PAYLOAD_HIDE_ICON = 6
 
 
     override fun areItemsTheSame(
@@ -38,12 +39,14 @@ object ListViewDiffer : DiffUtil.ItemCallback<Viewer.ListView.Item>() {
             if (oldItem.icon != newItem.icon) payload.add(PAYLOAD_ICON)
             if (oldItem.description != newItem.description) payload.add(PAYLOAD_DESCRIPTION)
             if (oldItem.relations != newItem.relations) payload.add(PAYLOAD_RELATION)
+            if (oldItem.hideIcon != newItem.hideIcon) payload.add(PAYLOAD_HIDE_ICON)
         }
         if (oldItem is Viewer.ListView.Item.Default && newItem is Viewer.ListView.Item.Default) {
             if (oldItem.name != newItem.name) payload.add(PAYLOAD_NAME)
             if (oldItem.icon != newItem.icon) payload.add(PAYLOAD_ICON)
             if (oldItem.description != newItem.description) payload.add(PAYLOAD_DESCRIPTION)
             if (oldItem.relations != newItem.relations) payload.add(PAYLOAD_RELATION)
+            if (oldItem.hideIcon != newItem.hideIcon) payload.add(PAYLOAD_HIDE_ICON)
         }
         return payload
     }

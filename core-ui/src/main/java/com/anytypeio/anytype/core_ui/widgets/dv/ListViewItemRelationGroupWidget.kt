@@ -45,8 +45,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
 
         val ids = mutableListOf<Int>()
 
-        relations.forEachIndexed { index, relation ->
-            var isAdded = false
+        relations.forEach { relation ->
             when (relation) {
                 is DefaultObjectRelationValueView.Checkbox -> {
                     val view = View(context).apply {
@@ -56,9 +55,9 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                         setBackgroundResource(R.drawable.ic_relation_checkbox_selector)
                         isSelected = relation.isChecked
                     }
+                    addDotView(ids)
                     addView(view)
                     ids.add(view.id)
-                    isAdded = true
                 }
                 is DefaultObjectRelationValueView.Date -> {
                     val value = relation.timeInMillis?.formatTimestamp(
@@ -67,9 +66,9 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                     )
                     if (value != null) {
                         val view = createView(value = value)
+                        addDotView(ids)
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.File -> {
@@ -83,22 +82,23 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                                 size = relation.files.size
                             )
                         }
+                        addDotView(ids)
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Number -> {
                     val value = relation.number
                     if (!value.isNullOrBlank()) {
+                        addDotView(ids)
                         val view = createView(value = value)
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Object -> {
                     if (relation.objects.isNotEmpty()) {
+                        addDotView(ids)
                         val view = ListViewRelationObjectValueView(context).apply {
                             id = generateViewId()
                             when (val obj = relation.objects[0]) {
@@ -116,21 +116,21 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                         }
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Phone -> {
                     val value = relation.phone
                     if (!value.isNullOrBlank()) {
+                        addDotView(ids)
                         val view = createView(value = value)
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Status -> {
                     val defaultTextColor = resources.getColor(R.color.text_primary, null)
                     if (relation.status.isNotEmpty()) {
+                        addDotView(ids)
                         val status = relation.status[0]
                         val color = ThemeColor.values().find { v -> v.code == status.color }
                         val view = TextView(context).apply {
@@ -148,11 +148,11 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                         }
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Tag -> {
                     if (relation.tags.isNotEmpty()) {
+                        addDotView(ids)
                         val view = ListViewRelationTagValueView(context).apply {
                             id = generateViewId()
                             val tag = relation.tags[0]
@@ -164,50 +164,50 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                         }
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Text -> {
                     val value = relation.text
                     if (!value.isNullOrBlank()) {
+                        addDotView(ids)
                         val view = createView(value = value)
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Email -> {
                     val value = relation.email
                     if (!value.isNullOrBlank()) {
+                        addDotView(ids)
                         val view = createView(value = value)
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
                 is DefaultObjectRelationValueView.Url -> {
                     val value = relation.url
                     if (!value.isNullOrBlank()) {
+                        addDotView(ids)
                         val view = createView(value = value)
                         addView(view)
                         ids.add(view.id)
-                        isAdded = true
                     }
                 }
-            }
-
-            if (index != relations.lastIndex && isAdded) {
-                val div = View(context).apply {
-                    id = View.generateViewId()
-                    layoutParams = LayoutParams(dividerSize, dividerSize)
-                    setBackgroundResource(R.drawable.divider_dv_viewer_list_item_relations)
-                }
-                addView(div)
-                ids.add(div.id)
             }
         }
 
         flow.referencedIds = ids.toIntArray()
+    }
+
+    private fun addDotView(ids: MutableList<Int>) {
+        if (ids.isEmpty()) return
+        val div = View(context).apply {
+            id = View.generateViewId()
+            layoutParams = LayoutParams(dividerSize, dividerSize)
+            setBackgroundResource(R.drawable.divider_dv_viewer_list_item_relations)
+        }
+        addView(div)
+        ids.add(div.id)
     }
 
     private fun createView(value: String): TextView {

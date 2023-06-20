@@ -578,9 +578,8 @@
 
     <style name="ListViewItemSecondaryStyle" parent="TextView.ContentStyle.Relations.3">
         <item name="android:textColor">@color/text_secondary</item>
-        <item name="maxLines">1</item>
+        <item name="android:maxLines">1</item>
         <item name="maxCharacterCount">40</item>
-        <item name="singleLine">true</item>
         <item name="android:ellipsize">end</item>
     </style>
 

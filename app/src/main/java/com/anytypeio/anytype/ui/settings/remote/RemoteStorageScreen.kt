@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -73,6 +74,7 @@ fun ContentDisplay(
         modifier = Modifier
             .fillMaxHeight()
             .nestedScroll(rememberNestedScrollInteropConnection())
+            .background(color = colorResource(id = R.color.background_primary))
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -80,7 +82,10 @@ fun ContentDisplay(
             Dragger(modifier = Modifier.padding(top = 6.dp))
             TopBar(vm, collectionUiState)
             SearchBar(vm, collectionUiState)
-            ListView(vm, collectionUiState)
+            ListView(
+                vm = vm, 
+                uiState = collectionUiState
+            )
         }
 
         ActionWidget(vm, collectionUiState)

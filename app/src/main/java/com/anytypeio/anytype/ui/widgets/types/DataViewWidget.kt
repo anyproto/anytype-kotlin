@@ -104,22 +104,30 @@ fun DataViewListWidgetCard(
                 DataViewTabs(item, onChangeWidgetView)
             }
             if (item.elements.isNotEmpty()) {
-                item.elements.forEachIndexed { idx, element ->
-                    ListWidgetElement(
-                        onWidgetObjectClicked = onWidgetObjectClicked,
-                        obj = element.obj,
-                        icon = element.icon,
-                        mode = mode
+                if (item.isCompact) {
+                    CompactListWidgetList(
+                        mode = mode,
+                        elements = item.elements,
+                        onWidgetElementClicked = onWidgetObjectClicked
                     )
-                    if (idx != item.elements.lastIndex) {
-                        Divider(
-                            thickness = 0.5.dp,
-                            modifier = Modifier.padding(end = 16.dp, start = 16.dp),
-                            color = colorResource(id = R.color.widget_divider)
+                } else {
+                    item.elements.forEachIndexed { idx, element ->
+                        ListWidgetElement(
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            obj = element.obj,
+                            icon = element.objectIcon,
+                            mode = mode
                         )
-                    }
-                    if (idx == item.elements.lastIndex) {
-                        Spacer(modifier = Modifier.height(2.dp))
+                        if (idx != item.elements.lastIndex) {
+                            Divider(
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                color = colorResource(id = R.color.widget_divider)
+                            )
+                        }
+                        if (idx == item.elements.lastIndex) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                        }
                     }
                 }
             } else {

@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <string name="amplitude_api_key">1ba981d1a9afb8af8c81847ef3383a20</string>
     <string name="amplitude_api_key_debug">b9791dd64a1e9f07a330a4ac9feb1f10</string>
@@ -324,7 +324,9 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="widget_type_link">Link</string>
     <string name="widget_type_link_description">Compact version of the object</string>
     <string name="widget_type_list_description">Widget with list view of set object</string>
+    <string name="widget_type_compact_list_description">Widget with list view of set object</string>
     <string name="widget_type_list">List</string>
+    <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Change Source</string>
     <string name="widget_change_type">Change Type</string>
     <string name="widget_remove_widget">Remove Widget</string>

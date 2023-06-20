@@ -416,6 +416,7 @@ class HomeScreenViewModel(
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
                         else -> WidgetLayout.LINK
                     },
                     target = target,
@@ -721,7 +722,12 @@ class HomeScreenViewModel(
     private fun parseWidgetType(curr: Widget) = when (curr) {
         is Widget.Link -> Command.ChangeWidgetType.TYPE_LINK
         is Widget.Tree -> Command.ChangeWidgetType.TYPE_TREE
-        is Widget.List -> Command.ChangeWidgetType.TYPE_LIST
+        is Widget.List -> {
+            if (curr.isCompact)
+                Command.ChangeWidgetType.TYPE_COMPACT_LIST
+            else
+                Command.ChangeWidgetType.TYPE_LIST
+        }
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -1138,6 +1144,7 @@ sealed class Command {
             const val TYPE_TREE = 0
             const val TYPE_LINK = 1
             const val TYPE_LIST = 2
+            const val TYPE_COMPACT_LIST = 3
             const val UNDEFINED_LAYOUT_CODE = -1
         }
     }

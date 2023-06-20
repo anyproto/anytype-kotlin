@@ -140,7 +140,7 @@ private fun TreeWidgetTreeItems(
     item.elements.forEachIndexed { idx, element ->
         Row(
             modifier = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .padding(vertical = 10.dp, horizontal = 16.dp)
                 .then(
                     if (mode is InteractionMode.Default)
                         Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
@@ -198,7 +198,7 @@ private fun TreeWidgetTreeItems(
             }
             if (element.objectIcon != ObjectIcon.None && element.objectIcon !is ObjectIcon.Basic.Avatar) {
                 TreeWidgetObjectIcon(
-                    element = element,
+                    icon = element.objectIcon,
                     paddingStart = 8.dp,
                     paddingEnd = 4.dp
                 )

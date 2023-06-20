@@ -19,7 +19,8 @@ sealed class Widget {
      */
     data class Tree(
         override val id: Id,
-        override val source: Source
+        override val source: Source,
+        val limit: Int = 0
     ) : Widget()
 
     /**
@@ -37,7 +38,9 @@ sealed class Widget {
      */
     data class List(
         override val id: Id,
-        override val source: Source
+        override val source: Source,
+        val isCompact: Boolean = false,
+        val limit: Int = 0
     ) : Widget()
 
     sealed class Source {
@@ -125,11 +128,11 @@ fun List<Block>.parseWidgets(
                                 )
                             }
                             Block.Content.Widget.Layout.COMPACT_LIST -> {
-                                // Compact list is currently unsupported, fallback to simple list.
                                 add(
                                     Widget.List(
                                         id = w.id,
-                                        source = source
+                                        source = source,
+                                        isCompact = true
                                     )
                                 )
                             }

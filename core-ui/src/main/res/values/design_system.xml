@@ -260,8 +260,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
-        <item name="android:paddingTop">5dp</item>
-        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingTop">6.4dp</item>
+        <item name="android:paddingBottom">6.4dp</item>
     </style>
 
     <style name="Button.Primary.Small" parent="TextView.UXStyle.Body.Callout.Medium">
@@ -273,8 +273,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
-        <item name="android:paddingTop">7dp</item>
-        <item name="android:paddingBottom">7dp</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
     </style>
 
     <style name="Button.Primary.Medium" parent="TextView.UXStyle.Buttons.Medium">
@@ -315,8 +315,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
-        <item name="android:paddingTop">5dp</item>
-        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingTop">6.4dp</item>
+        <item name="android:paddingBottom">6.4dp</item>
     </style>
 
     <style name="Button.Secondary.Small" parent="TextView.UXStyle.Body.Callout.Regular">
@@ -327,8 +327,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
-        <item name="android:paddingTop">7dp</item>
-        <item name="android:paddingBottom">7dp</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
     </style>
 
     <style name="Button.Secondary.Medium" parent="TextView.UXStyle.Body">
@@ -361,8 +361,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
-        <item name="android:paddingTop">5dp</item>
-        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingTop">6.4dp</item>
+        <item name="android:paddingBottom">6.4dp</item>
     </style>
 
     <style name="Button.Warning.Small" parent="TextView.UXStyle.Body.Callout.Medium">
@@ -373,8 +373,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
-        <item name="android:paddingTop">7dp</item>
-        <item name="android:paddingBottom">7dp</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
     </style>
 
     <style name="Button.Warning.Medium" parent="TextView.UXStyle.Buttons.Medium">

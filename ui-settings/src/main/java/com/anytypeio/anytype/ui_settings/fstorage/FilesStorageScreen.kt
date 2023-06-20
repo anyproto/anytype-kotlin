@@ -52,7 +52,7 @@ fun FilesStorageScreen(
     Card(
         modifier = Modifier.fillMaxSize(),
         shape = RoundedCornerShape(16.dp),
-        backgroundColor = colorResource(id = R.color.background_primary)
+        backgroundColor = colorResource(id = R.color.background_secondary)
     ) {
         Column(
             modifier = Modifier

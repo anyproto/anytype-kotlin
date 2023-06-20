@@ -574,6 +574,8 @@
 
     <!-- List View -->
     <style name="ListViewItemPrimaryStyle" parent="TextView.ContentStyle.PreviewTitles.1.Medium">
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="ListViewItemSecondaryStyle" parent="TextView.ContentStyle.Relations.3">

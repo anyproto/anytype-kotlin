@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.widgets.dv
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
@@ -25,9 +24,9 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private val defaultTextSize: Float = context.dimen(R.dimen.sp_12)
     private val defaultTextColor: Int = context.resources.getColor(R.color.text_secondary, null)
     private val dividerSize: Int = context.dimen(R.dimen.dp_2).toInt()
+    private val verticalGap = context.resources.getDimensionPixelSize(R.dimen.dp_4)
 
     fun set(relations: List<DefaultObjectRelationValueView>) {
         clear()
@@ -39,7 +38,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
             setHorizontalBias(0f)
             setHorizontalAlign(Flow.HORIZONTAL_ALIGN_START)
             setHorizontalGap(15)
-            setVerticalGap(15)
+            setVerticalGap(verticalGap)
         }
 
         addView(flow)
@@ -129,24 +128,14 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                     }
                 }
                 is DefaultObjectRelationValueView.Status -> {
-                    val defaultTextColor = resources.getColor(R.color.text_primary, null)
                     if (relation.status.isNotEmpty()) {
                         addDotView(ids)
                         val status = relation.status[0]
                         val color = ThemeColor.values().find { v -> v.code == status.color }
-                        val view = TextView(context).apply {
-                            id = generateViewId()
-                            text = status.status
-                            isSingleLine = true
-                            maxLines = 1
-                            ellipsize = TextUtils.TruncateAt.END
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            if (color != null) {
-                                setTextColor(resources.dark(color, defaultTextColor))
-                            } else {
-                                setTextColor(defaultTextColor)
-                            }
-                        }
+                        val view = createView(
+                            value = status.status,
+                            color = color
+                        )
                         addView(view)
                         ids.add(view.id)
                     }
@@ -211,7 +200,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
         ids.add(div.id)
     }
 
-    private fun createView(value: String): TextView {
+    private fun createView(value: String, color: ThemeColor? = null): TextView {
         return TextView(context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             setTextAppearance(R.style.TextView_ContentStyle_Relations_3)
@@ -220,7 +209,11 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
             isSingleLine = true
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
-            setTextColor(defaultTextColor)
+            if (color != null) {
+                setTextColor(resources.dark(color, defaultTextColor))
+            } else {
+                setTextColor(defaultTextColor)
+            }
         }
     }
 

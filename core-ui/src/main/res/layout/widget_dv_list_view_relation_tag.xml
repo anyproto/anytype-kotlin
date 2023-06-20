@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <TextView
-        style="@style/TextView.ContentStyle.Relations.2"
+        style="@style/TextView.ContentStyle.Relations.3"
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,8 +20,9 @@
         tools:visibility="visible" />
 
     <TextView
-        style="@style/TextView.ContentStyle.Relations.2"
+        style="@style/TextView.ContentStyle.Relations.3"
         android:id="@+id/tvCount"
+        android:textColor="@color/text_secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"

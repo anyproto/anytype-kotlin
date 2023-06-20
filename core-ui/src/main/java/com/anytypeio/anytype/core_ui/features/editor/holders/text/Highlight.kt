@@ -6,9 +6,6 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHighlightBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -80,7 +77,7 @@ class Highlight(
             binding.highlightBlockContentContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.default_indent) + rect.left
                 marginEnd = dimen(R.dimen.dp_8) + rect.right
-                bottomMargin = rect.bottom
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
         }
         if (decorations.isNotEmpty()) {

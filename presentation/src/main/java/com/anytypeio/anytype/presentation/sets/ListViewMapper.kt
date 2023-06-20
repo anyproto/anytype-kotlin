@@ -5,11 +5,12 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.presentation.objects.valuesFilteredByHidden
+import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 suspend fun DVViewer.buildListViews(
@@ -33,9 +34,14 @@ suspend fun DVViewer.buildListViews(
                 ObjectType.Layout.IMAGE,
                 ObjectType.Layout.NOTE,
                 ObjectType.Layout.BOOKMARK -> {
+                    val description = if (relations.any { it.key == Relations.DESCRIPTION }) {
+                        obj.description
+                    } else {
+                        null
+                    }
                     Viewer.ListView.Item.Default(
                         objectId = obj.id,
-                        relations = obj.valuesFilteredByHidden(
+                        relations = obj.relationsFilteredByHiddenAndDescription(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             details = details,
@@ -48,14 +54,19 @@ suspend fun DVViewer.buildListViews(
                             layout = obj.layout,
                             builder = urlBuilder
                         ),
-                        description = obj.description,
+                        description = description,
                         hideIcon = hideIcon
                     )
                 }
                 ObjectType.Layout.PROFILE -> {
+                    val description = if (relations.any { it.key == Relations.DESCRIPTION }) {
+                        obj.description
+                    } else {
+                        null
+                    }
                     Viewer.ListView.Item.Profile(
                         objectId = obj.id,
-                        relations = obj.valuesFilteredByHidden(
+                        relations = obj.relationsFilteredByHiddenAndDescription(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             details = details,
@@ -68,14 +79,19 @@ suspend fun DVViewer.buildListViews(
                             layout = obj.layout,
                             builder = urlBuilder
                         ),
-                        description = obj.description,
+                        description = description,
                         hideIcon = hideIcon
                     )
                 }
                 ObjectType.Layout.TODO -> {
+                    val description = if (relations.any { it.key == Relations.DESCRIPTION }) {
+                        obj.description
+                    } else {
+                        null
+                    }
                     Viewer.ListView.Item.Task(
                         objectId = obj.id,
-                        relations = obj.valuesFilteredByHidden(
+                        relations = obj.relationsFilteredByHiddenAndDescription(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             details = details,
@@ -83,13 +99,8 @@ suspend fun DVViewer.buildListViews(
                             storeOfObjects = store
                         ),
                         name = obj.getProperName(),
-                        icon = ObjectIcon.from(
-                            obj = obj,
-                            layout = obj.layout,
-                            builder = urlBuilder
-                        ),
-                        description = obj.description,
-                        hideIcon = hideIcon
+                        done = obj.done ?: false,
+                        description = description
                     )
                 }
                 else -> null

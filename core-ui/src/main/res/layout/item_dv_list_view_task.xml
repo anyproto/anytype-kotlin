@@ -4,20 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <TextView
         android:id="@+id/tvPrimary"
         style="@style/ListViewItemPrimaryStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        android:layout_marginTop="20dp"
-        app:layout_goneMarginStart="0dp"
+        android:layout_marginStart="6dp"
         android:hint="@string/untitled"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginStart="0dp"
         tools:text="Virgil Abloh’s Lecture at Harvard’s School of Design" />
 
     <TextView
@@ -43,16 +44,13 @@
         app:layout_constraintTop_toBottomOf="@+id/tvSecondary"
         tools:visibility="visible" />
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+    <ImageView
         android:id="@+id/icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="20dp"
-        app:checkboxSize="18dp"
-        app:emojiSize="20dp"
-        app:hasEmojiRounded8Background="false"
-        app:imageSize="20dp"
-        app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="@dimen/dp_1"
+        android:src="@drawable/ic_todo_title_checkbox_selector"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />

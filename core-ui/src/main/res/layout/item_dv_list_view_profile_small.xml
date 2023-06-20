@@ -4,18 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <TextView
         android:id="@+id/tvPrimary"
         style="@style/ListViewItemPrimaryStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        android:layout_marginTop="20dp"
         android:hint="@string/untitled"
+        android:textColor="@color/text_primary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_goneMarginStart="0dp"
         tools:text="Virgil Abloh’s Lecture at Harvard’s School of Design" />
@@ -47,7 +48,6 @@
         android:id="@+id/icon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_marginTop="20dp"
         app:checkboxSize="20dp"
         app:emojiSize="20dp"
         app:hasEmojiRounded8Background="false"

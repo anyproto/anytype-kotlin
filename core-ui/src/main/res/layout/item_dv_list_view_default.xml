@@ -4,22 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="20dp"
+    android:orientation="vertical"
     android:paddingTop="20dp"
-    android:orientation="vertical">
+    android:paddingBottom="20dp">
 
     <TextView
         android:id="@+id/tvPrimary"
         style="@style/ListViewItemPrimaryStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
         android:hint="@string/untitled"
         android:textColor="@color/text_primary"
-        app:layout_goneMarginStart="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginStart="0dp"
         tools:text="Virgil Abloh’s Lecture at Harvard’s School of Design" />
 
     <TextView
@@ -55,6 +54,6 @@
         app:imageSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone" />
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

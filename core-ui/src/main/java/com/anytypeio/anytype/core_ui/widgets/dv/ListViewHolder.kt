@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
+import android.text.SpannableString
+import android.text.style.LeadingMarginSpan
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,13 +17,11 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    private val tvPrimary: TextView get() = itemView.findViewById(R.id.tvPrimary)
-    private val tvSecondary: TextView get() = itemView.findViewById(R.id.tvSecondary)
+    protected val tvPrimary: TextView get() = itemView.findViewById(R.id.tvPrimary)
+    protected val tvSecondary: TextView get() = itemView.findViewById(R.id.tvSecondary)
     protected val relations: ListViewItemRelationGroupWidget get() = itemView.findViewById(R.id.relationsContainer)
-
-    fun updateName(item: Viewer.ListView.Item) {
-        tvPrimary.text = item.name
-    }
+    val firstLineMargin = itemView.resources.getDimensionPixelOffset(R.dimen.default_dv_list_first_line_margin_start)
+    val untitled = itemView.resources.getString(R.string.untitled)
 
     fun updateDescription(item: Viewer.ListView.Item) {
         if (item.description.isNullOrBlank()) {
@@ -47,8 +47,7 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val icon = binding.icon
 
         fun bind(item: Viewer.ListView.Item.Default) {
-            updateIcon(item)
-            updateName(item)
+            updateTitleAndIcon(item)
             updateDescription(item)
             updateRelations(item)
         }
@@ -56,8 +55,8 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(item: Viewer.ListView.Item.Default, payloads: List<Int>) {
             payloads.forEach { payload ->
                 when (payload) {
-                    ListViewDiffer.PAYLOAD_NAME -> {
-                        updateName(item)
+                    ListViewDiffer.PAYLOAD_NAME, ListViewDiffer.PAYLOAD_ICON -> {
+                        updateTitleAndIcon(item)
                     }
                     ListViewDiffer.PAYLOAD_DESCRIPTION -> {
                         updateDescription(item)
@@ -65,20 +64,24 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     ListViewDiffer.PAYLOAD_RELATION -> {
                         updateRelations(item)
                     }
-                    ListViewDiffer.PAYLOAD_ICON -> {
-                        updateIcon(item)
-                    }
                 }
             }
         }
 
-        private fun updateIcon(item: Viewer.ListView.Item.Default) {
-            icon.apply {
-                if (item.hideIcon || item.icon is ObjectIcon.None) {
-                    gone()
-                } else {
-                    visible()
-                    setIcon(item.icon)
+        private fun updateTitleAndIcon(item: Viewer.ListView.Item.Default) {
+            if (!item.hideIcon && item.icon != ObjectIcon.None) {
+                icon.visible()
+                icon.setIcon(item.icon)
+                val sb = SpannableString(item.name.ifEmpty { untitled })
+                sb.setSpan(
+                    LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
+                )
+                tvPrimary.text = sb
+            } else {
+                icon.gone()
+                tvPrimary.text = when {
+                    item.name.isEmpty() -> SpannableString(untitled)
+                    else -> SpannableString(item.name)
                 }
             }
         }
@@ -89,8 +92,7 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val icon = binding.icon
 
         fun bind(item: Viewer.ListView.Item.Profile) {
-            updateIcon(item)
-            updateName(item)
+            updateTitleAndIcon(item)
             updateDescription(item)
             updateRelations(item)
         }
@@ -98,8 +100,8 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(item: Viewer.ListView.Item.Profile, payloads: List<Int>) {
             payloads.forEach { payload ->
                 when (payload) {
-                    ListViewDiffer.PAYLOAD_NAME -> {
-                        updateName(item)
+                    ListViewDiffer.PAYLOAD_NAME, ListViewDiffer.PAYLOAD_ICON -> {
+                        updateTitleAndIcon(item)
                     }
                     ListViewDiffer.PAYLOAD_DESCRIPTION -> {
                         updateDescription(item)
@@ -107,22 +109,24 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     ListViewDiffer.PAYLOAD_RELATION -> {
                         updateRelations(item)
                     }
-                    ListViewDiffer.PAYLOAD_ICON -> {
-                        updateIcon(item)
-                    }
                 }
             }
         }
 
-        private fun updateIcon(item: Viewer.ListView.Item.Profile) {
-            icon.apply {
-                when {
-                    item.hideIcon -> gone()
-                    item.icon is ObjectIcon.Profile -> {
-                        visible()
-                        setIcon(item.icon)
-                    }
-                    else -> gone()
+        private fun updateTitleAndIcon(item: Viewer.ListView.Item.Profile) {
+            if (!item.hideIcon && item.icon != ObjectIcon.None) {
+                icon.visible()
+                icon.setIcon(item.icon)
+                val sb = SpannableString(item.name.ifEmpty { untitled })
+                sb.setSpan(
+                    LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
+                )
+                tvPrimary.text = sb
+            } else {
+                icon.gone()
+                tvPrimary.text = when {
+                    item.name.isEmpty() -> SpannableString(untitled)
+                    else -> SpannableString(item.name)
                 }
             }
         }
@@ -160,6 +164,10 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private fun updateTaskChecked(item: Viewer.ListView.Item.Task) {
             icon.isSelected = item.done
+        }
+
+        private fun updateName(item: Viewer.ListView.Item) {
+            tvPrimary.text = item.name
         }
     }
 }

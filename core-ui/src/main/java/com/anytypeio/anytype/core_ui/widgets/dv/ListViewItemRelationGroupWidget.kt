@@ -26,6 +26,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val defaultTextSize: Float = context.dimen(R.dimen.sp_12)
+    private val defaultTextColor: Int = context.resources.getColor(R.color.text_secondary, null)
     private val dividerSize: Int = context.dimen(R.dimen.dp_2).toInt()
 
     fun set(relations: List<DefaultObjectRelationValueView>) {
@@ -212,12 +213,14 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
 
     private fun createView(value: String): TextView {
         return TextView(context).apply {
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            setTextAppearance(R.style.TextView_ContentStyle_Relations_3)
             id = generateViewId()
             text = value
             isSingleLine = true
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+            setTextColor(defaultTextColor)
         }
     }
 

@@ -19,7 +19,8 @@ sealed class Widget {
      */
     data class Tree(
         override val id: Id,
-        override val source: Source
+        override val source: Source,
+        val limit: Int = 0
     ) : Widget()
 
     /**
@@ -38,7 +39,8 @@ sealed class Widget {
     data class List(
         override val id: Id,
         override val source: Source,
-        val isCompact: Boolean = false
+        val isCompact: Boolean = false,
+        val limit: Int = 0
     ) : Widget()
 
     sealed class Source {

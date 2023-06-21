@@ -30,6 +30,7 @@
             android:name="com.anytypeio.anytype.ui.main.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:resizeableActivity="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <intent-filter android:label="filter">

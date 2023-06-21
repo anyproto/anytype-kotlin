@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -159,7 +160,7 @@ suspend fun ObjectWrapper.Basic.values(
     return values
 }
 
-suspend fun ObjectWrapper.Basic.valuesFilteredByHidden(
+suspend fun ObjectWrapper.Basic.relationsFilteredByHiddenAndDescription(
     relations: List<ObjectWrapper.Relation>,
     settings: List<DVViewerRelation>,
     details: Map<Id, Block.Fields>,
@@ -167,7 +168,7 @@ suspend fun ObjectWrapper.Basic.valuesFilteredByHidden(
     storeOfObjects: ObjectStore
 ): List<DefaultObjectRelationValueView> {
     return values(
-        relations = relations.filter { it.isHidden != true },
+        relations = relations.filter { it.isHidden != true && it.key != Relations.DESCRIPTION },
         settings = settings,
         details = details,
         urlBuilder = urlBuilder,

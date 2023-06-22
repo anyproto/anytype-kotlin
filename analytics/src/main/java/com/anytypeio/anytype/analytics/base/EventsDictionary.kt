@@ -109,6 +109,7 @@ object EventsDictionary {
     const val setSelectQuery = "SetSelectQuery"
     const val addView = "AddView"
     const val switchView = "SwitchView"
+    const val repositionView = "RepositionView"
     const val removeView = "RemoveView"
     const val changeViewType = "ChangeViewType"
     const val duplicateView = "DuplicateView"
@@ -142,7 +143,7 @@ object EventsDictionary {
     // Widgets
 
     const val addWidget = "AddWidget"
-    const val editWidgets = "EditWidgets"
+    const val editWidgets = "EditWidget"
     const val changeWidgetSource = "ChangeWidgetSource"
     const val changeWidgetLayout = "ChangeWidgetLayout"
     const val reorderWidget = "ReorderWidget"

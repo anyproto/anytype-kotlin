@@ -8,8 +8,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,17 +49,19 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun CreateSoulAnimWrapper(
+    contentPaddingTop: Int,
     viewModel: OnboardingSoulCreationAnimViewModel,
-    onAnimationComplete: () -> Unit
+    onAnimationComplete: () -> Unit,
 ) {
     val state = viewModel.accountData.collectAsStateWithLifecycle().value
-    CreateSoulAnimScreen(state, onAnimationComplete)
+    CreateSoulAnimScreen(state, onAnimationComplete, contentPaddingTop)
 }
 
 @Composable
 private fun CreateSoulAnimScreen(
     state: Resultat<OnboardingSoulCreationAnimViewModel.AccountData>,
-    onAnimationComplete: () -> Unit
+    onAnimationComplete: () -> Unit,
+    contentPaddingTop: Int
 ) {
 
     state.fold(
@@ -76,7 +80,8 @@ private fun CreateSoulAnimScreen(
                 animationSpec = tween(durationMillis = ANIMATION_DURATION)
             )
 
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+                Spacer(modifier = Modifier.height(contentPaddingTop.dp))
                 CreateSoulAnimationTitle(targetElementsAlpha)
                 CreateSoulAnimation(
                     isBoxVisible,
@@ -191,7 +196,7 @@ private fun CreateSoulAnimationTitle(targetElementsAlpha: Float) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(bottom = 64.dp)
+            .padding(bottom = 48.dp)
     ) {
         Box(
             modifier = Modifier

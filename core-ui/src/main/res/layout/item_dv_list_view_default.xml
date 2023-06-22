@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="20dp"
+    android:orientation="vertical"
     android:paddingTop="20dp"
-    android:orientation="vertical">
+    android:paddingBottom="20dp">
 
     <TextView
         android:id="@+id/tvPrimary"
         style="@style/ListViewItemPrimaryStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:hint="@string/untitled"
-        app:layout_goneMarginStart="0dp"
+        android:textColor="@color/text_primary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginStart="0dp"
         tools:text="Virgil Abloh’s Lecture at Harvard’s School of Design" />
 
     <TextView
@@ -26,7 +26,7 @@
         style="@style/ListViewItemSecondaryStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPrimary"
@@ -37,7 +37,7 @@
         android:id="@+id/relationsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSecondary"
@@ -48,11 +48,10 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         app:checkboxSize="20dp"
-        android:layout_marginTop="1dp"
-        app:hasEmojiRounded8Background="false"
         app:emojiSize="20dp"
-        app:imageSize="20dp"
+        app:hasEmojiRounded8Background="false"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
+        app:imageSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />

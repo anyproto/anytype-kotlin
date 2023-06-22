@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -31,27 +32,40 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingSoulCreationViewModel
 
 
 @Composable
-fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel) {
-    CreateSoulScreen {
+fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel, contentPaddingTop: Int) {
+    CreateSoulScreen(contentPaddingTop) {
         viewModel.setAccountAndSpaceName(it)
     }
 }
 
 @Composable
 private fun CreateSoulScreen(
+    contentPaddingTop: Int,
     onCreateSoulClicked: (String) -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center
-    ) {
-        val text = remember { mutableStateOf("") }
-        CreateSoulTitle(modifier = Modifier.padding(bottom = 16.dp))
-        CreateSoulInput(text)
-        Spacer(modifier = Modifier.height(9.dp))
-        CreateSoulDescription()
-        Spacer(modifier = Modifier.height(18.dp))
-        CreateSoulNextButton(onCreateSoulClicked, text)
+    val text = remember { mutableStateOf("") }
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Spacer(modifier = Modifier.height(contentPaddingTop.dp))
+        }
+        item {
+            CreateSoulTitle(modifier = Modifier.padding(bottom = 16.dp))
+        }
+        item {
+            CreateSoulInput(text)
+        }
+        item {
+            Spacer(modifier = Modifier.height(9.dp))
+        }
+        item {
+            CreateSoulDescription()
+        }
+        item {
+            Spacer(modifier = Modifier.height(18.dp))
+        }
+        item {
+            CreateSoulNextButton(onCreateSoulClicked, text)
+        }
     }
 }
 

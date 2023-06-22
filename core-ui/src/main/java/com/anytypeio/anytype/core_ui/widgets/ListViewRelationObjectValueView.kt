@@ -22,7 +22,12 @@ class ListViewRelationObjectValueView @JvmOverloads constructor(
     fun setup(name: String, icon: ObjectIcon, size: Int) = with(binding) {
         tvName.visible()
         tvName.text = name
-        objectIcon.setIcon(icon)
+        if (icon is ObjectIcon.None) {
+            objectIcon.gone()
+        } else {
+            objectIcon.visible()
+            objectIcon.setIcon(icon)
+        }
         if (size > 1) {
             tvCount.visible()
             tvCount.text = "+${size - 1}"

@@ -94,32 +94,29 @@ sealed class Viewer {
             abstract val objectId: Id
             abstract val name: String
             abstract val description: String?
-            abstract val icon: ObjectIcon
             abstract val relations: List<DefaultObjectRelationValueView>
-            abstract val hideIcon: Boolean
             data class Default(
                 override val objectId: Id,
                 override val name: String,
                 override val description: String?,
-                override val icon: ObjectIcon,
-                override val hideIcon: Boolean,
+                val icon: ObjectIcon,
+                val hideIcon: Boolean,
                 override val relations: List<DefaultObjectRelationValueView>
             ) : Item()
             data class Profile(
                 override val objectId: Id,
                 override val name: String,
                 override val description: String?,
-                override val icon: ObjectIcon,
-                override val hideIcon: Boolean,
+                val icon: ObjectIcon,
+                val hideIcon: Boolean,
                 override val relations: List<DefaultObjectRelationValueView>
             ) : Item()
             data class Task(
                 override val objectId: Id,
                 override val name: String,
                 override val description: String?,
-                override val icon: ObjectIcon,
-                override val hideIcon: Boolean,
-                override val relations: List<DefaultObjectRelationValueView>
+                override val relations: List<DefaultObjectRelationValueView>,
+                val done: Boolean
             ) : Item()
         }
     }

@@ -86,8 +86,8 @@ class OnboardingAuthViewModel @Inject constructor(
     }
 
     interface JoinFlowState {
-        object Active: JoinFlowState
-        object Loading: JoinFlowState
+        object Active : JoinFlowState
+        object Loading : JoinFlowState
     }
 
     class Factory @Inject constructor(

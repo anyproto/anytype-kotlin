@@ -51,6 +51,7 @@ import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
@@ -121,20 +122,24 @@ class OnboardingFragment : BaseComposeFragment() {
             composable(
                 route = OnboardingNavigation.recovery,
                 enterTransition = {
-                    when (initialState.destination.route) {
-                        OnboardingNavigation.inviteCode -> {
-                            slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
-                        }
-                        else -> {
-                            slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
-                        }
-                    }
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
                 },
                 exitTransition = {
-                    slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
-                RecoveryScreenWrapper()
+                currentPage.value = Page.RECOVERY
+                RecoveryScreenWrapper(
+                    backClick = {
+                        navController.popBackStack()
+                    },
+                    nextClick = {
+                        navController.navigate(OnboardingNavigation.enterTheVoid)
+                    },
+                    scanQrClick = {
+
+                    }
+                )
             }
             composable(
                 route = OnboardingNavigation.void,
@@ -219,14 +224,27 @@ class OnboardingFragment : BaseComposeFragment() {
                     // do nothing
                 }
             }
+            composable(
+                route = OnboardingNavigation.enterTheVoid,
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                currentPage.value = Page.ENTER_THE_VOID
+                EnteringTheVoidScreen(
+                    openApp = {},
+                    contentPaddingTop = ContentPaddingTop()
+                )
+            }
         }
     }
 
 
     @Composable
-    private fun ContentPaddingTop(): Int {
-        return LocalConfiguration.current.screenHeightDp * 2 / 6
-    }
+    private fun ContentPaddingTop() = LocalConfiguration.current.screenHeightDp * 2 / 6
 
     @Composable
     private fun CreateSoulAnimation(contentPaddingTop: Int) {

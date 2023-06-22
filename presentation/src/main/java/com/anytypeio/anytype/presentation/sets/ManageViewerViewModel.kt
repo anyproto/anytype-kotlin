@@ -13,8 +13,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPositio
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRedoEvent
-import com.anytypeio.anytype.presentation.extension.sendRepositionViewEvent
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher

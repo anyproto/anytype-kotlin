@@ -13,6 +13,8 @@ import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPositio
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRedoEvent
+import com.anytypeio.anytype.presentation.extension.sendRepositionViewEvent
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -67,6 +69,7 @@ class ManageViewerViewModel(
         if (viewer != null) {
             viewModelScope.launch {
                 // Workaround for preserving the previously first view as the active view
+                val startTime = System.currentTimeMillis()
                 if (newPosition == 0 && session.currentViewerId.value.isNullOrEmpty()) {
                     session.currentViewerId.value = views.value.firstOrNull()?.id
                 }
@@ -78,6 +81,13 @@ class ManageViewerViewModel(
                         pos = newPosition
                     )
                 ).collect { result ->
+                    logEvent(
+                        state = objectState.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.REPOSITION_VIEW,
+                        startTime = startTime,
+                        type = views.value.find { it.id  == viewer }?.type?.formattedName
+                    )
                     result.fold(
                         onSuccess = { dispatcher.send(it) },
                         onFailure = { Timber.e(it, "Error while changing view order") }

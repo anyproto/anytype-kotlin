@@ -142,7 +142,7 @@ object EventsDictionary {
     // Widgets
 
     const val addWidget = "AddWidget"
-    const val editWidgets = "EditWidgets"
+    const val editWidgets = "EditWidget"
     const val changeWidgetSource = "ChangeWidgetSource"
     const val changeWidgetLayout = "ChangeWidgetLayout"
     const val reorderWidget = "ReorderWidget"

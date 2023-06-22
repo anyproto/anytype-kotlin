@@ -192,7 +192,10 @@ fun MnemonicPhraseWidgetPreview() {
 
 @Composable
 fun OnboardingInput(
-    modifier: Modifier = Modifier, text: MutableState<String>, placeholder: String? = null
+    modifier: Modifier = Modifier,
+    text: MutableState<String>,
+    placeholder: String? = null,
+    singleLine: Boolean = true
 ) {
     TextField(
         modifier = modifier.then(
@@ -219,7 +222,7 @@ fun OnboardingInput(
                 Text(text = it, style = UXBody.copy(color = ColorPlaceholderText))
             }
         },
-        singleLine = true,
+        singleLine = singleLine,
     )
 }
 

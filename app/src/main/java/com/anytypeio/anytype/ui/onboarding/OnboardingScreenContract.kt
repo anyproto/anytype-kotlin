@@ -12,5 +12,7 @@ enum class Page(val num: Int, val visible: Boolean) {
     VOID(1, true),
     MNEMONIC(2, true),
     SOUL_CREATION(3, true),
-    SOUL_CREATION_ANIM(4, false)
+    SOUL_CREATION_ANIM(4, false),
+    RECOVERY(5, false),
+    ENTER_THE_VOID(6, false)
 }

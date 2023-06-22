@@ -38,3 +38,19 @@ val TextOnBoardingDescription =
         lineHeight = 18.sp,
         letterSpacing = (-0.017).em
     )
+
+val TitleLogin = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W600,
+    fontSize = 17.sp,
+    lineHeight = 22.sp,
+    letterSpacing = (-0.024).em
+)
+
+val ConditionLogin = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W700,
+    fontSize = 11.sp,
+    lineHeight = 24.sp,
+    letterSpacing = (-0.006).em
+)

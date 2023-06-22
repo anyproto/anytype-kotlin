@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -19,6 +21,7 @@ import timber.log.Timber
 class OnboardingAuthViewModel @Inject constructor(
     private val createAccount: CreateAccount,
     private val setupWallet: SetupWallet,
+    private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
     private val pathProvider: PathProvider,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
@@ -68,6 +71,20 @@ class OnboardingAuthViewModel @Inject constructor(
                     relationsSubscriptionManager.onStart()
                     objectTypesSubscriptionManager.onStart()
                     joinFlowState.value = JoinFlowState.Active
+                    setupUseCase()
+                }
+            )
+        }
+    }
+
+    private fun setupUseCase() {
+        viewModelScope.launch {
+            setupMobileUseCaseSkip.execute(Unit).fold(
+                onFailure = {
+                    Timber.e(it, "Error while importing use case")
+                    navigateTo(InviteCodeNavigation.Void)
+                },
+                onSuccess = {
                     navigateTo(InviteCodeNavigation.Void)
                 }
             )
@@ -93,6 +110,7 @@ class OnboardingAuthViewModel @Inject constructor(
     class Factory @Inject constructor(
         private val createAccount: CreateAccount,
         private val setupWallet: SetupWallet,
+        private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
         private val pathProvider: PathProvider,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
@@ -103,6 +121,7 @@ class OnboardingAuthViewModel @Inject constructor(
             return OnboardingAuthViewModel(
                 createAccount = createAccount,
                 setupWallet = setupWallet,
+                setupMobileUseCaseSkip = setupMobileUseCaseSkip,
                 pathProvider = pathProvider,
                 spaceGradientProvider = spaceGradientProvider,
                 relationsSubscriptionManager = relationsSubscriptionManager,

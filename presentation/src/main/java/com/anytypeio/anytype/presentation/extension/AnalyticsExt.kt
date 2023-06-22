@@ -1597,12 +1597,3 @@ suspend fun Analytics.sendHideKeyboardEvent() {
         eventName = EventsDictionary.hideKeyboard
     )
 }
-
-suspend fun Analytics.sendRepositionViewEvent(
-    startTime: Long,
-) {
-    sendEvent(
-        eventName = EventsDictionary.repositionView,
-
-    )
-}

@@ -316,6 +316,7 @@
 
     <dimen name="default_dv_gallery_first_line_margin_start">22dp</dimen>
     <dimen name="default_collection_dv_header_height">56dp</dimen>
+    <dimen name="default_dv_list_first_line_margin_start">26dp</dimen>
 
     <dimen name="default_dv_gallery_title_height">38dp</dimen>
     <dimen name="default_dv_gallery_title_desc_height">57dp</dimen>

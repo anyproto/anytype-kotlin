@@ -367,7 +367,8 @@ data class Block(
         object TableColumn : Content()
 
         data class Widget(
-            val layout: Layout
+            val layout: Layout,
+            val limit: Int = 0
         ) : Content() {
             enum class Layout {
                 TREE, LINK, LIST, COMPACT_LIST

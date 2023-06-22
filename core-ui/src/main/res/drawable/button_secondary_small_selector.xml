@@ -4,14 +4,12 @@
         <shape android:shape="rectangle">
             <stroke android:color="@color/shape_secondary" android:width="1dp"/>
             <corners android:radius="@dimen/button_small_corner" />
-            <solid android:color="@color/background_primary" />
         </shape>
     </item>
     <item android:state_enabled="true" android:state_pressed="false">
         <shape android:shape="rectangle">
             <stroke android:color="@color/shape_primary" android:width="1dp"/>
             <corners android:radius="@dimen/button_small_corner" />
-            <solid android:color="@color/background_primary" />
         </shape>
     </item>
 

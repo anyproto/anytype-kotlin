@@ -55,7 +55,8 @@ class DataViewListWidgetContainer(
                             source = widget.source,
                             tabs = emptyList(),
                             elements = emptyList(),
-                            isExpanded = false
+                            isExpanded = false,
+                            isCompact = widget.isCompact
                         )
                     )
                 } else {
@@ -70,10 +71,11 @@ class DataViewListWidgetContainer(
                                 elements = objects.map { obj ->
                                     WidgetView.SetOfObjects.Element(
                                         obj = obj,
-                                        icon = obj.widgetElementIcon(urlBuilder)
+                                        objectIcon = obj.widgetElementIcon(urlBuilder)
                                     )
                                 },
-                                isExpanded = true
+                                isExpanded = true,
+                                isCompact = widget.isCompact
                             )
                         }
                     } else {
@@ -91,7 +93,8 @@ class DataViewListWidgetContainer(
         source = widget.source,
         tabs = emptyList(),
         elements = emptyList(),
-        isExpanded = true
+        isExpanded = true,
+        isCompact = widget.isCompact
     )
 
     fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList {
@@ -148,7 +151,7 @@ class DataViewListWidgetContainer(
                     ),
                 )
             },
-            limit = MAX_COUNT,
+            limit = resolveLimit(),
             source = source.setOf,
             collection = if (source.type.contains(ObjectTypeIds.COLLECTION))
                 source.id
@@ -157,7 +160,22 @@ class DataViewListWidgetContainer(
         )
     }
 
+    private fun resolveLimit(): Int {
+        if (widget.isCompact) {
+            return if (widget.limit == 0) {
+                DEFAULT_COMPACT_LIST_MAX_COUNT
+            } else
+                return widget.limit
+        } else {
+            return if (widget.limit == 0) {
+                DEFAULT_LIST_MAX_COUNT
+            } else
+                return widget.limit
+        }
+    }
+
     companion object {
-        const val MAX_COUNT = 3
+        const val DEFAULT_LIST_MAX_COUNT = 4
+        const val DEFAULT_COMPACT_LIST_MAX_COUNT = 6
     }
 }

@@ -45,7 +45,8 @@ class ListWidgetContainer(
                     source = widget.source,
                     type = resolveType(),
                     elements = emptyList(),
-                    isExpanded = false
+                    isExpanded = false,
+                    isCompact = widget.isCompact
                 )
             )
         } else {
@@ -81,16 +82,18 @@ class ListWidgetContainer(
         elements = objects.map { obj ->
             WidgetView.ListOfObjects.Element(
                 obj = obj,
-                icon = obj.widgetElementIcon(urlBuilder)
+                objectIcon = obj.widgetElementIcon(urlBuilder)
             )
         },
         isExpanded = true,
+        isCompact = widget.isCompact
     )
 
     private fun buildParams() = params(
         subscription = subscription,
         workspace = workspace,
-        keys = keys
+        keys = keys,
+        limit = resolveLimit()
     )
 
     private fun resolveType() = when (subscription) {
@@ -102,13 +105,11 @@ class ListWidgetContainer(
     }
 
     companion object {
-        private const val MAX_COUNT = 3
-
         fun params(
             subscription: Id,
             workspace: Id,
             keys: List<Id>,
-            limit: Int = MAX_COUNT
+            limit: Int
         ) : StoreSearchParams = when (subscription) {
             BundledWidgetSourceIds.RECENT -> {
                 StoreSearchParams(
@@ -161,6 +162,20 @@ class ListWidgetContainer(
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.DESCRIPTION)
+        }
+    }
+
+    private fun resolveLimit(): Int {
+        if (widget.isCompact) {
+            return if (widget.limit == 0) {
+                DataViewListWidgetContainer.DEFAULT_COMPACT_LIST_MAX_COUNT
+            } else
+                return widget.limit
+        } else {
+            return if (widget.limit == 0) {
+                DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+            } else
+                return widget.limit
         }
     }
 }

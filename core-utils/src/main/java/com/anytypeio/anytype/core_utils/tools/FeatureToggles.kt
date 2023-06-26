@@ -8,7 +8,7 @@ interface FeatureToggles {
 
     val isLogMiddlewareInteraction: Boolean
 
-    val isLogDashboardReducer: Boolean
+    val excludeThreadStatusLogging: Boolean
 
     val isLogEditorViewModelEvents: Boolean
 

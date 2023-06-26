@@ -758,8 +758,27 @@ class HomeScreenViewModel(
                 is Event.Command.Details -> {
                     curr = curr.copy(details = curr.details.process(e))
                 }
+                is Event.Command.LinkGranularChange -> {
+                    curr = curr.copy(
+                        blocks = curr.blocks.map { block ->
+                            if (block.id == e.id) {
+                                val content = block.content
+                                if (content is Block.Content.Link) {
+                                    block.copy(
+                                        content = content.copy(
+                                            target = e.target
+                                        )
+                                    )
+                                } else {
+                                    block
+                                }
+                            } else {
+                                block
+                            }
+                        }
+                    )
+                }
                 is Event.Command.Widgets.SetWidget -> {
-                    Timber.d("Got set widget event: $e")
                     curr = curr.copy(
                         blocks = curr.blocks.map { block ->
                             if (block.id == e.widget) {

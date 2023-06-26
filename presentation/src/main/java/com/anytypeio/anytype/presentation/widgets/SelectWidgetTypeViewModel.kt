@@ -45,16 +45,24 @@ class SelectWidgetTypeViewModel(
     ) {
         Timber.d("onStart for existing widget")
         if (BundledWidgetSourceIds.ids.contains(source)) {
-            views.value = listOf(
-                WidgetTypeView.Tree().setIsSelected(currentType),
-                WidgetTypeView.List().setIsSelected(currentType)
-            )
+            if (source == BundledWidgetSourceIds.FAVORITE || source == BundledWidgetSourceIds.RECENT) {
+                views.value = listOf(
+                    WidgetTypeView.CompactList().setIsSelected(currentType),
+                    WidgetTypeView.List().setIsSelected(currentType),
+                    WidgetTypeView.Tree().setIsSelected(currentType),
+                )
+            } else {
+                views.value = listOf(
+                    WidgetTypeView.CompactList().setIsSelected(currentType),
+                    WidgetTypeView.List().setIsSelected(currentType)
+                )
+            }
         } else {
             val objectLayout = ObjectType.Layout.values().find { it.code == sourceLayout }
             if (objectLayout.isDataView()) {
                 views.value = listOf(
-                    WidgetTypeView.List().setIsSelected(currentType),
                     WidgetTypeView.CompactList().setIsSelected(currentType),
+                    WidgetTypeView.List().setIsSelected(currentType),
                     WidgetTypeView.Link().setIsSelected(currentType)
                 )
             } else {
@@ -66,16 +74,29 @@ class SelectWidgetTypeViewModel(
     fun onStartForNewWidget(layout: Int, source: Id) {
         Timber.d("onStart for new widget")
         if (BundledWidgetSourceIds.ids.contains(source)) {
-            views.value = listOf(
-                WidgetTypeView.Tree(isSelected = false),
-                WidgetTypeView.List(isSelected = false)
-            )
+            if (source == BundledWidgetSourceIds.FAVORITE || source == BundledWidgetSourceIds.RECENT) {
+                views.value = listOf(
+                    WidgetTypeView.CompactList(isSelected = false),
+                    WidgetTypeView.List(isSelected = false),
+                    WidgetTypeView.Tree(isSelected = false),
+                )
+            } else {
+                views.value = listOf(
+                    WidgetTypeView.CompactList(isSelected = false),
+                    WidgetTypeView.List(isSelected = false),
+                )
+            }
         } else {
             val objectLayout = ObjectType.Layout.values().find { it.code == layout }
             if (objectLayout.isDataView()) {
                 views.value = listOf(
-                    WidgetTypeView.List(isSelected = false),
                     WidgetTypeView.CompactList(isSelected = false),
+                    WidgetTypeView.List(isSelected = false),
+                    WidgetTypeView.Link(isSelected = false)
+                )
+            } else {
+                views.value = listOf(
+                    WidgetTypeView.Tree(isSelected = false),
                     WidgetTypeView.Link(isSelected = false)
                 )
             }

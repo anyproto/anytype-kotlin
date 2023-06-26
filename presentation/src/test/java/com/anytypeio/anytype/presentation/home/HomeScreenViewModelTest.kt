@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -2037,6 +2038,186 @@ class HomeScreenViewModelTest {
                 delay(1)
                 val secondTimeItem = awaitItem()
                 assertTrue { secondTimeItem.none { it.id == widgetBlock.id } }
+            }
+        }
+    }
+
+    @Test
+    fun `should react to change-widget-source event when source type is page for old and new source`() = runTest {
+
+        val currentSourceObject = StubObject(
+            id = "SOURCE OBJECT 1",
+            links = emptyList(),
+            objectType = ObjectTypeIds.PAGE
+        )
+
+        val newSourceObject = StubObject(
+            id = "SOURCE OBJECT 2",
+            links = emptyList(),
+            objectType = ObjectTypeIds.PAGE
+        )
+
+        val sourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = currentSourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.TREE,
+            children = listOf(sourceLink.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLink
+            ),
+            details = mapOf(
+                currentSourceObject.id to currentSourceObject.map
+            )
+        )
+
+        stubConfig()
+        stubInterceptEvents(
+            events = flow {
+                delay(300)
+                emit(
+                    listOf(
+                        Event.Command.LinkGranularChange(
+                            context = WIDGET_OBJECT_ID,
+                            id = sourceLink.id,
+                            target = newSourceObject.id
+                        )
+                    )
+                )
+            }
+        )
+        stubOpenObject(givenObjectView)
+        stubSearchByIds(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+        stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = emptyList()
+            )
+            delay(1)
+            val secondTimeItem = awaitItem()
+            assertTrue {
+                val firstWidget = secondTimeItem.first()
+                firstWidget is WidgetView.Tree && firstWidget.source.id == currentSourceObject.id
+            }
+            val thirdTimeItem = awaitItem()
+            advanceUntilIdle()
+            assertTrue {
+                val firstWidget = thirdTimeItem.first()
+                firstWidget is WidgetView.Tree && firstWidget.source.id == newSourceObject.id
+            }
+        }
+    }
+
+    @Test
+    fun `should react to change-widget-layout event when tree changed to link`() = runTest {
+
+        val currentSourceObject = StubObject(
+            id = "SOURCE OBJECT 1",
+            links = emptyList(),
+            objectType = ObjectTypeIds.PAGE
+        )
+
+        val sourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = currentSourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.TREE,
+            children = listOf(sourceLink.id)
+        )
+
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(
+                smartBlock,
+                widgetBlock,
+                sourceLink
+            ),
+            details = mapOf(
+                currentSourceObject.id to currentSourceObject.map
+            )
+        )
+
+        stubConfig()
+        stubInterceptEvents(
+            events = flow {
+                delay(300)
+                emit(
+                    listOf(
+                        Event.Command.Widgets.SetWidget(
+                            context = WIDGET_OBJECT_ID,
+                            widget = widgetBlock.id,
+                            layout = Block.Content.Widget.Layout.LINK,
+                        )
+                    )
+                )
+            }
+        )
+        stubOpenObject(givenObjectView)
+        stubSearchByIds(
+            subscription = widgetBlock.id,
+            targets = emptyList()
+        )
+        stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = emptyList()
+            )
+            delay(1)
+            val secondTimeItem = awaitItem()
+            assertTrue {
+                val firstWidget = secondTimeItem.first()
+                firstWidget is WidgetView.Tree
+            }
+            val thirdTimeItem = awaitItem()
+            advanceUntilIdle()
+            assertTrue {
+                val firstWidget = thirdTimeItem.first()
+                firstWidget is WidgetView.Link
             }
         }
     }

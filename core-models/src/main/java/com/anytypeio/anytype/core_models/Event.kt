@@ -221,6 +221,16 @@ sealed class Event {
             ) : ObjectRelation()
         }
 
+        sealed class Widgets: Command() {
+            data class SetWidget(
+                override val context: Id,
+                val widget: Id,
+                val layout: WidgetLayout?,
+                val activeView: Id?,
+                val limit: Int?
+            ) : Widgets()
+        }
+
         sealed class DataView : Command() {
 
             /**

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -756,6 +757,29 @@ class HomeScreenViewModel(
                 }
                 is Event.Command.Details -> {
                     curr = curr.copy(details = curr.details.process(e))
+                }
+                is Event.Command.Widgets.SetWidget -> {
+                    Timber.d("Got set widget event: $e")
+                    curr = curr.copy(
+                        blocks = curr.blocks.map { block ->
+                            if (block.id == e.widget) {
+                                val content = block.content
+                                if (content is Block.Content.Widget) {
+                                    block.copy(
+                                        content = content.copy(
+                                            layout = e.layout ?: content.layout,
+                                            limit = e.limit ?: content.limit,
+                                            activeView = e.activeView ?: content.activeView
+                                        )
+                                    )
+                                } else {
+                                    block
+                                }
+                            } else {
+                                block
+                            }
+                        }
+                    )
                 }
                 else -> {
                     Timber.d("Skipping event: $e")

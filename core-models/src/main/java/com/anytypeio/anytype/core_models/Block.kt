@@ -368,7 +368,8 @@ data class Block(
 
         data class Widget(
             val layout: Layout,
-            val limit: Int = 0
+            val limit: Int = 0,
+            val activeView: Id? = null
         ) : Content() {
             enum class Layout {
                 TREE, LINK, LIST, COMPACT_LIST

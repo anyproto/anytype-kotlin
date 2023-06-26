@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.middleware.interactor
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.middleware.mappers.MWidgetLayout
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
@@ -165,6 +167,23 @@ fun anytype.Event.Message.toCoreModels(
             context = context,
             id = event.id,
             style = style.value_.toCoreModels()
+        )
+    }
+    blockSetWidget != null -> {
+        val event = blockSetWidget
+        checkNotNull(event)
+        Event.Command.Widgets.SetWidget(
+            context = context,
+            widget = event.id,
+            activeView = event.viewId?.value_,
+            limit = event.limit?.value_,
+            layout = when(event.layout?.value_) {
+                MWidgetLayout.Link -> Block.Content.Widget.Layout.LINK
+                MWidgetLayout.Tree -> Block.Content.Widget.Layout.TREE
+                MWidgetLayout.List -> Block.Content.Widget.Layout.LIST
+                MWidgetLayout.CompactList -> Block.Content.Widget.Layout.COMPACT_LIST
+                else -> null
+            }
         )
     }
     blockDataviewViewSet != null -> {

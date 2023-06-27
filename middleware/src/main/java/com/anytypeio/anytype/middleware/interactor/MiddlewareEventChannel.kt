@@ -38,7 +38,8 @@ class MiddlewareEventChannel(
             msg.objectRelationsRemove,
             msg.blockDataviewViewUpdate,
             msg.blockDataviewTargetObjectIdSet,
-            msg.blockDataviewIsCollectionSet
+            msg.blockDataviewIsCollectionSet,
+            msg.blockSetWidget
         )
         return events.any { it != null }
     }

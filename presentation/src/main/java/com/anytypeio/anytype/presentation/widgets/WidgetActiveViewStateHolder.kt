@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapLatest
+import timber.log.Timber
 
 interface WidgetActiveViewStateHolder {
 
@@ -16,6 +18,7 @@ interface WidgetActiveViewStateHolder {
         private val widgetToActiveView = MutableStateFlow<WidgetToActiveView>(mapOf())
 
         override fun init(map: WidgetToActiveView) {
+            Timber.d("Initializing active view: ${map.toPrettyString()}")
             widgetToActiveView.value = map
         }
 
@@ -30,3 +33,4 @@ interface WidgetActiveViewStateHolder {
 }
 
 typealias WidgetToActiveView = Map<Id, Id>
+typealias WidgetActiveViewId = Id

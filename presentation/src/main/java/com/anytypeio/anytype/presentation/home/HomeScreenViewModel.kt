@@ -74,6 +74,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.getActiveTabViews
+import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -269,7 +270,7 @@ class HomeScreenViewModel(
                     root = state.obj.root,
                     details = state.obj.details
                 ).also {
-                    // TODO active view logic here?
+                    widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
                 }
             }.collect {
                 Timber.d("Emitting list of widgets: ${it.size}")
@@ -783,6 +784,7 @@ class HomeScreenViewModel(
                     )
                 }
                 is Event.Command.Widgets.SetWidget -> {
+                    Timber.d("Set widget event: $e")
                     curr = curr.copy(
                         blocks = curr.blocks.map { block ->
                             if (block.id == e.widget) {
@@ -844,7 +846,7 @@ class HomeScreenViewModel(
                 }
                 if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
-                    widgetActiveViewStateHolder.init(session.widgetsToActiveViews)
+                    //widgetActiveViewStateHolder.init(session.widgetsToActiveViews)
                 }
                 proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
             }

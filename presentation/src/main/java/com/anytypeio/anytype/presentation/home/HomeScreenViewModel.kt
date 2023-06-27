@@ -240,13 +240,14 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithObjectViewStatePipeline(config: Config) {
-        val externalChannelEvents =
-            interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
-                Payload(
-                    context = config.widgets,
-                    events = it
-                )
-            }
+        val externalChannelEvents = interceptEvents.build(
+            InterceptEvents.Params(config.widgets)
+        ).map { events ->
+            Payload(
+                context = config.widgets,
+                events = events
+            )
+        }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
 

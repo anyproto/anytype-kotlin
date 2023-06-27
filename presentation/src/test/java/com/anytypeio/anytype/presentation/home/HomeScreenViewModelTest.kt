@@ -696,7 +696,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit three bundled widgets, each having 2 elements, library and bin`() = runTest {
+    fun `should emit three bundled widgets with tree layout, each having 2 elements, library and bin`() = runTest {
 
         // SETUP
 

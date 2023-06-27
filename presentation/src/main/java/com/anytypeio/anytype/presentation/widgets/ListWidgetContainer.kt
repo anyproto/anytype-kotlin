@@ -104,7 +104,13 @@ class ListWidgetContainer(
         else -> throw IllegalStateException("Unexpected subscription: $subscription")
     }
 
+    private fun resolveLimit(): Int = WidgetConfig.resolveListWidgetLimit(
+        isCompact = widget.isCompact,
+        limit = widget.limit
+    )
+
     companion object {
+
         fun params(
             subscription: Id,
             workspace: Id,
@@ -162,20 +168,6 @@ class ListWidgetContainer(
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.DESCRIPTION)
-        }
-    }
-
-    private fun resolveLimit(): Int {
-        if (widget.isCompact) {
-            return if (widget.limit == 0) {
-                DataViewListWidgetContainer.DEFAULT_COMPACT_LIST_MAX_COUNT
-            } else
-                return widget.limit
-        } else {
-            return if (widget.limit == 0) {
-                DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
-            } else
-                return widget.limit
         }
     }
 }

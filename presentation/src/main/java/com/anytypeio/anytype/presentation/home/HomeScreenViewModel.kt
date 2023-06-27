@@ -172,7 +172,6 @@ class HomeScreenViewModel(
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
             containers.filterNotNull().flatMapLatest { list ->
-                Timber.d("Receiving list of containers: ${list.map { it::class }}")
                 if (list.isNotEmpty()) {
                     combine(
                         list.map { m -> m.view }
@@ -241,13 +240,14 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithObjectViewStatePipeline(config: Config) {
-        val externalChannelEvents =
-            interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
-                Payload(
-                    context = config.widgets,
-                    events = it
-                )
-            }
+        val externalChannelEvents = interceptEvents.build(
+            InterceptEvents.Params(config.widgets)
+        ).map { events ->
+            Payload(
+                context = config.widgets,
+                events = events
+            )
+        }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
 

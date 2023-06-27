@@ -160,19 +160,10 @@ class DataViewListWidgetContainer(
         )
     }
 
-    private fun resolveLimit(): Int {
-        if (widget.isCompact) {
-            return if (widget.limit == 0) {
-                DEFAULT_COMPACT_LIST_MAX_COUNT
-            } else
-                return widget.limit
-        } else {
-            return if (widget.limit == 0) {
-                DEFAULT_LIST_MAX_COUNT
-            } else
-                return widget.limit
-        }
-    }
+    private fun resolveLimit(): Int = WidgetConfig.resolveListWidgetLimit(
+        isCompact = widget.isCompact,
+        limit = widget.limit
+    )
 
     companion object {
         const val DEFAULT_LIST_MAX_COUNT = 4

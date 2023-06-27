@@ -164,9 +164,4 @@ class DataViewListWidgetContainer(
         isCompact = widget.isCompact,
         limit = widget.limit
     )
-
-    companion object {
-        const val DEFAULT_LIST_MAX_COUNT = 4
-        const val DEFAULT_COMPACT_LIST_MAX_COUNT = 6
-    }
 }

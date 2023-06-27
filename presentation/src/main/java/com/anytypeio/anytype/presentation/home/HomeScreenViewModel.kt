@@ -191,6 +191,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map {
                 it.map { widget ->
+                    // TODO caching logic for containers could be implemented here.
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget
@@ -267,7 +268,9 @@ class HomeScreenViewModel(
                 state.obj.blocks.parseWidgets(
                     root = state.obj.root,
                     details = state.obj.details
-                )
+                ).also {
+                    // TODO active view logic here?
+                }
             }.collect {
                 Timber.d("Emitting list of widgets: ${it.size}")
                 widgets.value = it

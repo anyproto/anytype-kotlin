@@ -172,7 +172,6 @@ class HomeScreenViewModel(
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
             containers.filterNotNull().flatMapLatest { list ->
-                Timber.d("Receiving list of containers: ${list.map { it::class }}")
                 if (list.isNotEmpty()) {
                     combine(
                         list.map { m -> m.view }

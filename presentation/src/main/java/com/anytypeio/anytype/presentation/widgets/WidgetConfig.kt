@@ -41,8 +41,8 @@ object WidgetConfig {
         }
     }
 
-    private const val DEFAULT_LIST_MAX_COUNT = 4
-    private const val DEFAULT_COMPACT_LIST_MAX_COUNT = 6
+    const val DEFAULT_LIST_MAX_COUNT = 4
+    const val DEFAULT_COMPACT_LIST_MAX_COUNT = 6
 
     private val listLimitOptions = intArrayOf(DEFAULT_LIST_MAX_COUNT, 6, 8)
     private val compactListLimitOptions = intArrayOf(DEFAULT_COMPACT_LIST_MAX_COUNT, 10, 14)

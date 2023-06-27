@@ -1353,7 +1353,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1363,7 +1363,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1373,7 +1373,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1701,7 +1701,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1711,7 +1711,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1721,7 +1721,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1748,7 +1748,7 @@ class HomeScreenViewModelTest {
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1759,7 +1759,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1770,7 +1770,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1801,7 +1801,7 @@ class HomeScreenViewModelTest {
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1812,7 +1812,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }
@@ -1823,7 +1823,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = DataViewListWidgetContainer.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
                 )
             )
         }

@@ -107,7 +107,8 @@ fun List<Block>.parseWidgets(
                                 add(
                                     Widget.Tree(
                                         id = w.id,
-                                        source = source
+                                        source = source,
+                                        limit = widgetContent.limit
                                     )
                                 )
                             }
@@ -123,7 +124,8 @@ fun List<Block>.parseWidgets(
                                 add(
                                     Widget.List(
                                         id = w.id,
-                                        source = source
+                                        source = source,
+                                        limit = widgetContent.limit
                                     )
                                 )
                             }
@@ -132,7 +134,8 @@ fun List<Block>.parseWidgets(
                                     Widget.List(
                                         id = w.id,
                                         source = source,
-                                        isCompact = true
+                                        isCompact = true,
+                                        limit = widgetContent.limit
                                     )
                                 )
                             }

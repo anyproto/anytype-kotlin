@@ -89,12 +89,12 @@ class OnboardingFragment : BaseComposeFragment() {
                             .fillMaxSize()
                             .background(Color.Black)
                     ) {
-                        val currentPage = remember { mutableStateOf(Page.AUTH) }
+                        val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
                         BackgroundCircle()
                         PagerIndicator(
                             modifier = Modifier
                                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                            pageCount = Page.values().filter { it.visible }.size,
+                            pageCount = OnboardingPage.values().filter { it.visible }.size,
                             page = currentPage,
                             onBackClick = {
                                 navController.popBackStack()
@@ -109,7 +109,7 @@ class OnboardingFragment : BaseComposeFragment() {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    private fun Onboarding(currentPage: MutableState<Page>, navController: NavHostController) {
+    private fun Onboarding(currentPage: MutableState<OnboardingPage>, navController: NavHostController) {
         AnimatedNavHost(navController, startDestination = OnboardingNavigation.auth) {
             composable(
                 route = OnboardingNavigation.auth,
@@ -118,7 +118,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeOut(tween(150))
                 }
             ) {
-                currentPage.value = Page.AUTH
+                currentPage.value = OnboardingPage.AUTH
                 Auth(navController)
             }
             composable(
@@ -130,7 +130,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeOut(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
-                currentPage.value = Page.RECOVERY
+                currentPage.value = OnboardingPage.RECOVERY
                 RecoveryScreenWrapper(
                     onBackClicked = {
                         navController.popBackStack()
@@ -166,7 +166,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             ) {
-                currentPage.value = Page.VOID
+                currentPage.value = OnboardingPage.VOID
                 VoidScreenWrapper(ContentPaddingTop()) {
                     navController.navigate(OnboardingNavigation.mnemonic)
                 }
@@ -194,7 +194,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             ) {
-                currentPage.value = Page.MNEMONIC
+                currentPage.value = OnboardingPage.MNEMONIC
                 Mnemonic(navController, ContentPaddingTop())
             }
             composable(
@@ -211,7 +211,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             ) {
-                currentPage.value = Page.SOUL_CREATION
+                currentPage.value = OnboardingPage.SOUL_CREATION
                 CreateSoul(navController, ContentPaddingTop())
             }
             composable(
@@ -220,7 +220,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeIn(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
-                currentPage.value = Page.SOUL_CREATION_ANIM
+                currentPage.value = OnboardingPage.SOUL_CREATION_ANIM
                 CreateSoulAnimation(ContentPaddingTop())
                 BackHandler {
                     // do nothing
@@ -235,7 +235,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeOut(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
-                currentPage.value = Page.ENTER_THE_VOID
+                currentPage.value = OnboardingPage.ENTER_THE_VOID
                 EnteringTheVoidScreen(
                     openApp = {},
                     contentPaddingTop = ContentPaddingTop()

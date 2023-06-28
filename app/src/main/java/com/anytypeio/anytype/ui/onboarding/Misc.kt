@@ -51,7 +51,7 @@ import com.anytypeio.anytype.core_ui.views.UXBody
 
 @Composable
 fun PagerIndicator(
-    modifier: Modifier = Modifier, pageCount: Int, page: MutableState<Page>, onBackClick: () -> Unit
+    modifier: Modifier = Modifier, pageCount: Int, page: MutableState<OnboardingPage>, onBackClick: () -> Unit
 ) {
     val currentPage = remember { page }
     val screenWidth = LocalConfiguration.current.screenWidthDp.minus(32)

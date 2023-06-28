@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.main
 
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.account.AccountStatusDataChannel
 import com.anytypeio.anytype.data.auth.account.AccountStatusRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventDataChannel
@@ -43,8 +44,9 @@ object EventModule {
     @Provides
     @Singleton
     fun provideEventRemoteChannel(
-        proxy: EventProxy
-    ): EventRemoteChannel = MiddlewareEventChannel(events = proxy)
+        proxy: EventProxy,
+        featureToggles: FeatureToggles
+    ): EventRemoteChannel = MiddlewareEventChannel(events = proxy, featureToggles = featureToggles)
 
     @JvmStatic
     @Provides

@@ -18,7 +18,7 @@ class DefaultFeatureToggles @Inject constructor(
         BuildConfig.LOG_FROM_MW_LIBRARY && buildProvider.isDebug()
 
     override val isLogMiddlewareInteraction =
-        true
+        BuildConfig.LOG_MW_INTERACTION && buildProvider.isDebug()
 
     override val excludeThreadStatusLogging: Boolean = true
 

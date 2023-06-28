@@ -336,7 +336,7 @@ class HomeScreenViewModel(
                 SaveWidgetSession.Params(
                     WidgetSession(
                         collapsed = collapsedWidgetStateHolder.get(),
-                        widgetsToActiveViews = views.value.getActiveTabViews()
+                        widgetsToActiveViews = emptyMap()
                     )
                 )
             )
@@ -848,7 +848,6 @@ class HomeScreenViewModel(
                 }
                 if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
-                    //widgetActiveViewStateHolder.init(session.widgetsToActiveViews)
                 }
                 proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
             }

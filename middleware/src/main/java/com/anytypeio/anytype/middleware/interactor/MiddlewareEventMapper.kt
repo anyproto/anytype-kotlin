@@ -2,11 +2,13 @@ package com.anytypeio.anytype.middleware.interactor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.mappers.MWidgetLayout
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsBookmarkState
+import timber.log.Timber
 
 fun anytype.Event.Message.toCoreModels(
     context: String
@@ -289,5 +291,10 @@ fun anytype.Event.Message.toCoreModels(
             isCollection = event.value_
         )
     }
-    else -> null
+    else -> {
+        if (BuildConfig.DEBUG) {
+            Timber.w("Skipped event while mapping: $this")
+        }
+        null
+    }
 }

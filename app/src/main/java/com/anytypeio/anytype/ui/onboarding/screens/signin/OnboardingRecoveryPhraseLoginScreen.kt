@@ -51,16 +51,6 @@ fun RecoveryScreen(
             .fillMaxSize()
             .padding(top = 24.dp)
     ) {
-        Image(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 8.dp, start = 24.dp)
-                .noRippleClickable {
-                    onBackClicked.invoke()
-                },
-            painter = painterResource(id = R.drawable.icon_back_onboarding),
-            contentDescription = "back"
-        )
         Text(
             modifier = Modifier.align(Alignment.TopCenter),
             text = stringResource(id = R.string.login),
@@ -122,6 +112,16 @@ fun RecoveryScreen(
                     )
                 }
             }
+        )
+        Image(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 8.dp, start = 24.dp)
+                .noRippleClickable {
+                    onBackClicked.invoke()
+                },
+            painter = painterResource(id = R.drawable.icon_back_onboarding),
+            contentDescription = "back"
         )
     }
 }

@@ -28,12 +28,12 @@ class OnboardingAuthViewModel @Inject constructor(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModel() {
 
-    private val _navigationFlow = MutableSharedFlow<InviteCodeNavigation>()
-    val navigationFlow: SharedFlow<InviteCodeNavigation> = _navigationFlow
+    private val _navigationFlow = MutableSharedFlow<AuthNavigation>()
+    val navigationFlow: SharedFlow<AuthNavigation> = _navigationFlow
 
     val joinFlowState = MutableStateFlow<JoinFlowState>(JoinFlowState.Active)
 
-    fun signUp() {
+    fun onJoinClicked() {
         joinFlowState.value = JoinFlowState.Loading
         setupWallet.invoke(
             scope = viewModelScope,
@@ -50,6 +50,11 @@ class OnboardingAuthViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun onLoginClicked() {
+        Timber.d("onLoginClicked")
+        navigateTo(AuthNavigation.ProceedWithSignIn)
     }
 
     private fun setupAccount() {
@@ -82,24 +87,25 @@ class OnboardingAuthViewModel @Inject constructor(
             setupMobileUseCaseSkip.execute(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
-                    navigateTo(InviteCodeNavigation.Void)
+                    navigateTo(AuthNavigation.ProceedWithSignUp)
                 },
                 onSuccess = {
-                    navigateTo(InviteCodeNavigation.Void)
+                    navigateTo(AuthNavigation.ProceedWithSignUp)
                 }
             )
         }
     }
 
-    private fun navigateTo(destination: InviteCodeNavigation) {
+    private fun navigateTo(destination: AuthNavigation) {
         viewModelScope.launch {
             _navigationFlow.emit(destination)
         }
     }
 
-    interface InviteCodeNavigation {
-        object Idle : InviteCodeNavigation
-        object Void : InviteCodeNavigation
+    interface AuthNavigation {
+        object Idle : AuthNavigation
+        object ProceedWithSignUp : AuthNavigation
+        object ProceedWithSignIn : AuthNavigation
     }
 
     interface JoinFlowState {
@@ -129,5 +135,4 @@ class OnboardingAuthViewModel @Inject constructor(
             ) as T
         }
     }
-
 }

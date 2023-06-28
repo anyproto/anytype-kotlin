@@ -139,7 +139,7 @@ class OnboardingFragment : BaseComposeFragment() {
                         navController.navigate(OnboardingNavigation.enterTheVoid)
                     },
                     onScanQrClick = {
-
+                        // TODO
                     }
                 )
             }
@@ -326,20 +326,17 @@ class OnboardingFragment : BaseComposeFragment() {
             state = Lifecycle.State.DESTROYED
         )
         val viewModel = daggerViewModel { component.get().getViewModel() }
-        AuthScreenWrapper(
-            viewModel = viewModel,
-            navigateToLogin = {
-                // Sign-in flow.
-                navController.navigate(OnboardingNavigation.recovery)
-            }
-        )
+        AuthScreenWrapper(viewModel = viewModel)
         val navigationCommands = viewModel.navigationFlow.collectAsState(
-            initial = OnboardingAuthViewModel.InviteCodeNavigation.Idle
+            initial = OnboardingAuthViewModel.AuthNavigation.Idle
         )
         LaunchedEffect(key1 = navigationCommands.value) {
             when (navigationCommands.value) {
-                is OnboardingAuthViewModel.InviteCodeNavigation.Void -> {
+                is OnboardingAuthViewModel.AuthNavigation.ProceedWithSignUp -> {
                     navController.navigate(OnboardingNavigation.void)
+                }
+                is OnboardingAuthViewModel.AuthNavigation.ProceedWithSignIn -> {
+                    navController.navigate(OnboardingNavigation.recovery)
                 }
                 else -> {
 

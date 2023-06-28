@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.onboarding
+package com.anytypeio.anytype.presentation.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.ui.onboarding.OnboardingSoulCreationAnimViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationAnimViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module

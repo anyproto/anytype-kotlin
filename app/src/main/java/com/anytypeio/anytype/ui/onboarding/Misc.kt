@@ -34,7 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorMnemonicPhrase
 import com.anytypeio.anytype.core_ui.ColorMnemonicStub

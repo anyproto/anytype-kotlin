@@ -48,12 +48,14 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.MnemonicPhraseScreenWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.RecoveryScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -130,13 +132,13 @@ class OnboardingFragment : BaseComposeFragment() {
             ) {
                 currentPage.value = Page.RECOVERY
                 RecoveryScreenWrapper(
-                    backClick = {
+                    onBackClicked = {
                         navController.popBackStack()
                     },
-                    nextClick = {
+                    onNextClicked = {
                         navController.navigate(OnboardingNavigation.enterTheVoid)
                     },
-                    scanQrClick = {
+                    onScanQrClick = {
 
                     }
                 )
@@ -285,6 +287,9 @@ class OnboardingFragment : BaseComposeFragment() {
         }
     }
 
+    /**
+     * Mnemonic screen for sign-in
+     */
     @Composable
     private fun Mnemonic(navController: NavHostController, contentPaddingTop: Int) {
         val component = componentManager().onboardingMnemonicComponent.ReleaseOn(
@@ -324,6 +329,7 @@ class OnboardingFragment : BaseComposeFragment() {
         AuthScreenWrapper(
             viewModel = viewModel,
             navigateToLogin = {
+                // Sign-in flow.
                 navController.navigate(OnboardingNavigation.recovery)
             }
         )
@@ -388,9 +394,13 @@ class OnboardingFragment : BaseComposeFragment() {
         return player
     }
 
-    override fun injectDependencies() {}
+    override fun injectDependencies() {
+        // Do nothing
+    }
 
-    override fun releaseDependencies() {}
+    override fun releaseDependencies() {
+        // Do nothing.
+    }
 
 
     @Composable

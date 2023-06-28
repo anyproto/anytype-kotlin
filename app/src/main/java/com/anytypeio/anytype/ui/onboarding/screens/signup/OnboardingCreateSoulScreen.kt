@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.ui.onboarding.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +26,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
-import com.anytypeio.anytype.ui.onboarding.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationViewModel
 
 
 @Composable

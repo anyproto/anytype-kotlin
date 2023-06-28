@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.ui.onboarding.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module

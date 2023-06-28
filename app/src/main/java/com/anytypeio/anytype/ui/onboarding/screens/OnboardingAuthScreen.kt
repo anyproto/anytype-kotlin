@@ -31,7 +31,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
-import com.anytypeio.anytype.ui.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 
 
 @Preview

@@ -1957,6 +1957,22 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    fun setWidgetViewId(
+        ctx: Id,
+        widget: Id,
+        view: Id
+    ): Payload {
+        val request = Rpc.BlockWidget.SetViewId.Request(
+            contextId = ctx,
+            blockId = widget,
+            viewId = view
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockWidgetSetViewId(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     @Throws(Exception::class)
     fun updateWidget(
         ctx: Id,

@@ -34,7 +34,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 
 class BlockDataRepository(
-    private val remote: BlockDataStore
+    private val remote: BlockRemote
 ) : BlockRepository {
 
     override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
@@ -119,7 +119,7 @@ class BlockDataRepository(
 
     override suspend fun updateBackgroundColor(
         command: Command.UpdateBackgroundColor
-    ): Payload = remote.updateBackroundColor(command)
+    ): Payload = remote.updateBackgroundColor(command)
 
     override suspend fun updateCheckbox(
         command: Command.UpdateCheckbox

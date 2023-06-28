@@ -19,7 +19,6 @@ import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 import com.anytypeio.anytype.data.auth.repo.UserSettingsDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
-import com.anytypeio.anytype.data.auth.repo.block.BlockRemoteDataStore
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
@@ -196,21 +195,10 @@ object DataModule {
     @Provides
     @Singleton
     fun provideBlockRepository(
-        blockRemoteDataStore: BlockRemoteDataStore
+        blockRemote: BlockRemote
     ): BlockRepository {
         return BlockDataRepository(
-            remote = blockRemoteDataStore
-        )
-    }
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideBlockRemoteDataStore(
-        remote: BlockRemote
-    ): BlockRemoteDataStore {
-        return BlockRemoteDataStore(
-            remote = remote
+            remote = blockRemote
         )
     }
 

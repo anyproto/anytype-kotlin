@@ -10,8 +10,6 @@ class ThreadStatusDataChannel(
 ) : ThreadStatusChannel {
 
     override fun observe(ctx: String): Flow<SyncStatus> {
-        return remote
-            .observe(ctx)
-            .map { status -> SyncStatus.valueOf(status.name) }
+        return remote.observe(ctx)
     }
 }

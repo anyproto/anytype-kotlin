@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.onboarding.screens
+package com.anytypeio.anytype.ui.onboarding.screens.signin
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -29,38 +29,28 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 @Composable
 fun RecoveryScreenWrapper(
-    backClick: () -> Unit,
-    nextClick: (String) -> Unit,
-    scanQrClick: () -> Unit
+    onBackClicked: () -> Unit,
+    onNextClicked: (Mnemonic) -> Unit,
+    onScanQrClick: () -> Unit
 ) {
     RecoveryScreen(
-        backClick,
-        nextClick,
-        scanQrClick
+        onBackClicked = onBackClicked,
+        onNextClicked = onNextClicked,
+        onScanQrClicked = onScanQrClick
     )
 }
 
 @Composable
 fun RecoveryScreen(
-    backClick: () -> Unit,
-    nextClick: (String) -> Unit,
-    scanQrClick: () -> Unit
+    onBackClicked: () -> Unit,
+    onNextClicked: (Mnemonic) -> Unit,
+    onScanQrClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 24.dp)
     ) {
-        Image(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 8.dp, start = 24.dp)
-                .noRippleClickable {
-                    backClick.invoke()
-                },
-            painter = painterResource(id = R.drawable.icon_back_onboarding),
-            contentDescription = "back"
-        )
         Text(
             modifier = Modifier.align(Alignment.TopCenter),
             text = stringResource(id = R.string.login),
@@ -89,7 +79,7 @@ fun RecoveryScreen(
                     OnBoardingButtonPrimary(
                         text = stringResource(id = R.string.next),
                         onClick = {
-                            nextClick.invoke(text.value)
+                            onNextClicked.invoke(text.value)
                         },
                         enabled = text.value.isNotEmpty(),
                         size = ButtonSize.Large,
@@ -112,7 +102,7 @@ fun RecoveryScreen(
                     OnBoardingButtonSecondary(
                         text = stringResource(id = R.string.or_scan_qr_code),
                         onClick = {
-                            scanQrClick.invoke()
+                            onScanQrClicked.invoke()
                         },
                         enabled = true,
                         size = ButtonSize.Large,
@@ -123,5 +113,17 @@ fun RecoveryScreen(
                 }
             }
         )
+        Image(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 8.dp, start = 24.dp)
+                .noRippleClickable {
+                    onBackClicked.invoke()
+                },
+            painter = painterResource(id = R.drawable.icon_back_onboarding),
+            contentDescription = "back"
+        )
     }
 }
+
+typealias Mnemonic = String

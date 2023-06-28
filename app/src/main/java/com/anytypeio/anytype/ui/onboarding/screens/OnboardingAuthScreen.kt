@@ -31,31 +31,34 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
-import com.anytypeio.anytype.ui.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 
 
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    AuthScreen({}, {}, OnboardingAuthViewModel.JoinFlowState.Active)
+    AuthScreen(
+        onLoginClicked = {},
+        onJoinClicked = {},
+        joinState = OnboardingAuthViewModel.JoinFlowState.Active
+    )
 }
 
 @Composable
 fun AuthScreenWrapper(
-    viewModel: OnboardingAuthViewModel,
-    navigateToLogin: () -> Unit
+    viewModel: OnboardingAuthViewModel
 ) {
     AuthScreen(
-        viewModel::signUp,
-        navigateToLogin,
-        viewModel.joinFlowState.collectAsStateWithLifecycle().value
+        onJoinClicked = viewModel::onJoinClicked,
+        onLoginClicked = viewModel::onLoginClicked,
+        joinState = viewModel.joinFlowState.collectAsStateWithLifecycle().value
     )
 }
 
 @Composable
 fun AuthScreen(
-    signup: () -> Unit,
-    navigateToLogin: () -> Unit,
+    onJoinClicked: () -> Unit,
+    onLoginClicked: () -> Unit,
     joinState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Box(
@@ -69,7 +72,7 @@ fun AuthScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            SignButtons(signup, navigateToLogin, joinState)
+            SignButtons(onJoinClicked, onLoginClicked, joinState)
             TermsAndPolicy(Modifier)
         }
     }
@@ -110,16 +113,14 @@ fun Description(modifier: Modifier = Modifier) {
 
 @Composable
 fun SignButtons(
-    signup: () -> Unit,
-    navigateToLogin: () -> Unit,
+    onJoinClicked: () -> Unit,
+    onLoginClicked: () -> Unit,
     joinFlowState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Row {
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.onboarding_join),
-            onClick = {
-                signup.invoke()
-            },
+            onClick = onJoinClicked,
             enabled = joinFlowState is OnboardingAuthViewModel.JoinFlowState.Active,
             size = ButtonSize.Large,
             modifier = Modifier
@@ -129,9 +130,7 @@ fun SignButtons(
         )
         OnBoardingButtonSecondary(
             text = stringResource(id = R.string.onboarding_log_in),
-            onClick = {
-                navigateToLogin.invoke()
-            },
+            onClick = onLoginClicked,
             size = ButtonSize.Large,
             modifier = Modifier
                 .weight(1f)

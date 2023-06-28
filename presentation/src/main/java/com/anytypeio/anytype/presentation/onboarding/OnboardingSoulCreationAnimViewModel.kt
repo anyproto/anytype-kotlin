@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.onboarding
+package com.anytypeio.anytype.presentation.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
 
 class OnboardingSoulCreationAnimViewModel @Inject constructor(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,

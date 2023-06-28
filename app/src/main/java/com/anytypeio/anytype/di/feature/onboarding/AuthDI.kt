@@ -15,7 +15,7 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.ui.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module

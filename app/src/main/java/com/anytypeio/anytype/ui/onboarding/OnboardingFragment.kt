@@ -48,12 +48,14 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.MnemonicPhraseScreenWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.RecoveryScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -87,12 +89,12 @@ class OnboardingFragment : BaseComposeFragment() {
                             .fillMaxSize()
                             .background(Color.Black)
                     ) {
-                        val currentPage = remember { mutableStateOf(Page.AUTH) }
+                        val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
                         BackgroundCircle()
                         PagerIndicator(
                             modifier = Modifier
                                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                            pageCount = Page.values().filter { it.visible }.size,
+                            pageCount = OnboardingPage.values().filter { it.visible }.size,
                             page = currentPage,
                             onBackClick = {
                                 navController.popBackStack()
@@ -107,7 +109,7 @@ class OnboardingFragment : BaseComposeFragment() {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    private fun Onboarding(currentPage: MutableState<Page>, navController: NavHostController) {
+    private fun Onboarding(currentPage: MutableState<OnboardingPage>, navController: NavHostController) {
         AnimatedNavHost(navController, startDestination = OnboardingNavigation.auth) {
             composable(
                 route = OnboardingNavigation.auth,
@@ -116,7 +118,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeOut(tween(150))
                 }
             ) {
-                currentPage.value = Page.AUTH
+                currentPage.value = OnboardingPage.AUTH
                 Auth(navController)
             }
             composable(
@@ -128,16 +130,16 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeOut(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
-                currentPage.value = Page.RECOVERY
+                currentPage.value = OnboardingPage.RECOVERY
                 RecoveryScreenWrapper(
-                    backClick = {
+                    onBackClicked = {
                         navController.popBackStack()
                     },
-                    nextClick = {
+                    onNextClicked = {
                         navController.navigate(OnboardingNavigation.enterTheVoid)
                     },
-                    scanQrClick = {
-
+                    onScanQrClick = {
+                        // TODO
                     }
                 )
             }
@@ -164,7 +166,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             ) {
-                currentPage.value = Page.VOID
+                currentPage.value = OnboardingPage.VOID
                 VoidScreenWrapper(ContentPaddingTop()) {
                     navController.navigate(OnboardingNavigation.mnemonic)
                 }
@@ -192,7 +194,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             ) {
-                currentPage.value = Page.MNEMONIC
+                currentPage.value = OnboardingPage.MNEMONIC
                 Mnemonic(navController, ContentPaddingTop())
             }
             composable(
@@ -209,7 +211,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             ) {
-                currentPage.value = Page.SOUL_CREATION
+                currentPage.value = OnboardingPage.SOUL_CREATION
                 CreateSoul(navController, ContentPaddingTop())
             }
             composable(
@@ -218,7 +220,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeIn(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
-                currentPage.value = Page.SOUL_CREATION_ANIM
+                currentPage.value = OnboardingPage.SOUL_CREATION_ANIM
                 CreateSoulAnimation(ContentPaddingTop())
                 BackHandler {
                     // do nothing
@@ -233,7 +235,7 @@ class OnboardingFragment : BaseComposeFragment() {
                     fadeOut(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
-                currentPage.value = Page.ENTER_THE_VOID
+                currentPage.value = OnboardingPage.ENTER_THE_VOID
                 EnteringTheVoidScreen(
                     openApp = {},
                     contentPaddingTop = ContentPaddingTop()
@@ -285,6 +287,9 @@ class OnboardingFragment : BaseComposeFragment() {
         }
     }
 
+    /**
+     * Mnemonic screen for sign-in
+     */
     @Composable
     private fun Mnemonic(navController: NavHostController, contentPaddingTop: Int) {
         val component = componentManager().onboardingMnemonicComponent.ReleaseOn(
@@ -321,19 +326,17 @@ class OnboardingFragment : BaseComposeFragment() {
             state = Lifecycle.State.DESTROYED
         )
         val viewModel = daggerViewModel { component.get().getViewModel() }
-        AuthScreenWrapper(
-            viewModel = viewModel,
-            navigateToLogin = {
-                navController.navigate(OnboardingNavigation.recovery)
-            }
-        )
+        AuthScreenWrapper(viewModel = viewModel)
         val navigationCommands = viewModel.navigationFlow.collectAsState(
-            initial = OnboardingAuthViewModel.InviteCodeNavigation.Idle
+            initial = OnboardingAuthViewModel.AuthNavigation.Idle
         )
         LaunchedEffect(key1 = navigationCommands.value) {
             when (navigationCommands.value) {
-                is OnboardingAuthViewModel.InviteCodeNavigation.Void -> {
+                is OnboardingAuthViewModel.AuthNavigation.ProceedWithSignUp -> {
                     navController.navigate(OnboardingNavigation.void)
+                }
+                is OnboardingAuthViewModel.AuthNavigation.ProceedWithSignIn -> {
+                    navController.navigate(OnboardingNavigation.recovery)
                 }
                 else -> {
 
@@ -388,9 +391,13 @@ class OnboardingFragment : BaseComposeFragment() {
         return player
     }
 
-    override fun injectDependencies() {}
+    override fun injectDependencies() {
+        // Do nothing
+    }
 
-    override fun releaseDependencies() {}
+    override fun releaseDependencies() {
+        // Do nothing.
+    }
 
 
     @Composable

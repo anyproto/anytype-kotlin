@@ -34,7 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorMnemonicPhrase
 import com.anytypeio.anytype.core_ui.ColorMnemonicStub
@@ -52,7 +51,7 @@ import com.anytypeio.anytype.core_ui.views.UXBody
 
 @Composable
 fun PagerIndicator(
-    modifier: Modifier = Modifier, pageCount: Int, page: MutableState<Page>, onBackClick: () -> Unit
+    modifier: Modifier = Modifier, pageCount: Int, page: MutableState<OnboardingPage>, onBackClick: () -> Unit
 ) {
     val currentPage = remember { page }
     val screenWidth = LocalConfiguration.current.screenWidthDp.minus(32)

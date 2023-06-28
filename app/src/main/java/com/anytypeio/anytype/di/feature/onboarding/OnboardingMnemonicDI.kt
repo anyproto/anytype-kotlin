@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingMnemonicViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module

@@ -3,6 +3,9 @@ package com.anytypeio.anytype.presentation.home
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -13,6 +16,9 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.StubDataView
+import com.anytypeio.anytype.core_models.StubDataViewView
+import com.anytypeio.anytype.core_models.StubFilter
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectView
@@ -45,13 +51,13 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
-import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -82,6 +88,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoMoreInteractions
 
 class HomeScreenViewModelTest {
 
@@ -209,7 +216,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events)
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
 
@@ -282,7 +289,7 @@ class HomeScreenViewModelTest {
 
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
-            stubOpenObject(givenObjectView)
+            stubOpenWidgetObject(givenObjectView)
             stubCollapsedWidgetState(any())
             stubGetWidgetSession()
 
@@ -353,7 +360,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -446,7 +453,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
 
         stubSearchByIds(
             subscription = widgetBlock.id,
@@ -556,7 +563,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
 
         stubSearchByIds(
             subscription = widgetBlock.id,
@@ -653,7 +660,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
 
         stubSearchByIds(
             subscription = widgetBlock.id,
@@ -768,7 +775,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubFavoritesObjectWatcher()
 
         stubSearchByIds(
@@ -960,7 +967,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -1040,7 +1047,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -1179,7 +1186,7 @@ class HomeScreenViewModelTest {
             }
         )
         stubConfig()
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -1246,7 +1253,7 @@ class HomeScreenViewModelTest {
 
             stubInterceptEvents(events = emptyFlow())
             stubConfig()
-            stubOpenObject(givenObjectView)
+            stubOpenWidgetObject(givenObjectView)
             stubSearchByIds(
                 subscription = widgetBlock.id,
                 targets = emptyList()
@@ -1332,7 +1339,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
 
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
@@ -1468,7 +1475,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
 
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
@@ -1680,7 +1687,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
 
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
@@ -1876,7 +1883,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -1952,7 +1959,7 @@ class HomeScreenViewModelTest {
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -2019,7 +2026,7 @@ class HomeScreenViewModelTest {
 
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
-            stubOpenObject(givenObjectView)
+            stubOpenWidgetObject(givenObjectView)
             stubSearchByIds(
                 subscription = widgetBlock.id,
                 targets = emptyList()
@@ -2104,7 +2111,7 @@ class HomeScreenViewModelTest {
                 )
             }
         )
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -2191,7 +2198,7 @@ class HomeScreenViewModelTest {
                 )
             }
         )
-        stubOpenObject(givenObjectView)
+        stubOpenWidgetObject(givenObjectView)
         stubSearchByIds(
             subscription = widgetBlock.id,
             targets = emptyList()
@@ -2226,6 +2233,230 @@ class HomeScreenViewModelTest {
         }
     }
 
+    @Test
+    fun `should not re-fetch data after updating active view locally and then on mw`() = runTest {
+
+        val currentWidgetSourceObject = StubObject(
+            id = "SOURCE OBJECT 1",
+            links = emptyList(),
+            objectType = ObjectTypeIds.SET
+        )
+
+        val widgetSourceLink = StubLinkToObjectBlock(
+            id = "SOURCE LINK",
+            target = currentWidgetSourceObject.id
+        )
+
+        val widgetBlock = StubWidgetBlock(
+            id = "WIDGET BLOCK",
+            layout = Block.Content.Widget.Layout.LIST,
+            children = listOf(widgetSourceLink.id)
+        )
+
+        val smartWidgetBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = listOf(widgetBlock.id),
+        )
+
+        val givenWidgetObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(
+                smartWidgetBlock,
+                widgetBlock,
+                widgetSourceLink
+            ),
+            details = mapOf(
+                currentWidgetSourceObject.id to currentWidgetSourceObject.map
+            )
+        )
+
+        val dataViewFirstView = StubDataViewView()
+        val dataViewSecondView = StubDataViewView(
+            filters = listOf(StubFilter())
+        )
+
+        val dataViewBlock = StubDataView(
+            views = listOf(dataViewFirstView, dataViewSecondView)
+        )
+
+        val dataViewSmartBlock = StubSmartBlock(
+            id = currentWidgetSourceObject.id,
+            children = listOf(dataViewBlock.id)
+        )
+
+        val givenDataViewObjectView = StubObjectView(
+            root = dataViewSmartBlock.id,
+            blocks = listOf(
+                dataViewSmartBlock,
+                dataViewBlock
+            ),
+            details = mapOf(
+                currentWidgetSourceObject.id to mapOf(
+                    Relations.ID to currentWidgetSourceObject.map
+                )
+            )
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+
+        stubOpenWidgetObject(givenWidgetObjectView)
+        stubGetObject(givenDataViewObjectView)
+
+        stubWidgetActiveView(widgetBlock)
+
+        stubSetWidgetActiveView(
+            widget = widgetBlock.id,
+            view = dataViewSecondView.id
+        )
+
+        val firstTimeParams = StoreSearchParams(
+            subscription = widgetBlock.id,
+            filters = buildList {
+                addAll(ObjectSearchConstants.defaultDataViewFilters(config.workspace))
+                add(
+                    DVFilter(
+                        relation = Relations.TYPE,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = listOf(
+                            ObjectTypeIds.OBJECT_TYPE,
+                            ObjectTypeIds.RELATION,
+                            ObjectTypeIds.TEMPLATE,
+                            ObjectTypeIds.IMAGE,
+                            ObjectTypeIds.FILE,
+                            ObjectTypeIds.VIDEO,
+                            ObjectTypeIds.AUDIO,
+                            ObjectTypeIds.DASHBOARD,
+                            ObjectTypeIds.RELATION_OPTION,
+                            ObjectTypeIds.DASHBOARD,
+                            ObjectTypeIds.DATE
+                        )
+                    ),
+                )
+            },
+            sorts = emptyList(),
+            limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT,
+            keys = buildList {
+                addAll(ObjectSearchConstants.defaultDataViewKeys)
+                add(Relations.DESCRIPTION)
+            }.distinct(),
+            source = currentWidgetSourceObject.setOf
+        )
+
+        // Params expected after switching active view
+        val secondTimeParams = firstTimeParams.copy(
+            filters = buildList {
+                addAll(dataViewSecondView.filters)
+                addAll(firstTimeParams.filters)
+            }
+        )
+
+        stubDefaultSearch(
+            params = firstTimeParams,
+            results = emptyList()
+        )
+
+        stubDefaultSearch(
+            params = secondTimeParams,
+            results = emptyList()
+        )
+
+        stubCollapsedWidgetState(any())
+        stubGetWidgetSession()
+        stubGetDefaultPageType()
+        stubObserveSpaceObject()
+
+        // Using real implementation here
+        activeViewStateHolder = WidgetActiveViewStateHolder.Impl()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart()
+
+        vm.views.test {
+            val firstTimeState = awaitItem()
+            assertEquals(
+                actual = firstTimeState,
+                expected = emptyList()
+            )
+            delay(1)
+            val secondTimeItem = awaitItem()
+            assertTrue {
+                val firstWidget = secondTimeItem.first()
+                firstWidget is WidgetView.SetOfObjects && firstWidget.tabs.first().isSelected
+            }
+            verifyBlocking(getObject, times(1)) {
+                run(params = currentWidgetSourceObject.id)
+            }
+            verify(storelessSubscriptionContainer, times(1)).subscribe(
+                StoreSearchByIdsParams(
+                    subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                    targets = listOf(config.workspace),
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION
+                    )
+                )
+            )
+            verify(storelessSubscriptionContainer, times(1)).subscribe(
+                firstTimeParams
+            )
+            advanceUntilIdle()
+
+            // Changing active view
+            vm.onChangeCurrentWidgetView(
+                widget = widgetBlock.id,
+                view = dataViewSecondView.id
+            )
+
+            advanceUntilIdle()
+            val thirdTimeItem = awaitItem()
+            advanceUntilIdle()
+            assertTrue {
+                val firstWidget = thirdTimeItem.first()
+                firstWidget is WidgetView.SetOfObjects && firstWidget.tabs.last().isSelected
+            }
+            verify(storelessSubscriptionContainer, times(1)).subscribe(
+                secondTimeParams
+            )
+            verifyNoMoreInteractions(storelessSubscriptionContainer)
+        }
+    }
+
+    private fun stubSetWidgetActiveView(
+        widget: Id,
+        view: Id,
+    ) {
+        setWidgetActiveView.stub {
+            on {
+                stream(
+                    params = SetWidgetActiveView.Params(
+                        ctx = config.widgets,
+                        widget = widget,
+                        view = view
+                    )
+                )
+            } doReturn flowOf(
+                Resultat.Success(
+                    Payload(
+                        context = WIDGET_OBJECT_ID,
+                        events = listOf(
+                            Event.Command.Widgets.SetWidget(
+                                context = WIDGET_OBJECT_ID,
+                                widget = widget,
+                                activeView = view
+                            )
+                        )
+                    )
+                )
+            )
+        }
+    }
+
     private fun stubInterceptEvents(events: Flow<List<Event>>) {
         interceptEvents.stub {
             on { build(InterceptEvents.Params(WIDGET_OBJECT_ID)) } doReturn events
@@ -2238,7 +2469,7 @@ class HomeScreenViewModelTest {
         }
     }
 
-    private fun stubOpenObject(givenObjectView: ObjectView) {
+    private fun stubOpenWidgetObject(givenObjectView: ObjectView) {
         openObject.stub {
             on {
                 stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
@@ -2247,6 +2478,16 @@ class HomeScreenViewModelTest {
                     value = givenObjectView
                 )
             )
+        }
+    }
+
+    private fun stubGetObject(
+        givenObjectView: ObjectView
+    ) {
+        getObject.stub {
+            onBlocking {
+                run(givenObjectView.root)
+            } doReturn givenObjectView
         }
     }
 
@@ -2324,6 +2565,16 @@ class HomeScreenViewModelTest {
                 StubObjectView(
                     root = config.home
                 )
+            )
+        }
+    }
+
+    private fun stubGetDefaultPageType() {
+        getDefaultPageType.stub {
+            onBlocking {
+                execute(any())
+            } doReturn Resultat.Success(
+                GetDefaultPageType.Response(null, null)
             )
         }
     }

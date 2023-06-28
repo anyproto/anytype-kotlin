@@ -42,6 +42,7 @@ import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
+import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -152,6 +153,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var getWidgetSession: GetWidgetSession
+
+    @Mock
+    lateinit var setWidgetActiveView: SetWidgetActiveView
 
     @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
@@ -2352,7 +2356,8 @@ class HomeScreenViewModelTest {
         saveWidgetSession = saveWidgetSession,
         spaceGradientProvider = spaceGradientProvider,
         storeOfObjectTypes = storeOfObjectTypes,
-        objectWatcher = objectWatcher
+        objectWatcher = objectWatcher,
+        setWidgetActiveView = setWidgetActiveView
     )
 
     companion object {

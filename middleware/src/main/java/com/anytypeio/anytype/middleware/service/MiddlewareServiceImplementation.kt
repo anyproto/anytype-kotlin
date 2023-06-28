@@ -17,7 +17,7 @@ class MiddlewareServiceImplementation @Inject constructor(
 ) : MiddlewareService {
 
     init {
-        if (!featureToggles.isLogFromMiddlewareLibrary) {
+        if (!featureToggles.isLogFromGoProcess) {
             Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
         }
     }

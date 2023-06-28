@@ -728,6 +728,16 @@ class BlockMiddleware(
         type = type
     )
 
+    override suspend fun setWidgetViewId(
+        ctx: Id,
+        widget: Id,
+        view: Id
+    ): Payload = middleware.setWidgetViewId(
+        ctx = ctx,
+        widget = widget,
+        view = view
+    )
+
     override suspend fun addDataViewFilter(command: Command.AddFilter): Payload {
         return middleware.addDataViewFilter(command)
     }

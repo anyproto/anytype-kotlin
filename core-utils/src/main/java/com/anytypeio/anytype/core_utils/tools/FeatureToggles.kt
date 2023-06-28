@@ -4,9 +4,11 @@ interface FeatureToggles {
 
     val isAutoUpdateEnabled: Boolean
 
-    val isLogFromMiddlewareLibrary: Boolean
+    val isLogFromGoProcess: Boolean
 
     val isLogMiddlewareInteraction: Boolean
+
+    val isConciseLogging: Boolean
 
     val excludeThreadStatusLogging: Boolean
 

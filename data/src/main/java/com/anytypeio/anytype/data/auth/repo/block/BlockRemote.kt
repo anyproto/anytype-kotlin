@@ -337,6 +337,12 @@ interface BlockRemote {
         type: Block.Content.Widget.Layout
     ): Payload
 
+    suspend fun setWidgetViewId(
+        ctx: Id,
+        widget: Id,
+        view: Id
+    ): Payload
+
     suspend fun addDataViewFilter(command: Command.AddFilter): Payload
     suspend fun removeDataViewFilter(command: Command.RemoveFilter): Payload
     suspend fun replaceDataViewFilter(command: Command.ReplaceFilter): Payload

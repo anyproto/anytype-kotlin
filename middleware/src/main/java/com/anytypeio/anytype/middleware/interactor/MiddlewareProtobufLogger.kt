@@ -47,9 +47,13 @@ interface MiddlewareProtobufLogger {
         }
 
         private fun Any.toLogMessage(): String {
-            return "${this::class.java.canonicalName}:\n${
-                protobufConverter.provideConverter().toJson(this)
-            }"
+            return if (featureToggles.isConciseLogging) {
+                this::class.java.canonicalName
+            } else {
+                "${this::class.java.canonicalName}:\n${
+                    protobufConverter.provideConverter().toJson(this)
+                }"
+            }
         }
 
         private fun containsOnlyThreadStatusEvents(event: Event) : Boolean {

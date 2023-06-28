@@ -427,6 +427,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockCreateWidget(request: Rpc.Block.CreateWidget.Request): Rpc.Block.CreateWidget.Response
 
+    @Throws(Exception::class)
+    fun blockWidgetSetViewId(request: Rpc.BlockWidget.SetViewId.Request) : Rpc.BlockWidget.SetViewId.Response
+
     //endregion
 
     //region WORKSPACE

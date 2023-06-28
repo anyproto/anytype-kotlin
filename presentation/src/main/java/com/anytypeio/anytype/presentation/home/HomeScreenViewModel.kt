@@ -43,6 +43,7 @@ import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
+import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -74,6 +75,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.getActiveTabViews
+import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -128,7 +130,8 @@ class HomeScreenViewModel(
     private val saveWidgetSession: SaveWidgetSession,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val objectWatcher: ObjectWatcher
+    private val objectWatcher: ObjectWatcher,
+    private val setWidgetActiveView: SetWidgetActiveView
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -269,7 +272,7 @@ class HomeScreenViewModel(
                     root = state.obj.root,
                     details = state.obj.details
                 ).also {
-                    // TODO active view logic here?
+                    widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
                 }
             }.collect {
                 Timber.d("Emitting list of widgets: ${it.size}")
@@ -333,7 +336,7 @@ class HomeScreenViewModel(
                 SaveWidgetSession.Params(
                     WidgetSession(
                         collapsed = collapsedWidgetStateHolder.get(),
-                        widgetsToActiveViews = views.value.getActiveTabViews()
+                        widgetsToActiveViews = emptyMap()
                     )
                 )
             )
@@ -783,6 +786,7 @@ class HomeScreenViewModel(
                     )
                 }
                 is Event.Command.Widgets.SetWidget -> {
+                    Timber.d("Set widget event: $e")
                     curr = curr.copy(
                         blocks = curr.blocks.map { block ->
                             if (block.id == e.widget) {
@@ -844,7 +848,6 @@ class HomeScreenViewModel(
                 }
                 if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
-                    widgetActiveViewStateHolder.init(session.widgetsToActiveViews)
                 }
                 proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
             }
@@ -1053,6 +1056,28 @@ class HomeScreenViewModel(
         }
     }
 
+    override fun onChangeCurrentWidgetView(widget: Id, view: Id) {
+        widgetActiveViewStateHolder.onChangeCurrentWidgetView(
+            widget = widget,
+            view = view
+        ).also {
+            viewModelScope.launch {
+                setWidgetActiveView.stream(
+                    SetWidgetActiveView.Params(
+                        ctx = configStorage.get().widgets,
+                        widget = widget,
+                        view = view,
+                    )
+                ).collect { result ->
+                    result.fold(
+                        onSuccess = { objectPayloadDispatcher.send(it) },
+                        onFailure = { Timber.e(it, "Error while updating active view") }
+                    )
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
@@ -1094,7 +1119,8 @@ class HomeScreenViewModel(
         private val saveWidgetSession: SaveWidgetSession,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val objectWatcher: ObjectWatcher
+        private val objectWatcher: ObjectWatcher,
+        private val setWidgetActiveView: SetWidgetActiveView
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1125,7 +1151,8 @@ class HomeScreenViewModel(
             saveWidgetSession = saveWidgetSession,
             spaceGradientProvider = spaceGradientProvider,
             storeOfObjectTypes = storeOfObjectTypes,
-            objectWatcher = objectWatcher
+            objectWatcher = objectWatcher,
+            setWidgetActiveView = setWidgetActiveView
         ) as T
     }
 

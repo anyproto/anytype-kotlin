@@ -14,7 +14,7 @@ class DefaultFeatureToggles @Inject constructor(
     private val buildProvider: BuildProvider
 ) : FeatureToggles {
 
-    override val isLogFromMiddlewareLibrary =
+    override val isLogFromGoProcess =
         BuildConfig.LOG_FROM_MW_LIBRARY && buildProvider.isDebug()
 
     override val isLogMiddlewareInteraction =
@@ -32,4 +32,5 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isAutoUpdateEnabled: Boolean = false
 
+    override val isConciseLogging: Boolean = true
 }

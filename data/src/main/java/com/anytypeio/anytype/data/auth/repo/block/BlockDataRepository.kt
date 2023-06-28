@@ -764,6 +764,16 @@ class BlockDataRepository(
         type = type
     )
 
+    override suspend fun setWidgetViewId(
+        ctx: Id,
+        widget: Id,
+        view: Id
+    ): Payload = remote.setWidgetViewId(
+        ctx = ctx,
+        widget = widget,
+        view = view
+    )
+
     override suspend fun addDataViewFilter(command: Command.AddFilter): Payload {
         return remote.addDataViewFilter(command = command)
     }

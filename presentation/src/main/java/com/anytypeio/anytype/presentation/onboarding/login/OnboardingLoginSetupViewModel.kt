@@ -41,7 +41,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     private val configStorage: ConfigStorage
 ) : ViewModel() {
 
-    private val navigation = MutableSharedFlow<Navigation>()
+    val navigation = MutableSharedFlow<Navigation>()
 
     val state by lazy { MutableLiveData<List<SelectAccountView>>() }
     val error by lazy { MutableLiveData<String>() }

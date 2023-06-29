@@ -51,6 +51,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel.SideEffect
+import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
@@ -230,10 +231,30 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.ENTER_THE_VOID
+                val component = componentManager().onboardingLoginSetupComponent.ReleaseOn(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    state = Lifecycle.State.DESTROYED
+                )
+                val vm = daggerViewModel { component.get().getViewModel() }
                 EnteringTheVoidScreen(
                     openApp = {},
                     contentPaddingTop = ContentPaddingTop()
                 )
+                LaunchedEffect(Unit) {
+                    vm.navigation.collect { navigation ->
+                        when(navigation) {
+                            OnboardingLoginSetupViewModel.Navigation.Exit -> {
+                                // TODO
+                            }
+                            OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen -> {
+                                findNavController().navigate(R.id.action_openHome)
+                            }
+                            OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
+                                // TODO
+                            }
+                        }
+                    }
+                }
             }
         }
     }

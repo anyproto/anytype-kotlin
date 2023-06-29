@@ -64,6 +64,7 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingAuthComponent
+import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingLoginSetupComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingSoulCreationAnimComponent
@@ -928,6 +929,12 @@ class ComponentManager(
 
     val onboardingMnemonicLoginComponent = Component {
         DaggerOnboardingMnemonicLoginComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val onboardingLoginSetupComponent = Component {
+        DaggerOnboardingLoginSetupComponent
             .factory()
             .create(findComponentDependencies())
     }

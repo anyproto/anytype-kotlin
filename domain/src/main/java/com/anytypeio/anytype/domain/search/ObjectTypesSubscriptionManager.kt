@@ -11,7 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class ObjectTypesSubscriptionManager(
+class ObjectTypesSubscriptionManager (
     private val scope: CoroutineScope = GlobalScope,
     private val subscription: ObjectTypesSubscriptionContainer,
     private val workspaceManager: WorkspaceManager

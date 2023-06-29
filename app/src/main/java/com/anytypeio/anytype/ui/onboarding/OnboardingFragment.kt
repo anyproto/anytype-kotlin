@@ -51,14 +51,16 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel.SideEffect
-import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupViewModel
+import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.EnteringTheVoidScreen
-import com.anytypeio.anytype.ui.onboarding.screens.MnemonicPhraseScreenWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -134,17 +136,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.RECOVERY
-                RecoveryScreenWrapper(
-                    onBackClicked = {
-                        navController.popBackStack()
-                    },
-                    onNextClicked = {
-                        navController.navigate(OnboardingNavigation.enterTheVoid)
-                    },
-                    onScanQrClick = {
-                        // TODO
-                    }
-                )
+                Recovery(navController)
             }
             composable(
                 route = OnboardingNavigation.void,
@@ -239,17 +231,71 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.ENTER_THE_VOID
-                EnteringTheVoidScreen(
-                    openApp = {},
-                    contentPaddingTop = ContentPaddingTop()
-                )
+                enterTheVoid()
             }
         }
     }
 
-
     @Composable
     private fun ContentPaddingTop() = LocalConfiguration.current.screenHeightDp * 2 / 6
+
+    @Composable
+    private fun Recovery(navController: NavHostController) {
+        val component = componentManager().onboardingMnemonicLoginComponent.ReleaseOn(
+            viewLifecycleOwner = viewLifecycleOwner,
+            state = Lifecycle.State.DESTROYED
+        )
+        val vm = daggerViewModel { component.get().getViewModel() }
+        RecoveryScreenWrapper(
+            vm = vm,
+            onBackClicked = vm::onBackButtonPressed,
+            onScanQrClick = {
+                // TODO
+            }
+        )
+        LaunchedEffect(Unit) {
+            vm.sideEffects.collect { effect ->
+                when(effect) {
+                    OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
+                        navController.popBackStack()
+                    }
+                    OnboardingMnemonicLoginViewModel.SideEffect.ProceedWithLogin -> {
+                        navController.navigate(OnboardingNavigation.enterTheVoid)
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun enterTheVoid() {
+        val component = componentManager().onboardingLoginSetupComponent.ReleaseOn(
+            viewLifecycleOwner = viewLifecycleOwner,
+            state = Lifecycle.State.DESTROYED
+        )
+        val vm = daggerViewModel { component.get().getViewModel() }
+        EnteringTheVoidScreen(
+            openApp = {},
+            contentPaddingTop = ContentPaddingTop()
+        )
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { navigation ->
+                when (navigation) {
+                    OnboardingLoginSetupViewModel.Navigation.Exit -> {
+                        // TODO
+                    }
+
+                    OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen -> {
+                        findNavController().navigate(R.id.action_openHome)
+                    }
+
+                    OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
+                        // TODO
+                    }
+                }
+            }
+        }
+    }
 
     @Composable
     private fun CreateSoulAnimation(contentPaddingTop: Int) {
@@ -257,7 +303,6 @@ class OnboardingFragment : BaseComposeFragment() {
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
-
         CreateSoulAnimWrapper(
             contentPaddingTop = contentPaddingTop,
             viewModel = daggerViewModel { component.get().getViewModel() }
@@ -290,9 +335,6 @@ class OnboardingFragment : BaseComposeFragment() {
         }
     }
 
-    /**
-     * Mnemonic screen for sign-in
-     */
     @Composable
     private fun Mnemonic(navController: NavHostController, contentPaddingTop: Int) {
         val component = componentManager().onboardingMnemonicComponent.ReleaseOn(

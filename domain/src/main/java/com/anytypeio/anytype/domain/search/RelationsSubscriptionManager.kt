@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
-class RelationsSubscriptionManager(
+class RelationsSubscriptionManager @Inject constructor(
     private val scope: CoroutineScope = GlobalScope,
     private val subscription: RelationsSubscriptionContainer,
     private val workspaceManager: WorkspaceManager,

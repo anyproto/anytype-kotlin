@@ -1,40 +1,37 @@
-package com.anytypeio.anytype.presentation.auth.keychain
+package com.anytypeio.anytype.presentation.onboarding.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.loginScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.common.ViewState
-import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@Deprecated("Legacy")
-class KeychainLoginViewModel(
+class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val recoverWallet: RecoverWallet,
     private val convertWallet: ConvertWallet,
     private val saveMnemonic: SaveMnemonic,
     private val pathProvider: PathProvider,
     private val analytics: Analytics
-) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
+) : ViewModel() {
 
-    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
-        MutableLiveData()
-
+    val sideEffects = MutableSharedFlow<SideEffect>()
     val state = MutableLiveData<ViewState<Boolean>>()
 
     init {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = loginScreenShow
+            eventName = EventsDictionary.loginScreenShow
         )
     }
 
@@ -47,10 +44,13 @@ class KeychainLoginViewModel(
     }
 
     fun onBackButtonPressed() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
+        viewModelScope.launch {
+            sideEffects.emit(SideEffect.Exit)
+        }
     }
 
-    fun onGetEntropy(entropy: String) {
+    fun onGetEntropyFromQRCode(entropy: String) {
+        // TODO
         viewModelScope.launch {
             convertWallet(
                 params = ConvertWallet.Request(entropy)
@@ -93,10 +93,36 @@ class KeychainLoginViewModel(
         ) { result ->
             result.either(
                 fnR = {
-                    navigation.postValue(EventWrapper(AppNavigation.Command.SelectAccountScreen))
+                    viewModelScope.launch {
+                        sideEffects.emit(SideEffect.ProceedWithLogin)
+                    }
                 },
                 fnL = { Timber.e(it, "Error while saving mnemonic") }
             )
+        }
+    }
+
+    sealed class SideEffect {
+        object ProceedWithLogin : SideEffect()
+        object Exit: SideEffect()
+    }
+
+    class Factory @Inject constructor(
+        private val pathProvider: PathProvider,
+        private val convertWallet: ConvertWallet,
+        private val recoverWallet: RecoverWallet,
+        private val saveMnemonic: SaveMnemonic,
+        private val analytics: Analytics
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return OnboardingMnemonicLoginViewModel(
+                recoverWallet = recoverWallet,
+                convertWallet = convertWallet,
+                pathProvider = pathProvider,
+                saveMnemonic = saveMnemonic,
+                analytics = analytics
+            ) as T
         }
     }
 }

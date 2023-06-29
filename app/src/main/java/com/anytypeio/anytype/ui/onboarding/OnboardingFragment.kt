@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.onboarding
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
@@ -69,6 +71,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
+import timber.log.Timber
 
 
 class OnboardingFragment : BaseComposeFragment() {
@@ -326,7 +329,7 @@ class OnboardingFragment : BaseComposeFragment() {
             state = Lifecycle.State.DESTROYED
         )
         val viewModel = daggerViewModel { component.get().getViewModel() }
-        AuthScreenWrapper(viewModel = viewModel)
+        AuthScreenWrapper(vm = viewModel)
         val navigationCommands = viewModel.navigationFlow.collectAsState(
             initial = OnboardingAuthViewModel.AuthNavigation.Idle
         )
@@ -340,6 +343,34 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
                 else -> {
 
+                }
+            }
+        }
+        LaunchedEffect(Unit) {
+            viewModel.sideEffects.collect { effect ->
+                when(effect) {
+                    SideEffect.OpenPrivacyPolicy -> {
+                        try {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(getString(R.string.about_privacy_policy_link))
+                            )
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            Timber.e(e, "Error while opening privacy policy")
+                        }
+                    }
+                    SideEffect.OpenTermsOfUse -> {
+                        try {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(getString(R.string.about_terms_and_conditions_link))
+                            )
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            Timber.e(e, "Error while opening terms of use")
+                        }
+                    }
                 }
             }
         }
@@ -418,7 +449,6 @@ class OnboardingFragment : BaseComposeFragment() {
         )
         return that
     }
-
 }
 
 private const val ANIMATION_LENGTH_SLIDE = 700

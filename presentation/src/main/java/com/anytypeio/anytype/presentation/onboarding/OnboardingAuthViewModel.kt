@@ -28,6 +28,8 @@ class OnboardingAuthViewModel @Inject constructor(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 ) : ViewModel() {
 
+    val sideEffects = MutableSharedFlow<SideEffect>()
+
     private val _navigationFlow = MutableSharedFlow<AuthNavigation>()
     val navigationFlow: SharedFlow<AuthNavigation> = _navigationFlow
 
@@ -53,8 +55,15 @@ class OnboardingAuthViewModel @Inject constructor(
     }
 
     fun onLoginClicked() {
-        Timber.d("onLoginClicked")
         navigateTo(AuthNavigation.ProceedWithSignIn)
+    }
+
+    fun onPrivacyPolicyClicked() {
+        viewModelScope.launch { sideEffects.emit(SideEffect.OpenPrivacyPolicy) }
+    }
+
+    fun onTermsOfUseClicked() {
+        viewModelScope.launch { sideEffects.emit(SideEffect.OpenTermsOfUse) }
     }
 
     private fun setupAccount() {
@@ -106,6 +115,11 @@ class OnboardingAuthViewModel @Inject constructor(
         object Idle : AuthNavigation
         object ProceedWithSignUp : AuthNavigation
         object ProceedWithSignIn : AuthNavigation
+    }
+
+    sealed class SideEffect {
+        object OpenPrivacyPolicy : SideEffect()
+        object OpenTermsOfUse : SideEffect()
     }
 
     interface JoinFlowState {

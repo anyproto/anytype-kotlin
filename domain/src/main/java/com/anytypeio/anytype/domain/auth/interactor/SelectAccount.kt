@@ -8,11 +8,12 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import javax.inject.Inject
 
 /**
  * Use case for selecting user account.
  */
-class SelectAccount(
+class SelectAccount @Inject constructor(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
     private val workspaceManager: WorkspaceManager,

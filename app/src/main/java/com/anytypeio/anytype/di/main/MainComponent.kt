@@ -22,6 +22,7 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingLoginSetupDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationAnimDependencies
@@ -86,6 +87,7 @@ interface MainComponent :
     OnboardingMnemonicDependencies,
     OnboardingMnemonicLoginDependencies,
     OnboardingSoulCreationDependencies,
+    OnboardingLoginSetupDependencies,
     AboutAppDependencies,
     OnboardingSoulCreationAnimDependencies {
 
@@ -208,6 +210,11 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(OnboardingMnemonicLoginDependencies::class)
     abstract fun provideOnboardingMnemonicLoginDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingLoginSetupDependencies::class)
+    abstract fun provideOnboardingLoginSetupDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

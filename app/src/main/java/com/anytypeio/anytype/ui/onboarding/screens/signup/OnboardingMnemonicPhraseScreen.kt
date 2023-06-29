@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.onboarding.screens
+package com.anytypeio.anytype.ui.onboarding.screens.signup
 
 import android.os.Build
 import android.os.Build.VERSION_CODES
@@ -33,9 +33,9 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
 import com.anytypeio.anytype.ui.onboarding.MnemonicStub
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 
 @Composable
 fun MnemonicPhraseScreenWrapper(

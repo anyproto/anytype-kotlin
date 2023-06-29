@@ -25,17 +25,18 @@ import com.anytypeio.anytype.core_ui.views.ConditionLogin
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TitleLogin
+import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 @Composable
 fun RecoveryScreenWrapper(
+    vm: OnboardingMnemonicLoginViewModel,
     onBackClicked: () -> Unit,
-    onNextClicked: (Mnemonic) -> Unit,
     onScanQrClick: () -> Unit
 ) {
     RecoveryScreen(
         onBackClicked = onBackClicked,
-        onNextClicked = onNextClicked,
+        onNextClicked = vm::onLoginClicked,
         onScanQrClicked = onScanQrClick
     )
 }

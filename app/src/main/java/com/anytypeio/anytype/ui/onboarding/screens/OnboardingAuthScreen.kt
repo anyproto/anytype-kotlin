@@ -40,18 +40,22 @@ fun AuthScreenPreview() {
     AuthScreen(
         onLoginClicked = {},
         onJoinClicked = {},
+        onPrivacyPolicyClicked = {},
+        onTermsOfUseClicked = {},
         joinState = OnboardingAuthViewModel.JoinFlowState.Active
     )
 }
 
 @Composable
 fun AuthScreenWrapper(
-    viewModel: OnboardingAuthViewModel
+    vm: OnboardingAuthViewModel
 ) {
     AuthScreen(
-        onJoinClicked = viewModel::onJoinClicked,
-        onLoginClicked = viewModel::onLoginClicked,
-        joinState = viewModel.joinFlowState.collectAsStateWithLifecycle().value
+        onJoinClicked = vm::onJoinClicked,
+        onLoginClicked = vm::onLoginClicked,
+        onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
+        onTermsOfUseClicked = vm::onTermsOfUseClicked,
+        joinState = vm.joinFlowState.collectAsStateWithLifecycle().value
     )
 }
 
@@ -59,6 +63,8 @@ fun AuthScreenWrapper(
 fun AuthScreen(
     onJoinClicked: () -> Unit,
     onLoginClicked: () -> Unit,
+    onPrivacyPolicyClicked: () -> Unit,
+    onTermsOfUseClicked: () -> Unit,
     joinState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Box(
@@ -72,8 +78,16 @@ fun AuthScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            SignButtons(onJoinClicked, onLoginClicked, joinState)
-            TermsAndPolicy(Modifier)
+            SignButtons(
+                onJoinClicked = onJoinClicked,
+                onLoginClicked = onLoginClicked,
+                joinFlowState = joinState
+            )
+            TermsAndPolicy(
+                modifier = Modifier,
+                onPrivacyPolicyClicked = onPrivacyPolicyClicked,
+                onTermsOfUseClicked = onTermsOfUseClicked
+            )
         }
     }
 }
@@ -143,6 +157,8 @@ fun SignButtons(
 @Composable
 fun TermsAndPolicy(
     modifier: Modifier = Modifier,
+    onPrivacyPolicyClicked: () -> Unit,
+    onTermsOfUseClicked: () -> Unit
 ) {
     val annotatedString = buildAnnotatedString {
         append(
@@ -174,11 +190,11 @@ fun TermsAndPolicy(
         onClick = {
             annotatedString.getStringAnnotations(TermsOfUseTag, it, it)
                 .firstOrNull()?.let {
-                    // do nothing
+                    onTermsOfUseClicked()
                 }
             annotatedString.getStringAnnotations(PrivacyPolicyTag, it, it)
                 .firstOrNull()?.let {
-                    // do nothing
+                    onPrivacyPolicyClicked()
                 }
         }
     )

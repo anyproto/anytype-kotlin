@@ -107,6 +107,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
                             error.postValue(SplashViewModel.ERROR_NEED_UPDATE)
                         }
                         else -> {
+                            // TODO process migration
 //                            migrationMessageJob.cancel()
 //                            isMigrationInProgress.value = false
                             val msg = e.message ?: "Unknown error"
@@ -115,6 +116,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
                     }
                 },
                 success = { (analyticsId, status) ->
+                    // TODO process migration
 //                    migrationMessageJob.cancel()
 //                    isMigrationInProgress.value = false
                     analytics.proceedWithAccountEvent(
@@ -124,7 +126,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
                     )
                     crashReporter.setUser(analyticsId)
                     if (status is AccountStatus.PendingDeletion) {
-                        // TODO
+                        // TODO process deleted account
 //                        navigation.postValue(
 //                            EventWrapper(
 //                                AppNavigation.Command.DeletedAccountScreen(
@@ -142,6 +144,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     }
 
     fun onRetryClicked(id: Id) {
+        // TODO
         proceedWithSelectingAccount(id)
     }
 
@@ -149,14 +152,12 @@ class OnboardingLoginSetupViewModel @Inject constructor(
         viewModelScope.launch {
             navigation.emit(Navigation.NavigateToHomeScreen)
         }
-//        navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromLogin))
     }
 
     private fun navigateToMigrationErrorScreen() {
         viewModelScope.launch {
             navigation.emit(Navigation.NavigateToMigrationErrorScreen)
         }
-//        navigation.postValue(EventWrapper(AppNavigation.Command.MigrationErrorScreen))
     }
 
     private fun proceedWithGlobalSubscriptions() {

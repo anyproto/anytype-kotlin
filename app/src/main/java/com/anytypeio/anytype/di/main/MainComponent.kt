@@ -23,16 +23,17 @@ import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationAnimDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
-import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
+import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
@@ -83,6 +84,7 @@ interface MainComponent :
     FilesStorageDependencies,
     OnboardingAuthDependencies,
     OnboardingMnemonicDependencies,
+    OnboardingMnemonicLoginDependencies,
     OnboardingSoulCreationDependencies,
     AboutAppDependencies,
     OnboardingSoulCreationAnimDependencies {
@@ -201,6 +203,11 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(OnboardingMnemonicDependencies::class)
     abstract fun provideOnboardingMnemonicDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingMnemonicLoginDependencies::class)
+    abstract fun provideOnboardingMnemonicLoginDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("Legacy")
 class KeychainLoginViewModel(
     private val recoverWallet: RecoverWallet,
     private val convertWallet: ConvertWallet,

@@ -3,8 +3,9 @@ package com.anytypeio.anytype.domain.auth.interactor
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
+import javax.inject.Inject
 
-class ConvertWallet(
+class ConvertWallet @Inject constructor(
     private val authRepository: AuthRepository
 ) : BaseUseCase<String, ConvertWallet.Request>() {
 

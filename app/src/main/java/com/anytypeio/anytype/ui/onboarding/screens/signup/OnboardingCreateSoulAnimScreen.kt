@@ -44,7 +44,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationAnimViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationAnimViewModel
 import kotlinx.coroutines.delay
 
 @Composable

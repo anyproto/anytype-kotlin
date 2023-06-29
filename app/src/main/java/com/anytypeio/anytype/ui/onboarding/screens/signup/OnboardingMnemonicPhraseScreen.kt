@@ -35,7 +35,7 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
 import com.anytypeio.anytype.ui.onboarding.MnemonicStub
-import com.anytypeio.anytype.presentation.onboarding.OnboardingMnemonicViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 
 @Composable
 fun MnemonicPhraseScreenWrapper(

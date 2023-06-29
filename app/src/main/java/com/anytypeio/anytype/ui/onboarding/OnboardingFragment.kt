@@ -51,7 +51,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel.SideEffect
-import com.anytypeio.anytype.presentation.onboarding.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper

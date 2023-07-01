@@ -111,7 +111,6 @@ class FilesStorageViewModel(
         events
             .throttleFirst()
             .onEach { event ->
-                dispatchAnalyticsEvent(event)
                 dispatchCommand(event)
             }
             .launchIn(viewModelScope)
@@ -189,22 +188,8 @@ class FilesStorageViewModel(
                 commands.emit(Command.OpenOffloadFilesScreen)
                 analytics.sendSettingsOffloadEvent()
             }
-        }
-    }
-
-    private fun dispatchAnalyticsEvent(event: Event) {
-        when (event) {
-            Event.OnManageFilesClicked -> {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.manageFilesScreenShow
-                )
-            }
-            Event.OnOffloadFilesClicked -> {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.fileOffloadScreenShow
-                )
+            Event.OnGetMoreSpaceClicked -> {
+                
             }
         }
     }

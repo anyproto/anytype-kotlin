@@ -188,9 +188,7 @@ class FilesStorageViewModel(
                 commands.emit(Command.OpenOffloadFilesScreen)
                 analytics.sendSettingsOffloadEvent()
             }
-            Event.OnGetMoreSpaceClicked -> {
-                
-            }
+            Event.OnGetMoreSpaceClicked -> {}
         }
     }
 
@@ -216,12 +214,21 @@ class FilesStorageViewModel(
                 val workspace = result.find { it.id == workspaceId }
                 val bytesUsage = spaceUsage.bytesUsage
                 val bytesLimit = spaceUsage.bytesLimit
+                val localeUsage = spaceUsage.localBytesUsage
                 val percentUsage =
                     if (bytesUsage != null && bytesLimit != null && bytesLimit != 0L) {
                         (bytesUsage.toFloat() / bytesLimit.toFloat())
                     } else {
                         null
                     }
+                val isShowGetMoreSpace = isNeedToShowGetMoreSpace(
+                    percentUsage = percentUsage,
+                    localUsage = localeUsage,
+                    bytesLimit = bytesLimit
+                )
+                val isShowSpaceUsedWarning = isShowSpaceUsedWarning(
+                    percentUsage = percentUsage
+                )
                 ScreenState(
                     spaceName = workspace?.name.orEmpty(),
                     spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
@@ -231,6 +238,8 @@ class FilesStorageViewModel(
                     localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSizeLocal(it) }
                         .orEmpty(),
                     spaceLimit = bytesLimit?.let { bytesToHumanReadableSize(it) }.orEmpty(),
+                    isShowGetMoreSpace = isShowGetMoreSpace,
+                    isShowSpaceUsedWarning = isShowSpaceUsedWarning
                 )
             }
                 .flowOn(appCoroutineDispatchers.io)
@@ -248,9 +257,31 @@ class FilesStorageViewModel(
         }
     }
 
+    private fun isNeedToShowGetMoreSpace(
+        percentUsage: Float?,
+        localUsage: Long?,
+        bytesLimit: Long?
+    ): Boolean {
+        val localPercentUsage =
+            if (localUsage != null && bytesLimit != null && bytesLimit != 0L) {
+                (localUsage.toFloat() / bytesLimit.toFloat())
+            } else {
+                null
+            }
+        return (percentUsage != null && percentUsage >= WARNING_PERCENT)
+                || (localPercentUsage != null && localPercentUsage >= WARNING_PERCENT)
+    }
+
+    private fun isShowSpaceUsedWarning(
+        percentUsage: Float?
+    ): Boolean {
+        return percentUsage != null && percentUsage >= WARNING_PERCENT
+    }
+
     sealed class Event {
         object OnManageFilesClicked : Event()
         object OnOffloadFilesClicked : Event()
+        object OnGetMoreSpaceClicked : Event()
     }
 
     sealed class Command {
@@ -294,7 +325,9 @@ class FilesStorageViewModel(
         val spaceUsage: String,
         val percentUsage: Float?,
         val device: String?,
-        val localUsage: String
+        val localUsage: String,
+        val isShowGetMoreSpace: Boolean,
+        val isShowSpaceUsedWarning: Boolean
     ) {
         companion object {
             fun empty() = ScreenState(
@@ -304,8 +337,14 @@ class FilesStorageViewModel(
                 spaceUsage = "",
                 percentUsage = null,
                 device = null,
-                localUsage = ""
+                localUsage = "",
+                isShowGetMoreSpace = false,
+                isShowSpaceUsedWarning = false
             )
         }
+    }
+
+    companion object {
+        const val WARNING_PERCENT = 0.9f
     }
 }

@@ -50,7 +50,8 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
                     FilesStorageScreen(
                         data = vm.state.collectAsStateWithLifecycle().value,
                         onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } },
-                        onManageFilesClicked = { throttle { vm.event(Event.OnManageFilesClicked) } }
+                        onManageFilesClicked = { throttle { vm.event(Event.OnManageFilesClicked) } },
+                        onGetMoreSpaceClicked = { throttle { vm.event(Event.OnGetMoreSpaceClicked) } },
                     )
                 }
             }

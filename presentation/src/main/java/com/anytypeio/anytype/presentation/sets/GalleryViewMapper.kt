@@ -89,7 +89,6 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
         relations = obj.values(
             relations = filteredRelations,
             urlBuilder = urlBuilder,
-            details = details,
             settings = viewerRelations,
             storeOfObjects = store
         ),
@@ -162,7 +161,6 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         relations = obj.values(
             relations = filteredRelations,
             urlBuilder = urlBuilder,
-            details = details,
             settings = dvViewer.viewerRelations,
             storeOfObjects = store
         ),

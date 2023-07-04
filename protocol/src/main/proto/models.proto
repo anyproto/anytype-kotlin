@@ -326,6 +326,7 @@ message Block {
                 string groupRelationKey = 11; // Group view by this relationKey
 				        bool groupBackgroundColors = 12; // Enable backgrounds in groups
                 int32 pageLimit = 13;
+                string defaultTemplateId = 14;
 
                 enum Type {
                     Table = 0;

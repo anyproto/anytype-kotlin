@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
 import com.anytypeio.anytype.core_ui.databinding.ItemDvManageViewerBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemDvManageViewerDoneBinding
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -72,6 +73,13 @@ class ManageViewerEditAdapter(
         override fun bind(item: ViewerView) {
             binding.title.text = item.name.ifEmpty {
                 untitled
+            }
+            if (item.isActive) {
+                binding.icRemove.gone()
+                binding.icRemoveInactive.visible()
+            } else {
+                binding.icRemove.visible()
+                binding.icRemoveInactive.gone()
             }
         }
 

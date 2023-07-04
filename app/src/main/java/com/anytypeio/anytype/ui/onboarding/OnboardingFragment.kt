@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.onboarding
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,7 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Left
@@ -267,14 +270,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 AlertDialog.Builder(requireContext())
                     .setMessage(R.string.alert_qr_camera)
                     .setPositiveButton(R.string.alert_qr_camera_ok) { dialog, _ ->
-                        launcher.launch(
-                            IntentIntegrator
-                                .forSupportFragment(this)
-                                .setBeepEnabled(false)
-                                .createScanIntent()
-                        ).also {
-                            dialog.dismiss()
-                        }
+                        proceedWithQrCodeActivity(launcher, dialog)
                     }
                     .setCancelable(true)
                     .show()
@@ -291,6 +287,24 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun proceedWithQrCodeActivity(
+        launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+        dialog: DialogInterface
+    ) {
+        try {
+            launcher.launch(
+                IntentIntegrator
+                    .forSupportFragment(this)
+                    .setBeepEnabled(false)
+                    .createScanIntent()
+            ).also {
+                dialog.dismiss()
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error while scanning QR code")
         }
     }
 

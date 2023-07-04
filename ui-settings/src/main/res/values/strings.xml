@@ -49,7 +49,7 @@
     <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
     <string name="about_anytype_community_link">https://community.anytype.io</string>
     <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
-    <string name="about_terms_and_conditions_link">https://anytype.io/terms.pdf</string>
+    <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
 
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
@@ -65,4 +65,5 @@
     <string name="space_usage">%1$s of %2$s used</string>
     <string name="remote_storage">Remote storage</string>
     <string name="contact_us">Contact us</string>
+    <string name="get_more_space">Get more space</string>
 </resources>

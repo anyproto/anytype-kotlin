@@ -50,7 +50,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     fun onGetEntropyFromQRCode(entropy: String) {
-        // TODO
         viewModelScope.launch {
             convertWallet(
                 params = ConvertWallet.Request(entropy)

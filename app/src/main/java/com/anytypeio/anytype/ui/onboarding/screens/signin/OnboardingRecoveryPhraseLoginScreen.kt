@@ -7,14 +7,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -25,6 +31,7 @@ import com.anytypeio.anytype.core_ui.views.ConditionLogin
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TitleLogin
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
@@ -37,14 +44,17 @@ fun RecoveryScreenWrapper(
     RecoveryScreen(
         onBackClicked = onBackClicked,
         onNextClicked = vm::onLoginClicked,
+        onActionDoneClicked = vm::onActionDone,
         onScanQrClicked = onScanQrClick
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RecoveryScreen(
     onBackClicked: () -> Unit,
     onNextClicked: (Mnemonic) -> Unit,
+    onActionDoneClicked: (Mnemonic) -> Unit,
     onScanQrClicked: () -> Unit
 ) {
     Box(
@@ -63,6 +73,10 @@ fun RecoveryScreen(
         val text = remember {
             mutableStateOf("")
         }
+
+        val focus = LocalFocusManager.current
+        val context = LocalContext.current
+
         LazyColumn(
             content = {
                 item {
@@ -70,17 +84,35 @@ fun RecoveryScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(164.dp)
-                            .padding(start = 18.dp, end = 18.dp, top = 48.dp, bottom = 18.dp),
+                            .padding(start = 18.dp, end = 18.dp, top = 48.dp, bottom = 18.dp)
+                        ,
                         text = text,
                         singleLine = false,
-                        placeholder = stringResource(id = R.string.onboarding_type_recovery_phrase)
+                        placeholder = stringResource(id = R.string.onboarding_type_recovery_phrase),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                val input = text.value
+                                if (input.isNotEmpty()) {
+                                    onActionDoneClicked(text.value).also {
+                                        focus.clearFocus()
+                                    }
+                                } else {
+                                    context.toast("Can't be empty")
+                                }
+                            }
+                        )
                     )
                 }
                 item {
                     OnBoardingButtonPrimary(
                         text = stringResource(id = R.string.next),
                         onClick = {
-                            onNextClicked.invoke(text.value)
+                            onNextClicked.invoke(text.value).also {
+                                focus.clearFocus()
+                            }
                         },
                         enabled = text.value.isNotEmpty(),
                         size = ButtonSize.Large,

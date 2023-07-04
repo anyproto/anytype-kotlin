@@ -5,6 +5,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -85,6 +87,14 @@ object FilesStorageModule {
         dispatchers: AppCoroutineDispatchers
     ) : InterceptFileLimitEvents = InterceptFileLimitEvents(channel, dispatchers)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetAccountUseCase(
+        repo: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetAccount = GetAccount(repo = repo, dispatcher = dispatchers)
+
     @Module
     interface Declarations {
 
@@ -103,4 +113,5 @@ interface FilesStorageDependencies : ComponentDependencies {
     fun channel(): SubscriptionEventChannel
     fun fileEventsChannel(): FileLimitsEventChannel
     fun buildProvider(): BuildProvider
+    fun authRepo(): AuthRepository
 }

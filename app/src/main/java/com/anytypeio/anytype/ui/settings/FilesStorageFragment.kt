@@ -14,10 +14,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.di.common.componentManager
@@ -50,7 +53,8 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
                     FilesStorageScreen(
                         data = vm.state.collectAsStateWithLifecycle().value,
                         onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } },
-                        onManageFilesClicked = { throttle { vm.event(Event.OnManageFilesClicked) } }
+                        onManageFilesClicked = { throttle { vm.event(Event.OnManageFilesClicked) } },
+                        onGetMoreSpaceClicked = { throttle { vm.event(Event.OnGetMoreSpaceClicked) } },
                     )
                 }
             }
@@ -88,6 +92,17 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
             is FilesStorageViewModel.Command.OpenRemoteStorageScreen -> openRemoteStorageScreen(
                 subscription = command.subscription
             )
+            is FilesStorageViewModel.Command.SendGetMoreSpaceEmail -> {
+                proceedWithAction(
+                    SystemAction.MailTo(
+                        generateSupportMail(
+                            account = command.account,
+                            limit = command.limit,
+                            name = command.name
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -103,6 +118,18 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
             R.id.remoteStorageFragment,
             bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription)
         )
+    }
+
+    private fun generateSupportMail(
+        account: Id,
+        name: String,
+        limit: String,
+
+    ) : String {
+        val bodyString = resources.getString(R.string.mail_more_space_body, limit, account, name)
+        return "storage@anytype.io" +
+                "?subject=Get%20more%20storage,%20account%20$account" +
+                "&body=$bodyString"
     }
 
     override fun injectDependencies() {

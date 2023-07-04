@@ -387,4 +387,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="sync_status_incompatible">Incompatible version</string>
     <string name="base_add_options_empty_title">No tags found</string>
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
+
+    <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
 </resources>

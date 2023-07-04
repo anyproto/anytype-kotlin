@@ -1546,6 +1546,12 @@ suspend fun Analytics.sendSettingsOffloadEvent() {
     )
 }
 
+suspend fun Analytics.sendGetMoreSpaceEvent() {
+    sendEvent(
+        eventName = EventsDictionary.getMoreSpace
+    )
+}
+
 suspend fun Analytics.sendSettingsStorageOffloadEvent() {
     sendEvent(
         eventName = EventsDictionary.settingsStorageOffload

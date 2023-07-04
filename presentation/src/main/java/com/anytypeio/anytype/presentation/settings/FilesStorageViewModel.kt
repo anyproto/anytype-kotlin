@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
@@ -198,6 +199,7 @@ class FilesStorageViewModel(
             }
             Event.OnGetMoreSpaceClicked -> {
                 onGetMoreSpaceClicked()
+                analytics.sendGetMoreSpaceEvent()
             }
         }
     }

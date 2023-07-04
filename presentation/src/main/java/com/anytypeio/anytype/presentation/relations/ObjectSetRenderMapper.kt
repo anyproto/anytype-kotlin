@@ -116,7 +116,6 @@ suspend fun DVViewer.render(
                 id = id,
                 items = buildListViews(
                     objects = objects,
-                    details = details,
                     relations = visibleRelations,
                     urlBuilder = builder,
                     store = store,

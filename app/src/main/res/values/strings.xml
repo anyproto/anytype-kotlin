@@ -212,7 +212,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="btn_upload_storage">Upload from External storage</string>
     <string name="btn_upload">Upload</string>
 
-    <string name="alert_qr_camera">Open "Settings" and then "Recovery phrase" in Anytype Desktop.</string>
+    <string name="alert_qr_camera">Open "Profile" and then "Recovery phrase" on Anytype Desktop.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>

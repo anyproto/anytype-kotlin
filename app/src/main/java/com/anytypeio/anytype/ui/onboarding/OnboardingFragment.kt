@@ -10,6 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Left
 import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Right
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -73,6 +76,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
+import com.google.zxing.integration.android.IntentIntegrator
 import timber.log.Timber
 
 
@@ -246,11 +250,34 @@ class OnboardingFragment : BaseComposeFragment() {
             state = Lifecycle.State.DESTROYED
         )
         val vm = daggerViewModel { component.get().getViewModel() }
+
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            val r = IntentIntegrator.parseActivityResult(result.resultCode, result.data)
+            if (r != null && r.contents != null) {
+                vm.onGetEntropyFromQRCode(entropy = r.contents)
+            }
+        }
+
         RecoveryScreenWrapper(
             vm = vm,
             onBackClicked = vm::onBackButtonPressed,
             onScanQrClick = {
-                // TODO
+                AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.alert_qr_camera)
+                    .setPositiveButton(R.string.alert_qr_camera_ok) { dialog, _ ->
+                        launcher.launch(
+                            IntentIntegrator
+                                .forSupportFragment(this)
+                                .setBeepEnabled(false)
+                                .createScanIntent()
+                        ).also {
+                            dialog.dismiss()
+                        }
+                    }
+                    .setCancelable(true)
+                    .show()
             }
         )
         LaunchedEffect(Unit) {

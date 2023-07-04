@@ -91,7 +91,9 @@ class FilesStorageViewModel(
 
     fun onStop() {
         viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(listOf(SPACE_STORAGE_SUBSCRIPTION_ID))
+            storelessSubscriptionContainer.unsubscribe(
+                listOf(SPACE_STORAGE_SUBSCRIPTION_ID, PROFILE_SUBSCRIPTION_ID)
+            )
         }
         jobs.cancel()
     }

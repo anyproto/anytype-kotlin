@@ -279,11 +279,14 @@ class OnboardingFragment : BaseComposeFragment() {
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
                 when(effect) {
-                    OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
                         navController.popBackStack()
                     }
-                    OnboardingMnemonicLoginViewModel.SideEffect.ProceedWithLogin -> {
+                    is OnboardingMnemonicLoginViewModel.SideEffect.ProceedWithLogin -> {
                         navController.navigate(OnboardingNavigation.enterTheVoid)
+                    }
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error -> {
+                        toast(effect.msg)
                     }
                 }
             }

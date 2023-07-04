@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -205,4 +206,3 @@ class ProfileViewModel(
 }
 
 private const val STOP_SUBSCRIPTION_TIMEOUT = 1_000L
-private const val PROFILE_SUBSCRIPTION_ID = "profile_subscription"

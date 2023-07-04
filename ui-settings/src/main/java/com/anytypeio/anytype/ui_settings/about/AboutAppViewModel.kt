@@ -9,11 +9,13 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class AboutAppViewModel(
     private val getAccount: GetAccount,
@@ -49,12 +51,12 @@ class AboutAppViewModel(
 
     init {
         viewModelScope.launch {
-            getAccount(BaseUseCase.None).process(
-                failure = {},
-                success = { acc ->
-                    accountId.value = acc.id
-                }
-            )
+            getAccount.stream(Unit).collect { result ->
+                result.fold(
+                    onSuccess = { accountId.value = it.id },
+                    onFailure = { Timber.e(it, "getAccount error") }
+                )
+            }
         }
         viewModelScope.launch {
             val config = configStorage.get()

@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -49,7 +48,6 @@ fun RecoveryScreenWrapper(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RecoveryScreen(
     onBackClicked: () -> Unit,
@@ -58,12 +56,13 @@ fun RecoveryScreen(
     onScanQrClicked: () -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 24.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         Text(
-            modifier = Modifier.align(Alignment.TopCenter),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 20.dp)
+            ,
             text = stringResource(id = R.string.login),
             style = TitleLogin.copy(
                 color = OnBoardingTextPrimaryColor
@@ -84,9 +83,14 @@ fun RecoveryScreen(
                 item {
                     OnboardingInput(
                         modifier = Modifier
+                            .padding(
+                                start = 18.dp,
+                                end = 18.dp,
+                                top = 71.dp,
+                                bottom = 18.dp
+                            )
+                            .height(165.dp)
                             .fillMaxWidth()
-                            .height(164.dp)
-                            .padding(start = 18.dp, end = 18.dp, top = 48.dp, bottom = 18.dp)
                         ,
                         text = text,
                         singleLine = false,
@@ -151,12 +155,12 @@ fun RecoveryScreen(
         Image(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = 8.dp, start = 24.dp)
+                .padding(top = 15.dp, start = 9.dp)
                 .noRippleClickable {
                     onBackClicked.invoke()
                 },
-            painter = painterResource(id = R.drawable.icon_back_onboarding),
-            contentDescription = "back"
+            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+            contentDescription = "Back button"
         )
     }
 }

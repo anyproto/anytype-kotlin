@@ -135,7 +135,10 @@ suspend fun ObjectWrapper.Basic.values(
                 val value = DefaultObjectRelationValueView.File(
                     objectId = id,
                     relationKey = relation.key,
-                    files = files(relation = relation.key, details = details)
+                    files = files(
+                        relation = relation.key,
+                        storeOfObjects = storeOfObjects
+                    )
                 )
                 values.add(value)
             }
@@ -226,9 +229,9 @@ suspend fun ObjectWrapper.Basic.tags(
     return result
 }
 
-fun ObjectWrapper.Basic.files(
+suspend fun ObjectWrapper.Basic.files(
     relation: Id,
-    details: Map<Id, Block.Fields>
+    storeOfObjects: ObjectStore
 ) : List<FileView> {
     val result = mutableListOf<FileView>()
     val ids : List<Id> = when(val value = map.getOrDefault(relation, null)) {
@@ -237,9 +240,8 @@ fun ObjectWrapper.Basic.files(
         else -> emptyList()
     }
     ids.forEach { id ->
-        val data = details[id]
-        if (data != null) {
-            val obj = ObjectWrapper.Basic(data.map)
+        val obj = storeOfObjects.get(id)
+        if (obj != null) {
             result.add(
                 FileView(
                     id = obj.id,

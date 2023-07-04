@@ -77,6 +77,8 @@ fun RecoveryScreen(
         val focus = LocalFocusManager.current
         val context = LocalContext.current
 
+        val emptyRecoveryPhraseError = stringResource(R.string.your_recovery_phrase_can_t_be_empty)
+
         LazyColumn(
             content = {
                 item {
@@ -100,7 +102,7 @@ fun RecoveryScreen(
                                         focus.clearFocus()
                                     }
                                 } else {
-                                    context.toast("Can't be empty")
+                                    context.toast(emptyRecoveryPhraseError)
                                 }
                             }
                         )

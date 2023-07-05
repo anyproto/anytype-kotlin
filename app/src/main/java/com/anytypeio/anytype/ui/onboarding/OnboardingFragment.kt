@@ -417,9 +417,9 @@ class OnboardingFragment : BaseComposeFragment() {
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
-        val viewModel = daggerViewModel { component.get().getViewModel() }
-        AuthScreenWrapper(vm = viewModel)
-        val navigationCommands = viewModel.navigationFlow.collectAsState(
+        val vm = daggerViewModel { component.get().getViewModel() }
+        AuthScreenWrapper(vm = vm)
+        val navigationCommands = vm.navigationFlow.collectAsState(
             initial = OnboardingAuthViewModel.AuthNavigation.Idle
         )
         LaunchedEffect(key1 = navigationCommands.value) {
@@ -436,7 +436,7 @@ class OnboardingFragment : BaseComposeFragment() {
             }
         }
         LaunchedEffect(Unit) {
-            viewModel.sideEffects.collect { effect ->
+            vm.sideEffects.collect { effect ->
                 when(effect) {
                     SideEffect.OpenPrivacyPolicy -> {
                         try {
@@ -540,5 +540,5 @@ class OnboardingFragment : BaseComposeFragment() {
     }
 }
 
-private const val ANIMATION_LENGTH_SLIDE = 700
+private const val ANIMATION_LENGTH_SLIDE = 300
 private const val ANIMATION_LENGTH_FADE = 700

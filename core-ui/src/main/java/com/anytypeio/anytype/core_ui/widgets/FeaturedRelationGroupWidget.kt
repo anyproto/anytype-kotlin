@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
-import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.px
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
@@ -219,18 +218,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isFirst = index == 0
                     )
                     view.setOnClickListener {
-                        val popup = ObjectTypePopupMenu(
-                            context = context,
-                            view = it,
-                            onChangeTypeClicked = {
-                                click(ListenerType.Relation.ChangeObjectType(type = relation.id))
-                            },
-                            onOpenSetClicked = {
-                                click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
-                            },
-                            allowChangingObjectType = item.allowChangingObjectType
+                        click(
+                            ListenerType.Relation.ObjectType(
+                                typeId = relation.type,
+                                typeName = relation.name
+                            )
                         )
-                        popup.show()
                     }
                     addView(view)
                     ids.add(view.id)
@@ -273,16 +266,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         setTextColor(context.getColor(R.color.palette_dark_red))
                     }
                     view.setOnClickListener {
-                        val popup = ObjectTypePopupMenu(
-                            context = context,
-                            view = it,
-                            onChangeTypeClicked = {
-                                click(ListenerType.Relation.ChangeObjectType(type = relation.id))
-                            },
-                            onOpenSetClicked = {},
-                            allowOnlyChangingType = true
-                        )
-                        popup.show()
+                        click(ListenerType.Relation.ObjectTypeDeleted)
                     }
                     addView(view)
                     ids.add(view.id)

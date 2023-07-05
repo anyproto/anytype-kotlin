@@ -64,9 +64,9 @@ import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.EnteringTheVoidScreen
-import com.anytypeio.anytype.ui.onboarding.screens.VoidScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.VoidScreenWrapper
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -103,16 +103,14 @@ class OnboardingFragment : BaseComposeFragment() {
                     ) {
                         val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
                         BackgroundCircle()
+                        Onboarding(currentPage, navController)
                         PagerIndicator(
-                            modifier = Modifier
-                                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
                             pageCount = OnboardingPage.values().filter { it.visible }.size,
                             page = currentPage,
                             onBackClick = {
                                 navController.popBackStack()
                             }
                         )
-                        Onboarding(currentPage, navController)
                     }
                 }
             }
@@ -225,7 +223,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 currentPage.value = OnboardingPage.SOUL_CREATION_ANIM
                 CreateSoulAnimation(ContentPaddingTop())
                 BackHandler {
-                    // do nothing
+                    Timber.d("OnBackHandler")
                 }
             }
             composable(
@@ -361,10 +359,10 @@ class OnboardingFragment : BaseComposeFragment() {
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
-        val viewModel = daggerViewModel { component.get().getViewModel() }
-        CreateSoulWrapper(viewModel, contentPaddingTop)
+        val vm = daggerViewModel { component.get().getViewModel() }
+        CreateSoulWrapper(vm, contentPaddingTop)
         val navigationCommands =
-            viewModel.navigationFlow.collectAsState(
+            vm.navigationFlow.collectAsState(
                 initial = OnboardingSoulCreationViewModel.Navigation.Idle
             )
         LaunchedEffect(key1 = navigationCommands.value) {
@@ -375,6 +373,11 @@ class OnboardingFragment : BaseComposeFragment() {
                     )
                 }
                 else -> {}
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.toasts.collect {
+                toast(it)
             }
         }
     }

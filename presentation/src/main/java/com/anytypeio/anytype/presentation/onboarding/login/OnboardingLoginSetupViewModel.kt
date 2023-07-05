@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.onboarding.login
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -20,11 +19,11 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
-import com.anytypeio.anytype.presentation.auth.model.SelectAccountView
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -41,10 +40,11 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     private val configStorage: ConfigStorage
 ) : ViewModel() {
 
+    private val setupState = MutableStateFlow<SetupState>(SetupState.Idle)
+
     val navigation = MutableSharedFlow<Navigation>()
 
-    val state by lazy { MutableLiveData<List<SelectAccountView>>() }
-    val error by lazy { MutableLiveData<String>() }
+    val error by lazy { MutableStateFlow(NO_ERROR) }
 
     init {
         startObservingAccounts()
@@ -58,9 +58,9 @@ class OnboardingLoginSetupViewModel @Inject constructor(
             result.either(
                 fnL = { e ->
                     if (e is AccountIsDeletedException) {
-                        error.postValue("This account is deleted. Try using another account or create a new one.")
+                        error.value = "This account is deleted. Try using another account or create a new one."
                     } else {
-                        error.postValue("Error while account loading \n ${e.localizedMessage}")
+                        error.value = "Error while account loading \n ${e.localizedMessage}"
                     }
                     Timber.e(e, "Error while account loading")
                     // TODO refact
@@ -88,30 +88,32 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     private fun proceedWithSelectingAccount(id: String) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
+            setupState.value = SetupState.InProgress
             selectAccount(
                 SelectAccount.Params(
                     id = id,
                     path = pathProvider.providePath()
                 )
             ).process(
-                failure = {e ->
+                failure = { e ->
                     Timber.e(e, "Error while selecting account with id: $id")
+                    setupState.value = SetupState.Failed
                     when (e) {
                         is MigrationNeededException -> {
                             navigateToMigrationErrorScreen()
                         }
                         is AccountIsDeletedException -> {
-                            error.postValue("This account is deleted. Try using another account or create a new one.")
+                            error.value = "This account is deleted. Try using another account or create a new one."
                         }
                         is NeedToUpdateApplicationException -> {
-                            error.postValue(SplashViewModel.ERROR_NEED_UPDATE)
+                            error.value = SplashViewModel.ERROR_NEED_UPDATE
                         }
                         else -> {
                             // TODO process migration
 //                            migrationMessageJob.cancel()
 //                            isMigrationInProgress.value = false
                             val msg = e.message ?: "Unknown error"
-                            error.postValue("${SetupSelectedAccountViewModel.ERROR_MESSAGE}: $msg")
+                            error.value = "${SetupSelectedAccountViewModel.ERROR_MESSAGE}: $msg"
                         }
                     }
                 },
@@ -165,14 +167,24 @@ class OnboardingLoginSetupViewModel @Inject constructor(
         objectTypesSubscriptionManager.onStart()
     }
 
+    fun onSystemBackPressed() {
+        if (setupState.value == SetupState.Failed) {
+            viewModelScope.launch {
+                navigation.emit(Navigation.Exit)
+            }
+        }
+    }
+
     sealed class Navigation {
         object Exit : Navigation()
         object NavigateToMigrationErrorScreen : Navigation()
         object NavigateToHomeScreen: Navigation()
     }
 
-    sealed class SideEffect {
-        // TODO
+    sealed class SetupState {
+        object Idle : SetupState()
+        object InProgress: SetupState()
+        object Failed: SetupState()
     }
 
     class Factory(
@@ -201,5 +213,10 @@ class OnboardingLoginSetupViewModel @Inject constructor(
                 observeAccounts = observeAccounts
             ) as T
         }
+    }
+
+    companion object {
+        const val NO_ERROR = ""
+        const val SOMETHING_WENT_WRONG_ERROR = "Something went wrong. Please, try again."
     }
 }

@@ -639,5 +639,8 @@
     <string name="file_delete_alert_subtitle">You can’t undo this action.</string>
     <string name="file_delete_cancel">Cancel</string>
     <string name="file_delete_delete">Delete</string>
+    <string name="menu_type_change">Change type</string>
+    <string name="menu_type_open_set">Open set of %1$s</string>
+    <string name="menu_type_create_set">Create set of %1$s</string>
 
 </resources>

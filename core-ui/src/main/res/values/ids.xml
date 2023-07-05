@@ -3,4 +3,8 @@
     <item name="menuStyle" type="id"/>
     <item name="menuBookmark" type="id"/>
     <item name="menuLink" type="id"/>
+
+    <item name="menuChangeType" type="id"/>
+    <item name="menuOpenSet" type="id"/>
+    <item name="menuCreateSet" type="id"/>
 </resources>

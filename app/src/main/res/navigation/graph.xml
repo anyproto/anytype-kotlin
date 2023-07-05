@@ -224,11 +224,11 @@
 
     <dialog
         android:id="@+id/logoutWarningScreen"
-        android:name="com.anytypeio.anytype.ui.settings.LogoutWarningFragment"></dialog>
+        android:name="com.anytypeio.anytype.ui.settings.LogoutWarningFragment"/>
 
     <dialog
         android:id="@+id/deleteAccountWarningScreen"
-        android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning"></dialog>
+        android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning"/>
 
     <fragment
         android:id="@+id/createAccountScreen"

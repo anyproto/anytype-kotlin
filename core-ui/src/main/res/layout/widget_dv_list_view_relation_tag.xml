@@ -2,20 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="16dp"
+    android:layout_height="@dimen/dv_list_gallery_item_relation_height"
     android:orientation="horizontal">
 
     <TextView
         style="@style/TextView.ContentStyle.Relations.3"
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:maxLength="40"
         android:maxLines="1"
         android:singleLine="true"
         android:ellipsize="end"
         android:background="@drawable/rect_dv_cell_tag_item"
         android:visibility="gone"
+        android:gravity="center_vertical"
         tools:text="Favorites"
         tools:visibility="visible" />
 
@@ -24,9 +25,10 @@
         android:id="@+id/tvCount"
         android:textColor="@color/text_secondary"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/dv_list_gallery_item_relation_count_margin_start"
         android:background="@drawable/bg_dv_list_item_object_count"
+        android:gravity="center_vertical"
         android:maxLines="1"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"

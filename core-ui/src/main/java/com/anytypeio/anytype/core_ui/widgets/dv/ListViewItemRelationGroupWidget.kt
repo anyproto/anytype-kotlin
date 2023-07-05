@@ -50,7 +50,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                 is DefaultObjectRelationValueView.Checkbox -> {
                     val view = View(context).apply {
                         id = generateViewId()
-                        val size = context.dimen(R.dimen.dp_16).toInt()
+                        val size = context.dimen(R.dimen.dv_list_gallery_item_relation_height).toInt()
                         layoutParams = LayoutParams(size, size)
                         setBackgroundResource(R.drawable.ic_relation_checkbox_selector)
                         isSelected = relation.isChecked

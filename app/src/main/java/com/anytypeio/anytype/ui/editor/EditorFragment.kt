@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
@@ -56,6 +57,7 @@ import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
+import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
@@ -1125,8 +1127,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                     fr.showChildFragment()
                 }
+                is Command.OpenObjectTypeMenu -> {
+                    val mng = binding.recycler.layoutManager as LinearLayoutManager
+                    val count = mng.childCount
+                    for (i in 0 until count) {
+                        val child = mng.getChildAt(i)
+                        if (child?.id == R.id.featuredRelationRoot) {
+                            createObjectTypeMenu(child, command).show()
+                            break
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private fun createObjectTypeMenu(anchor: View, command: Command.OpenObjectTypeMenu): PopupMenu {
+        return ObjectTypePopupMenu(
+            context = requireContext(),
+            anchor = anchor,
+            items = command.items,
+            onChangeTypeClicked = vm::onChangeObjectTypeClicked,
+            onOpenSetClicked = vm::proceedWithOpeningDataViewObject,
+            onCreateSetClicked = vm::onCreateNewSetForType
+        )
     }
 
     private fun getFrom() = (blockAdapter.views

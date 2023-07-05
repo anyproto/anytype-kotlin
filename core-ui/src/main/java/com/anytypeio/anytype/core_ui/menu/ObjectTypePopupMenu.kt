@@ -10,12 +10,12 @@ import com.anytypeio.anytype.presentation.editor.editor.ObjectTypeMenuItem
 
 class ObjectTypePopupMenu(
     context: Context,
-    view: View,
-    onChangeTypeClicked: (Id) -> Unit,
+    anchor: View,
+    onChangeTypeClicked: () -> Unit,
     onOpenSetClicked: (Id) -> Unit,
     onCreateSetClicked: (Id) -> Unit,
     items: List<ObjectTypeMenuItem>
-) : PopupMenu(context, view, Gravity.BOTTOM, 0, R.style.DefaultPopupMenuStyle) {
+) : PopupMenu(context, anchor, Gravity.BOTTOM, 0, R.style.DefaultPopupMenuStyle) {
     init {
         val res = context.resources
         items.forEachIndexed { index, objectTypeMenuItem ->
@@ -27,7 +27,7 @@ class ObjectTypePopupMenu(
                         index,
                         res.getString(R.string.menu_type_change)
                     ).setOnMenuItemClickListener {
-                        onChangeTypeClicked(objectTypeMenuItem.type)
+                        onChangeTypeClicked()
                         true
                     }
                 }

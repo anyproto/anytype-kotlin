@@ -419,17 +419,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             jobs += subscribe(vm.toasts) { toast(it) }
             jobs += subscribe(vm.snacks) { snack ->
                 when (snack) {
-                    is Snack.ObjectSetNotFound -> {
-                        Snackbar
-                            .make(
-                                binding.root,
-                                resources.getString(R.string.snack_object_set_not_found),
-                                Snackbar.LENGTH_LONG
-                            )
-                            .setActionTextColor(requireContext().color(R.color.orange))
-                            .setAction(R.string.create_new_set) { vm.onCreateNewSetForType(snack.type) }
-                            .show()
-                    }
                     is Snack.UndoRedo -> {
                         Snackbar.make(requireView(), snack.message, Snackbar.LENGTH_SHORT).apply {
                             anchorView = binding.undoRedoToolbar

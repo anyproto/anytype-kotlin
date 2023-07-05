@@ -63,7 +63,7 @@ import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreati
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.EnteringTheVoidScreen
+import com.anytypeio.anytype.ui.onboarding.screens.signin.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.VoidScreenWrapper
@@ -236,7 +236,7 @@ class OnboardingFragment : BaseComposeFragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.ENTER_THE_VOID
-                enterTheVoid()
+                enterTheVoid(navController)
             }
         }
     }
@@ -310,27 +310,28 @@ class OnboardingFragment : BaseComposeFragment() {
     }
 
     @Composable
-    private fun enterTheVoid() {
+    private fun enterTheVoid(
+        navController: NavHostController
+    ) {
         val component = componentManager().onboardingLoginSetupComponent.ReleaseOn(
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
         val vm = daggerViewModel { component.get().getViewModel() }
         EnteringTheVoidScreen(
-            openApp = {},
-            contentPaddingTop = ContentPaddingTop()
+            error = vm.error.collectAsState().value,
+            contentPaddingTop = ContentPaddingTop(),
+            onSystemBackPressed = vm::onSystemBackPressed
         )
         LaunchedEffect(Unit) {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     OnboardingLoginSetupViewModel.Navigation.Exit -> {
-                        // TODO
+                        navController.popBackStack()
                     }
-
                     OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen -> {
                         findNavController().navigate(R.id.action_openHome)
                     }
-
                     OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
                         // TODO
                     }

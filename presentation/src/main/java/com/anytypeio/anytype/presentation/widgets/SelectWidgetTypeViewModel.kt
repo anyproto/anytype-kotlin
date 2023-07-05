@@ -103,6 +103,9 @@ class SelectWidgetTypeViewModel(
         }
     }
 
+    /**
+     * Flow for an existing widget
+     */
     fun onWidgetTypeClicked(
         ctx: Id,
         widget: Id,
@@ -121,7 +124,7 @@ class SelectWidgetTypeViewModel(
                 updateWidget(
                     UpdateWidget.Params(
                         ctx = ctx,
-                        target = widget,
+                        widget = widget,
                         source = source,
                         type = newLayout
                     )
@@ -146,6 +149,9 @@ class SelectWidgetTypeViewModel(
         }
     }
 
+    /**
+     * Flow for a new widget
+     */
     fun onWidgetTypeClicked(
         source: Id,
         target: Id?,

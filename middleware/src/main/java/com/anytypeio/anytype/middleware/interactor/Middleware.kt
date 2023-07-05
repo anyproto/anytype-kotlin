@@ -1974,15 +1974,15 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun updateWidget(
+    fun createWidgetByReplacingExistingWidget(
         ctx: Id,
-        target: Id,
+        widget: Id,
         source: Id,
         type: WidgetLayout
     ): Payload {
         val request = Rpc.Block.CreateWidget.Request(
             contextId = ctx,
-            targetId = target,
+            targetId = widget,
             widgetLayout = type.mw(),
             position = Block.Position.Replace,
             block = Block(

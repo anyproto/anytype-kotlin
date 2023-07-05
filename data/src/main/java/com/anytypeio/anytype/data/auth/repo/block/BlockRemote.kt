@@ -332,7 +332,7 @@ interface BlockRemote {
 
     suspend fun updateWidget(
         ctx: Id,
-        target: Id,
+        widget: Id,
         source: Id,
         type: Block.Content.Widget.Layout
     ): Payload

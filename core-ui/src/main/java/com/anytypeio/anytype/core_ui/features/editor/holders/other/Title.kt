@@ -364,39 +364,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    class Archive(val binding: ItemBlockTitleBinding) : Title(binding.root) {
-
-        override val icon: View = binding.docEmojiIconContainer
-        override val image: ImageView = binding.imageIcon
-
-        override val root: View = itemView
-        override val content: TextInputWidget = binding.title
-
-        init {
-            content.setSpannableFactory(DefaultSpannableFactory())
-        }
-
-        fun bind(
-            item: BlockView.Title.Archive
-        ) {
-            super.bind(
-                item = item,
-                onCoverClicked = {}
-            )
-            setImage(item)
-        }
-
-        override fun setImage(item: BlockView.Title) {
-            image.scaleType = ImageView.ScaleType.CENTER
-            Glide.with(itemView.context)
-                .load(R.drawable.ic_bin_big)
-                .into(image)
-        }
-
-        override fun applyTextColor(item: BlockView.Title) {}
-        override fun applyBackground(item: BlockView.Title) {}
-    }
-
     class Profile(val binding: ItemBlockTitleProfileBinding) : Title(binding.root) {
 
         override val icon: View = binding.docProfileIconContainer

@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 suspend fun DVViewer.buildListViews(
     objects: List<Id>,
     relations: List<ObjectWrapper.Relation>,
-    details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
     objectOrderIds: List<Id>
@@ -44,7 +43,6 @@ suspend fun DVViewer.buildListViews(
                         relations = obj.relationsFilteredByHiddenAndDescription(
                             relations = relations,
                             urlBuilder = urlBuilder,
-                            details = details,
                             settings = viewerRelations,
                             storeOfObjects = store
                         ),
@@ -69,7 +67,6 @@ suspend fun DVViewer.buildListViews(
                         relations = obj.relationsFilteredByHiddenAndDescription(
                             relations = relations,
                             urlBuilder = urlBuilder,
-                            details = details,
                             settings = viewerRelations,
                             storeOfObjects = store
                         ),
@@ -94,7 +91,6 @@ suspend fun DVViewer.buildListViews(
                         relations = obj.relationsFilteredByHiddenAndDescription(
                             relations = relations,
                             urlBuilder = urlBuilder,
-                            details = details,
                             settings = viewerRelations,
                             storeOfObjects = store
                         ),

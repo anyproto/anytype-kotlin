@@ -212,7 +212,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="btn_upload_storage">Upload from External storage</string>
     <string name="btn_upload">Upload</string>
 
-    <string name="alert_qr_camera">Open "Settings" and then "Recovery phrase" in Anytype Desktop.</string>
+    <string name="alert_qr_camera">Open "Profile" and then "Recovery phrase" on Anytype Desktop.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
@@ -389,4 +389,5 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
 
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
+    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
 </resources>

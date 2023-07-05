@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.onboarding.login
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -26,7 +25,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 ) : ViewModel() {
 
     val sideEffects = MutableSharedFlow<SideEffect>()
-    val state = MutableLiveData<ViewState<Boolean>>()
+    val state = MutableSharedFlow<ViewState<Boolean>>()
 
     init {
         viewModelScope.sendEvent(
@@ -50,20 +49,25 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     fun onGetEntropyFromQRCode(entropy: String) {
-        // TODO
         viewModelScope.launch {
             convertWallet(
                 params = ConvertWallet.Request(entropy)
             ).proceed(
-                failure = { Timber.e(it, "Error while convert wallet") },
+                failure = { error ->
+                    sideEffects.emit(
+                        SideEffect.Error(
+                            "Error while login: ${error.message}"
+                        )
+                    ).also {
+                        Timber.e(error, "Error while convert wallet")
+                    }
+                },
                 success = { mnemonic -> proceedWithRecoveringWallet(mnemonic) }
             )
         }
     }
 
     private fun proceedWithRecoveringWallet(chain: String) {
-        state.postValue(ViewState.Loading)
-
         recoverWallet.invoke(
             scope = viewModelScope,
             params = RecoverWallet.Params(
@@ -73,12 +77,19 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         ) { result ->
             result.either(
                 fnR = {
-                    state.postValue(ViewState.Success(true))
                     proceedWithSavingMnemonic(chain)
                 },
-                fnL = {
-                    state.postValue(ViewState.Error(it.localizedMessage.orEmpty()))
-                    Timber.e(it, "Error while recovering wallet")
+                fnL = { error ->
+                    viewModelScope.launch {
+                        sideEffects.emit(
+                            SideEffect.Error(
+                                "Error while login: ${error.message}"
+                            )
+                        ).also {
+                            Timber.e(error, "Error while recovering wallet")
+                        }
+                    }
+
                 }
             )
         }
@@ -104,6 +115,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     sealed class SideEffect {
         object ProceedWithLogin : SideEffect()
+        data class Error(val msg: String): SideEffect()
         object Exit: SideEffect()
     }
 

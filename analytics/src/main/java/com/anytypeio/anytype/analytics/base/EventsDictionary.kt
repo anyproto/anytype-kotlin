@@ -23,6 +23,7 @@ object EventsDictionary {
     const val defaultTypeChanged = "DefaultTypeChange"
     const val fileOffloadSuccess = "FileOffload"
     const val changeTheme = "ThemeSet"
+    const val getMoreSpace = "GetMoreSpace"
 
     // Screen show events
     const val objectScreenShow = "ScreenObject"

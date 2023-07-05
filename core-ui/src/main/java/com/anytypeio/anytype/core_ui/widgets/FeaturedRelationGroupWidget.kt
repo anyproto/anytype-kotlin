@@ -10,6 +10,7 @@ import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
@@ -39,6 +40,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     private val themeWrapper = ContextThemeWrapper(context, style)
     private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
     private val defaultTextColor = resources.getColor(R.color.text_secondary, null)
+
+    private var objectTypeIds = mutableListOf<Int>()
 
     fun set(
         item: BlockView.FeaturedRelation,
@@ -264,6 +267,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                         setTextColor(context.getColor(R.color.palette_dark_red))
+                        objectTypeIds.add(id)
                     }
                     view.setOnClickListener {
                         click(ListenerType.Relation.ObjectTypeDeleted)
@@ -328,6 +332,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
             setPadding(if (isFirst) 0.px else 4.px, 2.px, 4.px, 2.px)
+            objectTypeIds.add(id)
         }
         if (name.isEmpty()) {
             textView.hint = context.resources.getString(R.string.untitled)
@@ -467,5 +472,14 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
 
     fun clear() {
         removeAllViews()
+        objectTypeIds.clear()
+    }
+
+    fun getObjectTypeView(): View? {
+        return if (objectTypeIds.isNotEmpty()) {
+            findViewById(objectTypeIds.first())
+        } else {
+            null
+        }
     }
 }

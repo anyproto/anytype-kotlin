@@ -67,6 +67,7 @@ import com.anytypeio.anytype.core_ui.tools.NoteHeaderItemDecorator
 import com.anytypeio.anytype.core_ui.tools.OutsideClickDetector
 import com.anytypeio.anytype.core_ui.tools.SlashWidgetFooterItemDecorator
 import com.anytypeio.anytype.core_ui.tools.StyleToolbarItemDecorator
+import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -1127,19 +1128,23 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                     fr.showChildFragment()
                 }
-                is Command.OpenObjectTypeMenu -> {
-                    val mng = binding.recycler.layoutManager as LinearLayoutManager
-                    val count = mng.childCount
-                    for (i in 0 until count) {
-                        val child = mng.getChildAt(i)
-                        if (child?.id == R.id.featuredRelationRoot) {
-                            createObjectTypeMenu(child, command).show()
-                            break
-                        }
-                    }
-                }
+                is Command.OpenObjectTypeMenu -> openObjectTypeMenu(command)
             }
         }
+    }
+
+    private fun openObjectTypeMenu(command: Command.OpenObjectTypeMenu) {
+        val layoutManager = binding.recycler.layoutManager as LinearLayoutManager
+        val featuredGroupWidget = findFeaturedGroupWidget(layoutManager)
+        featuredGroupWidget?.getObjectTypeView()?.let { anchor ->
+            createObjectTypeMenu(anchor, command).show()
+        }
+    }
+
+    private fun findFeaturedGroupWidget(layoutManager: LinearLayoutManager): FeaturedRelationGroupWidget? {
+        return (0 until layoutManager.childCount)
+            .map { layoutManager.getChildAt(it) }
+            .find { it is FeaturedRelationGroupWidget } as? FeaturedRelationGroupWidget
     }
 
     private fun createObjectTypeMenu(anchor: View, command: Command.OpenObjectTypeMenu): PopupMenu {

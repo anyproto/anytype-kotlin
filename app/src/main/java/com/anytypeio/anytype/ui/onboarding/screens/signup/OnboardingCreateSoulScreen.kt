@@ -106,7 +106,7 @@ fun CreateSoulInput(
     ) {
         val focus = LocalFocusManager.current
         val context = LocalContext.current
-        val emptyRecoveryPhraseError = stringResource(R.string.name_is_required)
+        val emptyNameError = stringResource(R.string.name_is_required)
 
         OnboardingInput(
             modifier = Modifier
@@ -121,7 +121,7 @@ fun CreateSoulInput(
                         focus.clearFocus()
                         onKeyboardActionDoneClicked()
                     } else {
-                        context.toast(emptyRecoveryPhraseError)
+                        context.toast(emptyNameError)
                     }
                 }
             )

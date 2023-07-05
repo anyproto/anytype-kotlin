@@ -154,13 +154,17 @@ class EditDataViewViewerViewModel(
         }
     }
 
-    fun onMenuClicked() {
-        val state = objectState.value.dataViewState() ?: return
+    fun onMenuClicked(viewer: Id) {
+        val isDeletionAllowed = isDeletionAllowed(viewer)
         viewModelScope.launch {
-            popupCommands.emit(
-                PopupMenuCommand(isDeletionAllowed = state.viewers.size > 1)
-            )
+            popupCommands.emit(PopupMenuCommand(isDeletionAllowed = isDeletionAllowed))
         }
+    }
+
+    private fun isDeletionAllowed(viewerId: Id): Boolean {
+        val activeViewerId = objectSetSession.currentViewerId.value
+            ?: (objectState.value.dataViewState()?.viewers?.firstOrNull()?.id ?: false)
+        return viewerId != activeViewerId
     }
 
     fun onDoneClicked(ctx: Id, viewerId: Id) {

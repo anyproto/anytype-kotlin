@@ -44,7 +44,7 @@ EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerB
             subscribe(binding.btnDone.clicks()) {
                 vm.onDoneClicked(ctx, viewer)
             }
-            subscribe(binding.threeDotsButton.clicks()) { vm.onMenuClicked() }
+            subscribe(binding.threeDotsButton.clicks()) { vm.onMenuClicked(viewer) }
             subscribe(binding.gridContainer.clicks()) { vm.onGridClicked() }
             subscribe(binding.galleryContainer.clicks()) { vm.onGalleryClicked() }
             subscribe(binding.listContainer.clicks()) { vm.onListClicked() }

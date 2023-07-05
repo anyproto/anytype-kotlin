@@ -23,7 +23,8 @@ import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 class ManageViewerEditAdapter(
     private val onDragListener: OnStartDragListener,
     private val onButtonMoreClicked: (ViewerView) -> Unit,
-    private val onDeleteView: (ViewerView) -> Unit
+    private val onDeleteView: (ViewerView) -> Unit,
+    private val onDeleteActiveView: () -> Unit
 ) : AbstractAdapter<ViewerView>(emptyList()), SupportDragAndDropBehavior {
 
     val order: List<String> get() = items.map { it.id }
@@ -54,6 +55,9 @@ class ManageViewerEditAdapter(
             if (pos != RecyclerView.NO_POSITION) {
                 onButtonMoreClicked(items[pos])
             }
+        }
+        binding.icRemoveInactive.setOnClickListener {
+            onDeleteActiveView()
         }
     }
 

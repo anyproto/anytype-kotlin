@@ -18,47 +18,68 @@ class OnboardingSoulCreationViewModel @Inject constructor(
     private val configStorage: ConfigStorage
 ) : ViewModel() {
 
-    private val accountId = configStorage.get().profile
-    private val workspaceId = configStorage.get().workspace
+    val toasts = MutableSharedFlow<String>()
 
     private val _navigationFlow = MutableSharedFlow<Navigation>()
     val navigationFlow: SharedFlow<Navigation> = _navigationFlow
 
     fun setAccountAndSpaceName(name: String) {
-        viewModelScope.launch {
-            setObjectDetails.execute(
-                SetObjectDetails.Params(ctx = accountId, details = mapOf(Relations.NAME to name))
-            ).fold(
-                onFailure = {
-                    Timber.e(it, "Error while updating object details")
-                },
-                onSuccess = {
-                    setWorkspaceName(name)
-                }
-            )
+        val config = configStorage.getOrNull()
+        if (config != null) {
+            viewModelScope.launch {
+                setObjectDetails.execute(
+                    SetObjectDetails.Params(
+                        ctx = config.profile, details = mapOf(Relations.NAME to name)
+                    )
+                ).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while updating object details")
+                    },
+                    onSuccess = {
+                        setWorkspaceName(name)
+                    }
+                )
+            }
+        } else {
+            Timber.e(CONFIG_NOT_FOUND_ERROR).also {
+                toast(CONFIG_NOT_FOUND_ERROR)
+            }
         }
     }
 
     private fun setWorkspaceName(name: String) {
-        viewModelScope.launch {
-            setObjectDetails.execute(
-                SetObjectDetails.Params(ctx = workspaceId, details = mapOf(Relations.NAME to name))
-            ).fold(
-                onFailure = {
-                    Timber.e(it, "Error while updating object details")
-                },
-                onSuccess = {
-                    _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
-                }
-            )
+        val config = configStorage.getOrNull()
+        if (config != null) {
+            viewModelScope.launch {
+                setObjectDetails.execute(
+                    SetObjectDetails.Params(
+                        ctx = config.workspace,
+                        details = mapOf(Relations.NAME to name)
+                    )
+                ).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while updating object details")
+                    },
+                    onSuccess = {
+                        _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
+                    }
+                )
+            }
+        } else {
+            Timber.e(CONFIG_NOT_FOUND_ERROR).also {
+                toast(CONFIG_NOT_FOUND_ERROR)
+            }
         }
+    }
+
+    private fun toast(msg: String) {
+        viewModelScope.launch { toasts.emit(msg) }
     }
 
     sealed interface Navigation {
         object Idle: Navigation
         class OpenSoulCreationAnim(val name: String): Navigation
     }
-
 
     class Factory @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
@@ -71,5 +92,9 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                 configStorage = configStorage
             ) as T
         }
+    }
+
+    companion object {
+        const val CONFIG_NOT_FOUND_ERROR = "Something went wrong: config not found"
     }
 }

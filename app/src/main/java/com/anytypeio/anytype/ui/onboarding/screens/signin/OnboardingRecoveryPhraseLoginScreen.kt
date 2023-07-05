@@ -61,7 +61,7 @@ fun RecoveryScreen(
         Text(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 20.dp)
+                .padding(top = 21.dp)
             ,
             text = stringResource(id = R.string.login),
             style = TitleLogin.copy(
@@ -155,7 +155,7 @@ fun RecoveryScreen(
         Image(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = 15.dp, start = 9.dp)
+                .padding(top = 16.dp, start = 9.dp)
                 .noRippleClickable {
                     onBackClicked.invoke()
                 },

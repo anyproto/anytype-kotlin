@@ -50,10 +50,12 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
 
-
 @Composable
 fun PagerIndicator(
-    modifier: Modifier = Modifier, pageCount: Int, page: MutableState<OnboardingPage>, onBackClick: () -> Unit
+    modifier: Modifier = Modifier,
+    pageCount: Int,
+    page: MutableState<OnboardingPage>,
+    onBackClick: () -> Unit
 ) {
     val currentPage = remember { page }
     val screenWidth = LocalConfiguration.current.screenWidthDp.minus(32)
@@ -63,6 +65,7 @@ fun PagerIndicator(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 4.dp, start = 16.dp, end = 16.dp)
                     .height(2.dp)
                     .background(
                         ColorPagerIndicator, RoundedCornerShape(1.dp)
@@ -81,25 +84,19 @@ fun PagerIndicator(
                         )
                 )
             }
-            Row(
-                modifier = Modifier.padding(
-                    top = 12.dp,
-                    start = 8.dp,
-                    end = 0.dp
-                )
-            ) {
+            Row {
                 Image(
                     modifier = Modifier
-                        .padding(top = 6.dp)
+                        .padding(start = 9.dp, top = 16.dp)
                         .noRippleClickable {
                             onBackClick.invoke()
                         },
-                    painter = painterResource(id = R.drawable.icon_back_onboarding),
+                    painter = painterResource(id = R.drawable.ic_back_onboarding_32),
                     contentDescription = "back"
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier.wrapContentWidth().padding(top = 21.dp, end = 16.dp),
                     text = "${currentPage.value.num} / $pageCount",
                     style = HeadlineOnBoardingDescription.copy(
                         color = ColorPagerIndicatorText, textAlign = TextAlign.End

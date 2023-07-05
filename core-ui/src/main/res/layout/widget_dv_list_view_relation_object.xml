@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/dv_list_gallery_item_relation_height"
     android:orientation="horizontal">
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -24,7 +24,8 @@
         android:id="@+id/tvName"
         style="@style/TextView.ContentStyle.Relations.3"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
         android:maxLength="40"
         android:maxLines="1"
         android:singleLine="true"
@@ -39,7 +40,8 @@
         style="@style/TextView.ContentStyle.Relations.3"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginStart="6dp"
+        android:layout_marginStart="@dimen/dv_list_gallery_item_relation_count_margin_start"
+        android:gravity="center_vertical"
         android:background="@drawable/bg_dv_list_item_object_count"
         android:textColor="@color/text_secondary"
         android:maxLines="1"

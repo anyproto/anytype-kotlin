@@ -327,4 +327,8 @@
     <dimen name="dv_gallery_relation_height">16dp</dimen>
     <dimen name="dv_gallery_relation_margin_top">4dp</dimen>
 
+    <!-- DataView, List items, relations-->
+    <dimen name="dv_list_gallery_item_relation_height">15dp</dimen>
+    <dimen name="dv_list_gallery_item_relation_count_margin_start">4dp</dimen>
+
 </resources>

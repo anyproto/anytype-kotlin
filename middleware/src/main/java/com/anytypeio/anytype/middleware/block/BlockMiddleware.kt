@@ -718,12 +718,12 @@ class BlockMiddleware(
 
     override suspend fun updateWidget(
         ctx: Id,
-        target: Id,
+        widget: Id,
         source: Id,
         type: Block.Content.Widget.Layout
-    ): Payload = middleware.updateWidget(
+    ): Payload = middleware.createWidgetByReplacingExistingWidget(
         ctx = ctx,
-        target = target,
+        widget = widget,
         source = source,
         type = type
     )

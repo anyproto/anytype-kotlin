@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -15,6 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,8 +28,9 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.ui.onboarding.OnboardingInput
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 
 @Composable
@@ -50,7 +54,10 @@ private fun CreateSoulScreen(
             CreateSoulTitle(modifier = Modifier.padding(bottom = 16.dp))
         }
         item {
-            CreateSoulInput(text)
+            CreateSoulInput(
+                text = text,
+                onKeyboardActionDoneClicked = { onCreateSoulClicked(text.value) }
+            )
         }
         item {
             Spacer(modifier = Modifier.height(9.dp))
@@ -87,19 +94,37 @@ fun CreateSoulTitle(modifier: Modifier) {
 }
 
 @Composable
-fun CreateSoulInput(text: MutableState<String>) {
+fun CreateSoulInput(
+    text: MutableState<String>,
+    onKeyboardActionDoneClicked: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {
+        val focus = LocalFocusManager.current
+        val context = LocalContext.current
+        val emptyRecoveryPhraseError = stringResource(R.string.name_is_required)
+
         OnboardingInput(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             text = text,
-            placeholder = stringResource(id = R.string.onboarding_soul_creation_placeholder)
+            placeholder = stringResource(id = R.string.onboarding_soul_creation_placeholder),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    val input = text.value
+                    if (input.isNotEmpty()) {
+                        focus.clearFocus()
+                        onKeyboardActionDoneClicked()
+                    } else {
+                        context.toast(emptyRecoveryPhraseError)
+                    }
+                }
+            )
         )
     }
 }

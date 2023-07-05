@@ -9,6 +9,7 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -1148,8 +1149,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun createObjectTypeMenu(anchor: View, command: Command.OpenObjectTypeMenu): PopupMenu {
+        val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
         return ObjectTypePopupMenu(
-            context = requireContext(),
+            context = themeWrapper,
             anchor = anchor,
             items = command.items,
             onChangeTypeClicked = vm::onChangeObjectTypeClicked,

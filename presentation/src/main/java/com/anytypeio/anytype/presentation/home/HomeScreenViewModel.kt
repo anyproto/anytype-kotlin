@@ -74,7 +74,6 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
-import com.anytypeio.anytype.presentation.widgets.getActiveTabViews
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
@@ -461,7 +460,7 @@ class HomeScreenViewModel(
                 UpdateWidget.Params(
                     ctx = config.widgets,
                     source = source,
-                    target = widget,
+                    widget = widget,
                     type = when (type) {
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE

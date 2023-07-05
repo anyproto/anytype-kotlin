@@ -18,18 +18,18 @@ class UpdateWidget @Inject constructor(
         ctx = params.ctx,
         source = params.source,
         type = params.type,
-        target = params.target
+        widget = params.widget
     )
 
     /**
      * [ctx] context of widgets — id of object containing widgets
-     * [target] widget block to update
+     * [widget] widget block to update
      * [source] source for the given widget block
      * [type] layout type to update
      */
     data class Params(
         val ctx: Id,
-        val target: Id,
+        val widget: Id,
         val source: Id,
         val type: Block.Content.Widget.Layout
     )

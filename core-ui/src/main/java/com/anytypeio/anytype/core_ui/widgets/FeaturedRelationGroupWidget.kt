@@ -10,13 +10,13 @@ import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
-import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.px
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
@@ -40,6 +40,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     private val themeWrapper = ContextThemeWrapper(context, style)
     private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
     private val defaultTextColor = resources.getColor(R.color.text_secondary, null)
+
+    private var objectTypeIds = mutableListOf<Int>()
 
     fun set(
         item: BlockView.FeaturedRelation,
@@ -219,18 +221,12 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isFirst = index == 0
                     )
                     view.setOnClickListener {
-                        val popup = ObjectTypePopupMenu(
-                            context = context,
-                            view = it,
-                            onChangeTypeClicked = {
-                                click(ListenerType.Relation.ChangeObjectType(type = relation.id))
-                            },
-                            onOpenSetClicked = {
-                                click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
-                            },
-                            allowChangingObjectType = item.allowChangingObjectType
+                        click(
+                            ListenerType.Relation.ObjectType(
+                                typeId = relation.type,
+                                typeName = relation.name
+                            )
                         )
-                        popup.show()
                     }
                     addView(view)
                     ids.add(view.id)
@@ -271,18 +267,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                         setTextColor(context.getColor(R.color.palette_dark_red))
+                        objectTypeIds.add(id)
                     }
                     view.setOnClickListener {
-                        val popup = ObjectTypePopupMenu(
-                            context = context,
-                            view = it,
-                            onChangeTypeClicked = {
-                                click(ListenerType.Relation.ChangeObjectType(type = relation.id))
-                            },
-                            onOpenSetClicked = {},
-                            allowOnlyChangingType = true
-                        )
-                        popup.show()
+                        click(ListenerType.Relation.ObjectTypeDeleted)
                     }
                     addView(view)
                     ids.add(view.id)
@@ -344,6 +332,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
             setPadding(if (isFirst) 0.px else 4.px, 2.px, 4.px, 2.px)
+            objectTypeIds.add(id)
         }
         if (name.isEmpty()) {
             textView.hint = context.resources.getString(R.string.untitled)
@@ -483,5 +472,14 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
 
     fun clear() {
         removeAllViews()
+        objectTypeIds.clear()
+    }
+
+    fun getObjectTypeView(): View? {
+        return if (objectTypeIds.isNotEmpty()) {
+            findViewById(objectTypeIds.first())
+        } else {
+            null
+        }
     }
 }

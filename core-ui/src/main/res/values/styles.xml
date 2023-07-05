@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -868,6 +868,12 @@
 
     <style name="DefaultPopupMenuStyle" parent="@style/Widget.Material3.PopupMenu">
         <item name="android:popupBackground">@drawable/bg_menu_default</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineHeight" tools:targetApi="28">22sp</item>
+        <item name="android:letterSpacing">-0.014</item>
+        <item name="android:fontWeight">400</item>
     </style>
 
    <style name="FeaturedRelationTextStyle" parent="TextView.ContentStyle.Relations.2">

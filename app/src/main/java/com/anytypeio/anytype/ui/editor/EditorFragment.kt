@@ -9,6 +9,7 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +17,7 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
@@ -56,6 +58,7 @@ import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
+import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
@@ -65,6 +68,7 @@ import com.anytypeio.anytype.core_ui.tools.NoteHeaderItemDecorator
 import com.anytypeio.anytype.core_ui.tools.OutsideClickDetector
 import com.anytypeio.anytype.core_ui.tools.SlashWidgetFooterItemDecorator
 import com.anytypeio.anytype.core_ui.tools.StyleToolbarItemDecorator
+import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -415,17 +419,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             jobs += subscribe(vm.toasts) { toast(it) }
             jobs += subscribe(vm.snacks) { snack ->
                 when (snack) {
-                    is Snack.ObjectSetNotFound -> {
-                        Snackbar
-                            .make(
-                                binding.root,
-                                resources.getString(R.string.snack_object_set_not_found),
-                                Snackbar.LENGTH_LONG
-                            )
-                            .setActionTextColor(requireContext().color(R.color.orange))
-                            .setAction(R.string.create_new_set) { vm.onCreateNewSetForType(snack.type) }
-                            .show()
-                    }
                     is Snack.UndoRedo -> {
                         Snackbar.make(requireView(), snack.message, Snackbar.LENGTH_SHORT).apply {
                             anchorView = binding.undoRedoToolbar
@@ -1125,8 +1118,35 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                     fr.showChildFragment()
                 }
+                is Command.OpenObjectTypeMenu -> openObjectTypeMenu(command)
             }
         }
+    }
+
+    private fun openObjectTypeMenu(command: Command.OpenObjectTypeMenu) {
+        val layoutManager = binding.recycler.layoutManager as LinearLayoutManager
+        val featuredGroupWidget = findFeaturedGroupWidget(layoutManager)
+        featuredGroupWidget?.getObjectTypeView()?.let { anchor ->
+            createObjectTypeMenu(anchor, command).show()
+        }
+    }
+
+    private fun findFeaturedGroupWidget(layoutManager: LinearLayoutManager): FeaturedRelationGroupWidget? {
+        return (0 until layoutManager.childCount)
+            .map { layoutManager.getChildAt(it) }
+            .find { it is FeaturedRelationGroupWidget } as? FeaturedRelationGroupWidget
+    }
+
+    private fun createObjectTypeMenu(anchor: View, command: Command.OpenObjectTypeMenu): PopupMenu {
+        val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
+        return ObjectTypePopupMenu(
+            context = themeWrapper,
+            anchor = anchor,
+            items = command.items,
+            onChangeTypeClicked = vm::onChangeObjectTypeClicked,
+            onOpenSetClicked = vm::proceedWithOpeningDataViewObject,
+            onCreateSetClicked = vm::onCreateNewSetForType
+        )
     }
 
     private fun getFrom() = (blockAdapter.views

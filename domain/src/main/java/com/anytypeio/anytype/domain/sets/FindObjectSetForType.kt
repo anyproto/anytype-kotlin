@@ -18,25 +18,14 @@ class FindObjectSetForType(
     override suspend fun run(params: Params) = safe {
         val results = repo.searchObjects(
             limit = 1,
-            filters = listOf(
-                DVFilter(
-                    relation = Relations.TYPE,
-                    condition = DVFilterCondition.EQUAL,
-                    value = ObjectTypeIds.SET
-                ),
-                DVFilter(
-                    relation = Relations.SET_OF,
-                    condition = DVFilterCondition.IN,
-                    value = listOf(params.type)
-                )
-            ),
+            filters = params.filters,
             sorts = emptyList(),
+            keys = listOf(Relations.ID),
             fulltext = "",
             offset = 0
         )
         if (results.isNotEmpty()) {
             val obj = ObjectWrapper.Basic(results.first())
-            check(obj.layout == ObjectType.Layout.SET) { "Unexpected layout for set" }
             Response.Success(
                 type = params.type,
                 obj = obj
@@ -49,7 +38,7 @@ class FindObjectSetForType(
     /**
      * @property [type] object type id
      */
-    data class Params(val type: Id)
+    data class Params(val type: Id, val filters: List<DVFilter>)
 
     sealed class Response {
         /**

@@ -624,7 +624,7 @@
     <string name="set_no_items_description">Create first object to continue</string>
     <string name="set_no_items_button">Create object</string>
     <string name="set_collection_view_not_present">View is not present in set or collection, please recreate object</string>
-    <string name="menu_turn_to_collection">Turn into collection</string>
+    <string name="menu_turn_to_collection">Turn set into collection</string>
     <string name="menu_change_query">Change query</string>
     <string name="collections">Collections</string>
     <string name="collection_widget_description">Your collections of objects</string>
@@ -639,5 +639,8 @@
     <string name="file_delete_alert_subtitle">You can’t undo this action.</string>
     <string name="file_delete_cancel">Cancel</string>
     <string name="file_delete_delete">Delete</string>
+    <string name="menu_type_change">Change type</string>
+    <string name="menu_type_open_set">Open set of %1$s</string>
+    <string name="menu_type_create_set">Create set of %1$s</string>
 
 </resources>

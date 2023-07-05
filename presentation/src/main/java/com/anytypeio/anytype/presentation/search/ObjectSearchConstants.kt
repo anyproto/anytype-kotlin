@@ -799,4 +799,37 @@ object ObjectSearchConstants {
             value = FileSyncStatus.SYNCED.value.toDouble()
         )
     )
+
+    fun setsByObjectTypeFilters(types: List<Id>, workspaceId: String) = listOf(
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE,
+            condition = DVFilterCondition.EQUAL,
+            value = SET
+        ),
+        DVFilter(
+            relation = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = workspaceId
+        ),
+        DVFilter(
+            relation = Relations.SET_OF,
+            condition = DVFilterCondition.IN,
+            value = types
+        )
+    )
 }

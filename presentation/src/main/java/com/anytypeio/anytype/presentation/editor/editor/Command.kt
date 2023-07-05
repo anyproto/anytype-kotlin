@@ -162,4 +162,6 @@ sealed class Command {
         val table: Id,
         val block: Id
     ) : Command()
+
+    data class OpenObjectTypeMenu(val items: List<ObjectTypeMenuItem>) : Command()
 }

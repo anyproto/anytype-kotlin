@@ -67,7 +67,7 @@ private fun CreateSoulScreen(
     ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
         ) {
             item {
                 Spacer(

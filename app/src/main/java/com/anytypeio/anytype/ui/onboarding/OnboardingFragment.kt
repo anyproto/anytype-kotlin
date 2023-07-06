@@ -105,7 +105,9 @@ class OnboardingFragment : Fragment() {
                             .background(Color.Black)
                     ) {
                         val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
-                        BackgroundCircle()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            BackgroundCircle()
+                        }
                         Onboarding(currentPage, navController)
                         PagerIndicator(
                             pageCount = OnboardingPage.values().filter { it.visible }.size,
@@ -126,7 +128,7 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun onApplyWindowRootInsets(view: View) {
-        if (com.anytypeio.anytype.core_utils.BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val deferringInsetsListener = RootViewDeferringInsetsCallback(
                 persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
                 deferredInsetTypes = 0
@@ -232,7 +234,13 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.SOUL_CREATION
-                CreateSoul(navController, ContentPaddingTop())
+                CreateSoul(
+                    navController = navController,
+                    contentPaddingTop = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+                        LocalConfiguration.current.screenHeightDp / 6
+                    else
+                        ContentPaddingTop()
+                )
             }
             composable(
                 route = OnboardingNavigation.createSoulAnim,
@@ -381,11 +389,12 @@ class OnboardingFragment : Fragment() {
             state = Lifecycle.State.DESTROYED
         )
         val vm = daggerViewModel { component.get().getViewModel() }
+
         CreateSoulWrapper(vm, contentPaddingTop)
-        val navigationCommands =
-            vm.navigationFlow.collectAsState(
+
+        val navigationCommands = vm.navigationFlow.collectAsState(
                 initial = OnboardingSoulCreationViewModel.Navigation.Idle
-            )
+        )
         LaunchedEffect(key1 = navigationCommands.value) {
             when (navigationCommands.value) {
                 is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {

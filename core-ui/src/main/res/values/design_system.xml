@@ -17,26 +17,26 @@
 
     <style name="TextView.ContentStyle.Headline.Title" parent="TextView.ContentStyle.Headline">
         <item name="android:textSize">28sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">30.5sp</item>
+        <item name="lineHeight" tools:targetApi="28">30.5sp</item>
         <item name="android:letterSpacing">-0.017</item>
     </style>
 
     <style name="TextView.ContentStyle.Headline.Heading" parent="TextView.ContentStyle.Headline">
         <item name="android:textSize">22sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">26sp</item>
+        <item name="lineHeight" tools:targetApi="28">26sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
     <style name="TextView.ContentStyle.Headline.Subheading" parent="TextView.ContentStyle.Headline">
         <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">24sp</item>
+        <item name="lineHeight" tools:targetApi="28">24sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
     <!-- Body -->
     <style name="TextView.ContentStyle.Body" parent="BaseTextView">
-        <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">24sp</item>
+        <item name="android:textSize">17sp</item>я
+        <item name="lineHeight" tools:targetApi="28">24sp</item>
         <item name="android:letterSpacing">-0.024</item>
     </style>
 
@@ -66,7 +66,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">22sp</item>
+        <item name="lineHeight" tools:targetApi="28">22sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
@@ -75,7 +75,7 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">22sp</item>
+        <item name="lineHeight" tools:targetApi="28">22sp</item>
         <item name="android:letterSpacing">-0.024</item>
     </style>
 
@@ -83,7 +83,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">22sp</item>
+        <item name="lineHeight" tools:targetApi="28">22sp</item>
         <item name="android:letterSpacing">-0.024</item>
     </style>
 
@@ -91,7 +91,7 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">20sp</item>
+        <item name="lineHeight" tools:targetApi="28">20sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
@@ -99,7 +99,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">20sp</item>
+        <item name="lineHeight" tools:targetApi="28">20sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
@@ -111,19 +111,19 @@
 
     <style name="TextView.ContentStyle.Relations.1" parent="TextView.ContentStyle.Relations">
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">20sp</item>
+        <item name="lineHeight" tools:targetApi="28">20sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
     <style name="TextView.ContentStyle.Relations.2" parent="TextView.ContentStyle.Relations">
         <item name="android:textSize">13sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">18sp</item>
+        <item name="lineHeight" tools:targetApi="28">18sp</item>
         <item name="android:letterSpacing">-0.006</item>
     </style>
 
     <style name="TextView.ContentStyle.Relations.3" parent="TextView.ContentStyle.Relations">
         <item name="android:textSize">12sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">15sp</item>
+        <item name="lineHeight" tools:targetApi="28">15sp</item>
     </style>
 
     <!-- Code block -->
@@ -131,7 +131,7 @@
         <item name="android:fontFamily">@font/ibm_plex_mono</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">22sp</item>
+        <item name="lineHeight" tools:targetApi="28">22sp</item>
         <item name="android:letterSpacing">-0.016</item>
     </style>
 
@@ -148,7 +148,7 @@
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:fontWeight">600</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">24sp</item>
+        <item name="lineHeight" tools:targetApi="28">24sp</item>
         <item name="android:letterSpacing">-0.024</item>
     </style>
 
@@ -156,7 +156,7 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">20sp</item>
+        <item name="lineHeight" tools:targetApi="28">20sp</item>
         <item name="android:letterSpacing">-0.014</item>
     </style>
 
@@ -164,7 +164,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">20sp</item>
+        <item name="lineHeight" tools:targetApi="28">20sp</item>
         <item name="android:letterSpacing">-0.014</item>
     </style>
 
@@ -173,7 +173,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">24sp</item>
+        <item name="lineHeight" tools:targetApi="28">24sp</item>
         <item name="android:letterSpacing">-0.024</item>
     </style>
 
@@ -181,7 +181,7 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">22sp</item>
+        <item name="lineHeight" tools:targetApi="28">22sp</item>
         <item name="android:letterSpacing">-0.014</item>
     </style>
 
@@ -189,7 +189,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">22sp</item>
+        <item name="lineHeight" tools:targetApi="28">22sp</item>
         <item name="android:letterSpacing">-0.014</item>
     </style>
 
@@ -198,7 +198,7 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">18sp</item>
+        <item name="lineHeight" tools:targetApi="28">18sp</item>
         <item name="android:letterSpacing">-0.006</item>
     </style>
 
@@ -206,7 +206,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">18sp</item>
+        <item name="lineHeight" tools:targetApi="28">18sp</item>
         <item name="android:letterSpacing">-0.006</item>
     </style>
 
@@ -214,7 +214,7 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">11sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">14sp</item>
+        <item name="lineHeight" tools:targetApi="28">14sp</item>
         <item name="android:letterSpacing">-0.006</item>
     </style>
 
@@ -222,7 +222,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">11sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">14sp</item>
+        <item name="lineHeight" tools:targetApi="28">14sp</item>
         <item name="android:letterSpacing">-0.006</item>
     </style>
 
@@ -235,7 +235,7 @@
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">24sp</item>
+        <item name="lineHeight" tools:targetApi="28">24sp</item>
         <item name="android:letterSpacing">-0.024</item>
         <item name="android:textAllCaps">false</item>
     </style>
@@ -244,7 +244,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:lineHeight" tools:targetApi="28">24sp</item>
+        <item name="lineHeight" tools:targetApi="28">24sp</item>
         <item name="android:letterSpacing">-0.024</item>
         <item name="android:textAllCaps">false</item>
     </style>

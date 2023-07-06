@@ -498,18 +498,24 @@ class OnboardingFragment : Fragment() {
 
         val exoPlayer = remember { getVideoPlayer(context, videoPath) }
         Box(modifier = Modifier.fillMaxSize()) {
-            AndroidView(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = padding.dp)
-                    .scale(1.7f),
-                factory = {
-                    PlayerView(context).apply {
-                        player = exoPlayer
-                        useController = false
+            DisposableEffect(
+                AndroidView(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = padding.dp)
+                        .scale(1.7f),
+                    factory = {
+                        PlayerView(context).apply {
+                            player = exoPlayer
+                            useController = false
+                        }
                     }
+                )
+            ) {
+                onDispose {
+                    exoPlayer.release()
                 }
-            )
+            }
         }
     }
 

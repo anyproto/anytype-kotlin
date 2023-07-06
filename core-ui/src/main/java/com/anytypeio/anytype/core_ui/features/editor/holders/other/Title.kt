@@ -289,12 +289,18 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_10)
                     }
+                    binding.imageIcon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = if (!item.hasCover) dimen(R.dimen.dp_51) else dimen(R.dimen.dp_102)
+                    }
                 }
                 item.emoji != null -> {
                     binding.imageIcon.gone()
                     binding.docEmojiIconContainer.visible()
                     binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_12)
+                    }
+                    binding.docEmojiIconContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        topMargin = if (!item.hasCover) dimen(R.dimen.dp_60) else dimen(R.dimen.dp_120)
                     }
                 }
                 else -> {
@@ -306,7 +312,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         }
                     } else {
                         content.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                            topMargin = dimen(R.dimen.dp_32)
+                            topMargin = dimen(R.dimen.dp_16)
                         }
                     }
                 }
@@ -386,6 +392,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 item = item,
                 onCoverClicked = onCoverClicked
             )
+            setupMargins(item)
             applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onProfileIconClicked(ListenerType.ProfileImageIcon) }
@@ -437,6 +444,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
                     }
+                    if (payload.isCoverChanged) {
+                        setupMargins(item)
+                    }
                 }
             }
         }
@@ -447,6 +457,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         override fun applyBackground(item: BlockView.Title) {
             binding.title.setBlockBackgroundColor(item.background)
+        }
+
+        private fun setupMargins(item: BlockView.Title.Profile) {
+            binding.docProfileIconContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topMargin = if (!item.hasCover) dimen(R.dimen.dp_46) else dimen(R.dimen.dp_92)
+            }
         }
     }
 

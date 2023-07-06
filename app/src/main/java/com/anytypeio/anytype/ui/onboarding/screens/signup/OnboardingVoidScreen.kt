@@ -24,15 +24,21 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
-fun VoidScreenWrapper(contentPaddingTop: Int, navigateToMnemonicPhrase: () -> Unit) {
+fun VoidScreenWrapper(
+    contentPaddingTop: Int,
+    navigateToMnemonicPhrase: () -> Unit
+) {
     VoidScreen(
-        navigateToMnemonicPhrase,
-        contentPaddingTop
+        navigateToMnemonicPhrase = navigateToMnemonicPhrase,
+        contentPaddingTop = contentPaddingTop
     )
 }
 
 @Composable
-fun VoidScreen(navigateToMnemonicPhrase: () -> Unit, contentPaddingTop: Int) {
+fun VoidScreen(
+    navigateToMnemonicPhrase: () -> Unit,
+    contentPaddingTop: Int
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize(),

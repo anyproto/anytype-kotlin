@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.onboarding.screens
+package com.anytypeio.anytype.ui.onboarding.screens.signup
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,6 +45,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
@@ -51,7 +55,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
+import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
@@ -61,10 +65,10 @@ import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupV
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulAnimWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.CreateSoulAnimWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.VoidScreenWrapper
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -82,8 +86,7 @@ import com.google.android.exoplayer2.util.Util
 import com.google.zxing.integration.android.IntentIntegrator
 import timber.log.Timber
 
-
-class OnboardingFragment : BaseComposeFragment() {
+class OnboardingFragment : Fragment() {
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreateView(
@@ -114,6 +117,23 @@ class OnboardingFragment : BaseComposeFragment() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        onApplyWindowRootInsets(view)
+    }
+
+    private fun onApplyWindowRootInsets(view: View) {
+        if (com.anytypeio.anytype.core_utils.BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val deferringInsetsListener = RootViewDeferringInsetsCallback(
+                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
+                deferredInsetTypes = 0
+            )
+
+            ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
+            ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
         }
     }
 
@@ -511,15 +531,6 @@ class OnboardingFragment : BaseComposeFragment() {
         player.prepare()
         return player
     }
-
-    override fun injectDependencies() {
-        // Do nothing
-    }
-
-    override fun releaseDependencies() {
-        // Do nothing.
-    }
-
 
     @Composable
     fun <T> ComponentManager.Component<T>.ReleaseOn(

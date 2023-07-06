@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
+import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
@@ -421,7 +422,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         mode = mode,
                                         restrictions = restrictions,
                                         focus = focus,
-                                        isToDoLayout = obj.layout == ObjectType.Layout.TODO
+                                        objLayout = obj.layout
                                     )
                                 )
                             }
@@ -820,19 +821,21 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         restrictions: List<ObjectRestriction>,
         focus: Focus,
-        isToDoLayout: Boolean
+        objLayout: ObjectType.Layout?
     ): BlockView.Description {
         val blockMode = if (restrictions.contains(ObjectRestriction.RELATIONS)) {
             BlockView.Mode.READ
         } else {
             if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
         }
+        val alignment = if (objLayout == ObjectType.Layout.PROFILE) Alignment.CENTER else Alignment.START
         return BlockView.Description(
             id = block.id,
             text = content.text,
             mode = blockMode,
             isFocused = resolveIsFocused(focus, block),
-            isTodoLayout = isToDoLayout
+            isTodoLayout = objLayout == ObjectType.Layout.TODO,
+            alignment = alignment
         )
     }
 

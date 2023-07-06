@@ -642,5 +642,6 @@
     <string name="menu_type_change">Change type</string>
     <string name="menu_type_open_set">Open set of %1$s</string>
     <string name="menu_type_create_set">Create set of %1$s</string>
+    <string name="toast_active_view_delete">Current view cannot be deleted</string>
 
 </resources>

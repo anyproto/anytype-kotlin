@@ -44,7 +44,8 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
                     dv = dv,
                     view = it
                 )
-            }
+            },
+            onDeleteActiveView = { toast(R.string.toast_active_view_delete) }
         )
     }
 

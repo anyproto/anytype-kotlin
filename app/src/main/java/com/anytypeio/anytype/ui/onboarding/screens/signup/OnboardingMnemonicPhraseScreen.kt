@@ -97,7 +97,7 @@ fun MnemonicButtons(
                     text = stringResource(id = R.string.onboarding_mnemonic_key_saved),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 56.dp),
+                        .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
                     onClick = {
                         openSoulCreation.invoke()
                     }, size = ButtonSize.Large
@@ -121,7 +121,7 @@ fun MnemonicButtons(
                             start = 16.dp,
                             top = 14.dp,
                             end = 16.dp,
-                            bottom = 56.dp
+                            bottom = 24.dp
                         ),
                     onClick = {
                         openSoulCreation.invoke()

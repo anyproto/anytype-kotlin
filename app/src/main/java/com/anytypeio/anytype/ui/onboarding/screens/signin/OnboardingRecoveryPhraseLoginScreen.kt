@@ -157,7 +157,8 @@ fun RecoveryScreen(
                 .align(Alignment.TopStart)
                 .padding(top = 16.dp, start = 9.dp)
                 .noRippleClickable {
-                    onBackClicked.invoke()
+                    focus.clearFocus()
+                    onBackClicked()
                 },
             painter = painterResource(id = R.drawable.ic_back_onboarding_32),
             contentDescription = "Back button"

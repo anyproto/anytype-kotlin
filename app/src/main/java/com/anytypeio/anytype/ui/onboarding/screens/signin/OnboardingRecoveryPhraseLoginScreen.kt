@@ -147,7 +147,7 @@ fun RecoveryScreen(
                         size = ButtonSize.Large,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 18.dp)
+                            .padding(start = 18.dp, end = 18.dp, bottom = 24.dp)
                     )
                 }
             }

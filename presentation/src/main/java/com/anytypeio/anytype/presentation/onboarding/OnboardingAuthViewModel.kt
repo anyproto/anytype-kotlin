@@ -37,21 +37,7 @@ class OnboardingAuthViewModel @Inject constructor(
 
     fun onJoinClicked() {
         joinFlowState.value = JoinFlowState.Loading
-        setupWallet.invoke(
-            scope = viewModelScope,
-            params = SetupWallet.Params(
-                path = pathProvider.providePath()
-            )
-        ) { result ->
-            result.either(
-                fnL = {
-                    Timber.e(it, "Error while setting up wallet")
-                },
-                fnR = {
-                    setupAccount()
-                }
-            )
-        }
+        proceedWithCreatingWallet()
     }
 
     fun onLoginClicked() {
@@ -66,7 +52,25 @@ class OnboardingAuthViewModel @Inject constructor(
         viewModelScope.launch { sideEffects.emit(SideEffect.OpenTermsOfUse) }
     }
 
-    private fun setupAccount() {
+    private fun proceedWithCreatingWallet() {
+        setupWallet.invoke(
+            scope = viewModelScope,
+            params = SetupWallet.Params(
+                path = pathProvider.providePath()
+            )
+        ) { result ->
+            result.either(
+                fnL = {
+                    Timber.e(it, "Error while setting up wallet")
+                },
+                fnR = {
+                    proceedWithCreatingAccount()
+                }
+            )
+        }
+    }
+
+    private fun proceedWithCreatingAccount() {
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(

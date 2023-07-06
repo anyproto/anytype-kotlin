@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
+import android.view.Gravity
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
@@ -9,6 +10,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
 
@@ -33,6 +35,7 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
             setFocus(view)
         }
         setupContentPadding(view.isTodoLayout)
+        setAlignment(view.alignment)
     }
 
     fun processChangePayload(
@@ -61,6 +64,10 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
 
             if (payload.focusChanged()) {
                 setFocus(item)
+            }
+
+            if (payload.alignmentChanged()) {
+                setAlignment(item.alignment)
             }
 
             try {
@@ -135,6 +142,14 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
             binding.tvBlockDescription.setPadding(lr, 0, 0, 0)
         } else {
             binding.tvBlockDescription.setPadding(0, 0, 0, 0)
+        }
+    }
+
+    private fun setAlignment(alignment: Alignment?) {
+        content.gravity = when (alignment) {
+            Alignment.CENTER -> Gravity.CENTER
+            Alignment.END -> Gravity.END
+            else -> Gravity.START
         }
     }
 }

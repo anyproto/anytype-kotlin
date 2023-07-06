@@ -47,7 +47,7 @@ fun VoidScreen(navigateToMnemonicPhrase: () -> Unit, contentPaddingTop: Int) {
         OnBoardingButtonPrimary(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 56.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
                 .align(Alignment.BottomCenter),
             text = stringResource(id = R.string.next),
             onClick = { navigateToMnemonicPhrase.invoke() },

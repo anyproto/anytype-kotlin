@@ -49,13 +49,13 @@ fun LoadingIndicator(
 ) {
     val (dotSize, dotSpacing) = when (size) {
         ButtonSize.XSmall,
-        ButtonSize.XSmallSecondary -> 6.dp to 8.dp
+        ButtonSize.XSmallSecondary -> 6.dp to 2.dp
         ButtonSize.Small,
-        ButtonSize.SmallSecondary -> 6.dp to 12.dp
+        ButtonSize.SmallSecondary -> 6.dp to 4.dp
         ButtonSize.Medium,
-        ButtonSize.MediumSecondary -> 6.dp to 16.dp
+        ButtonSize.MediumSecondary -> 6.dp to 6.dp
         ButtonSize.Large,
-        ButtonSize.LargeSecondary -> 6.dp to 16.dp
+        ButtonSize.LargeSecondary -> 6.dp to 6.dp
     }
     val state = rememberLoadingIndicatorState(animating, animationSpecs)
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {

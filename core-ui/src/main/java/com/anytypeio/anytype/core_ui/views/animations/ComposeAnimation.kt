@@ -9,18 +9,17 @@ interface AnimationSpecs {
     val initialValue: Float
     val targetValue: Float
     val animationSpec: DurationBasedAnimationSpec<Float>
+    val itemCount: Int
 }
 
-class FadeAnimationSpecs(size: Int) : AnimationSpecs {
-    private val fadeAnimationDurationMillis = 600
+class FadeAnimationSpecs(
+    override val itemCount: Int = 3,
+    fadeAnimationDurationMillis: Int = 600
+) : AnimationSpecs {
 
     override val duration = fadeAnimationDurationMillis
-    override val delay = duration / size
+    override val delay = duration / itemCount
     override val initialValue = 1f
     override val targetValue = 0.2f
     override val animationSpec = tween<Float>(durationMillis = duration)
-}
-
-enum class AnimationType(val specs: AnimationSpecs) {
-    FADE_3_DOTS(FadeAnimationSpecs(3))
 }

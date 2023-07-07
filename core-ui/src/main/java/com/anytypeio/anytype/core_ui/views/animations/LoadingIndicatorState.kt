@@ -15,13 +15,13 @@ interface LoadingIndicatorState {
     fun start(animationSpecs: AnimationSpecs, scope: CoroutineScope)
 }
 
-class LoadingIndicatorStateImpl(private val size: Int) : LoadingIndicatorState {
-    private val animatedValues = List(size) { mutableStateOf(0f) }
+class LoadingIndicatorStateImpl(private val itemsCount: Int) : LoadingIndicatorState {
+    private val animatedValues = List(itemsCount) { mutableStateOf(0f) }
 
     override fun get(index: Int): Float = animatedValues[index].value
 
     override fun start(animationSpecs: AnimationSpecs, scope: CoroutineScope) {
-        repeat(size) { index ->
+        repeat(itemsCount) { index ->
             scope.launch {
                 animate(
                     initialValue = animationSpecs.initialValue,

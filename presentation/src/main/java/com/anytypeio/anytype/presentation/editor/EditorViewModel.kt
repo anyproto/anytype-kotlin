@@ -3156,7 +3156,8 @@ class EditorViewModel(
                             analytics = analytics,
                             type = result.type,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objPowerTool,
+                            route = EventsDictionary.Routes.navigation,
+                            view = EventsDictionary.View.viewNavbar,
                             startTime = startTime
                         )
                         proceedWithOpeningObject(result.objectId)

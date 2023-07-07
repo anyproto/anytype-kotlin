@@ -262,7 +262,8 @@ private fun propsForObjectEvents(
     route: String? = null,
     context: String? = null,
     originalId: String? = null,
-    sourceObject: String? = null
+    sourceObject: String? = null,
+    view: String? = null
 ): Props {
     val objType = sourceObject ?: OBJ_TYPE_CUSTOM
     val layout = layoutCode?.toInt()?.let { code ->
@@ -276,7 +277,8 @@ private fun propsForObjectEvents(
             EventsPropertiesKey.layout to layout,
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.context to context,
-            EventsPropertiesKey.originalId to originalId
+            EventsPropertiesKey.originalId to originalId,
+            EventsPropertiesKey.view to view
         )
     )
 }
@@ -681,7 +683,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     storeOfObjectTypes: StoreOfObjectTypes,
     type: String?,
     route: String,
-    startTime: Long? = null
+    startTime: Long? = null,
+    view: String? = null
 ) {
     this.launch {
         val objType = type?.let { storeOfObjectTypes.get(it) }
@@ -691,7 +694,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
                 route = route,
                 context = analytics.getContext(),
                 originalId = analytics.getOriginalId(),
-                sourceObject = objType?.sourceObject
+                sourceObject = objType?.sourceObject,
+                view = view
             ),
             startTime = startTime,
             middleTime = System.currentTimeMillis()

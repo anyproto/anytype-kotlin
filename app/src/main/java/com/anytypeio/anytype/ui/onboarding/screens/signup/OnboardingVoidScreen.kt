@@ -26,17 +26,17 @@ import com.anytypeio.anytype.core_ui.views.Title1
 @Composable
 fun VoidScreenWrapper(
     contentPaddingTop: Int,
-    navigateToMnemonicPhrase: () -> Unit
+    onNextClicked: () -> Unit
 ) {
     VoidScreen(
-        navigateToMnemonicPhrase = navigateToMnemonicPhrase,
+        onNextClicked = onNextClicked,
         contentPaddingTop = contentPaddingTop
     )
 }
 
 @Composable
 fun VoidScreen(
-    navigateToMnemonicPhrase: () -> Unit,
+    onNextClicked: () -> Unit,
     contentPaddingTop: Int
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -56,7 +56,7 @@ fun VoidScreen(
                 .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
                 .align(Alignment.BottomCenter),
             text = stringResource(id = R.string.next),
-            onClick = { navigateToMnemonicPhrase.invoke() },
+            onClick = { onNextClicked() },
             size = ButtonSize.Large
         )
     }

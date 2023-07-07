@@ -189,9 +189,13 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.VOID
-                VoidScreenWrapper(ContentPaddingTop()) {
-                    navController.navigate(OnboardingNavigation.mnemonic)
-                }
+                VoidScreenWrapper(
+                    contentPaddingTop = ContentPaddingTop(),
+                    onNextClicked = {
+                        navController.navigate(OnboardingNavigation.mnemonic)
+                    }
+                )
+
             }
             composable(
                 route = OnboardingNavigation.mnemonic,

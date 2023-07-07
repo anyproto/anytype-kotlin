@@ -5333,14 +5333,6 @@ class EditorViewModel(
                 )
                 viewModelScope.sendAnalyticsSetTitleEvent(analytics, analyticsContext)
             }
-            is KeyPressedEvent.OnDescriptionBlockEnterKeyEvent -> {
-                proceedWithDescriptionEnterClicked(
-                    description = event.target,
-                    text = event.text,
-                    range = event.range
-                )
-                viewModelScope.sendAnalyticsSetDescriptionEvent(analytics, analyticsContext)
-            }
         }
     }
 
@@ -5375,14 +5367,6 @@ class EditorViewModel(
                 position = Position.TOP
             )
         }
-    }
-
-    private fun proceedWithDescriptionEnterClicked(
-        description: Id,
-        text: String,
-        range: IntRange
-    ) {
-        proceedWithSplitEvent(description, range, text, emptyList())
     }
     //endregion
 

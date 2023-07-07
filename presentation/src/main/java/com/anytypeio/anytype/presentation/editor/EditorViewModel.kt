@@ -1366,12 +1366,14 @@ class EditorViewModel(
         text: String,
         range: IntRange
     ) {
+        Timber.d("onSplitObjectDescription, target:[$target] text:[$text] range:[$range]")
         proceedWithSplitEvent(
             target = target,
             text = text,
             range = range,
             marks = emptyList()
         )
+        viewModelScope.sendAnalyticsSetDescriptionEvent(analytics, analyticsContext)
     }
 
     private fun proceedWithEnterEvent(

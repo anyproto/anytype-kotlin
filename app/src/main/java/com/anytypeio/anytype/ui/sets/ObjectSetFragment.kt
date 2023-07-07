@@ -26,6 +26,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.children
 import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -587,6 +588,7 @@ open class ObjectSetFragment :
     }
 
     private fun bindHeader(header: SetOrCollectionHeaderState.Default) {
+        setupHeaderMargins(header)
         if (title.text.toString() != header.title.text) {
             title.pauseTextWatchers {
                 title.setText(header.title.text)
@@ -644,6 +646,35 @@ open class ObjectSetFragment :
             tvDescription.visible()
         } else {
             tvDescription.gone()
+        }
+    }
+
+    private fun setupHeaderMargins(header: SetOrCollectionHeaderState.Default) {
+        when {
+            header.title.emoji != null -> {
+                title.updateLayoutParams<LinearLayout.LayoutParams> {
+                    topMargin = dimen(R.dimen.dp_12)
+                }
+                binding.objectHeader.docEmojiIconContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                    topMargin =
+                        if (!header.title.hasCover) dimen(R.dimen.dp_12) else dimen(R.dimen.dp_72)
+                }
+            }
+            header.title.image != null -> {
+                title.updateLayoutParams<LinearLayout.LayoutParams> {
+                    topMargin = dimen(R.dimen.dp_10)
+                }
+                binding.objectHeader.imageIcon.updateLayoutParams<FrameLayout.LayoutParams> {
+                    topMargin =
+                        if (!header.title.hasCover) dimen(R.dimen.dp_3) else dimen(R.dimen.dp_54)
+                }
+            }
+            else -> {
+                title.updateLayoutParams<LinearLayout.LayoutParams> {
+                    topMargin =
+                        if (!header.title.hasCover) dimen(R.dimen.dp_32) else dimen(R.dimen.dp_10)
+                }
+            }
         }
     }
 

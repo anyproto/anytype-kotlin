@@ -51,6 +51,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -1195,11 +1196,15 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null)).fold(
                 onSuccess = { result ->
-                    sendAnalyticsObjectCreateEvent(
-                        startTime = startTime,
-                        objectType = result.type
-                    )
                     proceedWithOpeningObject(result.objectId)
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        startTime = startTime,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        type = result.type,
+                        route = EventsDictionary.Routes.navigation,
+                        view = EventsDictionary.View.viewNavbar
+                    )
                 },
                 onFailure = { e ->
                     Timber.e(e, "Error while creating a new object")

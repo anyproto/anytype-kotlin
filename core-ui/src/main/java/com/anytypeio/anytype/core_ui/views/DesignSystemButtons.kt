@@ -155,9 +155,10 @@ fun ButtonPrimary(
 }
 
 @Composable
-fun LoadingButtonPrimary(
+fun ButtonPrimaryLoading(
     text: String = "",
-    modifier: Modifier = Modifier,
+    modifierBox: Modifier = Modifier,
+    modifierButton: Modifier = Modifier,
     size: ButtonSize,
     onClick: () -> Unit = {},
     enabled: Boolean = true,
@@ -175,7 +176,7 @@ fun LoadingButtonPrimary(
         )
 
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
-        Box(contentAlignment = Alignment.Center) {
+        Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
             Button(
                 onClick = { if (!loading) onClick() },
                 interactionSource = interactionSource,
@@ -187,7 +188,7 @@ fun LoadingButtonPrimary(
                     disabledBackgroundColor = colorResource(id = R.color.shape_tertiary),
                     disabledContentColor = colorResource(id = R.color.text_tertiary)
                 ),
-                modifier = modifier
+                modifier = modifierButton
                     .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                 elevation = ButtonDefaults.elevation(
                     defaultElevation = 0.dp,
@@ -258,11 +259,12 @@ fun ButtonSecondary(
 }
 
 @Composable
-fun ButtonLoadingSecondary(
+fun ButtonSecondaryLoading(
     text: String = "",
     onClick: () -> Unit,
     enabled: Boolean = true,
-    modifier: Modifier = Modifier,
+    modifierBox: Modifier = Modifier,
+    modifierButton: Modifier = Modifier,
     size: ButtonSize,
     loading: Boolean = false,
     loadingItemsCount: Int = 3
@@ -280,39 +282,41 @@ fun ButtonLoadingSecondary(
     )
 
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
-        Button(
-            onClick = onClick,
-            interactionSource = interactionSource,
-            enabled = enabled,
-            shape = RoundedCornerShape(size.cornerSize),
-            border = BorderStroke(width = 1.dp, color = borderColor),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = backgroundColor,
-                contentColor = colorResource(id = R.color.text_primary),
-                disabledBackgroundColor = Color.Transparent,
-                disabledContentColor = colorResource(id = R.color.text_tertiary)
-            ),
-            modifier = modifier
-                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-            elevation = ButtonDefaults.elevation(
-                defaultElevation = 0.dp,
-                pressedElevation = 0.dp
-            ),
-            contentPadding = size.contentPadding
-        ) {
-            Text(
-                text = text,
-                style = size.textStyle,
-                modifier = Modifier.graphicsLayer { alpha = contentAlpha }
+        Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
+            Button(
+                onClick = onClick,
+                interactionSource = interactionSource,
+                enabled = enabled,
+                shape = RoundedCornerShape(size.cornerSize),
+                border = BorderStroke(width = 1.dp, color = borderColor),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor,
+                    contentColor = colorResource(id = R.color.text_primary),
+                    disabledBackgroundColor = Color.Transparent,
+                    disabledContentColor = colorResource(id = R.color.text_tertiary)
+                ),
+                modifier = modifierButton
+                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp
+                ),
+                contentPadding = size.contentPadding
+            ) {
+                Text(
+                    text = text,
+                    style = size.textStyle,
+                    modifier = Modifier.graphicsLayer { alpha = contentAlpha }
+                )
+            }
+            LoadingIndicator(
+                animating = loading,
+                modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
+                animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
+                color = colorResource(id = R.color.text_primary),
+                size = size
             )
         }
-        LoadingIndicator(
-            animating = loading,
-            modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
-            animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
-            color = colorResource(id = R.color.text_primary),
-            size = size
-        )
     }
 }
 
@@ -358,9 +362,10 @@ fun ButtonWarning(
 }
 
 @Composable
-fun LoadingButtonWarning(
+fun ButtonWarningLoading(
     text: String = "",
-    modifier: Modifier = Modifier,
+    modifierBox: Modifier = Modifier,
+    modifierButton: Modifier = Modifier,
     size: ButtonSize,
     onClick: () -> Unit = {},
     loading: Boolean = false,
@@ -378,7 +383,7 @@ fun LoadingButtonWarning(
     val borderColor = colorResource(id = R.color.shape_primary)
 
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
-        Box(contentAlignment = Alignment.Center) {
+        Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
             Button(
                 onClick = { if (!loading) onClick() },
                 interactionSource = interactionSource,
@@ -388,7 +393,7 @@ fun LoadingButtonWarning(
                     backgroundColor = Color.Transparent,
                     contentColor = contentColor
                 ),
-                modifier = modifier
+                modifier = modifierButton
                     .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                 elevation = ButtonDefaults.elevation(
                     defaultElevation = 0.dp,
@@ -499,19 +504,6 @@ fun MySecondaryButton() {
 @Preview
 fun MyWarningButton() {
     ButtonWarning(
-        onClick = {},
-        size = ButtonSize.Large,
-        text = "Log out",
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
-    )
-}
-
-@Composable
-@Preview
-fun MyLoadingWarningButton() {
-    LoadingButtonWarning(
         onClick = {},
         size = ButtonSize.Large,
         text = "Log out",

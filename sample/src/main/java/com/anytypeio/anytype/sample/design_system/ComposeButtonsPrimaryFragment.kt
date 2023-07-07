@@ -9,14 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -25,19 +25,14 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
-import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
-import com.anytypeio.anytype.core_ui.views.ButtonPrimaryMedium
-import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmall
-import com.anytypeio.anytype.core_ui.views.ButtonPrimaryXSmall
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
-import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
-import com.anytypeio.anytype.core_ui.views.ButtonSecondaryMedium
-import com.anytypeio.anytype.core_ui.views.ButtonSecondarySmall
-import com.anytypeio.anytype.core_ui.views.ButtonSecondaryXSmall
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
+import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.sample.R
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -88,6 +83,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             enabled = false,
                             size = ButtonSize.XSmall
                         )
+                        loadingPrimaryButton(
+                            size = ButtonSize.XSmall,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
+                        )
                         ButtonSecondary(
                             onClick = {},
                             modifier = Modifier
@@ -105,6 +108,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             enabled = false,
                             size = ButtonSize.XSmallSecondary
                         )
+                        loadingSecondaryButton(
+                            size = ButtonSize.XSmallSecondary,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
+                        )
                         ButtonWarning(
                             onClick = {},
                             modifier = Modifier
@@ -112,6 +123,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             text = "Button",
                             size = ButtonSize.XSmall
+                        )
+                        loadingWarningButton(
+                            size = ButtonSize.XSmall,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
                         )
                         Text(
                             text = "Button.Small",
@@ -138,6 +157,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             size = ButtonSize.Small,
                             enabled = false
                         )
+                        loadingPrimaryButton(
+                            size = ButtonSize.Small,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
+                        )
                         ButtonSecondary(
                             onClick = {},
                             modifier = Modifier
@@ -155,6 +182,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             enabled = false,
                             size = ButtonSize.SmallSecondary
                         )
+                        loadingSecondaryButton(
+                            size = ButtonSize.SmallSecondary,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
+                        )
                         ButtonWarning(
                             onClick = {},
                             modifier = Modifier
@@ -162,6 +197,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             text = "Button",
                             size = ButtonSize.Small
+                        )
+                        loadingWarningButton(
+                            size = ButtonSize.Small,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
                         )
                         Text(
                             text = "Button.Medium",
@@ -190,6 +233,15 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             size = ButtonSize.Medium,
                             enabled = false
                         )
+                        loadingPrimaryButton(
+                            size = ButtonSize.Medium,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .wrapContentHeight()
+                        )
                         ButtonSecondary(
                             onClick = {},
                             modifier = Modifier
@@ -209,6 +261,15 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             enabled = false,
                             size = ButtonSize.MediumSecondary
                         )
+                        loadingSecondaryButton(
+                            size = ButtonSize.MediumSecondary,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                         ButtonWarning(
                             onClick = {},
                             modifier = Modifier
@@ -217,6 +278,15 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             text = "Button",
                             size = ButtonSize.Medium
+                        )
+                        loadingWarningButton(
+                            size = ButtonSize.Medium,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .wrapContentHeight()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                         Text(
                             text = "Button.Large",
@@ -247,6 +317,15 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             size = ButtonSize.Large,
                             enabled = false
                         )
+                        loadingPrimaryButton(
+                            size = ButtonSize.Large,
+                            modifierBox = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                         ButtonSecondary(
                             onClick = {},
                             modifier = Modifier
@@ -268,6 +347,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             enabled = false,
                             size = ButtonSize.LargeSecondary
                         )
+                        loadingSecondaryButton(
+                            size = ButtonSize.LargeSecondary,
+                            modifierBox = Modifier
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                         ButtonWarning(
                             onClick = {},
                             modifier = Modifier
@@ -278,10 +365,80 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             text = "Button",
                             size = ButtonSize.Large
                         )
+                        loadingWarningButton(
+                            size = ButtonSize.Large,
+                            modifierBox = Modifier
+                                .align(CenterHorizontally),
+                            modifierButton = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    fun loadingPrimaryButton(
+        size: ButtonSize,
+        modifierBox: Modifier = Modifier,
+        modifierButton: Modifier = Modifier
+    ) {
+        val loadingState = remember { mutableStateOf(false) }
+        ButtonPrimaryLoading(
+            onClick = {
+                loadingState.value = !loadingState.value
+            },
+            modifierButton = modifierButton,
+            modifierBox = modifierBox,
+            text = "Button",
+            size = size,
+            loading = loadingState.value,
+            enabled = true,
+            loadingItemsCount = 3
+        )
+    }
+
+    @Composable
+    fun loadingSecondaryButton(
+        size: ButtonSize,
+        modifierBox: Modifier = Modifier,
+        modifierButton: Modifier = Modifier
+    ) {
+        val loadingState = remember { mutableStateOf(false) }
+        ButtonSecondaryLoading(
+            onClick = {
+                loadingState.value = !loadingState.value
+            },
+            modifierButton = modifierButton,
+            modifierBox = modifierBox,
+            text = "Button",
+            size = size,
+            loading = loadingState.value,
+            enabled = true,
+            loadingItemsCount = 3
+        )
+    }
+
+    @Composable
+    fun loadingWarningButton(
+        size: ButtonSize,
+        modifierBox: Modifier = Modifier,
+        modifierButton: Modifier = Modifier
+    ) {
+        val loadingState = remember { mutableStateOf(false) }
+        ButtonWarningLoading(
+            onClick = {
+                loadingState.value = !loadingState.value
+            },
+            modifierButton = modifierButton,
+            modifierBox = modifierBox,
+            text = "Button",
+            size = size,
+            loading = loadingState.value,
+            loadingItemsCount = 3
+        )
     }
 
     override fun injectDependencies() {}

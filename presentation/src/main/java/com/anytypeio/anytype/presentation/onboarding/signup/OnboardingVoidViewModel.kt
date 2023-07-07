@@ -100,6 +100,14 @@ class OnboardingVoidViewModel @Inject constructor(
     }
 
     fun onSystemBackPressed() {
+        resolveBackNavigation()
+    }
+
+    fun onBackPressed() {
+        resolveBackNavigation()
+    }
+
+    private fun resolveBackNavigation() {
         if (state.value !is ScreenState.Loading) {
             viewModelScope.launch {
                 navigation.emit(

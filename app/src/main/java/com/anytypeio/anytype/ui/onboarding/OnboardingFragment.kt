@@ -114,7 +114,16 @@ class OnboardingFragment : Fragment() {
                             pageCount = OnboardingPage.values().filter { it.visible }.size,
                             page = currentPage,
                             onBackClick = {
-                                navController.popBackStack()
+                                when(currentPage.value) {
+                                    OnboardingPage.VOID -> {
+                                        val component = componentManager().onboardingNewVoidComponent.get()
+                                        val vm = component.getViewModel()
+                                        vm.onBackPressed()
+                                    }
+                                    else -> {
+                                        navController.popBackStack()
+                                    }
+                                }
                             }
                         )
                     }
@@ -214,6 +223,9 @@ class OnboardingFragment : Fragment() {
                             }
                         }
                     }
+                }
+                LaunchedEffect(Unit) {
+                    vm.toasts.collect { toast(it) }
                 }
             }
             composable(

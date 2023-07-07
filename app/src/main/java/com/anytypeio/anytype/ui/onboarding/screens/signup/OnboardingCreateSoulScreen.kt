@@ -201,7 +201,7 @@ fun CreateSoulNextButton(
     text: MutableState<String>
 ) {
     OnBoardingButtonPrimary(
-        text = stringResource(id = R.string.next),
+        text = stringResource(id = R.string.go_to_the_app),
         onClick = {
             onCreateSoulEntered.invoke(text.value)
         },

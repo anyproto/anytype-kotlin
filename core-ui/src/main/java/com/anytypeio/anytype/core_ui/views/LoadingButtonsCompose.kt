@@ -45,7 +45,8 @@ fun LoadingButtonPrimary(
     size: ButtonSize,
     onClick: () -> Unit = {},
     enabled: Boolean = true,
-    loading: Boolean = false
+    loading: Boolean = false,
+    loadingItemsCount: Int = 3
 ) {
     val contentAlpha by animateFloatAsState(targetValue = if (loading) 0f else 1f)
     val loadingAlpha by animateFloatAsState(targetValue = if (loading) 1f else 0f)
@@ -60,7 +61,7 @@ fun LoadingButtonPrimary(
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
         Box(contentAlignment = Alignment.Center) {
             Button(
-                onClick = onClick,
+                onClick = { if (!loading) onClick() },
                 interactionSource = interactionSource,
                 enabled = enabled,
                 shape = RoundedCornerShape(size.cornerSize),
@@ -86,7 +87,7 @@ fun LoadingButtonPrimary(
             LoadingIndicator(
                 animating = loading,
                 modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
-                animationSpecs = FadeAnimationSpecs(itemCount = 3),
+                animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
                 color = colorResource(id = R.color.button_text)
             )
         }

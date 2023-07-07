@@ -1191,10 +1191,6 @@ class ObjectSetViewModel(
     fun onAddNewDocumentClicked() {
         Timber.d("onAddNewDocumentClicked, ")
 
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.createObjectNavBar,
-        )
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null)).fold(

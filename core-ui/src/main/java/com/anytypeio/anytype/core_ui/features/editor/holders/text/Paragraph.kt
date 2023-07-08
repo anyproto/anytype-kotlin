@@ -23,7 +23,7 @@ class Paragraph(
     override val root: View = binding.root
     override val content: TextInputWidget = binding.textContent
     override val decoratableContainer : EditorDecorationContainer = binding.decorationContainer
-
+    override val selectionView: View = binding.selectionView
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
     private val mentionCheckedIcon: Drawable?

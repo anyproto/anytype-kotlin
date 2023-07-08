@@ -189,6 +189,9 @@ object EventsDictionary {
         const val openObject = "OpenObject"
     }
 
+    /**
+     * This parameter is used to separate the use of the navigation bar from the dashboard or from the editor/sets
+     */
     object View {
         const val viewHome = "Home"
         const val viewNavbar = "Navbar"

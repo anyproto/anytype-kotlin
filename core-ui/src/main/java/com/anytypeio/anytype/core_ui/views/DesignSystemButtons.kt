@@ -284,7 +284,7 @@ fun ButtonSecondaryLoading(
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
         Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
             Button(
-                onClick = onClick,
+                onClick = {if (!loading) onClick()},
                 interactionSource = interactionSource,
                 enabled = enabled,
                 shape = RoundedCornerShape(size.cornerSize),

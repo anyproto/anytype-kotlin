@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.onboarding
+package com.anytypeio.anytype.presentation.onboarding.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,15 +10,16 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.common.ScreenState
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class OnboardingAuthViewModel @Inject constructor(
+class OnboardingVoidViewModel @Inject constructor(
     private val createAccount: CreateAccount,
     private val setupWallet: SetupWallet,
     private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
@@ -26,33 +27,21 @@ class OnboardingAuthViewModel @Inject constructor(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
-) : ViewModel() {
+): BaseViewModel() {
 
-    val sideEffects = MutableSharedFlow<SideEffect>()
+    val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
+    val navigation = MutableSharedFlow<Navigation>()
 
-    private val _navigationFlow = MutableSharedFlow<AuthNavigation>()
-    val navigationFlow: SharedFlow<AuthNavigation> = _navigationFlow
-
-    val joinFlowState = MutableStateFlow<JoinFlowState>(JoinFlowState.Active)
-
-    fun onJoinClicked() {
-        joinFlowState.value = JoinFlowState.Loading
-        proceedWithCreatingWallet()
-    }
-
-    fun onLoginClicked() {
-        navigateTo(AuthNavigation.ProceedWithSignIn)
-    }
-
-    fun onPrivacyPolicyClicked() {
-        viewModelScope.launch { sideEffects.emit(SideEffect.OpenPrivacyPolicy) }
-    }
-
-    fun onTermsOfUseClicked() {
-        viewModelScope.launch { sideEffects.emit(SideEffect.OpenTermsOfUse) }
+    fun onNextClicked() {
+        if (state.value !is ScreenState.Loading) {
+            proceedWithCreatingWallet()
+        } else {
+            sendToast(LOADING_MSG)
+        }
     }
 
     private fun proceedWithCreatingWallet() {
+        state.value = ScreenState.Loading
         setupWallet.invoke(
             scope = viewModelScope,
             params = SetupWallet.Params(
@@ -88,47 +77,51 @@ class OnboardingAuthViewModel @Inject constructor(
 //                    sendAuthEvent(startTime)
                     relationsSubscriptionManager.onStart()
                     objectTypesSubscriptionManager.onStart()
-                    joinFlowState.value = JoinFlowState.Active
-                    setupUseCase()
+                    proceedWithSettingUpMobileUseCase()
                 }
             )
         }
     }
 
-    private fun setupUseCase() {
+    private fun proceedWithSettingUpMobileUseCase() {
         viewModelScope.launch {
             setupMobileUseCaseSkip.execute(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
-                    navigateTo(AuthNavigation.ProceedWithSignUp)
+                    state.value = ScreenState.Success
+                    navigation.emit(Navigation.NavigateToMnemonic)
                 },
                 onSuccess = {
-                    navigateTo(AuthNavigation.ProceedWithSignUp)
+                    state.value = ScreenState.Success
+                    navigation.emit(Navigation.NavigateToMnemonic)
                 }
             )
         }
     }
 
-    private fun navigateTo(destination: AuthNavigation) {
-        viewModelScope.launch {
-            _navigationFlow.emit(destination)
+    fun onSystemBackPressed() {
+        resolveBackNavigation()
+    }
+
+    fun onBackPressed() {
+        resolveBackNavigation()
+    }
+
+    private fun resolveBackNavigation() {
+        if (state.value !is ScreenState.Loading) {
+            viewModelScope.launch {
+                navigation.emit(
+                    Navigation.GoBack
+                )
+            }
+        } else {
+            sendToast(LOADING_MSG)
         }
     }
 
-    interface AuthNavigation {
-        object Idle : AuthNavigation
-        object ProceedWithSignUp : AuthNavigation
-        object ProceedWithSignIn : AuthNavigation
-    }
-
-    sealed class SideEffect {
-        object OpenPrivacyPolicy : SideEffect()
-        object OpenTermsOfUse : SideEffect()
-    }
-
-    interface JoinFlowState {
-        object Active : JoinFlowState
-        object Loading : JoinFlowState
+    sealed class Navigation {
+        object NavigateToMnemonic: Navigation()
+        object GoBack: Navigation()
     }
 
     class Factory @Inject constructor(
@@ -142,7 +135,7 @@ class OnboardingAuthViewModel @Inject constructor(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return OnboardingAuthViewModel(
+            return OnboardingVoidViewModel(
                 createAccount = createAccount,
                 setupWallet = setupWallet,
                 setupMobileUseCaseSkip = setupMobileUseCaseSkip,
@@ -152,5 +145,9 @@ class OnboardingAuthViewModel @Inject constructor(
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager
             ) as T
         }
+    }
+
+    companion object {
+        const val LOADING_MSG = "Loading, please wait."
     }
 }

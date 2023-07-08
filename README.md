@@ -1,27 +1,29 @@
-# Anytype.io - Mobile
+# Anytype
 
-### Build project
+Official Anytype client for Android.
 
-##### Prerequisites
+## Build project
 
-- Download `anytype/anytype-android` (private) repository from Github
+### Prerequisites
+
+- Clone this repository
   
 - Create `github.properties` file in root project folder:
 
-```
-gpr.usr=GITHUB_USER_ID
-gpr.key=GITHUB_PERSONAL_ACCESS_TOKEN
-```
+    ```
+    gpr.usr=GITHUB_USER_ID
+    gpr.key=GITHUB_PERSONAL_ACCESS_TOKEN
+    ```
 
 Your Github ID (starting with '#' character) can be found [here](https://caius.github.io/github_id/). As to your personal Github access token, you can generate it in `Developer settings` in your profile settings on Github. 
 
 - Create `apikeys.properties` file in root project folder:
 
-```
-amplitude.debug="AMPLITUDE_DEBUG_KEY"
-amplitude.release="AMPLITUDE_RELEASE_KEY"
-sentry_dsn="SENTRY_DSN_KEY"
-```
+    ```
+    amplitude.debug="AMPLITUDE_DEBUG_KEY"
+    amplitude.release="AMPLITUDE_RELEASE_KEY"
+    sentry_dsn="SENTRY_DSN_KEY"
+    ```
 
 Then build project.
 
@@ -33,33 +35,15 @@ Based on your IDE setup, you might experience problems while accessing/importing
 idea.max.intellisense.filesize=3500
 ```
 
-### Setup your Firebase account for Anytype
+## Useful links
 
-We're using *Firebase App Distribution* + *Firebase Crashlytics*. We have two separate projects: one for `debug` builds (which we distribute mostly for our Q&A team), another one for `release` builds.
+[Our tech change log](https://github.com/anyproto/anytype-kotlin/blob/main/CHANGELOG.md)
 
-### Install the latest Anytype Android release: 
+[Anytype Android app dependencies](https://github.com/anyproto/anytype-kotlin/blob/main/gradle/libs.versions.toml)
 
-From [Google Play](https://play.google.com/store/apps/details?id=com.anytypeio.anytype).
+## Conventions
 
-Or [download](https://download.anytype.io/) an apk for your device architecture from our website.
-
-### Join our community & telegram channels
-
-[Official Anytype community](https://community.anytype.io/).
-
-[Follow what community writes about our Android client](https://community.anytype.io/tag/Android).
-
-[Join our Android Testers telegram channel](https://t.me/+vEb8COFY7rY5Mzli).
-
-### Useful links
-
-[Our tech change log](https://github.com/anytypeio/android-anytype/blob/develop/CHANGELOG.md).
-
-[Anytype Android app dependencies](https://github.com/anytypeio/android-anytype/blob/develop/gradle/libs.versions.toml).
-
-### Conventions
-
-##### PR naming: 
+### PR naming
 ```
 {TASK-ID} {APP AREA} | {NATURE OF CHANGE: Fix, Enhancement, Feature, Design, Documentation} | {CONCISE DESCRIPTION OF WHAT HAS BEEN DONE}
 ```
@@ -70,19 +54,19 @@ DI, scripting, etc.), etc.
 Example: *Editor | Fix | Show meaningful message when failed to open file by an existing
 application*
 
-##### Git branch naming
+### Git branch naming
 
 ```
 {TASK_ID or TASK_NUMBER}-ConciseDescription
 ```
 
-##### Flags
+### Flags
 
 ```
 com.anytype.ci=true - for CI/CD pipeline
 ```
 
-### Updating MW (basics)
+## Updating anytype-heart (basics)
 
 Prerequisite: `brew install jq`
 
@@ -94,3 +78,15 @@ Prerequisite: `brew install jq`
 
 2. Make sure your proto files located in `protocol/main/proto/` compile.
 3. Make sure to update `middlewareVersion` version in `libs.versions.toml`.
+
+## Contribution
+Thank you for your desire to develop Anytype together. 
+
+Currently, we're not ready to accept PRs, but we will in the nearest future.
+
+Follow us on [Github](https://github.com/anyproto) and join the [Contributors Community](https://github.com/orgs/anyproto/discussions).
+
+---
+Made by Any — a Swiss association 🇨🇭
+
+Licensed under [Any Source Available License 1.0](./LICENSE.md).

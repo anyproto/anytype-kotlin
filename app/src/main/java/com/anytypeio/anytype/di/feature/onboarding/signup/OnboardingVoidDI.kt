@@ -1,6 +1,7 @@
-package com.anytypeio.anytype.di.feature.onboarding
+package com.anytypeio.anytype.di.feature.onboarding.signup
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
@@ -14,43 +15,42 @@ import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingVoidViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import javax.inject.Scope
 
 @Component(
-    dependencies = [OnboardingAuthDependencies::class],
+    dependencies = [OnboardingVoidDependencies::class],
     modules = [
-        OnboardingAuthModule::class,
-        OnboardingAuthModule.Declarations::class
+        OnboardingVoidModule::class,
+        OnboardingVoidModule.Declarations::class
     ]
 )
-@AuthScreenScope
-interface OnboardingAuthComponent {
+@PerScreen
+interface OnboardingVoidComponent {
 
     @Component.Factory
     interface Builder {
-        fun create(dependencies: OnboardingAuthDependencies): OnboardingAuthComponent
+        fun create(dependencies: OnboardingVoidDependencies): OnboardingVoidComponent
     }
 
-    fun getViewModel(): OnboardingAuthViewModel
+    fun getViewModel(): OnboardingVoidViewModel
 }
 
 @Module
-object OnboardingAuthModule {
+object OnboardingVoidModule {
 
     @JvmStatic
     @Provides
-    @AuthScreenScope
+    @PerScreen
     fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
 
     @JvmStatic
     @Provides
-    @AuthScreenScope
+    @PerScreen
     fun provideCreateAccountUseCase(
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
@@ -65,7 +65,7 @@ object OnboardingAuthModule {
 
     @JvmStatic
     @Provides
-    @AuthScreenScope
+    @PerScreen
     fun provideSetupWalletUseCase(
         authRepository: AuthRepository
     ): SetupWallet = SetupWallet(
@@ -74,7 +74,7 @@ object OnboardingAuthModule {
 
     @JvmStatic
     @Provides
-    @AuthScreenScope
+    @PerScreen
     fun provideSetupSkipUseCase(
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -85,15 +85,13 @@ object OnboardingAuthModule {
 
     @Module
     interface Declarations {
-
         @Binds
-        @AuthScreenScope
-        fun bindViewModelFactory(factory: OnboardingAuthViewModel.Factory): ViewModelProvider.Factory
-
+        @PerScreen
+        fun bindViewModelFactory(factory: OnboardingVoidViewModel.Factory): ViewModelProvider.Factory
     }
 }
 
-interface OnboardingAuthDependencies : ComponentDependencies {
+interface OnboardingVoidDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun blockRepository(): BlockRepository
     fun configStorage(): ConfigStorage
@@ -104,7 +102,3 @@ interface OnboardingAuthDependencies : ComponentDependencies {
     fun metricsProvider(): MetricsProvider
     fun dispatchers(): AppCoroutineDispatchers
 }
-
-@Scope
-@Retention(AnnotationRetention.RUNTIME)
-annotation class AuthScreenScope

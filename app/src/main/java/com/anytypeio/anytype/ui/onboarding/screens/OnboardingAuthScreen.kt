@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
@@ -31,8 +30,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
-import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
-
+import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 
 @Preview
 @Composable
@@ -41,21 +39,19 @@ fun AuthScreenPreview() {
         onLoginClicked = {},
         onJoinClicked = {},
         onPrivacyPolicyClicked = {},
-        onTermsOfUseClicked = {},
-        joinState = OnboardingAuthViewModel.JoinFlowState.Active
+        onTermsOfUseClicked = {}
     )
 }
 
 @Composable
 fun AuthScreenWrapper(
-    vm: OnboardingAuthViewModel
+    vm: OnboardingStartViewModel
 ) {
     AuthScreen(
         onJoinClicked = vm::onJoinClicked,
         onLoginClicked = vm::onLoginClicked,
         onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
-        onTermsOfUseClicked = vm::onTermsOfUseClicked,
-        joinState = vm.joinFlowState.collectAsStateWithLifecycle().value
+        onTermsOfUseClicked = vm::onTermsOfUseClicked
     )
 }
 
@@ -64,8 +60,7 @@ fun AuthScreen(
     onJoinClicked: () -> Unit,
     onLoginClicked: () -> Unit,
     onPrivacyPolicyClicked: () -> Unit,
-    onTermsOfUseClicked: () -> Unit,
-    joinState: OnboardingAuthViewModel.JoinFlowState
+    onTermsOfUseClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -80,8 +75,7 @@ fun AuthScreen(
         ) {
             SignButtons(
                 onJoinClicked = onJoinClicked,
-                onLoginClicked = onLoginClicked,
-                joinFlowState = joinState
+                onLoginClicked = onLoginClicked
             )
             TermsAndPolicy(
                 modifier = Modifier,
@@ -129,13 +123,12 @@ fun Description(modifier: Modifier = Modifier) {
 fun SignButtons(
     onJoinClicked: () -> Unit,
     onLoginClicked: () -> Unit,
-    joinFlowState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Row {
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.onboarding_join),
             onClick = onJoinClicked,
-            enabled = joinFlowState is OnboardingAuthViewModel.JoinFlowState.Active,
+            enabled = true,
             size = ButtonSize.Large,
             modifier = Modifier
                 .weight(1f)

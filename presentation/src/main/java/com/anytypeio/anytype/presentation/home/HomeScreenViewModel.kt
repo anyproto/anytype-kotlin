@@ -897,8 +897,9 @@ class HomeScreenViewModel(
                             analytics = analytics,
                             type = result.type,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objCreateHome,
+                            route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
+                            view = EventsDictionary.View.viewHome
                         )
                         navigate(Navigation.OpenObject(result.objectId))
                     },

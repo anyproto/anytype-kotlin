@@ -30,7 +30,6 @@ object EventsDictionary {
     const val authScreenShow = "ScreenIndex"
     const val loginScreenShow = "ScreenLogin"
     const val searchScreenShow = "ScreenSearch"
-    const val createObjectNavBar = "CreateObjectNavBar"
     const val createObjectCollectionsNavBar = "CreateObjectCollectionsNavBar"
     const val signupScreenShow = "ScreenAuthRegistration"
     const val invitationScreenShow = "ScreenAuthInvitation"
@@ -161,9 +160,9 @@ object EventsDictionary {
         const val objCreateMention = "Mention"
         const val objPowerTool = "Powertool"
         const val objTurnInto = "TurnInto"
-        const val tabFavorites = "Favorites"
         const val screenSettings = "ScreenSettings"
         const val screenDeletion = "ScreenDeletion"
+        const val navigation = "Navigation"
     }
 
     object Type {
@@ -189,6 +188,14 @@ object EventsDictionary {
         const val paste = "Paste"
         const val openObject = "OpenObject"
     }
+
+    /**
+     * This parameter is used to separate the use of the navigation bar from the dashboard or from the editor/sets
+     */
+    object View {
+        const val viewHome = "Home"
+        const val viewNavbar = "Navbar"
+    }
 }
 
 object EventsPropertiesKey {
@@ -208,4 +215,5 @@ object EventsPropertiesKey {
     const val condition = "condition"
     const val align = "align"
     const val originalId = "originalId"
+    const val view = "view"
 }

@@ -3149,12 +3149,6 @@ class EditorViewModel(
 
         Timber.d("onAddNewDocumentClicked, ")
 
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.createObjectNavBar,
-            props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
-        )
-
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
             createObject.execute(CreateObject.Param(type = null))
@@ -3164,7 +3158,8 @@ class EditorViewModel(
                             analytics = analytics,
                             type = result.type,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objPowerTool,
+                            route = EventsDictionary.Routes.navigation,
+                            view = EventsDictionary.View.viewNavbar,
                             startTime = startTime
                         )
                         proceedWithOpeningObject(result.objectId)

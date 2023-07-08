@@ -21,12 +21,13 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
-import com.anytypeio.anytype.di.feature.onboarding.OnboardingAuthDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingLoginSetupDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationAnimDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
+import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingVoidDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
@@ -83,7 +84,8 @@ interface MainComponent :
     MigrationErrorDependencies,
     BacklinkOrAddToObjectDependencies,
     FilesStorageDependencies,
-    OnboardingAuthDependencies,
+    OnboardingStartDependencies,
+    OnboardingVoidDependencies,
     OnboardingMnemonicDependencies,
     OnboardingMnemonicLoginDependencies,
     OnboardingSoulCreationDependencies,
@@ -198,8 +200,13 @@ private abstract class ComponentDependenciesModule private constructor() {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(OnboardingAuthDependencies::class)
-    abstract fun provideOnboardingAuthDependencies(component: MainComponent): ComponentDependencies
+    @ComponentDependenciesKey(OnboardingStartDependencies::class)
+    abstract fun provideOnboardingStartDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingVoidDependencies::class)
+    abstract fun provideOnboardingVoidDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap
@@ -230,5 +237,6 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(OnboardingSoulCreationAnimDependencies::class)
     abstract fun provideOnboardingSoulCreationAnimDependencies(component: MainComponent): ComponentDependencies
+
 
 }

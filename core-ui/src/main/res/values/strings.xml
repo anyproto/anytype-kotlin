@@ -346,7 +346,7 @@
     <string name="featured_relations">Featured relations</string>
     <string name="other_relations">Other relations</string>
     <string name="from_type">From type %1$s</string>
-    <string name="hint_add_description">Add description</string>
+    <string name="hint_add_description">Add a description</string>
 
     <string name="slash_widget_main_style">Style</string>
     <string name="slash_widget_main_media">Media</string>

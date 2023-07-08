@@ -14,9 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:addStatesFromChildren="true"
-        android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
-        tools:background="@drawable/item_block_multi_select_selected"
         tools:ignore="UselessParent">
 
         <TextView
@@ -37,5 +35,12 @@
             tools:text="@string/default_text_placeholder" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/selectionView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

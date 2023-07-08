@@ -4,13 +4,9 @@ import android.graphics.drawable.Drawable
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
 import com.anytypeio.anytype.core_ui.extensions.setTextColor
@@ -22,19 +18,17 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.addDot
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Numbered(
     val binding: ItemBlockNumberedBinding,
     clicked: (ListenerType) -> Unit,
 ) : Text<BlockView.Text.Numbered>(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
-    private val container = binding.graphicPlusTextContainer
     val number = binding.number
     override val content: TextInputWidget = binding.numberedListContent
     override val root: View = itemView
+    override val selectionView: View = binding.selectionView
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
@@ -106,10 +100,6 @@ class Numbered(
     @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
         // Do nothing
-    }
-
-    override fun select(item: BlockView.Selectable) {
-        container.isSelected = item.isSelected
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {

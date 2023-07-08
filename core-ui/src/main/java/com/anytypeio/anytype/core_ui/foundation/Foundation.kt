@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
+import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
 
@@ -180,13 +182,15 @@ fun Warning(
                     .weight(1f)
             )
             Spacer(modifier = Modifier.width(10.dp))
-            ButtonWarning(
+            ButtonWarningLoading(
                 onClick = onPositiveClick,
                 size = ButtonSize.Large,
                 text = actionButtonText,
-                modifier = Modifier
+                modifierBox = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+                modifierButton = Modifier.fillMaxWidth(),
+                loading = isInProgress
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
